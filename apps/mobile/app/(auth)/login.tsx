@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { View, Text, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -23,9 +23,7 @@ export default function LoginScreen() {
       >
         <View className="flex-1 justify-center px-8">
           <Text className="mb-2 text-4xl font-bold text-gray-900">Bentornato!</Text>
-          <Text className="mb-8 text-lg text-gray-500">
-            Accedi per continuare
-          </Text>
+          <Text className="mb-8 text-lg text-gray-500">Accedi per continuare</Text>
 
           <Input
             placeholder="Email"
@@ -59,27 +57,19 @@ export default function LoginScreen() {
             </View>
 
             <Pressable className="mb-3 flex-row items-center justify-center rounded-2xl border border-gray-200 py-4">
-              <Text className="text-base font-medium text-gray-700">
-                Continua con Google
-              </Text>
+              <Text className="text-base font-medium text-gray-700">Continua con Google</Text>
             </Pressable>
 
             <Pressable className="flex-row items-center justify-center rounded-2xl border border-gray-200 py-4">
-              <Text className="text-base font-medium text-gray-700">
-                Continua con Apple
-              </Text>
+              <Text className="text-base font-medium text-gray-700">Continua con Apple</Text>
             </Pressable>
           </View>
         </View>
 
         <View className="px-8 pb-8">
-          <Pressable
-            onPress={() => router.push('/(auth)/register')}
-            className="items-center py-2"
-          >
+          <Pressable onPress={() => router.push('/(auth)/register')} className="items-center py-2">
             <Text className="text-base text-gray-500">
-              Non hai un account?{' '}
-              <Text className="font-semibold text-primary">Registrati</Text>
+              Non hai un account? <Text className="font-semibold text-primary">Registrati</Text>
             </Text>
           </Pressable>
         </View>

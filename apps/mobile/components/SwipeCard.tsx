@@ -1,5 +1,5 @@
-import { View, Text, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Pressable, Text, View } from 'react-native';
 
 interface SwipeCardProps {
   dog: {

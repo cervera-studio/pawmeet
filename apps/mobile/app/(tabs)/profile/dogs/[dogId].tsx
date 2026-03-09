@@ -1,12 +1,13 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 
 export default function DogDetailScreen() {
-  const { dogId } = useLocalSearchParams<{ dogId: string }>();
+  const params = useLocalSearchParams<{ dogId: string }>();
   const router = useRouter();
+  // TODO: use params.dogId to fetch dog profile
 
   return (
     <>
@@ -64,7 +65,12 @@ export default function DogDetailScreen() {
           </View>
 
           <View className="mt-8">
-            <Button onPress={() => {/* TODO: modifica */}} label="Modifica profilo" />
+            <Button
+              onPress={() => {
+                router.push(`/profile/dogs/${params.dogId}/edit`);
+              }}
+              label="Modifica profilo"
+            />
           </View>
         </ScrollView>
       </SafeAreaView>

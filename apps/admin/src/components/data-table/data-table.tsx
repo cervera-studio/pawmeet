@@ -2,13 +2,14 @@
 
 import {
   type ColumnDef,
-  type SortingState,
-  type PaginationState,
   type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  type PaginationState,
+  type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -17,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -72,9 +72,10 @@ export function DataTable<TData, TValue>({
       : undefined,
     onPaginationChange: onPaginationChange
       ? (updater) => {
-          const newPagination = typeof updater === 'function'
-            ? updater(pagination ?? { pageIndex: 0, pageSize: 20 })
-            : updater;
+          const newPagination =
+            typeof updater === 'function'
+              ? updater(pagination ?? { pageIndex: 0, pageSize: 20 })
+              : updater;
           onPaginationChange(newPagination);
         }
       : undefined,

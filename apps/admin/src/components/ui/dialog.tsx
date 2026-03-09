@@ -14,13 +14,18 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
 
   return (
     <div className="fixed inset-0 z-50">
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: backdrop overlay needs click-to-dismiss */}
       <div
+        role="presentation"
         className="fixed inset-0 bg-black/80"
         onClick={() => onOpenChange?.(false)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            onOpenChange?.(false);
+          }
+        }}
       />
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        {children}
-      </div>
+      <div className="fixed inset-0 flex items-center justify-center p-4">{children}</div>
     </div>
   );
 }
@@ -42,11 +47,18 @@ const DialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
 DialogContent.displayName = 'DialogContent';
 
 function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)} {...props} />;
+  return (
+    <div
+      className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)}
+      {...props}
+    />
+  );
 }
 
 function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn('text-lg font-semibold leading-none tracking-tight', className)} {...props} />;
+  return (
+    <h2 className={cn('text-lg font-semibold leading-none tracking-tight', className)} {...props} />
+  );
 }
 
 function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
@@ -54,7 +66,12 @@ function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLPar
 }
 
 function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2', className)} {...props} />;
+  return (
+    <div
+      className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2', className)}
+      {...props}
+    />
+  );
 }
 
 export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter };

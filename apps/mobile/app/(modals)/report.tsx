@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 
 const REPORT_REASONS = [
@@ -24,9 +24,7 @@ export default function ReportModal() {
   return (
     <View className="flex-1 bg-white px-6 py-4">
       <Text className="mb-2 text-2xl font-bold text-gray-900">Segnala</Text>
-      <Text className="mb-6 text-base text-gray-500">
-        Seleziona il motivo della segnalazione
-      </Text>
+      <Text className="mb-6 text-base text-gray-500">Seleziona il motivo della segnalazione</Text>
 
       <View className="gap-2">
         {REPORT_REASONS.map((reason) => (
@@ -34,9 +32,7 @@ export default function ReportModal() {
             key={reason}
             onPress={() => setSelectedReason(reason)}
             className={`rounded-xl border px-4 py-3 ${
-              selectedReason === reason
-                ? 'border-primary bg-primary-50'
-                : 'border-gray-200'
+              selectedReason === reason ? 'border-primary bg-primary-50' : 'border-gray-200'
             }`}
           >
             <Text
@@ -60,11 +56,7 @@ export default function ReportModal() {
       />
 
       <View className="mt-6">
-        <Button
-          onPress={handleSubmit}
-          label="Invia segnalazione"
-          disabled={!selectedReason}
-        />
+        <Button onPress={handleSubmit} label="Invia segnalazione" disabled={!selectedReason} />
       </View>
     </View>
   );

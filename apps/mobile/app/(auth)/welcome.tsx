@@ -1,9 +1,7 @@
-import { useState } from 'react';
-import { View, Text, Pressable, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const { width } = Dimensions.get('window');
 
 const slides = [
   {
@@ -49,9 +47,9 @@ export default function WelcomeScreen() {
 
         {/* Indicatori */}
         <View className="mb-8 flex-row gap-2">
-          {slides.map((_, index) => (
+          {slides.map((slide, index) => (
             <View
-              key={index}
+              key={slide.title}
               className={`h-2 w-2 rounded-full ${
                 index === currentSlide ? 'w-8 bg-primary' : 'bg-gray-300'
               }`}
@@ -61,10 +59,7 @@ export default function WelcomeScreen() {
       </View>
 
       <View className="px-8 pb-8">
-        <Pressable
-          onPress={handleNext}
-          className="items-center rounded-2xl bg-primary py-4"
-        >
+        <Pressable onPress={handleNext} className="items-center rounded-2xl bg-primary py-4">
           <Text className="text-lg font-semibold text-white">
             {currentSlide < slides.length - 1 ? 'Avanti' : 'Inizia'}
           </Text>

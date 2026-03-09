@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 interface DogProfile {
   id: string;
@@ -11,12 +11,26 @@ interface DogProfile {
 
 export function useMatching() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
 
   // TODO: caricare profili da API
   const profiles: DogProfile[] = [
-    { id: '1', name: 'Luna', breed: 'Golden Retriever', age: '3 anni', distance: '1.2 km', imageUrl: null },
-    { id: '2', name: 'Rex', breed: 'Pastore Tedesco', age: '5 anni', distance: '2.5 km', imageUrl: null },
+    {
+      id: '1',
+      name: 'Luna',
+      breed: 'Golden Retriever',
+      age: '3 anni',
+      distance: '1.2 km',
+      imageUrl: null,
+    },
+    {
+      id: '2',
+      name: 'Rex',
+      breed: 'Pastore Tedesco',
+      age: '5 anni',
+      distance: '2.5 km',
+      imageUrl: null,
+    },
     { id: '3', name: 'Milo', breed: 'Labrador', age: '2 anni', distance: '0.8 km', imageUrl: null },
   ];
 

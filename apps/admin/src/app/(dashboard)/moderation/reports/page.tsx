@@ -1,6 +1,6 @@
 'use client';
 
-import { type ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -32,17 +32,19 @@ const columns: ColumnDef<Report>[] = [
     header: 'Stato',
     cell: ({ row }) => {
       const status = row.getValue('status') as string;
-      const variant = {
-        pending: 'warning' as const,
-        reviewed: 'outline' as const,
-        resolved: 'success' as const,
-      }[status] ?? 'outline' as const;
+      const variant =
+        {
+          pending: 'warning' as const,
+          reviewed: 'outline' as const,
+          resolved: 'success' as const,
+        }[status] ?? ('outline' as const);
 
-      const label = {
-        pending: 'In attesa',
-        reviewed: 'Revisionato',
-        resolved: 'Risolto',
-      }[status] ?? status;
+      const label =
+        {
+          pending: 'In attesa',
+          reviewed: 'Revisionato',
+          resolved: 'Risolto',
+        }[status] ?? status;
 
       return <Badge variant={variant}>{label}</Badge>;
     },
@@ -50,8 +52,7 @@ const columns: ColumnDef<Report>[] = [
   {
     accessorKey: 'createdAt',
     header: 'Data',
-    cell: ({ row }) =>
-      new Date(row.getValue('createdAt')).toLocaleDateString('it-IT'),
+    cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleDateString('it-IT'),
   },
   {
     id: 'actions',
@@ -65,9 +66,30 @@ const columns: ColumnDef<Report>[] = [
 ];
 
 const mockReports: Report[] = [
-  { id: '1', reporterName: 'Mario Rossi', reportedName: 'Luca Verdi', reason: 'Comportamento inappropriato', status: 'pending', createdAt: '2024-03-01' },
-  { id: '2', reporterName: 'Anna Bianchi', reportedName: 'Giuseppe Neri', reason: 'Foto inappropriata', status: 'pending', createdAt: '2024-03-02' },
-  { id: '3', reporterName: 'Chiara Blu', reportedName: 'Marco Gialli', reason: 'Spam', status: 'reviewed', createdAt: '2024-02-28' },
+  {
+    id: '1',
+    reporterName: 'Mario Rossi',
+    reportedName: 'Luca Verdi',
+    reason: 'Comportamento inappropriato',
+    status: 'pending',
+    createdAt: '2024-03-01',
+  },
+  {
+    id: '2',
+    reporterName: 'Anna Bianchi',
+    reportedName: 'Giuseppe Neri',
+    reason: 'Foto inappropriata',
+    status: 'pending',
+    createdAt: '2024-03-02',
+  },
+  {
+    id: '3',
+    reporterName: 'Chiara Blu',
+    reportedName: 'Marco Gialli',
+    reason: 'Spam',
+    status: 'reviewed',
+    createdAt: '2024-02-28',
+  },
 ];
 
 export default function ReportsPage() {
@@ -78,12 +100,7 @@ export default function ReportsPage() {
         <p className="text-neutral-500">Gestisci le segnalazioni degli utenti</p>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={mockReports}
-        total={mockReports.length}
-        totalPages={1}
-      />
+      <DataTable columns={columns} data={mockReports} total={mockReports.length} totalPages={1} />
     </div>
   );
 }

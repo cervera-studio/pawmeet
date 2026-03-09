@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 
 interface MatchCardProps {

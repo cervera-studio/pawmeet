@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 interface AvatarProps {
   name: string;
@@ -30,9 +30,7 @@ export function Avatar({ name, size = 'md' }: AvatarProps) {
     <View
       className={`items-center justify-center rounded-full bg-primary-100 ${sizeClasses[size]}`}
     >
-      <Text className={`font-semibold text-primary ${textSizeClasses[size]}`}>
-        {initials}
-      </Text>
+      <Text className={`font-semibold text-primary ${textSizeClasses[size]}`}>{initials}</Text>
     </View>
   );
 }

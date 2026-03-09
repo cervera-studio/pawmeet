@@ -1,6 +1,6 @@
-import { View, Text, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -59,10 +59,7 @@ export default function ProfileScreen() {
             <Text className="text-gray-400">›</Text>
           </Pressable>
 
-          <Pressable
-            onPress={logout}
-            className="mt-4 items-center rounded-xl py-4"
-          >
+          <Pressable onPress={logout} className="mt-4 items-center rounded-xl py-4">
             <Text className="text-base font-medium text-red-500">Esci</Text>
           </Pressable>
         </View>

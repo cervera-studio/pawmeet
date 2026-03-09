@@ -1,9 +1,21 @@
-import { pgTable, uuid, varchar, text, boolean, timestamp, doublePrecision, integer, jsonb } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  doublePrecision,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const dogProfiles = pgTable('dog_profiles', {
   id: uuid('id').defaultRandom().primaryKey(),
-  ownerId: uuid('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  ownerId: uuid('owner_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 50 }).notNull(),
   birthDate: timestamp('birth_date', { withTimezone: true }).notNull(),
   breed: varchar('breed', { length: 100 }).notNull(),
@@ -29,7 +41,9 @@ export const dogProfiles = pgTable('dog_profiles', {
 
 export const dogPhotos = pgTable('dog_photos', {
   id: uuid('id').defaultRandom().primaryKey(),
-  dogId: uuid('dog_id').notNull().references(() => dogProfiles.id, { onDelete: 'cascade' }),
+  dogId: uuid('dog_id')
+    .notNull()
+    .references(() => dogProfiles.id, { onDelete: 'cascade' }),
   url: text('url').notNull(),
   position: integer('position').notNull(),
   isPrimary: boolean('is_primary').notNull().default(false),

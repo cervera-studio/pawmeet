@@ -1,6 +1,6 @@
+import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -33,18 +33,14 @@ export default function NewDogScreen() {
         <ScrollView contentContainerClassName="px-6 py-4">
           {/* Step indicator */}
           <View className="mb-8 flex-row gap-2">
-            {steps.map((s, i) => (
-              <View key={i} className="flex-1 items-center">
+            {steps.map((s, stepIndex) => (
+              <View key={s} className="flex-1 items-center">
                 <View
                   className={`mb-1 h-1 w-full rounded-full ${
-                    i <= step ? 'bg-primary' : 'bg-gray-200'
+                    stepIndex <= step ? 'bg-primary' : 'bg-gray-200'
                   }`}
                 />
-                <Text
-                  className={`text-xs ${
-                    i <= step ? 'text-primary' : 'text-gray-400'
-                  }`}
-                >
+                <Text className={`text-xs ${stepIndex <= step ? 'text-primary' : 'text-gray-400'}`}>
                   {s}
                 </Text>
               </View>
@@ -53,9 +49,7 @@ export default function NewDogScreen() {
 
           {step === 0 && (
             <View className="gap-4">
-              <Text className="text-xl font-bold text-gray-900">
-                Come si chiama il tuo cane?
-              </Text>
+              <Text className="text-xl font-bold text-gray-900">Come si chiama il tuo cane?</Text>
               <Input placeholder="Nome" value={name} onChangeText={setName} />
               <Input placeholder="Razza" value={breed} onChangeText={setBreed} />
               <Input
@@ -69,9 +63,7 @@ export default function NewDogScreen() {
 
           {step === 1 && (
             <View className="gap-4">
-              <Text className="text-xl font-bold text-gray-900">
-                Parlaci del suo carattere
-              </Text>
+              <Text className="text-xl font-bold text-gray-900">Parlaci del suo carattere</Text>
               <Input
                 placeholder="Bio (descrizione breve)"
                 value={bio}
@@ -90,14 +82,10 @@ export default function NewDogScreen() {
 
           {step === 2 && (
             <View className="gap-4">
-              <Text className="text-xl font-bold text-gray-900">
-                Aggiungi delle foto
-              </Text>
+              <Text className="text-xl font-bold text-gray-900">Aggiungi delle foto</Text>
               <View className="h-48 items-center justify-center rounded-2xl border-2 border-dashed border-gray-200">
                 <Text className="text-4xl">📷</Text>
-                <Text className="mt-2 text-sm text-gray-400">
-                  Tocca per aggiungere foto
-                </Text>
+                <Text className="mt-2 text-sm text-gray-400">Tocca per aggiungere foto</Text>
               </View>
             </View>
           )}

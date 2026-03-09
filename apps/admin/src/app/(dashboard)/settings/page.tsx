@@ -1,5 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
 export default function SettingsPage() {
@@ -19,12 +19,16 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-700">Nome App</label>
-              <Input defaultValue="DogWalk" />
+              <label htmlFor="app-name" className="text-sm font-medium text-neutral-700">
+                Nome App
+              </label>
+              <Input id="app-name" defaultValue="DogWalk" />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-700">Email Supporto</label>
-              <Input defaultValue="support@dogwalk.app" />
+              <label htmlFor="support-email" className="text-sm font-medium text-neutral-700">
+                Email Supporto
+              </label>
+              <Input id="support-email" defaultValue="support@dogwalk.app" />
             </div>
             <Button size="sm">Salva modifiche</Button>
           </CardContent>
@@ -38,16 +42,16 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-700">
+              <label htmlFor="photo-confidence" className="text-sm font-medium text-neutral-700">
                 Soglia auto-approvazione foto (confidence %)
               </label>
-              <Input type="number" defaultValue="95" min="0" max="100" />
+              <Input id="photo-confidence" type="number" defaultValue="95" min="0" max="100" />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-700">
+              <label htmlFor="max-reports" className="text-sm font-medium text-neutral-700">
                 Max segnalazioni prima di sospensione
               </label>
-              <Input type="number" defaultValue="5" min="1" />
+              <Input id="max-reports" type="number" defaultValue="5" min="1" />
             </div>
             <Button size="sm">Salva modifiche</Button>
           </CardContent>
@@ -65,7 +69,9 @@ export default function SettingsPage() {
                 <p className="text-sm font-medium text-neutral-900">Svuota cache</p>
                 <p className="text-xs text-neutral-500">Invalida tutta la cache del sistema</p>
               </div>
-              <Button variant="destructive" size="sm">Svuota</Button>
+              <Button variant="destructive" size="sm">
+                Svuota
+              </Button>
             </div>
           </CardContent>
         </Card>

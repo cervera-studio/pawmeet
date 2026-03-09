@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { View, Text, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -28,16 +28,9 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <Text className="mb-2 text-4xl font-bold text-gray-900">Crea account</Text>
-          <Text className="mb-8 text-lg text-gray-500">
-            Unisciti alla community DogWalk
-          </Text>
+          <Text className="mb-8 text-lg text-gray-500">Unisciti alla community DogWalk</Text>
 
-          <Input
-            placeholder="Nome completo"
-            value={name}
-            onChangeText={setName}
-            className="mb-4"
-          />
+          <Input placeholder="Nome completo" value={name} onChangeText={setName} className="mb-4" />
 
           <Input
             placeholder="Email"

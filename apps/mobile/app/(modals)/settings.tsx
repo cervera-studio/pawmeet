@@ -1,6 +1,5 @@
-import { View, Text, Pressable, Switch } from 'react-native';
 import { useState } from 'react';
-import { ScrollView } from 'react-native';
+import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 
 export default function SettingsModal() {
   const [notifications, setNotifications] = useState(true);
@@ -32,11 +31,7 @@ export default function SettingsModal() {
 
         <View className="flex-row items-center justify-between py-4">
           <Text className="text-base text-gray-700">Tema scuro</Text>
-          <Switch
-            value={darkMode}
-            onValueChange={setDarkMode}
-            trackColor={{ true: '#FF6B35' }}
-          />
+          <Switch value={darkMode} onValueChange={setDarkMode} trackColor={{ true: '#FF6B35' }} />
         </View>
 
         <View className="mt-4 border-t border-gray-100 pt-4">

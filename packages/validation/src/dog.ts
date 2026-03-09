@@ -2,10 +2,26 @@ import { z } from 'zod';
 
 export const dogSizeEnum = z.enum(['toy', 'piccola', 'media', 'grande', 'gigante']);
 export const energyLevelEnum = z.enum(['bassa', 'media', 'alta', 'molto_alta']);
-export const behaviorWithDogsEnum = z.enum(['molto_socievole', 'socievole', 'selettivo', 'reattivo']);
-export const behaviorWithPeopleEnum = z.enum(['molto_socievole', 'socievole', 'timido', 'diffidente']);
+export const behaviorWithDogsEnum = z.enum([
+  'molto_socievole',
+  'socievole',
+  'selettivo',
+  'reattivo',
+]);
+export const behaviorWithPeopleEnum = z.enum([
+  'molto_socievole',
+  'socievole',
+  'timido',
+  'diffidente',
+]);
 export const leashBehaviorEnum = z.enum(['eccellente', 'buono', 'in_addestramento', 'difficile']);
-export const walkTimeEnum = z.enum(['mattina_presto', 'mattina', 'pomeriggio', 'sera', 'sera_tardi']);
+export const walkTimeEnum = z.enum([
+  'mattina_presto',
+  'mattina',
+  'pomeriggio',
+  'sera',
+  'sera_tardi',
+]);
 export const walkTerrainEnum = z.enum(['urbano', 'parco', 'campagna', 'spiaggia', 'montagna']);
 export const genderEnum = z.enum(['maschio', 'femmina']);
 

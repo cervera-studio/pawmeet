@@ -1,17 +1,30 @@
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { View, Text, FlatList, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
-import { useLocalSearchParams, Stack } from 'expo-router';
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChatBubble } from '@/components/ChatBubble';
 
 const PLACEHOLDER_MESSAGES = [
-  { id: '1', text: 'Ciao! Ho visto che anche tu hai un Golden!', isMine: false, timestamp: '14:20' },
+  {
+    id: '1',
+    text: 'Ciao! Ho visto che anche tu hai un Golden!',
+    isMine: false,
+    timestamp: '14:20',
+  },
   { id: '2', text: 'Si! Luna ha 3 anni, il tuo?', isMine: true, timestamp: '14:22' },
   { id: '3', text: 'Rex ne ha 4. Ci vediamo al parco alle 17?', isMine: false, timestamp: '14:30' },
 ];
 
 export default function ChatConversationScreen() {
-  const { matchId } = useLocalSearchParams<{ matchId: string }>();
+  useLocalSearchParams<{ matchId: string }>();
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
@@ -41,11 +54,7 @@ export default function ChatConversationScreen() {
             contentContainerClassName="px-4 py-2"
             inverted={false}
             renderItem={({ item }) => (
-              <ChatBubble
-                text={item.text}
-                isMine={item.isMine}
-                timestamp={item.timestamp}
-              />
+              <ChatBubble text={item.text} isMine={item.isMine} timestamp={item.timestamp} />
             )}
           />
 

@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface UserDetailPageProps {
   params: Promise<{ id: string }>;
@@ -25,8 +25,12 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="success">Attivo</Badge>
-          <Button variant="outline" size="sm">Sospendi</Button>
-          <Button variant="destructive" size="sm">Banna</Button>
+          <Button variant="outline" size="sm">
+            Sospendi
+          </Button>
+          <Button variant="destructive" size="sm">
+            Banna
+          </Button>
         </div>
       </div>
 

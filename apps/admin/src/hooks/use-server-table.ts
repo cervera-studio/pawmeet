@@ -1,15 +1,11 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
-import {
-  type SortingState,
-  type PaginationState,
-  type ColumnFiltersState,
-} from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
+import type { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { useCallback, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
 
-interface UseServerTableOptions<T> {
+interface UseServerTableOptions<_T> {
   /** API endpoint path (e.g. "/admin/users") */
   endpoint: string;
   /** TanStack Query key prefix */
@@ -26,11 +22,7 @@ interface PaginatedResponse<T> {
   totalPages: number;
 }
 
-export function useServerTable<T>({
-  endpoint,
-  queryKey,
-  pageSize = 20,
-}: UseServerTableOptions<T>) {
+export function useServerTable<T>({ endpoint, queryKey, pageSize = 20 }: UseServerTableOptions<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -64,8 +56,7 @@ export function useServerTable<T>({
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: [queryKey, queryParams],
-    queryFn: () =>
-      api.get<PaginatedResponse<T>>(endpoint, { params: queryParams }),
+    queryFn: () => api.get<PaginatedResponse<T>>(endpoint, { params: queryParams }),
   });
 
   const resetFilters = useCallback(() => {

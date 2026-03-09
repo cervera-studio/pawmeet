@@ -12,6 +12,8 @@
   },
   "devDependencies": {
     "@dogwalk/typescript-config": "workspace:*",
-    "typescript": "^5.9.0"
+    "@dogwalk/vitest-config": "workspace:*",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
   }
 }

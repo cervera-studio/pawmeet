@@ -54,9 +54,6 @@ export const storage = {
   },
 
   async clear(): Promise<void> {
-    await Promise.all([
-      this.removeToken(),
-      this.removeRefreshToken(),
-    ]);
+    await Promise.all([this.removeToken(), this.removeRefreshToken()]);
   },
 };

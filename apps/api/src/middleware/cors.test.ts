@@ -1,0 +1,69 @@
+import { Hono } from 'hono';
+import { corsMiddleware } from './cors.js';
+
+function createApp() {
+  const app = new Hono();
+  app.use('*', corsMiddleware);
+  app.get('/test', (c) => c.json({ ok: true }));
+  return app;
+}
+
+describe('corsMiddleware', () => {
+  const app = createApp();
+
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:4321',
+    'https://dogwalk.app',
+    'https://admin.dogwalk.app',
+  ];
+
+  const blockedOrigins = [
+    'http://localhost:8080',
+    'https://evil.com',
+    'https://dogwalk.app.evil.com',
+    'https://notdogwalk.app',
+  ];
+
+  it.each(allowedOrigins)('allows requests from %s', async (origin) => {
+    const res = await app.request('/test', {
+      headers: { Origin: origin },
+    });
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBe(origin);
+  });
+
+  it.each(blockedOrigins)('blocks requests from %s', async (origin) => {
+    const res = await app.request('/test', {
+      headers: { Origin: origin },
+    });
+    expect(res.headers.get('Access-Control-Allow-Origin')).not.toBe(origin);
+  });
+
+  it('includes credentials support', async () => {
+    const res = await app.request('/test', {
+      headers: { Origin: 'https://dogwalk.app' },
+    });
+    expect(res.headers.get('Access-Control-Allow-Credentials')).toBe('true');
+  });
+
+  it('handles preflight OPTIONS requests for allowed origins', async () => {
+    const res = await app.request('/test', {
+      method: 'OPTIONS',
+      headers: {
+        Origin: 'https://dogwalk.app',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Request-Headers': 'Content-Type',
+      },
+    });
+    // Preflight should return 204 or 200
+    expect(res.status).toBeLessThanOrEqual(204);
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBe('https://dogwalk.app');
+  });
+
+  it('does not set allow-origin header when no Origin is sent', async () => {
+    const res = await app.request('/test');
+    expect(res.status).toBe(200);
+    // Without an Origin header, CORS headers should not be set
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBeNull();
+  });
+});

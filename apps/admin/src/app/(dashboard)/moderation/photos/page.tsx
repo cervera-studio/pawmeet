@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface PendingPhoto {
   id: string;
@@ -16,12 +16,54 @@ interface PendingPhoto {
 
 // Placeholder data
 const mockPhotos: PendingPhoto[] = [
-  { id: '1', userId: 'u1', userName: 'Mario Rossi', imageUrl: '', type: 'profile', uploadedAt: '2024-03-01T10:00:00Z' },
-  { id: '2', userId: 'u2', userName: 'Laura Bianchi', imageUrl: '', type: 'dog', uploadedAt: '2024-03-01T11:00:00Z' },
-  { id: '3', userId: 'u3', userName: 'Giuseppe Verdi', imageUrl: '', type: 'profile', uploadedAt: '2024-03-01T12:00:00Z' },
-  { id: '4', userId: 'u4', userName: 'Anna Neri', imageUrl: '', type: 'dog', uploadedAt: '2024-03-01T13:00:00Z' },
-  { id: '5', userId: 'u5', userName: 'Luca Gialli', imageUrl: '', type: 'dog', uploadedAt: '2024-03-01T14:00:00Z' },
-  { id: '6', userId: 'u6', userName: 'Chiara Blu', imageUrl: '', type: 'profile', uploadedAt: '2024-03-01T15:00:00Z' },
+  {
+    id: '1',
+    userId: 'u1',
+    userName: 'Mario Rossi',
+    imageUrl: '',
+    type: 'profile',
+    uploadedAt: '2024-03-01T10:00:00Z',
+  },
+  {
+    id: '2',
+    userId: 'u2',
+    userName: 'Laura Bianchi',
+    imageUrl: '',
+    type: 'dog',
+    uploadedAt: '2024-03-01T11:00:00Z',
+  },
+  {
+    id: '3',
+    userId: 'u3',
+    userName: 'Giuseppe Verdi',
+    imageUrl: '',
+    type: 'profile',
+    uploadedAt: '2024-03-01T12:00:00Z',
+  },
+  {
+    id: '4',
+    userId: 'u4',
+    userName: 'Anna Neri',
+    imageUrl: '',
+    type: 'dog',
+    uploadedAt: '2024-03-01T13:00:00Z',
+  },
+  {
+    id: '5',
+    userId: 'u5',
+    userName: 'Luca Gialli',
+    imageUrl: '',
+    type: 'dog',
+    uploadedAt: '2024-03-01T14:00:00Z',
+  },
+  {
+    id: '6',
+    userId: 'u6',
+    userName: 'Chiara Blu',
+    imageUrl: '',
+    type: 'profile',
+    uploadedAt: '2024-03-01T15:00:00Z',
+  },
 ];
 
 export default function PhotoModerationPage() {
@@ -42,12 +84,12 @@ export default function PhotoModerationPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-neutral-900">Moderazione Foto</h1>
-          <p className="text-neutral-500">
-            {photos.length} foto in attesa di revisione
-          </p>
+          <p className="text-neutral-500">{photos.length} foto in attesa di revisione</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">Approva tutte</Button>
+          <Button variant="outline" size="sm">
+            Approva tutte
+          </Button>
         </div>
       </div>
 
@@ -68,9 +110,7 @@ export default function PhotoModerationPage() {
               </div>
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-neutral-900 truncate">
-                    {photo.userName}
-                  </p>
+                  <p className="text-sm font-medium text-neutral-900 truncate">{photo.userName}</p>
                   <Badge variant={photo.type === 'profile' ? 'default' : 'secondary'}>
                     {photo.type === 'profile' ? 'Profilo' : 'Cane'}
                   </Badge>

@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 
 interface DogProfileCardProps {

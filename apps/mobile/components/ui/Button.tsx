@@ -28,9 +28,7 @@ export function Button({ onPress, label, variant = 'primary', disabled = false }
       disabled={disabled}
       className={`${baseClass} ${variantClasses[variant]} ${disabled ? 'opacity-50' : ''}`}
     >
-      <Text className={`text-base font-semibold ${textVariantClasses[variant]}`}>
-        {label}
-      </Text>
+      <Text className={`text-base font-semibold ${textVariantClasses[variant]}`}>{label}</Text>
     </Pressable>
   );
 }

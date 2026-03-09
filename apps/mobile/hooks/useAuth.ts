@@ -1,25 +1,21 @@
-import { useCallback } from 'react';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '@/stores/auth';
+import { useCallback } from 'react';
 import { storage } from '@/lib/storage';
+import { useAuthStore } from '@/stores/auth';
 
 export function useAuth() {
   const router = useRouter();
   const { user, token, isAuthenticated, login: storeLogin, logout: storeLogout } = useAuthStore();
 
   const login = useCallback(
-    async (email: string, password: string) => {
-      try {
-        // TODO: chiamata API login
-        const mockUser = { id: '1', email, name: 'Utente' };
-        const mockToken = 'mock-token';
+    async (email: string, _password: string) => {
+      // TODO: chiamata API login
+      const mockUser = { id: '1', email, name: 'Utente' };
+      const mockToken = 'mock-token';
 
-        await storage.setToken(mockToken);
-        storeLogin(mockUser, mockToken);
-        router.replace('/(tabs)');
-      } catch (error) {
-        throw error;
-      }
+      await storage.setToken(mockToken);
+      storeLogin(mockUser, mockToken);
+      router.replace('/(tabs)');
     },
     [storeLogin, router],
   );

@@ -1,7 +1,7 @@
 export function formatDogAge(birthDate: Date): string {
   const now = new Date();
-  const months = (now.getFullYear() - birthDate.getFullYear()) * 12 +
-    (now.getMonth() - birthDate.getMonth());
+  const months =
+    (now.getFullYear() - birthDate.getFullYear()) * 12 + (now.getMonth() - birthDate.getMonth());
   if (months < 12) return `${months} mesi`;
   const years = Math.floor(months / 12);
   const remainingMonths = months % 12;

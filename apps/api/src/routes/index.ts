@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { authRoutes } from './auth.js';
+import { chatRoutes } from './chat.js';
 import { dogRoutes } from './dogs.js';
 import { matchRoutes } from './matches.js';
-import { chatRoutes } from './chat.js';
 import { userRoutes } from './users.js';
 
 export const routes = new Hono()

@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 
@@ -56,10 +56,7 @@ export default function DogDetailModal() {
 
       <View className="mt-6 gap-3 pb-8">
         <Button onPress={() => router.back()} label="Mi piace!" />
-        <Pressable
-          onPress={() => router.push('/(modals)/report')}
-          className="items-center py-2"
-        >
+        <Pressable onPress={() => router.push('/(modals)/report')} className="items-center py-2">
           <Text className="text-sm text-gray-400">Segnala profilo</Text>
         </Pressable>
       </View>

@@ -1,18 +1,8 @@
 ---
-const currentYear = new Date().getFullYear();
+import { siteLinks, legalLinks } from '../data/navigation';
+import { getCopyrightYear } from '../utils/meta';
 
-const legalLinks = [
-  { href: '/privacy', label: 'Privacy Policy' },
-  { href: '/terms', label: 'Termini e Condizioni' },
-  { href: '/cookie', label: 'Cookie Policy' },
-];
-
-const siteLinks = [
-  { href: '/chi-siamo', label: 'Chi siamo' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/contatti', label: 'Contatti' },
-  { href: '/waitlist', label: 'Waitlist' },
-];
+const currentYear = getCopyrightYear();
 ---
 
 <footer class="bg-gray-900 text-gray-300">

@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback } from 'react';
-import { AdminRole, hasRole } from '@/lib/auth';
 import type { AdminRole as AdminRoleType } from '@/lib/auth';
+import { AdminRole, hasRole } from '@/lib/auth';
 
 function getPlaceholderRole(): AdminRoleType {
   return AdminRole.Admin;
@@ -17,10 +17,7 @@ export function usePermission() {
   const role = getPlaceholderRole();
   const isAuthenticated = true;
 
-  const can = useCallback(
-    (requiredRole: AdminRoleType) => hasRole(role, requiredRole),
-    [role],
-  );
+  const can = useCallback((requiredRole: AdminRoleType) => hasRole(role, requiredRole), [role]);
 
   const isSuperAdmin = role === AdminRole.SuperAdmin;
   const isAdmin = hasRole(role, AdminRole.Admin);

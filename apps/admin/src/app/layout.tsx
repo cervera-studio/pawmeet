@@ -8,11 +8,7 @@ export const metadata: Metadata = {
   description: 'Pannello di amministrazione DogWalk',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="it">
       <body>

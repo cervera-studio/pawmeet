@@ -44,20 +44,12 @@ export default function DashboardPage() {
         {kpiCards.map((kpi) => (
           <Card key={kpi.title}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-neutral-500">
-                {kpi.title}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-neutral-500">{kpi.title}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-neutral-900">{kpi.value}</div>
               <p className="mt-1 text-xs">
-                <span
-                  className={
-                    kpi.changeType === 'positive'
-                      ? 'text-green-600'
-                      : 'text-red-600'
-                  }
-                >
+                <span className={kpi.changeType === 'positive' ? 'text-green-600' : 'text-red-600'}>
                   {kpi.change}
                 </span>{' '}
                 <span className="text-neutral-500">{kpi.description}</span>

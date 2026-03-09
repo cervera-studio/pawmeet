@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  calculateSizeScore,
-  calculateEnergyScore,
   calculateBehaviorScore,
   calculateDistanceScore,
+  calculateEnergyScore,
+  calculateSizeScore,
 } from './matching';
 
 describe('calculateSizeScore', () => {
@@ -14,9 +14,7 @@ describe('calculateSizeScore', () => {
   });
 
   it('returns symmetric scores', () => {
-    expect(calculateSizeScore('piccola', 'grande')).toBe(
-      calculateSizeScore('grande', 'piccola'),
-    );
+    expect(calculateSizeScore('piccola', 'grande')).toBe(calculateSizeScore('grande', 'piccola'));
   });
 
   it('returns 0.0 for extreme mismatch', () => {

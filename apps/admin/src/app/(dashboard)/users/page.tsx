@@ -1,6 +1,6 @@
 'use client';
 
-import { type ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,11 +30,12 @@ const columns: ColumnDef<User>[] = [
     header: 'Stato',
     cell: ({ row }) => {
       const status = row.getValue('status') as string;
-      const variant = {
-        active: 'success' as const,
-        suspended: 'warning' as const,
-        banned: 'destructive' as const,
-      }[status] ?? 'outline' as const;
+      const variant =
+        {
+          active: 'success' as const,
+          suspended: 'warning' as const,
+          banned: 'destructive' as const,
+        }[status] ?? ('outline' as const);
 
       return <Badge variant={variant}>{status}</Badge>;
     },
@@ -54,7 +55,10 @@ const columns: ColumnDef<User>[] = [
     id: 'actions',
     header: '',
     cell: ({ row }) => (
-      <a href={`/users/${row.original.id}`} className="inline-flex items-center justify-center h-8 rounded-md px-3 text-xs hover:bg-neutral-100 transition-colors">
+      <a
+        href={`/users/${row.original.id}`}
+        className="inline-flex items-center justify-center h-8 rounded-md px-3 text-xs hover:bg-neutral-100 transition-colors"
+      >
         Dettagli
       </a>
     ),
@@ -63,9 +67,30 @@ const columns: ColumnDef<User>[] = [
 
 // Placeholder data
 const mockUsers: User[] = [
-  { id: '1', name: 'Mario Rossi', email: 'mario@example.com', status: 'active', dogsCount: 2, createdAt: '2024-01-15' },
-  { id: '2', name: 'Laura Bianchi', email: 'laura@example.com', status: 'active', dogsCount: 1, createdAt: '2024-02-20' },
-  { id: '3', name: 'Giuseppe Verdi', email: 'giuseppe@example.com', status: 'suspended', dogsCount: 3, createdAt: '2024-03-10' },
+  {
+    id: '1',
+    name: 'Mario Rossi',
+    email: 'mario@example.com',
+    status: 'active',
+    dogsCount: 2,
+    createdAt: '2024-01-15',
+  },
+  {
+    id: '2',
+    name: 'Laura Bianchi',
+    email: 'laura@example.com',
+    status: 'active',
+    dogsCount: 1,
+    createdAt: '2024-02-20',
+  },
+  {
+    id: '3',
+    name: 'Giuseppe Verdi',
+    email: 'giuseppe@example.com',
+    status: 'suspended',
+    dogsCount: 3,
+    createdAt: '2024-03-10',
+  },
 ];
 
 export default function UsersPage() {
@@ -83,22 +108,14 @@ export default function UsersPage() {
 
       {/* Filters */}
       <div className="flex items-center gap-4">
-        <Input
-          placeholder="Cerca utenti..."
-          className="max-w-sm"
-        />
+        <Input placeholder="Cerca utenti..." className="max-w-sm" />
         <Button variant="outline" size="sm">
           Filtri
         </Button>
       </div>
 
       {/* Table */}
-      <DataTable
-        columns={columns}
-        data={mockUsers}
-        total={mockUsers.length}
-        totalPages={1}
-      />
+      <DataTable columns={columns} data={mockUsers} total={mockUsers.length} totalPages={1} />
     </div>
   );
 }

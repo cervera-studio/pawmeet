@@ -1,5 +1,5 @@
-import { useEffect, useCallback } from 'react';
 import * as Location from 'expo-location';
+import { useCallback } from 'react';
 import { useLocationStore } from '@/stores/location';
 
 export function useLocation() {
@@ -20,7 +20,7 @@ export function useLocation() {
       const granted = status === 'granted';
       setPermissionGranted(granted);
       return granted;
-    } catch (err) {
+    } catch (_err) {
       setError('Errore nel richiedere i permessi di posizione');
       return false;
     }
@@ -43,7 +43,7 @@ export function useLocation() {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       });
-    } catch (err) {
+    } catch (_err) {
       setError('Errore nel recuperare la posizione');
     } finally {
       setLoading(false);

@@ -1,0 +1,8 @@
+{
+  "extends": "@dogwalk/typescript-config/tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "jsx": "react-native"
+  },
+  "include": ["src"]
+}

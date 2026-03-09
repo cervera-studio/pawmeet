@@ -1,0 +1,65 @@
+---
+const currentYear = new Date().getFullYear();
+
+const legalLinks = [
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/terms', label: 'Termini e Condizioni' },
+  { href: '/cookie', label: 'Cookie Policy' },
+];
+
+const siteLinks = [
+  { href: '/chi-siamo', label: 'Chi siamo' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/contatti', label: 'Contatti' },
+  { href: '/waitlist', label: 'Waitlist' },
+];
+---
+
+<footer class="bg-gray-900 text-gray-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Brand -->
+      <div>
+        <a href="/" class="flex items-center gap-2 mb-4">
+          <img src="/favicon.svg" alt="DogWalk" class="w-8 h-8" />
+          <span class="text-xl font-bold text-white">DogWalk</span>
+        </a>
+        <p class="text-sm text-gray-400 max-w-xs">
+          La community per chi ama passeggiare con il proprio cane. Trova compagni di passeggiata nella tua zona.
+        </p>
+      </div>
+
+      <!-- Site links -->
+      <div>
+        <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Link utili</h3>
+        <ul class="space-y-2">
+          {siteLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm hover:text-white transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Legale</h3>
+        <ul class="space-y-2">
+          {legalLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm hover:text-white transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
+      &copy; {currentYear} DogWalk. Tutti i diritti riservati.
+    </div>
+  </div>
+</footer>

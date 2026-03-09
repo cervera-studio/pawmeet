@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Placeholder blog posts
+const posts = [
+  {
+    slug: '#',
+    title: 'Come socializzare il tuo cane con altri cani',
+    excerpt: 'Scopri i migliori consigli per abituare il tuo cane a interagire con altri amici a quattro zampe durante le passeggiate.',
+    date: '2026-03-01',
+    readingTime: '5 min',
+  },
+  {
+    slug: '#',
+    title: 'I 10 parchi dog-friendly migliori d\'Italia',
+    excerpt: 'Una guida completa ai parchi piu belli dove portare il tuo cane, da nord a sud.',
+    date: '2026-02-20',
+    readingTime: '8 min',
+  },
+  {
+    slug: '#',
+    title: 'Passeggiare d\'inverno: consigli per te e il tuo cane',
+    excerpt: 'Il freddo non deve fermarti! Ecco come goderti le passeggiate invernali in sicurezza.',
+    date: '2026-02-10',
+    readingTime: '4 min',
+  },
+];
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('it-IT', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<BaseLayout title="Blog" description="Consigli, guide e storie dal mondo DogWalk.">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+    <div class="text-center mb-16">
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Blog</h1>
+      <p class="mt-4 text-lg text-gray-600">
+        Consigli, guide e storie per te e il tuo amico a quattro zampe.
+      </p>
+    </div>
+
+    <div class="space-y-8">
+      {posts.map((post) => (
+        <article class="group border-b border-gray-100 pb-8">
+          <a href={post.slug} class="block">
+            <div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
+              <time datetime={post.date}>{formatDate(post.date)}</time>
+              <span>&middot;</span>
+              <span>{post.readingTime} di lettura</span>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900 group-hover:text-primary transition-colors">
+              {post.title}
+            </h2>
+            <p class="mt-2 text-gray-600">{post.excerpt}</p>
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <div class="mt-12 text-center text-gray-400 text-sm">
+      <p>Altri articoli in arrivo. Resta sintonizzato!</p>
+    </div>
+  </div>
+</BaseLayout>

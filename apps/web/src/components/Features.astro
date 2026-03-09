@@ -1,0 +1,55 @@
+---
+const features = [
+  {
+    title: 'Mappa interattiva',
+    description: 'Visualizza i percorsi e i punti di ritrovo nella tua zona. Trova i parchi dog-friendly e i sentieri migliori.',
+    icon: '🗺️',
+  },
+  {
+    title: 'Match intelligente',
+    description: 'Il nostro algoritmo trova cani compatibili per taglia, energia e temperamento. Passeggiate senza stress.',
+    icon: '🤝',
+  },
+  {
+    title: 'Calendario condiviso',
+    description: 'Pianifica le passeggiate in anticipo e ricevi notifiche. Non perdere mai un appuntamento con i tuoi amici.',
+    icon: '📅',
+  },
+  {
+    title: 'Profili dettagliati',
+    description: 'Ogni cane ha il suo profilo con foto, preferenze e storia. Conosci i compagni di passeggiata prima di incontrarli.',
+    icon: '🐕',
+  },
+  {
+    title: 'Chat di gruppo',
+    description: 'Comunica con gli altri proprietari, condividi consigli e organizza passeggiate spontanee nel quartiere.',
+    icon: '💬',
+  },
+  {
+    title: 'Tracciamento percorsi',
+    description: 'Registra i tuoi percorsi preferiti, la distanza e il tempo. Tieni traccia delle avventure del tuo cane.',
+    icon: '📍',
+  },
+];
+---
+
+<section class="py-20 sm:py-28 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Tutto quello che ti serve</h2>
+      <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+        Funzionalità pensate per rendere ogni passeggiata un'esperienza migliore.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {features.map((feature) => (
+        <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
+          <div class="text-4xl mb-4">{feature.icon}</div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
+          <p class="text-gray-600 text-sm">{feature.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

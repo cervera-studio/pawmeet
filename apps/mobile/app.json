@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "DogWalk",
+    "slug": "dogwalk",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "scheme": "dogwalk",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.dogwalk.mobile",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Per mostrarti cani nelle vicinanze",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Per aggiornare la tua posizione",
+        "NSCameraUsageDescription": "Per scattare foto del tuo cane",
+        "NSPhotoLibraryUsageDescription": "Per caricare foto del tuo cane"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FF6B35"
+      },
+      "package": "app.dogwalk.mobile",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "CAMERA"]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-location",
+      "expo-image-picker",
+      "expo-notifications",
+      "expo-secure-store"
+    ]
+  }
+}

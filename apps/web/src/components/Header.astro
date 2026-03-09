@@ -1,0 +1,80 @@
+---
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/chi-siamo', label: 'Chi siamo' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/contatti', label: 'Contatti' },
+];
+---
+
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <a href="/" class="flex items-center gap-2">
+      <img src="/favicon.svg" alt="DogWalk" class="w-8 h-8" />
+      <span class="text-xl font-bold text-primary-600">DogWalk</span>
+    </a>
+
+    <ul class="hidden md:flex items-center gap-8">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <a
+      href="/waitlist"
+      class="hidden sm:inline-flex items-center px-4 py-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-600 transition-colors"
+    >
+      Iscriviti alla waitlist
+    </a>
+
+    <!-- Mobile menu button -->
+    <button
+      class="md:hidden p-2 text-gray-600"
+      aria-label="Apri menu"
+      id="mobile-menu-btn"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white">
+    <ul class="px-4 py-4 space-y-3">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="block text-sm font-medium text-gray-600 hover:text-primary-600"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+      <li>
+        <a
+          href="/waitlist"
+          class="block text-center px-4 py-2 rounded-full bg-primary text-white text-sm font-semibold"
+        >
+          Iscriviti alla waitlist
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>

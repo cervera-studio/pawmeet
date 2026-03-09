@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@dogwalk/typescript-config": "workspace:*",
+    "@dogwalk/vitest-config": "workspace:*",
     "@biomejs/biome": "^2.4.0",
     "vitest": "^4.0.0",
     "turbo": "^2.8.0"

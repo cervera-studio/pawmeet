@@ -61,7 +61,9 @@ pnpm format:check     # Check formatting (Biome)
 
 - **Vitest** for all unit and integration tests (api, web, admin, shared packages)
 - **Jest** only for mobile (Expo's default runner)
-- Test files: colocated as `*.test.ts` / `*.test.tsx` next to source, or in `__tests__/` directories
+- Shared config in `tooling/vitest/` — extend with `node` (backend/packages) or `react` (web/admin)
+- Test files: colocated as `*.test.ts` / `*.test.tsx` next to source
+- **Builder pattern** for test data: use builder functions to construct test objects instead of raw literals. Keeps tests readable, avoids duplication, and makes defaults explicit.
 - Run: `pnpm test` (all), `pnpm --filter @dogwalk/api test` (single package)
 
 ## Conventions

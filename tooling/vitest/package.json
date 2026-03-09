@@ -1,0 +1,13 @@
+{
+  "name": "@dogwalk/vitest-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./node": "./node.ts",
+    "./react": "./react.ts"
+  },
+  "dependencies": {
+    "vitest": "^4.0.0"
+  }
+}

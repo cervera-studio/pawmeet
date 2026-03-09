@@ -9,11 +9,13 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "clean": "turbo clean && rm -rf node_modules",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "test": "turbo test"
   },
   "devDependencies": {
     "@dogwalk/typescript-config": "workspace:*",
     "@biomejs/biome": "^2.4.0",
+    "vitest": "^4.0.0",
     "turbo": "^2.8.0"
   },
   "packageManager": "pnpm@10.6.0",

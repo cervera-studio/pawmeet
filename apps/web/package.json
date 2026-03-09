@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "lint": "biome check src/",
+    "test": "vitest run",
     "typecheck": "astro check"
   },
   "dependencies": {

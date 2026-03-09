@@ -51,6 +51,19 @@ pnpm format:check     # Check formatting (Biome)
 - **Monitoring**: Sentry
 - **CI/CD**: GitHub Actions
 
+## Architecture Principles
+
+- **Clean Architecture**: separate domain logic from infrastructure. Layers: domain (entities, value objects) → use cases (application logic) → adapters (API routes, DB repositories, external services). Dependencies point inward only.
+- **SOLID principles**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion. Every module, class, and function should have one reason to change.
+- **Const objects over enums**: use `as const` objects + derived union types instead of TypeScript `enum` (see `apps/admin/src/lib/auth.ts` for reference pattern)
+
+## Testing
+
+- **Vitest** for all unit and integration tests (api, web, admin, shared packages)
+- **Jest** only for mobile (Expo's default runner)
+- Test files: colocated as `*.test.ts` / `*.test.tsx` next to source, or in `__tests__/` directories
+- Run: `pnpm test` (all), `pnpm --filter @dogwalk/api test` (single package)
+
 ## Conventions
 
 - Language: TypeScript everywhere, strict mode

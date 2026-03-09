@@ -1,7 +1,12 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
-  "organizeImports": {
-    "enabled": true
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "formatter": {
     "enabled": true,
@@ -34,14 +39,19 @@
     }
   },
   "files": {
-    "ignore": [
-      "**/dist/**",
-      "**/node_modules/**",
-      "**/.next/**",
-      "**/.astro/**",
-      "**/.expo/**",
-      "**/.turbo/**",
-      "**/coverage/**"
+    "includes": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.json",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/.astro",
+      "!**/.expo",
+      "!**/.turbo",
+      "!**/coverage"
     ]
   }
 }

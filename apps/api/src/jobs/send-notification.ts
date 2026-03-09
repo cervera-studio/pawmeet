@@ -1,7 +1,6 @@
 import { Worker } from 'bullmq';
-import IORedis from 'ioredis';
 
-const connection = new IORedis(process.env.REDIS_URL!, { maxRetriesPerRequest: null });
+const connection = { host: process.env.REDIS_HOST, port: Number(process.env.REDIS_PORT), password: process.env.REDIS_PASSWORD, maxRetriesPerRequest: null };
 
 const sendNotificationWorker = new Worker(
   'notifications',

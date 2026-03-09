@@ -86,6 +86,9 @@ pnpm format:check     # Check formatting (Biome)
 
 - No `Co-Authored-By` lines in commits
 - Commit messages in English, conventional commits style
+- **Lefthook** git hooks:
+  - `pre-commit`: Biome lint+format (staged files) + typecheck
+  - `pre-push`: test + build
 
 ## Documentation
 

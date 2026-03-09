@@ -1,6 +1,33 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #FFF3ED;
+  --color-primary-100: #FFE2D1;
+  --color-primary-200: #FFC4A3;
+  --color-primary-300: #FFA575;
+  --color-primary-400: #FF8753;
+  --color-primary-500: #FF6B35;
+  --color-primary-600: #E55A28;
+  --color-primary-700: #CC4A1C;
+  --color-primary-800: #993815;
+  --color-primary-900: #66250E;
+  --color-primary: #FF6B35;
+
+  --color-secondary-50: #E8F5EE;
+  --color-secondary-100: #D1EBDD;
+  --color-secondary-200: #A3D7BB;
+  --color-secondary-300: #75C399;
+  --color-secondary-400: #47AF77;
+  --color-secondary-500: #2D6A4F;
+  --color-secondary-600: #245640;
+  --color-secondary-700: #1B4130;
+  --color-secondary-800: #122B20;
+  --color-secondary-900: #091610;
+  --color-secondary: #2D6A4F;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --radius: 0.5rem;
+}
 
 @layer base {
   :root {
@@ -23,7 +50,6 @@
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 18 100% 60%;
-    --radius: 0.5rem;
   }
 
   * {
@@ -32,6 +58,5 @@
 
   body {
     @apply bg-neutral-50 text-neutral-900 antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
   }
 }

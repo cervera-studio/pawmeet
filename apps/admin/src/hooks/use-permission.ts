@@ -1,26 +1,30 @@
 'use client';
 
 import { useCallback } from 'react';
-import type { AdminRole } from '@/lib/auth';
-import { hasRole } from '@/lib/auth';
+import { AdminRole, hasRole } from '@/lib/auth';
+import type { AdminRole as AdminRoleType } from '@/lib/auth';
+
+function getPlaceholderRole(): AdminRoleType {
+  return AdminRole.Admin;
+}
 
 /**
  * RBAC hook for checking permissions in components.
  * TODO: Wire up to actual auth context/session.
  */
 export function usePermission() {
-  // Placeholder: in production, get from auth context
-  const role: AdminRole = 'admin';
+  // TODO: in production, get from auth context/session
+  const role = getPlaceholderRole();
   const isAuthenticated = true;
 
   const can = useCallback(
-    (requiredRole: AdminRole) => hasRole(role, requiredRole),
+    (requiredRole: AdminRoleType) => hasRole(role, requiredRole),
     [role],
   );
 
-  const isSuperAdmin = role === 'super_admin';
-  const isAdmin = hasRole(role, 'admin');
-  const isModerator = hasRole(role, 'moderator');
+  const isSuperAdmin = role === AdminRole.SuperAdmin;
+  const isAdmin = hasRole(role, AdminRole.Admin);
+  const isModerator = hasRole(role, AdminRole.Moderator);
 
   return {
     role,

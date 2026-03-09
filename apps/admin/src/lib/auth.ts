@@ -1,4 +1,11 @@
-export type AdminRole = 'super_admin' | 'admin' | 'moderator' | 'viewer';
+export const AdminRole = {
+  SuperAdmin: 'super_admin',
+  Admin: 'admin',
+  Moderator: 'moderator',
+  Viewer: 'viewer',
+} as const;
+
+export type AdminRole = (typeof AdminRole)[keyof typeof AdminRole];
 
 export interface AdminUser {
   id: string;
@@ -22,10 +29,10 @@ export async function getCurrentUser(): Promise<AdminUser | null> {
  */
 export function hasRole(userRole: AdminRole, requiredRole: AdminRole): boolean {
   const hierarchy: Record<AdminRole, number> = {
-    super_admin: 4,
-    admin: 3,
-    moderator: 2,
-    viewer: 1,
+    [AdminRole.SuperAdmin]: 4,
+    [AdminRole.Admin]: 3,
+    [AdminRole.Moderator]: 2,
+    [AdminRole.Viewer]: 1,
   };
 
   return hierarchy[userRole] >= hierarchy[requiredRole];
@@ -35,11 +42,11 @@ export function hasRole(userRole: AdminRole, requiredRole: AdminRole): boolean {
  * Route-based permission map.
  */
 export const routePermissions: Record<string, AdminRole> = {
-  '/settings': 'admin',
-  '/users': 'moderator',
-  '/moderation': 'moderator',
-  '/dogs': 'moderator',
-  '/': 'viewer',
+  '/settings': AdminRole.Admin,
+  '/users': AdminRole.Moderator,
+  '/moderation': AdminRole.Moderator,
+  '/dogs': AdminRole.Moderator,
+  '/': AdminRole.Viewer,
 };
 
 /**

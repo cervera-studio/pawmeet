@@ -10,8 +10,8 @@ Social app for dog owners to find compatible walking companions through behavior
 apps/
   api/        → Hono on Node.js (deploys to Fly.io, Frankfurt)
   web/        → Astro landing page (SSG, deploys to Cloudflare Pages)
-  admin/      → Next.js 15 backoffice + shadcn/ui (deploys to Cloudflare Pages)
-  mobile/     → Expo SDK 52 + Expo Router + NativeWind
+  admin/      → Next.js 16 backoffice + shadcn/ui (deploys to Cloudflare Pages)
+  mobile/     → Expo SDK 55 + Expo Router + NativeWind
 
 packages/
   types/      → Shared TypeScript interfaces
@@ -24,8 +24,6 @@ packages/
 
 tooling/
   typescript/ → Base tsconfig files
-  eslint/     → Shared ESLint config
-  prettier/   → Shared Prettier config
 ```
 
 ## Commands
@@ -34,15 +32,16 @@ tooling/
 pnpm install          # Install all dependencies
 pnpm dev              # Start all apps in dev mode
 pnpm build            # Build all apps
-pnpm lint             # Lint all apps
+pnpm lint             # Lint all apps (Biome)
+pnpm lint:fix         # Lint + auto-fix (Biome)
 pnpm typecheck        # Type-check all apps
-pnpm format           # Format all files with Prettier
-pnpm format:check     # Check formatting
+pnpm format           # Format all files (Biome)
+pnpm format:check     # Check formatting (Biome)
 ```
 
 ## Tech Stack
 
-- **Runtime**: Node.js 20, pnpm 9.15, Turborepo
+- **Runtime**: Node.js 22, pnpm 10, Turborepo
 - **API**: Hono + tRPC, JWT auth (jose), WebSocket for chat
 - **Database**: Neon PostgreSQL + PostGIS, Drizzle ORM
 - **Cache/Queue**: Upstash Redis, BullMQ
@@ -56,7 +55,7 @@ pnpm format:check     # Check formatting
 
 - Language: TypeScript everywhere, strict mode
 - Imports: use `type` imports for type-only (`import type { ... }`)
-- Formatting: Prettier (semi, singleQuote, trailingComma: all, printWidth: 100)
+- Linting & Formatting: Biome (semi, singleQuote, trailingComma: all, lineWidth: 100)
 - Module resolution: bundler
 - App content/UI text: Italian (it-IT)
 - Code/comments/docs: English

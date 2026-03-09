@@ -48,6 +48,9 @@ export function DataTable<TData, TValue>({
   total = 0,
   isLoading = false,
 }: DataTableProps<TData, TValue>) {
+  const defaultPagination: PaginationState = { pageIndex: 0, pageSize: 20 };
+  const currentPagination = pagination ?? defaultPagination;
+
   const table = useReactTable({
     data,
     columns,
@@ -58,7 +61,7 @@ export function DataTable<TData, TValue>({
     manualFiltering: true,
     state: {
       sorting,
-      pagination,
+      pagination: currentPagination,
       columnFilters,
     },
     onSortingChange: onSortingChange

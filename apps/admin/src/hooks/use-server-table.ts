@@ -45,9 +45,10 @@ export function useServerTable<T>({
       pageSize: pagination.pageSize,
     };
 
-    if (sorting.length > 0) {
-      params.sortBy = sorting[0].id;
-      params.sortOrder = sorting[0].desc ? 'desc' : 'asc';
+    const firstSort = sorting[0];
+    if (firstSort) {
+      params.sortBy = firstSort.id;
+      params.sortOrder = firstSort.desc ? 'desc' : 'asc';
     }
 
     if (globalFilter) {

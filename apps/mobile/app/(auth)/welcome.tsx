@@ -41,10 +41,10 @@ export default function WelcomeScreen() {
         </View>
 
         <Text className="mb-4 text-center text-3xl font-bold text-gray-900">
-          {slides[currentSlide].title}
+          {slides[currentSlide]?.title}
         </Text>
         <Text className="mb-8 text-center text-lg text-gray-600">
-          {slides[currentSlide].description}
+          {slides[currentSlide]?.description}
         </Text>
 
         {/* Indicatori */}

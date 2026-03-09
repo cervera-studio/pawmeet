@@ -54,9 +54,9 @@ const columns: ColumnDef<User>[] = [
     id: 'actions',
     header: '',
     cell: ({ row }) => (
-      <Button variant="ghost" size="sm" asChild>
-        <a href={`/users/${row.original.id}`}>Dettagli</a>
-      </Button>
+      <a href={`/users/${row.original.id}`} className="inline-flex items-center justify-center h-8 rounded-md px-3 text-xs hover:bg-neutral-100 transition-colors">
+        Dettagli
+      </a>
     ),
   },
 ];

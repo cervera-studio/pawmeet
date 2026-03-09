@@ -1,5 +1,5 @@
 {
-  "extends": "@dogwalk/typescript-config/react-native.json",
+  "extends": "@dogwalk/typescript-config/tsconfig.react.json",
   "compilerOptions": {
     "strict": true,
     "paths": {

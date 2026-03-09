@@ -6,7 +6,6 @@ export default defineConfig({
     environment: 'node',
     include: ['**/*.test.{ts,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**', '**/apps/mobile/**'],
-    passWithNoTests: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],

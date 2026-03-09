@@ -58,7 +58,7 @@
 | **Analytics** | Cloudflare Web Analytics + Plausible | Privacy-first, no cookie banner necessario, GDPR compliant |
 | **Content** | Astro Content Collections (Markdown/MDX) | Blog e pagine legali come file nel repo, type-safe, git-versioned |
 | **Mappe** | Mapbox GL JS (o MapLibre GL) | Leggero, performante, condivisibile la logica con mobile |
-| **Real-time** | Cloudflare Durable Objects (WebSocket) | Chat nella web app, consistente con il backend mobile |
+| **Real-time** | WebSocket nativo su Fly.io | Chat nella web app, consistente con il backend mobile |
 | **Auth** | Cookie-based sessions (web) tramite `@dogwalk/api-client` | Piu' sicuro di JWT in localStorage per web; il backend gestisce gia' JWT per mobile |
 | **Testing** | Vitest + Playwright | Unit/integration con Vitest, E2E con Playwright |
 
@@ -84,15 +84,15 @@
     +---------------+  +------+------+  +--------+-------+
                               |                  |
                     +---------+------------------+
-                    |   Cloudflare Workers        |
-                    |   (Hono API)                |
+                    |   Fly.io                    |
+                    |   (Node.js + Hono API)      |
                     +---------------------------+
                          |         |         |
                     +----+--+ +---+---+ +---+----+
-                    |  D1   | |  R2   | |  KV    |
-                    | (SQL) | | (img) | | (cache)|
-                    +-------+ +-------+ +--------+
-                         |
+                    | Neon  | |  R2   | | Upstash|
+                    | (SQL) | | (img) | | Redis  |
+                    +-------+ +-------+ |(cache) |
+                         |              +--------+
                     +----+------+
                     | PostgreSQL |
                     | (Neon)     |
@@ -111,7 +111,7 @@ dogwalk-app/
 │   ├── mobile/              → Expo (React Native)
 │   ├── web/                 → Sito web (Astro + React) ← QUESTO DOCUMENTO
 │   ├── backoffice/          → Admin dashboard
-│   └── api/                 → Hono su Cloudflare Workers
+│   └── api/                 → Hono su Fly.io (Node.js)
 ├── packages/
 │   ├── types/               → @dogwalk/types
 │   ├── validation/          → @dogwalk/validation (Zod)
@@ -253,13 +253,13 @@ apps/web/
 │   ├── styles/
 │   │   └── global.css               # @tailwind directives + custom utilities
 │   └── utils/
-│       ├── cloudflare.ts            # Helpers per CF bindings (KV, R2)
+│       ├── cloudflare.ts            # Helpers per CF bindings (R2) e Upstash Redis
 │       ├── seo.ts                   # Helpers generazione meta tags
 │       └── analytics.ts            # Wrapper analytics events
 ├── tests/
 │   ├── unit/                        # Test Vitest
 │   └── e2e/                         # Test Playwright
-└── wrangler.toml                    # Configurazione Cloudflare Pages Functions
+└── wrangler.toml                    # Configurazione Cloudflare Pages (deploy web)
 ```
 
 ### 2.3 Configurazione Astro
@@ -278,7 +278,7 @@ export default defineConfig({
   output: 'hybrid',  // SSG di default, SSR opt-in per route
   adapter: cloudflare({
     platformProxy: {
-      enabled: true,  // Accesso a KV, R2, D1 in dev
+      enabled: true,  // Accesso a R2 in dev
     },
   }),
   integrations: [
@@ -321,7 +321,7 @@ export default defineConfig({
 | `/chi-siamo` | Chi siamo | **SSG** | Team, missione, storia |
 | `/blog` | Blog index | **SSG** | Lista articoli, paginazione, categorie |
 | `/blog/[slug]` | Articolo blog | **SSG** | Singolo post, Content Collections |
-| `/waitlist` | Waiting list | **SSR** | Form pre-registrazione con Turnstile, salvataggio su D1/Workers |
+| `/waitlist` | Waiting list | **SSR** | Form pre-registrazione con Turnstile, salvataggio su Fly.io API |
 | `/contatti` | Contatti | **SSG** | Form contatti (island React), info supporto |
 | `/legal/privacy` | Privacy Policy | **SSG** | Content Collection Markdown |
 | `/legal/terms` | Termini e Condizioni | **SSG** | Content Collection Markdown |
@@ -417,9 +417,9 @@ Tutte le route sotto `/app/*` sono gestite da una singola pagina Astro (`pages/a
 - Output directory: `apps/web/dist`
 - Node.js version: 20.x (per il build)
 
-### 4.2 API calls via Cloudflare Workers
+### 4.2 API calls via Fly.io
 
-Le API vivono in `apps/api/` come Cloudflare Worker separato, esposto su `api.dogwalk.app`. Il web lo chiama tramite `@dogwalk/api-client`:
+Le API vivono in `apps/api/` come servizio Node.js su Fly.io, esposto su `api.dogwalk.app`. Il web lo chiama tramite `@dogwalk/api-client`:
 
 ```typescript
 // packages/api-client/src/index.ts
@@ -489,27 +489,29 @@ Le immagini statiche del marketing site (hero, team, illustrazioni) sono process
 
 Le foto dei cani (user-generated) sono su R2 e trasformate on-the-fly da Cloudflare Images.
 
-### 4.4 KV per caching
+### 4.4 Upstash Redis per caching
 
-| Namespace | Contenuto | TTL | Use Case |
+| Key pattern | Contenuto | TTL | Use Case |
 |-----------|----------|-----|----------|
-| `WEB_CACHE` | Profili cane pubblici (JSON) | 5 min | Cache SSR `/dog/[id]` per evitare query DB su ogni richiesta |
-| `WEB_EVENTS` | Lista eventi (JSON) | 15 min | Cache SSR `/events` |
-| `WEB_BLOG_META` | Metadata blog posts | 1 ora | Contatore visite, articoli correlati |
-| `WAITLIST_RATE` | Rate limiting per IP | 1 ora | Anti-abuse form waitlist |
+| `web:dog:{id}` | Profili cane pubblici (JSON) | 5 min | Cache SSR `/dog/[id]` per evitare query DB su ogni richiesta |
+| `web:events` | Lista eventi (JSON) | 15 min | Cache SSR `/events` |
+| `web:blog:meta:{slug}` | Metadata blog posts | 1 ora | Contatore visite, articoli correlati |
+| `web:waitlist:rate:{ip}` | Rate limiting per IP | 1 ora | Anti-abuse form waitlist |
 
 ```typescript
-// Esempio uso KV nella route SSR /dog/[id]
+// Esempio uso Upstash Redis nella route SSR /dog/[id]
 // apps/web/src/pages/dog/[id].astro
 ---
+import { Redis } from '@upstash/redis';
+
 export const prerender = false; // SSR
 
+const redis = Redis.fromEnv();
 const { id } = Astro.params;
-const { env } = Astro.locals.runtime;
 
 // Check cache
-const cacheKey = `dog:${id}`;
-let dogProfile = await env.WEB_CACHE.get(cacheKey, 'json');
+const cacheKey = `web:dog:${id}`;
+let dogProfile = await redis.get(cacheKey);
 
 if (!dogProfile) {
   // Fetch from API
@@ -517,9 +519,7 @@ if (!dogProfile) {
   if (!response.ok) return Astro.redirect('/404');
   dogProfile = await response.json();
   // Cache per 5 minuti
-  await env.WEB_CACHE.put(cacheKey, JSON.stringify(dogProfile), {
-    expirationTtl: 300,
-  });
+  await redis.set(cacheKey, JSON.stringify(dogProfile), { ex: 300 });
 }
 ---
 ```
@@ -538,7 +538,7 @@ if (!dogProfile) {
 
 Cloudflare Web Analytics non usa cookies e non raccoglie dati personali, quindi non richiede consenso GDPR. Viene integrato come analytics primario.
 
-Per analytics piu' avanzati (funnel conversion, custom events), si aggiunge **Plausible Analytics** (self-hosted su CF Workers o cloud), anch'esso cookie-free e GDPR compliant senza banner.
+Per analytics piu' avanzati (funnel conversion, custom events), si aggiunge **Plausible Analytics** (cloud o self-hosted), anch'esso cookie-free e GDPR compliant senza banner.
 
 ```typescript
 // apps/web/src/utils/analytics.ts
@@ -609,7 +609,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return new Response('Invalid captcha', { status: 403 });
   }
 
-  // Salva in D1 o chiama Worker API
+  // Salva tramite Fly.io API
   // ...
 };
 ```
@@ -729,7 +729,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 <meta property="al:android:app_name" content="DogWalk" />
 ```
 
-**Social card per profilo cane** (`/dog/[id]`): L'immagine OG viene generata dinamicamente da un Cloudflare Worker dedicato (`og.dogwalk.app/dog/[id].png`) usando `@cloudflare/pages-plugin-vercel-og` o `satori` + `resvg-wasm`. La card mostra la foto del cane, nome, razza e punteggio di compatibilita'.
+**Social card per profilo cane** (`/dog/[id]`): L'immagine OG viene generata dinamicamente da una Cloudflare Pages Function dedicata (`og.dogwalk.app/dog/[id].png`) usando `@cloudflare/pages-plugin-vercel-og` o `satori` + `resvg-wasm`. La card mostra la foto del cane, nome, razza e punteggio di compatibilita'.
 
 ### 5.5 Sitemap
 
@@ -1316,7 +1316,7 @@ Questo permette di generare automaticamente i link `hreflang` tra le versioni tr
 - [ ] `_headers` file con security headers (CSP, X-Frame-Options, etc.)
 - [ ] Cloudflare Web Analytics token configurato
 - [ ] Turnstile site key e secret key configurati
-- [ ] KV namespaces creati e bindings configurati in `wrangler.toml`
+- [ ] Upstash Redis configurato con credenziali (UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN)
 - [ ] R2 bucket configurato per immagini
 - [ ] Sitemap verificata su Google Search Console
 - [ ] robots.txt verificato
@@ -1331,6 +1331,6 @@ Questo permette di generare automaticamente i link `hreflang` tra le versioni tr
 
 > **Documento redatto da:** Senior Frontend Architect
 > **Prossima revisione:** Dopo Sprint 0 (post-PoC tech stack)
-> **Stato:** Da validare con il team backend per allineamento API e bindings Cloudflare
+> **Stato:** Da validare con il team backend per allineamento API (Fly.io) e servizi Cloudflare (Pages, R2, CDN)
 
 NOT FOUND

@@ -1,11 +1,11 @@
 # DogWalk - Architettura Consolidata (FONTE DI VERITA)
 
-> **Versione:** 1.0
+> **Versione:** 2.0 (Decisione B+)
 > **Data:** 9 marzo 2026
 > **Autore:** CTO / Architecture Board
 > **Stato:** Approvato
 > **Classificazione:** Documento interno - Confidenziale
-> **Priorita:** Questo documento PREVALE su tutti gli altri documenti architetturali (01-08) in caso di conflitto.
+> **Priorita:** Questo documento PREVALE su tutti gli altri documenti architetturali (01-10) in caso di conflitto.
 
 ---
 
@@ -14,8 +14,8 @@
 1. [Conflitti Risolti](#1-conflitti-risolti)
 2. [Struttura Monorepo Definitiva](#2-struttura-monorepo-definitiva)
 3. [Tech Stack Definitivo](#3-tech-stack-definitivo)
-4. [Architettura Cloudflare](#4-architettura-cloudflare)
-5. [Costi Cloudflare Aggiornati](#5-costi-cloudflare-aggiornati)
+4. [Architettura Ibrida (Fly.io + Cloudflare)](#4-architettura-ibrida-flyio--cloudflare)
+5. [Costi Aggiornati (Fly.io + Cloudflare + Upstash)](#5-costi-aggiornati-flyio--cloudflare--upstash)
 6. [Piano di Implementazione Allineato](#6-piano-di-implementazione-allineato)
 7. [Checklist Pre-Sviluppo](#7-checklist-pre-sviluppo)
 
@@ -29,26 +29,27 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 
 | Aspetto | Documento originale | Decisione definitiva |
 |---------|-------------------|---------------------|
-| **Doc 03** (Architecture) | Fastify 5.x come HTTP framework, `@trpc/server` adapter per Fastify, `@fastify/websocket` per WebSocket | **Hono su Cloudflare Workers** |
-| **Doc 07** (Web Architecture) | Hono su Cloudflare Workers, API client con `hono/client` | Confermato |
-| **Doc 08** (Backoffice) | Hono su Cloudflare Workers | Confermato |
+| **Doc 03** (Architecture) | Fastify 5.x come HTTP framework, `@trpc/server` adapter per Fastify, `@fastify/websocket` per WebSocket | **Hono su Node.js, deploy su Fly.io** |
+| **Doc 07** (Web Architecture) | Hono su Cloudflare Workers, API client con `hono/client` | Aggiornato: Hono su Node.js/Fly.io |
+| **Doc 08** (Backoffice) | Hono su Cloudflare Workers | Aggiornato: Hono su Node.js/Fly.io |
 
-**Motivazione:** Fastify e un framework Node.js tradizionale che richiede un runtime Node.js completo (ECS Fargate, VM, container). La decisione strategica e di operare interamente su Cloudflare Workers, dove Fastify non puo girare. Hono e il framework edge-native per eccellenza, con supporto nativo per Cloudflare Workers, tipizzazione delle route, e un client RPC type-safe simile a tRPC. Il doc 03 era stato scritto prima della decisione definitiva sull'infrastruttura Cloudflare-only.
+**Motivazione:** La decisione B+ sposta l'API da Cloudflare Workers a **Fly.io** (Node.js runtime). Hono resta il framework HTTP scelto per la sua leggerezza e tipizzazione, ma gira su Node.js con deploy containerizzato su Fly.io. Questo risolve le limitazioni di Workers: WebSocket nativo (senza Durable Objects), accesso completo a Node.js API, supporto nativo BullMQ/Redis, multi-region con Fly.io Machines.
 
-**Impatto:** L'entry point dell'API cambia da `server.ts` (Fastify) a `index.ts` (Hono Worker). I middleware vanno riscritti per il modello Hono. Il WebSocket passa da `@fastify/websocket` a Cloudflare Durable Objects.
+**Impatto:** L'entry point dell'API resta `index.ts` (Hono). I middleware restano compatibili. Il deploy passa da `wrangler deploy` a `fly deploy` con Dockerfile. Il WebSocket passa da Durable Objects a WebSocket nativo su Fly.io.
 
 ---
 
-### CONFLITTO 2: Cache e Job Queue -- Redis/BullMQ vs Cloudflare KV/Queues
+### CONFLITTO 2: Cache e Job Queue -- Redis/BullMQ vs Cloudflare KV/Queues vs Upstash Redis/BullMQ
 
 | Aspetto | Documento originale | Decisione definitiva |
 |---------|-------------------|---------------------|
-| **Doc 03** (Architecture) | Redis 7.x per cache, sessioni, pub/sub. BullMQ 5.x per job queue. ioredis 5.x come client. Docker Compose con Redis per dev. | **Cloudflare KV** per cache e sessioni. **Cloudflare Queues** per job asincroni. |
-| **Doc 07** (Web Architecture) | Cloudflare KV per caching | Confermato |
+| **Doc 03** (Architecture) | Redis 7.x per cache, sessioni, pub/sub. BullMQ 5.x per job queue. ioredis 5.x come client. Docker Compose con Redis per dev. | **Upstash Redis** per cache e sessioni. **BullMQ su Upstash Redis** per job asincroni. |
+| **Doc 07** (Web Architecture) | Cloudflare KV per caching | Aggiornato: Upstash Redis |
+| **Doc 09** v1.0 | Cloudflare KV + Cloudflare Queues | Aggiornato con decisione B+ |
 
-**Motivazione:** Redis richiede un server sempre attivo (ElastiCache, Upstash, etc.) con costi fissi e gestione separata. Cloudflare KV e un key-value store globale edge-native con free tier generoso, perfettamente integrato con Workers. Cloudflare Queues sostituisce BullMQ per i job asincroni (moderazione foto, invio push, email). Il rate limiting passa da Redis-based a KV-based o a Cloudflare native rate limiting.
+**Motivazione:** La decisione B+ reintroduce Redis nello stack tramite **Upstash Redis** (serverless, pay-per-request, multi-region). Con il passaggio a Fly.io/Node.js, BullMQ torna disponibile come soluzione matura per i job asincroni. Upstash Redis offre compatibilita completa con ioredis, pricing serverless (pay-per-command), e replica multi-region. Rispetto a Cloudflare KV, offre strong consistency e supporto nativo per pub/sub e rate limiting.
 
-**Impatto:** Eliminazione completa di Redis dallo stack. I background jobs vanno ripensati come consumer di Cloudflare Queues invece che worker BullMQ. Il pub/sub per chat real-time passa a Durable Objects.
+**Impatto:** I background jobs usano BullMQ con worker Node.js su Fly.io. La cache e le sessioni usano Upstash Redis. Il rate limiting torna a essere Redis-based.
 
 ---
 
@@ -80,11 +81,11 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 
 | Aspetto | Documento originale | Decisione definitiva |
 |---------|-------------------|---------------------|
-| **Doc 04** (Budget) | AWS come cloud provider. ECS Fargate per compute. RDS PostgreSQL. ElastiCache Redis. S3 + CloudFront. API Gateway WebSocket. SES per email. Stima 87-4.420 EUR/mese. | **Cloudflare per tutto** tranne il database (Neon). |
-| **Doc 07** (Web Architecture) | Cloudflare Pages, Workers, R2, KV, D1 | Confermato |
-| **Doc 08** (Backoffice) | Cloudflare Pages per hosting, Workers per API | Confermato |
+| **Doc 04** (Budget) | AWS come cloud provider. ECS Fargate per compute. RDS PostgreSQL. ElastiCache Redis. S3 + CloudFront. API Gateway WebSocket. SES per email. Stima 87-4.420 EUR/mese. | **Fly.io per API/compute**, **Cloudflare per Pages/R2/CDN**, **Upstash per Redis**. |
+| **Doc 07** (Web Architecture) | Cloudflare Pages, Workers, R2, KV, D1 | Aggiornato: Pages + R2 + CDN restano Cloudflare. API su Fly.io. |
+| **Doc 08** (Backoffice) | Cloudflare Pages per hosting, Workers per API | Aggiornato: Pages su Cloudflare, API su Fly.io |
 
-**Motivazione:** Cloudflare offre un free tier estremamente generoso (100K req/day su Workers, 10GB su R2, KV free tier). L'architettura edge-first elimina cold start, riduce la latenza, e semplifica il deployment. I costi sono radicalmente inferiori ad AWS per il nostro volume di traffico. Il database resta su Neon (PostgreSQL serverless edge-compatible) perche Cloudflare D1 (SQLite) non supporta PostGIS.
+**Motivazione:** La decisione B+ adotta un approccio ibrido: **Fly.io** per l'API backend (Node.js runtime completo, WebSocket nativo, multi-region Machines, Docker deploy) e **Cloudflare** per il frontend (Pages, R2, CDN). Questo elimina le limitazioni di Workers (CPU time limit, no WebSocket server nativo, no Node.js API) mantenendo i vantaggi di Cloudflare per static hosting e storage. Il database resta su Neon (PostgreSQL serverless).
 
 ---
 
@@ -96,19 +97,20 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 | **Doc 04** (Budget) | RDS PostgreSQL con costi da $25 a $1.400/mese | Neon con free tier (0.5GB) poi pay-per-use |
 | **Doc 07** (Web Architecture) | PostgreSQL su Neon | Confermato |
 
-**Motivazione:** Neon e PostgreSQL serverless che supporta branching (un database per ogni PR), auto-scaling a zero, e connessioni HTTP/WebSocket edge-compatible. Questo lo rende perfetto per Cloudflare Workers che non supportano connessioni TCP persistenti. PostGIS e pienamente supportato su Neon.
+**Motivazione:** Neon e PostgreSQL serverless che supporta branching (un database per ogni PR), auto-scaling a zero, e connessioni HTTP/WebSocket. Su Fly.io si possono usare sia connessioni TCP tradizionali che il driver serverless HTTP. PostGIS e pienamente supportato su Neon.
 
 ---
 
-### CONFLITTO 7: Real-time/WebSocket -- Socket.io/Fastify WS vs Durable Objects
+### CONFLITTO 7: Real-time/WebSocket -- Socket.io/Fastify WS vs Durable Objects vs WebSocket nativo
 
 | Aspetto | Documento originale | Decisione definitiva |
 |---------|-------------------|---------------------|
-| **Doc 02** (MVP Spec) | Menziona "WebSocket con TLS 1.3" genericamente | **Cloudflare Durable Objects** per chat real-time |
-| **Doc 03** (Architecture) | `@fastify/websocket` per WebSocket, Redis Pub/Sub per fanout | **Cloudflare Durable Objects** |
-| **Doc 05** (Roadmap) | "Socket.io / Firebase Realtime" per chat | **Cloudflare Durable Objects** |
+| **Doc 02** (MVP Spec) | Menziona "WebSocket con TLS 1.3" genericamente | **WebSocket nativo su Fly.io** |
+| **Doc 03** (Architecture) | `@fastify/websocket` per WebSocket, Redis Pub/Sub per fanout | **WebSocket nativo su Fly.io** + Upstash Redis Pub/Sub |
+| **Doc 05** (Roadmap) | "Socket.io / Firebase Realtime" per chat | **WebSocket nativo su Fly.io** |
+| **Doc 09** v1.0 | Cloudflare Durable Objects per chat real-time | Aggiornato con decisione B+ |
 
-**Motivazione:** Cloudflare Workers non supporta WebSocket server tradizionali. I Durable Objects offrono WebSocket con stato persistente, perfetti per le chat room. Ogni match diventa un Durable Object con la sua coppia di WebSocket. Nessun bisogno di Redis Pub/Sub o di un server WebSocket separato.
+**Motivazione:** Con il passaggio a Fly.io/Node.js, il WebSocket server nativo e disponibile senza necessita di Durable Objects. Hono su Node.js supporta WebSocket upgrade diretto. Fly.io offre multi-region con sticky sessions per le connessioni WebSocket. Upstash Redis Pub/Sub gestisce il fanout cross-region. Nessun bisogno di Durable Objects.
 
 ---
 
@@ -119,7 +121,7 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 | **Doc 03** (Architecture) | Nodemailer 6.x per email transazionali | **Resend** (o Cloudflare Email Workers in futuro) |
 | **Doc 04** (Budget) | AWS SES ($0.10/1.000 email) | Resend (free tier 100 email/giorno, poi $20/mese per 50K) |
 
-**Motivazione:** Nodemailer richiede un server SMTP e non funziona su Cloudflare Workers. Resend offre un'API HTTP edge-compatible, con SDK leggero, ottima DX, e un free tier sufficiente per l'MVP. In alternativa futura, Cloudflare Email Workers per invio diretto.
+**Motivazione:** Anche se con Fly.io/Node.js Nodemailer sarebbe ora tecnicamente possibile, Resend resta la scelta per la DX superiore (API HTTP, SDK leggero, ottima dashboard) e il free tier sufficiente per l'MVP (100 email/giorno).
 
 ---
 
@@ -130,7 +132,7 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 | **Doc 02** (MVP Spec) | AWS Rekognition per moderazione foto | **Cloudflare Workers AI** (modello NSFW classification) oppure **Hive Moderation** via API |
 | **Doc 03** (Architecture) | AWS Rekognition per scansione contenuti | Workers AI o Hive Moderation |
 
-**Motivazione:** AWS Rekognition richiede chiamate cross-cloud. Cloudflare Workers AI offre modelli di classificazione immagini eseguibili direttamente sull'edge, eliminando latenza e dipendenze esterne. Se la qualita non e sufficiente per l'MVP, Hive Moderation offre un'API HTTP chiamabile da Workers.
+**Motivazione:** AWS Rekognition richiede chiamate cross-cloud. Cloudflare Workers AI offre modelli di classificazione immagini via REST API, chiamabili da Fly.io tramite BullMQ worker. Se la qualita non e sufficiente per l'MVP, Hive Moderation offre un'API HTTP alternativa.
 
 ---
 
@@ -158,7 +160,7 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 | **Doc 03** (Architecture) | tRPC 11.x come API layer, con adapter Fastify | **tRPC** su Hono (adapter `@trpc/server/adapters/fetch`) |
 | **Doc 07** (Web Architecture) | Hono RPC client (`hono/client`) per type-safety | tRPC per API mobile e web app, con Hono come HTTP framework sottostante |
 
-**Motivazione:** tRPC e Hono RPC risolvono lo stesso problema (type-safe API) ma tRPC e piu maturo per le subscription WebSocket e ha un ecosistema piu ricco di middleware. Hono serve come HTTP framework (routing, middleware, CORS) e tRPC come API layer type-safe sopra Hono. L'adapter `@trpc/server/adapters/fetch` funziona nativamente su Cloudflare Workers. Il `@dogwalk/api-client` usa il client tRPC, non `hono/client`.
+**Motivazione:** tRPC e Hono RPC risolvono lo stesso problema (type-safe API) ma tRPC e piu maturo per le subscription WebSocket e ha un ecosistema piu ricco di middleware. Hono serve come HTTP framework (routing, middleware, CORS) e tRPC come API layer type-safe sopra Hono. L'adapter `@trpc/server/adapters/fetch` funziona su Node.js/Fly.io. Il `@dogwalk/api-client` usa il client tRPC, non `hono/client`.
 
 ---
 
@@ -187,9 +189,9 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 
 | Aspetto | Documento originale | Decisione definitiva |
 |---------|-------------------|---------------------|
-| **Doc 03** (Architecture) | `docker-compose.yml` con PostgreSQL + Redis + MinIO | **`docker-compose.yml`** solo con PostgreSQL + PostGIS (per dev locale). Redis e MinIO eliminati. |
+| **Doc 03** (Architecture) | `docker-compose.yml` con PostgreSQL + Redis + MinIO | **`docker-compose.yml`** con PostgreSQL + PostGIS + Redis (per dev locale). MinIO eliminato. |
 
-**Motivazione:** Redis sostituito da Cloudflare KV (emulato localmente via `wrangler dev`). MinIO sostituito da R2 (emulato localmente via `wrangler dev --r2`). Solo PostgreSQL richiede un container Docker locale perche Neon non ha un emulatore locale (in alternativa, si puo usare Neon branching per environment di dev).
+**Motivazione:** Con la decisione B+, Redis torna nel docker-compose per dev locale (necessario per BullMQ e cache). MinIO resta eliminato (R2 per storage). PostgreSQL come database locale. In alternativa, si possono usare Neon branching e Upstash Redis per environment di dev remoto.
 
 ---
 
@@ -204,17 +206,42 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 
 ---
 
-### CONFLITTO 16: Auth backend -- Service Blueprint
+### CONFLITTO 16: Infrastruttura API -- Cloudflare Workers vs Server tradizionale (Decisione B+)
 
 | Aspetto | Documento originale | Decisione definitiva |
 |---------|-------------------|---------------------|
-| **Doc 06** (UX/UI) | Menziona "Firebase/Supabase" come backstage auth | **Lucia Auth o custom JWT** su Cloudflare Workers |
+| **Doc 09** v1.0 | Cloudflare Workers per tutto il backend API | **Fly.io** (Node.js runtime) per API backend |
+| **Doc 10** (Analisi Workers vs Server) | Analisi comparativa Workers vs Server tradizionale | Decisione **B+**: Hono su Node.js/Fly.io |
 
-**Motivazione:** Firebase Auth aggiunge una dipendenza esterna non necessaria. Lucia Auth e una libreria di autenticazione leggera, edge-compatible, con supporto per sessioni e JWT. In alternativa, un'implementazione custom JWT con bcrypt (via `@noble/hashes` per edge compatibility) e pienamente funzionante su Workers.
+**Motivazione:** L'analisi del doc 10 ha evidenziato limiti critici di Cloudflare Workers per il caso d'uso DogWalk:
+- **CPU time limit** (10-50ms su free, 30s su paid): insufficiente per algoritmo di matching complesso con PostGIS
+- **No WebSocket server nativo**: richiede Durable Objects (complessita aggiuntiva, costi elevati a scala)
+- **No Node.js API completo**: incompatibilita con BullMQ, librerie native, stream processing
+- **Cold start edge-case**: Durable Objects hanno latenza di creazione
+- **Vendor lock-in**: Durable Objects e Cloudflare Queues sono proprietari
+
+La decisione B+ adotta **Fly.io** come piattaforma per l'API:
+- **Multi-region Machines**: deploy in EU (ams, cdg, fra) con auto-scaling
+- **WebSocket nativo**: senza Durable Objects, con sticky sessions e Redis Pub/Sub
+- **Node.js completo**: BullMQ, stream, librerie native, nessun limite CPU
+- **Docker deploy**: portabilita totale, nessun vendor lock-in
+- **Pricing competitivo**: $0 per 3 shared VMs, poi $1.94/mese per shared-cpu-1x 256MB
+
+Cloudflare resta per: Pages (web + admin), R2 (storage), CDN, Turnstile, Workers AI (moderazione).
 
 ---
 
-### CONFLITTO 17: Landing page pre-lancio
+### CONFLITTO 17 (rinumerato): Auth backend -- Service Blueprint
+
+| Aspetto | Documento originale | Decisione definitiva |
+|---------|-------------------|---------------------|
+| **Doc 06** (UX/UI) | Menziona "Firebase/Supabase" come backstage auth | **Lucia Auth o custom JWT** su Node.js/Fly.io |
+
+**Motivazione:** Firebase Auth aggiunge una dipendenza esterna non necessaria. Lucia Auth e una libreria di autenticazione leggera, con supporto per sessioni e JWT. In alternativa, un'implementazione custom JWT con bcrypt (nativo su Node.js) e pienamente funzionante su Fly.io.
+
+---
+
+### CONFLITTO 18 (rinumerato): Landing page pre-lancio
 
 | Aspetto | Documento originale | Decisione definitiva |
 |---------|-------------------|---------------------|
@@ -290,17 +317,17 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── api/                              # Hono su Cloudflare Workers
+│   ├── api/                              # Hono su Node.js, deploy su Fly.io
 │   │   ├── src/
 │   │   │   ├── index.ts                  # Entry point: Hono app + tRPC adapter
 │   │   │   ├── config/
-│   │   │   │   └── env.ts                # Validazione env/bindings con Zod
+│   │   │   │   └── env.ts                # Validazione env con Zod
 │   │   │   ├── trpc/
 │   │   │   │   ├── index.ts              # tRPC init, context, middleware
 │   │   │   │   ├── router.ts             # Root router (merge tutti i router)
 │   │   │   │   └── middleware/
 │   │   │   │       ├── auth.ts           # JWT verification middleware
-│   │   │   │       ├── rateLimit.ts      # Rate limiting (KV-based)
+│   │   │   │       ├── rateLimit.ts      # Rate limiting (Upstash Redis)
 │   │   │   │       └── logging.ts        # Request logging
 │   │   │   ├── modules/
 │   │   │   │   ├── auth/
@@ -312,21 +339,23 @@ dogwalk/
 │   │   │   │   ├── matching/
 │   │   │   │   │   └── algorithm/
 │   │   │   │   ├── chat/
-│   │   │   │   │   └── chat.durable-object.ts  # Durable Object per chat room
+│   │   │   │   │   └── chat.websocket.ts       # WebSocket nativo per chat room
 │   │   │   │   ├── notification/
 │   │   │   │   ├── upload/
 │   │   │   │   ├── moderation/
 │   │   │   │   └── admin/                # Endpoint admin (protetti RBAC)
-│   │   │   ├── queues/                   # Consumer Cloudflare Queues
+│   │   │   ├── jobs/                     # BullMQ workers (job asincroni)
 │   │   │   │   ├── photo-moderation.ts
 │   │   │   │   ├── push-notification.ts
 │   │   │   │   ├── email.ts
 │   │   │   │   └── cleanup.ts
 │   │   │   └── utils/
 │   │   │       ├── geo.ts                # PostGIS helpers
-│   │   │       ├── jwt.ts                # JWT sign/verify (edge-compatible)
+│   │   │       ├── jwt.ts                # JWT sign/verify
+│   │   │       ├── redis.ts              # Upstash Redis client
 │   │   │       └── errors.ts
-│   │   ├── wrangler.toml                 # Configurazione Workers, bindings
+│   │   ├── Dockerfile                    # Multi-stage build per Fly.io
+│   │   ├── fly.toml                      # Configurazione Fly.io (region, scaling)
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
@@ -362,7 +391,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   └── admin/                            # Refine + Ant Design su Cloudflare Pages
+│   └── admin/                            # Next.js + shadcn/ui su Cloudflare Pages
 │       ├── src/
 │       │   ├── App.tsx
 │       │   ├── main.tsx
@@ -371,7 +400,7 @@ dogwalk/
 │       │   │   ├── auth-provider.ts
 │       │   │   ├── data-provider.ts       # Data provider custom per API Hono/tRPC
 │       │   │   ├── access-control-provider.ts
-│       │   │   └── live-provider.ts       # WebSocket Durable Objects
+│       │   │   └── live-provider.ts       # WebSocket nativo Fly.io
 │       │   ├── modules/
 │       │   │   ├── dashboard/
 │       │   │   ├── moderation/
@@ -492,7 +521,7 @@ dogwalk/
 │       └── package.json
 │
 ├── docker/
-│   └── docker-compose.yml               # Solo PostgreSQL + PostGIS (dev locale)
+│   └── docker-compose.yml               # PostgreSQL + PostGIS + Redis (dev locale)
 │
 ├── turbo.json
 ├── pnpm-workspace.yaml
@@ -586,30 +615,30 @@ packages:
 | **Lucide React Native** | ~0.4x | Icon set | Leggero, tree-shakeable |
 | **date-fns** | ~4.x | Manipolazione date | Modulare, tree-shakeable |
 
-### 3.3 Backend (Cloudflare Workers)
+### 3.3 Backend (Hono su Node.js / Fly.io)
 
 | Tecnologia | Versione | Ruolo | Giustificazione |
 |-----------|----------|-------|-----------------|
-| **Hono** | ~4.x | HTTP framework | Edge-native, leggero (14KB), middleware ricco |
+| **Hono** | ~4.x | HTTP framework | Leggero (14KB), middleware ricco, multi-runtime |
 | **tRPC** | ~11.x | Type-safe API layer | End-to-end type safety, subscriptions |
-| **Drizzle ORM** | ~0.35.x | ORM type-safe | SQL-first, leggero, edge-compatible |
-| **@neondatabase/serverless** | latest | PostgreSQL driver | HTTP/WebSocket, edge-compatible |
+| **Drizzle ORM** | ~0.35.x | ORM type-safe | SQL-first, leggero, performance |
+| **@neondatabase/serverless** | latest | PostgreSQL driver | HTTP/WebSocket, serverless-compatible |
 | **Zod** | ~3.23 | Validazione runtime | Condiviso con frontend |
-| **@noble/hashes** | latest | Password hashing (bcrypt alternative) | Edge-compatible (no native bindings) |
-| **jose** | ~5.x | JWT sign/verify | Edge-compatible, standard Web Crypto API |
+| **bcrypt** | ~5.x | Password hashing | Node.js nativo, performante |
+| **jose** | ~5.x | JWT sign/verify | Standard Web Crypto API |
+| **BullMQ** | ~5.x | Job queue asincroni | Retry, scheduling, priorita, dashboard |
+| **ioredis** | ~5.x | Redis client per Upstash | Compatibile con Upstash Redis, BullMQ |
 | **expo-server-sdk** | ~3.x | Invio push notification | API Expo Push ufficiale |
 
-### 3.4 Database e Storage
+### 3.4 Database, Cache e Storage
 
 | Tecnologia | Ruolo | Giustificazione |
 |-----------|-------|-----------------|
-| **PostgreSQL 16 (Neon)** | Database relazionale primario | Serverless, auto-scaling, branching per PR, edge-compatible |
+| **PostgreSQL 16 (Neon)** | Database relazionale primario | Serverless, auto-scaling, branching per PR |
 | **PostGIS 3.4** | Estensione geospaziale | Query ST_DWithin per matching geografico |
+| **Upstash Redis** | Cache, sessioni, rate limiting, pub/sub | Serverless, pay-per-command, multi-region, strong consistency |
+| **BullMQ su Upstash Redis** | Job asincroni | Moderazione foto, email, push, cleanup |
 | **Cloudflare R2** | Object storage (foto cani) | S3-compatible, zero egress fee |
-| **Cloudflare KV** | Cache, sessioni, rate limiting | Edge-native, eventually consistent, free tier |
-| **Cloudflare D1** | Storage ausiliario leggero | Feature flags, config, waitlist (SQLite edge) |
-| **Cloudflare Durable Objects** | Chat real-time (WebSocket con stato) | Stato persistente per room, WebSocket nativo |
-| **Cloudflare Queues** | Job asincroni | Moderazione foto, email, push, cleanup |
 
 ### 3.5 Web Marketing (apps/web)
 
@@ -624,18 +653,19 @@ packages:
 
 | Tecnologia | Versione | Ruolo | Giustificazione |
 |-----------|----------|-------|-----------------|
-| **Refine** | 4.x | Admin framework headless | CRUD rapido, RBAC, TanStack Query nativo |
-| **Ant Design** | 5.x | UI library | Tabelle potenti, form, componenti enterprise |
+| **Next.js** | 15.x | Framework React full-stack | SSR/SSG, App Router, middleware RBAC, stesso stack della web app |
+| **shadcn/ui** | latest | Componenti UI (Tailwind) | Design system unificato con web app, accessibile, personalizzabile |
+| **TanStack Table** | 8.x | Tabelle avanzate | Sorting, filtering, pagination server-side |
 | **Vite** | 6.x | Build tool | HMR veloce, SPA output per CF Pages |
 | **Recharts** | 2.x | Grafici dashboard | Framework-agnostic, leggero |
-| **React Router** | 7.x | Routing admin | Supportato nativamente da Refine |
+| **React Hook Form** | 7.x | Gestione form | Validazione con Zod, stesso pattern del mobile |
 
 ### 3.7 Auth
 
 | Tecnologia | Ruolo | Giustificazione |
 |-----------|-------|-----------------|
-| **Lucia Auth** (o custom JWT) | Autenticazione e sessioni | Edge-compatible, zero dipendenze esterne |
-| **jose** | JWT signing/verification | Standard Web Crypto API, edge-native |
+| **Lucia Auth** (o custom JWT) | Autenticazione e sessioni | Leggero, zero dipendenze esterne |
+| **jose** | JWT signing/verification | Standard Web Crypto API |
 | **OAuth** | Google + Apple Sign-In | Provider sociali richiesti dall'MVP |
 
 ### 3.8 Servizi Esterni
@@ -645,7 +675,7 @@ packages:
 | **Resend** | Email transazionali | API HTTP, edge-compatible, free tier 100/day |
 | **Mapbox** | Mappe (mobile + web) | Pricing competitivo, SDK performante |
 | **Cloudflare Turnstile** | Anti-bot per form web | Gratuito, privacy-first, nativo CF |
-| **Cloudflare Workers AI** | Moderazione immagini | On-edge, nessuna dipendenza esterna |
+| **Cloudflare Workers AI** | Moderazione immagini | Chiamato via REST API da Fly.io, nessun costo egress |
 
 ### 3.9 Testing
 
@@ -664,8 +694,9 @@ packages:
 | **GitHub Actions** | CI/CD |
 | **EAS Build** | Build cloud per Expo (iOS + Android) |
 | **EAS Update** | OTA updates |
-| **Sentry** | Error tracking e performance |
-| **Cloudflare Analytics** | Web analytics + infra monitoring |
+| **Sentry** | Error tracking e performance (mobile + API) |
+| **Cloudflare Analytics** | Web analytics (Pages) |
+| **Fly.io Metrics** | Monitoring API (CPU, RAM, connessioni) |
 | **ESLint** (flat config) | Linting |
 | **Prettier** | Code formatting |
 | **Husky + lint-staged** | Pre-commit hooks |
@@ -673,7 +704,7 @@ packages:
 
 ---
 
-## 4. Architettura Cloudflare
+## 4. Architettura Ibrida (Fly.io + Cloudflare)
 
 ### 4.1 Diagramma dei Servizi
 
@@ -681,51 +712,52 @@ packages:
                           ┌──────────────────────────────────────────┐
                           │           Cloudflare Network              │
                           │         (CDN + Edge + DDoS)               │
-                          └──────────┬──────────┬────────────────────┘
-                                     │          │
-                    ┌────────────────┘          └────────────────┐
-                    │                                            │
-         ┌──────────▼──────────┐                    ┌───────────▼──────────┐
-         │  Cloudflare Pages    │                    │  Cloudflare Workers   │
-         │                      │                    │  (api.dogwalk.app)    │
-         │  dogwalk.app (web)   │                    │                      │
-         │  admin.dogwalk.app   │                    │  Hono + tRPC         │
-         │                      │                    │                      │
-         │  ┌────────────────┐  │                    │  ┌────────────────┐  │
-         │  │ Astro SSG/SSR  │  │    API calls       │  │  Auth Module   │  │
-         │  │ (marketing)    │──┼───────────────────▶│  │  User Module   │  │
-         │  └────────────────┘  │                    │  │  Dog Module    │  │
-         │  ┌────────────────┐  │                    │  │  Match Module  │  │
-         │  │ React SPA      │  │    API calls       │  │  Chat Module   │  │
-         │  │ (web app ph2)  │──┼───────────────────▶│  │  Upload Module │  │
-         │  └────────────────┘  │                    │  │  Notification  │  │
-         │  ┌────────────────┐  │                    │  │  Admin Module  │  │
-         │  │ Refine SPA     │  │    Admin API       │  └───────┬────────┘  │
-         │  │ (backoffice)   │──┼───────────────────▶│          │           │
-         │  └────────────────┘  │                    └──────────┼───────────┘
-         └──────────────────────┘                               │
-                                                                │
-                    ┌───────────────────────────────────────────┘
+                          └──────────┬───────────────────────────────┘
+                                     │
+                    ┌────────────────┘
                     │
-    ┌───────────────┼────────────────┬──────────────────┬──────────────────┐
-    │               │                │                  │                  │
-    ▼               ▼                ▼                  ▼                  ▼
-┌────────┐   ┌──────────┐    ┌────────────┐    ┌──────────────┐   ┌───────────┐
-│  Neon   │   │    R2    │    │     KV     │    │   Durable    │   │  Queues   │
-│ (PgSQL) │   │ (storage)│    │  (cache)   │    │  Objects     │   │  (jobs)   │
-│         │   │          │    │            │    │  (chat WS)   │   │           │
-│ PostGIS │   │ Foto cani│    │ Sessions   │    │              │   │ Photo mod │
-│ Schema  │   │ Media    │    │ Rate limit │    │ 1 DO per     │   │ Push send │
-│ Drizzle │   │ Avatar   │    │ Cache API  │    │ match/room   │   │ Email     │
-└────────┘   └──────────┘    └────────────┘    └──────────────┘   └───────────┘
-                                                                        │
-                                                                        ▼
-                                                                  ┌───────────┐
-                                                                  │  Workers  │
-                                                                  │    AI     │
-                                                                  │ (NSFW    │
-                                                                  │  detect)  │
-                                                                  └───────────┘
+         ┌──────────▼──────────┐
+         │  Cloudflare Pages    │
+         │                      │
+         │  dogwalk.app (web)   │
+         │  admin.dogwalk.app   │
+         │                      │                    ┌─────────────────────────┐
+         │  ┌────────────────┐  │                    │     Fly.io (multi-region)│
+         │  │ Astro SSG/SSR  │  │    API calls       │     api.dogwalk.app     │
+         │  │ (marketing)    │──┼───────────────────▶│                         │
+         │  └────────────────┘  │                    │     Hono + tRPC         │
+         │  ┌────────────────┐  │                    │     Node.js runtime     │
+         │  │ React SPA      │  │    API calls       │                         │
+         │  │ (web app ph2)  │──┼───────────────────▶│  ┌───────────────────┐  │
+         │  └────────────────┘  │                    │  │  Auth Module      │  │
+         │  ┌────────────────┐  │                    │  │  User Module      │  │
+         │  │ Next.js Admin  │  │    Admin API       │  │  Dog Module       │  │
+         │  │ (backoffice)   │──┼───────────────────▶│  │  Match Module     │  │
+         │  └────────────────┘  │                    │  │  Chat (WebSocket) │  │
+         └──────────────────────┘                    │  │  Upload Module    │  │
+                                                     │  │  Notification     │  │
+              ┌──────────────────┐                   │  │  Admin Module     │  │
+              │  Cloudflare R2   │◀──────────────────│  │  BullMQ Workers   │  │
+              │  (foto, media)   │   presigned URL   │  └────────┬──────────┘  │
+              └──────────────────┘                   └───────────┼─────────────┘
+                                                                 │
+                    ┌────────────────────────────────────────────┘
+                    │
+    ┌───────────────┼────────────────┐
+    │               │                │
+    ▼               ▼                ▼
+┌────────┐   ┌──────────────┐   ┌───────────────┐
+│  Neon   │   │   Upstash    │   │  Workers AI   │
+│ (PgSQL) │   │   Redis      │   │  (NSFW detect)│
+│         │   │              │   │               │
+│ PostGIS │   │ Cache        │   │  Chiamato via │
+│ Schema  │   │ Sessions     │   │  REST API     │
+│ Drizzle │   │ Rate limit   │   │               │
+│         │   │ BullMQ queue │   └───────────────┘
+└────────┘   │ Pub/Sub (WS) │
+              └──────────────┘
+
+Expo Mobile App ──── API calls + WebSocket ────▶ Fly.io (api.dogwalk.app)
 
 Servizi Esterni:
 ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  ┌──────────┐
@@ -735,62 +767,88 @@ Servizi Esterni:
 └────────────┘  └──────────┘  └──────────┘  └────────────┘  └──────────┘
 ```
 
-### 4.2 Dettaglio Servizi Cloudflare
+### 4.2 Dettaglio Servizi per Piattaforma
 
-| Servizio | Uso in DogWalk | Binding name | Note |
-|---------|----------------|-------------|------|
-| **Workers** | API backend (Hono + tRPC) | -- | Deploy su `api.dogwalk.app` |
-| **Pages** | Web marketing + Admin SPA | -- | `dogwalk.app` + `admin.dogwalk.app` |
-| **R2** | Storage foto cani, avatar | `PHOTOS_BUCKET` | Accesso via presigned URL o binding diretto |
-| **KV** | Cache sessioni, rate limiting, feature flags | `CACHE`, `SESSIONS`, `RATE_LIMIT` | Eventually consistent, TTL configurabile |
-| **D1** | Waitlist, feature flags, config leggera | `DB_D1` | SQLite edge, per dati non relazionali complessi |
-| **Durable Objects** | Chat room WebSocket | `CHAT_ROOM` | 1 DO per match, stato persistente |
-| **Queues** | Job asincroni | `PHOTO_QUEUE`, `PUSH_QUEUE`, `EMAIL_QUEUE` | Producer/consumer pattern |
-| **Workers AI** | Classificazione NSFW foto | `AI` | Modello on-edge |
-| **Cloudflare Images** | Resize on-the-fly foto cani | -- | Transform via URL (`/cdn-cgi/image/`) |
-| **Turnstile** | Anti-bot form web (waitlist, contatti) | -- | Gratuito, GDPR-friendly |
+#### Fly.io (API Backend)
+
+| Servizio | Uso in DogWalk | Configurazione | Note |
+|---------|----------------|---------------|------|
+| **Fly Machines** | API backend (Hono + tRPC + BullMQ) | `fly.toml` in `apps/api/` | Deploy su `api.dogwalk.app`, multi-region EU |
+| **WebSocket nativo** | Chat real-time | Sticky sessions via `fly-replay` header | Nessun Durable Object necessario |
+
+#### Cloudflare (Frontend + Storage)
+
+| Servizio | Uso in DogWalk | Note |
+|---------|----------------|------|
+| **Pages** | Web marketing + Admin SPA | `dogwalk.app` + `admin.dogwalk.app` |
+| **R2** | Storage foto cani, avatar | Accesso via presigned URL generato dall'API su Fly.io |
+| **Workers AI** | Classificazione NSFW foto | Chiamato via REST API dall'API su Fly.io |
+| **Cloudflare Images** | Resize on-the-fly foto cani | Transform via URL (`/cdn-cgi/image/`) |
+| **Turnstile** | Anti-bot form web (waitlist, contatti) | Gratuito, GDPR-friendly |
+| **CDN** | Cache e distribuzione statica | Built-in con Pages e R2 |
+
+#### Upstash (Cache + Queue)
+
+| Servizio | Uso in DogWalk | Note |
+|---------|----------------|------|
+| **Upstash Redis** | Cache, sessioni, rate limiting | Env var `UPSTASH_REDIS_URL` + `UPSTASH_REDIS_TOKEN` |
+| **BullMQ su Redis** | Job asincroni (moderazione, email, push) | Code: `photo-moderation`, `push-notification`, `email`, `cleanup` |
+| **Redis Pub/Sub** | Fanout WebSocket cross-region | Per sincronizzare connessioni WebSocket su piu regioni Fly.io |
 
 ### 4.3 Flusso Upload Foto
 
 ```
-1. Mobile/Web richiede presigned URL → API Worker
-2. API genera presigned URL per R2 → restituisce al client
+1. Mobile/Web richiede presigned URL → API Fly.io
+2. API genera presigned URL per R2 (via S3-compatible SDK) → restituisce al client
 3. Client upload diretto a R2 (PUT)
-4. Client conferma upload → API Worker
-5. API pubblica messaggio su PHOTO_QUEUE
-6. Consumer Queue: Workers AI classifica NSFW
+4. Client conferma upload → API Fly.io
+5. API aggiunge job su BullMQ (coda photo-moderation)
+6. BullMQ worker: chiama Workers AI via REST API per classificazione NSFW
 7. Se approvata: status = "approved", foto visibile
 8. Se rifiutata: status = "rejected", notifica utente
 9. Immagini servite via Cloudflare Images (resize on-the-fly)
 ```
 
-### 4.4 Flusso Chat Real-time (Durable Objects)
+### 4.4 Flusso Chat Real-time (WebSocket nativo su Fly.io)
 
 ```
-1. Utente apre chat di un match → WebSocket connect
-2. Worker instrada al Durable Object del match (ID = matchId)
-3. DO mantiene lo stato della room (utenti connessi, typing)
-4. Messaggio inviato → DO broadcast all'altro utente
-5. DO persiste il messaggio nel database (via Neon HTTP)
-6. Se destinatario offline → pubblica su PUSH_QUEUE
-7. Consumer Queue: invio push notification via Expo Push API
+1. Utente apre chat di un match → WebSocket connect a Fly.io
+2. Fly.io sticky session mantiene la connessione sulla stessa Machine
+3. Server mantiene lo stato della room in memoria (utenti connessi, typing)
+4. Messaggio inviato → broadcast all'altro utente (stesso server o via Redis Pub/Sub cross-region)
+5. Messaggio persistito nel database (Neon)
+6. Se destinatario offline → aggiunge job su BullMQ (coda push-notification)
+7. BullMQ worker: invio push notification via Expo Push API
 ```
 
 ---
 
-## 5. Costi Cloudflare Aggiornati
+## 5. Costi Aggiornati (Fly.io + Cloudflare + Upstash)
 
-### 5.1 Pricing Cloudflare (marzo 2026)
+### 5.1 Pricing Fly.io (marzo 2026)
 
 | Servizio | Free Tier | Pricing oltre free tier |
 |---------|-----------|------------------------|
-| **Workers** | 100.000 req/giorno, 10ms CPU/req | $5/mese per 10M req inclusi, poi $0.50/M req |
-| **KV** | 100.000 letture/giorno, 1.000 scritture/giorno, 1GB storage | $5/mese per 10M letture, $0.50/M letture addizionali |
+| **Machines (shared-cpu-1x, 256MB)** | 3 VM gratuite | $1.94/mese per VM aggiuntiva |
+| **Machines (shared-cpu-2x, 512MB)** | -- | $3.88/mese per VM |
+| **Machines (performance-1x, 2GB)** | -- | $29.00/mese per VM |
+| **Bandwidth** | 100GB/mese in uscita | $0.02/GB addizionale |
+| **Persistent Volumes** | 3GB gratuiti | $0.15/GB/mese |
+
+### 5.1b Pricing Upstash Redis (marzo 2026)
+
+| Piano | Comandi/giorno | Storage | Costo |
+|-------|---------------|---------|-------|
+| **Free** | 10.000 comandi/giorno | 256MB | $0/mese |
+| **Pay-as-you-go** | Illimitati | Illimitato | $0.2/100K comandi |
+| **Pro 2K** | 2.000 comandi/sec max | 10GB | $280/mese |
+
+### 5.1c Pricing Cloudflare (servizi residui)
+
+| Servizio | Free Tier | Pricing oltre free tier |
+|---------|-----------|------------------------|
 | **R2** | 10GB storage, 10M Class A ops (PUT), 10M Class B ops (GET) | $0.015/GB/mese storage, $4.50/M Class A, $0.36/M Class B |
 | **Pages** | Illimitato (build, bandwidth, siti) | Gratuito (anche piano Pro) |
-| **Durable Objects** | Incluso nel piano Workers Paid ($5/mese) | $0.15/M richieste, $12.50/M GB-sec durata |
-| **Queues** | 1M operazioni/mese | $0.40/M operazioni |
-| **D1** | 5GB storage, 5M righe lette/giorno, 100K scritte/giorno | $0.75/M righe lette, $1.00/M righe scritte |
 | **Workers AI** | 10.000 neuroni/giorno (free) | Variabile per modello |
 | **Cloudflare Images** | Non ha free tier per transforms | $5/mese per 5.000 transform unique, poi $1/5.000 |
 
@@ -809,44 +867,35 @@ Servizi Esterni:
 
 | Servizio | Configurazione | Costo/mese (EUR) |
 |---------|----------------|:----------------:|
-| Workers (API) | ~50K req/giorno (free tier) | 0 |
-| KV (cache) | ~30K letture/giorno (free tier) | 0 |
+| Fly.io (API) | 1 shared-cpu-1x 256MB (free tier) | 0 |
+| Upstash Redis | ~5K comandi/giorno (free tier) | 0 |
 | R2 (foto, ~2GB) | Free tier | 0 |
 | Pages (web + admin) | Free | 0 |
-| Durable Objects (chat) | ~10K req/giorno (Workers Paid) | 5 |
-| Queues (jobs) | ~100K ops/mese (free tier) | 0 |
-| D1 (config) | Free tier | 0 |
 | Workers AI (moderazione) | Free tier | 0 |
 | Neon (PostgreSQL) | Free tier (0.5GB) | 0 |
-| **Totale Cloudflare + Neon** | | **~5** |
+| **Totale** | | **~0** |
 
 #### 10.000 utenti (espansione citta)
 
 | Servizio | Configurazione | Costo/mese (EUR) |
 |---------|----------------|:----------------:|
-| Workers (API) | ~500K req/giorno | 5 (piano paid base) |
-| KV (cache) | ~300K letture/giorno | 5 (incluso nel piano) |
+| Fly.io (API) | 2 shared-cpu-1x 512MB (1 free + 1 paid) | 4 |
+| Upstash Redis | ~50K comandi/giorno (pay-as-you-go) | 3 |
 | R2 (foto, ~30GB) | 30GB storage + ops | 5 |
 | Pages (web + admin) | Free | 0 |
-| Durable Objects (chat) | ~200K req/mese | 5 (incluso) |
-| Queues (jobs) | ~2M ops/mese | 2 |
-| D1 | Free tier sufficiente | 0 |
 | Workers AI | ~50K classificazioni | 0 |
 | Neon (PostgreSQL) | Launch (10GB) | 19 |
 | Cloudflare Images | ~10K transforms | 10 |
-| **Totale** | | **~51** |
+| **Totale** | | **~41** |
 
 #### 50.000 utenti (trazione Italia)
 
 | Servizio | Configurazione | Costo/mese (EUR) |
 |---------|----------------|:----------------:|
-| Workers (API) | ~3M req/giorno | 15 |
-| KV (cache) | ~2M letture/giorno | 10 |
+| Fly.io (API) | 3 shared-cpu-2x 1GB, multi-region | 25 |
+| Upstash Redis | ~500K comandi/giorno (pay-as-you-go) | 30 |
 | R2 (foto, ~150GB) | Storage + ops | 20 |
 | Pages | Free | 0 |
-| Durable Objects (chat) | ~2M req/mese | 15 |
-| Queues | ~10M ops/mese | 10 |
-| D1 | ~1M righe/giorno | 5 |
 | Workers AI | ~200K classificazioni | 10 |
 | Neon (PostgreSQL) | Scale (50GB, auto-scaling) | 69 |
 | Cloudflare Images | ~100K transforms | 25 |
@@ -857,29 +906,26 @@ Servizi Esterni:
 
 | Servizio | Configurazione | Costo/mese (EUR) |
 |---------|----------------|:----------------:|
-| Workers (API) | ~8M req/giorno | 40 |
-| KV (cache) | ~5M letture/giorno | 25 |
+| Fly.io (API) | 4 performance-1x 2GB, multi-region | 120 |
+| Upstash Redis | ~2M comandi/giorno (Pro) | 70 |
 | R2 (foto, ~400GB) | Storage + ops | 50 |
 | Pages | Free | 0 |
-| Durable Objects (chat) | ~5M req/mese | 30 |
-| Queues | ~25M ops/mese | 20 |
-| D1 | ~5M righe/giorno | 15 |
 | Workers AI | ~500K classificazioni | 25 |
 | Neon (PostgreSQL) | Business (500GB, always-on) | 700 |
 | Cloudflare Images | ~300K transforms | 65 |
 | Resend (email) | ~200K email/mese | 50 |
-| **Totale** | | **~1.020** |
+| **Totale** | | **~1.080** |
 
-### 5.4 Confronto con Budget AWS Originale (Doc 04)
+### 5.4 Confronto con Budget AWS Originale (Doc 04) e Cloudflare-only (Doc 09 v1.0)
 
-| Utenti | Costo AWS (doc 04) | Costo Cloudflare+Neon | Risparmio |
-|:------:|:------------------:|:---------------------:|:---------:|
-| 1.000 | 87 EUR/mese | ~5 EUR/mese | **94%** |
-| 10.000 | 534 EUR/mese | ~51 EUR/mese | **90%** |
-| 50.000 | 2.115 EUR/mese | ~199 EUR/mese | **91%** |
-| 100.000 | 4.420 EUR/mese | ~1.020 EUR/mese | **77%** |
+| Utenti | Costo AWS (doc 04) | Costo CF-only (doc 09 v1.0) | Costo B+ (Fly+CF+Upstash) | Risparmio vs AWS |
+|:------:|:------------------:|:---------------------------:|:-------------------------:|:----------------:|
+| 1.000 | 87 EUR/mese | ~5 EUR/mese | ~0 EUR/mese | **100%** |
+| 10.000 | 534 EUR/mese | ~51 EUR/mese | ~41 EUR/mese | **92%** |
+| 50.000 | 2.115 EUR/mese | ~199 EUR/mese | ~199 EUR/mese | **91%** |
+| 100.000 | 4.420 EUR/mese | ~1.020 EUR/mese | ~1.080 EUR/mese | **76%** |
 
-Il risparmio complessivo sull'infrastruttura nel primo anno (rispetto al budget AWS del doc 04) e stimato in **7.000-8.000 EUR**, riducendo il costo totale infrastruttura annuale da ~9.610 EUR a ~1.500-2.000 EUR.
+Il costo B+ e comparabile alla versione Cloudflare-only a bassa scala (e addirittura inferiore per 1K-10K utenti grazie ai free tier di Fly.io e Upstash). A scala maggiore (100K+) il costo e leggermente superiore, ma si guadagna in flessibilita, assenza di limiti CPU, WebSocket nativo, e nessun vendor lock-in su Durable Objects/Queues.
 
 ---
 
@@ -890,9 +936,9 @@ Il risparmio complessivo sull'infrastruttura nel primo anno (rispetto al budget 
 | App | MVP (Fase 1) | Fase 2 | Fase 3 | Note |
 |-----|:------------:|:------:|:------:|------|
 | **mobile** (Expo) | Core completo | Filtri, notifiche, calendario, badge | Social, gamification, AI | Priorita assoluta |
-| **api** (Hono Workers) | Tutti gli endpoint MVP | Endpoint admin, analytics | ML matching, marketplace | Sviluppato in parallelo con mobile |
+| **api** (Hono/Fly.io) | Tutti gli endpoint MVP | Endpoint admin, analytics | ML matching, marketplace | Sviluppato in parallelo con mobile |
 | **web** (Astro) | Landing page + waitlist + blog | Profilo condivisibile, eventi | SPA web app completa | Marketing site dal pre-lancio |
-| **admin** (Refine) | Moderazione foto + gestione utenti | Dashboard analytics, feature flags | Workflow avanzati | Operativo al lancio alpha |
+| **admin** (Next.js + shadcn/ui) | Moderazione foto + gestione utenti | Dashboard analytics, feature flags | Workflow avanzati | Operativo al lancio alpha |
 
 ### 6.2 Sprint Allocation per App
 
@@ -908,9 +954,9 @@ Il risparmio complessivo sull'infrastruttura nel primo anno (rispetto al budget 
 |:------:|:---:|:------:|:---:|:-----:|
 | S1 (sett 3-4) | Auth (register, login, JWT), User CRUD | Auth screens, onboarding flow | Blog setup, SEO | -- |
 | S2 (sett 5-6) | Dog CRUD, upload R2, breeds API | Dog profile wizard, photo upload | Blog contenuti | -- |
-| S3 (sett 7-8) | Geolocation PostGIS, proximity search | Mappa, discovery feed, permessi | Legal pages | Setup Refine base |
+| S3 (sett 7-8) | Geolocation PostGIS, proximity search | Mappa, discovery feed, permessi | Legal pages | Setup Next.js admin base |
 | S4 (sett 9-10) | Matching algorithm, swipe API | Swipe cards, match animation | Dog/[id] SSR (condivisibile) | Moderazione foto (coda) |
-| S5 (sett 11-12) | Chat (Durable Objects), Queues setup | Chat UI, WebSocket integration | -- | Gestione utenti, report |
+| S5 (sett 11-12) | Chat (WebSocket nativo), BullMQ setup | Chat UI, WebSocket integration | -- | Gestione utenti, report |
 | Stab. | Stabilizzazione, fix, performance | Bug fixing, polish | -- | Testing moderazione |
 
 #### Fase 2 -- Consolidamento (6 settimane, 3 sprint)
@@ -991,18 +1037,20 @@ packages/utils       ──┘        │
 
 | # | Servizio | Azione | Responsabile | Costo iniziale |
 |---|---------|--------|-------------|:--------------:|
-| 1 | **Cloudflare** | Creare account, attivare piano Workers Paid ($5/mese) | DevOps | $5/mese |
-| 2 | **Neon** | Creare account, creare progetto con PostGIS | DevOps | Free |
-| 3 | **GitHub** | Creare organizzazione `dogwalk-app`, repo `dogwalk` | DevOps | Free (o Team $4/user/mese) |
-| 4 | **Expo / EAS** | Creare account Expo, attivare piano Production ($99/mese) | DevOps | $99/mese |
-| 5 | **Apple Developer** | Registrare account sviluppatore | PO | $99/anno |
-| 6 | **Google Play Console** | Registrare account sviluppatore | PO | $25 una tantum |
-| 7 | **Resend** | Creare account, verificare dominio | DevOps | Free |
-| 8 | **Mapbox** | Creare account, ottenere API key | DevOps | Free tier |
-| 9 | **Sentry** | Creare organizzazione, progetto per mobile + workers | DevOps | $26/mese (Team) |
-| 10 | **Figma** | Creare team, invitare designer | UX Lead | $15/editor/mese |
-| 11 | **Linear** | Creare workspace, configurare progetti | SM | $8/user/mese |
-| 12 | **Dominio** | Registrare `dogwalk.app`, `dogwalk.it` | DevOps | ~$30/anno |
+| 1 | **Fly.io** | Creare account, installare `flyctl` CLI, creare organizzazione | DevOps | Free (3 VM gratuite) |
+| 2 | **Cloudflare** | Creare account (Pages, R2, Workers AI) | DevOps | Free |
+| 3 | **Upstash** | Creare account, creare database Redis (regione EU) | DevOps | Free |
+| 4 | **Neon** | Creare account, creare progetto con PostGIS | DevOps | Free |
+| 5 | **GitHub** | Creare organizzazione `dogwalk-app`, repo `dogwalk` | DevOps | Free (o Team $4/user/mese) |
+| 6 | **Expo / EAS** | Creare account Expo, attivare piano Production ($99/mese) | DevOps | $99/mese |
+| 7 | **Apple Developer** | Registrare account sviluppatore | PO | $99/anno |
+| 8 | **Google Play Console** | Registrare account sviluppatore | PO | $25 una tantum |
+| 9 | **Resend** | Creare account, verificare dominio | DevOps | Free |
+| 10 | **Mapbox** | Creare account, ottenere API key | DevOps | Free tier |
+| 11 | **Sentry** | Creare organizzazione, progetto per mobile + API | DevOps | $26/mese (Team) |
+| 12 | **Figma** | Creare team, invitare designer | UX Lead | $15/editor/mese |
+| 13 | **Linear** | Creare workspace, configurare progetti | SM | $8/user/mese |
+| 14 | **Dominio** | Registrare `dogwalk.app`, `dogwalk.it` | DevOps | ~$30/anno |
 
 ### 7.2 Repository Setup
 
@@ -1018,6 +1066,10 @@ packages/utils       ──┘        │
 - [ ] Configurare `.gitignore` completo
 - [ ] Setup `CODEOWNERS`
 - [ ] Setup `pull_request_template.md`
+- [ ] Creare `Dockerfile` multi-stage in `apps/api/` (Node.js 20 Alpine)
+- [ ] Creare `fly.toml` in `apps/api/` (regione `ams`, auto-scaling)
+- [ ] Verificare Docker locale funzionante (`docker build` per API)
+- [ ] Configurare `docker-compose.yml` con PostgreSQL + PostGIS + Redis
 
 ### 7.3 CI/CD Pipeline
 
@@ -1030,12 +1082,12 @@ packages/utils       ──┘        │
   - Cloudflare Pages preview per admin
 - [ ] **deploy-staging.yml**: Deploy staging su merge in `develop`
   - EAS Build + EAS Update (staging channel)
-  - Wrangler deploy API worker (staging)
+  - `fly deploy --config apps/api/fly.toml` API (staging)
   - Cloudflare Pages deploy web (staging)
   - Cloudflare Pages deploy admin (staging)
 - [ ] **deploy-production.yml**: Deploy production su merge in `main`
   - EAS Build + Submit (production)
-  - Wrangler deploy API worker (production)
+  - `fly deploy --config apps/api/fly.toml` API (production)
   - Cloudflare Pages deploy web (production)
   - Cloudflare Pages deploy admin (production)
   - Tag git con versione semantica
@@ -1080,36 +1132,37 @@ packages/utils       ──┘        │
 - [ ] Definire tutti gli schema Zod in `packages/validation/`
 - [ ] Definire la struttura dei tRPC router (auth, user, dog, matching, chat, notification)
 - [ ] Documentare le costanti di matching in `packages/config/`
-- [ ] Definire i bindings Cloudflare in `wrangler.toml`
+- [ ] Definire le variabili d'ambiente in `fly.toml` e `.env`
 - [ ] Definire gli endpoint admin (`/api/admin/v1/...`)
 - [ ] Concordare formato paginazione standard (`{ data, meta: { total, page, pageSize } }`)
 - [ ] Concordare formato errori standard (tRPC error codes)
 
 ### 7.7 Ambienti
 
-| Ambiente | API | Web | Admin | Database | Scopo |
-|---------|-----|-----|-------|----------|-------|
-| **Local** | `wrangler dev` | `astro dev` | `vite dev` | Docker PostgreSQL o Neon branch | Sviluppo quotidiano |
-| **Preview** | Worker preview | Pages preview | Pages preview | Neon branch per PR | Review PR |
-| **Staging** | `api-staging.dogwalk.app` | `staging.dogwalk.app` | `admin-staging.dogwalk.app` | Neon branch `staging` | Test pre-release |
-| **Production** | `api.dogwalk.app` | `dogwalk.app` | `admin.dogwalk.app` | Neon main branch | Live |
+| Ambiente | API | Web | Admin | Database | Cache | Scopo |
+|---------|-----|-----|-------|----------|-------|-------|
+| **Local** | `node --watch` (Hono) | `astro dev` | `vite dev` | Docker PostgreSQL | Docker Redis | Sviluppo quotidiano |
+| **Preview** | Fly.io preview app | Pages preview | Pages preview | Neon branch per PR | Upstash Redis (dev) | Review PR |
+| **Staging** | `api-staging.dogwalk.app` (Fly.io) | `staging.dogwalk.app` | `admin-staging.dogwalk.app` | Neon branch `staging` | Upstash Redis (staging) | Test pre-release |
+| **Production** | `api.dogwalk.app` (Fly.io) | `dogwalk.app` | `admin.dogwalk.app` | Neon main branch | Upstash Redis (prod) | Live |
 
 ### 7.8 Sicurezza Pre-Lancio
 
-- [ ] Configurare CORS per Workers (origin whitelist)
+- [ ] Configurare CORS per API Fly.io (origin whitelist)
 - [ ] Configurare CSP headers per Pages
-- [ ] Setup Cloudflare WAF (regole base anti-DDoS)
-- [ ] Configurare rate limiting per API
+- [ ] Setup Cloudflare WAF (regole base anti-DDoS per Pages/CDN)
+- [ ] Configurare rate limiting per API (Upstash Redis)
 - [ ] Implementare JWT con rotazione refresh token
-- [ ] Configurare HTTPS redirect (gestito da Cloudflare)
-- [ ] Setup 2FA per account admin (Cloudflare, Neon, GitHub)
+- [ ] Configurare HTTPS redirect (Cloudflare per Pages, Fly.io per API)
+- [ ] Setup 2FA per account admin (Fly.io, Cloudflare, Upstash, Neon, GitHub)
 - [ ] Creare `.env` con secrets separati per staging/production
-- [ ] Mai committare secrets nel repo (usare Cloudflare Secrets e GitHub Secrets)
+- [ ] Mai committare secrets nel repo (usare `fly secrets set` e GitHub Secrets)
 
 ---
 
 > **Questo documento e la FONTE DI VERITA per tutte le decisioni architetturali del progetto DogWalk.**
-> In caso di conflitto tra questo documento e qualsiasi altro documento (01-08), questo documento prevale.
+> In caso di conflitto tra questo documento e qualsiasi altro documento (01-10), questo documento prevale.
+> **Decisione B+:** API su Fly.io (Node.js), cache/queue su Upstash Redis, frontend su Cloudflare Pages/R2/CDN.
 >
 > **Prossima revisione:** Aprile 2026 (dopo Sprint 2 della Fase 1)
 > **Distribuzione:** Engineering Team, Product Owner, CTO

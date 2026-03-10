@@ -1,5 +1,7 @@
 import * as Location from 'expo-location';
 import { useCallback } from 'react';
+import { Alert, Linking, Platform } from 'react-native';
+import { api } from '@/lib/api';
 import { useLocationStore } from '@/stores/location';
 
 export function useLocation() {
@@ -8,17 +10,40 @@ export function useLocation() {
     isLoading,
     error,
     permissionGranted,
+    searchRadiusKm,
     setCoordinates,
     setLoading,
     setError,
     setPermissionGranted,
+    setSearchRadiusKm,
   } = useLocationStore();
 
   const requestPermission = useCallback(async () => {
     try {
+      const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
+      if (existingStatus === 'granted') {
+        setPermissionGranted(true);
+        return true;
+      }
+
       const { status } = await Location.requestForegroundPermissionsAsync();
       const granted = status === 'granted';
       setPermissionGranted(granted);
+
+      if (!granted) {
+        Alert.alert(
+          'Posizione richiesta',
+          'DogWalk ha bisogno della tua posizione per mostrare cani nelle vicinanze. Abilita la posizione nelle impostazioni.',
+          [
+            { text: 'Annulla', style: 'cancel' },
+            {
+              text: 'Apri Impostazioni',
+              onPress: () => Linking.openSettings(),
+            },
+          ],
+        );
+      }
+
       return granted;
     } catch (_err) {
       setError('Errore nel richiedere i permessi di posizione');
@@ -32,19 +57,32 @@ export function useLocation() {
       const hasPermission = await requestPermission();
       if (!hasPermission) {
         setError('Permesso di posizione non concesso');
-        return;
+        return null;
       }
 
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       });
 
-      setCoordinates({
+      const coords = {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-      });
+      };
+
+      setCoordinates(coords);
+
+      // Send location to API in background
+      api
+        .patch('/users/me/location', {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        })
+        .catch(() => {});
+
+      return coords;
     } catch (_err) {
       setError('Errore nel recuperare la posizione');
+      return null;
     } finally {
       setLoading(false);
     }
@@ -55,6 +93,8 @@ export function useLocation() {
     isLoading,
     error,
     permissionGranted,
+    searchRadiusKm,
+    setSearchRadiusKm,
     requestPermission,
     getCurrentLocation,
   };

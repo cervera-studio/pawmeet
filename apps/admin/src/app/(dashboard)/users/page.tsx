@@ -3,10 +3,9 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useServerTable } from '@/hooks/use-server-table';
 
-// Placeholder type - in production, import from @dogwalk/types
 interface User {
   id: string;
   name: string;
@@ -36,8 +35,14 @@ const columns: ColumnDef<User>[] = [
           suspended: 'warning' as const,
           banned: 'destructive' as const,
         }[status] ?? ('outline' as const);
+      const label =
+        {
+          active: 'Attivo',
+          suspended: 'Sospeso',
+          banned: 'Bannato',
+        }[status] ?? status;
 
-      return <Badge variant={variant}>{status}</Badge>;
+      return <Badge variant={variant}>{label}</Badge>;
     },
   },
   {
@@ -65,37 +70,19 @@ const columns: ColumnDef<User>[] = [
   },
 ];
 
-// Placeholder data
-const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'Mario Rossi',
-    email: 'mario@example.com',
-    status: 'active',
-    dogsCount: 2,
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    name: 'Laura Bianchi',
-    email: 'laura@example.com',
-    status: 'active',
-    dogsCount: 1,
-    createdAt: '2024-02-20',
-  },
-  {
-    id: '3',
-    name: 'Giuseppe Verdi',
-    email: 'giuseppe@example.com',
-    status: 'suspended',
-    dogsCount: 3,
-    createdAt: '2024-03-10',
-  },
-];
-
 export default function UsersPage() {
-  // TODO: Replace with useServerTable hook
-  // const { data, isLoading, ... } = useServerTable<User>({ endpoint: '/admin/users', queryKey: 'users' });
+  const {
+    data,
+    total,
+    totalPages,
+    isLoading,
+    sorting,
+    setSorting,
+    pagination,
+    setPagination,
+    globalFilter,
+    setGlobalFilter,
+  } = useServerTable<User>({ endpoint: '/admin/users', queryKey: 'admin-users' });
 
   return (
     <div className="space-y-6">
@@ -106,16 +93,28 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Search */}
       <div className="flex items-center gap-4">
-        <Input placeholder="Cerca utenti..." className="max-w-sm" />
-        <Button variant="outline" size="sm">
-          Filtri
-        </Button>
+        <Input
+          placeholder="Cerca utenti..."
+          className="max-w-sm"
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+        />
       </div>
 
       {/* Table */}
-      <DataTable columns={columns} data={mockUsers} total={mockUsers.length} totalPages={1} />
+      <DataTable
+        columns={columns}
+        data={data}
+        total={total}
+        totalPages={totalPages}
+        isLoading={isLoading}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+      />
     </div>
   );
 }

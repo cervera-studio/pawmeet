@@ -1,42 +1,53 @@
 import { create } from 'zustand';
 
-export interface User {
+export interface AuthUser {
   id: string;
   email: string;
-  name: string;
-  avatarUrl?: string;
+  displayName: string;
+  avatarUrl: string | null;
 }
 
 interface AuthState {
-  user: User | null;
+  user: AuthUser | null;
   token: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
-  login: (user: User, token: string) => void;
+  isLoading: boolean;
+  login: (user: AuthUser, token: string, refreshToken: string) => void;
   logout: () => void;
   setToken: (token: string) => void;
-  setUser: (user: User) => void;
+  setUser: (user: AuthUser) => void;
+  setLoading: (loading: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
+  refreshToken: null,
   isAuthenticated: false,
+  isLoading: true,
 
-  login: (user, token) =>
+  login: (user, token, refreshToken) =>
     set({
       user,
       token,
+      refreshToken,
       isAuthenticated: true,
+      isLoading: false,
     }),
 
   logout: () =>
     set({
       user: null,
       token: null,
+      refreshToken: null,
       isAuthenticated: false,
+      isLoading: false,
     }),
 
   setToken: (token) => set({ token }),
 
   setUser: (user) => set({ user }),
+
+  setLoading: (isLoading) => set({ isLoading }),
 }));

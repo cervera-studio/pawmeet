@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useAuthContext } from '@/lib/auth-store';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboardIcon },
@@ -122,6 +123,7 @@ function SettingsIcon({ className }: { className?: string }) {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user, logout } = useAuthContext();
 
   return (
     <aside className="flex h-full w-64 flex-col border-r border-neutral-200 bg-white">
@@ -180,11 +182,20 @@ export function Sidebar() {
       {/* Footer */}
       <div className="border-t border-neutral-200 p-4">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-neutral-200" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-neutral-900 truncate">Admin User</p>
-            <p className="text-xs text-neutral-500 truncate">admin@dogwalk.app</p>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">
+            {user?.name?.charAt(0)?.toUpperCase() ?? 'A'}
           </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-neutral-900 truncate">{user?.name ?? 'Admin'}</p>
+            <p className="text-xs text-neutral-500 truncate">{user?.email ?? ''}</p>
+          </div>
+          <button
+            onClick={logout}
+            type="button"
+            className="text-xs text-neutral-400 hover:text-red-500 transition-colors"
+          >
+            Esci
+          </button>
         </div>
       </div>
     </aside>

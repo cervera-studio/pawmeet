@@ -13,7 +13,10 @@ function createApp() {
 
 async function signToken(sub: string, options?: { expiresIn?: string; secret?: Uint8Array }) {
   const secret = options?.secret ?? JWT_SECRET;
-  let builder = new SignJWT({ sub }).setProtectedHeader({ alg: 'HS256' }).setIssuedAt();
+  let builder = new SignJWT({ type: 'access' })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setSubject(sub)
+    .setIssuedAt();
   if (options?.expiresIn) {
     builder = builder.setExpirationTime(options.expiresIn);
   }
@@ -71,10 +74,27 @@ describe('authMiddleware', () => {
 
   it('returns 401 when token is expired', async () => {
     // Create a token that expired 1 hour ago
-    const token = await new SignJWT({ sub: 'user-123' })
+    const token = await new SignJWT({ type: 'access' })
       .setProtectedHeader({ alg: 'HS256' })
+      .setSubject('user-123')
       .setIssuedAt(Math.floor(Date.now() / 1000) - 7200)
       .setExpirationTime(Math.floor(Date.now() / 1000) - 3600)
+      .sign(JWT_SECRET);
+
+    const res = await app.request('/protected', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body.error).toBe('Invalid token');
+  });
+
+  it('returns 401 when token type is refresh instead of access', async () => {
+    const token = await new SignJWT({ type: 'refresh' })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setSubject('user-123')
+      .setIssuedAt()
+      .setExpirationTime('1h')
       .sign(JWT_SECRET);
 
     const res = await app.request('/protected', {

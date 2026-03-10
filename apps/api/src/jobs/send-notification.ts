@@ -1,30 +1,44 @@
 import { Worker } from 'bullmq';
+import { expo } from '../lib/push.js';
+import type { NotificationJobData } from './queue.js';
+import { QUEUE_NAMES, getRedisConnection } from './queue.js';
 
-const connection = {
-  host: process.env.REDIS_HOST,
-  port: Number(process.env.REDIS_PORT),
-  password: process.env.REDIS_PASSWORD,
-  maxRetriesPerRequest: null,
-};
+export function createNotificationWorker() {
+  const worker = new Worker<NotificationJobData>(
+    QUEUE_NAMES.NOTIFICATIONS,
+    async (job) => {
+      const { userId, title, body, data } = job.data;
+      console.log(`[notifications] Sending to user ${userId}: ${title}`);
 
-const sendNotificationWorker = new Worker(
-  'notifications',
-  async (job) => {
-    // TODO: implement push notification sending
-    // - Get user's Expo push token from database
-    // - Build notification payload
-    // - Send via Expo push notification service
-    console.log(`Processing notification job ${job.id}`, job.data);
-  },
-  { connection },
-);
+      // TODO: look up user's Expo push token from DB
+      // For now, log and skip
+      const pushToken = null; // await getUserPushToken(userId);
 
-sendNotificationWorker.on('completed', (job) => {
-  console.log(`Notification job ${job.id} completed`);
-});
+      if (!pushToken) {
+        console.log(`[notifications] No push token for user ${userId}, skipping`);
+        return;
+      }
 
-sendNotificationWorker.on('failed', (job, err) => {
-  console.error(`Notification job ${job?.id} failed:`, err);
-});
+      await expo.sendPushNotificationsAsync([
+        {
+          to: pushToken,
+          title,
+          body,
+          data,
+          sound: 'default',
+        },
+      ]);
+    },
+    { connection: getRedisConnection(), concurrency: 10 },
+  );
 
-export { sendNotificationWorker };
+  worker.on('completed', (job) => {
+    console.log(`[notifications] Job ${job.id} completed`);
+  });
+
+  worker.on('failed', (job, err) => {
+    console.error(`[notifications] Job ${job?.id} failed:`, err.message);
+  });
+
+  return worker;
+}

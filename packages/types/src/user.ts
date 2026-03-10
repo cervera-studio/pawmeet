@@ -2,6 +2,7 @@ export interface User {
   id: string;
   email: string;
   displayName: string;
+  passwordHash: string | null;
   authProvider: 'email' | 'google' | 'apple';
   avatarUrl: string | null;
   latitude: number | null;

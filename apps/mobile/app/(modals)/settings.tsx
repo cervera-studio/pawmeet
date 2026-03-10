@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function SettingsModal() {
+  const { logout } = useAuth();
   const [notifications, setNotifications] = useState(true);
   const [locationSharing, setLocationSharing] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -61,7 +63,11 @@ export default function SettingsModal() {
           </Pressable>
         </View>
 
-        <Pressable className="mt-8 items-center py-4">
+        <Pressable onPress={logout} className="mt-8 items-center py-4">
+          <Text className="text-base font-medium text-red-500">Esci</Text>
+        </Pressable>
+
+        <Pressable className="items-center py-4">
           <Text className="text-base font-medium text-red-500">Elimina account</Text>
         </Pressable>
       </View>

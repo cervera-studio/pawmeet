@@ -1,29 +1,21 @@
+import type { DogPhoto, DogProfile } from '@dogwalk/types';
 import { create } from 'zustand';
 
-interface Dog {
-  id: string;
-  name: string;
-  breed: string;
-  age: number;
-  bio?: string;
-  size: 'small' | 'medium' | 'large';
-  energy: 'low' | 'medium' | 'high';
-  temperament: string[];
-  photos: string[];
-}
-
 interface DogsState {
-  dogs: Dog[];
+  dogs: DogProfile[];
+  photos: Record<string, DogPhoto[]>;
   selectedDogId: string | null;
-  setDogs: (dogs: Dog[]) => void;
-  addDog: (dog: Dog) => void;
-  updateDog: (id: string, updates: Partial<Dog>) => void;
+  setDogs: (dogs: DogProfile[]) => void;
+  addDog: (dog: DogProfile) => void;
+  updateDog: (id: string, updates: Partial<DogProfile>) => void;
   removeDog: (id: string) => void;
   setSelectedDog: (id: string | null) => void;
+  setPhotos: (dogId: string, photos: DogPhoto[]) => void;
 }
 
 export const useDogsStore = create<DogsState>((set) => ({
   dogs: [],
+  photos: {},
   selectedDogId: null,
 
   setDogs: (dogs) => set({ dogs }),
@@ -44,4 +36,9 @@ export const useDogsStore = create<DogsState>((set) => ({
     })),
 
   setSelectedDog: (id) => set({ selectedDogId: id }),
+
+  setPhotos: (dogId, photos) =>
+    set((state) => ({
+      photos: { ...state.photos, [dogId]: photos },
+    })),
 }));

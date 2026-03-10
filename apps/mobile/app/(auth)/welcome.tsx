@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button } from '@/components/ui/Button';
 
 const slides = [
   {
@@ -25,15 +26,15 @@ export default function WelcomeScreen() {
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
-    } else {
-      router.push('/(auth)/login');
     }
   };
+
+  const isLastSlide = currentSlide >= slides.length - 1;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 items-center justify-center px-8">
-        {/* Placeholder per illustrazione */}
+        {/* Placeholder for illustration */}
         <View className="mb-8 h-64 w-64 items-center justify-center rounded-full bg-primary-50">
           <Text className="text-6xl">🐕</Text>
         </View>
@@ -45,7 +46,7 @@ export default function WelcomeScreen() {
           {slides[currentSlide]?.description}
         </Text>
 
-        {/* Indicatori */}
+        {/* Slide indicators */}
         <View className="mb-8 flex-row gap-2">
           {slides.map((slide, index) => (
             <View
@@ -59,19 +60,30 @@ export default function WelcomeScreen() {
       </View>
 
       <View className="px-8 pb-8">
-        <Pressable onPress={handleNext} className="items-center rounded-2xl bg-primary py-4">
-          <Text className="text-lg font-semibold text-white">
-            {currentSlide < slides.length - 1 ? 'Avanti' : 'Inizia'}
-          </Text>
-        </Pressable>
+        {isLastSlide ? (
+          <>
+            <Button onPress={() => router.push('/(auth)/login')} label="Accedi" />
+            <View className="mt-3">
+              <Button
+                onPress={() => router.push('/(auth)/register')}
+                label="Registrati"
+                variant="outline"
+              />
+            </View>
+          </>
+        ) : (
+          <>
+            <Pressable onPress={handleNext} className="items-center rounded-2xl bg-primary py-4">
+              <Text className="text-lg font-semibold text-white">Avanti</Text>
+            </Pressable>
 
-        {currentSlide < slides.length - 1 && (
-          <Pressable
-            onPress={() => router.push('/(auth)/login')}
-            className="mt-4 items-center py-2"
-          >
-            <Text className="text-base text-gray-500">Salta</Text>
-          </Pressable>
+            <Pressable
+              onPress={() => setCurrentSlide(slides.length - 1)}
+              className="mt-4 items-center py-2"
+            >
+              <Text className="text-base text-gray-500">Salta</Text>
+            </Pressable>
+          </>
         )}
       </View>
     </SafeAreaView>

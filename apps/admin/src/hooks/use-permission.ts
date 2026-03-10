@@ -3,19 +3,11 @@
 import { useCallback } from 'react';
 import type { AdminRole as AdminRoleType } from '@/lib/auth';
 import { AdminRole, hasRole } from '@/lib/auth';
+import { useAuthContext } from '@/lib/auth-store';
 
-function getPlaceholderRole(): AdminRoleType {
-  return AdminRole.Admin;
-}
-
-/**
- * RBAC hook for checking permissions in components.
- * TODO: Wire up to actual auth context/session.
- */
 export function usePermission() {
-  // TODO: in production, get from auth context/session
-  const role = getPlaceholderRole();
-  const isAuthenticated = true;
+  const { user, isAuthenticated } = useAuthContext();
+  const role = user?.role ?? AdminRole.Viewer;
 
   const can = useCallback((requiredRole: AdminRoleType) => hasRole(role, requiredRole), [role]);
 

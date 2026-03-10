@@ -10,10 +10,12 @@ interface LocationState {
   isLoading: boolean;
   error: string | null;
   permissionGranted: boolean;
+  searchRadiusKm: number;
   setCoordinates: (coords: Coordinates) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setPermissionGranted: (granted: boolean) => void;
+  setSearchRadiusKm: (radius: number) => void;
 }
 
 export const useLocationStore = create<LocationState>((set) => ({
@@ -21,9 +23,11 @@ export const useLocationStore = create<LocationState>((set) => ({
   isLoading: false,
   error: null,
   permissionGranted: false,
+  searchRadiusKm: 10,
 
   setCoordinates: (coordinates) => set({ coordinates, error: null }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
   setPermissionGranted: (permissionGranted) => set({ permissionGranted }),
+  setSearchRadiusKm: (searchRadiusKm) => set({ searchRadiusKm }),
 }));

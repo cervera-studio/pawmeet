@@ -37,6 +37,7 @@ export function Providers({ children }: { children: ReactNode }) {
         accessTokenRef.current = response.token;
         api.setToken(response.token);
         setUser(response.user);
+        document.cookie = 'admin_session=1; path=/; max-age=28800; SameSite=Lax';
         setIsLoading(false);
       })
       .catch(() => {
@@ -55,9 +56,10 @@ export function Providers({ children }: { children: ReactNode }) {
       accessTokenRef.current = response.token;
       api.setToken(response.token);
       setUser(response.user);
-      router.push('/');
+      // Set session indicator cookie so the middleware can gate access server-side
+      document.cookie = 'admin_session=1; path=/; max-age=28800; SameSite=Lax';
     },
-    [router],
+    [],
   );
 
   const logout = useCallback(async () => {
@@ -69,6 +71,7 @@ export function Providers({ children }: { children: ReactNode }) {
     accessTokenRef.current = null;
     api.setToken(null);
     setUser(null);
+    document.cookie = 'admin_session=; path=/; max-age=0';
     router.push('/login');
   }, [router]);
 

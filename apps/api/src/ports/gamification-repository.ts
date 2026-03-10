@@ -2,7 +2,6 @@ import type { AchievementType, ChallengeType, LeaderboardType, XpAction } from '
 import type {
   Achievement,
   Challenge,
-  ChallengeWithProgress,
   LeaderboardEntry,
   UserChallenge,
   XpTransaction,

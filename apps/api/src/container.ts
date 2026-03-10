@@ -7,6 +7,7 @@ import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
+import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
 import { DrizzleMessageRepository } from './infra/drizzle-message-repository.js';
 import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
@@ -42,6 +43,7 @@ import { createGetDog } from './use-cases/get-dog.js';
 import { createGetDogRating } from './use-cases/get-dog-rating.js';
 import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
+import { createGetGroupMessages } from './use-cases/get-group-messages.js';
 import { createGetMessages } from './use-cases/get-messages.js';
 import { createGetProfile } from './use-cases/get-profile.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
@@ -49,6 +51,7 @@ import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
 import { createLikeDog } from './use-cases/like-dog.js';
 import { createListBadges } from './use-cases/list-badges.js';
 import { createListConversations } from './use-cases/list-conversations.js';
+import { createListGroupConversations } from './use-cases/list-group-conversations.js';
 import { createListMatches } from './use-cases/list-matches.js';
 import { createListNearbyEvents } from './use-cases/list-nearby-events.js';
 import { createListUpcomingWalks } from './use-cases/list-upcoming-walks.js';
@@ -58,6 +61,7 @@ import { createListWalkFeedback } from './use-cases/list-walk-feedback.js';
 import { createListWalksByMatch } from './use-cases/list-walks-by-match.js';
 import { createLoginUser } from './use-cases/login-user.js';
 import { createLogoutUser } from './use-cases/logout-user.js';
+import { createMarkGroupMessagesRead } from './use-cases/mark-group-messages-read.js';
 import { createMarkMessagesRead } from './use-cases/mark-messages-read.js';
 import { createPassDog } from './use-cases/pass-dog.js';
 import { createProposeWalk } from './use-cases/propose-walk.js';
@@ -68,6 +72,7 @@ import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createResetPassword } from './use-cases/reset-password.js';
 import { createRespondToWalk } from './use-cases/respond-to-walk.js';
 import { createSearchBreeds } from './use-cases/search-breeds.js';
+import { createSendGroupMessage } from './use-cases/send-group-message.js';
 import { createSendMessage } from './use-cases/send-message.js';
 import { createSubmitFeedback } from './use-cases/submit-feedback.js';
 import { createUnmatch } from './use-cases/unmatch.js';
@@ -92,6 +97,7 @@ const breedRepo = new DrizzleBreedRepository(db);
 const walkRepo = new DrizzleWalkRepository(db);
 const feedbackRepo = new DrizzleFeedbackRepository(db);
 const groupEventRepo = new DrizzleGroupEventRepository(db);
+const groupMessageRepo = new DrizzleGroupMessageRepository(db);
 const badgeRepo = new DrizzleBadgeRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
@@ -187,6 +193,20 @@ export const chatDeps = {
   markMessagesRead: createMarkMessagesRead({ messageRepo, chat }),
 };
 
+// ── Group chat deps ──────────────────────────────────────────────────────────
+
+export const groupChatDeps = {
+  listGroupConversations: createListGroupConversations({ groupMessageRepo, chat }),
+  getGroupMessages: createGetGroupMessages({ groupMessageRepo, chat }),
+  sendGroupMessage: createSendGroupMessage({
+    groupMessageRepo,
+    chat,
+    userRepo,
+    notificationService,
+  }),
+  markGroupMessagesRead: createMarkGroupMessagesRead({ groupMessageRepo, chat }),
+};
+
 // ── Group event deps ──────────────────────────────────────────────────────────
 
 export const groupEventDeps = {
@@ -204,6 +224,13 @@ export const groupEventDeps = {
 
 export const adminDeps = {
   adminUserRepo,
+};
+
+// ── Event status deps ─────────────────────────────────────────────────────────
+
+export const eventStatusDeps = {
+  groupEventRepo,
+  notificationService,
 };
 
 // ── Photo moderation deps ─────────────────────────────────────────────────────

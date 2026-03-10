@@ -2,6 +2,7 @@ export * from './badge';
 export * from './chat';
 export * from './dog';
 export * from './feedback';
+export * from './group-chat';
 export * from './group-event';
 export * from './match';
 export * from './result';

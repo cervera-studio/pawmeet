@@ -11,6 +11,7 @@ export type {
   GroupEventRepository,
   NearbyEventsQuery,
 } from './group-event-repository.js';
+export type { GroupMessageRepository } from './group-message-repository.js';
 export type { CandidateDog, MatchRepository } from './match-repository.js';
 export type {
   ConversationSummary,

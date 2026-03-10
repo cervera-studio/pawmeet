@@ -54,6 +54,8 @@ function buildGroupEventRepo(overrides: Partial<GroupEventRepository> = {}): Gro
     updateParticipantStatus: vi.fn(),
     countParticipants: vi.fn(),
     promoteFromWaitlist: vi.fn().mockResolvedValue(null),
+    findScheduledPastStart: vi.fn(),
+    findInProgressPastEnd: vi.fn(),
     ...overrides,
   };
 }

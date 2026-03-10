@@ -5,6 +5,7 @@ export * from './chat';
 export * from './dogs';
 export * from './feedback';
 export * from './group-events';
+export * from './group-messages';
 export * from './matches';
 export * from './refresh-tokens';
 export * from './reports';

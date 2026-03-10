@@ -1,6 +1,6 @@
 import { groupEventParticipants, groupEvents } from '@dogwalk/db';
 import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@dogwalk/types';
-import { and, desc, eq, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, lte, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   CreateGroupEventInput,
@@ -125,6 +125,29 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .update(groupEvents)
       .set({ status, updatedAt: new Date() })
       .where(eq(groupEvents.id, id));
+  }
+
+  async findScheduledPastStart(): Promise<GroupEvent[]> {
+    const now = new Date();
+    const rows = await this.db
+      .select()
+      .from(groupEvents)
+      .where(and(eq(groupEvents.status, 'scheduled'), lte(groupEvents.scheduledAt, now)));
+    return rows as GroupEvent[];
+  }
+
+  async findInProgressPastEnd(): Promise<GroupEvent[]> {
+    const now = new Date();
+    const rows = await this.db
+      .select()
+      .from(groupEvents)
+      .where(
+        and(
+          eq(groupEvents.status, 'in_progress'),
+          sql`${groupEvents.scheduledAt} + (${groupEvents.durationMin} || ' minutes')::interval <= ${now}`,
+        ),
+      );
+    return rows as GroupEvent[];
   }
 
   // Participants

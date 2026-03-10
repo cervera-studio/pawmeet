@@ -30,6 +30,8 @@ export interface GroupEventRepository {
   findByParticipant(userId: string): Promise<GroupEvent[]>;
   update(id: string, data: Partial<CreateGroupEventInput>): Promise<GroupEvent>;
   updateStatus(id: string, status: string): Promise<void>;
+  findScheduledPastStart(): Promise<GroupEvent[]>;
+  findInProgressPastEnd(): Promise<GroupEvent[]>;
 
   // Participants
   addParticipant(input: {

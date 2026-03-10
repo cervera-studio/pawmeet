@@ -16,6 +16,7 @@ export const QUEUE_NAMES = {
   PHOTO_MODERATION: 'photo-moderation',
   NOTIFICATIONS: 'notifications',
   EMAIL: 'email',
+  EVENT_STATUS: 'event-status',
 } as const;
 
 // --- Lazy queue instances ---
@@ -23,6 +24,7 @@ export const QUEUE_NAMES = {
 let _photoModerationQueue: Queue | null = null;
 let _notificationQueue: Queue | null = null;
 let _emailQueue: Queue | null = null;
+let _eventStatusQueue: Queue | null = null;
 
 export function getPhotoModerationQueue(): Queue {
   if (!_photoModerationQueue) {
@@ -67,6 +69,21 @@ export function getEmailQueue(): Queue {
     });
   }
   return _emailQueue;
+}
+
+export function getEventStatusQueue(): Queue {
+  if (!_eventStatusQueue) {
+    _eventStatusQueue = new Queue(QUEUE_NAMES.EVENT_STATUS, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 2000 },
+        removeOnComplete: 50,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _eventStatusQueue;
 }
 
 // --- Job type definitions ---

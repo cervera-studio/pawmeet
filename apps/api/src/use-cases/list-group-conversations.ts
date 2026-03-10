@@ -1,7 +1,7 @@
 import type { GroupConversationSummary } from '@dogwalk/types';
 import { type Result, succeed } from '@dogwalk/types';
-import type { ChatService } from '../ports/index.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
+import type { ChatService } from '../ports/index.js';
 
 type Deps = {
   groupMessageRepo: GroupMessageRepository;
@@ -9,9 +9,7 @@ type Deps = {
 };
 
 export function createListGroupConversations({ groupMessageRepo, chat }: Deps) {
-  return async (
-    userId: string,
-  ): Promise<Result<{ conversations: GroupConversationSummary[] }>> => {
+  return async (userId: string): Promise<Result<{ conversations: GroupConversationSummary[] }>> => {
     const conversations = await groupMessageRepo.getConversationsForUser(userId);
 
     for (const conv of conversations) {

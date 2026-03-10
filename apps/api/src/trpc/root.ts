@@ -4,6 +4,7 @@ import {
   chatDeps,
   dogDeps,
   feedbackDeps,
+  gamificationDeps,
   groupChatDeps,
   groupEventDeps,
   matchDeps,
@@ -17,6 +18,7 @@ import { createBadgesRouter } from './routers/badges.js';
 import { createChatRouter } from './routers/chat.js';
 import { createDogsRouter } from './routers/dogs.js';
 import { createFeedbackRouter } from './routers/feedback.js';
+import { createGamificationRouter } from './routers/gamification.js';
 import { createGroupChatRouter } from './routers/group-chat.js';
 import { createGroupEventsRouter } from './routers/group-events.js';
 import { createMatchesRouter } from './routers/matches.js';
@@ -34,6 +36,7 @@ export const appRouter = router({
   admin: createAdminRouter(db),
   walks: createWalksRouter(walkDeps),
   feedback: createFeedbackRouter(feedbackDeps),
+  gamification: createGamificationRouter(gamificationDeps),
   groupChat: createGroupChatRouter(groupChatDeps),
   groupEvents: createGroupEventsRouter(groupEventDeps),
 });

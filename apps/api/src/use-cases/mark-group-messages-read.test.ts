@@ -1,7 +1,7 @@
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { ChatService } from '../ports/index.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
+import type { ChatService } from '../ports/index.js';
 import { createMarkGroupMessagesRead } from './mark-group-messages-read.js';
 
 function buildGroupMessageRepo(

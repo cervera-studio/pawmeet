@@ -1,7 +1,7 @@
 import type { GroupChatMessage } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import type { ChatService } from '../ports/index.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
+import type { ChatService } from '../ports/index.js';
 
 type Deps = {
   groupMessageRepo: GroupMessageRepository;

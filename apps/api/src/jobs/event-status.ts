@@ -1,7 +1,7 @@
 import { Worker } from 'bullmq';
 import type { GroupEventRepository, NotificationService } from '../ports/index.js';
 import { createTransitionEventStatuses } from '../use-cases/transition-event-statuses.js';
-import { QUEUE_NAMES, getEventStatusQueue, getRedisConnection } from './queue.js';
+import { getEventStatusQueue, getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 type Deps = {
   groupEventRepo: GroupEventRepository;

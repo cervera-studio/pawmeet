@@ -1,9 +1,4 @@
-import {
-  groupEventParticipants,
-  groupEvents,
-  groupMessageReads,
-  groupMessages,
-} from '@dogwalk/db';
+import { groupEventParticipants, groupEvents, groupMessageReads, groupMessages } from '@dogwalk/db';
 import type {
   GroupChatMessage,
   GroupConversationSummary,
@@ -114,12 +109,7 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
         const [readRecord] = await this.db
           .select({ lastReadAt: groupMessageReads.lastReadAt })
           .from(groupMessageReads)
-          .where(
-            and(
-              eq(groupMessageReads.eventId, eventId),
-              eq(groupMessageReads.userId, userId),
-            ),
-          );
+          .where(and(eq(groupMessageReads.eventId, eventId), eq(groupMessageReads.userId, userId)));
 
         const unreadConditions = [
           eq(groupMessages.eventId, eventId),
@@ -145,9 +135,7 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
       }),
     );
 
-    const filtered = conversations.filter(
-      (c): c is GroupConversationSummary => c !== null,
-    );
+    const filtered = conversations.filter((c): c is GroupConversationSummary => c !== null);
 
     filtered.sort((a, b) => {
       const aTime = a.lastMessage?.createdAt?.getTime() ?? 0;
@@ -162,9 +150,7 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
     const [existing] = await this.db
       .select()
       .from(groupMessageReads)
-      .where(
-        and(eq(groupMessageReads.eventId, eventId), eq(groupMessageReads.userId, userId)),
-      );
+      .where(and(eq(groupMessageReads.eventId, eventId), eq(groupMessageReads.userId, userId)));
 
     if (existing) {
       await this.db

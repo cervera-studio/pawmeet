@@ -1,8 +1,8 @@
 import type { GroupChatMessage } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
+import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
 import { createSendGroupMessage } from './send-group-message.js';
 
 function buildMessage(overrides: Partial<GroupChatMessage> = {}): GroupChatMessage {

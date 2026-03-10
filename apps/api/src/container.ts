@@ -4,6 +4,7 @@ import { BullMQNotificationService } from './infra/bullmq-notification-service.j
 import { DrizzleAdminUserRepository } from './infra/drizzle-admin-user-repository.js';
 import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
+import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
@@ -22,6 +23,14 @@ import { db } from './lib/db.js';
 import { createCancelGroupEvent } from './use-cases/cancel-group-event.js';
 // Use cases — walks
 import { createCancelWalk } from './use-cases/cancel-walk.js';
+// Use cases — gamification
+import { createAwardXp } from './use-cases/award-xp.js';
+import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-achievements.js';
+import { createGetLeaderboard } from './use-cases/get-leaderboard.js';
+import { createGetXpSummary } from './use-cases/get-xp-summary.js';
+import { createListAchievements } from './use-cases/list-achievements.js';
+import { createListActiveChallenges } from './use-cases/list-active-challenges.js';
+import { createUpdateChallengeProgress } from './use-cases/update-challenge-progress.js';
 // Use cases — badges
 import { createCheckAndAwardBadges } from './use-cases/check-and-award-badges.js';
 // Use cases — users
@@ -99,6 +108,7 @@ const feedbackRepo = new DrizzleFeedbackRepository(db);
 const groupEventRepo = new DrizzleGroupEventRepository(db);
 const groupMessageRepo = new DrizzleGroupMessageRepository(db);
 const badgeRepo = new DrizzleBadgeRepository(db);
+const gamificationRepo = new DrizzleGamificationRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
 
@@ -218,6 +228,20 @@ export const groupEventDeps = {
   leaveGroupEvent: createLeaveGroupEvent({ groupEventRepo, notificationService }),
   updateGroupEvent: createUpdateGroupEvent({ groupEventRepo }),
   cancelGroupEvent: createCancelGroupEvent({ groupEventRepo, notificationService }),
+};
+
+// ── Gamification deps ────────────────────────────────────────────────────────
+
+const awardXp = createAwardXp({ gamificationRepo });
+
+export const gamificationDeps = {
+  awardXp,
+  getXpSummary: createGetXpSummary({ gamificationRepo }),
+  getLeaderboard: createGetLeaderboard({ gamificationRepo }),
+  listActiveChallenges: createListActiveChallenges({ gamificationRepo }),
+  updateChallengeProgress: createUpdateChallengeProgress({ gamificationRepo, awardXp }),
+  checkAndUnlockAchievements: createCheckAndUnlockAchievements({ gamificationRepo }),
+  listAchievements: createListAchievements({ gamificationRepo }),
 };
 
 // ── Admin deps ────────────────────────────────────────────────────────────────

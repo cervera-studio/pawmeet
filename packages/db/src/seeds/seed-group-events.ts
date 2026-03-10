@@ -1,8 +1,8 @@
 import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
 import { eq } from 'drizzle-orm';
-import { groupEventParticipants, groupEvents } from '../schema/group-events';
+import { drizzle } from 'drizzle-orm/neon-http';
 import { dogProfiles } from '../schema/dogs';
+import { groupEventParticipants, groupEvents } from '../schema/group-events';
 import { users } from '../schema/users';
 
 async function seed() {

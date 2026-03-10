@@ -1,8 +1,8 @@
 import type { GroupChatMessage } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
-import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
+import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
 import { WS_EVENT } from '../ws/chat.js';
 
 type Deps = {

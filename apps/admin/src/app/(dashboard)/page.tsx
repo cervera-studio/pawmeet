@@ -1,37 +1,49 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+'use client';
 
-const kpiCards = [
-  {
-    title: 'Utenti Totali',
-    value: '12,847',
-    change: '+12.5%',
-    changeType: 'positive' as const,
-    description: 'rispetto al mese scorso',
-  },
-  {
-    title: 'Match Totali',
-    value: '34,291',
-    change: '+8.2%',
-    changeType: 'positive' as const,
-    description: 'rispetto al mese scorso',
-  },
-  {
-    title: 'MAU',
-    value: '6,423',
-    change: '-2.1%',
-    changeType: 'negative' as const,
-    description: 'rispetto al mese scorso',
-  },
-  {
-    title: 'Revenue',
-    value: '\u20ac18,420',
-    change: '+15.3%',
-    changeType: 'positive' as const,
-    description: 'rispetto al mese scorso',
-  },
-];
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { trpc } from '@/lib/trpc';
 
 export default function DashboardPage() {
+  const { data: stats, isLoading } = trpc.admin.getStats.useQuery();
+
+  const kpiCards = [
+    {
+      title: 'Utenti Totali',
+      value: stats?.totalUsers ?? 0,
+    },
+    {
+      title: 'Cani Registrati',
+      value: stats?.totalDogs ?? 0,
+    },
+    {
+      title: 'Match Attivi',
+      value: stats?.activeMatches ?? 0,
+    },
+    {
+      title: 'Foto in Attesa',
+      value: stats?.pendingPhotos ?? 0,
+    },
+    {
+      title: 'Segnalazioni Pendenti',
+      value: stats?.pendingReports ?? 0,
+    },
+    {
+      title: 'Match Totali',
+      value: stats?.totalMatches ?? 0,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -40,47 +52,113 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {kpiCards.map((kpi) => (
           <Card key={kpi.title}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-neutral-500">{kpi.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-neutral-900">{kpi.value}</div>
-              <p className="mt-1 text-xs">
-                <span className={kpi.changeType === 'positive' ? 'text-green-600' : 'text-red-600'}>
-                  {kpi.change}
-                </span>{' '}
-                <span className="text-neutral-500">{kpi.description}</span>
-              </p>
+              {isLoading ? (
+                <div className="h-8 w-20 animate-pulse rounded bg-neutral-100" />
+              ) : (
+                <div className="text-2xl font-bold text-neutral-900">
+                  {kpi.value.toLocaleString('it-IT')}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Placeholder charts area */}
+      {/* Charts */}
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Registrazioni Utenti</CardTitle>
+            <CardTitle className="text-base">Registrazioni Utenti (ultimi 30 giorni)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex h-64 items-center justify-center text-neutral-400">
-              {/* TODO: Recharts line chart */}
-              Grafico registrazioni (placeholder)
-            </div>
+            {isLoading || !stats?.userRegistrations ? (
+              <div className="flex h-64 items-center justify-center text-neutral-400">
+                Caricamento...
+              </div>
+            ) : stats.userRegistrations.length === 0 ? (
+              <div className="flex h-64 items-center justify-center text-neutral-400">
+                Nessun dato disponibile
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={256}>
+                <AreaChart data={stats.userRegistrations}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 11 }}
+                    tickFormatter={(v: string) => {
+                      const d = new Date(v);
+                      return `${d.getDate()}/${d.getMonth() + 1}`;
+                    }}
+                  />
+                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                  <Tooltip
+                    labelFormatter={(v) =>
+                      new Date(String(v)).toLocaleDateString('it-IT', {
+                        day: 'numeric',
+                        month: 'short',
+                      })
+                    }
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="count"
+                    name="Registrazioni"
+                    stroke="#6366f1"
+                    fill="#6366f1"
+                    fillOpacity={0.15}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Match Giornalieri</CardTitle>
+            <CardTitle className="text-base">Match Giornalieri (ultimi 30 giorni)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex h-64 items-center justify-center text-neutral-400">
-              {/* TODO: Recharts bar chart */}
-              Grafico match (placeholder)
-            </div>
+            {isLoading || !stats?.dailyMatches ? (
+              <div className="flex h-64 items-center justify-center text-neutral-400">
+                Caricamento...
+              </div>
+            ) : stats.dailyMatches.length === 0 ? (
+              <div className="flex h-64 items-center justify-center text-neutral-400">
+                Nessun dato disponibile
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={256}>
+                <BarChart data={stats.dailyMatches}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 11 }}
+                    tickFormatter={(v: string) => {
+                      const d = new Date(v);
+                      return `${d.getDate()}/${d.getMonth() + 1}`;
+                    }}
+                  />
+                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                  <Tooltip
+                    labelFormatter={(v) =>
+                      new Date(String(v)).toLocaleDateString('it-IT', {
+                        day: 'numeric',
+                        month: 'short',
+                      })
+                    }
+                  />
+                  <Bar dataKey="count" name="Match" fill="#10b981" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -1,20 +1,24 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { trpc } from '@/lib/trpc';
 
-interface Dog {
+interface DogRow {
   id: string;
   name: string;
   breed: string;
-  ownerName: string;
-  size: 'small' | 'medium' | 'large';
-  verified: boolean;
+  ownerName: string | null;
+  ownerId: string | null;
+  size: string;
+  isActive: boolean;
   createdAt: string;
 }
 
-const columns: ColumnDef<Dog>[] = [
+const columns: ColumnDef<DogRow>[] = [
   {
     accessorKey: 'name',
     header: 'Nome',
@@ -26,24 +30,37 @@ const columns: ColumnDef<Dog>[] = [
   {
     accessorKey: 'ownerName',
     header: 'Proprietario',
+    cell: ({ row }) => {
+      const ownerId = row.original.ownerId;
+      const name = row.original.ownerName ?? 'Sconosciuto';
+      return ownerId ? (
+        <a href={`/users/${ownerId}`} className="text-primary-600 hover:underline">
+          {name}
+        </a>
+      ) : (
+        name
+      );
+    },
   },
   {
     accessorKey: 'size',
     header: 'Taglia',
     cell: ({ row }) => {
       const size = row.getValue('size') as string;
-      const label = { small: 'Piccolo', medium: 'Medio', large: 'Grande' }[size] ?? size;
+      const label =
+        ({ small: 'Piccolo', medium: 'Medio', large: 'Grande' } as Record<string, string>)[size] ??
+        size;
       return <Badge variant="outline">{label}</Badge>;
     },
   },
   {
-    accessorKey: 'verified',
-    header: 'Verificato',
+    accessorKey: 'isActive',
+    header: 'Stato',
     cell: ({ row }) =>
-      row.getValue('verified') ? (
-        <Badge variant="success">Si</Badge>
+      row.getValue('isActive') ? (
+        <Badge variant="success">Attivo</Badge>
       ) : (
-        <Badge variant="outline">No</Badge>
+        <Badge variant="outline">Inattivo</Badge>
       ),
   },
   {
@@ -53,37 +70,33 @@ const columns: ColumnDef<Dog>[] = [
   },
 ];
 
-const mockDogs: Dog[] = [
-  {
-    id: '1',
-    name: 'Rex',
-    breed: 'Pastore Tedesco',
-    ownerName: 'Mario Rossi',
-    size: 'large',
-    verified: true,
-    createdAt: '2024-01-20',
-  },
-  {
-    id: '2',
-    name: 'Luna',
-    breed: 'Golden Retriever',
-    ownerName: 'Laura Bianchi',
-    size: 'large',
-    verified: true,
-    createdAt: '2024-02-15',
-  },
-  {
-    id: '3',
-    name: 'Milo',
-    breed: 'Chihuahua',
-    ownerName: 'Giuseppe Verdi',
-    size: 'small',
-    verified: false,
-    createdAt: '2024-03-05',
-  },
-];
-
 export default function DogsPage() {
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+
+  // Simple debounce via timeout ref
+  const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleSearchChange(value: string) {
+    setSearch(value);
+    if (debounceTimer) clearTimeout(debounceTimer);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(value);
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }, 300);
+    setDebounceTimer(timer);
+  }
+
+  const { data, isLoading } = trpc.admin.listDogs.useQuery({
+    page: pagination.pageIndex + 1,
+    pageSize: pagination.pageSize,
+    search: debouncedSearch || undefined,
+  });
+
   return (
     <div className="space-y-6">
       <div>
@@ -91,7 +104,25 @@ export default function DogsPage() {
         <p className="text-neutral-500">Tutti i cani registrati sulla piattaforma</p>
       </div>
 
-      <DataTable columns={columns} data={mockDogs} total={mockDogs.length} totalPages={1} />
+      {/* Search */}
+      <div className="flex items-center gap-4">
+        <Input
+          placeholder="Cerca per nome, razza o proprietario..."
+          className="max-w-sm"
+          value={search}
+          onChange={(e) => handleSearchChange(e.target.value)}
+        />
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={(data?.data as DogRow[]) ?? []}
+        total={data?.total ?? 0}
+        totalPages={data?.totalPages ?? 1}
+        isLoading={isLoading}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+      />
     </div>
   );
 }

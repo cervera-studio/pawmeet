@@ -170,6 +170,7 @@ describe('listMatches', () => {
     expect(result.data.matches).toHaveLength(1);
     const enriched = result.data.matches[0];
     expect(enriched.id).toBe('match-1');
+    expect(enriched.dogId).toBe('dog-1');
     expect(enriched.compatibilityScore).toBe(0.85);
     expect(enriched.otherDog).toEqual({ id: 'dog-2', name: 'Bella', breed: 'Beagle' });
     expect(enriched.otherOwner).toEqual({ id: 'user-2', displayName: 'Altro Utente' });
@@ -196,6 +197,7 @@ describe('listMatches', () => {
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
     const enriched = result.data.matches[0];
+    expect(enriched.dogId).toBe('dog-1');
     expect(enriched.otherDog).toEqual({ id: 'dog-missing', name: 'Sconosciuto', breed: '' });
     expect(enriched.otherOwner).toEqual({ id: '', displayName: 'Utente' });
   });
@@ -228,6 +230,7 @@ describe('listMatches', () => {
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
     const enriched = result.data.matches[0];
+    expect(enriched.dogId).toBe('dog-1');
     expect(enriched.otherDog).toEqual({ id: 'dog-3', name: 'Luna', breed: 'Pastore Tedesco' });
     expect(enriched.otherOwner).toEqual({ id: 'user-3', displayName: 'Marco' });
   });

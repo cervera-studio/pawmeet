@@ -3,5 +3,7 @@ export * from './chat';
 export * from './dogs';
 export * from './matches';
 export * from './refresh-tokens';
+export * from './reports';
 export * from './users';
 export * from './verification-tokens';
+export * from './walks';

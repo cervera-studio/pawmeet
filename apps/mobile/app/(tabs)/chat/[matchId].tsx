@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChatBubble } from '@/components/ChatBubble';
+import { ProposeWalkModal } from '@/components/ProposeWalkModal';
 import { useChat } from '@/hooks/useChat';
 import { useLocation } from '@/hooks/useLocation';
+import { useWalks } from '@/hooks/useWalks';
 import { useAuthStore } from '@/stores/auth';
 
 function formatTime(date: Date | string): string {
@@ -38,8 +40,10 @@ export default function ChatConversationScreen() {
     markAsRead,
   } = useChat(matchId);
   const { coordinates, getCurrentLocation } = useLocation();
+  const { proposeWalk } = useWalks();
   const [text, setText] = useState('');
   const [showAttachments, setShowAttachments] = useState(false);
+  const [showWalkModal, setShowWalkModal] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -178,6 +182,16 @@ export default function ChatConversationScreen() {
                 <Text className="text-2xl">📍</Text>
                 <Text className="mt-1 text-xs text-gray-600">Posizione</Text>
               </Pressable>
+              <Pressable
+                onPress={() => {
+                  setShowAttachments(false);
+                  setShowWalkModal(true);
+                }}
+                className="items-center rounded-xl bg-gray-50 px-4 py-3"
+              >
+                <Text className="text-2xl">🗓️</Text>
+                <Text className="mt-1 text-xs text-gray-600">Passeggiata</Text>
+              </Pressable>
             </View>
           )}
 
@@ -212,6 +226,13 @@ export default function ChatConversationScreen() {
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
+
+      <ProposeWalkModal
+        visible={showWalkModal}
+        matchId={matchId}
+        onClose={() => setShowWalkModal(false)}
+        onPropose={async (input) => { await proposeWalk(input); }}
+      />
     </>
   );
 }

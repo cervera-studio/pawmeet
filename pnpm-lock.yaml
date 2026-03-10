@@ -211,6 +211,9 @@ importers:
       '@dogwalk/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@dogwalk/config':
+        specifier: workspace:^
+        version: link:../../packages/config
       '@dogwalk/types':
         specifier: workspace:*
         version: link:../../packages/types

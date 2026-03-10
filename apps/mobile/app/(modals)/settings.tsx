@@ -40,13 +40,11 @@ export default function SettingsModal() {
       const updated = { ...prefs, [key]: value };
       setPrefs(updated);
 
-      api.users.updateNotificationPrefs
-        .mutate({ [key]: value })
-        .catch((e) => {
-          logger.warn('Settings', `Failed to update ${key} pref`, e);
-          // Revert on failure
-          setPrefs(prefs);
-        });
+      api.users.updateNotificationPrefs.mutate({ [key]: value }).catch((e) => {
+        logger.warn('Settings', `Failed to update ${key} pref`, e);
+        // Revert on failure
+        setPrefs(prefs);
+      });
     },
     [prefs],
   );

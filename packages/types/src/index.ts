@@ -3,3 +3,4 @@ export * from './dog';
 export * from './match';
 export * from './result';
 export * from './user';
+export * from './walk';

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@dogwalk/api-client": "workspace:*",
+    "@dogwalk/config": "workspace:^",
     "@dogwalk/types": "workspace:*",
     "@dogwalk/utils": "workspace:*",
     "@dogwalk/validation": "workspace:*",

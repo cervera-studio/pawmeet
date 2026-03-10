@@ -374,9 +374,9 @@ describe('users router', () => {
       const deps = buildUserDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.users.updateNotificationPrefs({ matches: false }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.users.updateNotificationPrefs({ matches: false })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
   });
 });

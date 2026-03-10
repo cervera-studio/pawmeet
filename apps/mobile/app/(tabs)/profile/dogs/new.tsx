@@ -1,3 +1,4 @@
+import { MAX_DOGS_PER_USER } from '@dogwalk/config';
 import { createDogSchema } from '@dogwalk/validation';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -147,6 +148,7 @@ const STEPS = ['Info base', 'Temperamento', 'Passeggiate', 'Foto'];
 export default function NewDogScreen() {
   const router = useRouter();
   const addDog = useDogsStore((s) => s.addDog);
+  const dogCount = useDogsStore((s) => s.dogs.length);
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
@@ -261,6 +263,11 @@ export default function NewDogScreen() {
 
   const handleCreate = async () => {
     if (!validateStep()) return;
+
+    if (dogCount >= MAX_DOGS_PER_USER) {
+      setApiError(`Puoi aggiungere al massimo ${MAX_DOGS_PER_USER} cani`);
+      return;
+    }
 
     const data = buildFormData();
     const result = createDogSchema.safeParse(data);

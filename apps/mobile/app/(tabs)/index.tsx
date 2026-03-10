@@ -5,10 +5,12 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { DogSelector } from '@/components/DogSelector';
 import { MatchCelebration } from '@/components/MatchCelebration';
 import { SwipeCard } from '@/components/SwipeCard';
 import { useLocation } from '@/hooks/useLocation';
 import { useMatching } from '@/hooks/useMatching';
+import { useDogsStore } from '@/stores/dogs';
 
 function calculateAge(birthDate: Date | string): string {
   const birth = new Date(birthDate);
@@ -102,7 +104,11 @@ function FilterChip({
   label,
   selected,
   onPress,
-}: { label: string; selected: boolean; onPress: () => void }) {
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
   return (
     <Pressable
       onPress={onPress}
@@ -174,9 +180,9 @@ function FilterModal({
                 <Text className="mb-2 text-sm font-semibold text-gray-600">{section.label}</Text>
                 <View className="flex-row flex-wrap">
                   {section.options.map((opt) => {
-                    const selected = (
-                      (draft[section.key] as string[] | undefined) ?? []
-                    ).includes(opt.value);
+                    const selected = ((draft[section.key] as string[] | undefined) ?? []).includes(
+                      opt.value,
+                    );
                     return (
                       <FilterChip
                         key={opt.value}
@@ -228,6 +234,8 @@ function FilterModal({
 export default function DiscoveryScreen() {
   const router = useRouter();
   const { coordinates, getCurrentLocation } = useLocation();
+  const dogs = useDogsStore((s) => s.dogs);
+  const selectedDogId = useDogsStore((s) => s.selectedDogId);
   const {
     currentProfile,
     isLoading,
@@ -257,10 +265,10 @@ export default function DiscoveryScreen() {
   }, [getCurrentLocation]);
 
   useEffect(() => {
-    if (coordinates) {
+    if (coordinates && selectedDogId) {
       fetchSuggestions();
     }
-  }, [coordinates, fetchSuggestions]);
+  }, [coordinates, selectedDogId, fetchSuggestions]);
 
   const handleSwipeRight = () => {
     if (currentProfile) swipeRight(currentProfile.dog.id);
@@ -286,9 +294,7 @@ export default function DiscoveryScreen() {
           onPress={() => setFilterModalVisible(true)}
           className="relative h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
         >
-          <Text className="text-lg">
-            {activeFilterCount > 0 ? '\u2699\uFE0F' : '\u2699'}
-          </Text>
+          <Text className="text-lg">{activeFilterCount > 0 ? '\u2699\uFE0F' : '\u2699'}</Text>
           {activeFilterCount > 0 && (
             <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-primary">
               <Text className="text-xs font-bold text-white">{activeFilterCount}</Text>
@@ -297,9 +303,28 @@ export default function DiscoveryScreen() {
         </Pressable>
       </View>
 
+      {/* Dog selector (visible only with multiple dogs) */}
+      <DogSelector />
+
       {/* Card area */}
       <View className="flex-1 items-center justify-center px-4">
-        {!coordinates ? (
+        {dogs.length === 0 ? (
+          <View className="items-center px-8">
+            <Text className="text-5xl">{'\u{1F436}'}</Text>
+            <Text className="mt-4 text-center text-lg font-semibold text-gray-900">
+              Aggiungi il tuo cane
+            </Text>
+            <Text className="mt-2 text-center text-sm text-gray-500">
+              Per iniziare a scoprire cani compatibili, aggiungi il tuo primo cane.
+            </Text>
+            <Pressable
+              onPress={() => router.push('/(tabs)/profile/dogs/new')}
+              className="mt-6 rounded-2xl bg-primary px-8 py-3"
+            >
+              <Text className="font-semibold text-white">Aggiungi cane</Text>
+            </Pressable>
+          </View>
+        ) : !coordinates ? (
           <View className="items-center px-8">
             <Text className="text-5xl">📍</Text>
             <Text className="mt-4 text-center text-lg font-semibold text-gray-900">

@@ -25,11 +25,22 @@ export const useDogsStore = create<DogsState>()(
       photos: {},
       selectedDogId: null,
 
-      setDogs: (dogs) => set({ dogs }),
+      setDogs: (dogs) =>
+        set((state) => {
+          // Auto-select first dog if none is selected or current selection is invalid
+          const needsAutoSelect =
+            !state.selectedDogId || !dogs.some((d) => d.id === state.selectedDogId);
+          return {
+            dogs,
+            ...(needsAutoSelect && dogs.length > 0 ? { selectedDogId: dogs[0]?.id ?? null } : {}),
+          };
+        }),
 
       addDog: (dog) =>
         set((state) => ({
           dogs: [...state.dogs, dog],
+          // Auto-select when first dog is added
+          ...(state.dogs.length === 0 ? { selectedDogId: dog.id } : {}),
         })),
 
       updateDog: (id, updates) =>
@@ -38,9 +49,16 @@ export const useDogsStore = create<DogsState>()(
         })),
 
       removeDog: (id) =>
-        set((state) => ({
-          dogs: state.dogs.filter((d) => d.id !== id),
-        })),
+        set((state) => {
+          const remaining = state.dogs.filter((d) => d.id !== id);
+          return {
+            dogs: remaining,
+            // If the removed dog was selected, auto-select the first remaining dog
+            ...(state.selectedDogId === id
+              ? { selectedDogId: remaining[0]?.id ?? null }
+              : {}),
+          };
+        }),
 
       setSelectedDog: (id) => set({ selectedDogId: id }),
 

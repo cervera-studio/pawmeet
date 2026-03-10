@@ -10,6 +10,8 @@ type Deps = {
 
 export type EnrichedMatch = {
   id: string;
+  /** The user's own dog involved in this match */
+  dogId: string;
   compatibilityScore: number;
   createdAt: Date;
   isActive: boolean;
@@ -57,12 +59,14 @@ export function createListMatches({ dogRepo, matchRepo, userRepo }: Deps) {
 
     // Assemble enriched matches
     const enriched: EnrichedMatch[] = activeMatches.map((m) => {
+      const myDogId = dogIdSet.has(m.dogAId) ? m.dogAId : m.dogBId;
       const otherDogId = dogIdSet.has(m.dogAId) ? m.dogBId : m.dogAId;
       const otherDog = dogsById.get(otherDogId);
       const otherOwner = otherDog ? ownersById.get(otherDog.ownerId) : undefined;
 
       return {
         id: m.id,
+        dogId: myDogId,
         compatibilityScore: m.compatibilityScore,
         createdAt: m.createdAt,
         isActive: m.isActive,

@@ -21,3 +21,4 @@ export type {
   NearbyUser,
   UserRepository,
 } from './user-repository.js';
+export type { WalkRepository } from './walk-repository.js';

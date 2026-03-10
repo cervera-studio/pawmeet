@@ -1,16 +1,22 @@
 import type { RouterOutput } from '@dogwalk/api-client';
 import type { DiscoveryFilters } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { cache } from '@/lib/storage';
 import { api } from '@/lib/trpc';
+import { useDogsStore } from '@/stores/dogs';
 
 type Suggestion = RouterOutput['matches']['discover']['suggestions'][number];
 type LikeResult = RouterOutput['matches']['like'];
 
 const SUGGESTIONS_CACHE_KEY = 'cache:suggestions';
 
-export function useMatching(dogId?: string) {
+/**
+ * Matching hook that reads the active dog from the store.
+ * Re-fetches suggestions whenever selectedDogId changes.
+ */
+export function useMatching() {
+  const dogId = useDogsStore((s) => s.selectedDogId);
   const cacheKey = dogId ? `${SUGGESTIONS_CACHE_KEY}:${dogId}` : SUGGESTIONS_CACHE_KEY;
 
   // Hydrate from cache on init (stale-while-revalidate)
@@ -21,6 +27,17 @@ export function useMatching(dogId?: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [newMatch, setNewMatch] = useState<LikeResult | null>(null);
   const [filters, setFilters] = useState<DiscoveryFilters>({});
+
+  // Reset suggestions when the active dog changes
+  const prevDogIdRef = useRef(dogId);
+  useEffect(() => {
+    if (dogId && dogId !== prevDogIdRef.current) {
+      prevDogIdRef.current = dogId;
+      const cached = cache.get<Suggestion[]>(cacheKey) ?? [];
+      setSuggestions(cached);
+      setCurrentIndex(0);
+    }
+  }, [dogId, cacheKey]);
 
   const currentProfile = suggestions[currentIndex] ?? null;
   const hasMore = currentIndex < suggestions.length;

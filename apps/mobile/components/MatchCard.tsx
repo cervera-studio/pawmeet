@@ -8,6 +8,8 @@ interface MatchCardProps {
   matchedAt: string;
   compatibilityScore?: number;
   status?: 'nuovo' | 'in_chat' | 'incontrato';
+  /** Name of the user's own dog for this match (shown when user has multiple dogs) */
+  myDogName?: string;
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -23,6 +25,7 @@ export function MatchCard({
   matchedAt,
   compatibilityScore,
   status,
+  myDogName,
 }: MatchCardProps) {
   const statusInfo = status ? STATUS_LABELS[status] : null;
 
@@ -47,6 +50,13 @@ export function MatchCard({
           <Text className="text-xs text-primary">
             {Math.round(compatibilityScore * 100)}% compatibile
           </Text>
+        )}
+        {myDogName && (
+          <View className="mt-1 flex-row items-center">
+            <Text className="text-[10px] text-gray-400">
+              via {myDogName}
+            </Text>
+          </View>
         )}
       </View>
       <Text className="text-xs text-gray-400">{matchedAt}</Text>

@@ -1,5 +1,6 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
+import { MAX_DOGS_PER_USER } from '@dogwalk/config';
 import { logger } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
@@ -29,6 +30,8 @@ export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const dogs = useDogsStore((s) => s.dogs);
   const setDogs = useDogsStore((s) => s.setDogs);
+  const selectedDogId = useDogsStore((s) => s.selectedDogId);
+  const setSelectedDog = useDogsStore((s) => s.setSelectedDog);
   const { uploading, uploadAvatar } = useImageUpload();
 
   useEffect(() => {
@@ -69,9 +72,11 @@ export default function ProfileScreen() {
         <View className="mb-6">
           <View className="mb-3 flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-gray-900">I miei cani</Text>
-            <Pressable onPress={() => router.push('/(tabs)/profile/dogs/new')}>
-              <Text className="text-sm font-medium text-primary">+ Aggiungi</Text>
-            </Pressable>
+            {dogs.length < MAX_DOGS_PER_USER && (
+              <Pressable onPress={() => router.push('/(tabs)/profile/dogs/new')}>
+                <Text className="text-sm font-medium text-primary">+ Aggiungi</Text>
+              </Pressable>
+            )}
           </View>
 
           {dogs.length === 0 ? (
@@ -80,15 +85,36 @@ export default function ProfileScreen() {
             </View>
           ) : (
             <View className="gap-3">
-              {dogs.map((dog) => (
-                <DogProfileCard
-                  key={dog.id}
-                  name={dog.name}
-                  breed={dog.breed}
-                  age={calculateAge(dog.birthDate)}
-                  onPress={() => router.push(`/(tabs)/profile/dogs/${dog.id}`)}
-                />
-              ))}
+              {dogs.map((dog) => {
+                const isActive = dog.id === selectedDogId;
+                return (
+                  <View key={dog.id} className="relative">
+                    <DogProfileCard
+                      name={dog.name}
+                      breed={dog.breed}
+                      age={calculateAge(dog.birthDate)}
+                      onPress={() => router.push(`/(tabs)/profile/dogs/${dog.id}`)}
+                    />
+                    {/* Active dog indicator (multi-dog only) */}
+                    {dogs.length > 1 && (
+                      <Pressable
+                        onPress={() => setSelectedDog(dog.id)}
+                        className={`absolute right-10 top-4 rounded-full px-2 py-0.5 ${
+                          isActive ? 'bg-primary' : 'bg-gray-200'
+                        }`}
+                      >
+                        <Text
+                          className={`text-[10px] font-semibold ${
+                            isActive ? 'text-white' : 'text-gray-500'
+                          }`}
+                        >
+                          {isActive ? 'Attivo' : 'Attiva'}
+                        </Text>
+                      </Pressable>
+                    )}
+                  </View>
+                );
+              })}
             </View>
           )}
         </View>

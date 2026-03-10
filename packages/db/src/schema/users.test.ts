@@ -16,6 +16,8 @@ describe('users table', () => {
         'email',
         'displayName',
         'authProvider',
+        'passwordHash',
+        'emailVerified',
         'avatarUrl',
         'latitude',
         'longitude',
@@ -26,7 +28,7 @@ describe('users table', () => {
         'lastLoginAt',
       ]),
     );
-    expect(columnNames).toHaveLength(12);
+    expect(columnNames).toHaveLength(14);
   });
 
   describe('id column', () => {

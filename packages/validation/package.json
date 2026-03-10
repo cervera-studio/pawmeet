@@ -11,6 +11,7 @@
     "lint": "biome check src/"
   },
   "dependencies": {
+    "@dogwalk/config": "workspace:*",
     "zod": "^4.3.0"
   },
   "devDependencies": {

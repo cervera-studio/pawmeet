@@ -1,53 +1,8 @@
-import { logger } from '@dogwalk/utils';
-import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
-import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/lib/trpc';
-
-interface NotificationPrefs {
-  matches: boolean;
-  messages: boolean;
-  reminders: boolean;
-}
-
-const DEFAULT_PREFS: NotificationPrefs = {
-  matches: true,
-  messages: true,
-  reminders: true,
-};
+import { useSettingsViewModel } from './settings.view-model';
 
 export default function SettingsModal() {
-  const { logout } = useAuth();
-  const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
-  const [locationSharing, setLocationSharing] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Load notification preferences from user profile
-  useEffect(() => {
-    api.users.getProfile
-      .query()
-      .then((data) => {
-        if (data.user.notificationPrefs) {
-          setPrefs(data.user.notificationPrefs);
-        }
-      })
-      .catch((e) => logger.warn('Settings', 'Failed to load notification prefs', e));
-  }, []);
-
-  // Persist a single notification pref toggle to the backend
-  const updatePref = useCallback(
-    (key: keyof NotificationPrefs, value: boolean) => {
-      const updated = { ...prefs, [key]: value };
-      setPrefs(updated);
-
-      api.users.updateNotificationPrefs.mutate({ [key]: value }).catch((e) => {
-        logger.warn('Settings', `Failed to update ${key} pref`, e);
-        // Revert on failure
-        setPrefs(prefs);
-      });
-    },
-    [prefs],
-  );
+  const vm = useSettingsViewModel();
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerClassName="px-6 py-4">
@@ -65,8 +20,8 @@ export default function SettingsModal() {
             <Text className="text-xs text-gray-400">Ricevi notifiche per nuovi match</Text>
           </View>
           <Switch
-            value={prefs.matches}
-            onValueChange={(v) => updatePref('matches', v)}
+            value={vm.prefs.matches}
+            onValueChange={(v) => vm.updatePref('matches', v)}
             trackColor={{ true: '#FF6B35' }}
           />
         </View>
@@ -77,8 +32,8 @@ export default function SettingsModal() {
             <Text className="text-xs text-gray-400">Ricevi notifiche per nuovi messaggi</Text>
           </View>
           <Switch
-            value={prefs.messages}
-            onValueChange={(v) => updatePref('messages', v)}
+            value={vm.prefs.messages}
+            onValueChange={(v) => vm.updatePref('messages', v)}
             trackColor={{ true: '#FF6B35' }}
           />
         </View>
@@ -91,8 +46,8 @@ export default function SettingsModal() {
             </Text>
           </View>
           <Switch
-            value={prefs.reminders}
-            onValueChange={(v) => updatePref('reminders', v)}
+            value={vm.prefs.reminders}
+            onValueChange={(v) => vm.updatePref('reminders', v)}
             trackColor={{ true: '#FF6B35' }}
           />
         </View>
@@ -105,15 +60,19 @@ export default function SettingsModal() {
         <View className="flex-row items-center justify-between py-4">
           <Text className="text-base text-gray-700">Condividi posizione</Text>
           <Switch
-            value={locationSharing}
-            onValueChange={setLocationSharing}
+            value={vm.locationSharing}
+            onValueChange={vm.setLocationSharing}
             trackColor={{ true: '#FF6B35' }}
           />
         </View>
 
         <View className="flex-row items-center justify-between py-4">
           <Text className="text-base text-gray-700">Tema scuro</Text>
-          <Switch value={darkMode} onValueChange={setDarkMode} trackColor={{ true: '#FF6B35' }} />
+          <Switch
+            value={vm.darkMode}
+            onValueChange={vm.setDarkMode}
+            trackColor={{ true: '#FF6B35' }}
+          />
         </View>
 
         <View className="mt-4 border-t border-gray-100 pt-4">
@@ -148,7 +107,7 @@ export default function SettingsModal() {
           Account
         </Text>
 
-        <Pressable onPress={logout} className="items-center py-4">
+        <Pressable onPress={vm.logout} className="items-center py-4">
           <Text className="text-base font-medium text-red-500">Esci</Text>
         </Pressable>
 

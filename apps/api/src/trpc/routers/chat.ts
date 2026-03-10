@@ -1,3 +1,4 @@
+import { markReadSchema, sendMessageSchema } from '@dogwalk/validation';
 import { z } from 'zod';
 import type { chatDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
@@ -8,14 +9,10 @@ const getMessagesSchema = z.object({
   limit: z.number().int().min(1).max(50).default(20),
 });
 
-const sendMessageSchema = z.object({
+const sendMessageWithMatchSchema = z.object({
   matchId: z.string().uuid(),
-  content: z.string().max(2000),
-  mediaUrl: z.string().url().optional(),
-});
-
-const markReadSchema = z.object({
-  matchId: z.string().uuid(),
+  content: sendMessageSchema.shape.content,
+  mediaUrl: sendMessageSchema.shape.mediaUrl,
 });
 
 export function createChatRouter(deps: typeof chatDeps) {
@@ -31,7 +28,7 @@ export function createChatRouter(deps: typeof chatDeps) {
       ),
 
     sendMessage: protectedProcedure
-      .input(sendMessageSchema)
+      .input(sendMessageWithMatchSchema)
       .mutation(async ({ ctx, input }) =>
         unwrapResult(
           await deps.sendMessage(ctx.userId, input.matchId, input.content, input.mediaUrl),

@@ -1,18 +1,7 @@
-import { discoveryFiltersSchema } from '@dogwalk/validation';
+import { discoverSchema, swipeSchema } from '@dogwalk/validation';
 import { z } from 'zod';
 import type { matchDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
-
-const swipeSchema = z.object({
-  dogId: z.string().uuid(),
-  targetDogId: z.string().uuid(),
-});
-
-const discoverSchema = z.object({
-  dogId: z.string().uuid(),
-  limit: z.number().int().min(1).max(50).optional(),
-  filters: discoveryFiltersSchema.optional(),
-});
 
 export function createMatchesRouter(deps: typeof matchDeps) {
   return router({

@@ -1,3 +1,4 @@
+import { MAX_SEARCH_RADIUS_KM, MIN_SEARCH_RADIUS_KM } from '@dogwalk/config';
 import { z } from 'zod';
 
 export const updateUserProfileSchema = z.object({
@@ -8,4 +9,39 @@ export const updateUserProfileSchema = z.object({
   searchRadiusKm: z.number().min(1).max(50).optional(),
 });
 
+export const updateLocationSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+});
+
+export const updatePreferencesSchema = z.object({
+  searchRadiusKm: z.number().min(MIN_SEARCH_RADIUS_KM).max(MAX_SEARCH_RADIUS_KM),
+});
+
+export const nearbySchema = z.object({
+  radiusKm: z.number().min(MIN_SEARCH_RADIUS_KM).max(MAX_SEARCH_RADIUS_KM).optional(),
+  limit: z.number().int().min(1).max(50).optional(),
+  offset: z.number().int().min(0).optional(),
+});
+
+export const confirmUploadSchema = z.object({
+  key: z.string().min(1),
+});
+
+export const registerPushTokenSchema = z.object({
+  token: z.string().min(1),
+});
+
+export const updateNotificationPrefsSchema = z.object({
+  matches: z.boolean().optional(),
+  messages: z.boolean().optional(),
+  reminders: z.boolean().optional(),
+});
+
 export type UpdateUserProfileInput = z.infer<typeof updateUserProfileSchema>;
+export type UpdateLocationInput = z.infer<typeof updateLocationSchema>;
+export type UpdatePreferencesInput = z.infer<typeof updatePreferencesSchema>;
+export type NearbyInput = z.infer<typeof nearbySchema>;
+export type ConfirmUploadInput = z.infer<typeof confirmUploadSchema>;
+export type RegisterPushTokenInput = z.infer<typeof registerPushTokenSchema>;
+export type UpdateNotificationPrefsInput = z.infer<typeof updateNotificationPrefsSchema>;

@@ -1,55 +1,11 @@
-import { registerSchema } from '@dogwalk/validation';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FormField } from '@/components/FormField';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useAuth } from '@/hooks/useAuth';
+import { useRegisterViewModel } from './register.view-model';
 
 export default function RegisterScreen() {
-  const router = useRouter();
-  const { register } = useAuth();
-  const [displayName, setDisplayName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [apiError, setApiError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleRegister = async () => {
-    setErrors({});
-    setApiError('');
-
-    // Check password confirmation first
-    if (password !== confirmPassword) {
-      setErrors({ confirmPassword: 'Le password non coincidono' });
-      return;
-    }
-
-    const result = registerSchema.safeParse({ displayName, email, password });
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      for (const issue of result.error.issues) {
-        const key = String(issue.path[0]);
-        if (!fieldErrors[key]) {
-          fieldErrors[key] = issue.message;
-        }
-      }
-      setErrors(fieldErrors);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await register(displayName, email, password);
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : 'Errore durante la registrazione');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const vm = useRegisterViewModel();
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -64,75 +20,56 @@ export default function RegisterScreen() {
           <Text className="mb-2 text-4xl font-bold text-gray-900">Crea account</Text>
           <Text className="mb-8 text-lg text-gray-500">Unisciti alla community DogWalk</Text>
 
-          {apiError ? (
+          {vm.apiError ? (
             <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
-              <Text className="text-sm text-red-600">{apiError}</Text>
+              <Text className="text-sm text-red-600">{vm.apiError}</Text>
             </View>
           ) : null}
 
-          <Input
+          <FormField
             placeholder="Nome completo"
-            value={displayName}
-            onChangeText={setDisplayName}
-            className="mb-1"
+            value={vm.displayName}
+            onChangeText={vm.setDisplayName}
+            error={vm.errors.displayName}
           />
-          {errors.displayName ? (
-            <Text className="mb-3 px-1 text-sm text-red-500">{errors.displayName}</Text>
-          ) : (
-            <View className="mb-4" />
-          )}
 
-          <Input
+          <FormField
             placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
+            value={vm.email}
+            onChangeText={vm.setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
-            className="mb-1"
+            error={vm.errors.email}
           />
-          {errors.email ? (
-            <Text className="mb-3 px-1 text-sm text-red-500">{errors.email}</Text>
-          ) : (
-            <View className="mb-4" />
-          )}
 
-          <Input
+          <FormField
             placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
+            value={vm.password}
+            onChangeText={vm.setPassword}
             secureTextEntry
-            className="mb-1"
+            error={vm.errors.password}
           />
-          {errors.password ? (
-            <Text className="mb-3 px-1 text-sm text-red-500">{errors.password}</Text>
-          ) : (
-            <View className="mb-4" />
-          )}
 
-          <Input
+          <FormField
             placeholder="Conferma password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
+            value={vm.confirmPassword}
+            onChangeText={vm.setConfirmPassword}
             secureTextEntry
-            className="mb-1"
+            error={vm.errors.confirmPassword}
+            spacingClassName="mb-8"
           />
-          {errors.confirmPassword ? (
-            <Text className="mb-3 px-1 text-sm text-red-500">{errors.confirmPassword}</Text>
-          ) : (
-            <View className="mb-8" />
-          )}
 
           <Button
-            onPress={handleRegister}
-            label={loading ? 'Registrazione...' : 'Registrati'}
-            disabled={loading}
+            onPress={vm.handleRegister}
+            label={vm.loading ? 'Registrazione...' : 'Registrati'}
+            disabled={vm.loading}
           />
 
           <Text className="mt-4 text-center text-sm text-gray-400">
             Registrandoti accetti i nostri Termini di Servizio e la Privacy Policy
           </Text>
 
-          <Pressable onPress={() => router.back()} className="mt-6 items-center py-2">
+          <Pressable onPress={vm.navigateToLogin} className="mt-6 items-center py-2">
             <Text className="text-base text-gray-500">
               Hai già un account? <Text className="font-semibold text-primary">Accedi</Text>
             </Text>

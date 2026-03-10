@@ -2,9 +2,9 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table/data-table';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/StatusBadge';
 import { Input } from '@/components/ui/input';
-import { useServerTable } from '@/hooks/use-server-table';
+import { useUsersViewModel } from './page.view-model';
 
 interface User {
   id: string;
@@ -29,20 +29,7 @@ const columns: ColumnDef<User>[] = [
     header: 'Stato',
     cell: ({ row }) => {
       const status = row.getValue('status') as string;
-      const variant =
-        {
-          active: 'success' as const,
-          suspended: 'warning' as const,
-          banned: 'destructive' as const,
-        }[status] ?? ('outline' as const);
-      const label =
-        {
-          active: 'Attivo',
-          suspended: 'Sospeso',
-          banned: 'Bannato',
-        }[status] ?? status;
-
-      return <Badge variant={variant}>{label}</Badge>;
+      return <StatusBadge status={status} type="user" />;
     },
   },
   {
@@ -71,18 +58,7 @@ const columns: ColumnDef<User>[] = [
 ];
 
 export default function UsersPage() {
-  const {
-    data,
-    total,
-    totalPages,
-    isLoading,
-    sorting,
-    setSorting,
-    pagination,
-    setPagination,
-    globalFilter,
-    setGlobalFilter,
-  } = useServerTable<User>({ endpoint: '/admin/users', queryKey: 'admin-users' });
+  const vm = useUsersViewModel();
 
   return (
     <div className="space-y-6">
@@ -98,22 +74,22 @@ export default function UsersPage() {
         <Input
           placeholder="Cerca utenti..."
           className="max-w-sm"
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
+          value={vm.globalFilter}
+          onChange={(e) => vm.setGlobalFilter(e.target.value)}
         />
       </div>
 
       {/* Table */}
       <DataTable
         columns={columns}
-        data={data}
-        total={total}
-        totalPages={totalPages}
-        isLoading={isLoading}
-        sorting={sorting}
-        onSortingChange={setSorting}
-        pagination={pagination}
-        onPaginationChange={setPagination}
+        data={vm.data}
+        total={vm.total}
+        totalPages={vm.totalPages}
+        isLoading={vm.isLoading}
+        sorting={vm.sorting}
+        onSortingChange={vm.setSorting}
+        pagination={vm.pagination}
+        onPaginationChange={vm.setPagination}
       />
     </div>
   );

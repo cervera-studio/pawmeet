@@ -1,11 +1,13 @@
-import { MAX_PHOTOS_PER_DOG } from '@dogwalk/config';
-import { createDogSchema, updateDogSchema } from '@dogwalk/validation';
+import {
+  breedsSearchSchema,
+  createDogSchema,
+  photoReorderSchema,
+  updateDogSchema,
+} from '@dogwalk/validation';
 import { z } from 'zod';
 import type { dogDeps } from '../../container.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { protectedProcedure, publicProcedure, router, unwrapResult } from '../trpc.js';
-
-const breedsSearchSchema = z.object({ q: z.string().min(1).max(100).optional() });
 
 const photoUploadUrlSchema = z.object({
   dogId: z.string().uuid(),
@@ -21,11 +23,6 @@ const photoConfirmSchema = z.object({
 const photoDeleteSchema = z.object({
   dogId: z.string().uuid(),
   photoId: z.string().uuid(),
-});
-
-const photoReorderSchema = z.object({
-  dogId: z.string().uuid(),
-  photoIds: z.array(z.string().uuid()).min(1).max(MAX_PHOTOS_PER_DOG),
 });
 
 export function createDogsRouter(deps: typeof dogDeps) {
@@ -75,7 +72,7 @@ export function createDogsRouter(deps: typeof dogDeps) {
       ),
 
     reorderPhotos: protectedProcedure
-      .input(photoReorderSchema)
+      .input(z.object({ dogId: z.string().uuid(), photoIds: photoReorderSchema.shape.photoIds }))
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.reorderDogPhotos(input.dogId, ctx.userId, input.photoIds)),
       ),

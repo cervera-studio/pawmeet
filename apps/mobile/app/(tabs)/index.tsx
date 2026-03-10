@@ -1,29 +1,14 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import type { DiscoveryFilters } from '@dogwalk/types';
-import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { formatDogAge } from '@dogwalk/utils';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogSelector } from '@/components/DogSelector';
 import { MatchCelebration } from '@/components/MatchCelebration';
 import { SwipeCard } from '@/components/SwipeCard';
-import { useLocation } from '@/hooks/useLocation';
-import { useMatching } from '@/hooks/useMatching';
-import { useDogsStore } from '@/stores/dogs';
-
-function calculateAge(birthDate: Date | string): string {
-  const birth = new Date(birthDate);
-  const now = new Date();
-  const years = now.getFullYear() - birth.getFullYear();
-  if (years < 1) {
-    const months =
-      (now.getFullYear() - birth.getFullYear()) * 12 + now.getMonth() - birth.getMonth();
-    return `${months} mesi`;
-  }
-  return `${years} ${years === 1 ? 'anno' : 'anni'}`;
-}
+import { useDiscoveryViewModel } from './index.view-model';
 
 // ── Filter configuration ────────────────────────────────────────────────────
 
@@ -233,64 +218,7 @@ function FilterModal({
 // ── Discovery screen ────────────────────────────────────────────────────────
 
 export default function DiscoveryScreen() {
-  const router = useRouter();
-  const { coordinates, getCurrentLocation } = useLocation();
-  const dogs = useDogsStore((s) => s.dogs);
-  const selectedDogId = useDogsStore((s) => s.selectedDogId);
-  const {
-    currentProfile,
-    isLoading,
-    hasMore,
-    newMatch,
-    filters,
-    activeFilterCount,
-    setFilters,
-    fetchSuggestions,
-    swipeRight,
-    swipeLeft,
-    superLike,
-    dismissMatch,
-  } = useMatching();
-
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
-
-  const handleApplyFilters = useCallback(
-    (newFilters: DiscoveryFilters) => {
-      setFilters(newFilters);
-    },
-    [setFilters],
-  );
-
-  useEffect(() => {
-    getCurrentLocation();
-  }, [getCurrentLocation]);
-
-  useEffect(() => {
-    if (coordinates && selectedDogId) {
-      fetchSuggestions();
-    }
-  }, [coordinates, selectedDogId, fetchSuggestions]);
-
-  const handleSwipeRight = useCallback(() => {
-    if (currentProfile) {
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      swipeRight(currentProfile.dog.id);
-    }
-  }, [currentProfile, swipeRight]);
-
-  const handleSwipeLeft = useCallback(() => {
-    if (currentProfile) {
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      swipeLeft(currentProfile.dog.id);
-    }
-  }, [currentProfile, swipeLeft]);
-
-  const handleSuperLike = useCallback(() => {
-    if (currentProfile) {
-      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      superLike(currentProfile.dog.id);
-    }
-  }, [currentProfile, superLike]);
+  const vm = useDiscoveryViewModel();
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -301,13 +229,13 @@ export default function DiscoveryScreen() {
           <Text className="text-sm text-gray-500">Cani nelle vicinanze</Text>
         </View>
         <Pressable
-          onPress={() => setFilterModalVisible(true)}
+          onPress={vm.openFilterModal}
           className="relative h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
         >
-          <Text className="text-lg">{activeFilterCount > 0 ? '\u2699\uFE0F' : '\u2699'}</Text>
-          {activeFilterCount > 0 && (
+          <Text className="text-lg">{vm.activeFilterCount > 0 ? '\u2699\uFE0F' : '\u2699'}</Text>
+          {vm.activeFilterCount > 0 && (
             <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-primary">
-              <Text className="text-xs font-bold text-white">{activeFilterCount}</Text>
+              <Text className="text-xs font-bold text-white">{vm.activeFilterCount}</Text>
             </View>
           )}
         </Pressable>
@@ -318,7 +246,7 @@ export default function DiscoveryScreen() {
 
       {/* Card area */}
       <View className="flex-1 items-center justify-center px-4">
-        {dogs.length === 0 ? (
+        {vm.dogs.length === 0 ? (
           <View className="items-center px-8">
             <Text className="text-5xl">{'\u{1F436}'}</Text>
             <Text className="mt-4 text-center text-lg font-semibold text-gray-900">
@@ -328,13 +256,13 @@ export default function DiscoveryScreen() {
               Per iniziare a scoprire cani compatibili, aggiungi il tuo primo cane.
             </Text>
             <Pressable
-              onPress={() => router.push('/(tabs)/profile/dogs/new')}
+              onPress={vm.navigateToAddDog}
               className="mt-6 rounded-2xl bg-primary px-8 py-3"
             >
               <Text className="font-semibold text-white">Aggiungi cane</Text>
             </Pressable>
           </View>
-        ) : !coordinates ? (
+        ) : !vm.coordinates ? (
           <View className="items-center px-8">
             <Text className="text-5xl">📍</Text>
             <Text className="mt-4 text-center text-lg font-semibold text-gray-900">
@@ -344,32 +272,32 @@ export default function DiscoveryScreen() {
               Abilita la posizione per scoprire cani nelle vicinanze.
             </Text>
             <Pressable
-              onPress={getCurrentLocation}
+              onPress={vm.getCurrentLocation}
               className="mt-6 rounded-2xl bg-primary px-8 py-3"
             >
               <Text className="font-semibold text-white">Abilita posizione</Text>
             </Pressable>
           </View>
-        ) : isLoading ? (
+        ) : vm.isLoading ? (
           <View className="items-center">
             <ActivityIndicator size="large" color="#FF6B35" />
             <Text className="mt-4 text-gray-400">Cerco cani compatibili...</Text>
           </View>
-        ) : currentProfile && hasMore ? (
+        ) : vm.currentProfile && vm.hasMore ? (
           <SwipeCard
             dog={{
-              dogId: currentProfile.dog.id,
-              name: currentProfile.dog.name,
-              breed: currentProfile.dog.breed,
-              age: calculateAge(currentProfile.dog.birthDate),
-              distanceKm: currentProfile.distanceKm,
-              compatibilityScore: currentProfile.compatibilityScore,
-              ownerName: currentProfile.dog.ownerId,
+              dogId: vm.currentProfile.dog.id,
+              name: vm.currentProfile.dog.name,
+              breed: vm.currentProfile.dog.breed,
+              age: formatDogAge(new Date(vm.currentProfile.dog.birthDate)),
+              distanceKm: vm.currentProfile.distanceKm,
+              compatibilityScore: vm.currentProfile.compatibilityScore,
+              ownerName: vm.currentProfile.dog.ownerId,
               imageUrl: null,
             }}
-            onSwipeRight={handleSwipeRight}
-            onSwipeLeft={handleSwipeLeft}
-            onSwipeUp={handleSuperLike}
+            onSwipeRight={vm.handleSwipeRight}
+            onSwipeLeft={vm.handleSwipeLeft}
+            onSwipeUp={vm.handleSuperLike}
           />
         ) : (
           <View className="items-center">
@@ -378,7 +306,10 @@ export default function DiscoveryScreen() {
             <Text className="mt-2 text-center text-sm text-gray-500">
               Hai visto tutti i cani nelle vicinanze. Riprova più tardi!
             </Text>
-            <Pressable onPress={fetchSuggestions} className="mt-6 rounded-2xl bg-primary px-8 py-3">
+            <Pressable
+              onPress={vm.fetchSuggestions}
+              className="mt-6 rounded-2xl bg-primary px-8 py-3"
+            >
               <Text className="font-semibold text-white">Aggiorna</Text>
             </Pressable>
           </View>
@@ -386,22 +317,22 @@ export default function DiscoveryScreen() {
       </View>
 
       {/* Action buttons */}
-      {currentProfile && hasMore && (
+      {vm.currentProfile && vm.hasMore && (
         <View className="flex-row items-center justify-center gap-6 pb-4">
           <Pressable
-            onPress={handleSwipeLeft}
+            onPress={vm.handleSwipeLeft}
             className="h-16 w-16 items-center justify-center rounded-full bg-white shadow-md"
           >
             <Text className="text-2xl">✕</Text>
           </Pressable>
           <Pressable
-            onPress={handleSuperLike}
+            onPress={vm.handleSuperLike}
             className="h-14 w-14 items-center justify-center rounded-full bg-blue-500 shadow-md"
           >
             <Text className="text-xl text-white">★</Text>
           </Pressable>
           <Pressable
-            onPress={handleSwipeRight}
+            onPress={vm.handleSwipeRight}
             className="h-16 w-16 items-center justify-center rounded-full bg-primary shadow-md"
           >
             <Text className="text-2xl">🐾</Text>
@@ -410,13 +341,13 @@ export default function DiscoveryScreen() {
       )}
 
       {/* Match celebration overlay */}
-      {newMatch?.isMatch && (
+      {vm.newMatch?.isMatch && (
         <MatchCelebration
-          onDismiss={dismissMatch}
+          onDismiss={vm.dismissMatch}
           onChat={() => {
-            dismissMatch();
-            if (newMatch.match) {
-              router.push(`/(tabs)/chat/${newMatch.match.id}`);
+            vm.dismissMatch();
+            if (vm.newMatch?.match) {
+              vm.navigateToChat(vm.newMatch.match.id);
             }
           }}
         />
@@ -424,10 +355,10 @@ export default function DiscoveryScreen() {
 
       {/* Filter modal */}
       <FilterModal
-        visible={filterModalVisible}
-        filters={filters}
-        onApply={handleApplyFilters}
-        onClose={() => setFilterModalVisible(false)}
+        visible={vm.filterModalVisible}
+        filters={vm.filters}
+        onApply={vm.handleApplyFilters}
+        onClose={vm.closeFilterModal}
       />
     </SafeAreaView>
   );

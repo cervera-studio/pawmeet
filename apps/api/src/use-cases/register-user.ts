@@ -1,8 +1,9 @@
 import { TOKEN_TYPE } from '@dogwalk/db';
-import type { Result, User } from '@dogwalk/types';
+import type { Result } from '@dogwalk/types';
 import { AppError, fail, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
 import { EMAIL_VERIFICATION_EXPIRY_MS } from '../lib/email.js';
+import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -13,8 +14,6 @@ export interface RegisterInput {
   password: string;
   displayName: string;
 }
-
-type SafeUser = Omit<User, 'passwordHash' | 'pushToken'>;
 
 export interface RegisterOutput {
   user: SafeUser;
@@ -27,11 +26,6 @@ interface Deps {
   tokenRepo: TokenRepository;
   authService: AuthService;
   emailService: EmailService;
-}
-
-function sanitizeUser(user: User): SafeUser {
-  const { passwordHash: _, pushToken: __, ...safeUser } = user;
-  return safeUser;
 }
 
 export function createRegisterUser(deps: Deps) {

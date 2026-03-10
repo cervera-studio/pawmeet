@@ -1,29 +1,11 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { MAX_DOGS_PER_USER } from '@dogwalk/config';
-import { logger } from '@dogwalk/utils';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogProfileCard } from '@/components/DogProfileCard';
 import { Avatar } from '@/components/ui/Avatar';
-import { useAuth } from '@/hooks/useAuth';
-import { useImageUpload } from '@/hooks/useImageUpload';
-import { api } from '@/lib/trpc';
-import { useDogsStore } from '@/stores/dogs';
-
-function calculateAge(birthDate: Date | string): string {
-  const birth = new Date(birthDate);
-  const now = new Date();
-  const years = now.getFullYear() - birth.getFullYear();
-  if (years < 1) {
-    const months =
-      (now.getFullYear() - birth.getFullYear()) * 12 + now.getMonth() - birth.getMonth();
-    return `${months} mesi`;
-  }
-  return `${years} ${years === 1 ? 'anno' : 'anni'}`;
-}
+import { formatDogAge, useProfileViewModel } from './index.view-model';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
 
@@ -62,29 +44,10 @@ function ProfileLoadingSkeleton() {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function ProfileScreen() {
-  const router = useRouter();
-  const { user, logout } = useAuth();
-  const dogs = useDogsStore((s) => s.dogs);
-  const setDogs = useDogsStore((s) => s.setDogs);
-  const selectedDogId = useDogsStore((s) => s.selectedDogId);
-  const setSelectedDog = useDogsStore((s) => s.setSelectedDog);
-  const { uploading, uploadAvatar } = useImageUpload();
-  const [loadingDogs, setLoadingDogs] = useState(true);
-
-  useEffect(() => {
-    api.dogs.list
-      .query()
-      .then(({ dogs: data }) => setDogs(data))
-      .catch((e) => logger.warn('ProfileScreen', 'Failed to fetch dogs', e))
-      .finally(() => setLoadingDogs(false));
-  }, [setDogs]);
-
-  const handleAvatarPress = async () => {
-    await uploadAvatar();
-  };
+  const vm = useProfileViewModel();
 
   // Show skeleton while initial data is loading
-  if (!user || loadingDogs) {
+  if (vm.isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-white">
         <ProfileLoadingSkeleton />
@@ -97,11 +60,15 @@ export default function ProfileScreen() {
       <ScrollView contentContainerClassName="px-4 py-6">
         {/* User profile */}
         <View className="mb-8 items-center">
-          <Pressable onPress={handleAvatarPress} disabled={uploading} className="relative">
-            <Avatar name={user.displayName ?? 'Utente'} imageUrl={user.avatarUrl} size="lg" />
+          <Pressable onPress={vm.handleAvatarPress} disabled={vm.uploading} className="relative">
+            <Avatar
+              name={vm.user?.displayName ?? 'Utente'}
+              imageUrl={vm.user?.avatarUrl}
+              size="lg"
+            />
             {/* Camera icon overlay */}
             <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-full bg-primary">
-              {uploading ? (
+              {vm.uploading ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
                 <Text className="text-sm text-white">{'\u{1F4F7}'}</Text>
@@ -109,9 +76,9 @@ export default function ProfileScreen() {
             </View>
           </Pressable>
           <Text className="mt-3 text-xl font-bold text-gray-900">
-            {user.displayName ?? 'Utente'}
+            {vm.user?.displayName ?? 'Utente'}
           </Text>
-          <Text className="text-sm text-gray-500">{user.email}</Text>
+          <Text className="text-sm text-gray-500">{vm.user?.email}</Text>
           <Text className="mt-1 text-xs text-gray-400">Tocca la foto per cambiarla</Text>
         </View>
 
@@ -119,21 +86,21 @@ export default function ProfileScreen() {
         <View className="mb-6">
           <View className="mb-3 flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-gray-900">I miei cani</Text>
-            {dogs.length < MAX_DOGS_PER_USER && (
-              <Pressable onPress={() => router.push('/(tabs)/profile/dogs/new')}>
+            {vm.dogs.length < MAX_DOGS_PER_USER && (
+              <Pressable onPress={vm.navigateToAddDog}>
                 <Text className="text-sm font-medium text-primary">+ Aggiungi</Text>
               </Pressable>
             )}
           </View>
 
-          {dogs.length === 0 ? (
+          {vm.dogs.length === 0 ? (
             <View className="items-center rounded-2xl bg-gray-50 p-6">
               <Text className="text-4xl">{'\u{1F436}'}</Text>
               <Text className="mt-2 text-sm text-gray-500 text-center">
                 Non hai ancora aggiunto nessun cane.
               </Text>
               <Pressable
-                onPress={() => router.push('/(tabs)/profile/dogs/new')}
+                onPress={vm.navigateToAddDog}
                 className="mt-4 rounded-2xl bg-primary px-6 py-2.5"
               >
                 <Text className="font-semibold text-white">Aggiungi il tuo cane</Text>
@@ -141,20 +108,20 @@ export default function ProfileScreen() {
             </View>
           ) : (
             <View className="gap-3">
-              {dogs.map((dog) => {
-                const isActive = dog.id === selectedDogId;
+              {vm.dogs.map((dog) => {
+                const isActive = dog.id === vm.selectedDogId;
                 return (
                   <View key={dog.id} className="relative">
                     <DogProfileCard
                       name={dog.name}
                       breed={dog.breed}
-                      age={calculateAge(dog.birthDate)}
-                      onPress={() => router.push(`/(tabs)/profile/dogs/${dog.id}`)}
+                      age={formatDogAge(new Date(dog.birthDate))}
+                      onPress={() => vm.navigateToDogDetail(dog.id)}
                     />
                     {/* Active dog indicator (multi-dog only) */}
-                    {dogs.length > 1 && (
+                    {vm.dogs.length > 1 && (
                       <Pressable
-                        onPress={() => setSelectedDog(dog.id)}
+                        onPress={() => vm.setSelectedDog(dog.id)}
                         className={`absolute right-10 top-4 rounded-full px-2 py-0.5 ${
                           isActive ? 'bg-primary' : 'bg-gray-200'
                         }`}
@@ -178,7 +145,7 @@ export default function ProfileScreen() {
         {/* Menu */}
         <View className="gap-1">
           <Pressable
-            onPress={() => router.push('/(modals)/settings')}
+            onPress={vm.navigateToSettings}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >
             <Text className="text-base text-gray-700">Impostazioni</Text>
@@ -195,7 +162,7 @@ export default function ProfileScreen() {
             <Text className="text-gray-400">{'\u203A'}</Text>
           </Pressable>
 
-          <Pressable onPress={logout} className="mt-4 items-center rounded-xl py-4">
+          <Pressable onPress={vm.logout} className="mt-4 items-center rounded-xl py-4">
             <Text className="text-base font-medium text-red-500">Esci</Text>
           </Pressable>
         </View>

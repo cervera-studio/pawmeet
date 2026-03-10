@@ -1,3 +1,4 @@
+import { formatDistance } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';
 import { Dimensions, Pressable, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -39,10 +40,7 @@ export function SwipeCard({ dog, onSwipeRight, onSwipeLeft, onSwipeUp }: SwipeCa
   const translateY = useSharedValue(0);
   const cardScale = useSharedValue(1);
 
-  const distanceLabel =
-    dog.distanceKm < 1
-      ? `${Math.round(dog.distanceKm * 1000)} m`
-      : `${dog.distanceKm.toFixed(1)} km`;
+  const distanceLabel = formatDistance(dog.distanceKm);
 
   const compatPercent = Math.round(dog.compatibilityScore * 100);
 

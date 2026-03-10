@@ -1,0 +1,110 @@
+import type { DiscoveryFilters } from '@dogwalk/types';
+import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocation } from '@/hooks/useLocation';
+import { useMatching } from '@/hooks/useMatching';
+import { useDogsStore } from '@/stores/dogs';
+
+export function useDiscoveryViewModel() {
+  const router = useRouter();
+  const { coordinates, getCurrentLocation } = useLocation();
+  const dogs = useDogsStore((s) => s.dogs);
+  const selectedDogId = useDogsStore((s) => s.selectedDogId);
+  const {
+    currentProfile,
+    isLoading,
+    hasMore,
+    newMatch,
+    filters,
+    activeFilterCount,
+    setFilters,
+    fetchSuggestions,
+    swipeRight,
+    swipeLeft,
+    superLike,
+    dismissMatch,
+  } = useMatching();
+
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+  const handleApplyFilters = useCallback(
+    (newFilters: DiscoveryFilters) => {
+      setFilters(newFilters);
+    },
+    [setFilters],
+  );
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, [getCurrentLocation]);
+
+  useEffect(() => {
+    if (coordinates && selectedDogId) {
+      fetchSuggestions();
+    }
+  }, [coordinates, selectedDogId, fetchSuggestions]);
+
+  const handleSwipeRight = useCallback(() => {
+    if (currentProfile) {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      swipeRight(currentProfile.dog.id);
+    }
+  }, [currentProfile, swipeRight]);
+
+  const handleSwipeLeft = useCallback(() => {
+    if (currentProfile) {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      swipeLeft(currentProfile.dog.id);
+    }
+  }, [currentProfile, swipeLeft]);
+
+  const handleSuperLike = useCallback(() => {
+    if (currentProfile) {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      superLike(currentProfile.dog.id);
+    }
+  }, [currentProfile, superLike]);
+
+  const openFilterModal = useCallback(() => {
+    setFilterModalVisible(true);
+  }, []);
+
+  const closeFilterModal = useCallback(() => {
+    setFilterModalVisible(false);
+  }, []);
+
+  const navigateToAddDog = useCallback(() => {
+    router.push('/(tabs)/profile/dogs/new');
+  }, [router]);
+
+  const navigateToChat = useCallback(
+    (matchId: string) => {
+      router.push(`/(tabs)/chat/${matchId}`);
+    },
+    [router],
+  );
+
+  return {
+    dogs,
+    coordinates,
+    getCurrentLocation,
+    currentProfile,
+    isLoading,
+    hasMore,
+    newMatch,
+    filters,
+    activeFilterCount,
+    filterModalVisible,
+    handleApplyFilters,
+    handleSwipeRight,
+    handleSwipeLeft,
+    handleSuperLike,
+    openFilterModal,
+    closeFilterModal,
+    navigateToAddDog,
+    navigateToChat,
+    dismissMatch,
+    fetchSuggestions,
+  };
+}

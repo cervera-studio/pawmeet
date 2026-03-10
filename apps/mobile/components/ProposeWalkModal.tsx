@@ -1,7 +1,5 @@
-import { WALK_DURATION_MAX, WALK_DURATION_MIN } from '@dogwalk/config';
-import { logger } from '@dogwalk/utils';
-import { useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { useProposeWalkViewModel } from './ProposeWalkModal.view-model';
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 
@@ -20,60 +18,7 @@ type Props = {
 };
 
 export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props) {
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [durationMin, setDurationMin] = useState(30);
-  const [title, setTitle] = useState('');
-  const [location, setLocation] = useState('');
-  const [notes, setNotes] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  const resetForm = () => {
-    setDate('');
-    setTime('');
-    setDurationMin(30);
-    setTitle('');
-    setLocation('');
-    setNotes('');
-  };
-
-  const handleSubmit = async () => {
-    if (!date || !time) {
-      Alert.alert('Errore', 'Inserisci data e ora');
-      return;
-    }
-
-    // Parse date (expected: YYYY-MM-DD) and time (expected: HH:MM)
-    const scheduledAt = new Date(`${date}T${time}:00`);
-    if (Number.isNaN(scheduledAt.getTime())) {
-      Alert.alert('Errore', 'Data o ora non valida. Usa il formato AAAA-MM-GG e HH:MM');
-      return;
-    }
-
-    if (scheduledAt <= new Date()) {
-      Alert.alert('Errore', 'La data deve essere nel futuro');
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      await onPropose({
-        matchId,
-        scheduledAt: scheduledAt.toISOString(),
-        durationMin,
-        title: title || undefined,
-        location: location || undefined,
-        notes: notes || undefined,
-      });
-      resetForm();
-      onClose();
-    } catch (e) {
-      logger.warn('ProposeWalkModal', 'Failed to propose walk', e);
-      Alert.alert('Errore', 'Impossibile proporre la passeggiata');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const vm = useProposeWalkViewModel(matchId, onPropose, onClose);
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
@@ -92,8 +37,8 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           <View className="mb-4">
             <Text className="mb-1 text-sm font-medium text-gray-700">Data (AAAA-MM-GG) *</Text>
             <TextInput
-              value={date}
-              onChangeText={setDate}
+              value={vm.date}
+              onChangeText={vm.setDate}
               placeholder="2026-03-15"
               className="rounded-xl border border-gray-200 px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
@@ -105,8 +50,8 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           <View className="mb-4">
             <Text className="mb-1 text-sm font-medium text-gray-700">Ora (HH:MM) *</Text>
             <TextInput
-              value={time}
-              onChangeText={setTime}
+              value={vm.time}
+              onChangeText={vm.setTime}
               placeholder="10:00"
               className="rounded-xl border border-gray-200 px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
@@ -121,14 +66,14 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
               {DURATION_OPTIONS.map((d) => (
                 <Pressable
                   key={d}
-                  onPress={() => setDurationMin(d)}
+                  onPress={() => vm.setDurationMin(d)}
                   className={`rounded-xl px-4 py-2 ${
-                    durationMin === d ? 'bg-primary' : 'bg-gray-100'
+                    vm.durationMin === d ? 'bg-primary' : 'bg-gray-100'
                   }`}
                 >
                   <Text
                     className={`text-sm font-medium ${
-                      durationMin === d ? 'text-white' : 'text-gray-700'
+                      vm.durationMin === d ? 'text-white' : 'text-gray-700'
                     }`}
                   >
                     {d} min
@@ -142,8 +87,8 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           <View className="mb-4">
             <Text className="mb-1 text-sm font-medium text-gray-700">Titolo</Text>
             <TextInput
-              value={title}
-              onChangeText={setTitle}
+              value={vm.title}
+              onChangeText={vm.setTitle}
               placeholder="Es. Passeggiata al parco"
               className="rounded-xl border border-gray-200 px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
@@ -155,8 +100,8 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           <View className="mb-4">
             <Text className="mb-1 text-sm font-medium text-gray-700">Luogo</Text>
             <TextInput
-              value={location}
-              onChangeText={setLocation}
+              value={vm.location}
+              onChangeText={vm.setLocation}
               placeholder="Es. Parco Sempione, Milano"
               className="rounded-xl border border-gray-200 px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
@@ -168,8 +113,8 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           <View className="mb-6">
             <Text className="mb-1 text-sm font-medium text-gray-700">Note</Text>
             <TextInput
-              value={notes}
-              onChangeText={setNotes}
+              value={vm.notes}
+              onChangeText={vm.setNotes}
               placeholder="Es. Ci vediamo all'ingresso principale"
               className="rounded-xl border border-gray-200 px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
@@ -181,12 +126,12 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
 
           {/* Submit button */}
           <Pressable
-            onPress={handleSubmit}
-            disabled={submitting}
-            className={`items-center rounded-xl py-4 ${submitting ? 'bg-gray-300' : 'bg-primary'}`}
+            onPress={vm.handleSubmit}
+            disabled={vm.submitting}
+            className={`items-center rounded-xl py-4 ${vm.submitting ? 'bg-gray-300' : 'bg-primary'}`}
           >
             <Text className="text-base font-bold text-white">
-              {submitting ? 'Invio...' : 'Proponi'}
+              {vm.submitting ? 'Invio...' : 'Proponi'}
             </Text>
           </Pressable>
         </ScrollView>

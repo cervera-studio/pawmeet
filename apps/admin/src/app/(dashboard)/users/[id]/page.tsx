@@ -1,41 +1,10 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useParams, useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { usePermission } from '@/hooks/use-permission';
-import { api } from '@/lib/api';
-
-interface UserDetail {
-  id: string;
-  displayName: string;
-  email: string;
-  avatarUrl: string | null;
-  status: 'active' | 'suspended' | 'banned';
-  authProvider: string;
-  createdAt: string;
-  lastLoginAt: string | null;
-  dogs: {
-    id: string;
-    name: string;
-    breed: string;
-    isActive: boolean;
-  }[];
-  reportsReceived: number;
-  matchesCount: number;
-}
-
-const STATUS_MAP: Record<
-  string,
-  { label: string; variant: 'success' | 'warning' | 'destructive' }
-> = {
-  active: { label: 'Attivo', variant: 'success' },
-  suspended: { label: 'Sospeso', variant: 'warning' },
-  banned: { label: 'Bannato', variant: 'destructive' },
-};
+import { useUserDetailViewModel } from './page.view-model';
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -47,44 +16,9 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function UserDetailPage() {
-  const params = useParams<{ id: string }>();
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const { isAdmin } = usePermission();
+  const vm = useUserDetailViewModel();
 
-  const { data: user, isLoading } = useQuery({
-    queryKey: ['admin-user', params.id],
-    queryFn: () => api.get<UserDetail>(`/admin/users/${params.id}`),
-  });
-
-  const suspendMutation = useMutation({
-    mutationFn: () => api.post(`/admin/users/${params.id}/suspend`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-user', params.id] });
-      toast.success('Utente sospeso');
-    },
-    onError: () => toast.error('Errore durante la sospensione'),
-  });
-
-  const banMutation = useMutation({
-    mutationFn: () => api.post(`/admin/users/${params.id}/ban`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-user', params.id] });
-      toast.success('Utente bannato');
-    },
-    onError: () => toast.error('Errore durante il ban'),
-  });
-
-  const reactivateMutation = useMutation({
-    mutationFn: () => api.post(`/admin/users/${params.id}/reactivate`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-user', params.id] });
-      toast.success('Utente riattivato');
-    },
-    onError: () => toast.error('Errore durante la riattivazione'),
-  });
-
-  if (isLoading || !user) {
+  if (vm.isLoading || !vm.user) {
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
@@ -93,52 +27,47 @@ export default function UserDetailPage() {
     );
   }
 
-  const statusInfo = STATUS_MAP[user.status] ?? {
-    label: 'Sconosciuto',
-    variant: 'outline' as const,
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-2xl font-bold text-primary-700">
-            {user.displayName.charAt(0).toUpperCase()}
+            {vm.user.displayName.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-neutral-900">{user.displayName}</h1>
-            <p className="text-neutral-500">{user.email}</p>
+            <h1 className="text-2xl font-bold text-neutral-900">{vm.user.displayName}</h1>
+            <p className="text-neutral-500">{vm.user.email}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
-          {isAdmin && user.status === 'active' && (
+          <StatusBadge status={vm.user.status} type="user" />
+          {vm.isAdmin && vm.user.status === 'active' && (
             <>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => suspendMutation.mutate()}
-                disabled={suspendMutation.isPending}
+                onClick={() => vm.suspendMutation.mutate()}
+                disabled={vm.suspendMutation.isPending}
               >
                 Sospendi
               </Button>
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => banMutation.mutate()}
-                disabled={banMutation.isPending}
+                onClick={() => vm.banMutation.mutate()}
+                disabled={vm.banMutation.isPending}
               >
                 Banna
               </Button>
             </>
           )}
-          {isAdmin && (user.status === 'suspended' || user.status === 'banned') && (
+          {vm.isAdmin && (vm.user.status === 'suspended' || vm.user.status === 'banned') && (
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => reactivateMutation.mutate()}
-              disabled={reactivateMutation.isPending}
+              onClick={() => vm.reactivateMutation.mutate()}
+              disabled={vm.reactivateMutation.isPending}
             >
               Riattiva
             </Button>
@@ -153,12 +82,12 @@ export default function UserDetailPage() {
             <CardTitle className="text-base">Informazioni</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <InfoRow label="Nome" value={user.displayName} />
-            <InfoRow label="Email" value={user.email} />
-            <InfoRow label="Provider" value={user.authProvider} />
+            <InfoRow label="Nome" value={vm.user.displayName} />
+            <InfoRow label="Email" value={vm.user.email} />
+            <InfoRow label="Provider" value={vm.user.authProvider} />
             <InfoRow
               label="Registrato il"
-              value={new Date(user.createdAt).toLocaleDateString('it-IT', {
+              value={new Date(vm.user.createdAt).toLocaleDateString('it-IT', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
@@ -167,8 +96,8 @@ export default function UserDetailPage() {
             <InfoRow
               label="Ultimo accesso"
               value={
-                user.lastLoginAt
-                  ? new Date(user.lastLoginAt).toLocaleDateString('it-IT', {
+                vm.user.lastLoginAt
+                  ? new Date(vm.user.lastLoginAt).toLocaleDateString('it-IT', {
                       day: 'numeric',
                       month: 'short',
                       hour: '2-digit',
@@ -177,21 +106,21 @@ export default function UserDetailPage() {
                   : 'Mai'
               }
             />
-            <InfoRow label="Segnalazioni ricevute" value={String(user.reportsReceived)} />
-            <InfoRow label="Match totali" value={String(user.matchesCount)} />
+            <InfoRow label="Segnalazioni ricevute" value={String(vm.user.reportsReceived)} />
+            <InfoRow label="Match totali" value={String(vm.user.matchesCount)} />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Cani ({user.dogs.length})</CardTitle>
+            <CardTitle className="text-base">Cani ({vm.user.dogs.length})</CardTitle>
           </CardHeader>
           <CardContent>
-            {user.dogs.length === 0 ? (
+            {vm.user.dogs.length === 0 ? (
               <p className="text-sm text-neutral-400">Nessun cane registrato</p>
             ) : (
               <div className="space-y-3">
-                {user.dogs.map((dog) => (
+                {vm.user.dogs.map((dog) => (
                   <div key={dog.id} className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-neutral-900">{dog.name}</p>
@@ -216,7 +145,7 @@ export default function UserDetailPage() {
               variant="outline"
               size="sm"
               className="w-full justify-start"
-              onClick={() => router.push(`/moderation/reports?user=${params.id}`)}
+              onClick={vm.navigateToReports}
             >
               Vedi segnalazioni
             </Button>
@@ -224,7 +153,7 @@ export default function UserDetailPage() {
               variant="outline"
               size="sm"
               className="w-full justify-start"
-              onClick={() => router.push(`/moderation/photos?user=${params.id}`)}
+              onClick={vm.navigateToPhotos}
             >
               Vedi foto
             </Button>

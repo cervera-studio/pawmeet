@@ -1,3 +1,4 @@
+import { swipeSchema } from '@dogwalk/validation';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -6,11 +7,6 @@ import { handleResult } from '../lib/result.js';
 import { authMiddleware } from '../middleware/auth.js';
 
 type Env = { Variables: { userId: string } };
-
-const swipeSchema = z.object({
-  dogId: z.string().uuid(),
-  targetDogId: z.string().uuid(),
-});
 
 const discoverQuerySchema = z.object({
   dogId: z.string().uuid(),

@@ -1,11 +1,10 @@
 'use client';
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useState } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { trpc } from '@/lib/trpc';
+import { useDogsViewModel } from './page.view-model';
 
 interface DogRow {
   id: string;
@@ -71,31 +70,7 @@ const columns: ColumnDef<DogRow>[] = [
 ];
 
 export default function DogsPage() {
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  });
-
-  // Simple debounce via timeout ref
-  const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    if (debounceTimer) clearTimeout(debounceTimer);
-    const timer = setTimeout(() => {
-      setDebouncedSearch(value);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    }, 300);
-    setDebounceTimer(timer);
-  }
-
-  const { data, isLoading } = trpc.admin.listDogs.useQuery({
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    search: debouncedSearch || undefined,
-  });
+  const vm = useDogsViewModel();
 
   return (
     <div className="space-y-6">
@@ -109,19 +84,19 @@ export default function DogsPage() {
         <Input
           placeholder="Cerca per nome, razza o proprietario..."
           className="max-w-sm"
-          value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
+          value={vm.search}
+          onChange={(e) => vm.handleSearchChange(e.target.value)}
         />
       </div>
 
       <DataTable
         columns={columns}
-        data={(data?.data as DogRow[]) ?? []}
-        total={data?.total ?? 0}
-        totalPages={data?.totalPages ?? 1}
-        isLoading={isLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
+        data={(vm.data?.data as DogRow[]) ?? []}
+        total={vm.data?.total ?? 0}
+        totalPages={vm.data?.totalPages ?? 1}
+        isLoading={vm.isLoading}
+        pagination={vm.pagination}
+        onPaginationChange={vm.setPagination}
       />
     </div>
   );

@@ -12,37 +12,10 @@ import {
   YAxis,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { trpc } from '@/lib/trpc';
+import { useDashboardViewModel } from './page.view-model';
 
 export default function DashboardPage() {
-  const { data: stats, isLoading } = trpc.admin.getStats.useQuery();
-
-  const kpiCards = [
-    {
-      title: 'Utenti Totali',
-      value: stats?.totalUsers ?? 0,
-    },
-    {
-      title: 'Cani Registrati',
-      value: stats?.totalDogs ?? 0,
-    },
-    {
-      title: 'Match Attivi',
-      value: stats?.activeMatches ?? 0,
-    },
-    {
-      title: 'Foto in Attesa',
-      value: stats?.pendingPhotos ?? 0,
-    },
-    {
-      title: 'Segnalazioni Pendenti',
-      value: stats?.pendingReports ?? 0,
-    },
-    {
-      title: 'Match Totali',
-      value: stats?.totalMatches ?? 0,
-    },
-  ];
+  const vm = useDashboardViewModel();
 
   return (
     <div className="space-y-6">
@@ -53,13 +26,13 @@ export default function DashboardPage() {
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {kpiCards.map((kpi) => (
+        {vm.kpiCards.map((kpi) => (
           <Card key={kpi.title}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-neutral-500">{kpi.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              {isLoading ? (
+              {vm.isLoading ? (
                 <div className="h-8 w-20 animate-pulse rounded bg-neutral-100" />
               ) : (
                 <div className="text-2xl font-bold text-neutral-900">
@@ -78,17 +51,17 @@ export default function DashboardPage() {
             <CardTitle className="text-base">Registrazioni Utenti (ultimi 30 giorni)</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading || !stats?.userRegistrations ? (
+            {!vm.hasUserRegistrations ? (
               <div className="flex h-64 items-center justify-center text-neutral-400">
                 Caricamento...
               </div>
-            ) : stats.userRegistrations.length === 0 ? (
+            ) : vm.userRegistrationsEmpty ? (
               <div className="flex h-64 items-center justify-center text-neutral-400">
                 Nessun dato disponibile
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={256}>
-                <AreaChart data={stats.userRegistrations}>
+                <AreaChart data={vm.userRegistrationsData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
                   <XAxis
                     dataKey="date"
@@ -126,17 +99,17 @@ export default function DashboardPage() {
             <CardTitle className="text-base">Match Giornalieri (ultimi 30 giorni)</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading || !stats?.dailyMatches ? (
+            {!vm.hasDailyMatches ? (
               <div className="flex h-64 items-center justify-center text-neutral-400">
                 Caricamento...
               </div>
-            ) : stats.dailyMatches.length === 0 ? (
+            ) : vm.dailyMatchesEmpty ? (
               <div className="flex h-64 items-center justify-center text-neutral-400">
                 Nessun dato disponibile
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={256}>
-                <BarChart data={stats.dailyMatches}>
+                <BarChart data={vm.dailyMatchesData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
                   <XAxis
                     dataKey="date"

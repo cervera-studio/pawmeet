@@ -1,20 +1,14 @@
-import { loginSchema, registerSchema } from '@dogwalk/validation';
-import { z } from 'zod';
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  logoutSchema,
+  refreshSchema,
+  registerSchema,
+  resetPasswordSchema,
+  verifyEmailSchema,
+} from '@dogwalk/validation';
 import type { authDeps } from '../../container.js';
 import { publicProcedure, router, unwrapResult } from '../trpc.js';
-
-const refreshSchema = z.object({ refreshToken: z.string().min(1) });
-const logoutSchema = z.object({ refreshToken: z.string().min(1) });
-const verifyEmailSchema = z.object({ token: z.string().min(1) });
-const forgotPasswordSchema = z.object({ email: z.string().email() });
-const resetPasswordSchema = z.object({
-  token: z.string().min(1),
-  password: z
-    .string()
-    .min(8, 'Minimo 8 caratteri')
-    .regex(/[A-Z]/, 'Almeno una maiuscola')
-    .regex(/[0-9]/, 'Almeno un numero'),
-});
 
 export function createAuthRouter(deps: typeof authDeps) {
   return router({

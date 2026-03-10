@@ -1,14 +1,10 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import type { RouterOutput } from '@dogwalk/api-client';
-import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import { useChat } from '@/hooks/useChat';
-
-type Conversation = RouterOutput['chat']['listConversations']['conversations'][number];
+import type { Conversation } from './index.view-model';
+import { useChatListViewModel } from './index.view-model';
 
 function ChatRow({ conversation, onPress }: { conversation: Conversation; onPress: () => void }) {
   return (
@@ -58,12 +54,7 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
 }
 
 export default function ChatListScreen() {
-  const router = useRouter();
-  const { conversations, loadingConversations, fetchConversations } = useChat();
-
-  useEffect(() => {
-    fetchConversations();
-  }, [fetchConversations]);
+  const vm = useChatListViewModel();
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -72,14 +63,14 @@ export default function ChatListScreen() {
       </View>
 
       <FlatList
-        data={conversations}
+        data={vm.conversations}
         keyExtractor={(item) => item.matchId}
-        onRefresh={fetchConversations}
-        refreshing={loadingConversations}
+        onRefresh={vm.fetchConversations}
+        refreshing={vm.loadingConversations}
         renderItem={({ item }) => (
           <ChatRow
             conversation={item}
-            onPress={() => router.push(`/(tabs)/chat/${item.matchId}`)}
+            onPress={() => vm.navigateToChat(item.matchId)}
           />
         )}
         ListEmptyComponent={

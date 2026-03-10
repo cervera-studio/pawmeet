@@ -1,18 +1,12 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import type { RouterOutput } from '@dogwalk/api-client';
 import { WALK_STATUS } from '@dogwalk/types';
-
-type Walk = RouterOutput['walks']['listUpcoming']['walks'][number];
-
-import { logger } from '@dogwalk/utils';
-import * as Haptics from 'expo-haptics';
-import { memo, useCallback, useState } from 'react';
-import { Alert, FlatList, Pressable, Text, View } from 'react-native';
+import { memo } from 'react';
+import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeedbackModal } from '@/components/FeedbackModal';
-import { useWalks } from '@/hooks/useWalks';
-import { useAuthStore } from '@/stores/auth';
+import type { Walk } from './walks.view-model';
+import { useWalksViewModel } from './walks.view-model';
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -195,87 +189,7 @@ function WalksEmptyState() {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function WalksScreen() {
-  const userId = useAuthStore((s) => s.user?.id) ?? '';
-  const { upcomingWalks, loading, fetchUpcoming, respondToWalk, cancelWalk } = useWalks();
-  const [feedbackTarget, setFeedbackTarget] = useState<{
-    walkId: string;
-    toDogId: string;
-  } | null>(null);
-
-  const handleFeedback = useCallback((walk: Walk) => {
-    // The walk's matchId is used to identify the other participant's dog.
-    // The API's feedback.submit endpoint will resolve the toDogId from the walk/match.
-    setFeedbackTarget({ walkId: walk.id, toDogId: walk.matchId });
-  }, []);
-
-  const handleFeedbackSubmit = useCallback(() => {
-    setFeedbackTarget(null);
-    fetchUpcoming();
-  }, [fetchUpcoming]);
-
-  const handleAccept = useCallback(
-    async (walkId: string) => {
-      try {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        await respondToWalk(walkId, true);
-      } catch (e) {
-        logger.warn('WalksScreen', 'Failed to accept walk', e);
-        Alert.alert('Errore', 'Impossibile accettare la passeggiata');
-      }
-    },
-    [respondToWalk],
-  );
-
-  const handleDecline = useCallback(
-    async (walkId: string) => {
-      try {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        await respondToWalk(walkId, false);
-      } catch (e) {
-        logger.warn('WalksScreen', 'Failed to decline walk', e);
-        Alert.alert('Errore', 'Impossibile rifiutare la passeggiata');
-      }
-    },
-    [respondToWalk],
-  );
-
-  const handleCancel = useCallback(
-    (walkId: string) => {
-      Alert.alert('Annulla passeggiata', 'Sei sicuro di voler annullare questa passeggiata?', [
-        { text: 'No', style: 'cancel' },
-        {
-          text: 'Annulla passeggiata',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await cancelWalk(walkId);
-            } catch (e) {
-              logger.warn('WalksScreen', 'Failed to cancel walk', e);
-              Alert.alert('Errore', 'Impossibile annullare la passeggiata');
-            }
-          },
-        },
-      ]);
-    },
-    [cancelWalk],
-  );
-
-  const renderItem = useCallback(
-    ({ item }: { item: Walk }) => (
-      <WalkCard
-        walk={item}
-        userId={userId}
-        onAccept={() => handleAccept(item.id)}
-        onDecline={() => handleDecline(item.id)}
-        onCancel={() => handleCancel(item.id)}
-        onFeedback={() => handleFeedback(item)}
-      />
-    ),
-    [userId, handleAccept, handleDecline, handleCancel, handleFeedback],
-  );
-
-  // Show skeleton on initial load only (not pull-to-refresh)
-  const isInitialLoad = loading && upcomingWalks.length === 0;
+  const vm = useWalksViewModel();
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -283,29 +197,38 @@ export default function WalksScreen() {
         <Text className="text-2xl font-bold text-gray-900">Passeggiate</Text>
       </View>
 
-      {isInitialLoad ? (
+      {vm.isInitialLoad ? (
         <WalksLoadingSkeleton />
       ) : (
         <FlatList
-          data={upcomingWalks}
+          data={vm.upcomingWalks}
           keyExtractor={(item) => item.id}
           contentContainerClassName="px-4 py-3"
-          onRefresh={fetchUpcoming}
-          refreshing={loading}
-          renderItem={renderItem}
+          onRefresh={vm.fetchUpcoming}
+          refreshing={vm.loading}
+          renderItem={({ item }) => (
+            <WalkCard
+              walk={item}
+              userId={vm.userId}
+              onAccept={() => vm.handleAccept(item.id)}
+              onDecline={() => vm.handleDecline(item.id)}
+              onCancel={() => vm.handleCancel(item.id)}
+              onFeedback={() => vm.handleFeedback(item)}
+            />
+          )}
           initialNumToRender={8}
           maxToRenderPerBatch={6}
           ListEmptyComponent={<WalksEmptyState />}
         />
       )}
 
-      {feedbackTarget && (
+      {vm.feedbackTarget && (
         <FeedbackModal
           visible
-          walkId={feedbackTarget.walkId}
-          toDogId={feedbackTarget.toDogId}
-          onClose={() => setFeedbackTarget(null)}
-          onSubmit={handleFeedbackSubmit}
+          walkId={vm.feedbackTarget.walkId}
+          toDogId={vm.feedbackTarget.toDogId}
+          onClose={vm.handleFeedbackClose}
+          onSubmit={vm.handleFeedbackSubmit}
         />
       )}
     </SafeAreaView>

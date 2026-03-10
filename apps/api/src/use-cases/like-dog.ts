@@ -1,8 +1,8 @@
-import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
 import type { Match } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
 import { enqueueNotification } from '../jobs/queue.js';
+import { checkDailySwipeLimit } from '../lib/swipe-limit.js';
 import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
 
 type Deps = {
@@ -24,14 +24,8 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo }: Deps) {
     }
 
     // Check daily swipe limit
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const dailyCount = await matchRepo.countDailySwipes(dogId, today);
-    if (dailyCount >= SWIPE_DAILY_LIMIT) {
-      return fail(
-        new AppError('SWIPE_LIMIT_REACHED', 'Limite giornaliero di swipe raggiunto', 429),
-      );
-    }
+    const limitResult = await checkDailySwipeLimit(matchRepo, dogId);
+    if (limitResult) return limitResult;
 
     // Check if already swiped
     const existing = await matchRepo.findSwipe(dogId, targetDogId);

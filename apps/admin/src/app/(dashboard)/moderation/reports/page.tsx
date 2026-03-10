@@ -1,10 +1,9 @@
 'use client';
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useState } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
-import { Badge } from '@/components/ui/badge';
+import { REPORT_STATUS_CONFIG, StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -13,8 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { trpc } from '@/lib/trpc';
-
-type ReportStatus = 'pending' | 'resolved' | 'dismissed';
+import { STATUS_TABS, useReportsViewModel } from './page.view-model';
 
 interface ReportRow {
   id: string;
@@ -32,17 +30,6 @@ interface ReportRow {
   createdAt: string;
 }
 
-const STATUS_VARIANT: Record<string, 'warning' | 'outline' | 'success'> = {
-  pending: 'warning',
-  resolved: 'success',
-  dismissed: 'outline',
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  pending: 'In attesa',
-  resolved: 'Risolto',
-  dismissed: 'Archiviato',
-};
 
 const REASON_LABEL: Record<string, string> = {
   inappropriate: 'Comportamento inappropriato',
@@ -70,7 +57,11 @@ function ReportActions({ reportId, status }: { reportId: string; status: string 
   });
 
   if (status !== 'pending') {
-    return <span className="text-xs text-neutral-400">{STATUS_LABEL[status] ?? status}</span>;
+    return (
+      <span className="text-xs text-neutral-400">
+        {REPORT_STATUS_CONFIG[status]?.label ?? status}
+      </span>
+    );
   }
 
   return (
@@ -142,9 +133,7 @@ const columns: ColumnDef<ReportRow>[] = [
     header: 'Stato',
     cell: ({ row }) => {
       const status = row.getValue('status') as string;
-      const variant = STATUS_VARIANT[status] ?? 'outline';
-      const label = STATUS_LABEL[status] ?? status;
-      return <Badge variant={variant}>{label}</Badge>;
+      return <StatusBadge status={status} type="report" />;
     },
   },
   {
@@ -174,25 +163,8 @@ const columns: ColumnDef<ReportRow>[] = [
   },
 ];
 
-const STATUS_TABS: { label: string; value: ReportStatus | undefined }[] = [
-  { label: 'Tutte', value: undefined },
-  { label: 'In attesa', value: 'pending' },
-  { label: 'Risolte', value: 'resolved' },
-  { label: 'Archiviate', value: 'dismissed' },
-];
-
 export default function ReportsPage() {
-  const [statusFilter, setStatusFilter] = useState<ReportStatus | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  });
-
-  const { data, isLoading } = trpc.admin.listReports.useQuery({
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    status: statusFilter,
-  });
+  const vm = useReportsViewModel();
 
   return (
     <div className="space-y-6">
@@ -206,12 +178,9 @@ export default function ReportsPage() {
         {STATUS_TABS.map((tab) => (
           <Button
             key={tab.label}
-            variant={statusFilter === tab.value ? 'default' : 'outline'}
+            variant={vm.statusFilter === tab.value ? 'default' : 'outline'}
             size="sm"
-            onClick={() => {
-              setStatusFilter(tab.value);
-              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-            }}
+            onClick={() => vm.handleStatusFilterChange(tab.value)}
           >
             {tab.label}
           </Button>
@@ -220,12 +189,12 @@ export default function ReportsPage() {
 
       <DataTable
         columns={columns}
-        data={(data?.data as ReportRow[]) ?? []}
-        total={data?.total ?? 0}
-        totalPages={data?.totalPages ?? 1}
-        isLoading={isLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
+        data={(vm.data?.data as ReportRow[]) ?? []}
+        total={vm.data?.total ?? 0}
+        totalPages={vm.data?.totalPages ?? 1}
+        isLoading={vm.isLoading}
+        pagination={vm.pagination}
+        onPaginationChange={vm.setPagination}
       />
     </div>
   );

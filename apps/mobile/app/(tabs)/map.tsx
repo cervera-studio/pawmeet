@@ -1,16 +1,12 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import type { RouterOutput } from '@dogwalk/api-client';
-import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { formatDistance } from '@dogwalk/utils';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import MapView, { Circle, type MapMarker, Marker } from 'react-native-maps';
+import MapView, { Circle, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import { useLocation } from '@/hooks/useLocation';
-import { useNearbyUsers } from '@/hooks/useNearbyUsers';
-
-type NearbyUser = RouterOutput['users']['findNearby']['users'][number];
+import type { NearbyUser } from './map.view-model';
+import { useMapViewModel } from './map.view-model';
 
 function UserPreviewCard({
   user,
@@ -33,11 +29,7 @@ function UserPreviewCard({
         <Avatar name={user.displayName} size="md" />
         <View className="ml-3 flex-1">
           <Text className="text-base font-semibold text-gray-900">{user.displayName}</Text>
-          <Text className="text-sm text-gray-500">
-            {user.distanceKm < 1
-              ? `${Math.round(user.distanceKm * 1000)} m`
-              : `${user.distanceKm.toFixed(1)} km`}
-          </Text>
+          <Text className="text-sm text-gray-500">{formatDistance(user.distanceKm)}</Text>
           {primaryDog ? (
             <Text className="text-sm text-gray-400">
               {primaryDog.name} - {primaryDog.breed}
@@ -57,46 +49,9 @@ function UserPreviewCard({
 }
 
 export default function MapScreen() {
-  const router = useRouter();
-  const mapRef = useRef<MapView>(null);
-  const {
-    coordinates,
-    isLoading: locationLoading,
-    getCurrentLocation,
-    searchRadiusKm,
-  } = useLocation();
-  const { users, loading: usersLoading, fetchNearby } = useNearbyUsers();
-  const [selectedUser, setSelectedUser] = useState<NearbyUser | null>(null);
+  const vm = useMapViewModel();
 
-  useEffect(() => {
-    getCurrentLocation();
-  }, [getCurrentLocation]);
-
-  useEffect(() => {
-    if (coordinates) {
-      fetchNearby();
-    }
-  }, [coordinates, fetchNearby]);
-
-  const handleMarkerPress = useCallback((user: NearbyUser) => {
-    setSelectedUser(user);
-  }, []);
-
-  const handleRecenter = useCallback(() => {
-    if (coordinates && mapRef.current) {
-      mapRef.current.animateToRegion(
-        {
-          latitude: coordinates.latitude,
-          longitude: coordinates.longitude,
-          latitudeDelta: searchRadiusKm * 0.02,
-          longitudeDelta: searchRadiusKm * 0.02,
-        },
-        500,
-      );
-    }
-  }, [coordinates, searchRadiusKm]);
-
-  if (locationLoading && !coordinates) {
+  if (vm.locationLoading && !vm.coordinates) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#FF6B35" />
@@ -105,7 +60,7 @@ export default function MapScreen() {
     );
   }
 
-  if (!coordinates) {
+  if (!vm.coordinates) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white px-8">
         <Text className="text-5xl">📍</Text>
@@ -115,7 +70,10 @@ export default function MapScreen() {
         <Text className="mt-2 text-center text-sm text-gray-500">
           Abilita la posizione per vedere i cani nelle vicinanze sulla mappa.
         </Text>
-        <Pressable onPress={getCurrentLocation} className="mt-6 rounded-2xl bg-primary px-8 py-3">
+        <Pressable
+          onPress={vm.getCurrentLocation}
+          className="mt-6 rounded-2xl bg-primary px-8 py-3"
+        >
           <Text className="font-semibold text-white">Abilita posizione</Text>
         </Pressable>
       </SafeAreaView>
@@ -125,41 +83,41 @@ export default function MapScreen() {
   return (
     <View className="flex-1">
       <MapView
-        ref={mapRef}
+        ref={vm.mapRef}
         className="flex-1"
         initialRegion={{
-          latitude: coordinates.latitude,
-          longitude: coordinates.longitude,
-          latitudeDelta: searchRadiusKm * 0.02,
-          longitudeDelta: searchRadiusKm * 0.02,
+          latitude: vm.coordinates.latitude,
+          longitude: vm.coordinates.longitude,
+          latitudeDelta: vm.searchRadiusKm * 0.02,
+          longitudeDelta: vm.searchRadiusKm * 0.02,
         }}
         showsUserLocation
         showsMyLocationButton={false}
-        onPress={() => setSelectedUser(null)}
+        onPress={vm.handleMapPress}
       >
         {/* Search radius circle */}
         <Circle
-          center={coordinates}
-          radius={searchRadiusKm * 1000}
+          center={vm.coordinates}
+          radius={vm.searchRadiusKm * 1000}
           fillColor="rgba(255, 107, 53, 0.08)"
           strokeColor="rgba(255, 107, 53, 0.3)"
           strokeWidth={1}
         />
 
         {/* Nearby user markers */}
-        {users.map((user) => (
+        {vm.users.map((user) => (
           <Marker
             key={user.id}
             coordinate={{
               latitude: user.latitude,
               longitude: user.longitude,
             }}
-            onPress={() => handleMarkerPress(user)}
+            onPress={() => vm.handleMarkerPress(user)}
           >
             <View className="items-center">
               <View
                 className={`rounded-full border-2 p-0.5 ${
-                  selectedUser?.id === user.id ? 'border-primary' : 'border-white'
+                  vm.selectedUser?.id === user.id ? 'border-primary' : 'border-white'
                 }`}
               >
                 <Avatar name={user.dogs[0]?.name ?? user.displayName} size="sm" />
@@ -176,7 +134,7 @@ export default function MapScreen() {
 
       {/* Recenter button */}
       <Pressable
-        onPress={handleRecenter}
+        onPress={vm.handleRecenter}
         className="absolute right-4 top-16 h-11 w-11 items-center justify-center rounded-full bg-white shadow-md"
       >
         <Text className="text-lg">📍</Text>
@@ -184,10 +142,10 @@ export default function MapScreen() {
 
       {/* Refresh button */}
       <Pressable
-        onPress={fetchNearby}
+        onPress={vm.fetchNearby}
         className="absolute left-4 top-16 flex-row items-center rounded-full bg-white px-4 py-2.5 shadow-md"
       >
-        {usersLoading ? (
+        {vm.usersLoading ? (
           <ActivityIndicator size="small" color="#FF6B35" />
         ) : (
           <Text className="text-sm font-medium text-gray-700">Aggiorna</Text>
@@ -195,14 +153,11 @@ export default function MapScreen() {
       </Pressable>
 
       {/* User preview card */}
-      {selectedUser && (
+      {vm.selectedUser && (
         <UserPreviewCard
-          user={selectedUser}
-          onClose={() => setSelectedUser(null)}
-          onViewProfile={() => {
-            router.push('/(modals)/dog-detail');
-            setSelectedUser(null);
-          }}
+          user={vm.selectedUser}
+          onClose={vm.handleClosePreview}
+          onViewProfile={vm.handleViewProfile}
         />
       )}
     </View>

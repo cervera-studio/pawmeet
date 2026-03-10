@@ -1,5 +1,6 @@
-import type { Result, User } from '@dogwalk/types';
+import type { Result } from '@dogwalk/types';
 import { AppError, fail, succeed } from '@dogwalk/types';
+import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
@@ -8,8 +9,6 @@ export interface LoginInput {
   email: string;
   password: string;
 }
-
-type SafeUser = Omit<User, 'passwordHash' | 'pushToken'>;
 
 export interface LoginOutput {
   user: SafeUser;
@@ -21,11 +20,6 @@ interface Deps {
   userRepo: UserRepository;
   tokenRepo: TokenRepository;
   authService: AuthService;
-}
-
-function sanitizeUser(user: User): SafeUser {
-  const { passwordHash: _, pushToken: __, ...safeUser } = user;
-  return safeUser;
 }
 
 export function createLoginUser(deps: Deps) {

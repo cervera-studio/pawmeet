@@ -1,3 +1,4 @@
+import { sendMessageSchema } from '@dogwalk/validation';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -6,11 +7,6 @@ import { handleResult } from '../lib/result.js';
 import { authMiddleware } from '../middleware/auth.js';
 
 type Env = { Variables: { userId: string } };
-
-const sendMessageSchema = z.object({
-  content: z.string().min(1).max(2000),
-  mediaUrl: z.string().url().optional(),
-});
 
 const paginationSchema = z.object({
   cursor: z.string().uuid().optional(),

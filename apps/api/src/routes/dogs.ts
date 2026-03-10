@@ -1,5 +1,9 @@
-import { MAX_PHOTOS_PER_DOG } from '@dogwalk/config';
-import { createDogSchema, updateDogSchema } from '@dogwalk/validation';
+import {
+  breedsSearchSchema,
+  createDogSchema,
+  photoReorderSchema,
+  updateDogSchema,
+} from '@dogwalk/validation';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -17,14 +21,6 @@ const photoUploadUrlSchema = z.object({
 
 const photoConfirmSchema = z.object({
   key: z.string().min(1),
-});
-
-const photoReorderSchema = z.object({
-  photoIds: z.array(z.string().uuid()).min(1).max(MAX_PHOTOS_PER_DOG),
-});
-
-const breedsSearchSchema = z.object({
-  q: z.string().min(1).max(100).optional(),
 });
 
 export function createDogRoutes(deps: typeof DogDeps) {

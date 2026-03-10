@@ -1,3 +1,4 @@
+import { MAX_PHOTOS_PER_DOG } from '@dogwalk/config';
 import { z } from 'zod';
 
 export const dogSizeEnum = z.enum(['toy', 'piccola', 'media', 'grande', 'gigante']);
@@ -60,5 +61,15 @@ export const discoveryFiltersSchema = z.object({
 
 export type DiscoveryFiltersInput = z.infer<typeof discoveryFiltersSchema>;
 
+export const breedsSearchSchema = z.object({
+  q: z.string().min(1).max(100).optional(),
+});
+
+export const photoReorderSchema = z.object({
+  photoIds: z.array(z.string().uuid()).min(1).max(MAX_PHOTOS_PER_DOG),
+});
+
 export type CreateDogInput = z.infer<typeof createDogSchema>;
 export type UpdateDogInput = z.infer<typeof updateDogSchema>;
+export type BreedsSearchInput = z.infer<typeof breedsSearchSchema>;
+export type PhotoReorderInput = z.infer<typeof photoReorderSchema>;

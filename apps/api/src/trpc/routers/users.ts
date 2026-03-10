@@ -1,41 +1,19 @@
-import { MAX_SEARCH_RADIUS_KM, MIN_SEARCH_RADIUS_KM } from '@dogwalk/config';
+import {
+  confirmUploadSchema,
+  nearbySchema,
+  registerPushTokenSchema,
+  updateLocationSchema,
+  updateNotificationPrefsSchema,
+  updatePreferencesSchema,
+} from '@dogwalk/validation';
 import { z } from 'zod';
 import type { userDeps } from '../../container.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
-const registerPushTokenSchema = z.object({
-  token: z.string().min(1),
-});
-
-const updateLocationSchema = z.object({
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
-});
-
-const updatePreferencesSchema = z.object({
-  searchRadiusKm: z.number().min(MIN_SEARCH_RADIUS_KM).max(MAX_SEARCH_RADIUS_KM),
-});
-
-const nearbySchema = z.object({
-  radiusKm: z.number().min(MIN_SEARCH_RADIUS_KM).max(MAX_SEARCH_RADIUS_KM).optional(),
-  limit: z.number().int().min(1).max(50).optional(),
-  offset: z.number().int().min(0).optional(),
-});
-
 const uploadAvatarSchema = z.object({
   contentType: z.enum(ALLOWED_IMAGE_TYPES as unknown as [string, ...string[]]),
   fileSize: z.number().int().min(1).max(MAX_FILE_SIZE),
-});
-
-const updateNotificationPrefsSchema = z.object({
-  matches: z.boolean().optional(),
-  messages: z.boolean().optional(),
-  reminders: z.boolean().optional(),
-});
-
-const confirmAvatarSchema = z.object({
-  key: z.string().min(1),
 });
 
 export function createUsersRouter(deps: typeof userDeps) {
@@ -67,7 +45,7 @@ export function createUsersRouter(deps: typeof userDeps) {
       ),
 
     confirmAvatar: protectedProcedure
-      .input(confirmAvatarSchema)
+      .input(confirmUploadSchema)
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.confirmAvatar(ctx.userId, input.key)),
       ),

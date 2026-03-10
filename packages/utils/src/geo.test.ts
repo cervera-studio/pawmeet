@@ -20,17 +20,17 @@ describe('calculateDistance', () => {
 });
 
 describe('formatDistance', () => {
-  it('formats sub-km distances', () => {
-    expect(formatDistance(0.3)).toBe('< 1 km');
-    expect(formatDistance(0.9)).toBe('< 1 km');
+  it('formats sub-km distances in meters', () => {
+    expect(formatDistance(0.3)).toBe('300 m');
+    expect(formatDistance(0.9)).toBe('900 m');
   });
 
-  it('formats short distances with rounding', () => {
-    expect(formatDistance(2.4)).toBe('~2 km');
-    expect(formatDistance(7.6)).toBe('~8 km');
+  it('formats km distances with one decimal', () => {
+    expect(formatDistance(2.4)).toBe('2.4 km');
+    expect(formatDistance(7.6)).toBe('7.6 km');
   });
 
-  it('formats long distances', () => {
-    expect(formatDistance(15)).toBe('> 10 km');
+  it('formats long distances with one decimal', () => {
+    expect(formatDistance(15)).toBe('15.0 km');
   });
 });

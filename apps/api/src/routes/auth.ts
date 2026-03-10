@@ -1,34 +1,16 @@
-import { loginSchema, registerSchema } from '@dogwalk/validation';
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  logoutSchema,
+  refreshSchema,
+  registerSchema,
+  resetPasswordSchema,
+  verifyEmailSchema,
+} from '@dogwalk/validation';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
-import { z } from 'zod';
 import type { authDeps as AuthDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';
-
-const refreshSchema = z.object({
-  refreshToken: z.string().min(1),
-});
-
-const logoutSchema = z.object({
-  refreshToken: z.string().min(1),
-});
-
-const verifyEmailSchema = z.object({
-  token: z.string().min(1),
-});
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email(),
-});
-
-const resetPasswordSchema = z.object({
-  token: z.string().min(1),
-  password: z
-    .string()
-    .min(8, 'Minimo 8 caratteri')
-    .regex(/[A-Z]/, 'Almeno una maiuscola')
-    .regex(/[0-9]/, 'Almeno un numero'),
-});
 
 export function createAuthRoutes(deps: typeof AuthDeps) {
   return new Hono()

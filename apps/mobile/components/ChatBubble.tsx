@@ -1,4 +1,5 @@
 import type { MessageStatus } from '@dogwalk/types';
+import { memo } from 'react';
 import { Image, Linking, Pressable, Text, View } from 'react-native';
 
 interface LocationData {
@@ -61,7 +62,13 @@ function LocationCard({ location, isMine }: { location: LocationData; isMine: bo
   );
 }
 
-export function ChatBubble({ text, isMine, timestamp, mediaUrl, status }: ChatBubbleProps) {
+export const ChatBubble = memo(function ChatBubble({
+  text,
+  isMine,
+  timestamp,
+  mediaUrl,
+  status,
+}: ChatBubbleProps) {
   const location = tryParseLocation(text);
 
   return (
@@ -100,4 +107,6 @@ export function ChatBubble({ text, isMine, timestamp, mediaUrl, status }: ChatBu
       </View>
     </View>
   );
-}
+});
+
+ChatBubble.displayName = 'ChatBubble';

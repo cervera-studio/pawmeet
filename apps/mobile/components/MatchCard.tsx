@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 
@@ -18,7 +19,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   incontrato: { label: 'Incontrato', color: 'bg-green-100 text-green-600' },
 };
 
-export function MatchCard({
+export const MatchCard = memo(function MatchCard({
   dogName,
   ownerName,
   breed,
@@ -60,4 +61,6 @@ export function MatchCard({
       <Text className="text-xs text-gray-400">{matchedAt}</Text>
     </View>
   );
-}
+});
+
+MatchCard.displayName = 'MatchCard';

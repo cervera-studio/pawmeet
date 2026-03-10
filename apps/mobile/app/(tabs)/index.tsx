@@ -1,6 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import type { DiscoveryFilters } from '@dogwalk/types';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
@@ -270,17 +271,26 @@ export default function DiscoveryScreen() {
     }
   }, [coordinates, selectedDogId, fetchSuggestions]);
 
-  const handleSwipeRight = () => {
-    if (currentProfile) swipeRight(currentProfile.dog.id);
-  };
+  const handleSwipeRight = useCallback(() => {
+    if (currentProfile) {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      swipeRight(currentProfile.dog.id);
+    }
+  }, [currentProfile, swipeRight]);
 
-  const handleSwipeLeft = () => {
-    if (currentProfile) swipeLeft(currentProfile.dog.id);
-  };
+  const handleSwipeLeft = useCallback(() => {
+    if (currentProfile) {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      swipeLeft(currentProfile.dog.id);
+    }
+  }, [currentProfile, swipeLeft]);
 
-  const handleSuperLike = () => {
-    if (currentProfile) superLike(currentProfile.dog.id);
-  };
+  const handleSuperLike = useCallback(() => {
+    if (currentProfile) {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      superLike(currentProfile.dog.id);
+    }
+  }, [currentProfile, superLike]);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">

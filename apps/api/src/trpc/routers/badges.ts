@@ -18,8 +18,6 @@ export function createBadgesRouter(deps: typeof badgeDeps) {
 
     checkAndAward: protectedProcedure
       .input(checkAndAwardSchema)
-      .mutation(async ({ input }) =>
-        unwrapResult(await deps.checkAndAwardBadges(input.dogId)),
-      ),
+      .mutation(async ({ input }) => unwrapResult(await deps.checkAndAwardBadges(input.dogId))),
   });
 }

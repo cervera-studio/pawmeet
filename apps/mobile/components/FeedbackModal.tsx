@@ -13,13 +13,7 @@ type Props = {
   onSubmit: () => void;
 };
 
-function StarSelector({
-  rating,
-  onSelect,
-}: {
-  rating: number;
-  onSelect: (value: number) => void;
-}) {
+function StarSelector({ rating, onSelect }: { rating: number; onSelect: (value: number) => void }) {
   return (
     <View className="flex-row justify-center gap-2">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -94,9 +88,7 @@ export function FeedbackModal({ visible, walkId, toDogId, onClose, onSubmit }: P
 
           {/* Comment */}
           <View className="mb-6">
-            <Text className="mb-1 text-sm font-medium text-gray-700">
-              Commento (opzionale)
-            </Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700">Commento (opzionale)</Text>
             <TextInput
               value={comment}
               onChangeText={setComment}

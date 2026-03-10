@@ -1,8 +1,8 @@
+import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -23,6 +23,37 @@ function formatTime(date: Date | string): string {
   const d = new Date(date);
   return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 }
+
+// ── Loading skeleton ──────────────────────────────────────────────────────────
+
+function ChatLoadingSkeleton() {
+  return (
+    <View className="flex-1 px-4 py-2">
+      {/* Incoming message */}
+      <View className="mb-2 self-start max-w-[80%]">
+        <View className="h-10 w-48 rounded-2xl rounded-bl-sm bg-gray-200 animate-pulse" />
+      </View>
+      {/* Outgoing message */}
+      <View className="mb-2 self-end max-w-[80%]">
+        <View className="h-10 w-40 rounded-2xl rounded-br-sm bg-gray-200 animate-pulse" />
+      </View>
+      {/* Incoming message */}
+      <View className="mb-2 self-start max-w-[80%]">
+        <View className="h-16 w-56 rounded-2xl rounded-bl-sm bg-gray-200 animate-pulse" />
+      </View>
+      {/* Outgoing message */}
+      <View className="mb-2 self-end max-w-[80%]">
+        <View className="h-10 w-32 rounded-2xl rounded-br-sm bg-gray-200 animate-pulse" />
+      </View>
+    </View>
+  );
+}
+
+// ── Estimated item height for getItemLayout (average message bubble) ─────────
+
+const ESTIMATED_MESSAGE_HEIGHT = 60;
+
+// ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function ChatConversationScreen() {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
@@ -69,13 +100,14 @@ export default function ChatConversationScreen() {
     typingTimeoutRef.current = setTimeout(() => sendTyping(false), 2000);
   };
 
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
     if (!text.trim()) return;
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     sendMessage(text.trim());
     setText('');
     sendTyping(false);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-  };
+  }, [text, sendMessage, sendTyping]);
 
   const handlePickImage = useCallback(async () => {
     setShowAttachments(false);
@@ -100,6 +132,28 @@ export default function ChatConversationScreen() {
       sendLocation(coords.latitude, coords.longitude, 'Punto di incontro');
     }
   }, [coordinates, getCurrentLocation, sendLocation]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: (typeof messages)[number] }) => (
+      <ChatBubble
+        text={item.content}
+        isMine={item.senderId === userId}
+        timestamp={formatTime(item.createdAt)}
+        mediaUrl={item.mediaUrl}
+        status={item.senderId === userId ? item.status : undefined}
+      />
+    ),
+    [userId],
+  );
+
+  const getItemLayout = useCallback(
+    (_data: unknown, index: number) => ({
+      length: ESTIMATED_MESSAGE_HEIGHT,
+      offset: ESTIMATED_MESSAGE_HEIGHT * index,
+      index,
+    }),
+    [],
+  );
 
   return (
     <>
@@ -127,29 +181,26 @@ export default function ChatConversationScreen() {
         >
           {/* Messages */}
           {loadingMessages ? (
-            <View className="flex-1 items-center justify-center">
-              <ActivityIndicator size="large" color="#FF6B35" />
-            </View>
+            <ChatLoadingSkeleton />
           ) : (
             <FlatList
               ref={flatListRef}
               data={messages}
               keyExtractor={(item) => item.id}
               contentContainerClassName="px-4 py-2"
-              renderItem={({ item }) => (
-                <ChatBubble
-                  text={item.content}
-                  isMine={item.senderId === userId}
-                  timestamp={formatTime(item.createdAt)}
-                  mediaUrl={item.mediaUrl}
-                  status={item.senderId === userId ? item.status : undefined}
-                />
-              )}
+              renderItem={renderItem}
+              getItemLayout={getItemLayout}
+              initialNumToRender={15}
+              maxToRenderPerBatch={10}
+              windowSize={11}
               ListEmptyComponent={
                 <View className="items-center py-20">
-                  <Text className="text-5xl">🐾</Text>
-                  <Text className="mt-4 text-center text-sm text-gray-400">
-                    Inizia la conversazione! Organizza una passeggiata insieme.
+                  <Text className="text-5xl">{'\u{1F43E}'}</Text>
+                  <Text className="mt-4 text-center text-lg font-semibold text-gray-900">
+                    Inizia la conversazione!
+                  </Text>
+                  <Text className="mt-2 text-center text-sm text-gray-500 px-8">
+                    Presentati e organizza una passeggiata insieme.
                   </Text>
                 </View>
               }
@@ -172,14 +223,14 @@ export default function ChatConversationScreen() {
                 onPress={handlePickImage}
                 className="items-center rounded-xl bg-gray-50 px-4 py-3"
               >
-                <Text className="text-2xl">📷</Text>
+                <Text className="text-2xl">{'\u{1F4F7}'}</Text>
                 <Text className="mt-1 text-xs text-gray-600">Foto</Text>
               </Pressable>
               <Pressable
                 onPress={handleSendLocation}
                 className="items-center rounded-xl bg-gray-50 px-4 py-3"
               >
-                <Text className="text-2xl">📍</Text>
+                <Text className="text-2xl">{'\u{1F4CD}'}</Text>
                 <Text className="mt-1 text-xs text-gray-600">Posizione</Text>
               </Pressable>
               <Pressable
@@ -189,7 +240,7 @@ export default function ChatConversationScreen() {
                 }}
                 className="items-center rounded-xl bg-gray-50 px-4 py-3"
               >
-                <Text className="text-2xl">🗓️</Text>
+                <Text className="text-2xl">{'\u{1F5D3}'}</Text>
                 <Text className="mt-1 text-xs text-gray-600">Passeggiata</Text>
               </Pressable>
             </View>
@@ -201,7 +252,7 @@ export default function ChatConversationScreen() {
               onPress={() => setShowAttachments(!showAttachments)}
               className="mr-2 h-10 w-10 items-center justify-center rounded-full bg-gray-100"
             >
-              <Text className="text-lg">{showAttachments ? '✕' : '+'}</Text>
+              <Text className="text-lg">{showAttachments ? '\u2715' : '+'}</Text>
             </Pressable>
 
             <TextInput
@@ -221,7 +272,9 @@ export default function ChatConversationScreen() {
                 text.trim() ? 'bg-primary' : 'bg-gray-200'
               }`}
             >
-              <Text className={`text-lg ${text.trim() ? 'text-white' : 'text-gray-400'}`}>↑</Text>
+              <Text className={`text-lg ${text.trim() ? 'text-white' : 'text-gray-400'}`}>
+                {'\u2191'}
+              </Text>
             </Pressable>
           </View>
         </KeyboardAvoidingView>

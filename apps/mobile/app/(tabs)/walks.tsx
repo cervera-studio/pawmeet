@@ -6,7 +6,8 @@ import { WALK_STATUS } from '@dogwalk/types';
 type Walk = RouterOutput['walks']['listUpcoming']['walks'][number];
 
 import { logger } from '@dogwalk/utils';
-import { useState } from 'react';
+import * as Haptics from 'expo-haptics';
+import { memo, useCallback, useState } from 'react';
 import { Alert, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeedbackModal } from '@/components/FeedbackModal';
@@ -61,7 +62,37 @@ function statusColor(status: string): string {
   }
 }
 
-function WalkCard({
+// ── Loading skeleton ──────────────────────────────────────────────────────────
+
+function WalkCardSkeleton() {
+  return (
+    <View className="mb-3 rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
+      <View className="flex-row items-center justify-between mb-2">
+        <View>
+          <View className="h-5 w-28 rounded bg-gray-200 animate-pulse" />
+          <View className="mt-1 h-4 w-20 rounded bg-gray-200 animate-pulse" />
+        </View>
+        <View className="h-6 w-20 rounded-full bg-gray-200 animate-pulse" />
+      </View>
+      <View className="h-4 w-40 rounded bg-gray-200 animate-pulse mt-1" />
+      <View className="h-4 w-32 rounded bg-gray-200 animate-pulse mt-1" />
+    </View>
+  );
+}
+
+function WalksLoadingSkeleton() {
+  return (
+    <View className="px-4 py-3">
+      <WalkCardSkeleton />
+      <WalkCardSkeleton />
+      <WalkCardSkeleton />
+    </View>
+  );
+}
+
+// ── WalkCard (memoized) ──────────────────────────────────────────────────────
+
+const WalkCard = memo(function WalkCard({
   walk,
   userId,
   onAccept,
@@ -141,7 +172,27 @@ function WalkCard({
       )}
     </View>
   );
+});
+
+WalkCard.displayName = 'WalkCard';
+
+// ── Empty state ──────────────────────────────────────────────────────────────
+
+function WalksEmptyState() {
+  return (
+    <View className="flex-1 items-center justify-center py-20">
+      <Text className="text-5xl">{'\u{1F5D3}'}</Text>
+      <Text className="mt-4 text-lg font-semibold text-gray-900">
+        Nessuna passeggiata in programma
+      </Text>
+      <Text className="mt-2 text-center text-sm text-gray-500 px-8">
+        Proponi una passeggiata dalla chat con uno dei tuoi match!
+      </Text>
+    </View>
+  );
 }
+
+// ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function WalksScreen() {
   const userId = useAuthStore((s) => s.user?.id) ?? '';
@@ -151,52 +202,80 @@ export default function WalksScreen() {
     toDogId: string;
   } | null>(null);
 
-  const handleFeedback = (walk: Walk) => {
+  const handleFeedback = useCallback((walk: Walk) => {
     // The walk's matchId is used to identify the other participant's dog.
     // The API's feedback.submit endpoint will resolve the toDogId from the walk/match.
     setFeedbackTarget({ walkId: walk.id, toDogId: walk.matchId });
-  };
+  }, []);
 
-  const handleFeedbackSubmit = () => {
+  const handleFeedbackSubmit = useCallback(() => {
     setFeedbackTarget(null);
     fetchUpcoming();
-  };
+  }, [fetchUpcoming]);
 
-  const handleAccept = async (walkId: string) => {
-    try {
-      await respondToWalk(walkId, true);
-    } catch (e) {
-      logger.warn('WalksScreen', 'Failed to accept walk', e);
-      Alert.alert('Errore', 'Impossibile accettare la passeggiata');
-    }
-  };
+  const handleAccept = useCallback(
+    async (walkId: string) => {
+      try {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        await respondToWalk(walkId, true);
+      } catch (e) {
+        logger.warn('WalksScreen', 'Failed to accept walk', e);
+        Alert.alert('Errore', 'Impossibile accettare la passeggiata');
+      }
+    },
+    [respondToWalk],
+  );
 
-  const handleDecline = async (walkId: string) => {
-    try {
-      await respondToWalk(walkId, false);
-    } catch (e) {
-      logger.warn('WalksScreen', 'Failed to decline walk', e);
-      Alert.alert('Errore', 'Impossibile rifiutare la passeggiata');
-    }
-  };
+  const handleDecline = useCallback(
+    async (walkId: string) => {
+      try {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        await respondToWalk(walkId, false);
+      } catch (e) {
+        logger.warn('WalksScreen', 'Failed to decline walk', e);
+        Alert.alert('Errore', 'Impossibile rifiutare la passeggiata');
+      }
+    },
+    [respondToWalk],
+  );
 
-  const handleCancel = (walkId: string) => {
-    Alert.alert('Annulla passeggiata', 'Sei sicuro di voler annullare questa passeggiata?', [
-      { text: 'No', style: 'cancel' },
-      {
-        text: 'Annulla passeggiata',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await cancelWalk(walkId);
-          } catch (e) {
-            logger.warn('WalksScreen', 'Failed to cancel walk', e);
-            Alert.alert('Errore', 'Impossibile annullare la passeggiata');
-          }
+  const handleCancel = useCallback(
+    (walkId: string) => {
+      Alert.alert('Annulla passeggiata', 'Sei sicuro di voler annullare questa passeggiata?', [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Annulla passeggiata',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await cancelWalk(walkId);
+            } catch (e) {
+              logger.warn('WalksScreen', 'Failed to cancel walk', e);
+              Alert.alert('Errore', 'Impossibile annullare la passeggiata');
+            }
+          },
         },
-      },
-    ]);
-  };
+      ]);
+    },
+    [cancelWalk],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: Walk }) => (
+      <WalkCard
+        walk={item}
+        userId={userId}
+        onAccept={() => handleAccept(item.id)}
+        onDecline={() => handleDecline(item.id)}
+        onCancel={() => handleCancel(item.id)}
+        onFeedback={() => handleFeedback(item)}
+      />
+    ),
+    [userId, handleAccept, handleDecline, handleCancel, handleFeedback],
+  );
+
+  // Show skeleton on initial load only (not pull-to-refresh)
+  const isInitialLoad = loading && upcomingWalks.length === 0;
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -204,30 +283,21 @@ export default function WalksScreen() {
         <Text className="text-2xl font-bold text-gray-900">Passeggiate</Text>
       </View>
 
-      <FlatList
-        data={upcomingWalks}
-        keyExtractor={(item) => item.id}
-        contentContainerClassName="px-4 py-3"
-        onRefresh={fetchUpcoming}
-        refreshing={loading}
-        renderItem={({ item }) => (
-          <WalkCard
-            walk={item}
-            userId={userId}
-            onAccept={() => handleAccept(item.id)}
-            onDecline={() => handleDecline(item.id)}
-            onCancel={() => handleCancel(item.id)}
-            onFeedback={() => handleFeedback(item)}
-          />
-        )}
-        ListEmptyComponent={
-          <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-5xl">🗓️</Text>
-            <Text className="mt-4 text-lg text-gray-400">Nessuna passeggiata in programma</Text>
-            <Text className="mt-1 text-sm text-gray-300">Proponi una passeggiata dalla chat!</Text>
-          </View>
-        }
-      />
+      {isInitialLoad ? (
+        <WalksLoadingSkeleton />
+      ) : (
+        <FlatList
+          data={upcomingWalks}
+          keyExtractor={(item) => item.id}
+          contentContainerClassName="px-4 py-3"
+          onRefresh={fetchUpcoming}
+          refreshing={loading}
+          renderItem={renderItem}
+          initialNumToRender={8}
+          maxToRenderPerBatch={6}
+          ListEmptyComponent={<WalksEmptyState />}
+        />
+      )}
 
       {feedbackTarget && (
         <FeedbackModal

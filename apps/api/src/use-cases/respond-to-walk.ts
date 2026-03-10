@@ -1,5 +1,4 @@
-import { WALK_STATUS } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed, WALK_STATUS } from '@dogwalk/types';
 import type { DogRepository, MatchRepository, WalkRepository } from '../ports/index.js';
 
 type Deps = {
@@ -20,15 +19,17 @@ export function createRespondToWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
     }
 
     if (walk.status !== WALK_STATUS.PENDING) {
-      return fail(
-        new AppError('WALK_NOT_PENDING', 'La passeggiata non è più in attesa', 400),
-      );
+      return fail(new AppError('WALK_NOT_PENDING', 'La passeggiata non è più in attesa', 400));
     }
 
     // The responder must NOT be the creator
     if (walk.createdBy === userId) {
       return fail(
-        new AppError('WALK_CANNOT_RESPOND_OWN', 'Non puoi rispondere alla tua stessa proposta', 403),
+        new AppError(
+          'WALK_CANNOT_RESPOND_OWN',
+          'Non puoi rispondere alla tua stessa proposta',
+          403,
+        ),
       );
     }
 

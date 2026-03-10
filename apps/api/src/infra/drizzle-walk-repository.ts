@@ -1,6 +1,6 @@
-import { dogProfiles, matches, walks } from '@dogwalk/db';
+import { dogProfiles, matches, walkFeedback, walks } from '@dogwalk/db';
 import type { Walk, WalkStatus } from '@dogwalk/types';
-import { and, eq, gt, inArray, or } from 'drizzle-orm';
+import { and, avg, count, eq, gt, inArray, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { WalkRepository } from '../ports/walk-repository.js';
 
@@ -80,5 +80,39 @@ export class DrizzleWalkRepository implements WalkRepository {
 
   async delete(id: string): Promise<void> {
     await this.db.delete(walks).where(eq(walks.id, id));
+  }
+
+  async countCompletedForDog(dogId: string): Promise<number> {
+    // Find all matches where this dog participates
+    const dogMatches = await this.db
+      .select({ id: matches.id })
+      .from(matches)
+      .where(or(eq(matches.dogAId, dogId), eq(matches.dogBId, dogId)));
+
+    if (dogMatches.length === 0) return 0;
+
+    const matchIds = dogMatches.map((m) => m.id);
+
+    const [result] = await this.db
+      .select({ total: count() })
+      .from(walks)
+      .where(and(inArray(walks.matchId, matchIds), eq(walks.status, 'completed')));
+
+    return result?.total ?? 0;
+  }
+
+  async getAverageRatingForDog(dogId: string): Promise<{ average: number; count: number }> {
+    const [result] = await this.db
+      .select({
+        average: avg(walkFeedback.rating),
+        total: count(),
+      })
+      .from(walkFeedback)
+      .where(eq(walkFeedback.toDogId, dogId));
+
+    return {
+      average: result?.average ? Number(result.average) : 0,
+      count: result?.total ?? 0,
+    };
   }
 }

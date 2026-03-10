@@ -231,7 +231,9 @@ export default function ChatConversationScreen() {
         visible={showWalkModal}
         matchId={matchId}
         onClose={() => setShowWalkModal(false)}
-        onPropose={async (input) => { await proposeWalk(input); }}
+        onPropose={async (input) => {
+          await proposeWalk(input);
+        }}
       />
     </>
   );

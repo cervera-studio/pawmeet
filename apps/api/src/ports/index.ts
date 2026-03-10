@@ -1,8 +1,10 @@
 export type { AuthService, TokenPair } from './auth-service.js';
+export type { BadgeRepository } from './badge-repository.js';
 export type { Breed, BreedRepository } from './breed-repository.js';
 export type { ChatService } from './chat-service.js';
 export type { CreateDogInput, DogRepository } from './dog-repository.js';
 export type { EmailService } from './email-service.js';
+export type { FeedbackRepository } from './feedback-repository.js';
 export type { CandidateDog, MatchRepository } from './match-repository.js';
 export type {
   ConversationSummary,

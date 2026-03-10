@@ -1,15 +1,7 @@
 import { WALK_DURATION_MAX, WALK_DURATION_MIN } from '@dogwalk/config';
 import { logger } from '@dogwalk/utils';
 import { useState } from 'react';
-import {
-  Alert,
-  Modal,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 
@@ -98,9 +90,7 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
         <ScrollView className="flex-1 px-4 py-4" keyboardShouldPersistTaps="handled">
           {/* Date input */}
           <View className="mb-4">
-            <Text className="mb-1 text-sm font-medium text-gray-700">
-              Data (AAAA-MM-GG) *
-            </Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700">Data (AAAA-MM-GG) *</Text>
             <TextInput
               value={date}
               onChangeText={setDate}
@@ -193,9 +183,7 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           <Pressable
             onPress={handleSubmit}
             disabled={submitting}
-            className={`items-center rounded-xl py-4 ${
-              submitting ? 'bg-gray-300' : 'bg-primary'
-            }`}
+            className={`items-center rounded-xl py-4 ${submitting ? 'bg-gray-300' : 'bg-primary'}`}
           >
             <Text className="text-base font-bold text-white">
               {submitting ? 'Invio...' : 'Proponi'}

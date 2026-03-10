@@ -1,5 +1,7 @@
+export * from './badge';
 export * from './chat';
 export * from './dog';
+export * from './feedback';
 export * from './match';
 export * from './result';
 export * from './user';

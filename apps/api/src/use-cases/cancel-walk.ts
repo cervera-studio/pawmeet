@@ -1,5 +1,4 @@
-import { WALK_STATUS } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed, WALK_STATUS } from '@dogwalk/types';
 import type { DogRepository, MatchRepository, WalkRepository } from '../ports/index.js';
 
 type Deps = {

@@ -54,9 +54,7 @@ export const useDogsStore = create<DogsState>()(
           return {
             dogs: remaining,
             // If the removed dog was selected, auto-select the first remaining dog
-            ...(state.selectedDogId === id
-              ? { selectedDogId: remaining[0]?.id ?? null }
-              : {}),
+            ...(state.selectedDogId === id ? { selectedDogId: remaining[0]?.id ?? null } : {}),
           };
         }),
 

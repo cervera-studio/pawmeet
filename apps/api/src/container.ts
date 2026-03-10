@@ -1,6 +1,8 @@
 // Infra implementations
+import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
+import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
 import { DrizzleMessageRepository } from './infra/drizzle-message-repository.js';
 import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
@@ -11,6 +13,10 @@ import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
 import { db } from './lib/db.js';
+// Use cases — walks
+import { createCancelWalk } from './use-cases/cancel-walk.js';
+// Use cases — badges
+import { createCheckAndAwardBadges } from './use-cases/check-and-award-badges.js';
 // Use cases — users
 import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
 // Use cases — dogs
@@ -19,36 +25,39 @@ import { createCreateDog } from './use-cases/create-dog.js';
 import { createDeleteAvatar } from './use-cases/delete-avatar.js';
 import { createDeleteDog } from './use-cases/delete-dog.js';
 import { createDeleteDogPhoto } from './use-cases/delete-dog-photo.js';
-// Use cases — walks
-import { createCancelWalk } from './use-cases/cancel-walk.js';
-import { createListUpcomingWalks } from './use-cases/list-upcoming-walks.js';
-import { createListWalksByMatch } from './use-cases/list-walks-by-match.js';
-import { createProposeWalk } from './use-cases/propose-walk.js';
-import { createRespondToWalk } from './use-cases/respond-to-walk.js';
 // Use cases — matches
 import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
 import { createGetDog } from './use-cases/get-dog.js';
+// Use cases — feedback
+import { createGetDogRating } from './use-cases/get-dog-rating.js';
 // Use cases — chat
 import { createGetMessages } from './use-cases/get-messages.js';
 import { createGetProfile } from './use-cases/get-profile.js';
 import { createLikeDog } from './use-cases/like-dog.js';
+import { createListBadges } from './use-cases/list-badges.js';
 import { createListConversations } from './use-cases/list-conversations.js';
 import { createListMatches } from './use-cases/list-matches.js';
+import { createListUpcomingWalks } from './use-cases/list-upcoming-walks.js';
 import { createListUserDogs } from './use-cases/list-user-dogs.js';
+import { createListWalkFeedback } from './use-cases/list-walk-feedback.js';
+import { createListWalksByMatch } from './use-cases/list-walks-by-match.js';
 import { createLoginUser } from './use-cases/login-user.js';
 import { createLogoutUser } from './use-cases/logout-user.js';
 import { createMarkMessagesRead } from './use-cases/mark-messages-read.js';
 import { createPassDog } from './use-cases/pass-dog.js';
+import { createProposeWalk } from './use-cases/propose-walk.js';
 import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createResetPassword } from './use-cases/reset-password.js';
+import { createRespondToWalk } from './use-cases/respond-to-walk.js';
 import { createSearchBreeds } from './use-cases/search-breeds.js';
 import { createSendMessage } from './use-cases/send-message.js';
+import { createSubmitFeedback } from './use-cases/submit-feedback.js';
 import { createUnmatch } from './use-cases/unmatch.js';
 import { createUpdateDog } from './use-cases/update-dog.js';
 import { createUpdateLocation } from './use-cases/update-location.js';
@@ -67,6 +76,8 @@ const messageRepo = new DrizzleMessageRepository(db);
 const tokenRepo = new DrizzleTokenRepository(db);
 const breedRepo = new DrizzleBreedRepository(db);
 const walkRepo = new DrizzleWalkRepository(db);
+const feedbackRepo = new DrizzleFeedbackRepository(db);
+const badgeRepo = new DrizzleBadgeRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
 
@@ -134,6 +145,21 @@ export const walkDeps = {
   cancelWalk: createCancelWalk({ walkRepo, matchRepo, dogRepo }),
   listUpcomingWalks: createListUpcomingWalks({ walkRepo }),
   listWalksByMatch: createListWalksByMatch({ walkRepo, matchRepo, dogRepo }),
+};
+
+// ── Feedback deps ──────────────────────────────────────────────────────────────
+
+export const feedbackDeps = {
+  submitFeedback: createSubmitFeedback({ feedbackRepo, walkRepo, matchRepo, dogRepo }),
+  listWalkFeedback: createListWalkFeedback({ feedbackRepo }),
+  getDogRating: createGetDogRating({ feedbackRepo }),
+};
+
+// ── Badge deps ─────────────────────────────────────────────────────────────────
+
+export const badgeDeps = {
+  listBadges: createListBadges({ badgeRepo }),
+  checkAndAwardBadges: createCheckAndAwardBadges({ badgeRepo, walkRepo }),
 };
 
 // ── Chat deps ───────────────────────────────────────────────────────────────────

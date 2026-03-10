@@ -8,8 +8,11 @@ type DogPhoto = RouterOutput['dogs']['get']['photos'][number];
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BadgeDisplay } from '@/components/BadgeDisplay';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { useBadges } from '@/hooks/useBadges';
+import { useFeedback } from '@/hooks/useFeedback';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
@@ -89,6 +92,8 @@ export default function DogDetailScreen() {
   const [deleting, setDeleting] = useState(false);
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
   const { uploading, uploadDogPhoto } = useImageUpload();
+  const { badges, fetchBadges } = useBadges();
+  const { dogRating, fetchDogRating } = useFeedback();
 
   useEffect(() => {
     if (params.dogId) {
@@ -103,8 +108,10 @@ export default function DogDetailScreen() {
           logger.warn('DogDetail', 'Failed to fetch dog', e);
           setLoading(false);
         });
+      fetchBadges(params.dogId);
+      fetchDogRating(params.dogId);
     }
-  }, [params.dogId]);
+  }, [params.dogId, fetchBadges, fetchDogRating]);
 
   const handleUploadPhoto = async () => {
     if (!dog) return;
@@ -222,6 +229,25 @@ export default function DogDetailScreen() {
                 <Text className="text-xs font-medium text-gray-600">Profilo disattivato</Text>
               </View>
             )}
+          </View>
+
+          {/* Rating */}
+          {dogRating && dogRating.count > 0 && (
+            <View className="mt-3 flex-row items-center justify-center gap-1">
+              <Text className="text-base">{'\u{2B50}'}</Text>
+              <Text className="text-base font-semibold text-gray-900">
+                {dogRating.average?.toFixed(1) ?? '-'}
+              </Text>
+              <Text className="text-sm text-gray-500">
+                ({dogRating.count} {dogRating.count === 1 ? 'recensione' : 'recensioni'})
+              </Text>
+            </View>
+          )}
+
+          {/* Badges */}
+          <View className="mt-4">
+            <Text className="mb-2 text-base font-semibold text-gray-900">Badge</Text>
+            <BadgeDisplay badges={badges} />
           </View>
 
           {/* Bio */}

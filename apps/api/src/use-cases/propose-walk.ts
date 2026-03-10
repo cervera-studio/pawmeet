@@ -1,5 +1,4 @@
-import { WALK_STATUS } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed, WALK_STATUS } from '@dogwalk/types';
 import type { DogRepository, MatchRepository, WalkRepository } from '../ports/index.js';
 
 type Deps = {
@@ -20,10 +19,7 @@ type ProposeWalkInput = {
 };
 
 export function createProposeWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
-  return async (
-    userId: string,
-    input: ProposeWalkInput,
-  ): Promise<Result<{ walkId: string }>> => {
+  return async (userId: string, input: ProposeWalkInput): Promise<Result<{ walkId: string }>> => {
     // Validate match exists and is active
     const match = await matchRepo.findById(input.matchId);
     if (!match || !match.isActive) {
@@ -39,9 +35,7 @@ export function createProposeWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
 
     // Validate scheduledAt is in the future
     if (input.scheduledAt <= new Date()) {
-      return fail(
-        new AppError('WALK_INVALID_DATE', 'La data deve essere nel futuro', 400),
-      );
+      return fail(new AppError('WALK_INVALID_DATE', 'La data deve essere nel futuro', 400));
     }
 
     const walk = await walkRepo.create({

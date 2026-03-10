@@ -44,20 +44,26 @@ export function createWalksRouter(deps: typeof walkDeps) {
       ),
     ),
 
-    respond: protectedProcedure.input(respondSchema).mutation(async ({ ctx, input }) =>
-      unwrapResult(await deps.respondToWalk(ctx.userId, input.walkId, input.accept)),
-    ),
+    respond: protectedProcedure
+      .input(respondSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.respondToWalk(ctx.userId, input.walkId, input.accept)),
+      ),
 
-    cancel: protectedProcedure.input(cancelSchema).mutation(async ({ ctx, input }) =>
-      unwrapResult(await deps.cancelWalk(ctx.userId, input.walkId)),
-    ),
+    cancel: protectedProcedure
+      .input(cancelSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.cancelWalk(ctx.userId, input.walkId)),
+      ),
 
     listUpcoming: protectedProcedure.query(async ({ ctx }) =>
       unwrapResult(await deps.listUpcomingWalks(ctx.userId)),
     ),
 
-    listByMatch: protectedProcedure.input(listByMatchSchema).query(async ({ ctx, input }) =>
-      unwrapResult(await deps.listWalksByMatch(ctx.userId, input.matchId)),
-    ),
+    listByMatch: protectedProcedure
+      .input(listByMatchSchema)
+      .query(async ({ ctx, input }) =>
+        unwrapResult(await deps.listWalksByMatch(ctx.userId, input.matchId)),
+      ),
   });
 }

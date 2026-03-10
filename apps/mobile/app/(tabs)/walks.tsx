@@ -4,9 +4,12 @@ import type { RouterOutput } from '@dogwalk/api-client';
 import { WALK_STATUS } from '@dogwalk/types';
 
 type Walk = RouterOutput['walks']['listUpcoming']['walks'][number];
+
 import { logger } from '@dogwalk/utils';
+import { useState } from 'react';
 import { Alert, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FeedbackModal } from '@/components/FeedbackModal';
 import { useWalks } from '@/hooks/useWalks';
 import { useAuthStore } from '@/stores/auth';
 
@@ -49,6 +52,8 @@ function statusColor(status: string): string {
       return 'bg-green-100 text-green-800';
     case WALK_STATUS.DECLINED:
       return 'bg-red-100 text-red-800';
+    case WALK_STATUS.COMPLETED:
+      return 'bg-blue-100 text-blue-800';
     case WALK_STATUS.CANCELLED:
       return 'bg-gray-100 text-gray-500';
     default:
@@ -62,16 +67,19 @@ function WalkCard({
   onAccept,
   onDecline,
   onCancel,
+  onFeedback,
 }: {
   walk: Walk;
   userId: string;
   onAccept: () => void;
   onDecline: () => void;
   onCancel: () => void;
+  onFeedback: () => void;
 }) {
   const isMine = walk.createdBy === userId;
   const isPending = walk.status === WALK_STATUS.PENDING;
   const isAccepted = walk.status === WALK_STATUS.ACCEPTED;
+  const isCompleted = walk.status === WALK_STATUS.COMPLETED;
 
   return (
     <View className="mb-3 rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
@@ -93,19 +101,13 @@ function WalkCard({
       </View>
 
       {/* Title and location */}
-      {walk.title && (
-        <Text className="text-base font-medium text-gray-800 mb-1">{walk.title}</Text>
-      )}
+      {walk.title && <Text className="text-base font-medium text-gray-800 mb-1">{walk.title}</Text>}
       {walk.location && (
         <View className="flex-row items-center mb-1">
-          <Text className="text-sm text-gray-500">
-            {walk.location}
-          </Text>
+          <Text className="text-sm text-gray-500">{walk.location}</Text>
         </View>
       )}
-      {walk.notes && (
-        <Text className="text-sm text-gray-400 mb-2">{walk.notes}</Text>
-      )}
+      {walk.notes && <Text className="text-sm text-gray-400 mb-2">{walk.notes}</Text>}
 
       {/* Action buttons */}
       {isPending && !isMine && (
@@ -116,22 +118,24 @@ function WalkCard({
           >
             <Text className="font-semibold text-white">Accetta</Text>
           </Pressable>
-          <Pressable
-            onPress={onDecline}
-            className="flex-1 items-center rounded-xl bg-red-100 py-3"
-          >
+          <Pressable onPress={onDecline} className="flex-1 items-center rounded-xl bg-red-100 py-3">
             <Text className="font-semibold text-red-600">Rifiuta</Text>
           </Pressable>
         </View>
       )}
 
-      {(isPending && isMine || isAccepted) && (
+      {((isPending && isMine) || isAccepted) && (
         <View className="mt-2">
-          <Pressable
-            onPress={onCancel}
-            className="items-center rounded-xl bg-gray-100 py-3"
-          >
+          <Pressable onPress={onCancel} className="items-center rounded-xl bg-gray-100 py-3">
             <Text className="font-semibold text-gray-600">Annulla</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {isCompleted && (
+        <View className="mt-2">
+          <Pressable onPress={onFeedback} className="items-center rounded-xl bg-primary py-3">
+            <Text className="font-semibold text-white">Lascia feedback</Text>
           </Pressable>
         </View>
       )}
@@ -142,6 +146,21 @@ function WalkCard({
 export default function WalksScreen() {
   const userId = useAuthStore((s) => s.user?.id) ?? '';
   const { upcomingWalks, loading, fetchUpcoming, respondToWalk, cancelWalk } = useWalks();
+  const [feedbackTarget, setFeedbackTarget] = useState<{
+    walkId: string;
+    toDogId: string;
+  } | null>(null);
+
+  const handleFeedback = (walk: Walk) => {
+    // The walk's matchId is used to identify the other participant's dog.
+    // The API's feedback.submit endpoint will resolve the toDogId from the walk/match.
+    setFeedbackTarget({ walkId: walk.id, toDogId: walk.matchId });
+  };
+
+  const handleFeedbackSubmit = () => {
+    setFeedbackTarget(null);
+    fetchUpcoming();
+  };
 
   const handleAccept = async (walkId: string) => {
     try {
@@ -198,20 +217,27 @@ export default function WalksScreen() {
             onAccept={() => handleAccept(item.id)}
             onDecline={() => handleDecline(item.id)}
             onCancel={() => handleCancel(item.id)}
+            onFeedback={() => handleFeedback(item)}
           />
         )}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center py-20">
             <Text className="text-5xl">🗓️</Text>
-            <Text className="mt-4 text-lg text-gray-400">
-              Nessuna passeggiata in programma
-            </Text>
-            <Text className="mt-1 text-sm text-gray-300">
-              Proponi una passeggiata dalla chat!
-            </Text>
+            <Text className="mt-4 text-lg text-gray-400">Nessuna passeggiata in programma</Text>
+            <Text className="mt-1 text-sm text-gray-300">Proponi una passeggiata dalla chat!</Text>
           </View>
         }
       />
+
+      {feedbackTarget && (
+        <FeedbackModal
+          visible
+          walkId={feedbackTarget.walkId}
+          toDogId={feedbackTarget.toDogId}
+          onClose={() => setFeedbackTarget(null)}
+          onSubmit={handleFeedbackSubmit}
+        />
+      )}
     </SafeAreaView>
   );
 }

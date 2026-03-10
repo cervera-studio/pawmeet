@@ -53,9 +53,7 @@ export function MatchCard({
         )}
         {myDogName && (
           <View className="mt-1 flex-row items-center">
-            <Text className="text-[10px] text-gray-400">
-              via {myDogName}
-            </Text>
+            <Text className="text-[10px] text-gray-400">via {myDogName}</Text>
           </View>
         )}
       </View>

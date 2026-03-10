@@ -46,6 +46,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="events"
+        options={{
+          title: 'Eventi',
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>📅</Text>,
+        }}
+      />
+      <Tabs.Screen
         name="walks"
         options={{
           title: 'Passeggiate',

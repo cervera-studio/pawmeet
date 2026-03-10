@@ -17,6 +17,7 @@
     "@dogwalk/types": "workspace:*",
     "@dogwalk/utils": "workspace:*",
     "@dogwalk/validation": "workspace:*",
+    "@react-native-community/datetimepicker": "^8.6.0",
     "@tanstack/react-query": "^5.90.0",
     "expo": "~55.0.0",
     "expo-constants": "~55.0.0",

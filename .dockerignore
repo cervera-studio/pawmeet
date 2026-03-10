@@ -12,9 +12,6 @@ apps/web/.astro
 apps/admin/.next
 apps/mobile/.expo
 
-# Tooling
-tooling/vitest
-
 # Dev/test files
 **/*.test.ts
 **/*.test.tsx

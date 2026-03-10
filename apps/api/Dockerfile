@@ -22,7 +22,8 @@ COPY tooling/typescript/package.json ./tooling/typescript/
 COPY tooling/vitest/package.json ./tooling/vitest/
 
 # Install all dependencies (frozen lockfile for reproducibility)
-RUN pnpm install --frozen-lockfile
+# --ignore-scripts: skip lefthook prepare (no git in container)
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # ── Stage 3: Build ───────────────────────────────────────────
 FROM base AS builder
@@ -44,21 +45,20 @@ COPY tooling/typescript/ ./tooling/typescript/
 # Build the API and its dependencies via Turborepo
 RUN pnpm turbo build --filter=@dogwalk/api...
 
-# Prune dev dependencies after build
-RUN pnpm prune --prod
-
 # ── Stage 4: Runner ──────────────────────────────────────────
 FROM node:22-alpine AS runner
+RUN corepack enable && corepack prepare pnpm@10.6.0 --activate
 RUN apk add --no-cache libc6-compat dumb-init
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy built output and production dependencies
+# Copy only the bundled output (tsup bundles all deps except bullmq)
 COPY --from=builder /app/apps/api/dist/ ./dist/
-COPY --from=builder /app/apps/api/package.json ./package.json
-COPY --from=builder /app/node_modules/ ./node_modules/
-COPY --from=builder /app/packages/ ./packages/
+
+# Install only the external dependency (bullmq has native optional deps)
+RUN echo '{"type":"module","dependencies":{"bullmq":"^5.70.0"}}' > package.json && \
+    pnpm install --prod --no-lockfile
 
 # Run as non-root user
 RUN addgroup --system --gid 1001 nodejs && \

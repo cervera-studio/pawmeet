@@ -1,7 +1,12 @@
 import type { ChatMessage } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { ChatService, MessageRepository, UserRepository } from '../ports/index.js';
+import type {
+  ChatService,
+  MessageRepository,
+  NotificationService,
+  UserRepository,
+} from '../ports/index.js';
 import { createSendMessage } from './send-message.js';
 
 function buildMessage(overrides: Partial<ChatMessage> = {}): ChatMessage {
@@ -52,6 +57,15 @@ function buildChat(overrides: Partial<ChatService> = {}): ChatService {
   };
 }
 
+function buildNotificationService(
+  overrides: Partial<NotificationService> = {},
+): NotificationService {
+  return {
+    send: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
+  };
+}
+
 describe('sendMessage', () => {
   it('sends a message and emits WS event', async () => {
     const msg = buildMessage();
@@ -60,7 +74,8 @@ describe('sendMessage', () => {
     });
     const chat = buildChat();
     const userRepo = buildUserRepo();
-    const sendMessage = createSendMessage({ messageRepo, chat, userRepo });
+    const notificationService = buildNotificationService();
+    const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 
@@ -89,7 +104,8 @@ describe('sendMessage', () => {
     });
     const chat = buildChat();
     const userRepo = buildUserRepo();
-    const sendMessage = createSendMessage({ messageRepo, chat, userRepo });
+    const notificationService = buildNotificationService();
+    const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });
 
     const result = await sendMessage(
       'user-1',
@@ -110,7 +126,8 @@ describe('sendMessage', () => {
     });
     const chat = buildChat();
     const userRepo = buildUserRepo();
-    const sendMessage = createSendMessage({ messageRepo, chat, userRepo });
+    const notificationService = buildNotificationService();
+    const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 

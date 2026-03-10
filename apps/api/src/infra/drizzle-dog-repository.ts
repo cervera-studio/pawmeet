@@ -118,4 +118,19 @@ export class DrizzleDogRepository implements DogRepository {
         .where(eq(dogPhotos.id, update.id));
     }
   }
+
+  async findPhotoById(photoId: string): Promise<DogPhoto | null> {
+    const [photo] = await this.db.select().from(dogPhotos).where(eq(dogPhotos.id, photoId));
+    return (photo as DogPhoto | undefined) ?? null;
+  }
+
+  async updatePhotoModerationStatus(
+    photoId: string,
+    status: 'approved' | 'rejected',
+  ): Promise<void> {
+    await this.db
+      .update(dogPhotos)
+      .set({ moderationStatus: status })
+      .where(eq(dogPhotos.id, photoId));
+  }
 }

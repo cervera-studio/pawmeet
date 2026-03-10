@@ -47,20 +47,17 @@ export function Providers({ children }: { children: ReactNode }) {
       });
   }, []);
 
-  const login = useCallback(
-    async (email: string, password: string) => {
-      const response = await api.post<{ user: AdminUser; token: string }>('/admin/auth/login', {
-        email,
-        password,
-      });
-      accessTokenRef.current = response.token;
-      api.setToken(response.token);
-      setUser(response.user);
-      // Set session indicator cookie so the middleware can gate access server-side
-      document.cookie = 'admin_session=1; path=/; max-age=28800; SameSite=Lax';
-    },
-    [],
-  );
+  const login = useCallback(async (email: string, password: string) => {
+    const response = await api.post<{ user: AdminUser; token: string }>('/admin/auth/login', {
+      email,
+      password,
+    });
+    accessTokenRef.current = response.token;
+    api.setToken(response.token);
+    setUser(response.user);
+    // Set session indicator cookie so the middleware can gate access server-side
+    document.cookie = 'admin_session=1; path=/; max-age=28800; SameSite=Lax';
+  }, []);
 
   const logout = useCallback(async () => {
     try {

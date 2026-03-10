@@ -68,10 +68,7 @@ export async function generateTokenPair(userId: string) {
 const ADMIN_ACCESS_TOKEN_EXPIRY = '30m';
 const ADMIN_REFRESH_TOKEN_EXPIRY = '8h';
 
-export async function generateAdminAccessToken(
-  adminId: string,
-  role: string,
-): Promise<string> {
+export async function generateAdminAccessToken(adminId: string, role: string): Promise<string> {
   return new SignJWT({ type: 'admin', role })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(adminId)
@@ -80,10 +77,7 @@ export async function generateAdminAccessToken(
     .sign(JWT_SECRET);
 }
 
-export async function generateAdminRefreshToken(
-  adminId: string,
-  role: string,
-): Promise<string> {
+export async function generateAdminRefreshToken(adminId: string, role: string): Promise<string> {
   return new SignJWT({ type: 'admin_refresh', role })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(adminId)

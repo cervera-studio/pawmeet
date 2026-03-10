@@ -68,10 +68,7 @@ export default function ChatListScreen() {
         onRefresh={vm.fetchConversations}
         refreshing={vm.loadingConversations}
         renderItem={({ item }) => (
-          <ChatRow
-            conversation={item}
-            onPress={() => vm.navigateToChat(item.matchId)}
-          />
+          <ChatRow conversation={item} onPress={() => vm.navigateToChat(item.matchId)} />
         )}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center py-20">

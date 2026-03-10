@@ -1,7 +1,4 @@
-import { adminUsers } from '@dogwalk/db';
 import { compare } from 'bcryptjs';
-import { eq } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { Hono } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
 import {
@@ -11,11 +8,12 @@ import {
   verifyAdminAccessToken,
   verifyAdminRefreshToken,
 } from '../lib/jwt.js';
+import type { AdminUserRepository } from '../ports/admin-user-repository.js';
 
 const REFRESH_COOKIE_NAME = 'admin_refresh_token';
 const REFRESH_COOKIE_MAX_AGE = 8 * 60 * 60; // 8 hours in seconds
 
-export function createAdminAuthRoutes(db: NeonHttpDatabase) {
+export function createAdminAuthRoutes(adminUserRepo: AdminUserRepository) {
   return new Hono()
     .post('/login', async (c) => {
       const body = await c.req.json<{ email: string; password: string }>();
@@ -24,10 +22,7 @@ export function createAdminAuthRoutes(db: NeonHttpDatabase) {
         return c.json({ error: 'Email and password are required' }, 400);
       }
 
-      const [admin] = await db
-        .select()
-        .from(adminUsers)
-        .where(eq(adminUsers.email, body.email.toLowerCase().trim()));
+      const admin = await adminUserRepo.findByEmail(body.email.toLowerCase().trim());
 
       if (!admin) {
         return c.json({ error: 'Credenziali non valide' }, 401);
@@ -43,10 +38,7 @@ export function createAdminAuthRoutes(db: NeonHttpDatabase) {
       }
 
       // Update last login
-      await db
-        .update(adminUsers)
-        .set({ lastLoginAt: new Date() })
-        .where(eq(adminUsers.id, admin.id));
+      await adminUserRepo.updateLastLogin(admin.id);
 
       const { accessToken, refreshToken } = await generateAdminTokenPair(admin.id, admin.role);
 
@@ -79,10 +71,7 @@ export function createAdminAuthRoutes(db: NeonHttpDatabase) {
         const token = authHeader.slice(7);
         const payload = await verifyAdminAccessToken(token);
 
-        const [admin] = await db
-          .select()
-          .from(adminUsers)
-          .where(eq(adminUsers.id, payload.sub));
+        const admin = await adminUserRepo.findById(payload.sub);
 
         if (!admin || !admin.isActive) {
           return c.json({ error: 'Unauthorized' }, 401);
@@ -109,10 +98,7 @@ export function createAdminAuthRoutes(db: NeonHttpDatabase) {
       try {
         const payload = await verifyAdminRefreshToken(refreshToken);
 
-        const [admin] = await db
-          .select()
-          .from(adminUsers)
-          .where(eq(adminUsers.id, payload.sub));
+        const admin = await adminUserRepo.findById(payload.sub);
 
         if (!admin || !admin.isActive) {
           return c.json({ error: 'Unauthorized' }, 401);

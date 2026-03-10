@@ -1,17 +1,22 @@
 import type { ChatMessage } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
-import { enqueueNotification } from '../jobs/queue.js';
-import type { ChatService, MessageRepository, UserRepository } from '../ports/index.js';
+import type {
+  ChatService,
+  MessageRepository,
+  NotificationService,
+  UserRepository,
+} from '../ports/index.js';
 import { WS_EVENT } from '../ws/chat.js';
 
 type Deps = {
   messageRepo: MessageRepository;
   chat: ChatService;
   userRepo: UserRepository;
+  notificationService: NotificationService;
 };
 
-export function createSendMessage({ messageRepo, chat, userRepo }: Deps) {
+export function createSendMessage({ messageRepo, chat, userRepo, notificationService }: Deps) {
   return async (
     userId: string,
     matchId: string,
@@ -49,14 +54,16 @@ export function createSendMessage({ messageRepo, chat, userRepo }: Deps) {
         const senderName = sender?.displayName ?? 'Qualcuno';
         const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
 
-        enqueueNotification({
-          userId: recipientId,
-          title: senderName,
-          body: preview,
-          data: { matchId, type: 'new_message' },
-        }).catch((err) =>
-          logger.error('sendMessage', 'Failed to enqueue message notification', err),
-        );
+        notificationService
+          .send({
+            userId: recipientId,
+            title: senderName,
+            body: preview,
+            data: { matchId, type: 'new_message' },
+          })
+          .catch((err) =>
+            logger.error('sendMessage', 'Failed to enqueue message notification', err),
+          );
       }
     }
 

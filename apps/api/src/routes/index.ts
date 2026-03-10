@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
-import { authDeps, chatDeps, dogDeps, matchDeps, userDeps } from '../container.js';
-import { db } from '../lib/db.js';
+import { adminDeps, authDeps, chatDeps, dogDeps, matchDeps, userDeps } from '../container.js';
 import { createAdminAuthRoutes } from './admin-auth.js';
 import { createAuthRoutes } from './auth.js';
 import { createChatRoutes } from './chat.js';
@@ -14,6 +13,6 @@ export const routes = new Hono()
   .route('/matches', createMatchRoutes(matchDeps))
   .route('/chat', createChatRoutes(chatDeps))
   .route('/users', createUserRoutes(userDeps))
-  .route('/admin/auth', createAdminAuthRoutes(db));
+  .route('/admin/auth', createAdminAuthRoutes(adminDeps.adminUserRepo));
 
 export type AppType = typeof routes;

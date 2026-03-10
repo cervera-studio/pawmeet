@@ -46,4 +46,9 @@ export interface DogRepository {
   updatePhotoPositions(
     updates: { id: string; position: number; isPrimary: boolean }[],
   ): Promise<void>;
+  findPhotoById(photoId: string): Promise<DogPhoto | null>;
+  updatePhotoModerationStatus(
+    photoId: string,
+    status: 'approved' | 'rejected',
+  ): Promise<void>;
 }

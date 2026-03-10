@@ -1,4 +1,5 @@
 // Infra implementations
+import { DrizzleAdminUserRepository } from './infra/drizzle-admin-user-repository.js';
 import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
@@ -11,6 +12,7 @@ import { DrizzleWalkRepository } from './infra/drizzle-walk-repository.js';
 import { JwtAuthService } from './infra/jwt-auth-service.js';
 import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
+import { BullMQNotificationService } from './infra/bullmq-notification-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
 import { db } from './lib/db.js';
 // Use cases — walks
@@ -69,6 +71,7 @@ import { createVerifyEmail } from './use-cases/verify-email.js';
 
 // ── Repositories ────────────────────────────────────────────────────────────────
 
+const adminUserRepo = new DrizzleAdminUserRepository(db);
 const userRepo = new DrizzleUserRepository(db);
 const dogRepo = new DrizzleDogRepository(db);
 const matchRepo = new DrizzleMatchRepository(db);
@@ -85,6 +88,7 @@ const authService = new JwtAuthService();
 const emailService = new ResendEmailService();
 const storage = new R2StorageService();
 const chat = new WsChatService();
+const notificationService = new BullMQNotificationService();
 
 // ── Auth deps ───────────────────────────────────────────────────────────────────
 
@@ -132,7 +136,7 @@ export const userDeps = {
 export const matchDeps = {
   listMatches: createListMatches({ dogRepo, matchRepo, userRepo }),
   discoverCandidates: createDiscoverCandidates({ dogRepo, matchRepo, userRepo }),
-  likeDog: createLikeDog({ dogRepo, matchRepo, userRepo }),
+  likeDog: createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }),
   passDog: createPassDog({ dogRepo, matchRepo }),
   unmatch: createUnmatch({ dogRepo, matchRepo }),
 };
@@ -167,6 +171,19 @@ export const badgeDeps = {
 export const chatDeps = {
   listConversations: createListConversations({ dogRepo, messageRepo, chat }),
   getMessages: createGetMessages({ messageRepo, chat }),
-  sendMessage: createSendMessage({ messageRepo, chat, userRepo }),
+  sendMessage: createSendMessage({ messageRepo, chat, userRepo, notificationService }),
   markMessagesRead: createMarkMessagesRead({ messageRepo, chat }),
+};
+
+// ── Admin deps ────────────────────────────────────────────────────────────────
+
+export const adminDeps = {
+  adminUserRepo,
+};
+
+// ── Photo moderation deps ─────────────────────────────────────────────────────
+
+export const photoModerationDeps = {
+  dogRepo,
+  notificationService,
 };

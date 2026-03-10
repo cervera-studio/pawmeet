@@ -3,7 +3,7 @@ import { serve } from '@hono/node-server';
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import { db } from './lib/db.js';
+import { adminDeps } from './container.js';
 import { corsMiddleware } from './middleware/cors.js';
 import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { routes } from './routes/index.js';
@@ -40,7 +40,7 @@ app.use('/trpc/*', trpcServer({ router: appRouter, createContext }));
 app.route('/api', routes);
 
 // Admin auth routes — mounted at root level for the admin backoffice
-app.route('/admin/auth', createAdminAuthRoutes(db));
+app.route('/admin/auth', createAdminAuthRoutes(adminDeps.adminUserRepo));
 
 app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
 

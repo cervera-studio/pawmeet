@@ -1,5 +1,5 @@
-import { Text, View } from 'react-native';
 import type { TextInputProps } from 'react-native';
+import { Text, View } from 'react-native';
 import { Input } from '@/components/ui/Input';
 
 interface FormFieldProps extends TextInputProps {

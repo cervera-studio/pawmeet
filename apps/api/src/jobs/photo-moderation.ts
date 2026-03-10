@@ -1,11 +1,10 @@
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
-import { dogPhotos } from '@dogwalk/db';
 import { Worker } from 'bullmq';
-import { eq } from 'drizzle-orm';
-import { db } from '../lib/db.js';
 import { extractKeyFromUrl, MAX_FILE_SIZE } from '../lib/storage.js';
+import type { DogRepository } from '../ports/dog-repository.js';
+import type { NotificationService } from '../ports/notification-service.js';
 import type { PhotoModerationJobData } from './queue.js';
-import { enqueueNotification, getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 const R2_BUCKET = process.env.R2_BUCKET || 'dogwalk';
 
@@ -70,14 +69,21 @@ async function moderatePhoto(url: string): Promise<'approved' | 'rejected'> {
   // Step 3: Auto-approve — no content moderation service is configured
   // TODO: Integrate a real moderation API here (see function docstring above)
   console.warn(
-    '[photo-moderation] WARNING: No content moderation service configured. '
-      + 'Photo auto-approved without content analysis. '
-      + 'Configure AWS Rekognition, Google Vision, or similar before production.',
+    '[photo-moderation] WARNING: No content moderation service configured. ' +
+      'Photo auto-approved without content analysis. ' +
+      'Configure AWS Rekognition, Google Vision, or similar before production.',
   );
   return 'approved';
 }
 
-export function createPhotoModerationWorker() {
+interface PhotoModerationDeps {
+  dogRepo: DogRepository;
+  notificationService: NotificationService;
+}
+
+export function createPhotoModerationWorker(deps: PhotoModerationDeps) {
+  const { dogRepo, notificationService } = deps;
+
   const worker = new Worker<PhotoModerationJobData>(
     QUEUE_NAMES.PHOTO_MODERATION,
     async (job) => {
@@ -86,17 +92,21 @@ export function createPhotoModerationWorker() {
 
       const status = await moderatePhoto(url);
 
-      await db.update(dogPhotos).set({ moderationStatus: status }).where(eq(dogPhotos.id, photoId));
+      await dogRepo.updatePhotoModerationStatus(photoId, status);
 
       if (status === 'rejected') {
         // Notify the user
-        const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, photoId));
+        const photo = await dogRepo.findPhotoById(photoId);
         if (photo) {
-          await enqueueNotification({
-            userId: job.data.dogId, // Will need to resolve to ownerId in production
-            title: 'Foto rifiutata',
-            body: 'Una delle foto del tuo cane non rispetta le linee guida.',
-          });
+          await notificationService
+            .send({
+              userId: job.data.dogId, // Will need to resolve to ownerId in production
+              title: 'Foto rifiutata',
+              body: 'Una delle foto del tuo cane non rispetta le linee guida.',
+            })
+            .catch((err) => {
+              console.error(`[photo-moderation] Failed to send notification:`, err);
+            });
         }
       }
     },

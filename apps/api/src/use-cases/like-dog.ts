@@ -1,17 +1,22 @@
 import type { Match } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
-import { enqueueNotification } from '../jobs/queue.js';
 import { checkDailySwipeLimit } from '../lib/swipe-limit.js';
-import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  MatchRepository,
+  NotificationService,
+  UserRepository,
+} from '../ports/index.js';
 
 type Deps = {
   dogRepo: DogRepository;
   matchRepo: MatchRepository;
   userRepo: UserRepository;
+  notificationService: NotificationService;
 };
 
-export function createLikeDog({ dogRepo, matchRepo, userRepo }: Deps) {
+export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }: Deps) {
   return async (
     userId: string,
     dogId: string,
@@ -56,12 +61,14 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo }: Deps) {
         const wantsMatchNotifs = recipient?.notificationPrefs?.matches !== false;
 
         if (wantsMatchNotifs) {
-          enqueueNotification({
-            userId: targetDog.ownerId,
-            title: 'Hai un nuovo match! \u{1F415}',
-            body: `Il tuo cane ${targetDog.name} ha un nuovo compagno di passeggiata!`,
-            data: { matchId: match.id, type: 'new_match' },
-          }).catch((err) => logger.error('likeDog', 'Failed to enqueue match notification', err));
+          notificationService
+            .send({
+              userId: targetDog.ownerId,
+              title: 'Hai un nuovo match! \u{1F415}',
+              body: `Il tuo cane ${targetDog.name} ha un nuovo compagno di passeggiata!`,
+              data: { matchId: match.id, type: 'new_match' },
+            })
+            .catch((err) => logger.error('likeDog', 'Failed to enqueue match notification', err));
         }
       }
 

@@ -2,7 +2,12 @@ import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
 import type { DogProfile, Match, Swipe, User } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  MatchRepository,
+  NotificationService,
+  UserRepository,
+} from '../ports/index.js';
 import { createLikeDog } from './like-dog.js';
 
 function buildDog(overrides: Partial<DogProfile> = {}): DogProfile {
@@ -113,6 +118,15 @@ function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository 
   };
 }
 
+function buildNotificationService(
+  overrides: Partial<NotificationService> = {},
+): NotificationService {
+  return {
+    send: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
+  };
+}
+
 function buildMatchRepo(overrides: Partial<MatchRepository> = {}): MatchRepository {
   return {
     findActiveByDogIds: vi.fn(),
@@ -136,7 +150,8 @@ describe('likeDog', () => {
     });
     const matchRepo = buildMatchRepo();
     const userRepo = buildUserRepo();
-    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
+    const notificationService = buildNotificationService();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo, notificationService });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 
@@ -161,7 +176,8 @@ describe('likeDog', () => {
       create: vi.fn().mockResolvedValue(match),
     });
     const userRepo = buildUserRepo();
-    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
+    const notificationService = buildNotificationService();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo, notificationService });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 
@@ -182,7 +198,8 @@ describe('likeDog', () => {
     });
     const matchRepo = buildMatchRepo();
     const userRepo = buildUserRepo();
-    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
+    const notificationService = buildNotificationService();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo, notificationService });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 
@@ -200,7 +217,8 @@ describe('likeDog', () => {
       countDailySwipes: vi.fn().mockResolvedValue(SWIPE_DAILY_LIMIT),
     });
     const userRepo = buildUserRepo();
-    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
+    const notificationService = buildNotificationService();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo, notificationService });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 
@@ -218,7 +236,8 @@ describe('likeDog', () => {
       findSwipe: vi.fn().mockResolvedValue(buildSwipe()),
     });
     const userRepo = buildUserRepo();
-    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
+    const notificationService = buildNotificationService();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo, notificationService });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 

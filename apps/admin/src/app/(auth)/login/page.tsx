@@ -30,9 +30,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm space-y-6 rounded-lg border border-neutral-200 bg-white p-8 shadow-sm">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-neutral-900">DogWalk Admin</h1>
-          <p className="mt-1 text-sm text-neutral-500">
-            Accedi al pannello di amministrazione
-          </p>
+          <p className="mt-1 text-sm text-neutral-500">Accedi al pannello di amministrazione</p>
         </div>
 
         <form onSubmit={vm.handleSubmit} className="space-y-4">
@@ -69,16 +67,10 @@ export default function LoginPage() {
           </div>
 
           {vm.error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-              {vm.error}
-            </div>
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{vm.error}</div>
           )}
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={vm.isSubmitting}
-          >
+          <Button type="submit" className="w-full" disabled={vm.isSubmitting}>
             {vm.isSubmitting ? 'Accesso in corso...' : 'Accedi'}
           </Button>
         </form>

@@ -30,7 +30,6 @@ interface ReportRow {
   createdAt: string;
 }
 
-
 const REASON_LABEL: Record<string, string> = {
   inappropriate: 'Comportamento inappropriato',
   fake: 'Profilo falso',

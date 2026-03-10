@@ -23,8 +23,7 @@ export function useLoginViewModel() {
         await login(email, password);
         router.push('/');
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : 'Errore durante il login';
+        const message = err instanceof Error ? err.message : 'Errore durante il login';
         // Provide user-friendly messages
         if (message.includes('401') || message.includes('Credenziali')) {
           setError('Email o password non validi');

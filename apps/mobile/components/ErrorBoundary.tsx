@@ -1,5 +1,5 @@
-import type { ErrorBoundaryProps } from 'expo-router';
 import { logger } from '@dogwalk/utils';
+import type { ErrorBoundaryProps } from 'expo-router';
 import { Component, type ComponentType, type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

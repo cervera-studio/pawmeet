@@ -1,8 +1,8 @@
 import type { RouterOutput } from '@dogwalk/api-client';
 import { logger } from '@dogwalk/utils';
 import { useCallback, useState } from 'react';
-import { api } from '@/lib/trpc';
 import { cache } from '@/lib/storage';
+import { api } from '@/lib/trpc';
 
 type Suggestion = RouterOutput['matches']['discover']['suggestions'][number];
 type LikeResult = RouterOutput['matches']['like'];

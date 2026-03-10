@@ -1,6 +1,6 @@
+import * as SecureStore from 'expo-secure-store';
 import { createMMKV } from 'react-native-mmkv';
 import type { StateStorage } from 'zustand/middleware';
-import * as SecureStore from 'expo-secure-store';
 
 const TOKEN_KEY = 'dogwalk_auth_token';
 const REFRESH_TOKEN_KEY = 'dogwalk_refresh_token';
@@ -34,7 +34,9 @@ export const cache = {
 export const mmkvStorage: StateStorage = {
   getItem: (name) => mmkv.getString(name) ?? null,
   setItem: (name, value) => mmkv.set(name, value),
-  removeItem: (name) => { mmkv.remove(name); },
+  removeItem: (name) => {
+    mmkv.remove(name);
+  },
 };
 
 // ---------------------------------------------------------------------------

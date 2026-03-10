@@ -2,8 +2,8 @@ import type { RouterOutput } from '@dogwalk/api-client';
 import type { WsMessage } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { api } from '@/lib/trpc';
 import { cache } from '@/lib/storage';
+import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 
 const WS_URL = process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:3000/ws';

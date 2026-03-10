@@ -1,6 +1,6 @@
 import type { RouterOutput } from '@dogwalk/api-client';
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from '@/lib/storage';
 
 type Dog = RouterOutput['dogs']['list']['dogs'][number];

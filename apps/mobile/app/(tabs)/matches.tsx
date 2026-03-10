@@ -1,3 +1,5 @@
+export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
+
 import type { RouterOutput } from '@dogwalk/api-client';
 import { logger } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';

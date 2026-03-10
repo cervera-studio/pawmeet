@@ -37,9 +37,7 @@ function buildConversation(overrides: Partial<ConversationSummary> = {}): Conver
 
 function buildChatDeps(overrides: Partial<typeof chatDeps> = {}): typeof chatDeps {
   return {
-    listConversations: vi
-      .fn()
-      .mockResolvedValue(succeed({ conversations: [buildConversation()] })),
+    listConversations: vi.fn().mockResolvedValue(succeed({ conversations: [buildConversation()] })),
     getMessages: vi.fn().mockResolvedValue(
       succeed({
         messages: [buildMessage()],
@@ -137,27 +135,27 @@ describe('chat router', () => {
       });
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.chat.getMessages({ matchId, limit: 20 }),
-      ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+      await expect(caller.chat.getMessages({ matchId, limit: 20 })).rejects.toMatchObject({
+        code: 'NOT_FOUND',
+      });
     });
 
     it('rejects unauthenticated callers', async () => {
       const deps = buildChatDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.chat.getMessages({ matchId, limit: 20 }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.chat.getMessages({ matchId, limit: 20 })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
 
     it('rejects invalid matchId (not UUID)', async () => {
       const deps = buildChatDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.chat.getMessages({ matchId: 'bad', limit: 20 }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.chat.getMessages({ matchId: 'bad', limit: 20 })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.getMessages).not.toHaveBeenCalled();
     });
 
@@ -165,9 +163,7 @@ describe('chat router', () => {
       const deps = buildChatDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.chat.getMessages({ matchId, limit: 100 }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.chat.getMessages({ matchId, limit: 100 })).rejects.toThrow(TRPCError);
       expect(deps.getMessages).not.toHaveBeenCalled();
     });
   });
@@ -211,27 +207,27 @@ describe('chat router', () => {
       });
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.chat.sendMessage({ matchId, content: 'Ciao!' }),
-      ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+      await expect(caller.chat.sendMessage({ matchId, content: 'Ciao!' })).rejects.toMatchObject({
+        code: 'NOT_FOUND',
+      });
     });
 
     it('rejects unauthenticated callers', async () => {
       const deps = buildChatDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.chat.sendMessage({ matchId, content: 'Ciao!' }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.chat.sendMessage({ matchId, content: 'Ciao!' })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
 
     it('rejects invalid matchId (not UUID)', async () => {
       const deps = buildChatDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.chat.sendMessage({ matchId: 'bad', content: 'Ciao!' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.chat.sendMessage({ matchId: 'bad', content: 'Ciao!' })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.sendMessage).not.toHaveBeenCalled();
     });
 
@@ -240,9 +236,9 @@ describe('chat router', () => {
       const caller = createAuthenticatedCaller(deps);
 
       const longContent = 'x'.repeat(2001);
-      await expect(
-        caller.chat.sendMessage({ matchId, content: longContent }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.chat.sendMessage({ matchId, content: longContent })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.sendMessage).not.toHaveBeenCalled();
     });
 
@@ -278,27 +274,25 @@ describe('chat router', () => {
       });
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.chat.markMessagesRead({ matchId }),
-      ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+      await expect(caller.chat.markMessagesRead({ matchId })).rejects.toMatchObject({
+        code: 'NOT_FOUND',
+      });
     });
 
     it('rejects unauthenticated callers', async () => {
       const deps = buildChatDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.chat.markMessagesRead({ matchId }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.chat.markMessagesRead({ matchId })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
 
     it('rejects invalid matchId (not UUID)', async () => {
       const deps = buildChatDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.chat.markMessagesRead({ matchId: 'bad' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.chat.markMessagesRead({ matchId: 'bad' })).rejects.toThrow(TRPCError);
       expect(deps.markMessagesRead).not.toHaveBeenCalled();
     });
   });

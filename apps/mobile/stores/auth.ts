@@ -1,5 +1,7 @@
 import type { RouterOutput } from '@dogwalk/api-client';
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { mmkvStorage } from '@/lib/storage';
 
 /** Subset of user fields needed in the auth store (from getProfile output). */
 export type AuthUser = Pick<
@@ -20,34 +22,47 @@ interface AuthState {
   setLoading: (loading: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: null,
-  refreshToken: null,
-  isAuthenticated: false,
-  isLoading: true,
-
-  login: (user, token, refreshToken) =>
-    set({
-      user,
-      token,
-      refreshToken,
-      isAuthenticated: true,
-      isLoading: false,
-    }),
-
-  logout: () =>
-    set({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
       user: null,
       token: null,
       refreshToken: null,
       isAuthenticated: false,
-      isLoading: false,
+      isLoading: true,
+
+      login: (user, token, refreshToken) =>
+        set({
+          user,
+          token,
+          refreshToken,
+          isAuthenticated: true,
+          isLoading: false,
+        }),
+
+      logout: () =>
+        set({
+          user: null,
+          token: null,
+          refreshToken: null,
+          isAuthenticated: false,
+          isLoading: false,
+        }),
+
+      setToken: (token) => set({ token }),
+
+      setUser: (user) => set({ user }),
+
+      setLoading: (isLoading) => set({ isLoading }),
     }),
-
-  setToken: (token) => set({ token }),
-
-  setUser: (user) => set({ user }),
-
-  setLoading: (isLoading) => set({ isLoading }),
-}));
+    {
+      name: 'dogwalk-auth',
+      storage: createJSONStorage(() => mmkvStorage),
+      // Only persist user profile data — tokens stay in SecureStore
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    },
+  ),
+);

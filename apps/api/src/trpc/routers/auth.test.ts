@@ -53,9 +53,7 @@ function buildAuthDeps(overrides: Partial<typeof authDeps> = {}): typeof authDep
     verifyEmail: vi.fn().mockResolvedValue(succeed({ message: 'Email verificata con successo' })),
     forgotPassword: vi
       .fn()
-      .mockResolvedValue(
-        succeed({ message: "Se l'email esiste, riceverai un link per il reset" }),
-      ),
+      .mockResolvedValue(succeed({ message: "Se l'email esiste, riceverai un link per il reset" })),
     resetPassword: vi
       .fn()
       .mockResolvedValue(succeed({ message: 'Password reimpostata con successo' })),
@@ -109,9 +107,9 @@ describe('auth router', () => {
       const deps = buildAuthDeps();
       const caller = createCaller(deps);
 
-      await expect(
-        caller.auth.register({ ...validInput, email: 'not-an-email' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.auth.register({ ...validInput, email: 'not-an-email' })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.registerUser).not.toHaveBeenCalled();
     });
 
@@ -119,9 +117,9 @@ describe('auth router', () => {
       const deps = buildAuthDeps();
       const caller = createCaller(deps);
 
-      await expect(
-        caller.auth.register({ ...validInput, password: 'short' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.auth.register({ ...validInput, password: 'short' })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.registerUser).not.toHaveBeenCalled();
     });
 
@@ -194,9 +192,7 @@ describe('auth router', () => {
       const deps = buildAuthDeps();
       const caller = createCaller(deps);
 
-      await expect(
-        caller.auth.login({ email: 'bad', password: 'x' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.auth.login({ email: 'bad', password: 'x' })).rejects.toThrow(TRPCError);
       expect(deps.loginUser).not.toHaveBeenCalled();
     });
   });
@@ -217,15 +213,13 @@ describe('auth router', () => {
       const deps = buildAuthDeps({
         refreshTokens: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido', 401)),
-          ),
+          .mockResolvedValue(fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido', 401))),
       });
       const caller = createCaller(deps);
 
-      await expect(
-        caller.auth.refresh({ refreshToken: 'bad_token' }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.auth.refresh({ refreshToken: 'bad_token' })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
 
     it('rejects empty refresh token', async () => {
@@ -270,9 +264,9 @@ describe('auth router', () => {
       });
       const caller = createCaller(deps);
 
-      await expect(
-        caller.auth.verifyEmail({ token: 'bad_token' }),
-      ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+      await expect(caller.auth.verifyEmail({ token: 'bad_token' })).rejects.toMatchObject({
+        code: 'BAD_REQUEST',
+      });
     });
 
     it('rejects empty token', async () => {
@@ -299,9 +293,9 @@ describe('auth router', () => {
       const deps = buildAuthDeps();
       const caller = createCaller(deps);
 
-      await expect(
-        caller.auth.forgotPassword({ email: 'not-an-email' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.auth.forgotPassword({ email: 'not-an-email' })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.forgotPassword).not.toHaveBeenCalled();
     });
   });
@@ -342,9 +336,9 @@ describe('auth router', () => {
       const deps = buildAuthDeps();
       const caller = createCaller(deps);
 
-      await expect(
-        caller.auth.resetPassword({ token: 'tok', password: 'weak' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.auth.resetPassword({ token: 'tok', password: 'weak' })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.resetPassword).not.toHaveBeenCalled();
     });
   });

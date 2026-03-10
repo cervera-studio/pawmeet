@@ -1,3 +1,5 @@
+export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
+
 import type { RouterOutput } from '@dogwalk/api-client';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';

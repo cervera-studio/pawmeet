@@ -66,7 +66,9 @@ function buildUserDeps(overrides: Partial<typeof userDeps> = {}): typeof userDep
       .mockResolvedValue(succeed({ users: [buildNearbyUser()], radius: 10, total: 1 })),
     uploadAvatarUrl: vi
       .fn()
-      .mockResolvedValue(succeed({ uploadUrl: 'https://upload.url', key: 'avatars/user-1/img.jpg' })),
+      .mockResolvedValue(
+        succeed({ uploadUrl: 'https://upload.url', key: 'avatars/user-1/img.jpg' }),
+      ),
     confirmAvatar: vi
       .fn()
       .mockResolvedValue(succeed({ avatarUrl: 'https://cdn.example.com/avatar.jpg' })),
@@ -142,9 +144,9 @@ describe('users router', () => {
       const deps = buildUserDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.users.updateLocation({ latitude: 100, longitude: 12 }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.users.updateLocation({ latitude: 100, longitude: 12 })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.updateLocation).not.toHaveBeenCalled();
     });
 
@@ -152,9 +154,9 @@ describe('users router', () => {
       const deps = buildUserDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.users.updateLocation({ latitude: 41, longitude: 200 }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.users.updateLocation({ latitude: 41, longitude: 200 })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.updateLocation).not.toHaveBeenCalled();
     });
 
@@ -183,9 +185,9 @@ describe('users router', () => {
       const deps = buildUserDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.users.updatePreferences({ searchRadiusKm: 0 }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.users.updatePreferences({ searchRadiusKm: 0 })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.updatePreferences).not.toHaveBeenCalled();
     });
 
@@ -193,9 +195,9 @@ describe('users router', () => {
       const deps = buildUserDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.users.updatePreferences({ searchRadiusKm: 100 }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.users.updatePreferences({ searchRadiusKm: 100 })).rejects.toThrow(
+        TRPCError,
+      );
       expect(deps.updatePreferences).not.toHaveBeenCalled();
     });
 
@@ -203,9 +205,9 @@ describe('users router', () => {
       const deps = buildUserDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.users.updatePreferences({ searchRadiusKm: 15 }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.users.updatePreferences({ searchRadiusKm: 15 })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
   });
 
@@ -263,9 +265,7 @@ describe('users router', () => {
       const deps = buildUserDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.users.findNearby({ radiusKm: 0 }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.users.findNearby({ radiusKm: 0 })).rejects.toThrow(TRPCError);
       expect(deps.findNearby).not.toHaveBeenCalled();
     });
   });

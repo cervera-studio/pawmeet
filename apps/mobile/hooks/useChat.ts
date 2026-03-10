@@ -3,10 +3,13 @@ import type { WsMessage } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/trpc';
+import { cache } from '@/lib/storage';
 import { useAuthStore } from '@/stores/auth';
 
 const WS_URL = process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:3000/ws';
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
+
+const CONVERSATIONS_CACHE_KEY = 'cache:conversations';
 
 type Conversation = RouterOutput['chat']['listConversations']['conversations'][number];
 type Message = RouterOutput['chat']['getMessages']['messages'][number];
@@ -15,7 +18,10 @@ export function useChat(matchId?: string) {
   const wsRef = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  // Hydrate conversations from cache (stale-while-revalidate)
+  const [conversations, setConversations] = useState<Conversation[]>(
+    () => cache.get<Conversation[]>(CONVERSATIONS_CACHE_KEY) ?? [],
+  );
   const [isTyping, setIsTyping] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [loadingConversations, setLoadingConversations] = useState(false);
@@ -84,6 +90,7 @@ export function useChat(matchId?: string) {
     try {
       const { conversations: data } = await api.chat.listConversations.query();
       setConversations(data);
+      cache.set(CONVERSATIONS_CACHE_KEY, data);
     } catch (e) {
       logger.warn('useChat', 'Failed to fetch conversations', e);
     } finally {

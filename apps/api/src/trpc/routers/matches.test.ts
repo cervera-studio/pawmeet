@@ -169,9 +169,7 @@ describe('matches router', () => {
       const deps = buildMatchDeps({
         discoverCandidates: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404)),
-          ),
+          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -193,9 +191,7 @@ describe('matches router', () => {
       const deps = buildMatchDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.matches.discover({ dogId: 'not-a-uuid' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.matches.discover({ dogId: 'not-a-uuid' })).rejects.toThrow(TRPCError);
       expect(deps.discoverCandidates).not.toHaveBeenCalled();
     });
   });
@@ -228,9 +224,7 @@ describe('matches router', () => {
       const deps = buildMatchDeps({
         likeDog: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('SWIPE_LIMIT_REACHED', 'Limite giornaliero', 429)),
-          ),
+          .mockResolvedValue(fail(new AppError('SWIPE_LIMIT_REACHED', 'Limite giornaliero', 429))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -241,11 +235,7 @@ describe('matches router', () => {
 
     it('throws CONFLICT when already swiped', async () => {
       const deps = buildMatchDeps({
-        likeDog: vi
-          .fn()
-          .mockResolvedValue(
-            fail(new AppError('ALREADY_SWIPED', 'Già votato', 409)),
-          ),
+        likeDog: vi.fn().mockResolvedValue(fail(new AppError('ALREADY_SWIPED', 'Già votato', 409))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -258,9 +248,9 @@ describe('matches router', () => {
       const deps = buildMatchDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.matches.like({ dogId, targetDogId }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.matches.like({ dogId, targetDogId })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
   });
 
@@ -277,11 +267,7 @@ describe('matches router', () => {
 
     it('throws CONFLICT when already swiped', async () => {
       const deps = buildMatchDeps({
-        passDog: vi
-          .fn()
-          .mockResolvedValue(
-            fail(new AppError('ALREADY_SWIPED', 'Già votato', 409)),
-          ),
+        passDog: vi.fn().mockResolvedValue(fail(new AppError('ALREADY_SWIPED', 'Già votato', 409))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -294,9 +280,9 @@ describe('matches router', () => {
       const deps = buildMatchDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.matches.pass({ dogId, targetDogId }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.matches.pass({ dogId, targetDogId })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
   });
 
@@ -315,9 +301,7 @@ describe('matches router', () => {
       const deps = buildMatchDeps({
         unmatch: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404)),
-          ),
+          .mockResolvedValue(fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -330,18 +314,16 @@ describe('matches router', () => {
       const deps = buildMatchDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.matches.unmatch({ matchId }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.matches.unmatch({ matchId })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
 
     it('rejects invalid matchId (not UUID)', async () => {
       const deps = buildMatchDeps();
       const caller = createAuthenticatedCaller(deps);
 
-      await expect(
-        caller.matches.unmatch({ matchId: 'not-a-uuid' }),
-      ).rejects.toThrow(TRPCError);
+      await expect(caller.matches.unmatch({ matchId: 'not-a-uuid' })).rejects.toThrow(TRPCError);
       expect(deps.unmatch).not.toHaveBeenCalled();
     });
   });

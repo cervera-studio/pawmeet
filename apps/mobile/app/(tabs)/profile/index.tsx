@@ -1,3 +1,5 @@
+export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
+
 import { logger } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';

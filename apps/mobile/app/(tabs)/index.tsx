@@ -1,3 +1,5 @@
+export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
+
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';

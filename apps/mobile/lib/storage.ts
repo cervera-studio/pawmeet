@@ -1,7 +1,45 @@
+import { createMMKV } from 'react-native-mmkv';
+import type { StateStorage } from 'zustand/middleware';
 import * as SecureStore from 'expo-secure-store';
 
 const TOKEN_KEY = 'dogwalk_auth_token';
 const REFRESH_TOKEN_KEY = 'dogwalk_refresh_token';
+
+// ---------------------------------------------------------------------------
+// MMKV — fast synchronous key-value storage for caching & Zustand persistence
+// ---------------------------------------------------------------------------
+
+export const mmkv = createMMKV();
+
+/** Type-safe JSON cache helpers built on top of MMKV. */
+export const cache = {
+  get<T>(key: string): T | null {
+    const value = mmkv.getString(key);
+    if (!value) return null;
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return null;
+    }
+  },
+  set<T>(key: string, value: T): void {
+    mmkv.set(key, JSON.stringify(value));
+  },
+  delete(key: string): void {
+    mmkv.remove(key);
+  },
+};
+
+/** Zustand-compatible StateStorage adapter backed by MMKV. */
+export const mmkvStorage: StateStorage = {
+  getItem: (name) => mmkv.getString(name) ?? null,
+  setItem: (name, value) => mmkv.set(name, value),
+  removeItem: (name) => { mmkv.remove(name); },
+};
+
+// ---------------------------------------------------------------------------
+// SecureStore — encrypted storage for auth tokens (unchanged)
+// ---------------------------------------------------------------------------
 
 export const storage = {
   async getToken(): Promise<string | null> {

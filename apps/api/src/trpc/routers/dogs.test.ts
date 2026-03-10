@@ -102,7 +102,14 @@ describe('dogs router', () => {
   describe('searchBreeds', () => {
     it('returns breeds (public procedure)', async () => {
       const breeds = [
-        { id: 'b1', name: 'Labrador', nameIt: 'Labrador', group: 'Retriever', sizeCategory: 'large', avgWeightKg: 30 },
+        {
+          id: 'b1',
+          name: 'Labrador',
+          nameIt: 'Labrador',
+          group: 'Retriever',
+          sizeCategory: 'large',
+          avgWeightKg: 30,
+        },
       ];
       const deps = buildDogDeps({
         searchBreeds: vi.fn().mockResolvedValue(succeed({ breeds })),
@@ -135,7 +142,10 @@ describe('dogs router', () => {
       const result = await caller.dogs.create(validCreateInput);
 
       expect(result.dog.name).toBe('Rex');
-      expect(deps.createDog).toHaveBeenCalledWith('user-1', expect.objectContaining({ name: 'Rex' }));
+      expect(deps.createDog).toHaveBeenCalledWith(
+        'user-1',
+        expect.objectContaining({ name: 'Rex' }),
+      );
     });
 
     it('rejects unauthenticated callers', async () => {
@@ -193,9 +203,7 @@ describe('dogs router', () => {
       const deps = buildDogDeps({
         getDog: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404)),
-          ),
+          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440099';
@@ -209,9 +217,9 @@ describe('dogs router', () => {
       const deps = buildDogDeps();
       const caller = createAnonCaller(deps);
 
-      await expect(
-        caller.dogs.get({ id: 'dog-1' }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.dogs.get({ id: 'dog-1' })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
 
     it('rejects invalid UUID', async () => {
@@ -262,9 +270,7 @@ describe('dogs router', () => {
       const deps = buildDogDeps({
         updateDog: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404)),
-          ),
+          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440000';
@@ -279,9 +285,9 @@ describe('dogs router', () => {
       const caller = createAnonCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440000';
 
-      await expect(
-        caller.dogs.update({ id: dogId, data: { name: 'X' } }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.dogs.update({ id: dogId, data: { name: 'X' } })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
   });
 
@@ -301,9 +307,7 @@ describe('dogs router', () => {
       const deps = buildDogDeps({
         deleteDog: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404)),
-          ),
+          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440000';
@@ -344,9 +348,7 @@ describe('dogs router', () => {
       const deps = buildDogDeps({
         uploadDogPhotoUrl: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('PHOTO_LIMIT_REACHED', 'Limite foto', 400)),
-          ),
+          .mockResolvedValue(fail(new AppError('PHOTO_LIMIT_REACHED', 'Limite foto', 400))),
       });
       const caller = createAuthenticatedCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440000';
@@ -407,9 +409,9 @@ describe('dogs router', () => {
       const dogId = '550e8400-e29b-41d4-a716-446655440000';
       const photoId = '550e8400-e29b-41d4-a716-446655440001';
 
-      await expect(
-        caller.dogs.deletePhoto({ dogId, photoId }),
-      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+      await expect(caller.dogs.deletePhoto({ dogId, photoId })).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
     });
   });
 

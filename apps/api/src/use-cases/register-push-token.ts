@@ -11,9 +11,7 @@ type Deps = {
 export function createRegisterPushToken({ userRepo }: Deps) {
   return async (userId: string, token: string): Promise<Result<{ registered: boolean }>> => {
     if (!EXPO_PUSH_TOKEN_REGEX.test(token)) {
-      return fail(
-        new AppError('INVALID_PUSH_TOKEN', 'Token push non valido', 400),
-      );
+      return fail(new AppError('INVALID_PUSH_TOKEN', 'Token push non valido', 400));
     }
 
     try {
@@ -21,9 +19,7 @@ export function createRegisterPushToken({ userRepo }: Deps) {
       return succeed({ registered: true });
     } catch (error) {
       logger.error('registerPushToken', 'Failed to save push token', error);
-      return fail(
-        new AppError('INTERNAL_ERROR', 'Errore durante il salvataggio del token', 500),
-      );
+      return fail(new AppError('INTERNAL_ERROR', 'Errore durante il salvataggio del token', 500));
     }
   };
 }

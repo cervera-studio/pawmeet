@@ -19,8 +19,10 @@ Notifications.setNotificationHandler({
 });
 
 export function usePushNotifications() {
-  const notificationListener = useRef<ReturnType<typeof Notifications.addNotificationReceivedListener>>(null);
-  const responseListener = useRef<ReturnType<typeof Notifications.addNotificationResponseReceivedListener>>(null);
+  const notificationListener =
+    useRef<ReturnType<typeof Notifications.addNotificationReceivedListener>>(null);
+  const responseListener =
+    useRef<ReturnType<typeof Notifications.addNotificationResponseReceivedListener>>(null);
   const router = useRouter();
 
   useEffect(() => {

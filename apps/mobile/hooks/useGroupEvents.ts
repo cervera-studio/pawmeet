@@ -12,26 +12,23 @@ export function useGroupEvents() {
   const [events, setEvents] = useState<GroupEvent[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const listNearby = useCallback(
-    async (latitude: number, longitude: number, radiusKm?: number) => {
-      setLoading(true);
-      try {
-        const data = await api.groupEvents.listNearby.query({
-          latitude,
-          longitude,
-          radiusKm: radiusKm ?? 10,
-        });
-        setEvents(data);
-        return data;
-      } catch (e) {
-        logger.warn('useGroupEvents', 'Failed to fetch nearby events', e);
-        return [];
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const listNearby = useCallback(async (latitude: number, longitude: number, radiusKm?: number) => {
+    setLoading(true);
+    try {
+      const data = await api.groupEvents.listNearby.query({
+        latitude,
+        longitude,
+        radiusKm: radiusKm ?? 10,
+      });
+      setEvents(data);
+      return data;
+    } catch (e) {
+      logger.warn('useGroupEvents', 'Failed to fetch nearby events', e);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const getEvent = useCallback(async (eventId: string) => {
     try {

@@ -43,9 +43,7 @@ export function useEventDetailViewModel() {
   const isOrganizer = event?.createdBy === userId;
 
   const isParticipant =
-    event?.participants?.some(
-      (p) => p.userId === userId && p.status === 'accepted',
-    ) ?? false;
+    event?.participants?.some((p) => p.userId === userId && p.status === 'accepted') ?? false;
 
   const canJoin =
     event?.status === GROUP_EVENT_STATUS.SCHEDULED &&
@@ -53,8 +51,7 @@ export function useEventDetailViewModel() {
     !isOrganizer &&
     (event.participantCount ?? 0) < event.maxParticipants;
 
-  const canLeave =
-    event?.status === GROUP_EVENT_STATUS.SCHEDULED && isParticipant && !isOrganizer;
+  const canLeave = event?.status === GROUP_EVENT_STATUS.SCHEDULED && isParticipant && !isOrganizer;
 
   const canCancel = event?.status === GROUP_EVENT_STATUS.SCHEDULED && isOrganizer;
 
@@ -70,7 +67,7 @@ export function useEventDetailViewModel() {
       await fetchEvent();
     } catch (e) {
       logger.warn('EventDetail', 'Failed to join event', e);
-      Alert.alert('Errore', 'Impossibile partecipare all\'evento.');
+      Alert.alert('Errore', "Impossibile partecipare all'evento.");
     } finally {
       setActionLoading(false);
     }
@@ -90,7 +87,7 @@ export function useEventDetailViewModel() {
             await fetchEvent();
           } catch (e) {
             logger.warn('EventDetail', 'Failed to leave event', e);
-            Alert.alert('Errore', 'Impossibile abbandonare l\'evento.');
+            Alert.alert('Errore', "Impossibile abbandonare l'evento.");
           } finally {
             setActionLoading(false);
           }
@@ -113,7 +110,7 @@ export function useEventDetailViewModel() {
             await fetchEvent();
           } catch (e) {
             logger.warn('EventDetail', 'Failed to cancel event', e);
-            Alert.alert('Errore', 'Impossibile annullare l\'evento.');
+            Alert.alert('Errore', "Impossibile annullare l'evento.");
           } finally {
             setActionLoading(false);
           }

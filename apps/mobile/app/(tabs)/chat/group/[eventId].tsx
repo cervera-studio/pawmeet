@@ -65,9 +65,7 @@ function GroupChatBubble({
       </View>
 
       {/* Timestamp */}
-      <View
-        className={`mt-1 flex-row items-center ${isMine ? 'justify-end' : 'justify-start'}`}
-      >
+      <View className={`mt-1 flex-row items-center ${isMine ? 'justify-end' : 'justify-start'}`}>
         <Text className="text-xs text-gray-400">{timestamp}</Text>
       </View>
     </View>

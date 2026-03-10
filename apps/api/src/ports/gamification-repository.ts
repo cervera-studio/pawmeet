@@ -1,9 +1,4 @@
-import type {
-  AchievementType,
-  ChallengeType,
-  LeaderboardType,
-  XpAction,
-} from '@dogwalk/config';
+import type { AchievementType, ChallengeType, LeaderboardType, XpAction } from '@dogwalk/config';
 import type {
   Achievement,
   Challenge,

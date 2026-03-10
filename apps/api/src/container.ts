@@ -4,9 +4,9 @@ import { BullMQNotificationService } from './infra/bullmq-notification-service.j
 import { DrizzleAdminUserRepository } from './infra/drizzle-admin-user-repository.js';
 import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
-import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
+import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repository.js';
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
@@ -19,20 +19,15 @@ import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
 import { db } from './lib/db.js';
+// Use cases — gamification
+import { createAwardXp } from './use-cases/award-xp.js';
 // Use cases — group events
 import { createCancelGroupEvent } from './use-cases/cancel-group-event.js';
 // Use cases — walks
 import { createCancelWalk } from './use-cases/cancel-walk.js';
-// Use cases — gamification
-import { createAwardXp } from './use-cases/award-xp.js';
-import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-achievements.js';
-import { createGetLeaderboard } from './use-cases/get-leaderboard.js';
-import { createGetXpSummary } from './use-cases/get-xp-summary.js';
-import { createListAchievements } from './use-cases/list-achievements.js';
-import { createListActiveChallenges } from './use-cases/list-active-challenges.js';
-import { createUpdateChallengeProgress } from './use-cases/update-challenge-progress.js';
 // Use cases — badges
 import { createCheckAndAwardBadges } from './use-cases/check-and-award-badges.js';
+import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-achievements.js';
 // Use cases — users
 import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
 // Use cases — dogs
@@ -53,11 +48,15 @@ import { createGetDogRating } from './use-cases/get-dog-rating.js';
 import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
 import { createGetGroupMessages } from './use-cases/get-group-messages.js';
+import { createGetLeaderboard } from './use-cases/get-leaderboard.js';
 import { createGetMessages } from './use-cases/get-messages.js';
 import { createGetProfile } from './use-cases/get-profile.js';
+import { createGetXpSummary } from './use-cases/get-xp-summary.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
 import { createLikeDog } from './use-cases/like-dog.js';
+import { createListAchievements } from './use-cases/list-achievements.js';
+import { createListActiveChallenges } from './use-cases/list-active-challenges.js';
 import { createListBadges } from './use-cases/list-badges.js';
 import { createListConversations } from './use-cases/list-conversations.js';
 import { createListGroupConversations } from './use-cases/list-group-conversations.js';
@@ -85,6 +84,7 @@ import { createSendGroupMessage } from './use-cases/send-group-message.js';
 import { createSendMessage } from './use-cases/send-message.js';
 import { createSubmitFeedback } from './use-cases/submit-feedback.js';
 import { createUnmatch } from './use-cases/unmatch.js';
+import { createUpdateChallengeProgress } from './use-cases/update-challenge-progress.js';
 import { createUpdateDog } from './use-cases/update-dog.js';
 import { createUpdateGroupEvent } from './use-cases/update-group-event.js';
 import { createUpdateLocation } from './use-cases/update-location.js';

@@ -29,12 +29,7 @@ export const listActiveChallengesSchema = z.object({
 
 export const updateChallengeProgressSchema = z.object({
   userId: z.string().uuid(),
-  challengeType: z.enum([
-    'walk_count',
-    'walk_distance_km',
-    'new_matches',
-    'group_events_joined',
-  ]),
+  challengeType: z.enum(['walk_count', 'walk_distance_km', 'new_matches', 'group_events_joined']),
   incrementBy: z.number().int().min(1).default(1),
 });
 

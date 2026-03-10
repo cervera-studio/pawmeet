@@ -145,9 +145,7 @@ function GroupChatRow({
             </Text>
           </View>
           <View className="flex-row items-center ml-2">
-            <Text className="text-xs text-gray-400 mr-1">
-              {conversation.participantCount}
-            </Text>
+            <Text className="text-xs text-gray-400 mr-1">{conversation.participantCount}</Text>
             {conversation.unreadCount > 0 && (
               <View className="h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5">
                 <Text className="text-xs font-bold text-white">{conversation.unreadCount}</Text>
@@ -167,9 +165,7 @@ function MessagesEmptyState() {
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F4AC}'}</Text>
       <Text className="mt-4 text-lg text-gray-400">Nessuna chat</Text>
-      <Text className="text-sm text-gray-300">
-        Fai match con qualcuno per iniziare a chattare!
-      </Text>
+      <Text className="text-sm text-gray-300">Fai match con qualcuno per iniziare a chattare!</Text>
     </View>
   );
 }

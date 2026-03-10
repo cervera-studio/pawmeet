@@ -8,15 +8,8 @@ import { useAuthStore } from '@/stores/auth';
 export function useGroupChatConversationViewModel() {
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
   const userId = useAuthStore((s) => s.user?.id);
-  const {
-    messages,
-    loadingMessages,
-    hasMore,
-    fetchMessages,
-    sendMessage,
-    markAsRead,
-    loadMore,
-  } = useGroupChat(eventId);
+  const { messages, loadingMessages, hasMore, fetchMessages, sendMessage, markAsRead, loadMore } =
+    useGroupChat(eventId);
 
   const [text, setText] = useState('');
   const flatListRef = useRef<FlatList>(null);

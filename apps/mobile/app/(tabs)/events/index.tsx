@@ -117,9 +117,7 @@ const EventCard = memo(function EventCard({
 
       {/* Info */}
       <View className="flex-row items-center justify-between mt-2">
-        <Text className="text-sm text-gray-400">
-          Max {event.maxParticipants} partecipanti
-        </Text>
+        <Text className="text-sm text-gray-400">Max {event.maxParticipants} partecipanti</Text>
         <Text className="text-sm text-gray-400">{event.durationMin} min</Text>
       </View>
     </Pressable>
@@ -134,7 +132,9 @@ function EventsEmptyState() {
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F4C5}'}</Text>
-      <Text className="mt-4 text-lg font-semibold text-gray-900">Nessun evento nelle vicinanze</Text>
+      <Text className="mt-4 text-lg font-semibold text-gray-900">
+        Nessun evento nelle vicinanze
+      </Text>
       <Text className="mt-2 text-center text-sm text-gray-500 px-8">
         Crea un evento per organizzare una passeggiata di gruppo!
       </Text>

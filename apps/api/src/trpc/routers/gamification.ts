@@ -14,9 +14,7 @@ export function createGamificationRouter(deps: typeof gamificationDeps) {
 
     getLeaderboard: protectedProcedure
       .input(getLeaderboardSchema)
-      .query(async ({ input }) =>
-        unwrapResult(await deps.getLeaderboard(input.type, input.limit)),
-      ),
+      .query(async ({ input }) => unwrapResult(await deps.getLeaderboard(input.type, input.limit))),
 
     listActiveChallenges: protectedProcedure.query(async ({ ctx }) =>
       unwrapResult(await deps.listActiveChallenges(ctx.userId)),

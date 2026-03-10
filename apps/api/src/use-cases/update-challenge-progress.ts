@@ -26,10 +26,7 @@ export function createUpdateChallengeProgress({ gamificationRepo, awardXp }: Ful
     incrementBy: number,
   ): Promise<Result<{ updated: UserChallenge[] }>> => {
     const now = new Date();
-    const activeChallenges = await gamificationRepo.findActiveChallengesByType(
-      challengeType,
-      now,
-    );
+    const activeChallenges = await gamificationRepo.findActiveChallengesByType(challengeType, now);
 
     const updated: UserChallenge[] = [];
 

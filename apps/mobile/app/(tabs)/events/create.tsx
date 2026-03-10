@@ -1,8 +1,8 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Platform } from 'react-native';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -174,11 +174,7 @@ export default function CreateEventScreen() {
             {vm.submitting ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text
-                className={`font-semibold ${
-                  vm.isValid ? 'text-white' : 'text-gray-400'
-                }`}
-              >
+              <Text className={`font-semibold ${vm.isValid ? 'text-white' : 'text-gray-400'}`}>
                 Crea evento
               </Text>
             )}

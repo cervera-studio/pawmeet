@@ -1,5 +1,5 @@
 import type { XpAction } from '@dogwalk/config';
-import { XP_POINTS, computeLevelFromXp } from '@dogwalk/config';
+import { computeLevelFromXp, XP_POINTS } from '@dogwalk/config';
 import type { Result, XpSummary } from '@dogwalk/types';
 import { succeed } from '@dogwalk/types';
 import type { GamificationRepository } from '../ports/gamification-repository.js';

@@ -1,6 +1,6 @@
 import { USER_LEVEL, XP_ACTION, XP_POINTS } from '@dogwalk/config';
-import { isSuccess } from '@dogwalk/types';
 import type { XpTransaction } from '@dogwalk/types';
+import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import { createAwardXp } from './award-xp.js';

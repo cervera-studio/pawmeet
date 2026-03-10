@@ -82,9 +82,9 @@ describe('updateChallengeProgress', () => {
     const repo = buildGamificationRepo({
       findActiveChallengesByType: vi.fn().mockResolvedValue([challenge]),
       findUserChallenges: vi.fn().mockResolvedValue([buildUserChallenge({ progress: 4 })]),
-      upsertUserChallenge: vi.fn().mockResolvedValue(
-        buildUserChallenge({ progress: 5, completedAt: new Date() }),
-      ),
+      upsertUserChallenge: vi
+        .fn()
+        .mockResolvedValue(buildUserChallenge({ progress: 5, completedAt: new Date() })),
     });
     const awardXp = vi.fn().mockResolvedValue(undefined);
     const updateProgress = createUpdateChallengeProgress({
@@ -105,9 +105,11 @@ describe('updateChallengeProgress', () => {
     const challenge = buildChallenge({ targetValue: 5 });
     const repo = buildGamificationRepo({
       findActiveChallengesByType: vi.fn().mockResolvedValue([challenge]),
-      findUserChallenges: vi.fn().mockResolvedValue([
-        buildUserChallenge({ progress: 5, completedAt: new Date('2026-03-10') }),
-      ]),
+      findUserChallenges: vi
+        .fn()
+        .mockResolvedValue([
+          buildUserChallenge({ progress: 5, completedAt: new Date('2026-03-10') }),
+        ]),
     });
     const awardXp = vi.fn().mockResolvedValue(undefined);
     const updateProgress = createUpdateChallengeProgress({

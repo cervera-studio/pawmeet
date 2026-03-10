@@ -115,9 +115,7 @@ export default function EventDetailScreen() {
             {/* Date, time, duration */}
             <View className="mt-4">
               <View className="flex-row items-center mb-2">
-                <Text className="text-base text-gray-700">
-                  {formatDate(vm.event.scheduledAt)}
-                </Text>
+                <Text className="text-base text-gray-700">{formatDate(vm.event.scheduledAt)}</Text>
               </View>
               <View className="flex-row items-center mb-2">
                 <Text className="text-base text-gray-700">

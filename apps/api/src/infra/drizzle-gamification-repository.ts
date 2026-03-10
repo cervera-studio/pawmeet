@@ -1,21 +1,16 @@
+import type { AchievementType, ChallengeType, LeaderboardType, XpAction } from '@dogwalk/config';
+import { computeLevelFromXp, LEADERBOARD_TYPE } from '@dogwalk/config';
 import {
   achievements,
   challenges,
+  dogProfiles,
   groupEventParticipants,
   matches,
-  users,
   userChallenges,
+  users,
   walks,
   xpTransactions,
-  dogProfiles,
 } from '@dogwalk/db';
-import type {
-  AchievementType,
-  ChallengeType,
-  LeaderboardType,
-  XpAction,
-} from '@dogwalk/config';
-import { computeLevelFromXp, LEADERBOARD_TYPE } from '@dogwalk/config';
 import type {
   Achievement,
   Challenge,
@@ -23,7 +18,7 @@ import type {
   UserChallenge,
   XpTransaction,
 } from '@dogwalk/types';
-import { and, eq, gte, lte, or, sql, sum, desc, inArray } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, lte, or, sql, sum } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 
@@ -68,9 +63,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
         ? gte(xpTransactions.createdAt, new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
         : undefined;
 
-    const query = whereClause
-      ? baseQuery.where(whereClause)
-      : baseQuery;
+    const query = whereClause ? baseQuery.where(whereClause) : baseQuery;
 
     const rows = await query
       .groupBy(xpTransactions.userId, users.displayName)
@@ -106,10 +99,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
       .select()
       .from(userChallenges)
       .where(
-        and(
-          eq(userChallenges.userId, userId),
-          inArray(userChallenges.challengeId, challengeIds),
-        ),
+        and(eq(userChallenges.userId, userId), inArray(userChallenges.challengeId, challengeIds)),
       );
     return rows as UserChallenge[];
   }
@@ -136,11 +126,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
       .select()
       .from(challenges)
       .where(
-        and(
-          eq(challenges.type, type),
-          lte(challenges.startsAt, now),
-          gte(challenges.endsAt, now),
-        ),
+        and(eq(challenges.type, type), lte(challenges.startsAt, now), gte(challenges.endsAt, now)),
       );
     return rows as Challenge[];
   }
@@ -148,10 +134,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
   // ── Achievements ──────────────────────────────────────────────────────────
 
   async findAchievementsByUser(userId: string): Promise<Achievement[]> {
-    const rows = await this.db
-      .select()
-      .from(achievements)
-      .where(eq(achievements.userId, userId));
+    const rows = await this.db.select().from(achievements).where(eq(achievements.userId, userId));
     return rows as Achievement[];
   }
 
@@ -164,10 +147,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
   }
 
   async unlockAchievement(userId: string, type: AchievementType): Promise<Achievement> {
-    const rows = await this.db
-      .insert(achievements)
-      .values({ userId, type })
-      .returning();
+    const rows = await this.db.insert(achievements).values({ userId, type }).returning();
     return rows[0] as Achievement;
   }
 
@@ -186,10 +166,10 @@ export class DrizzleGamificationRepository implements GamificationRepository {
     const result = await this.db
       .select({ count: sql<number>`count(*)::int` })
       .from(matches)
-      .innerJoin(dogProfiles, or(
-        eq(matches.dogAId, dogProfiles.id),
-        eq(matches.dogBId, dogProfiles.id),
-      ))
+      .innerJoin(
+        dogProfiles,
+        or(eq(matches.dogAId, dogProfiles.id), eq(matches.dogBId, dogProfiles.id)),
+      )
       .where(and(eq(dogProfiles.ownerId, userId), eq(matches.isActive, true)));
     return result[0]?.count ?? 0;
   }

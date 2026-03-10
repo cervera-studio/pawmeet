@@ -90,7 +90,7 @@ export function useCreateEventViewModel() {
       router.back();
     } catch (e) {
       logger.warn('CreateEvent', 'Failed to create event', e);
-      Alert.alert('Errore', 'Impossibile creare l\'evento. Riprova.');
+      Alert.alert('Errore', "Impossibile creare l'evento. Riprova.");
     } finally {
       setSubmitting(false);
     }

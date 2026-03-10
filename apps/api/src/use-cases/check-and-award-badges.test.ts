@@ -17,9 +17,11 @@ function buildBadge(overrides: Partial<Badge> = {}): Badge {
 function buildBadgeRepo(overrides: Partial<BadgeRepository> = {}): BadgeRepository {
   return {
     findByDog: vi.fn().mockResolvedValue([]),
-    award: vi.fn().mockImplementation((_dogId: string, type: BadgeType) =>
-      Promise.resolve(buildBadge({ type })),
-    ),
+    award: vi
+      .fn()
+      .mockImplementation((_dogId: string, type: BadgeType) =>
+        Promise.resolve(buildBadge({ type })),
+      ),
     hasBadge: vi.fn().mockResolvedValue(false),
     ...overrides,
   };

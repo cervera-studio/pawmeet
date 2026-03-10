@@ -2,11 +2,11 @@ app = "dogwalk-api"
 primary_region = "fra"
 
 [build]
-  dockerfile = "../../Dockerfile"
+  dockerfile = "Dockerfile"
 
 [env]
-  PORT = "3000"
   NODE_ENV = "production"
+  PORT = "3000"
 
 [http_service]
   internal_port = 3000
@@ -17,4 +17,4 @@ primary_region = "fra"
 
 [[vm]]
   size = "shared-cpu-1x"
-  memory = "512mb"
+  memory = "256mb"

@@ -1,0 +1,23 @@
+node_modules
+.turbo
+.git
+.env
+.env.*
+*.log
+.DS_Store
+
+# App-specific build outputs
+apps/*/dist
+apps/web/.astro
+apps/admin/.next
+apps/mobile/.expo
+
+# Tooling
+tooling/vitest
+
+# Dev/test files
+**/*.test.ts
+**/*.test.tsx
+**/vitest.config.*
+**/.eslintrc.*
+coverage

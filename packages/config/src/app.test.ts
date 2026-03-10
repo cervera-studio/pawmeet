@@ -18,6 +18,10 @@ describe('app constants', () => {
       'WALK_DURATION_MAX',
       'DOG_WEIGHT_MIN_KG',
       'DOG_WEIGHT_MAX_KG',
+      'GROUP_EVENT_MIN_PARTICIPANTS',
+      'GROUP_EVENT_MAX_PARTICIPANTS',
+      'GROUP_EVENT_TITLE_MAX_LENGTH',
+      'GROUP_EVENT_DESCRIPTION_MAX_LENGTH',
     ] as const;
 
     it.each(requiredKeys)('exports %s', (key) => {

@@ -33,19 +33,14 @@ export function hasRefreshCookie(): boolean {
   return document.cookie.includes('admin_refresh_token');
 }
 
-// Legacy cookie helpers — kept for backward compatibility with tRPC client config.
-// The access token is now stored in memory, but the tRPC client may still call
-// getTokenFromCookie during initialization before the refresh flow completes.
-export function getTokenFromCookie(): string | null {
-  // Access token is stored in memory, not in cookies.
-  // Return null — the tRPC client should be updated to use the in-memory token.
-  return null;
+// Module-level in-memory token holder.
+// Shared between the auth provider (writes) and the tRPC client config (reads).
+let accessToken: string | null = null;
+
+export function getAccessToken(): string | null {
+  return accessToken;
 }
 
-export function setTokenCookie(_token: string) {
-  // No-op: access token is now stored in memory only
-}
-
-export function removeTokenCookie() {
-  // No-op: refresh token cookie is managed by the server
+export function setAccessToken(token: string | null) {
+  accessToken = token;
 }

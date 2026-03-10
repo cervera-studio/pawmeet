@@ -45,7 +45,7 @@ describe('Input', () => {
     render(<Input testID="input" />);
     const input = screen.getByTestId('input-input');
     fireEvent.focus(input);
-    expect(input).toHaveStyle({ borderColor: '#FF6B35' });
+    expect(input).toHaveStyle({ borderColor: '#065F46' });
   });
 
   it('reverts to default border on blur', () => {

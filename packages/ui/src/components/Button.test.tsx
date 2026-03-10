@@ -43,17 +43,17 @@ describe('Button', () => {
     expect(btn.style.opacity).toBe('0.4');
   });
 
-  it('renders primary variant with orange background by default', () => {
+  it('renders primary variant with emerald background by default', () => {
     render(<Button title="Primary" onPress={() => {}} testID="btn" />);
     const btn = screen.getByTestId('btn');
-    expect(btn).toHaveStyle({ backgroundColor: '#FF6B35' });
+    expect(btn).toHaveStyle({ backgroundColor: '#065F46' });
   });
 
   it('renders secondary variant with transparent background and border', () => {
     render(<Button title="Secondary" onPress={() => {}} variant="secondary" testID="btn" />);
     const btn = screen.getByTestId('btn');
     expect(btn.style.backgroundColor).toBe('transparent');
-    expect(btn).toHaveStyle({ borderColor: '#FF6B35' });
+    expect(btn).toHaveStyle({ borderColor: '#065F46' });
   });
 
   it('renders ghost variant with transparent background', () => {

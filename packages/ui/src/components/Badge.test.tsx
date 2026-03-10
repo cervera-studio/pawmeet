@@ -28,13 +28,13 @@ describe('Badge', () => {
   it('renders new variant with primary background and white text', () => {
     render(<Badge label="Nuovo" variant="new" testID="badge" />);
     const el = screen.getByTestId('badge');
-    expect(el).toHaveStyle({ backgroundColor: '#FF6B35' });
+    expect(el).toHaveStyle({ backgroundColor: '#065F46' });
   });
 
   it('renders counter variant with primary background', () => {
     render(<Badge label="3" variant="counter" testID="badge" />);
     const el = screen.getByTestId('badge');
-    expect(el).toHaveStyle({ backgroundColor: '#FF6B35' });
+    expect(el).toHaveStyle({ backgroundColor: '#065F46' });
   });
 
   it('renders verified variant with blue-tinted background', () => {

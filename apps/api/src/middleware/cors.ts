@@ -7,6 +7,7 @@ export const corsMiddleware = cors({
     'http://localhost:4321',
     'https://dogwalk.app',
     'https://admin.dogwalk.app',
+    'https://dogwalk-admin.vercel.app',
   ],
   credentials: true,
 });

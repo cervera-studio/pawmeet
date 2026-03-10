@@ -9,7 +9,7 @@ export interface LoginInput {
   password: string;
 }
 
-type SafeUser = Omit<User, 'passwordHash'>;
+type SafeUser = Omit<User, 'passwordHash' | 'pushToken'>;
 
 export interface LoginOutput {
   user: SafeUser;
@@ -24,7 +24,7 @@ interface Deps {
 }
 
 function sanitizeUser(user: User): SafeUser {
-  const { passwordHash: _, ...safeUser } = user;
+  const { passwordHash: _, pushToken: __, ...safeUser } = user;
   return safeUser;
 }
 

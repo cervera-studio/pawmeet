@@ -36,6 +36,7 @@ import { createLogoutUser } from './use-cases/logout-user.js';
 import { createMarkMessagesRead } from './use-cases/mark-messages-read.js';
 import { createPassDog } from './use-cases/pass-dog.js';
 import { createRefreshTokens } from './use-cases/refresh-tokens.js';
+import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createResetPassword } from './use-cases/reset-password.js';
@@ -102,6 +103,7 @@ export const userDeps = {
   uploadAvatarUrl: createUploadAvatarUrl({ storage }),
   confirmAvatar: createConfirmAvatar({ userRepo, storage }),
   deleteAvatar: createDeleteAvatar({ userRepo, storage }),
+  registerPushToken: createRegisterPushToken({ userRepo }),
 };
 
 // ── Match deps ──────────────────────────────────────────────────────────────────
@@ -119,6 +121,6 @@ export const matchDeps = {
 export const chatDeps = {
   listConversations: createListConversations({ dogRepo, messageRepo, chat }),
   getMessages: createGetMessages({ messageRepo, chat }),
-  sendMessage: createSendMessage({ messageRepo, chat }),
+  sendMessage: createSendMessage({ messageRepo, chat, userRepo }),
   markMessagesRead: createMarkMessagesRead({ messageRepo, chat }),
 };

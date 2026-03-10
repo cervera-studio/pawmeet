@@ -77,6 +77,7 @@ function buildMessageRepo(overrides: Partial<MessageRepository> = {}): MessageRe
     create: vi.fn(),
     markAsRead: vi.fn(),
     isMatchParticipant: vi.fn(),
+    getOtherParticipant: vi.fn().mockResolvedValue(null),
     ...overrides,
   };
 }

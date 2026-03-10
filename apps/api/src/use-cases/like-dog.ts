@@ -1,6 +1,8 @@
 import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
 import type { Match } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { logger } from '@dogwalk/utils';
+import { enqueueNotification } from '../jobs/queue.js';
 import type { DogRepository, MatchRepository } from '../ports/index.js';
 
 type Deps = {
@@ -51,6 +53,18 @@ export function createLikeDog({ dogRepo, matchRepo }: Deps) {
         dogBId: targetDogId,
         compatibilityScore: 0, // will be recalculated
       });
+
+      // Notify the other dog's owner about the match
+      const targetDog = await dogRepo.findById(targetDogId);
+      if (targetDog) {
+        enqueueNotification({
+          userId: targetDog.ownerId,
+          title: 'Hai un nuovo match! \u{1F415}',
+          body: `Il tuo cane ${targetDog.name} ha un nuovo compagno di passeggiata!`,
+          data: { matchId: match.id, type: 'new_match' },
+        }).catch((err) => logger.error('likeDog', 'Failed to enqueue match notification', err));
+      }
+
       return succeed({ match, isMatch: true });
     }
 

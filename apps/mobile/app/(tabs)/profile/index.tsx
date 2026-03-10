@@ -1,11 +1,12 @@
 import { logger } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogProfileCard } from '@/components/DogProfileCard';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuth } from '@/hooks/useAuth';
+import { useImageUpload } from '@/hooks/useImageUpload';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
 
@@ -26,6 +27,7 @@ export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const dogs = useDogsStore((s) => s.dogs);
   const setDogs = useDogsStore((s) => s.setDogs);
+  const { uploading, uploadAvatar } = useImageUpload();
 
   useEffect(() => {
     api.dogs.list
@@ -34,16 +36,31 @@ export default function ProfileScreen() {
       .catch((e) => logger.warn('ProfileScreen', 'Failed to fetch dogs', e));
   }, [setDogs]);
 
+  const handleAvatarPress = async () => {
+    await uploadAvatar();
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerClassName="px-4 py-6">
         {/* User profile */}
         <View className="mb-8 items-center">
-          <Avatar name={user?.displayName ?? 'Utente'} size="lg" />
+          <Pressable onPress={handleAvatarPress} disabled={uploading} className="relative">
+            <Avatar name={user?.displayName ?? 'Utente'} imageUrl={user?.avatarUrl} size="lg" />
+            {/* Camera icon overlay */}
+            <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-full bg-primary">
+              {uploading ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text className="text-sm text-white">{'\u{1F4F7}'}</Text>
+              )}
+            </View>
+          </Pressable>
           <Text className="mt-3 text-xl font-bold text-gray-900">
             {user?.displayName ?? 'Utente'}
           </Text>
           <Text className="text-sm text-gray-500">{user?.email}</Text>
+          <Text className="mt-1 text-xs text-gray-400">Tocca la foto per cambiarla</Text>
         </View>
 
         {/* My dogs */}
@@ -81,17 +98,17 @@ export default function ProfileScreen() {
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >
             <Text className="text-base text-gray-700">Impostazioni</Text>
-            <Text className="text-gray-400">›</Text>
+            <Text className="text-gray-400">{'\u203A'}</Text>
           </Pressable>
 
           <Pressable className="flex-row items-center justify-between rounded-xl px-4 py-4">
             <Text className="text-base text-gray-700">Privacy e Sicurezza</Text>
-            <Text className="text-gray-400">›</Text>
+            <Text className="text-gray-400">{'\u203A'}</Text>
           </Pressable>
 
           <Pressable className="flex-row items-center justify-between rounded-xl px-4 py-4">
             <Text className="text-base text-gray-700">Aiuto e Supporto</Text>
-            <Text className="text-gray-400">›</Text>
+            <Text className="text-gray-400">{'\u203A'}</Text>
           </Pressable>
 
           <Pressable onPress={logout} className="mt-4 items-center rounded-xl py-4">

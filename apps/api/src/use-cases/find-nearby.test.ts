@@ -18,6 +18,7 @@ function buildUser(overrides: Partial<User> = {}): User {
     locationUpdatedAt: new Date('2026-03-01'),
     searchRadiusKm: 15,
     emailVerified: true,
+    pushToken: null,
     isActive: true,
     createdAt: new Date('2026-01-01'),
     lastLoginAt: null,
@@ -46,6 +47,8 @@ function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository 
     create: vi.fn(),
     update: vi.fn(),
     findNearby: vi.fn(),
+    updatePushToken: vi.fn(),
+    findPushToken: vi.fn(),
     ...overrides,
   };
 }

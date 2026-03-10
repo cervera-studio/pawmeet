@@ -3,14 +3,18 @@ import { logger } from '@dogwalk/utils';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 type Dog = RouterOutput['dogs']['get']['dog'];
+type DogPhoto = RouterOutput['dogs']['get']['photos'][number];
 
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { useImageUpload } from '@/hooks/useImageUpload';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
+
+const MAX_PHOTOS = 6;
 
 const LABEL_MAP: Record<string, string> = {
   toy: 'Toy',
@@ -80,15 +84,19 @@ export default function DogDetailScreen() {
   const updateDogInStore = useDogsStore((s) => s.updateDog);
   const removeDogFromStore = useDogsStore((s) => s.removeDog);
   const [dog, setDog] = useState<Dog | null>(storeDog ?? null);
+  const [photos, setPhotos] = useState<DogPhoto[]>([]);
   const [loading, setLoading] = useState(!storeDog);
   const [deleting, setDeleting] = useState(false);
+  const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+  const { uploading, uploadDogPhoto } = useImageUpload();
 
   useEffect(() => {
-    if (!storeDog && params.dogId) {
+    if (params.dogId) {
       api.dogs.get
         .query({ id: params.dogId })
-        .then(({ dog: d }) => {
+        .then(({ dog: d, photos: p }) => {
           setDog(d);
+          setPhotos(p);
           setLoading(false);
         })
         .catch((e) => {
@@ -96,12 +104,42 @@ export default function DogDetailScreen() {
           setLoading(false);
         });
     }
-  }, [storeDog, params.dogId]);
+  }, [params.dogId]);
+
+  const handleUploadPhoto = async () => {
+    if (!dog) return;
+    const photo = await uploadDogPhoto(dog.id);
+    if (photo) {
+      setPhotos((prev) => [...prev, photo]);
+    }
+  };
+
+  const handleDeletePhoto = (photoId: string) => {
+    if (!dog) return;
+    Alert.alert('Elimina foto', 'Sei sicuro di voler eliminare questa foto?', [
+      { text: 'Annulla', style: 'cancel' },
+      {
+        text: 'Elimina',
+        style: 'destructive',
+        onPress: async () => {
+          setDeletingPhotoId(photoId);
+          try {
+            await api.dogs.deletePhoto.mutate({ dogId: dog.id, photoId });
+            setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+          } catch (e) {
+            logger.warn('DogDetail', 'Failed to delete photo', e);
+            Alert.alert('Errore', 'Impossibile eliminare la foto. Riprova.');
+          } finally {
+            setDeletingPhotoId(null);
+          }
+        },
+      },
+    ]);
+  };
 
   const handleToggleActive = async () => {
     if (!dog) return;
     try {
-      // Toggle active status via soft delete/reactivate
       if (dog.isActive) {
         await api.dogs.delete.mutate({ id: dog.id });
         setDog({ ...dog, isActive: false });
@@ -153,6 +191,9 @@ export default function DogDetailScreen() {
     );
   }
 
+  // Use the first photo as the avatar image, if available
+  const primaryPhoto = photos.find((p) => p.isPrimary) ?? photos[0];
+
   return (
     <>
       <Stack.Screen
@@ -166,7 +207,7 @@ export default function DogDetailScreen() {
         <ScrollView contentContainerClassName="px-6 py-4">
           {/* Header */}
           <View className="items-center">
-            <Avatar name={dog.name} size="lg" />
+            <Avatar name={dog.name} imageUrl={primaryPhoto?.url} size="lg" />
             <Text className="mt-3 text-2xl font-bold text-gray-900">{dog.name}</Text>
             <Text className="text-base text-gray-500">{dog.breed}</Text>
             {dog.breedSecondary ? (
@@ -238,17 +279,57 @@ export default function DogDetailScreen() {
             </View>
           </View>
 
-          {/* Photo placeholder */}
+          {/* Photo gallery */}
           <View className="mt-4">
-            <Text className="mb-2 text-base font-semibold text-gray-900">Foto</Text>
-            <View className="flex-row gap-2">
-              <View className="h-24 w-24 items-center justify-center rounded-xl bg-gray-100">
-                <Text className="text-2xl">🐕</Text>
-              </View>
-              <Pressable className="h-24 w-24 items-center justify-center rounded-xl border-2 border-dashed border-gray-200">
-                <Text className="text-2xl">+</Text>
-              </Pressable>
+            <Text className="mb-2 text-base font-semibold text-gray-900">
+              Foto ({photos.length}/{MAX_PHOTOS})
+            </Text>
+            <View className="flex-row flex-wrap gap-2">
+              {photos.map((photo) => (
+                <Pressable
+                  key={photo.id}
+                  onLongPress={() => handleDeletePhoto(photo.id)}
+                  className="relative h-24 w-24 overflow-hidden rounded-xl"
+                >
+                  <Image source={{ uri: photo.url }} className="h-full w-full" resizeMode="cover" />
+                  {deletingPhotoId === photo.id && (
+                    <View className="absolute inset-0 items-center justify-center bg-black/40">
+                      <ActivityIndicator size="small" color="#ffffff" />
+                    </View>
+                  )}
+                  {photo.moderationStatus === 'pending' && (
+                    <View className="absolute bottom-1 left-1 rounded-full bg-yellow-500 px-1.5 py-0.5">
+                      <Text className="text-[10px] font-medium text-white">In revisione</Text>
+                    </View>
+                  )}
+                  {photo.moderationStatus === 'rejected' && (
+                    <View className="absolute bottom-1 left-1 rounded-full bg-red-500 px-1.5 py-0.5">
+                      <Text className="text-[10px] font-medium text-white">Rifiutata</Text>
+                    </View>
+                  )}
+                </Pressable>
+              ))}
+
+              {/* Upload button — shown only when under the limit */}
+              {photos.length < MAX_PHOTOS && (
+                <Pressable
+                  onPress={handleUploadPhoto}
+                  disabled={uploading}
+                  className="h-24 w-24 items-center justify-center rounded-xl border-2 border-dashed border-gray-300"
+                >
+                  {uploading ? (
+                    <ActivityIndicator size="small" color="#FF6B35" />
+                  ) : (
+                    <Text className="text-2xl text-gray-400">+</Text>
+                  )}
+                </Pressable>
+              )}
             </View>
+            {photos.length > 0 && (
+              <Text className="mt-1 text-xs text-gray-400">
+                Tieni premuto su una foto per eliminarla
+              </Text>
+            )}
           </View>
 
           {/* Actions */}

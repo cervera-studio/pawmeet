@@ -14,7 +14,7 @@ export interface RegisterInput {
   displayName: string;
 }
 
-type SafeUser = Omit<User, 'passwordHash'>;
+type SafeUser = Omit<User, 'passwordHash' | 'pushToken'>;
 
 export interface RegisterOutput {
   user: SafeUser;
@@ -30,7 +30,7 @@ interface Deps {
 }
 
 function sanitizeUser(user: User): SafeUser {
-  const { passwordHash: _, ...safeUser } = user;
+  const { passwordHash: _, pushToken: __, ...safeUser } = user;
   return safeUser;
 }
 

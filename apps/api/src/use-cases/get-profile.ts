@@ -13,7 +13,7 @@ export function createGetProfile({ userRepo }: Deps) {
       return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
     }
 
-    const { passwordHash: _, ...safeUser } = user;
+    const { passwordHash: _, pushToken: __, ...safeUser } = user;
     return succeed({ user: safeUser });
   };
 }

@@ -26,4 +26,5 @@ export interface MessageRepository {
   }): Promise<ChatMessage>;
   markAsRead(matchId: string, readerId: string): Promise<void>;
   isMatchParticipant(matchId: string, userId: string): Promise<boolean>;
+  getOtherParticipant(matchId: string, userId: string): Promise<string | null>;
 }

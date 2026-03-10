@@ -10,10 +10,11 @@ export interface User {
   locationUpdatedAt: Date | null;
   searchRadiusKm: number;
   emailVerified: boolean;
+  pushToken: string | null;
   isActive: boolean;
   createdAt: Date;
   lastLoginAt: Date | null;
 }
 
-/** User data without sensitive fields (passwordHash). */
-export type SafeUser = Omit<User, 'passwordHash'>;
+/** User data without sensitive fields (passwordHash, pushToken). */
+export type SafeUser = Omit<User, 'passwordHash' | 'pushToken'>;

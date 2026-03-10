@@ -11,6 +11,8 @@ function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository 
     create: vi.fn(),
     update: vi.fn().mockResolvedValue({} as any),
     findNearby: vi.fn(),
+    updatePushToken: vi.fn(),
+    findPushToken: vi.fn(),
     ...overrides,
   };
 }

@@ -24,11 +24,12 @@ describe('users table', () => {
         'locationUpdatedAt',
         'searchRadiusKm',
         'isActive',
+        'pushToken',
         'createdAt',
         'lastLoginAt',
       ]),
     );
-    expect(columnNames).toHaveLength(14);
+    expect(columnNames).toHaveLength(15);
   });
 
   describe('id column', () => {

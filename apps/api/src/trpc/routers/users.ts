@@ -4,6 +4,10 @@ import type { userDeps } from '../../container.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
+const registerPushTokenSchema = z.object({
+  token: z.string().min(1),
+});
+
 const updateLocationSchema = z.object({
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
@@ -65,5 +69,11 @@ export function createUsersRouter(deps: typeof userDeps) {
     deleteAvatar: protectedProcedure.mutation(async ({ ctx }) =>
       unwrapResult(await deps.deleteAvatar(ctx.userId)),
     ),
+
+    registerPushToken: protectedProcedure
+      .input(registerPushTokenSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.registerPushToken(ctx.userId, input.token)),
+      ),
   });
 }

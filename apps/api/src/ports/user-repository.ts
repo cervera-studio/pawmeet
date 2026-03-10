@@ -56,4 +56,6 @@ export interface UserRepository {
     >,
   ): Promise<User>;
   findNearby(query: NearbyQuery): Promise<NearbyUser[]>;
+  updatePushToken(userId: string, token: string | null): Promise<void>;
+  findPushToken(userId: string): Promise<string | null>;
 }

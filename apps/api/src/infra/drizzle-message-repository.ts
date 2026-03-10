@@ -172,4 +172,22 @@ export class DrizzleMessageRepository implements MessageRepository {
 
     return dogA?.ownerId === userId || dogB?.ownerId === userId;
   }
+
+  async getOtherParticipant(matchId: string, userId: string): Promise<string | null> {
+    const [match] = await this.db.select().from(matches).where(eq(matches.id, matchId));
+    if (!match || !match.isActive) return null;
+
+    const [dogA] = await this.db
+      .select({ ownerId: dogProfiles.ownerId })
+      .from(dogProfiles)
+      .where(eq(dogProfiles.id, match.dogAId));
+    const [dogB] = await this.db
+      .select({ ownerId: dogProfiles.ownerId })
+      .from(dogProfiles)
+      .where(eq(dogProfiles.id, match.dogBId));
+
+    if (dogA?.ownerId === userId) return dogB?.ownerId ?? null;
+    if (dogB?.ownerId === userId) return dogA?.ownerId ?? null;
+    return null;
+  }
 }

@@ -1,0 +1,351 @@
+import type { SafeUser } from '@dogwalk/types';
+import { AppError, fail, succeed } from '@dogwalk/types';
+import { TRPCError } from '@trpc/server';
+import { describe, expect, it, vi } from 'vitest';
+import type { authDeps } from '../../container.js';
+import { router } from '../trpc.js';
+import { createAuthRouter } from './auth.js';
+
+// ── Builders ──────────────────────────────────────────────────────────────────
+
+function buildSafeUser(overrides: Partial<SafeUser> = {}): SafeUser {
+  return {
+    id: 'usr_1',
+    email: 'test@example.com',
+    displayName: 'Test User',
+    authProvider: 'email',
+    avatarUrl: null,
+    latitude: null,
+    longitude: null,
+    locationUpdatedAt: null,
+    searchRadiusKm: 10,
+    emailVerified: false,
+    isActive: true,
+    createdAt: new Date('2024-01-01'),
+    lastLoginAt: null,
+    ...overrides,
+  };
+}
+
+function buildAuthDeps(overrides: Partial<typeof authDeps> = {}): typeof authDeps {
+  return {
+    registerUser: vi.fn().mockResolvedValue(
+      succeed({
+        user: buildSafeUser(),
+        accessToken: 'access_tok',
+        refreshToken: 'refresh_tok',
+      }),
+    ),
+    loginUser: vi.fn().mockResolvedValue(
+      succeed({
+        user: buildSafeUser({ emailVerified: true }),
+        accessToken: 'access_tok',
+        refreshToken: 'refresh_tok',
+      }),
+    ),
+    refreshTokens: vi.fn().mockResolvedValue(
+      succeed({
+        accessToken: 'new_access_tok',
+        refreshToken: 'new_refresh_tok',
+      }),
+    ),
+    logoutUser: vi.fn().mockResolvedValue(succeed({ message: 'Logout effettuato' })),
+    verifyEmail: vi.fn().mockResolvedValue(succeed({ message: 'Email verificata con successo' })),
+    forgotPassword: vi
+      .fn()
+      .mockResolvedValue(
+        succeed({ message: "Se l'email esiste, riceverai un link per il reset" }),
+      ),
+    resetPassword: vi
+      .fn()
+      .mockResolvedValue(succeed({ message: 'Password reimpostata con successo' })),
+    ...overrides,
+  };
+}
+
+function createCaller(deps: typeof authDeps) {
+  const appRouter = router({ auth: createAuthRouter(deps) });
+  // Auth procedures are all public, so userId is not required
+  return appRouter.createCaller({ userId: null });
+}
+
+// ── Tests ─────────────────────────────────────────────────────────────────────
+
+describe('auth router', () => {
+  describe('register', () => {
+    const validInput = {
+      email: 'new@example.com',
+      password: 'Str0ng!Pass',
+      displayName: 'New User',
+    };
+
+    it('returns user and tokens on valid input', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      const result = await caller.auth.register(validInput);
+
+      expect(result.accessToken).toBe('access_tok');
+      expect(result.refreshToken).toBe('refresh_tok');
+      expect(result.user.email).toBe('test@example.com');
+      expect(deps.registerUser).toHaveBeenCalledWith(validInput);
+    });
+
+    it('throws CONFLICT when email already taken', async () => {
+      const deps = buildAuthDeps({
+        registerUser: vi
+          .fn()
+          .mockResolvedValue(fail(new AppError('AUTH_EMAIL_TAKEN', 'Email già registrata', 409))),
+      });
+      const caller = createCaller(deps);
+
+      await expect(caller.auth.register(validInput)).rejects.toThrow(TRPCError);
+      await expect(caller.auth.register(validInput)).rejects.toMatchObject({
+        code: 'CONFLICT',
+      });
+    });
+
+    it('rejects invalid email with Zod validation error', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.register({ ...validInput, email: 'not-an-email' }),
+      ).rejects.toThrow(TRPCError);
+      expect(deps.registerUser).not.toHaveBeenCalled();
+    });
+
+    it('rejects weak password with Zod validation error', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.register({ ...validInput, password: 'short' }),
+      ).rejects.toThrow(TRPCError);
+      expect(deps.registerUser).not.toHaveBeenCalled();
+    });
+
+    it('rejects password without uppercase letter', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.register({ ...validInput, password: 'nouppercase1' }),
+      ).rejects.toThrow(TRPCError);
+      expect(deps.registerUser).not.toHaveBeenCalled();
+    });
+
+    it('rejects password without number', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.register({ ...validInput, password: 'NoNumberHere' }),
+      ).rejects.toThrow(TRPCError);
+      expect(deps.registerUser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('login', () => {
+    const validInput = { email: 'test@example.com', password: 'Str0ng!Pass' };
+
+    it('returns tokens on valid credentials', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      const result = await caller.auth.login(validInput);
+
+      expect(result.accessToken).toBe('access_tok');
+      expect(result.refreshToken).toBe('refresh_tok');
+      expect(deps.loginUser).toHaveBeenCalledWith(validInput);
+    });
+
+    it('throws UNAUTHORIZED on invalid credentials', async () => {
+      const deps = buildAuthDeps({
+        loginUser: vi
+          .fn()
+          .mockResolvedValue(
+            fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Credenziali non valide', 401)),
+          ),
+      });
+      const caller = createCaller(deps);
+
+      await expect(caller.auth.login(validInput)).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
+    });
+
+    it('throws FORBIDDEN when account is disabled', async () => {
+      const deps = buildAuthDeps({
+        loginUser: vi
+          .fn()
+          .mockResolvedValue(
+            fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disattivato', 403)),
+          ),
+      });
+      const caller = createCaller(deps);
+
+      await expect(caller.auth.login(validInput)).rejects.toMatchObject({
+        code: 'FORBIDDEN',
+      });
+    });
+
+    it('rejects invalid email format', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.login({ email: 'bad', password: 'x' }),
+      ).rejects.toThrow(TRPCError);
+      expect(deps.loginUser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('refresh', () => {
+    it('returns new tokens on valid refresh token', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      const result = await caller.auth.refresh({ refreshToken: 'valid_refresh_token' });
+
+      expect(result.accessToken).toBe('new_access_tok');
+      expect(result.refreshToken).toBe('new_refresh_tok');
+      expect(deps.refreshTokens).toHaveBeenCalledWith('valid_refresh_token');
+    });
+
+    it('throws UNAUTHORIZED on invalid refresh token', async () => {
+      const deps = buildAuthDeps({
+        refreshTokens: vi
+          .fn()
+          .mockResolvedValue(
+            fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido', 401)),
+          ),
+      });
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.refresh({ refreshToken: 'bad_token' }),
+      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
+    });
+
+    it('rejects empty refresh token', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(caller.auth.refresh({ refreshToken: '' })).rejects.toThrow(TRPCError);
+      expect(deps.refreshTokens).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('logout', () => {
+    it('returns success message', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      const result = await caller.auth.logout({ refreshToken: 'some_token' });
+
+      expect(result.message).toBe('Logout effettuato');
+      expect(deps.logoutUser).toHaveBeenCalledWith('some_token');
+    });
+  });
+
+  describe('verifyEmail', () => {
+    it('returns success on valid token', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      const result = await caller.auth.verifyEmail({ token: 'valid_token' });
+
+      expect(result.message).toBe('Email verificata con successo');
+      expect(deps.verifyEmail).toHaveBeenCalledWith('valid_token');
+    });
+
+    it('throws BAD_REQUEST on invalid token', async () => {
+      const deps = buildAuthDeps({
+        verifyEmail: vi
+          .fn()
+          .mockResolvedValue(
+            fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido o scaduto', 400)),
+          ),
+      });
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.verifyEmail({ token: 'bad_token' }),
+      ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+    });
+
+    it('rejects empty token', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(caller.auth.verifyEmail({ token: '' })).rejects.toThrow(TRPCError);
+      expect(deps.verifyEmail).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('forgotPassword', () => {
+    it('returns success message (regardless of email existence)', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      const result = await caller.auth.forgotPassword({ email: 'any@example.com' });
+
+      expect(result.message).toContain('email');
+      expect(deps.forgotPassword).toHaveBeenCalledWith('any@example.com');
+    });
+
+    it('rejects invalid email format', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.forgotPassword({ email: 'not-an-email' }),
+      ).rejects.toThrow(TRPCError);
+      expect(deps.forgotPassword).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('returns success on valid token and password', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      const result = await caller.auth.resetPassword({
+        token: 'reset_token',
+        password: 'NewStr0ng!',
+      });
+
+      expect(result.message).toBe('Password reimpostata con successo');
+      expect(deps.resetPassword).toHaveBeenCalledWith({
+        token: 'reset_token',
+        password: 'NewStr0ng!',
+      });
+    });
+
+    it('throws BAD_REQUEST on invalid reset token', async () => {
+      const deps = buildAuthDeps({
+        resetPassword: vi
+          .fn()
+          .mockResolvedValue(
+            fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido o scaduto', 400)),
+          ),
+      });
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.resetPassword({ token: 'bad', password: 'NewStr0ng!' }),
+      ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+    });
+
+    it('rejects weak password', async () => {
+      const deps = buildAuthDeps();
+      const caller = createCaller(deps);
+
+      await expect(
+        caller.auth.resetPassword({ token: 'tok', password: 'weak' }),
+      ).rejects.toThrow(TRPCError);
+      expect(deps.resetPassword).not.toHaveBeenCalled();
+    });
+  });
+});

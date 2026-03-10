@@ -1,7 +1,7 @@
 import type { ChatMessage } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { ChatService, MessageRepository } from '../ports/index.js';
+import type { ChatService, MessageRepository, UserRepository } from '../ports/index.js';
 import { createSendMessage } from './send-message.js';
 
 function buildMessage(overrides: Partial<ChatMessage> = {}): ChatMessage {
@@ -25,6 +25,21 @@ function buildMessageRepo(overrides: Partial<MessageRepository> = {}): MessageRe
     create: vi.fn(),
     markAsRead: vi.fn(),
     isMatchParticipant: vi.fn().mockResolvedValue(true),
+    getOtherParticipant: vi.fn().mockResolvedValue(null),
+    ...overrides,
+  };
+}
+
+function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository {
+  return {
+    findByEmail: vi.fn(),
+    findById: vi.fn(),
+    findByIds: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    findNearby: vi.fn(),
+    updatePushToken: vi.fn(),
+    findPushToken: vi.fn(),
     ...overrides,
   };
 }
@@ -44,7 +59,8 @@ describe('sendMessage', () => {
       create: vi.fn().mockResolvedValue(msg),
     });
     const chat = buildChat();
-    const sendMessage = createSendMessage({ messageRepo, chat });
+    const userRepo = buildUserRepo();
+    const sendMessage = createSendMessage({ messageRepo, chat, userRepo });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 
@@ -72,7 +88,8 @@ describe('sendMessage', () => {
       create: vi.fn().mockResolvedValue(msg),
     });
     const chat = buildChat();
-    const sendMessage = createSendMessage({ messageRepo, chat });
+    const userRepo = buildUserRepo();
+    const sendMessage = createSendMessage({ messageRepo, chat, userRepo });
 
     const result = await sendMessage(
       'user-1',
@@ -92,7 +109,8 @@ describe('sendMessage', () => {
       isMatchParticipant: vi.fn().mockResolvedValue(false),
     });
     const chat = buildChat();
-    const sendMessage = createSendMessage({ messageRepo, chat });
+    const userRepo = buildUserRepo();
+    const sendMessage = createSendMessage({ messageRepo, chat, userRepo });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 

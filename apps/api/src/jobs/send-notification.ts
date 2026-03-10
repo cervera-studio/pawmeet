@@ -1,25 +1,28 @@
+import { logger } from '@dogwalk/utils';
 import { Worker } from 'bullmq';
+import { DrizzleUserRepository } from '../infra/drizzle-user-repository.js';
+import { db } from '../lib/db.js';
 import { expo } from '../lib/push.js';
 import type { NotificationJobData } from './queue.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 export function createNotificationWorker() {
+  const userRepo = new DrizzleUserRepository(db);
+
   const worker = new Worker<NotificationJobData>(
     QUEUE_NAMES.NOTIFICATIONS,
     async (job) => {
       const { userId, title, body, data } = job.data;
-      console.log(`[notifications] Sending to user ${userId}: ${title}`);
+      logger.debug('notifications', `Sending to user ${userId}: ${title}`);
 
-      // TODO: look up user's Expo push token from DB
-      // For now, log and skip
-      const pushToken = null; // await getUserPushToken(userId);
+      const pushToken = await userRepo.findPushToken(userId);
 
       if (!pushToken) {
-        console.log(`[notifications] No push token for user ${userId}, skipping`);
+        logger.debug('notifications', `No push token for user ${userId}, skipping`);
         return;
       }
 
-      await expo.sendPushNotificationsAsync([
+      const tickets = await expo.sendPushNotificationsAsync([
         {
           to: pushToken,
           title,
@@ -28,16 +31,24 @@ export function createNotificationWorker() {
           sound: 'default',
         },
       ]);
+
+      const ticket = tickets[0];
+      if (ticket?.status === 'error') {
+        logger.error('notifications', `Push send error: ${ticket.message}`, {
+          userId,
+          details: ticket.details,
+        });
+      }
     },
     { connection: getRedisConnection(), concurrency: 10 },
   );
 
   worker.on('completed', (job) => {
-    console.log(`[notifications] Job ${job.id} completed`);
+    logger.debug('notifications', `Job ${job.id} completed`);
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`[notifications] Job ${job?.id} failed:`, err.message);
+    logger.error('notifications', `Job ${job?.id} failed: ${err.message}`);
   });
 
   return worker;

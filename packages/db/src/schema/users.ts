@@ -23,5 +23,6 @@ export const users = pgTable('users', {
   emailVerified: boolean('email_verified').notNull().default(false),
   isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  pushToken: text('push_token'),
   lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
 });

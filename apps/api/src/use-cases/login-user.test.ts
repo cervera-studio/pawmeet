@@ -19,6 +19,7 @@ function buildUser(overrides: Partial<User> = {}): User {
     locationUpdatedAt: null,
     searchRadiusKm: 10,
     emailVerified: true,
+    pushToken: null,
     isActive: true,
     createdAt: new Date('2024-01-01'),
     lastLoginAt: null,
@@ -42,6 +43,8 @@ function buildDeps(
       create: vi.fn().mockResolvedValue(user),
       update: vi.fn().mockResolvedValue(user),
       findNearby: vi.fn().mockResolvedValue([]),
+      updatePushToken: vi.fn().mockResolvedValue(undefined),
+      findPushToken: vi.fn().mockResolvedValue(null),
       ...overrides.userRepo,
     } as UserRepository,
     tokenRepo: {

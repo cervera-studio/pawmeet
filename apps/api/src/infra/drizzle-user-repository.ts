@@ -62,6 +62,18 @@ export class DrizzleUserRepository implements UserRepository {
     return rows[0] as User;
   }
 
+  async updatePushToken(userId: string, token: string | null): Promise<void> {
+    await this.db.update(users).set({ pushToken: token }).where(eq(users.id, userId));
+  }
+
+  async findPushToken(userId: string): Promise<string | null> {
+    const [row] = await this.db
+      .select({ pushToken: users.pushToken })
+      .from(users)
+      .where(eq(users.id, userId));
+    return row?.pushToken ?? null;
+  }
+
   async findNearby(query: NearbyQuery): Promise<NearbyUser[]> {
     const { userId, latitude, longitude, radiusKm, limit, offset } = query;
 

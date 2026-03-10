@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 
 interface AvatarProps {
   name: string;
@@ -18,13 +18,32 @@ const textSizeClasses = {
   lg: 'text-3xl',
 };
 
-export function Avatar({ name, size = 'md' }: AvatarProps) {
+const sizePixels = {
+  sm: 40,
+  md: 56,
+  lg: 96,
+};
+
+export function Avatar({ name, imageUrl, size = 'md' }: AvatarProps) {
   const initials = name
     .split(' ')
     .map((n) => n[0])
     .join('')
     .toUpperCase()
     .slice(0, 2);
+
+  if (imageUrl) {
+    return (
+      <View className={`overflow-hidden rounded-full ${sizeClasses[size]}`}>
+        <Image
+          source={{ uri: imageUrl }}
+          style={{ width: sizePixels[size], height: sizePixels[size] }}
+          className="h-full w-full"
+          resizeMode="cover"
+        />
+      </View>
+    );
+  }
 
   return (
     <View

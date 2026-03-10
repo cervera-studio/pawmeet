@@ -198,7 +198,12 @@ describe('listMatches', () => {
 
   it('correctly identifies the other dog when user dog is dogB', async () => {
     const myDog = buildDog({ id: 'dog-1', ownerId: 'user-1' });
-    const otherDog = buildDog({ id: 'dog-3', ownerId: 'user-3', name: 'Luna', breed: 'Pastore Tedesco' });
+    const otherDog = buildDog({
+      id: 'dog-3',
+      ownerId: 'user-3',
+      name: 'Luna',
+      breed: 'Pastore Tedesco',
+    });
     const otherOwner = buildUser({ id: 'user-3', displayName: 'Marco' });
     const match = buildMatch({ id: 'match-2', dogAId: 'dog-3', dogBId: 'dog-1' });
 

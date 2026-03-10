@@ -1,5 +1,4 @@
-import type { DogProfile, Match, Swipe } from '@dogwalk/types';
-import type { User } from '@dogwalk/types';
+import type { DogProfile, Match, Swipe, User } from '@dogwalk/types';
 
 export interface CandidateDog {
   dog: DogProfile;
@@ -18,7 +17,11 @@ export interface MatchRepository {
   countDailySwipes(swiperDogId: string, since: Date): Promise<number>;
   findSwipe(swiperDogId: string, swipedDogId: string): Promise<Swipe | null>;
   findReciprocalLike(swiperDogId: string, swipedDogId: string): Promise<Swipe | null>;
-  createSwipe(input: { swiperDogId: string; swipedDogId: string; direction: 'like' | 'pass' }): Promise<Swipe>;
+  createSwipe(input: {
+    swiperDogId: string;
+    swipedDogId: string;
+    direction: 'like' | 'pass';
+  }): Promise<Swipe>;
 
   // Discovery
   findCandidateDogs(excludeOwnerId: string): Promise<CandidateDog[]>;

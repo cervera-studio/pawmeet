@@ -30,8 +30,9 @@ const confirmAvatarSchema = z.object({
 
 export function createUsersRouter(deps: typeof userDeps) {
   return router({
-    getProfile: protectedProcedure
-      .query(async ({ ctx }) => unwrapResult(await deps.getProfile(ctx.userId))),
+    getProfile: protectedProcedure.query(async ({ ctx }) =>
+      unwrapResult(await deps.getProfile(ctx.userId)),
+    ),
 
     updateLocation: protectedProcedure
       .input(updateLocationSchema)
@@ -61,7 +62,8 @@ export function createUsersRouter(deps: typeof userDeps) {
         unwrapResult(await deps.confirmAvatar(ctx.userId, input.key)),
       ),
 
-    deleteAvatar: protectedProcedure
-      .mutation(async ({ ctx }) => unwrapResult(await deps.deleteAvatar(ctx.userId))),
+    deleteAvatar: protectedProcedure.mutation(async ({ ctx }) =>
+      unwrapResult(await deps.deleteAvatar(ctx.userId)),
+    ),
   });
 }

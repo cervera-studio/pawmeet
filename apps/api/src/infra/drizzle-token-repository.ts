@@ -30,10 +30,7 @@ export class DrizzleTokenRepository implements TokenRepository {
   }
 
   async revokeRefreshToken(id: string): Promise<void> {
-    await this.db
-      .update(refreshTokens)
-      .set({ revoked: true })
-      .where(eq(refreshTokens.id, id));
+    await this.db.update(refreshTokens).set({ revoked: true }).where(eq(refreshTokens.id, id));
   }
 
   async revokeRefreshTokenByHash(tokenHash: string): Promise<void> {

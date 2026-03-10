@@ -74,7 +74,9 @@ describe('confirmAvatar', () => {
 
     await confirmAvatar('user-1', 'avatars/user-1/new.jpg');
 
-    expect(storage.extractKeyFromUrl).toHaveBeenCalledWith('https://cdn.example.com/avatars/user-1/old.jpg');
+    expect(storage.extractKeyFromUrl).toHaveBeenCalledWith(
+      'https://cdn.example.com/avatars/user-1/old.jpg',
+    );
     expect(storage.deleteObject).toHaveBeenCalledWith('avatars/user-1/old.jpg');
   });
 

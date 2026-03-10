@@ -18,7 +18,12 @@ export interface PaginatedMessages {
 export interface MessageRepository {
   getConversationsForUser(userId: string, dogIds: string[]): Promise<ConversationSummary[]>;
   findByMatch(matchId: string, cursor: string | null, limit: number): Promise<PaginatedMessages>;
-  create(input: { matchId: string; senderId: string; content: string; mediaUrl?: string | null }): Promise<ChatMessage>;
+  create(input: {
+    matchId: string;
+    senderId: string;
+    content: string;
+    mediaUrl?: string | null;
+  }): Promise<ChatMessage>;
   markAsRead(matchId: string, readerId: string): Promise<void>;
   isMatchParticipant(matchId: string, userId: string): Promise<boolean>;
 }

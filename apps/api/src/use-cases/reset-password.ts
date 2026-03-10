@@ -28,10 +28,7 @@ export function createResetPassword(deps: Deps) {
     const tokenHash = await authService.hashToken(token);
 
     // Find valid, unused reset token
-    const stored = await tokenRepo.findValidVerificationToken(
-      tokenHash,
-      TOKEN_TYPE.PASSWORD_RESET,
-    );
+    const stored = await tokenRepo.findValidVerificationToken(tokenHash, TOKEN_TYPE.PASSWORD_RESET);
 
     if (!stored) {
       return fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido o scaduto', 400));

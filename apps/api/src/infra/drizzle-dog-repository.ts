@@ -14,10 +14,7 @@ export class DrizzleDogRepository implements DogRepository {
 
   async findByIds(ids: string[]): Promise<DogProfile[]> {
     if (ids.length === 0) return [];
-    const rows = await this.db
-      .select()
-      .from(dogProfiles)
-      .where(inArray(dogProfiles.id, ids));
+    const rows = await this.db.select().from(dogProfiles).where(inArray(dogProfiles.id, ids));
     return rows as DogProfile[];
   }
 

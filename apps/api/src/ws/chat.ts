@@ -1,7 +1,7 @@
 import type { Server as HttpServer } from 'node:http';
 import { WS_EVENT, type WsEvent, type WsMessage } from '@dogwalk/types';
-import { type WebSocket, WebSocketServer } from 'ws';
 import { logger } from '@dogwalk/utils';
+import { type WebSocket, WebSocketServer } from 'ws';
 import { verifyAccessToken } from '../lib/jwt.js';
 
 export { WS_EVENT, type WsEvent, type WsMessage };

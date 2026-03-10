@@ -35,8 +35,15 @@ export interface DogRepository {
   // Photos
   findPhotos(dogId: string): Promise<DogPhoto[]>;
   countPhotos(dogId: string): Promise<number>;
-  addPhoto(input: { dogId: string; url: string; position: number; isPrimary: boolean }): Promise<DogPhoto>;
+  addPhoto(input: {
+    dogId: string;
+    url: string;
+    position: number;
+    isPrimary: boolean;
+  }): Promise<DogPhoto>;
   findPhoto(photoId: string, dogId: string): Promise<DogPhoto | null>;
   deletePhoto(photoId: string): Promise<void>;
-  updatePhotoPositions(updates: { id: string; position: number; isPrimary: boolean }[]): Promise<void>;
+  updatePhotoPositions(
+    updates: { id: string; position: number; isPrimary: boolean }[],
+  ): Promise<void>;
 }

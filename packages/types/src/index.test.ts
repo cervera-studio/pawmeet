@@ -433,4 +433,3 @@ describe('ChatMessage', () => {
     expect(msg.isDeleted).toBe(true);
   });
 });
-

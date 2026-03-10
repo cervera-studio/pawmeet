@@ -1,7 +1,7 @@
-import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
+import type { AppRouter } from '@dogwalk/api/trpc';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
-import type { AppRouter } from '@dogwalk/api/trpc';
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 export type { AppRouter };
 

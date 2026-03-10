@@ -35,17 +35,13 @@ export function createChatRoutes(deps: typeof ChatDeps) {
       return handleResult(c, result);
     })
 
-    .post(
-      '/conversations/:matchId/messages',
-      zValidator('json', sendMessageSchema),
-      async (c) => {
-        const userId = c.get('userId');
-        const matchId = c.req.param('matchId');
-        const { content, mediaUrl } = c.req.valid('json');
-        const result = await deps.sendMessage(userId, matchId, content, mediaUrl);
-        return handleResult(c, result, 201);
-      },
-    )
+    .post('/conversations/:matchId/messages', zValidator('json', sendMessageSchema), async (c) => {
+      const userId = c.get('userId');
+      const matchId = c.req.param('matchId');
+      const { content, mediaUrl } = c.req.valid('json');
+      const result = await deps.sendMessage(userId, matchId, content, mediaUrl);
+      return handleResult(c, result, 201);
+    })
 
     .patch('/conversations/:matchId/read', async (c) => {
       const userId = c.get('userId');

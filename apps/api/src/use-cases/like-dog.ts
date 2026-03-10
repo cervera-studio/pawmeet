@@ -1,6 +1,6 @@
 import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
 import type { Match } from '@dogwalk/types';
-import { AppError, type Result, fail, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import type { DogRepository, MatchRepository } from '../ports/index.js';
 
 type Deps = {
@@ -37,7 +37,11 @@ export function createLikeDog({ dogRepo, matchRepo }: Deps) {
     }
 
     // Record the swipe
-    await matchRepo.createSwipe({ swiperDogId: dogId, swipedDogId: targetDogId, direction: 'like' });
+    await matchRepo.createSwipe({
+      swiperDogId: dogId,
+      swipedDogId: targetDogId,
+      direction: 'like',
+    });
 
     // Check for reciprocal like
     const reciprocal = await matchRepo.findReciprocalLike(targetDogId, dogId);

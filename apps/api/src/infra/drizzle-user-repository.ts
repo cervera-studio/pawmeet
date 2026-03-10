@@ -24,10 +24,7 @@ export class DrizzleUserRepository implements UserRepository {
 
   async findByIds(ids: string[]): Promise<User[]> {
     if (ids.length === 0) return [];
-    const rows = await this.db
-      .select()
-      .from(users)
-      .where(inArray(users.id, ids));
+    const rows = await this.db.select().from(users).where(inArray(users.id, ids));
     return rows as User[];
   }
 
@@ -116,17 +113,19 @@ export class DrizzleUserRepository implements UserRepository {
         energyLevel: dogProfiles.energyLevel,
       })
       .from(dogProfiles)
-      .where(
-        and(
-          eq(dogProfiles.isActive, true),
-          inArray(dogProfiles.ownerId, userIds),
-        ),
-      );
+      .where(and(eq(dogProfiles.isActive, true), inArray(dogProfiles.ownerId, userIds)));
 
     const dogsByOwner = new Map<string, NearbyUser['dogs']>();
     for (const dog of dogRows) {
       const list = dogsByOwner.get(dog.ownerId) ?? [];
-      list.push({ id: dog.id, name: dog.name, breed: dog.breed, size: dog.size, energyLevel: dog.energyLevel, avatarUrl: null });
+      list.push({
+        id: dog.id,
+        name: dog.name,
+        breed: dog.breed,
+        size: dog.size,
+        energyLevel: dog.energyLevel,
+        avatarUrl: null,
+      });
       dogsByOwner.set(dog.ownerId, list);
     }
 

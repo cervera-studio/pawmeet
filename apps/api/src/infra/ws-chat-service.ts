@@ -1,5 +1,5 @@
-import { joinRoom, sendToRoom } from '../ws/chat.js';
 import type { ChatService } from '../ports/chat-service.js';
+import { joinRoom, sendToRoom } from '../ws/chat.js';
 
 export class WsChatService implements ChatService {
   joinRoom(matchId: string, userId: string): void {

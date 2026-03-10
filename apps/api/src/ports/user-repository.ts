@@ -38,6 +38,22 @@ export interface UserRepository {
   findById(id: string): Promise<User | null>;
   findByIds(ids: string[]): Promise<User[]>;
   create(input: CreateUserInput): Promise<User>;
-  update(id: string, data: Partial<Pick<User, 'passwordHash' | 'avatarUrl' | 'latitude' | 'longitude' | 'locationUpdatedAt' | 'searchRadiusKm' | 'emailVerified' | 'lastLoginAt' | 'isActive'>>): Promise<User>;
+  update(
+    id: string,
+    data: Partial<
+      Pick<
+        User,
+        | 'passwordHash'
+        | 'avatarUrl'
+        | 'latitude'
+        | 'longitude'
+        | 'locationUpdatedAt'
+        | 'searchRadiusKm'
+        | 'emailVerified'
+        | 'lastLoginAt'
+        | 'isActive'
+      >
+    >,
+  ): Promise<User>;
   findNearby(query: NearbyQuery): Promise<NearbyUser[]>;
 }

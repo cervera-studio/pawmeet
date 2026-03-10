@@ -1,5 +1,5 @@
-import { isFailure, isSuccess } from '@dogwalk/types';
 import type { User } from '@dogwalk/types';
+import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository, VerificationTokenRecord } from '../ports/token-repository.js';
@@ -26,7 +26,9 @@ function buildUser(overrides: Partial<User> = {}): User {
   };
 }
 
-function buildVerificationToken(overrides: Partial<VerificationTokenRecord> = {}): VerificationTokenRecord {
+function buildVerificationToken(
+  overrides: Partial<VerificationTokenRecord> = {},
+): VerificationTokenRecord {
   return {
     id: 'vt_1',
     userId: 'usr_1',
@@ -39,11 +41,13 @@ function buildVerificationToken(overrides: Partial<VerificationTokenRecord> = {}
   };
 }
 
-function buildDeps(overrides: Partial<{
-  userRepo: Partial<UserRepository>;
-  tokenRepo: Partial<TokenRepository>;
-  authService: Partial<AuthService>;
-}> = {}) {
+function buildDeps(
+  overrides: Partial<{
+    userRepo: Partial<UserRepository>;
+    tokenRepo: Partial<TokenRepository>;
+    authService: Partial<AuthService>;
+  }> = {},
+) {
   const user = buildUser();
   return {
     userRepo: {

@@ -1,5 +1,5 @@
 import type { DogPhoto } from '@dogwalk/types';
-import { AppError, type Result, fail, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import type { DogRepository } from '../ports/index.js';
 
 type Deps = {

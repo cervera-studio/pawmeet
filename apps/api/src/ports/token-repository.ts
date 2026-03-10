@@ -21,7 +21,11 @@ export interface VerificationTokenRecord {
 
 export interface TokenRepository {
   // Refresh tokens
-  createRefreshToken(input: { userId: string; tokenHash: string; expiresAt: Date }): Promise<RefreshTokenRecord>;
+  createRefreshToken(input: {
+    userId: string;
+    tokenHash: string;
+    expiresAt: Date;
+  }): Promise<RefreshTokenRecord>;
   findRefreshToken(tokenHash: string): Promise<RefreshTokenRecord | null>;
   revokeRefreshToken(id: string): Promise<void>;
   revokeRefreshTokenByHash(tokenHash: string): Promise<void>;
@@ -34,6 +38,9 @@ export interface TokenRepository {
     type: TokenType;
     expiresAt: Date;
   }): Promise<VerificationTokenRecord>;
-  findValidVerificationToken(tokenHash: string, type: TokenType): Promise<VerificationTokenRecord | null>;
+  findValidVerificationToken(
+    tokenHash: string,
+    type: TokenType,
+  ): Promise<VerificationTokenRecord | null>;
   markVerificationTokenUsed(id: string): Promise<void>;
 }

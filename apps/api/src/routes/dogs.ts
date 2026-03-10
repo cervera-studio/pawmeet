@@ -4,8 +4,8 @@ import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { dogDeps as DogDeps } from '../container.js';
-import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../lib/storage.js';
 import { handleResult } from '../lib/result.js';
+import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../lib/storage.js';
 import { authMiddleware } from '../middleware/auth.js';
 
 type Env = { Variables: { userId: string } };

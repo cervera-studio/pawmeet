@@ -20,8 +20,9 @@ const markReadSchema = z.object({
 
 export function createChatRouter(deps: typeof chatDeps) {
   return router({
-    listConversations: protectedProcedure
-      .query(async ({ ctx }) => unwrapResult(await deps.listConversations(ctx.userId))),
+    listConversations: protectedProcedure.query(async ({ ctx }) =>
+      unwrapResult(await deps.listConversations(ctx.userId)),
+    ),
 
     getMessages: protectedProcedure
       .input(getMessagesSchema)
@@ -32,7 +33,9 @@ export function createChatRouter(deps: typeof chatDeps) {
     sendMessage: protectedProcedure
       .input(sendMessageSchema)
       .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.sendMessage(ctx.userId, input.matchId, input.content, input.mediaUrl)),
+        unwrapResult(
+          await deps.sendMessage(ctx.userId, input.matchId, input.content, input.mediaUrl),
+        ),
       ),
 
     markMessagesRead: protectedProcedure

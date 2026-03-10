@@ -1,6 +1,6 @@
 import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@dogwalk/config';
 import type { DogProfile } from '@dogwalk/types';
-import { AppError, type Result, fail, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import {
   calculateBehaviorScore,
   calculateDistance,
@@ -41,8 +41,18 @@ function calculateLeashScore(a: string, b: string): number {
 }
 
 function calculateWalkScore(
-  dogA: { walkPrefTime: string[]; walkPrefDurationMin: number; walkPrefDurationMax: number; walkPrefTerrain: string[] },
-  dogB: { walkPrefTime: string[]; walkPrefDurationMin: number; walkPrefDurationMax: number; walkPrefTerrain: string[] },
+  dogA: {
+    walkPrefTime: string[];
+    walkPrefDurationMin: number;
+    walkPrefDurationMax: number;
+    walkPrefTerrain: string[];
+  },
+  dogB: {
+    walkPrefTime: string[];
+    walkPrefDurationMin: number;
+    walkPrefDurationMax: number;
+    walkPrefTerrain: string[];
+  },
 ): number {
   // Time overlap
   const timeSetA = new Set(dogA.walkPrefTime);
@@ -67,7 +77,11 @@ function calculateWalkScore(
   return (timeScore + durationScore + terrainScore) / 3;
 }
 
-function calculateCompatibilityScore(dogA: DogProfile, dogB: DogProfile, distanceKm: number): number {
+function calculateCompatibilityScore(
+  dogA: DogProfile,
+  dogB: DogProfile,
+  distanceKm: number,
+): number {
   const sizeScore = calculateSizeScore(dogA.size, dogB.size);
   const energyScore = calculateEnergyScore(dogA.energyLevel, dogB.energyLevel);
   const behaviorScore = calculateBehaviorScore(dogA.behaviorWithDogs, dogB.behaviorWithDogs);

@@ -26,11 +26,13 @@ function buildUser(overrides: Partial<User> = {}): User {
   };
 }
 
-function buildDeps(overrides: Partial<{
-  userRepo: Partial<UserRepository>;
-  tokenRepo: Partial<TokenRepository>;
-  authService: Partial<AuthService>;
-}> = {}) {
+function buildDeps(
+  overrides: Partial<{
+    userRepo: Partial<UserRepository>;
+    tokenRepo: Partial<TokenRepository>;
+    authService: Partial<AuthService>;
+  }> = {},
+) {
   const user = buildUser();
   return {
     userRepo: {

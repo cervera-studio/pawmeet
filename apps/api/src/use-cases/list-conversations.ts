@@ -1,6 +1,11 @@
 import type { Result } from '@dogwalk/types';
 import { succeed } from '@dogwalk/types';
-import type { ChatService, ConversationSummary, DogRepository, MessageRepository } from '../ports/index.js';
+import type {
+  ChatService,
+  ConversationSummary,
+  DogRepository,
+  MessageRepository,
+} from '../ports/index.js';
 
 type Deps = {
   dogRepo: DogRepository;

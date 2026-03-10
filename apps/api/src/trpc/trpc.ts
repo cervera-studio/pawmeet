@@ -1,6 +1,6 @@
-import { TRPCError, initTRPC } from '@trpc/server';
 import type { Result } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
+import { initTRPC, TRPCError } from '@trpc/server';
 import { verifyAccessToken } from '../lib/jwt.js';
 
 export interface Context {

@@ -22,18 +22,22 @@ export const logger = {
   },
 
   debug(tag: string, msg: string, data?: unknown) {
-    if (LOG_LEVEL[minLevel] <= LOG_LEVEL.debug) console.debug(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
+    if (LOG_LEVEL[minLevel] <= LOG_LEVEL.debug)
+      console.debug(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
   },
 
   info(tag: string, msg: string, data?: unknown) {
-    if (LOG_LEVEL[minLevel] <= LOG_LEVEL.info) console.info(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
+    if (LOG_LEVEL[minLevel] <= LOG_LEVEL.info)
+      console.info(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
   },
 
   warn(tag: string, msg: string, data?: unknown) {
-    if (LOG_LEVEL[minLevel] <= LOG_LEVEL.warn) console.warn(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
+    if (LOG_LEVEL[minLevel] <= LOG_LEVEL.warn)
+      console.warn(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
   },
 
   error(tag: string, msg: string, data?: unknown) {
-    if (LOG_LEVEL[minLevel] <= LOG_LEVEL.error) console.error(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
+    if (LOG_LEVEL[minLevel] <= LOG_LEVEL.error)
+      console.error(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
   },
 };

@@ -14,8 +14,9 @@ const discoverSchema = z.object({
 
 export function createMatchesRouter(deps: typeof matchDeps) {
   return router({
-    list: protectedProcedure
-      .query(async ({ ctx }) => unwrapResult(await deps.listMatches(ctx.userId))),
+    list: protectedProcedure.query(async ({ ctx }) =>
+      unwrapResult(await deps.listMatches(ctx.userId)),
+    ),
 
     discover: protectedProcedure
       .input(discoverSchema)

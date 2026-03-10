@@ -1,7 +1,12 @@
 import type { DogProfile } from '@dogwalk/types';
 import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { ChatService, ConversationSummary, DogRepository, MessageRepository } from '../ports/index.js';
+import type {
+  ChatService,
+  ConversationSummary,
+  DogRepository,
+  MessageRepository,
+} from '../ports/index.js';
 import { createListConversations } from './list-conversations.js';
 
 function buildDog(overrides: Partial<DogProfile> = {}): DogProfile {

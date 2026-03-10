@@ -29,7 +29,11 @@ describe('updateLocation', () => {
     expect(result.data.updatedAt).toBeDefined();
     expect(userRepo.update).toHaveBeenCalledWith(
       'user-1',
-      expect.objectContaining({ latitude: 45.4642, longitude: 9.19, locationUpdatedAt: expect.any(Date) }),
+      expect.objectContaining({
+        latitude: 45.4642,
+        longitude: 9.19,
+        locationUpdatedAt: expect.any(Date),
+      }),
     );
   });
 });

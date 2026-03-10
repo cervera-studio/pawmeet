@@ -98,9 +98,7 @@ describe('findNearby', () => {
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
     expect(result.data.radius).toBe(25);
-    expect(userRepo.findNearby).toHaveBeenCalledWith(
-      expect.objectContaining({ radiusKm: 25 }),
-    );
+    expect(userRepo.findNearby).toHaveBeenCalledWith(expect.objectContaining({ radiusKm: 25 }));
   });
 
   it('fails with LOCATION_NOT_SET when user has no location', async () => {

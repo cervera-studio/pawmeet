@@ -3,6 +3,7 @@ import { logger } from '@dogwalk/utils';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 type Dog = RouterOutput['dogs']['get']['dog'];
+
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -90,7 +91,10 @@ export default function DogDetailScreen() {
           setDog(d);
           setLoading(false);
         })
-        .catch((e) => { logger.warn('DogDetail', 'Failed to fetch dog', e); setLoading(false); });
+        .catch((e) => {
+          logger.warn('DogDetail', 'Failed to fetch dog', e);
+          setLoading(false);
+        });
     }
   }, [storeDog, params.dogId]);
 

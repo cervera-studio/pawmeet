@@ -34,8 +34,9 @@ export function createDogsRouter(deps: typeof dogDeps) {
       .input(breedsSearchSchema)
       .query(async ({ input }) => unwrapResult(await deps.searchBreeds(input.q))),
 
-    list: protectedProcedure
-      .query(async ({ ctx }) => unwrapResult(await deps.listUserDogs(ctx.userId))),
+    list: protectedProcedure.query(async ({ ctx }) =>
+      unwrapResult(await deps.listUserDogs(ctx.userId)),
+    ),
 
     create: protectedProcedure
       .input(createDogSchema)
@@ -47,7 +48,9 @@ export function createDogsRouter(deps: typeof dogDeps) {
 
     update: protectedProcedure
       .input(z.object({ id: z.string().uuid(), data: updateDogSchema }))
-      .mutation(async ({ ctx, input }) => unwrapResult(await deps.updateDog(input.id, ctx.userId, input.data))),
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.updateDog(input.id, ctx.userId, input.data)),
+      ),
 
     delete: protectedProcedure
       .input(z.object({ id: z.string().uuid() }))

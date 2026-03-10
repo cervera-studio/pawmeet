@@ -1,6 +1,6 @@
 import { MAX_PHOTOS_PER_DOG } from '@dogwalk/config';
 import type { DogPhoto } from '@dogwalk/types';
-import { AppError, type Result, fail, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import type { DogRepository, StorageService } from '../ports/index.js';
 
 type Deps = {

@@ -1,9 +1,9 @@
+import type { RouterOutput } from '@dogwalk/api-client';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import MapView, { Circle, type MapMarker, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { RouterOutput } from '@dogwalk/api-client';
 import { Avatar } from '@/components/ui/Avatar';
 import { useLocation } from '@/hooks/useLocation';
 import { useNearbyUsers } from '@/hooks/useNearbyUsers';

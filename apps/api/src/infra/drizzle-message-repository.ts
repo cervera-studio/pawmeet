@@ -11,10 +11,7 @@ import type {
 export class DrizzleMessageRepository implements MessageRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
-  async getConversationsForUser(
-    userId: string,
-    dogIds: string[],
-  ): Promise<ConversationSummary[]> {
+  async getConversationsForUser(userId: string, dogIds: string[]): Promise<ConversationSummary[]> {
     if (dogIds.length === 0) return [];
 
     // Find active matches involving any of the user's dogs
@@ -120,7 +117,7 @@ export class DrizzleMessageRepository implements MessageRepository {
 
     const hasMore = rows.length > limit;
     const messageList = hasMore ? rows.slice(0, limit) : rows;
-    const nextCursor = hasMore ? messageList[messageList.length - 1]?.id ?? null : null;
+    const nextCursor = hasMore ? (messageList[messageList.length - 1]?.id ?? null) : null;
 
     return {
       messages: messageList as ChatMessage[],

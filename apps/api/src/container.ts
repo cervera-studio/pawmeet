@@ -1,5 +1,3 @@
-import { db } from './lib/db.js';
-
 // Infra implementations
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
@@ -11,49 +9,45 @@ import { JwtAuthService } from './infra/jwt-auth-service.js';
 import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
-
-// Use cases — auth
-import { createForgotPassword } from './use-cases/forgot-password.js';
-import { createLoginUser } from './use-cases/login-user.js';
-import { createLogoutUser } from './use-cases/logout-user.js';
-import { createRefreshTokens } from './use-cases/refresh-tokens.js';
-import { createRegisterUser } from './use-cases/register-user.js';
-import { createResetPassword } from './use-cases/reset-password.js';
-import { createVerifyEmail } from './use-cases/verify-email.js';
-
+import { db } from './lib/db.js';
+// Use cases — users
+import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
 // Use cases — dogs
 import { createConfirmDogPhoto } from './use-cases/confirm-dog-photo.js';
 import { createCreateDog } from './use-cases/create-dog.js';
+import { createDeleteAvatar } from './use-cases/delete-avatar.js';
 import { createDeleteDog } from './use-cases/delete-dog.js';
 import { createDeleteDogPhoto } from './use-cases/delete-dog-photo.js';
-import { createGetDog } from './use-cases/get-dog.js';
-import { createListUserDogs } from './use-cases/list-user-dogs.js';
-import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
-import { createSearchBreeds } from './use-cases/search-breeds.js';
-import { createUpdateDog } from './use-cases/update-dog.js';
-import { createUploadDogPhotoUrl } from './use-cases/upload-dog-photo-url.js';
-
-// Use cases — users
-import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
-import { createDeleteAvatar } from './use-cases/delete-avatar.js';
+// Use cases — matches
+import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
+// Use cases — auth
+import { createForgotPassword } from './use-cases/forgot-password.js';
+import { createGetDog } from './use-cases/get-dog.js';
+// Use cases — chat
+import { createGetMessages } from './use-cases/get-messages.js';
 import { createGetProfile } from './use-cases/get-profile.js';
+import { createLikeDog } from './use-cases/like-dog.js';
+import { createListConversations } from './use-cases/list-conversations.js';
+import { createListMatches } from './use-cases/list-matches.js';
+import { createListUserDogs } from './use-cases/list-user-dogs.js';
+import { createLoginUser } from './use-cases/login-user.js';
+import { createLogoutUser } from './use-cases/logout-user.js';
+import { createMarkMessagesRead } from './use-cases/mark-messages-read.js';
+import { createPassDog } from './use-cases/pass-dog.js';
+import { createRefreshTokens } from './use-cases/refresh-tokens.js';
+import { createRegisterUser } from './use-cases/register-user.js';
+import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
+import { createResetPassword } from './use-cases/reset-password.js';
+import { createSearchBreeds } from './use-cases/search-breeds.js';
+import { createSendMessage } from './use-cases/send-message.js';
+import { createUnmatch } from './use-cases/unmatch.js';
+import { createUpdateDog } from './use-cases/update-dog.js';
 import { createUpdateLocation } from './use-cases/update-location.js';
 import { createUpdatePreferences } from './use-cases/update-preferences.js';
 import { createUploadAvatarUrl } from './use-cases/upload-avatar-url.js';
-
-// Use cases — matches
-import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
-import { createLikeDog } from './use-cases/like-dog.js';
-import { createListMatches } from './use-cases/list-matches.js';
-import { createPassDog } from './use-cases/pass-dog.js';
-import { createUnmatch } from './use-cases/unmatch.js';
-
-// Use cases — chat
-import { createGetMessages } from './use-cases/get-messages.js';
-import { createListConversations } from './use-cases/list-conversations.js';
-import { createMarkMessagesRead } from './use-cases/mark-messages-read.js';
-import { createSendMessage } from './use-cases/send-message.js';
+import { createUploadDogPhotoUrl } from './use-cases/upload-dog-photo-url.js';
+import { createVerifyEmail } from './use-cases/verify-email.js';
 
 // ── Repositories ────────────────────────────────────────────────────────────────
 

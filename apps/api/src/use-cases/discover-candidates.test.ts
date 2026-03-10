@@ -2,7 +2,12 @@ import { COMPATIBILITY_THRESHOLD } from '@dogwalk/config';
 import type { DogProfile, User } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { CandidateDog, DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
+import type {
+  CandidateDog,
+  DogRepository,
+  MatchRepository,
+  UserRepository,
+} from '../ports/index.js';
 import { createDiscoverCandidates } from './discover-candidates.js';
 
 function buildDog(overrides: Partial<DogProfile> = {}): DogProfile {
@@ -70,7 +75,7 @@ function buildCandidate(overrides: Partial<CandidateDog> = {}): CandidateDog {
       walkPrefTerrain: ['parco', 'urbano'],
     }),
     ownerLat: 41.91,
-    ownerLon: 12.50,
+    ownerLon: 12.5,
     ...overrides,
   };
 }

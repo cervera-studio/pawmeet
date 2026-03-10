@@ -1,4 +1,4 @@
-import { AppError, type Result, fail, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import type { StorageService, UserRepository } from '../ports/index.js';
 
 type Deps = {

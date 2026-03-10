@@ -74,7 +74,12 @@ describe('sendMessage', () => {
     const chat = buildChat();
     const sendMessage = createSendMessage({ messageRepo, chat });
 
-    const result = await sendMessage('user-1', 'match-1', 'Guarda!', 'https://cdn.example.com/photo.jpg');
+    const result = await sendMessage(
+      'user-1',
+      'match-1',
+      'Guarda!',
+      'https://cdn.example.com/photo.jpg',
+    );
 
     expect(isSuccess(result)).toBe(true);
     expect(messageRepo.create).toHaveBeenCalledWith(

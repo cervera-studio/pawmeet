@@ -28,7 +28,8 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
                 : 'font-semibold text-gray-900'
             }`}
           >
-            {conversation.otherDogName ?? 'Cane'} & {conversation.otherUser?.displayName ?? 'Utente'}
+            {conversation.otherDogName ?? 'Cane'} &{' '}
+            {conversation.otherUser?.displayName ?? 'Utente'}
           </Text>
           <Text className="text-xs text-gray-400">
             {conversation.lastMessage ? String(conversation.lastMessage.createdAt) : ''}

@@ -1,5 +1,5 @@
 import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
-import { AppError, type Result, fail, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import type { DogRepository, MatchRepository } from '../ports/index.js';
 
 type Deps = {
@@ -36,7 +36,11 @@ export function createPassDog({ dogRepo, matchRepo }: Deps) {
     }
 
     // Record the pass
-    await matchRepo.createSwipe({ swiperDogId: dogId, swipedDogId: targetDogId, direction: 'pass' });
+    await matchRepo.createSwipe({
+      swiperDogId: dogId,
+      swipedDogId: targetDogId,
+      direction: 'pass',
+    });
 
     return succeed({ message: 'Passato' });
   };

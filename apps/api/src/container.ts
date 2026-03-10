@@ -1,9 +1,12 @@
 // Infra implementations
+
+import { BullMQNotificationService } from './infra/bullmq-notification-service.js';
 import { DrizzleAdminUserRepository } from './infra/drizzle-admin-user-repository.js';
 import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
+import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
 import { DrizzleMessageRepository } from './infra/drizzle-message-repository.js';
 import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
@@ -12,9 +15,10 @@ import { DrizzleWalkRepository } from './infra/drizzle-walk-repository.js';
 import { JwtAuthService } from './infra/jwt-auth-service.js';
 import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
-import { BullMQNotificationService } from './infra/bullmq-notification-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
 import { db } from './lib/db.js';
+// Use cases — group events
+import { createCancelGroupEvent } from './use-cases/cancel-group-event.js';
 // Use cases — walks
 import { createCancelWalk } from './use-cases/cancel-walk.js';
 // Use cases — badges
@@ -24,6 +28,7 @@ import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
 // Use cases — dogs
 import { createConfirmDogPhoto } from './use-cases/confirm-dog-photo.js';
 import { createCreateDog } from './use-cases/create-dog.js';
+import { createCreateGroupEvent } from './use-cases/create-group-event.js';
 import { createDeleteAvatar } from './use-cases/delete-avatar.js';
 import { createDeleteDog } from './use-cases/delete-dog.js';
 import { createDeleteDogPhoto } from './use-cases/delete-dog-photo.js';
@@ -33,15 +38,20 @@ import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
 import { createGetDog } from './use-cases/get-dog.js';
+import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — feedback
 import { createGetDogRating } from './use-cases/get-dog-rating.js';
 // Use cases — chat
 import { createGetMessages } from './use-cases/get-messages.js';
 import { createGetProfile } from './use-cases/get-profile.js';
+import { createJoinGroupEvent } from './use-cases/join-group-event.js';
+import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
 import { createLikeDog } from './use-cases/like-dog.js';
 import { createListBadges } from './use-cases/list-badges.js';
 import { createListConversations } from './use-cases/list-conversations.js';
 import { createListMatches } from './use-cases/list-matches.js';
+import { createListNearbyEvents } from './use-cases/list-nearby-events.js';
+import { createListUserEvents } from './use-cases/list-user-events.js';
 import { createListUpcomingWalks } from './use-cases/list-upcoming-walks.js';
 import { createListUserDogs } from './use-cases/list-user-dogs.js';
 import { createListWalkFeedback } from './use-cases/list-walk-feedback.js';
@@ -62,6 +72,7 @@ import { createSendMessage } from './use-cases/send-message.js';
 import { createSubmitFeedback } from './use-cases/submit-feedback.js';
 import { createUnmatch } from './use-cases/unmatch.js';
 import { createUpdateDog } from './use-cases/update-dog.js';
+import { createUpdateGroupEvent } from './use-cases/update-group-event.js';
 import { createUpdateLocation } from './use-cases/update-location.js';
 import { createUpdateNotificationPrefs } from './use-cases/update-notification-prefs.js';
 import { createUpdatePreferences } from './use-cases/update-preferences.js';
@@ -80,6 +91,7 @@ const tokenRepo = new DrizzleTokenRepository(db);
 const breedRepo = new DrizzleBreedRepository(db);
 const walkRepo = new DrizzleWalkRepository(db);
 const feedbackRepo = new DrizzleFeedbackRepository(db);
+const groupEventRepo = new DrizzleGroupEventRepository(db);
 const badgeRepo = new DrizzleBadgeRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
@@ -173,6 +185,19 @@ export const chatDeps = {
   getMessages: createGetMessages({ messageRepo, chat }),
   sendMessage: createSendMessage({ messageRepo, chat, userRepo, notificationService }),
   markMessagesRead: createMarkMessagesRead({ messageRepo, chat }),
+};
+
+// ── Group event deps ──────────────────────────────────────────────────────────
+
+export const groupEventDeps = {
+  createGroupEvent: createCreateGroupEvent({ groupEventRepo, dogRepo }),
+  getGroupEvent: createGetGroupEvent({ groupEventRepo }),
+  listNearbyEvents: createListNearbyEvents({ groupEventRepo }),
+  listUserEvents: createListUserEvents({ groupEventRepo }),
+  joinGroupEvent: createJoinGroupEvent({ groupEventRepo, dogRepo, notificationService }),
+  leaveGroupEvent: createLeaveGroupEvent({ groupEventRepo, notificationService }),
+  updateGroupEvent: createUpdateGroupEvent({ groupEventRepo }),
+  cancelGroupEvent: createCancelGroupEvent({ groupEventRepo, notificationService }),
 };
 
 // ── Admin deps ────────────────────────────────────────────────────────────────

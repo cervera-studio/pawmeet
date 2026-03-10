@@ -14,3 +14,7 @@ export const WALK_DURATION_MIN = 15;
 export const WALK_DURATION_MAX = 180;
 export const DOG_WEIGHT_MIN_KG = 0.5;
 export const DOG_WEIGHT_MAX_KG = 100;
+export const GROUP_EVENT_MIN_PARTICIPANTS = 3;
+export const GROUP_EVENT_MAX_PARTICIPANTS = 50;
+export const GROUP_EVENT_TITLE_MAX_LENGTH = 100;
+export const GROUP_EVENT_DESCRIPTION_MAX_LENGTH = 1000;

@@ -7,10 +7,7 @@ export class DrizzleAdminUserRepository implements AdminUserRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
   async findByEmail(email: string): Promise<AdminUser | null> {
-    const [admin] = await this.db
-      .select()
-      .from(adminUsers)
-      .where(eq(adminUsers.email, email));
+    const [admin] = await this.db.select().from(adminUsers).where(eq(adminUsers.email, email));
     return (admin as AdminUser | undefined) ?? null;
   }
 
@@ -20,9 +17,6 @@ export class DrizzleAdminUserRepository implements AdminUserRepository {
   }
 
   async updateLastLogin(id: string): Promise<void> {
-    await this.db
-      .update(adminUsers)
-      .set({ lastLoginAt: new Date() })
-      .where(eq(adminUsers.id, id));
+    await this.db.update(adminUsers).set({ lastLoginAt: new Date() }).where(eq(adminUsers.id, id));
   }
 }

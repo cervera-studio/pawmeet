@@ -4,6 +4,7 @@ export * from './breeds';
 export * from './chat';
 export * from './dogs';
 export * from './feedback';
+export * from './group-events';
 export * from './matches';
 export * from './refresh-tokens';
 export * from './reports';

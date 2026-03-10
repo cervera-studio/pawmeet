@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   borderFocus: {
     borderWidth: 2,
-    borderColor: '#FF6B35',
+    borderColor: '#065F46',
   },
   borderError: {
     borderWidth: 2,

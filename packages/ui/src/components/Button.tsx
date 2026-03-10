@@ -8,12 +8,12 @@ import {
 
 const VARIANT_STYLES = {
   primary: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#065F46',
   },
   secondary: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#FF6B35',
+    borderColor: '#065F46',
   },
   ghost: {
     backgroundColor: 'transparent',
@@ -25,7 +25,7 @@ const VARIANT_STYLES = {
 
 const TEXT_COLORS: Record<ButtonVariant, string> = {
   primary: '#FFFFFF',
-  secondary: '#FF6B35',
+  secondary: '#065F46',
   ghost: '#4A4A5A',
   destructive: '#FFFFFF',
 };

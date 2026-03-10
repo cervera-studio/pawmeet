@@ -19,8 +19,8 @@ const VARIANT_STYLES: Record<BadgeVariant, { backgroundColor: string; color: str
   premium: { backgroundColor: '#FFF8E1', color: '#FFD700' },
   size: { backgroundColor: '#F2F2F7', color: '#4A4A5A' },
   energy: { backgroundColor: '#F2F2F7', color: '#4A4A5A' },
-  new: { backgroundColor: '#FF6B35', color: '#FFFFFF' },
-  counter: { backgroundColor: '#FF6B35', color: '#FFFFFF' },
+  new: { backgroundColor: '#065F46', color: '#FFFFFF' },
+  counter: { backgroundColor: '#065F46', color: '#FFFFFF' },
 };
 
 const SIZE_STYLES: Record<

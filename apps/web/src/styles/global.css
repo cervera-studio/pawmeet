@@ -1,29 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #FFF3ED;
-  --color-primary-100: #FFE2D1;
-  --color-primary-200: #FFC4A3;
-  --color-primary-300: #FFA575;
-  --color-primary-400: #FF8753;
-  --color-primary-500: #FF6B35;
-  --color-primary-600: #E55A28;
-  --color-primary-700: #CC4A1C;
-  --color-primary-800: #993815;
-  --color-primary-900: #66250E;
-  --color-primary: #FF6B35;
+  /* DogWalk — Deep Emerald + Gold */
+  --color-primary-50: #ECFDF5;
+  --color-primary-100: #D1FAE5;
+  --color-primary-200: #A7F3D0;
+  --color-primary-300: #6EE7B7;
+  --color-primary-400: #34D399;
+  --color-primary-500: #10B981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065F46;
+  --color-primary-900: #064E3B;
+  --color-primary: #065F46;
 
-  --color-secondary-50: #E8F5EE;
-  --color-secondary-100: #D1EBDD;
-  --color-secondary-200: #A3D7BB;
-  --color-secondary-300: #75C399;
-  --color-secondary-400: #47AF77;
-  --color-secondary-500: #2D6A4F;
-  --color-secondary-600: #245640;
-  --color-secondary-700: #1B4130;
-  --color-secondary-800: #122B20;
-  --color-secondary-900: #091610;
-  --color-secondary: #2D6A4F;
+  --color-secondary-50: #FDF8EF;
+  --color-secondary-100: #FAF0D7;
+  --color-secondary-200: #F5DFB0;
+  --color-secondary-300: #EDCA7E;
+  --color-secondary-400: #E0B04E;
+  --color-secondary-500: #C9A84C;
+  --color-secondary-600: #A6872E;
+  --color-secondary-700: #836A24;
+  --color-secondary-800: #6B551E;
+  --color-secondary-900: #574518;
+  --color-secondary: #C9A84C;
 
   --font-sans: 'Inter', system-ui, sans-serif;
 }

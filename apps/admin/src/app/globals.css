@@ -1,29 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #FFF3ED;
-  --color-primary-100: #FFE2D1;
-  --color-primary-200: #FFC4A3;
-  --color-primary-300: #FFA575;
-  --color-primary-400: #FF8753;
-  --color-primary-500: #FF6B35;
-  --color-primary-600: #E55A28;
-  --color-primary-700: #CC4A1C;
-  --color-primary-800: #993815;
-  --color-primary-900: #66250E;
-  --color-primary: #FF6B35;
+  /* Monochromatic palette — cervera.studio brand */
+  --color-primary-50: #FAFAFA;
+  --color-primary-100: #F4F4F5;
+  --color-primary-200: #E4E4E7;
+  --color-primary-300: #D4D4D8;
+  --color-primary-400: #A1A1AA;
+  --color-primary-500: #71717A;
+  --color-primary-600: #52525B;
+  --color-primary-700: #3F3F46;
+  --color-primary-800: #27272A;
+  --color-primary-900: #18181B;
+  --color-primary: #18181B;
 
-  --color-secondary-50: #E8F5EE;
-  --color-secondary-100: #D1EBDD;
-  --color-secondary-200: #A3D7BB;
-  --color-secondary-300: #75C399;
-  --color-secondary-400: #47AF77;
-  --color-secondary-500: #2D6A4F;
-  --color-secondary-600: #245640;
-  --color-secondary-700: #1B4130;
-  --color-secondary-800: #122B20;
-  --color-secondary-900: #091610;
-  --color-secondary: #2D6A4F;
+  --color-secondary-50: #F5F0EB;
+  --color-secondary-100: #EDE8E3;
+  --color-secondary-200: #E5DFD9;
+  --color-secondary-300: #D9D2CA;
+  --color-secondary-400: #C5BDB4;
+  --color-secondary-500: #A39B92;
+  --color-secondary-600: #6D665E;
+  --color-secondary-700: #4A4540;
+  --color-secondary-800: #2E2A26;
+  --color-secondary-900: #1A1A1A;
+  --color-secondary: #4A4540;
 
   --font-sans: 'Inter', system-ui, sans-serif;
   --radius: 0.5rem;
@@ -37,19 +38,19 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 18 100% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 153 41% 30%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 30 10% 90%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 30 8% 92%;
+    --muted-foreground: 25 8% 40%;
+    --accent: 30 10% 90%;
+    --accent-foreground: 0 0% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 18 100% 60%;
+    --border: 27 8% 80%;
+    --input: 27 8% 80%;
+    --ring: 0 0% 10%;
   }
 
   * {

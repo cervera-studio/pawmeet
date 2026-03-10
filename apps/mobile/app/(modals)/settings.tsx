@@ -22,7 +22,7 @@ export default function SettingsModal() {
           <Switch
             value={vm.prefs.matches}
             onValueChange={(v) => vm.updatePref('matches', v)}
-            trackColor={{ true: '#FF6B35' }}
+            trackColor={{ true: '#065F46' }}
           />
         </View>
 
@@ -34,7 +34,7 @@ export default function SettingsModal() {
           <Switch
             value={vm.prefs.messages}
             onValueChange={(v) => vm.updatePref('messages', v)}
-            trackColor={{ true: '#FF6B35' }}
+            trackColor={{ true: '#065F46' }}
           />
         </View>
 
@@ -48,7 +48,7 @@ export default function SettingsModal() {
           <Switch
             value={vm.prefs.reminders}
             onValueChange={(v) => vm.updatePref('reminders', v)}
-            trackColor={{ true: '#FF6B35' }}
+            trackColor={{ true: '#065F46' }}
           />
         </View>
 
@@ -62,7 +62,7 @@ export default function SettingsModal() {
           <Switch
             value={vm.locationSharing}
             onValueChange={vm.setLocationSharing}
-            trackColor={{ true: '#FF6B35' }}
+            trackColor={{ true: '#065F46' }}
           />
         </View>
 
@@ -71,7 +71,7 @@ export default function SettingsModal() {
           <Switch
             value={vm.darkMode}
             onValueChange={vm.setDarkMode}
-            trackColor={{ true: '#FF6B35' }}
+            trackColor={{ true: '#065F46' }}
           />
         </View>
 

@@ -148,7 +148,7 @@ function PhotoGallery({
             className="h-24 w-24 items-center justify-center rounded-xl border-2 border-dashed border-gray-300"
           >
             {uploading ? (
-              <ActivityIndicator size="small" color="#FF6B35" />
+              <ActivityIndicator size="small" color="#065F46" />
             ) : (
               <Text className="text-2xl text-gray-400">+</Text>
             )}
@@ -199,7 +199,7 @@ export default function DogDetailScreen() {
           options={{ headerShown: true, title: 'Caricamento...', headerBackTitle: 'Profilo' }}
         />
         <View className="flex-1 items-center justify-center bg-white">
-          <ActivityIndicator size="large" color="#FF6B35" />
+          <ActivityIndicator size="large" color="#065F46" />
         </View>
       </>
     );

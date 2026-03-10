@@ -54,7 +54,7 @@ export default function MapScreen() {
   if (vm.locationLoading && !vm.coordinates) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#FF6B35" />
+        <ActivityIndicator size="large" color="#065F46" />
         <Text className="mt-4 text-gray-500">Recupero posizione...</Text>
       </View>
     );
@@ -99,8 +99,8 @@ export default function MapScreen() {
         <Circle
           center={vm.coordinates}
           radius={vm.searchRadiusKm * 1000}
-          fillColor="rgba(255, 107, 53, 0.08)"
-          strokeColor="rgba(255, 107, 53, 0.3)"
+          fillColor="rgba(6, 95, 70, 0.08)"
+          strokeColor="rgba(6, 95, 70, 0.3)"
           strokeWidth={1}
         />
 
@@ -146,7 +146,7 @@ export default function MapScreen() {
         className="absolute left-4 top-16 flex-row items-center rounded-full bg-white px-4 py-2.5 shadow-md"
       >
         {vm.usersLoading ? (
-          <ActivityIndicator size="small" color="#FF6B35" />
+          <ActivityIndicator size="small" color="#065F46" />
         ) : (
           <Text className="text-sm font-medium text-gray-700">Aggiorna</Text>
         )}

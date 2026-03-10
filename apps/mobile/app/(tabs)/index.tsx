@@ -280,7 +280,7 @@ export default function DiscoveryScreen() {
           </View>
         ) : vm.isLoading ? (
           <View className="items-center">
-            <ActivityIndicator size="large" color="#FF6B35" />
+            <ActivityIndicator size="large" color="#065F46" />
             <Text className="mt-4 text-gray-400">Cerco cani compatibili...</Text>
           </View>
         ) : vm.currentProfile && vm.hasMore ? (

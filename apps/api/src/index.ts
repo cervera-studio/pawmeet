@@ -2,8 +2,10 @@ import type { Server } from 'node:http';
 import { serve } from '@hono/node-server';
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
-import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import { db } from './lib/db.js';
+import { corsMiddleware } from './middleware/cors.js';
+import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { routes } from './routes/index.js';
 import { appRouter } from './trpc/root.js';
 import { createContext } from './trpc/trpc.js';
@@ -12,7 +14,7 @@ import { setupWebSocket } from './ws/chat.js';
 const app = new Hono();
 
 app.use('*', logger());
-app.use('*', cors());
+app.use('*', corsMiddleware);
 
 // Global error handler — consistent JSON error responses
 app.onError((err, c) => {
@@ -36,6 +38,9 @@ app.use('/trpc/*', trpcServer({ router: appRouter, createContext }));
 
 // REST API — kept for backwards compatibility (to be removed)
 app.route('/api', routes);
+
+// Admin auth routes — mounted at root level for the admin backoffice
+app.route('/admin/auth', createAdminAuthRoutes(db));
 
 app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
 

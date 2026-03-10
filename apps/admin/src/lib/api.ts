@@ -63,6 +63,7 @@ class ApiClient {
     const response = await fetch(this.buildUrl(path, params), {
       ...rest,
       headers,
+      credentials: 'include',
       body: body ? JSON.stringify(body) : undefined,
     });
 

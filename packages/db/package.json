@@ -16,11 +16,13 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
+    "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.0"
   },
   "devDependencies": {
     "@dogwalk/typescript-config": "workspace:*",
     "@dogwalk/vitest-config": "workspace:*",
+    "@types/bcryptjs": "^3.0.0",
     "drizzle-kit": "^0.31.0",
     "typescript": "^5.9.0"
   }

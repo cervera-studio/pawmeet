@@ -2,15 +2,10 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import type { AdminUser } from '@/lib/auth';
-import {
-  AuthContext,
-  getTokenFromCookie,
-  removeTokenCookie,
-  setTokenCookie,
-} from '@/lib/auth-store';
+import { AuthContext } from '@/lib/auth-store';
 import { getTRPCClientConfig, trpc } from '@/lib/trpc';
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -31,38 +26,33 @@ export function Providers({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize auth from cookie on mount
-  // Uses REST client because /admin/auth/me is an admin-specific endpoint
-  // not yet available in the tRPC router
+  // Store access token in memory only (not localStorage, not cookies)
+  const accessTokenRef = useRef<string | null>(null);
+
+  // On mount, try to refresh the session via HttpOnly refresh cookie
   useEffect(() => {
-    const token = getTokenFromCookie();
-    if (token) {
-      api.setToken(token);
-      api
-        .get<AdminUser>('/admin/auth/me')
-        .then((u) => {
-          setUser(u);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          removeTokenCookie();
-          api.setToken(null);
-          setIsLoading(false);
-        });
-    } else {
-      setIsLoading(false);
-    }
+    api
+      .post<{ token: string; user: AdminUser }>('/admin/auth/refresh')
+      .then((response) => {
+        accessTokenRef.current = response.token;
+        api.setToken(response.token);
+        setUser(response.user);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        accessTokenRef.current = null;
+        api.setToken(null);
+        setIsLoading(false);
+      });
   }, []);
 
-  // Uses REST client because /admin/auth/login is an admin-specific endpoint
-  // not yet available in the tRPC router
   const login = useCallback(
     async (email: string, password: string) => {
       const response = await api.post<{ user: AdminUser; token: string }>('/admin/auth/login', {
         email,
         password,
       });
-      setTokenCookie(response.token);
+      accessTokenRef.current = response.token;
       api.setToken(response.token);
       setUser(response.user);
       router.push('/');
@@ -70,8 +60,13 @@ export function Providers({ children }: { children: ReactNode }) {
     [router],
   );
 
-  const logout = useCallback(() => {
-    removeTokenCookie();
+  const logout = useCallback(async () => {
+    try {
+      await api.post('/admin/auth/logout');
+    } catch {
+      // Ignore errors during logout
+    }
+    accessTokenRef.current = null;
     api.setToken(null);
     setUser(null);
     router.push('/login');

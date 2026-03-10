@@ -1,3 +1,4 @@
+export * from './admin-users';
 export * from './badges';
 export * from './breeds';
 export * from './chat';

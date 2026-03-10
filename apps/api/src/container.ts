@@ -38,9 +38,9 @@ import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
 import { createGetDog } from './use-cases/get-dog.js';
-import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — feedback
 import { createGetDogRating } from './use-cases/get-dog-rating.js';
+import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
 import { createGetMessages } from './use-cases/get-messages.js';
 import { createGetProfile } from './use-cases/get-profile.js';
@@ -51,9 +51,9 @@ import { createListBadges } from './use-cases/list-badges.js';
 import { createListConversations } from './use-cases/list-conversations.js';
 import { createListMatches } from './use-cases/list-matches.js';
 import { createListNearbyEvents } from './use-cases/list-nearby-events.js';
-import { createListUserEvents } from './use-cases/list-user-events.js';
 import { createListUpcomingWalks } from './use-cases/list-upcoming-walks.js';
 import { createListUserDogs } from './use-cases/list-user-dogs.js';
+import { createListUserEvents } from './use-cases/list-user-events.js';
 import { createListWalkFeedback } from './use-cases/list-walk-feedback.js';
 import { createListWalksByMatch } from './use-cases/list-walks-by-match.js';
 import { createLoginUser } from './use-cases/login-user.js';

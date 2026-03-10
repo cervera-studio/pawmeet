@@ -29,14 +29,12 @@ export function createUpdateGroupEvent({ groupEventRepo }: Deps) {
 
     if (event.createdBy !== userId) {
       return fail(
-        new AppError('NOT_ORGANIZER', 'Solo l\'organizzatore può modificare l\'evento', 403),
+        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può modificare l'evento", 403),
       );
     }
 
     if (event.status === 'cancelled' || event.status === 'completed') {
-      return fail(
-        new AppError('EVENT_NOT_EDITABLE', 'Evento non modificabile', 400),
-      );
+      return fail(new AppError('EVENT_NOT_EDITABLE', 'Evento non modificabile', 400));
     }
 
     if (input.scheduledAt && input.scheduledAt <= new Date()) {

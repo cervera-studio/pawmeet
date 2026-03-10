@@ -1,8 +1,4 @@
-import type {
-  GroupEvent,
-  GroupEventParticipant,
-  GroupEventWithParticipants,
-} from '@dogwalk/types';
+import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@dogwalk/types';
 
 export interface CreateGroupEventInput {
   createdBy: string;

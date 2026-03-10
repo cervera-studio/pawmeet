@@ -48,9 +48,7 @@ function buildGroupEventWithParticipants(
   };
 }
 
-function buildGroupEventRepo(
-  overrides: Partial<GroupEventRepository> = {},
-): GroupEventRepository {
+function buildGroupEventRepo(overrides: Partial<GroupEventRepository> = {}): GroupEventRepository {
   return {
     create: vi.fn(),
     findById: vi.fn(),

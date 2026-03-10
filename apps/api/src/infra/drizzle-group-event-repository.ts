@@ -1,9 +1,5 @@
 import { groupEventParticipants, groupEvents } from '@dogwalk/db';
-import type {
-  GroupEvent,
-  GroupEventParticipant,
-  GroupEventWithParticipants,
-} from '@dogwalk/types';
+import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@dogwalk/types';
 import { and, desc, eq, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
@@ -33,10 +29,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .select()
       .from(groupEventParticipants)
       .where(
-        and(
-          eq(groupEventParticipants.eventId, id),
-          ne(groupEventParticipants.status, 'declined'),
-        ),
+        and(eq(groupEventParticipants.eventId, id), ne(groupEventParticipants.status, 'declined')),
       );
 
     return {
@@ -46,9 +39,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
     };
   }
 
-  async findNearby(
-    query: NearbyEventsQuery,
-  ): Promise<(GroupEvent & { distanceKm: number })[]> {
+  async findNearby(query: NearbyEventsQuery): Promise<(GroupEvent & { distanceKm: number })[]> {
     const { latitude, longitude, radiusKm, limit = 20, excludeUserId } = query;
 
     const distanceExpr = sql<number>`
@@ -158,18 +149,12 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
     return rows[0] as GroupEventParticipant;
   }
 
-  async findParticipant(
-    eventId: string,
-    userId: string,
-  ): Promise<GroupEventParticipant | null> {
+  async findParticipant(eventId: string, userId: string): Promise<GroupEventParticipant | null> {
     const [participant] = await this.db
       .select()
       .from(groupEventParticipants)
       .where(
-        and(
-          eq(groupEventParticipants.eventId, eventId),
-          eq(groupEventParticipants.userId, userId),
-        ),
+        and(eq(groupEventParticipants.eventId, eventId), eq(groupEventParticipants.userId, userId)),
       );
     return (participant as GroupEventParticipant | undefined) ?? null;
   }
@@ -178,10 +163,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
     await this.db
       .delete(groupEventParticipants)
       .where(
-        and(
-          eq(groupEventParticipants.eventId, eventId),
-          eq(groupEventParticipants.userId, userId),
-        ),
+        and(eq(groupEventParticipants.eventId, eventId), eq(groupEventParticipants.userId, userId)),
       );
   }
 
@@ -194,10 +176,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .update(groupEventParticipants)
       .set({ status })
       .where(
-        and(
-          eq(groupEventParticipants.eventId, eventId),
-          eq(groupEventParticipants.userId, userId),
-        ),
+        and(eq(groupEventParticipants.eventId, eventId), eq(groupEventParticipants.userId, userId)),
       );
   }
 

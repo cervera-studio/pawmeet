@@ -27,7 +27,11 @@ export function createCreateGroupEvent({ groupEventRepo, dogRepo }: Deps) {
 
     if (input.maxParticipants < 3) {
       return fail(
-        new AppError('EVENT_MIN_PARTICIPANTS', 'Minimo 3 partecipanti per un evento di gruppo', 400),
+        new AppError(
+          'EVENT_MIN_PARTICIPANTS',
+          'Minimo 3 partecipanti per un evento di gruppo',
+          400,
+        ),
       );
     }
 

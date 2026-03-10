@@ -12,16 +12,14 @@ import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createGroupEventsRouter(deps: typeof groupEventDeps) {
   return router({
-    create: protectedProcedure
-      .input(createGroupEventSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(
-          await deps.createGroupEvent(ctx.userId, {
-            ...input,
-            scheduledAt: new Date(input.scheduledAt),
-          }),
-        ),
+    create: protectedProcedure.input(createGroupEventSchema).mutation(async ({ ctx, input }) =>
+      unwrapResult(
+        await deps.createGroupEvent(ctx.userId, {
+          ...input,
+          scheduledAt: new Date(input.scheduledAt),
+        }),
       ),
+    ),
 
     get: protectedProcedure
       .input(getGroupEventSchema)
@@ -49,17 +47,15 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
         unwrapResult(await deps.leaveGroupEvent(ctx.userId, input.eventId)),
       ),
 
-    update: protectedProcedure
-      .input(updateGroupEventSchema)
-      .mutation(async ({ ctx, input }) => {
-        const { eventId, scheduledAt, ...rest } = input;
-        return unwrapResult(
-          await deps.updateGroupEvent(ctx.userId, eventId, {
-            ...rest,
-            ...(scheduledAt ? { scheduledAt: new Date(scheduledAt) } : {}),
-          }),
-        );
-      }),
+    update: protectedProcedure.input(updateGroupEventSchema).mutation(async ({ ctx, input }) => {
+      const { eventId, scheduledAt, ...rest } = input;
+      return unwrapResult(
+        await deps.updateGroupEvent(ctx.userId, eventId, {
+          ...rest,
+          ...(scheduledAt ? { scheduledAt: new Date(scheduledAt) } : {}),
+        }),
+      );
+    }),
 
     cancel: protectedProcedure
       .input(cancelGroupEventSchema)

@@ -31,7 +31,9 @@ export function createJoinGroupEvent({ groupEventRepo, dogRepo, notificationServ
     }
 
     if (event.status !== GROUP_EVENT_STATUS.SCHEDULED) {
-      return fail(new AppError('EVENT_NOT_JOINABLE', "Non è possibile unirsi a questo evento", 400));
+      return fail(
+        new AppError('EVENT_NOT_JOINABLE', 'Non è possibile unirsi a questo evento', 400),
+      );
     }
 
     if (event.scheduledAt <= new Date()) {
@@ -65,8 +67,8 @@ export function createJoinGroupEvent({ groupEventRepo, dogRepo, notificationServ
     notificationService
       .send({
         userId: event.createdBy,
-        title: status === 'accepted' ? 'Nuovo partecipante' : 'Nuova lista d\'attesa',
-        body: `Un utente si è ${status === 'accepted' ? 'unito al' : 'messo in lista d\'attesa per il'} tuo evento "${event.title}"`,
+        title: status === 'accepted' ? 'Nuovo partecipante' : "Nuova lista d'attesa",
+        body: `Un utente si è ${status === 'accepted' ? 'unito al' : "messo in lista d'attesa per il"} tuo evento "${event.title}"`,
       })
       .catch((err) => {
         console.error('[join-group-event] Failed to send notification:', err);

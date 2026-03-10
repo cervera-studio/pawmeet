@@ -1073,24 +1073,15 @@ packages/utils       ──┘        │
 
 ### 7.3 CI/CD Pipeline
 
-- [ ] **ci.yml**: Lint, typecheck, test su ogni PR
+- [x] **ci.yml**: Lint, typecheck, test su ogni PR
   - pnpm install, turbo lint, turbo typecheck, turbo test
-  - Matrix: Node 20
-- [ ] **deploy-preview.yml**: Preview deployment per PR
-  - EAS Update per mobile (preview channel)
-  - Cloudflare Pages preview per web
-  - Cloudflare Pages preview per admin
-- [ ] **deploy-staging.yml**: Deploy staging su merge in `develop`
-  - EAS Build + EAS Update (staging channel)
-  - `fly deploy --config apps/api/fly.toml` API (staging)
-  - Cloudflare Pages deploy web (staging)
-  - Cloudflare Pages deploy admin (staging)
-- [ ] **deploy-production.yml**: Deploy production su merge in `main`
-  - EAS Build + Submit (production)
-  - `fly deploy --config apps/api/fly.toml` API (production)
-  - Cloudflare Pages deploy web (production)
-  - Cloudflare Pages deploy admin (production)
-  - Tag git con versione semantica
+  - Node 22
+- [x] **deploy-api.yml**: Deploy API su Fly.io al push su `main`
+  - `flyctl deploy --remote-only` (paths filter: apps/api, packages, lockfile)
+  - Secret: `FLY_API_TOKEN`
+- **Web** (Cloudflare Pages): auto-deploy via GitHub integration (no workflow needed)
+- **Admin** (Vercel): auto-deploy via GitHub integration (no workflow needed)
+- [ ] **deploy-mobile.yml** (post-MVP): EAS Build + Submit via GitHub Actions
 
 ### 7.4 Design Tokens
 

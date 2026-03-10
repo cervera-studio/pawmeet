@@ -1,8 +1,9 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
+import type { DiscoveryFilters } from '@dogwalk/types';
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MatchCelebration } from '@/components/MatchCelebration';
 import { SwipeCard } from '@/components/SwipeCard';
@@ -21,6 +22,209 @@ function calculateAge(birthDate: Date | string): string {
   return `${years} ${years === 1 ? 'anno' : 'anni'}`;
 }
 
+// ── Filter configuration ────────────────────────────────────────────────────
+
+type FilterSection<K extends keyof DiscoveryFilters> = {
+  key: K;
+  label: string;
+  options: { value: string; label: string }[];
+};
+
+const FILTER_SECTIONS: FilterSection<keyof DiscoveryFilters>[] = [
+  {
+    key: 'size',
+    label: 'Taglia',
+    options: [
+      { value: 'toy', label: 'Toy' },
+      { value: 'piccola', label: 'Piccola' },
+      { value: 'media', label: 'Media' },
+      { value: 'grande', label: 'Grande' },
+      { value: 'gigante', label: 'Gigante' },
+    ],
+  },
+  {
+    key: 'energyLevel',
+    label: 'Energia',
+    options: [
+      { value: 'bassa', label: 'Bassa' },
+      { value: 'media', label: 'Media' },
+      { value: 'alta', label: 'Alta' },
+      { value: 'molto_alta', label: 'Molto alta' },
+    ],
+  },
+  {
+    key: 'gender',
+    label: 'Genere',
+    options: [
+      { value: 'maschio', label: 'Maschio' },
+      { value: 'femmina', label: 'Femmina' },
+    ],
+  },
+  {
+    key: 'behaviorWithDogs',
+    label: 'Comportamento',
+    options: [
+      { value: 'molto_socievole', label: 'Molto socievole' },
+      { value: 'socievole', label: 'Socievole' },
+      { value: 'selettivo', label: 'Selettivo' },
+      { value: 'reattivo', label: 'Reattivo' },
+    ],
+  },
+  {
+    key: 'walkPrefTime',
+    label: 'Orari',
+    options: [
+      { value: 'mattina_presto', label: 'Mattina presto' },
+      { value: 'mattina', label: 'Mattina' },
+      { value: 'pomeriggio', label: 'Pomeriggio' },
+      { value: 'sera', label: 'Sera' },
+      { value: 'sera_tardi', label: 'Sera tardi' },
+    ],
+  },
+  {
+    key: 'walkPrefTerrain',
+    label: 'Terreno',
+    options: [
+      { value: 'urbano', label: 'Urbano' },
+      { value: 'parco', label: 'Parco' },
+      { value: 'campagna', label: 'Campagna' },
+      { value: 'spiaggia', label: 'Spiaggia' },
+      { value: 'montagna', label: 'Montagna' },
+    ],
+  },
+];
+
+const DISTANCE_STEPS = [1, 3, 5, 10, 15, 20, 30, 50];
+
+// ── Chip component ──────────────────────────────────────────────────────────
+
+function FilterChip({
+  label,
+  selected,
+  onPress,
+}: { label: string; selected: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      className={`mr-2 mb-2 rounded-full px-4 py-2 ${selected ? 'bg-primary' : 'bg-gray-200'}`}
+    >
+      <Text className={`text-sm font-medium ${selected ? 'text-white' : 'text-gray-700'}`}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+// ── Filter modal ────────────────────────────────────────────────────────────
+
+function FilterModal({
+  visible,
+  filters,
+  onApply,
+  onClose,
+}: {
+  visible: boolean;
+  filters: DiscoveryFilters;
+  onApply: (f: DiscoveryFilters) => void;
+  onClose: () => void;
+}) {
+  const [draft, setDraft] = useState<DiscoveryFilters>(filters);
+
+  // Sync draft when modal opens
+  useEffect(() => {
+    if (visible) setDraft(filters);
+  }, [visible, filters]);
+
+  const toggleValue = (key: keyof DiscoveryFilters, value: string) => {
+    setDraft((prev) => {
+      const current = (prev[key] as string[] | undefined) ?? [];
+      const next = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
+      return { ...prev, [key]: next.length > 0 ? next : undefined };
+    });
+  };
+
+  const handleReset = () => setDraft({});
+
+  const handleApply = () => {
+    onApply(draft);
+    onClose();
+  };
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent>
+      <View className="flex-1 justify-end bg-black/40">
+        <View className="max-h-[85%] rounded-t-3xl bg-white px-5 pb-8 pt-4">
+          {/* Handle bar */}
+          <View className="mb-4 items-center">
+            <View className="h-1 w-10 rounded-full bg-gray-300" />
+          </View>
+
+          <View className="mb-4 flex-row items-center justify-between">
+            <Text className="text-xl font-bold text-gray-900">Filtri</Text>
+            <Pressable onPress={handleReset}>
+              <Text className="font-semibold text-primary">Resetta</Text>
+            </Pressable>
+          </View>
+
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {FILTER_SECTIONS.map((section) => (
+              <View key={section.key} className="mb-5">
+                <Text className="mb-2 text-sm font-semibold text-gray-600">{section.label}</Text>
+                <View className="flex-row flex-wrap">
+                  {section.options.map((opt) => {
+                    const selected = (
+                      (draft[section.key] as string[] | undefined) ?? []
+                    ).includes(opt.value);
+                    return (
+                      <FilterChip
+                        key={opt.value}
+                        label={opt.label}
+                        selected={selected}
+                        onPress={() => toggleValue(section.key, opt.value)}
+                      />
+                    );
+                  })}
+                </View>
+              </View>
+            ))}
+
+            {/* Distance slider (discrete steps) */}
+            <View className="mb-5">
+              <Text className="mb-2 text-sm font-semibold text-gray-600">
+                Distanza massima
+                {draft.maxDistanceKm ? ` — ${draft.maxDistanceKm} km` : ''}
+              </Text>
+              <View className="flex-row flex-wrap">
+                {DISTANCE_STEPS.map((km) => (
+                  <FilterChip
+                    key={km}
+                    label={`${km} km`}
+                    selected={draft.maxDistanceKm === km}
+                    onPress={() =>
+                      setDraft((prev) => ({
+                        ...prev,
+                        maxDistanceKm: prev.maxDistanceKm === km ? undefined : km,
+                      }))
+                    }
+                  />
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+
+          <Pressable onPress={handleApply} className="mt-2 rounded-2xl bg-primary py-4">
+            <Text className="text-center text-base font-bold text-white">Applica filtri</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// ── Discovery screen ────────────────────────────────────────────────────────
+
 export default function DiscoveryScreen() {
   const router = useRouter();
   const { coordinates, getCurrentLocation } = useLocation();
@@ -29,12 +233,24 @@ export default function DiscoveryScreen() {
     isLoading,
     hasMore,
     newMatch,
+    filters,
+    activeFilterCount,
+    setFilters,
     fetchSuggestions,
     swipeRight,
     swipeLeft,
     superLike,
     dismissMatch,
   } = useMatching();
+
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+  const handleApplyFilters = useCallback(
+    (newFilters: DiscoveryFilters) => {
+      setFilters(newFilters);
+    },
+    [setFilters],
+  );
 
   useEffect(() => {
     getCurrentLocation();
@@ -66,6 +282,19 @@ export default function DiscoveryScreen() {
           <Text className="text-2xl font-bold text-gray-900">Scopri</Text>
           <Text className="text-sm text-gray-500">Cani nelle vicinanze</Text>
         </View>
+        <Pressable
+          onPress={() => setFilterModalVisible(true)}
+          className="relative h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
+        >
+          <Text className="text-lg">
+            {activeFilterCount > 0 ? '\u2699\uFE0F' : '\u2699'}
+          </Text>
+          {activeFilterCount > 0 && (
+            <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-primary">
+              <Text className="text-xs font-bold text-white">{activeFilterCount}</Text>
+            </View>
+          )}
+        </Pressable>
       </View>
 
       {/* Card area */}
@@ -157,6 +386,14 @@ export default function DiscoveryScreen() {
           }}
         />
       )}
+
+      {/* Filter modal */}
+      <FilterModal
+        visible={filterModalVisible}
+        filters={filters}
+        onApply={handleApplyFilters}
+        onClose={() => setFilterModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }

@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@dogwalk/api-client';
+import type { DiscoveryFilters } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
 import { useCallback, useState } from 'react';
 import { cache } from '@/lib/storage';
@@ -19,14 +20,23 @@ export function useMatching(dogId?: string) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [newMatch, setNewMatch] = useState<LikeResult | null>(null);
+  const [filters, setFilters] = useState<DiscoveryFilters>({});
 
   const currentProfile = suggestions[currentIndex] ?? null;
   const hasMore = currentIndex < suggestions.length;
 
+  const activeFilterCount = Object.values(filters).filter(
+    (v) => v !== undefined && (!Array.isArray(v) || v.length > 0),
+  ).length;
+
   const fetchSuggestions = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { suggestions: data } = await api.matches.discover.query({ dogId: dogId ?? '' });
+      const hasFilters = Object.keys(filters).length > 0;
+      const { suggestions: data } = await api.matches.discover.query({
+        dogId: dogId ?? '',
+        ...(hasFilters ? { filters } : {}),
+      });
       setSuggestions(data);
       setCurrentIndex(0);
       cache.set(cacheKey, data);
@@ -35,7 +45,7 @@ export function useMatching(dogId?: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [dogId, cacheKey]);
+  }, [dogId, cacheKey, filters]);
 
   const advanceCard = useCallback(() => {
     setCurrentIndex((prev) => prev + 1);
@@ -99,6 +109,9 @@ export function useMatching(dogId?: string) {
     isLoading,
     hasMore,
     newMatch,
+    filters,
+    activeFilterCount,
+    setFilters,
     fetchSuggestions,
     swipeRight,
     swipeLeft,

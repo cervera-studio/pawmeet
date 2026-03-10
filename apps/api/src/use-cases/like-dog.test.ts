@@ -1,8 +1,8 @@
 import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
-import type { DogProfile, Match, Swipe } from '@dogwalk/types';
+import type { DogProfile, Match, Swipe, User } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { DogRepository, MatchRepository } from '../ports/index.js';
+import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
 import { createLikeDog } from './like-dog.js';
 
 function buildDog(overrides: Partial<DogProfile> = {}): DogProfile {
@@ -77,6 +77,42 @@ function buildDogRepo(overrides: Partial<DogRepository> = {}): DogRepository {
   };
 }
 
+function buildUser(overrides: Partial<User> = {}): User {
+  return {
+    id: 'user-2',
+    email: 'owner@example.com',
+    displayName: 'Dog Owner',
+    passwordHash: 'hash',
+    authProvider: 'email',
+    avatarUrl: null,
+    latitude: null,
+    longitude: null,
+    locationUpdatedAt: null,
+    searchRadiusKm: 10,
+    emailVerified: true,
+    pushToken: null,
+    notificationPrefs: { matches: true, messages: true, reminders: true },
+    isActive: true,
+    createdAt: new Date('2026-01-01'),
+    lastLoginAt: null,
+    ...overrides,
+  };
+}
+
+function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository {
+  return {
+    findByEmail: vi.fn(),
+    findById: vi.fn().mockResolvedValue(buildUser()),
+    findByIds: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    findNearby: vi.fn(),
+    updatePushToken: vi.fn(),
+    findPushToken: vi.fn(),
+    ...overrides,
+  };
+}
+
 function buildMatchRepo(overrides: Partial<MatchRepository> = {}): MatchRepository {
   return {
     findActiveByDogIds: vi.fn(),
@@ -99,7 +135,8 @@ describe('likeDog', () => {
       findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
     });
     const matchRepo = buildMatchRepo();
-    const likeDog = createLikeDog({ dogRepo, matchRepo });
+    const userRepo = buildUserRepo();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 
@@ -123,7 +160,8 @@ describe('likeDog', () => {
       findReciprocalLike: vi.fn().mockResolvedValue(buildSwipe()),
       create: vi.fn().mockResolvedValue(match),
     });
-    const likeDog = createLikeDog({ dogRepo, matchRepo });
+    const userRepo = buildUserRepo();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 
@@ -143,7 +181,8 @@ describe('likeDog', () => {
       findByIdAndOwner: vi.fn().mockResolvedValue(null),
     });
     const matchRepo = buildMatchRepo();
-    const likeDog = createLikeDog({ dogRepo, matchRepo });
+    const userRepo = buildUserRepo();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 
@@ -160,7 +199,8 @@ describe('likeDog', () => {
     const matchRepo = buildMatchRepo({
       countDailySwipes: vi.fn().mockResolvedValue(SWIPE_DAILY_LIMIT),
     });
-    const likeDog = createLikeDog({ dogRepo, matchRepo });
+    const userRepo = buildUserRepo();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 
@@ -177,7 +217,8 @@ describe('likeDog', () => {
     const matchRepo = buildMatchRepo({
       findSwipe: vi.fn().mockResolvedValue(buildSwipe()),
     });
-    const likeDog = createLikeDog({ dogRepo, matchRepo });
+    const userRepo = buildUserRepo();
+    const likeDog = createLikeDog({ dogRepo, matchRepo, userRepo });
 
     const result = await likeDog('user-1', 'dog-1', 'dog-2');
 

@@ -52,6 +52,7 @@ export interface UserRepository {
         | 'emailVerified'
         | 'lastLoginAt'
         | 'isActive'
+        | 'notificationPrefs'
       >
     >,
   ): Promise<User>;

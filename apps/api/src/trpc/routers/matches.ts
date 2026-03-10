@@ -1,3 +1,4 @@
+import { discoveryFiltersSchema } from '@dogwalk/validation';
 import { z } from 'zod';
 import type { matchDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
@@ -10,6 +11,7 @@ const swipeSchema = z.object({
 const discoverSchema = z.object({
   dogId: z.string().uuid(),
   limit: z.number().int().min(1).max(50).optional(),
+  filters: discoveryFiltersSchema.optional(),
 });
 
 export function createMatchesRouter(deps: typeof matchDeps) {
@@ -21,7 +23,9 @@ export function createMatchesRouter(deps: typeof matchDeps) {
     discover: protectedProcedure
       .input(discoverSchema)
       .query(async ({ ctx, input }) =>
-        unwrapResult(await deps.discoverCandidates(ctx.userId, input.dogId, input.limit)),
+        unwrapResult(
+          await deps.discoverCandidates(ctx.userId, input.dogId, input.limit, input.filters),
+        ),
       ),
 
     like: protectedProcedure

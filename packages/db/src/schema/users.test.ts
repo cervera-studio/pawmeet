@@ -23,13 +23,14 @@ describe('users table', () => {
         'longitude',
         'locationUpdatedAt',
         'searchRadiusKm',
+        'notificationPrefs',
         'isActive',
         'pushToken',
         'createdAt',
         'lastLoginAt',
       ]),
     );
-    expect(columnNames).toHaveLength(15);
+    expect(columnNames).toHaveLength(16);
   });
 
   describe('id column', () => {
@@ -141,6 +142,15 @@ describe('users table', () => {
       expect(col.name).toBe('created_at');
       expect(col.columnType).toBe('PgTimestamp');
       expect(col.notNull).toBe(true);
+      expect(col.hasDefault).toBe(true);
+    });
+  });
+
+  describe('notificationPrefs column', () => {
+    it('is a jsonb column with default prefs', () => {
+      const col = getTableColumns(users).notificationPrefs;
+      expect(col.name).toBe('notification_prefs');
+      expect(col.columnType).toBe('PgJsonb');
       expect(col.hasDefault).toBe(true);
     });
   });

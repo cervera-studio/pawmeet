@@ -55,6 +55,7 @@ export class DrizzleUserRepository implements UserRepository {
         | 'emailVerified'
         | 'lastLoginAt'
         | 'isActive'
+        | 'notificationPrefs'
       >
     >,
   ): Promise<User> {

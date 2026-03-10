@@ -1,5 +1,5 @@
 import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@dogwalk/config';
-import type { DogProfile } from '@dogwalk/types';
+import type { DiscoveryFilters, DogProfile } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import {
   calculateBehaviorScore,
@@ -107,11 +107,43 @@ type Suggestion = {
   compatibilityScore: number;
 };
 
+// ── Filter helpers ──────────────────────────────────────────────────────────
+
+function hasOverlap(a: readonly string[], b: readonly string[]): boolean {
+  const setA = new Set(a);
+  return b.some((v) => setA.has(v));
+}
+
+function matchesFilters(dog: DogProfile, filters: DiscoveryFilters): boolean {
+  if (filters.size?.length && !filters.size.includes(dog.size)) return false;
+  if (filters.energyLevel?.length && !filters.energyLevel.includes(dog.energyLevel)) return false;
+  if (filters.gender?.length && !filters.gender.includes(dog.gender)) return false;
+  if (
+    filters.behaviorWithDogs?.length &&
+    !filters.behaviorWithDogs.includes(dog.behaviorWithDogs)
+  ) {
+    return false;
+  }
+  if (filters.walkPrefTime?.length && !hasOverlap(filters.walkPrefTime, dog.walkPrefTime)) {
+    return false;
+  }
+  if (
+    filters.walkPrefTerrain?.length &&
+    !hasOverlap(filters.walkPrefTerrain, dog.walkPrefTerrain)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+// ── Use case factory ────────────────────────────────────────────────────────
+
 export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo }: Deps) {
   return async (
     userId: string,
     dogId: string,
     limit?: number,
+    filters?: DiscoveryFilters,
   ): Promise<Result<{ suggestions: Suggestion[] }>> => {
     const effectiveLimit = limit ?? 20;
 
@@ -127,7 +159,7 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo }: Deps)
       return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
     }
 
-    const radiusKm = user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
+    const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
     // Get already-swiped dog IDs
     const swipedIds = new Set(await matchRepo.findSwipedDogIds(dogId));
@@ -135,11 +167,13 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo }: Deps)
     // Get candidate dogs
     const candidates = await matchRepo.findCandidateDogs(userId);
 
-    // Score and filter
+    // Apply discovery filters, score, and rank
     const scored = candidates
       .filter((c) => {
         if (!c.ownerLat || !c.ownerLon) return false;
         if (swipedIds.has(c.dog.id)) return false;
+        // Apply user-selected filters before expensive scoring
+        if (filters && !matchesFilters(c.dog, filters)) return false;
         return true;
       })
       .map((c) => {

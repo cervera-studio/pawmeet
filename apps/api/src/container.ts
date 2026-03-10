@@ -43,6 +43,7 @@ import { createResetPassword } from './use-cases/reset-password.js';
 import { createSearchBreeds } from './use-cases/search-breeds.js';
 import { createSendMessage } from './use-cases/send-message.js';
 import { createUnmatch } from './use-cases/unmatch.js';
+import { createUpdateNotificationPrefs } from './use-cases/update-notification-prefs.js';
 import { createUpdateDog } from './use-cases/update-dog.js';
 import { createUpdateLocation } from './use-cases/update-location.js';
 import { createUpdatePreferences } from './use-cases/update-preferences.js';
@@ -104,6 +105,7 @@ export const userDeps = {
   confirmAvatar: createConfirmAvatar({ userRepo, storage }),
   deleteAvatar: createDeleteAvatar({ userRepo, storage }),
   registerPushToken: createRegisterPushToken({ userRepo }),
+  updateNotificationPrefs: createUpdateNotificationPrefs({ userRepo }),
 };
 
 // ── Match deps ──────────────────────────────────────────────────────────────────
@@ -111,7 +113,7 @@ export const userDeps = {
 export const matchDeps = {
   listMatches: createListMatches({ dogRepo, matchRepo, userRepo }),
   discoverCandidates: createDiscoverCandidates({ dogRepo, matchRepo, userRepo }),
-  likeDog: createLikeDog({ dogRepo, matchRepo }),
+  likeDog: createLikeDog({ dogRepo, matchRepo, userRepo }),
   passDog: createPassDog({ dogRepo, matchRepo }),
   unmatch: createUnmatch({ dogRepo, matchRepo }),
 };

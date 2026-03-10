@@ -1,3 +1,15 @@
+export interface NotificationPrefs {
+  matches: boolean; // New match notifications
+  messages: boolean; // New message notifications
+  reminders: boolean; // Walk reminders
+}
+
+export const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
+  matches: true,
+  messages: true,
+  reminders: true,
+};
+
 export interface User {
   id: string;
   email: string;
@@ -11,6 +23,7 @@ export interface User {
   searchRadiusKm: number;
   emailVerified: boolean;
   pushToken: string | null;
+  notificationPrefs: NotificationPrefs;
   isActive: boolean;
   createdAt: Date;
   lastLoginAt: Date | null;

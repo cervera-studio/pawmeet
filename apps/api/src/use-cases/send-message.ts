@@ -38,19 +38,26 @@ export function createSendMessage({ messageRepo, chat, userRepo }: Deps) {
       payload: { message },
     });
 
-    // Send push notification to the recipient
+    // Send push notification to the recipient (if they opted in)
     const recipientId = await messageRepo.getOtherParticipant(matchId, userId);
     if (recipientId) {
-      const sender = await userRepo.findById(userId);
-      const senderName = sender?.displayName ?? 'Qualcuno';
-      const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
+      const recipient = await userRepo.findById(recipientId);
+      const wantsMessageNotifs = recipient?.notificationPrefs?.messages !== false;
 
-      enqueueNotification({
-        userId: recipientId,
-        title: senderName,
-        body: preview,
-        data: { matchId, type: 'new_message' },
-      }).catch((err) => logger.error('sendMessage', 'Failed to enqueue message notification', err));
+      if (wantsMessageNotifs) {
+        const sender = await userRepo.findById(userId);
+        const senderName = sender?.displayName ?? 'Qualcuno';
+        const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
+
+        enqueueNotification({
+          userId: recipientId,
+          title: senderName,
+          body: preview,
+          data: { matchId, type: 'new_message' },
+        }).catch((err) =>
+          logger.error('sendMessage', 'Failed to enqueue message notification', err),
+        );
+      }
     }
 
     return succeed({ message });

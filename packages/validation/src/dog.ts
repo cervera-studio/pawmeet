@@ -48,5 +48,17 @@ export const createDogSchema = z.object({
 
 export const updateDogSchema = createDogSchema.partial();
 
+export const discoveryFiltersSchema = z.object({
+  size: z.array(dogSizeEnum).min(1).optional(),
+  energyLevel: z.array(energyLevelEnum).min(1).optional(),
+  gender: z.array(genderEnum).min(1).optional(),
+  behaviorWithDogs: z.array(behaviorWithDogsEnum).min(1).optional(),
+  walkPrefTime: z.array(walkTimeEnum).min(1).optional(),
+  walkPrefTerrain: z.array(walkTerrainEnum).min(1).optional(),
+  maxDistanceKm: z.number().min(1).max(50).optional(),
+});
+
+export type DiscoveryFiltersInput = z.infer<typeof discoveryFiltersSchema>;
+
 export type CreateDogInput = z.infer<typeof createDogSchema>;
 export type UpdateDogInput = z.infer<typeof updateDogSchema>;

@@ -138,7 +138,7 @@ describe('matches router', () => {
 
       expect(result.suggestions).toHaveLength(1);
       expect(result.suggestions[0].compatibilityScore).toBe(0.78);
-      expect(deps.discoverCandidates).toHaveBeenCalledWith('user-1', dogId, undefined);
+      expect(deps.discoverCandidates).toHaveBeenCalledWith('user-1', dogId, undefined, undefined);
     });
 
     it('passes limit to use case', async () => {
@@ -147,7 +147,7 @@ describe('matches router', () => {
 
       await caller.matches.discover({ dogId, limit: 10 });
 
-      expect(deps.discoverCandidates).toHaveBeenCalledWith('user-1', dogId, 10);
+      expect(deps.discoverCandidates).toHaveBeenCalledWith('user-1', dogId, 10, undefined);
     });
 
     it('throws BAD_REQUEST when location is not set', async () => {

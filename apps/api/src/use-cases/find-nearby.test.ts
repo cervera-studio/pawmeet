@@ -19,6 +19,7 @@ function buildUser(overrides: Partial<User> = {}): User {
     searchRadiusKm: 15,
     emailVerified: true,
     pushToken: null,
+    notificationPrefs: { matches: true, messages: true, reminders: true },
     isActive: true,
     createdAt: new Date('2026-01-01'),
     lastLoginAt: null,

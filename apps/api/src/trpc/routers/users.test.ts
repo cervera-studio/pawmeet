@@ -21,6 +21,7 @@ function buildSafeUser(overrides: Partial<SafeUser> = {}): SafeUser {
     locationUpdatedAt: new Date('2026-03-01'),
     searchRadiusKm: 10,
     emailVerified: true,
+    notificationPrefs: { matches: true, messages: true, reminders: true },
     isActive: true,
     createdAt: new Date('2024-01-01'),
     lastLoginAt: null,
@@ -73,6 +74,12 @@ function buildUserDeps(overrides: Partial<typeof userDeps> = {}): typeof userDep
       .fn()
       .mockResolvedValue(succeed({ avatarUrl: 'https://cdn.example.com/avatar.jpg' })),
     deleteAvatar: vi.fn().mockResolvedValue(succeed({ message: 'Avatar eliminato' })),
+    registerPushToken: vi.fn().mockResolvedValue(succeed({ registered: true })),
+    updateNotificationPrefs: vi
+      .fn()
+      .mockResolvedValue(
+        succeed({ notificationPrefs: { matches: true, messages: true, reminders: true } }),
+      ),
     ...overrides,
   };
 }
@@ -333,6 +340,43 @@ describe('users router', () => {
       await expect(caller.users.deleteAvatar()).rejects.toMatchObject({
         code: 'UNAUTHORIZED',
       });
+    });
+  });
+
+  describe('updateNotificationPrefs', () => {
+    it('updates notification preferences', async () => {
+      const deps = buildUserDeps();
+      const caller = createAuthenticatedCaller(deps);
+
+      const result = await caller.users.updateNotificationPrefs({ matches: false });
+
+      expect(result.notificationPrefs).toEqual({
+        matches: true,
+        messages: true,
+        reminders: true,
+      });
+      expect(deps.updateNotificationPrefs).toHaveBeenCalledWith('user-1', { matches: false });
+    });
+
+    it('accepts partial updates', async () => {
+      const deps = buildUserDeps();
+      const caller = createAuthenticatedCaller(deps);
+
+      await caller.users.updateNotificationPrefs({ messages: false, reminders: false });
+
+      expect(deps.updateNotificationPrefs).toHaveBeenCalledWith('user-1', {
+        messages: false,
+        reminders: false,
+      });
+    });
+
+    it('rejects unauthenticated callers', async () => {
+      const deps = buildUserDeps();
+      const caller = createAnonCaller(deps);
+
+      await expect(
+        caller.users.updateNotificationPrefs({ matches: false }),
+      ).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
     });
   });
 });

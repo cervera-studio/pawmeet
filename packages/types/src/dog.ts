@@ -34,6 +34,16 @@ export interface DogProfile {
   updatedAt: Date;
 }
 
+export interface DiscoveryFilters {
+  size?: DogSize[];
+  energyLevel?: EnergyLevel[];
+  gender?: Gender[];
+  behaviorWithDogs?: BehaviorWithDogs[];
+  walkPrefTime?: WalkTime[];
+  walkPrefTerrain?: WalkTerrain[];
+  maxDistanceKm?: number;
+}
+
 export interface DogPhoto {
   id: string;
   dogId: string;

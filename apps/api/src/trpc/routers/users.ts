@@ -28,6 +28,12 @@ const uploadAvatarSchema = z.object({
   fileSize: z.number().int().min(1).max(MAX_FILE_SIZE),
 });
 
+const updateNotificationPrefsSchema = z.object({
+  matches: z.boolean().optional(),
+  messages: z.boolean().optional(),
+  reminders: z.boolean().optional(),
+});
+
 const confirmAvatarSchema = z.object({
   key: z.string().min(1),
 });
@@ -74,6 +80,12 @@ export function createUsersRouter(deps: typeof userDeps) {
       .input(registerPushTokenSchema)
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.registerPushToken(ctx.userId, input.token)),
+      ),
+
+    updateNotificationPrefs: protectedProcedure
+      .input(updateNotificationPrefsSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.updateNotificationPrefs(ctx.userId, input)),
       ),
   });
 }

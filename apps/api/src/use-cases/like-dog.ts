@@ -3,14 +3,15 @@ import type { Match } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
 import { enqueueNotification } from '../jobs/queue.js';
-import type { DogRepository, MatchRepository } from '../ports/index.js';
+import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
 
 type Deps = {
   dogRepo: DogRepository;
   matchRepo: MatchRepository;
+  userRepo: UserRepository;
 };
 
-export function createLikeDog({ dogRepo, matchRepo }: Deps) {
+export function createLikeDog({ dogRepo, matchRepo, userRepo }: Deps) {
   return async (
     userId: string,
     dogId: string,
@@ -54,15 +55,20 @@ export function createLikeDog({ dogRepo, matchRepo }: Deps) {
         compatibilityScore: 0, // will be recalculated
       });
 
-      // Notify the other dog's owner about the match
+      // Notify the other dog's owner about the match (if they opted in)
       const targetDog = await dogRepo.findById(targetDogId);
       if (targetDog) {
-        enqueueNotification({
-          userId: targetDog.ownerId,
-          title: 'Hai un nuovo match! \u{1F415}',
-          body: `Il tuo cane ${targetDog.name} ha un nuovo compagno di passeggiata!`,
-          data: { matchId: match.id, type: 'new_match' },
-        }).catch((err) => logger.error('likeDog', 'Failed to enqueue match notification', err));
+        const recipient = await userRepo.findById(targetDog.ownerId);
+        const wantsMatchNotifs = recipient?.notificationPrefs?.matches !== false;
+
+        if (wantsMatchNotifs) {
+          enqueueNotification({
+            userId: targetDog.ownerId,
+            title: 'Hai un nuovo match! \u{1F415}',
+            body: `Il tuo cane ${targetDog.name} ha un nuovo compagno di passeggiata!`,
+            data: { matchId: match.id, type: 'new_match' },
+          }).catch((err) => logger.error('likeDog', 'Failed to enqueue match notification', err));
+        }
       }
 
       return succeed({ match, isMatch: true });

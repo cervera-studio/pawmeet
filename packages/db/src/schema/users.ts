@@ -2,6 +2,7 @@ import {
   boolean,
   doublePrecision,
   integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -23,6 +24,11 @@ export const users = pgTable('users', {
   emailVerified: boolean('email_verified').notNull().default(false),
   isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  notificationPrefs: jsonb('notification_prefs').$type<{ matches: boolean; messages: boolean; reminders: boolean }>().default({
+    matches: true,
+    messages: true,
+    reminders: true,
+  }),
   pushToken: text('push_token'),
   lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
 });

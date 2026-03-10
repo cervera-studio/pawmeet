@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { api } from '@/lib/api';
 import type { AdminUser } from '@/lib/auth';
 import {
   AuthContext,
@@ -10,7 +11,7 @@ import {
   removeTokenCookie,
   setTokenCookie,
 } from '@/lib/auth-store';
-import { api } from '@/lib/api';
+import { getTRPCClientConfig, trpc } from '@/lib/trpc';
 
 export function Providers({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -25,11 +26,14 @@ export function Providers({ children }: { children: ReactNode }) {
         },
       }),
   );
+  const [trpcClient] = useState(() => trpc.createClient(getTRPCClientConfig()));
 
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Initialize auth from cookie on mount
+  // Uses REST client because /admin/auth/me is an admin-specific endpoint
+  // not yet available in the tRPC router
   useEffect(() => {
     const token = getTokenFromCookie();
     if (token) {
@@ -50,6 +54,8 @@ export function Providers({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Uses REST client because /admin/auth/login is an admin-specific endpoint
+  // not yet available in the tRPC router
   const login = useCallback(
     async (email: string, password: string) => {
       const response = await api.post<{ user: AdminUser; token: string }>('/admin/auth/login', {
@@ -83,8 +89,10 @@ export function Providers({ children }: { children: ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>
-    </QueryClientProvider>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>
+      </QueryClientProvider>
+    </trpc.Provider>
   );
 }

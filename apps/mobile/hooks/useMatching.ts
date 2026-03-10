@@ -1,41 +1,16 @@
+import type { RouterOutput } from '@dogwalk/api-client';
+import { logger } from '@dogwalk/utils';
 import { useCallback, useState } from 'react';
-import { api } from '@/lib/api';
+import { api } from '@/lib/trpc';
 
-export interface MatchSuggestion {
-  id: string;
-  dogId: string;
-  name: string;
-  breed: string;
-  age: string;
-  size: string;
-  energyLevel: string;
-  ownerName: string;
-  distanceKm: number;
-  compatibilityScore: number;
-  imageUrl: string | null;
-}
+type Suggestion = RouterOutput['matches']['discover']['suggestions'][number];
+type LikeResult = RouterOutput['matches']['like'];
 
-export interface MatchResult {
-  id: string;
-  dogName: string;
-  ownerName: string;
-  breed: string;
-  compatibilityScore: number;
-  status: 'nuovo' | 'in_chat' | 'incontrato';
-  matchedAt: string;
-  imageUrl: string | null;
-}
-
-interface MatchResponse {
-  matched: boolean;
-  matchId?: string;
-}
-
-export function useMatching() {
-  const [suggestions, setSuggestions] = useState<MatchSuggestion[]>([]);
+export function useMatching(dogId?: string) {
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [newMatch, setNewMatch] = useState<MatchResponse | null>(null);
+  const [newMatch, setNewMatch] = useState<LikeResult | null>(null);
 
   const currentProfile = suggestions[currentIndex] ?? null;
   const hasMore = currentIndex < suggestions.length;
@@ -43,60 +18,66 @@ export function useMatching() {
   const fetchSuggestions = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<MatchSuggestion[]>('/matches/suggestions');
+      const { suggestions: data } = await api.matches.discover.query({ dogId: dogId ?? '' });
       setSuggestions(data);
       setCurrentIndex(0);
-    } catch {
-      // Silently fail, will show empty state
+    } catch (e) {
+      logger.warn('useMatching', 'Failed to fetch suggestions', e);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [dogId]);
 
   const advanceCard = useCallback(() => {
     setCurrentIndex((prev) => prev + 1);
   }, []);
 
   const swipeRight = useCallback(
-    async (dogId: string) => {
+    async (targetDogId: string) => {
       try {
-        const result = await api.post<MatchResponse>('/matches/like', { dogId });
-        if (result.matched) {
+        const result = await api.matches.like.mutate({
+          dogId: dogId ?? '',
+          targetDogId,
+        });
+        if (result.isMatch) {
           setNewMatch(result);
         }
-      } catch {
-        // Silently fail
+      } catch (e) {
+        logger.warn('useMatching', 'swipeRight failed', e);
       }
       advanceCard();
     },
-    [advanceCard],
+    [advanceCard, dogId],
   );
 
   const swipeLeft = useCallback(
-    async (dogId: string) => {
+    async (targetDogId: string) => {
       try {
-        await api.post('/matches/dislike', { dogId });
-      } catch {
-        // Silently fail
+        await api.matches.pass.mutate({ dogId: dogId ?? '', targetDogId });
+      } catch (e) {
+        logger.warn('useMatching', 'swipeLeft failed', e);
       }
       advanceCard();
     },
-    [advanceCard],
+    [advanceCard, dogId],
   );
 
   const superLike = useCallback(
-    async (dogId: string) => {
+    async (targetDogId: string) => {
       try {
-        const result = await api.post<MatchResponse>('/matches/superlike', { dogId });
-        if (result.matched) {
+        const result = await api.matches.like.mutate({
+          dogId: dogId ?? '',
+          targetDogId,
+        });
+        if (result.isMatch) {
           setNewMatch(result);
         }
-      } catch {
-        // Silently fail
+      } catch (e) {
+        logger.warn('useMatching', 'superLike failed', e);
       }
       advanceCard();
     },
-    [advanceCard],
+    [advanceCard, dogId],
   );
 
   const dismissMatch = useCallback(() => {

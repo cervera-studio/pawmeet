@@ -1,24 +1,10 @@
 import type { Server as HttpServer } from 'node:http';
-import { WebSocketServer, type WebSocket } from 'ws';
+import { WS_EVENT, type WsEvent, type WsMessage } from '@dogwalk/types';
+import { type WebSocket, WebSocketServer } from 'ws';
+import { logger } from '@dogwalk/utils';
 import { verifyAccessToken } from '../lib/jwt.js';
 
-// --- Event types ---
-
-export const WS_EVENT = {
-  NEW_MESSAGE: 'new_message',
-  MESSAGE_READ: 'message_read',
-  TYPING_START: 'typing_start',
-  TYPING_STOP: 'typing_stop',
-  ONLINE_STATUS: 'online_status',
-  ERROR: 'error',
-} as const;
-
-export type WsEvent = (typeof WS_EVENT)[keyof typeof WS_EVENT];
-
-export interface WsMessage {
-  type: WsEvent;
-  payload: Record<string, unknown>;
-}
+export { WS_EVENT, type WsEvent, type WsMessage };
 
 // --- Connection registry ---
 
@@ -116,7 +102,8 @@ export function parseWsMessage(data: string): WsMessage | null {
       return parsed as WsMessage;
     }
     return null;
-  } catch {
+  } catch (e) {
+    logger.warn('WebSocket', 'Failed to parse incoming message', e);
     return null;
   }
 }
@@ -170,7 +157,8 @@ export function setupWebSocket(server: HttpServer) {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, userId);
       });
-    } catch {
+    } catch (e) {
+      logger.warn('WebSocket', 'Authentication failed during upgrade', e);
       socket.destroy();
     }
   });
@@ -210,7 +198,8 @@ export function setupWebSocket(server: HttpServer) {
       }
     });
 
-    ws.on('error', () => {
+    ws.on('error', (e) => {
+      logger.error('WebSocket', 'Connection error', e);
       removeConnection(userId, ws);
     });
   });

@@ -1,3 +1,19 @@
+/**
+ * REST API client for admin-specific endpoints that don't have tRPC procedures yet.
+ *
+ * Currently used by:
+ * - /admin/auth/login, /admin/auth/me — admin authentication
+ * - /admin/users, /admin/users/:id — user listing and detail
+ * - /admin/users/:id/suspend, /admin/users/:id/ban, /admin/users/:id/reactivate — user moderation
+ * - /admin/moderation/photos — photo moderation (approve, reject, approve-all)
+ *
+ * When admin-specific tRPC procedures are added to the API router, migrate
+ * the corresponding calls to use `trpc` hooks from `@/lib/trpc` and remove
+ * them from this client. Once all endpoints are migrated, this file can be deleted.
+ *
+ * For tRPC-based calls (auth, dogs, users, matches, chat), use:
+ *   import { trpc } from '@/lib/trpc';
+ */
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 interface RequestOptions extends Omit<RequestInit, 'body'> {

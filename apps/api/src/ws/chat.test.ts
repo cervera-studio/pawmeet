@@ -1,6 +1,5 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
-  WS_EVENT,
   getConnections,
   getRooms,
   isUserOnline,
@@ -9,6 +8,7 @@ import {
   parseWsMessage,
   sendToRoom,
   sendToUser,
+  WS_EVENT,
 } from './chat.js';
 
 // Mock WebSocket objects

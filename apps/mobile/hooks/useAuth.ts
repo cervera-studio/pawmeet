@@ -1,14 +1,13 @@
+import { logger } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { api } from '@/lib/api';
 import { storage } from '@/lib/storage';
+import { api } from '@/lib/trpc';
 import type { AuthUser } from '@/stores/auth';
 import { useAuthStore } from '@/stores/auth';
 
-interface AuthResponse {
-  user: AuthUser;
-  accessToken: string;
-  refreshToken: string;
+function toAuthUser(user: { id: string; email: string; displayName: string; avatarUrl: string | null }): AuthUser {
+  return { id: user.id, email: user.email, displayName: user.displayName, avatarUrl: user.avatarUrl };
 }
 
 export function useAuth() {
@@ -25,10 +24,10 @@ export function useAuth() {
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const data = await api.post<AuthResponse>('/auth/login', { email, password });
+      const data = await api.auth.login.mutate({ email, password });
       await storage.setToken(data.accessToken);
       await storage.setRefreshToken(data.refreshToken);
-      storeLogin(data.user, data.accessToken, data.refreshToken);
+      storeLogin(toAuthUser(data.user), data.accessToken, data.refreshToken);
       router.replace('/(tabs)');
     },
     [storeLogin, router],
@@ -36,14 +35,14 @@ export function useAuth() {
 
   const register = useCallback(
     async (displayName: string, email: string, password: string) => {
-      const data = await api.post<AuthResponse>('/auth/register', {
+      const data = await api.auth.register.mutate({
         displayName,
         email,
         password,
       });
       await storage.setToken(data.accessToken);
       await storage.setRefreshToken(data.refreshToken);
-      storeLogin(data.user, data.accessToken, data.refreshToken);
+      storeLogin(toAuthUser(data.user), data.accessToken, data.refreshToken);
       router.replace('/(tabs)');
     },
     [storeLogin, router],
@@ -51,9 +50,10 @@ export function useAuth() {
 
   const logout = useCallback(async () => {
     try {
-      await api.post('/auth/logout', {});
-    } catch {
-      // Continue with local logout even if API call fails
+      const rt = useAuthStore.getState().refreshToken;
+      if (rt) await api.auth.logout.mutate({ refreshToken: rt });
+    } catch (e) {
+      logger.warn('useAuth', 'Server logout failed, continuing local logout', e);
     }
     await storage.clear();
     storeLogout();
@@ -71,10 +71,11 @@ export function useAuth() {
       useAuthStore.getState().setToken(savedToken);
       const savedRefreshToken = await storage.getRefreshToken();
       // Validate token by fetching user profile
-      const user = await api.get<AuthUser>('/auth/me');
-      storeLogin(user, savedToken, savedRefreshToken ?? '');
+      const { user: profile } = await api.users.getProfile.query();
+      storeLogin(toAuthUser(profile), savedToken, savedRefreshToken ?? '');
       return true;
-    } catch {
+    } catch (e) {
+      logger.warn('useAuth', 'Auth check failed, clearing session', e);
       await storage.clear();
       storeLogout();
       return false;

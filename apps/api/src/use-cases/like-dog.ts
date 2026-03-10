@@ -1,0 +1,55 @@
+import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
+import type { Match } from '@dogwalk/types';
+import { AppError, type Result, fail, succeed } from '@dogwalk/types';
+import type { DogRepository, MatchRepository } from '../ports/index.js';
+
+type Deps = {
+  dogRepo: DogRepository;
+  matchRepo: MatchRepository;
+};
+
+export function createLikeDog({ dogRepo, matchRepo }: Deps) {
+  return async (
+    userId: string,
+    dogId: string,
+    targetDogId: string,
+  ): Promise<Result<{ match?: Match; isMatch: boolean }>> => {
+    // Verify ownership
+    const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
+    if (!myDog) {
+      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+    }
+
+    // Check daily swipe limit
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dailyCount = await matchRepo.countDailySwipes(dogId, today);
+    if (dailyCount >= SWIPE_DAILY_LIMIT) {
+      return fail(
+        new AppError('SWIPE_LIMIT_REACHED', 'Limite giornaliero di swipe raggiunto', 429),
+      );
+    }
+
+    // Check if already swiped
+    const existing = await matchRepo.findSwipe(dogId, targetDogId);
+    if (existing) {
+      return fail(new AppError('ALREADY_SWIPED', 'Già votato per questo profilo', 409));
+    }
+
+    // Record the swipe
+    await matchRepo.createSwipe({ swiperDogId: dogId, swipedDogId: targetDogId, direction: 'like' });
+
+    // Check for reciprocal like
+    const reciprocal = await matchRepo.findReciprocalLike(targetDogId, dogId);
+    if (reciprocal) {
+      const match = await matchRepo.create({
+        dogAId: dogId,
+        dogBId: targetDogId,
+        compatibilityScore: 0, // will be recalculated
+      });
+      return succeed({ match, isMatch: true });
+    }
+
+    return succeed({ isMatch: false });
+  };
+}

@@ -1,0 +1,39 @@
+import type { TokenType } from '@dogwalk/db';
+
+export interface RefreshTokenRecord {
+  id: string;
+  userId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  revoked: boolean;
+  createdAt: Date;
+}
+
+export interface VerificationTokenRecord {
+  id: string;
+  userId: string;
+  tokenHash: string;
+  type: string;
+  expiresAt: Date;
+  usedAt: Date | null;
+  createdAt: Date;
+}
+
+export interface TokenRepository {
+  // Refresh tokens
+  createRefreshToken(input: { userId: string; tokenHash: string; expiresAt: Date }): Promise<RefreshTokenRecord>;
+  findRefreshToken(tokenHash: string): Promise<RefreshTokenRecord | null>;
+  revokeRefreshToken(id: string): Promise<void>;
+  revokeRefreshTokenByHash(tokenHash: string): Promise<void>;
+  revokeAllUserRefreshTokens(userId: string): Promise<void>;
+
+  // Verification tokens
+  createVerificationToken(input: {
+    userId: string;
+    tokenHash: string;
+    type: TokenType;
+    expiresAt: Date;
+  }): Promise<VerificationTokenRecord>;
+  findValidVerificationToken(tokenHash: string, type: TokenType): Promise<VerificationTokenRecord | null>;
+  markVerificationTokenUsed(id: string): Promise<void>;
+}

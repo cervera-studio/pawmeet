@@ -7,6 +7,18 @@ import { SwipeCard } from '@/components/SwipeCard';
 import { useLocation } from '@/hooks/useLocation';
 import { useMatching } from '@/hooks/useMatching';
 
+function calculateAge(birthDate: Date | string): string {
+  const birth = new Date(birthDate);
+  const now = new Date();
+  const years = now.getFullYear() - birth.getFullYear();
+  if (years < 1) {
+    const months =
+      (now.getFullYear() - birth.getFullYear()) * 12 + now.getMonth() - birth.getMonth();
+    return `${months} mesi`;
+  }
+  return `${years} ${years === 1 ? 'anno' : 'anni'}`;
+}
+
 export default function DiscoveryScreen() {
   const router = useRouter();
   const { coordinates, getCurrentLocation } = useLocation();
@@ -33,15 +45,15 @@ export default function DiscoveryScreen() {
   }, [coordinates, fetchSuggestions]);
 
   const handleSwipeRight = () => {
-    if (currentProfile) swipeRight(currentProfile.dogId);
+    if (currentProfile) swipeRight(currentProfile.dog.id);
   };
 
   const handleSwipeLeft = () => {
-    if (currentProfile) swipeLeft(currentProfile.dogId);
+    if (currentProfile) swipeLeft(currentProfile.dog.id);
   };
 
   const handleSuperLike = () => {
-    if (currentProfile) superLike(currentProfile.dogId);
+    if (currentProfile) superLike(currentProfile.dog.id);
   };
 
   return (
@@ -80,14 +92,14 @@ export default function DiscoveryScreen() {
         ) : currentProfile && hasMore ? (
           <SwipeCard
             dog={{
-              dogId: currentProfile.dogId,
-              name: currentProfile.name,
-              breed: currentProfile.breed,
-              age: currentProfile.age,
+              dogId: currentProfile.dog.id,
+              name: currentProfile.dog.name,
+              breed: currentProfile.dog.breed,
+              age: calculateAge(currentProfile.dog.birthDate),
               distanceKm: currentProfile.distanceKm,
               compatibilityScore: currentProfile.compatibilityScore,
-              ownerName: currentProfile.ownerName,
-              imageUrl: currentProfile.imageUrl,
+              ownerName: currentProfile.dog.ownerId,
+              imageUrl: null,
             }}
             onSwipeRight={handleSwipeRight}
             onSwipeLeft={handleSwipeLeft}
@@ -132,13 +144,13 @@ export default function DiscoveryScreen() {
       )}
 
       {/* Match celebration overlay */}
-      {newMatch?.matched && (
+      {newMatch?.isMatch && (
         <MatchCelebration
           onDismiss={dismissMatch}
           onChat={() => {
             dismissMatch();
-            if (newMatch.matchId) {
-              router.push(`/(tabs)/chat/${newMatch.matchId}`);
+            if (newMatch.match) {
+              router.push(`/(tabs)/chat/${newMatch.match.id}`);
             }
           }}
         />

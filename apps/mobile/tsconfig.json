@@ -2,6 +2,9 @@
   "extends": "@dogwalk/typescript-config/tsconfig.react.json",
   "compilerOptions": {
     "strict": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
     "paths": {
       "@/*": ["./*"]
     }

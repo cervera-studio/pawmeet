@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  QUEUE_NAMES,
   type EmailJobData,
+  getRedisConnection,
   type NotificationJobData,
   type PhotoModerationJobData,
-  getRedisConnection,
+  QUEUE_NAMES,
 } from './queue.js';
 
 // We only test pure functions and types — actual queue creation requires Redis

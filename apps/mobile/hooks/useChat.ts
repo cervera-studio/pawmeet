@@ -1,30 +1,20 @@
+import type { RouterOutput } from '@dogwalk/api-client';
+import type { WsMessage } from '@dogwalk/types';
+import { logger } from '@dogwalk/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { ChatMessage } from '@dogwalk/types';
-import { api } from '@/lib/api';
+import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 
 const WS_URL = process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:3000/ws';
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
-interface WsMessage {
-  type: 'message' | 'typing' | 'read' | 'online';
-  payload: unknown;
-}
-
-export interface Conversation {
-  matchId: string;
-  dogName: string;
-  ownerName: string;
-  ownerId: string;
-  lastMessage: string | null;
-  lastMessageAt: string | null;
-  unreadCount: number;
-  isOnline: boolean;
-}
+type Conversation = RouterOutput['chat']['listConversations']['conversations'][number];
+type Message = RouterOutput['chat']['getMessages']['messages'][number];
 
 export function useChat(matchId?: string) {
   const wsRef = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -44,21 +34,19 @@ export function useChat(matchId?: string) {
 
     ws.onmessage = (event) => {
       try {
-        const data: WsMessage = JSON.parse(event.data);
+        const data = JSON.parse(event.data) as WsMessage;
         switch (data.type) {
-          case 'message': {
-            const msg = data.payload as ChatMessage;
+          case 'new_message': {
+            const msg = data.payload as unknown as Message;
             if (matchId && msg.matchId === matchId) {
               setMessages((prev) => [...prev, msg]);
             }
-            // Update conversation list last message
             setConversations((prev) =>
               prev.map((c) =>
                 c.matchId === msg.matchId
                   ? {
                       ...c,
-                      lastMessage: msg.content,
-                      lastMessageAt: String(msg.createdAt),
+                      lastMessage: msg,
                       unreadCount: msg.senderId !== userId ? c.unreadCount + 1 : c.unreadCount,
                     }
                   : c,
@@ -66,29 +54,21 @@ export function useChat(matchId?: string) {
             );
             break;
           }
-          case 'typing': {
-            const { matchId: typingMatchId, isTyping: typing } = data.payload as {
-              matchId: string;
-              isTyping: boolean;
-            };
+          case 'typing_start':
+          case 'typing_stop': {
+            const typingMatchId = data.payload.matchId as string;
             if (matchId && typingMatchId === matchId) {
-              setIsTyping(typing);
+              setIsTyping(data.type === 'typing_start');
             }
             break;
           }
-          case 'online': {
-            const { userId: onlineUserId, isOnline } = data.payload as {
-              userId: string;
-              isOnline: boolean;
-            };
-            setConversations((prev) =>
-              prev.map((c) => (c.ownerId === onlineUserId ? { ...c, isOnline } : c)),
-            );
+          case 'online_status': {
+            // Online presence tracked via WS but not persisted in conversation type
             break;
           }
         }
-      } catch {
-        // Ignore malformed messages
+      } catch (e) {
+        logger.debug('useChat', 'Malformed WS message', e);
       }
     };
 
@@ -102,10 +82,10 @@ export function useChat(matchId?: string) {
   const fetchConversations = useCallback(async () => {
     setLoadingConversations(true);
     try {
-      const data = await api.get<Conversation[]>('/chat/conversations');
+      const { conversations: data } = await api.chat.listConversations.query();
       setConversations(data);
-    } catch {
-      // Silently fail
+    } catch (e) {
+      logger.warn('useChat', 'Failed to fetch conversations', e);
     } finally {
       setLoadingConversations(false);
     }
@@ -116,10 +96,10 @@ export function useChat(matchId?: string) {
     if (!matchId) return;
     setLoadingMessages(true);
     try {
-      const data = await api.get<ChatMessage[]>(`/chat/${matchId}/messages`);
+      const { messages: data } = await api.chat.getMessages.query({ matchId });
       setMessages(data);
-    } catch {
-      // Silently fail
+    } catch (e) {
+      logger.warn('useChat', 'Failed to fetch messages', e);
     } finally {
       setLoadingMessages(false);
     }
@@ -130,12 +110,12 @@ export function useChat(matchId?: string) {
     async (content: string) => {
       if (!matchId || !content.trim()) return;
       try {
-        const msg = await api.post<ChatMessage>(`/chat/${matchId}/messages`, { content });
+        const { message: msg } = await api.chat.sendMessage.mutate({ matchId, content });
         setMessages((prev) => [...prev, msg]);
         // Also send via WS for real-time
         wsRef.current?.send(JSON.stringify({ type: 'message', payload: msg }));
-      } catch {
-        // Silently fail
+      } catch (e) {
+        logger.warn('useChat', 'Failed to send message', e);
       }
     },
     [matchId],
@@ -146,7 +126,7 @@ export function useChat(matchId?: string) {
     async (imageUri: string) => {
       if (!matchId) return;
       try {
-        // Upload image first
+        // Upload image first (tRPC doesn't handle file uploads)
         const formData = new FormData();
         formData.append('file', {
           uri: imageUri,
@@ -154,27 +134,28 @@ export function useChat(matchId?: string) {
           name: 'chat-image.jpg',
         } as unknown as Blob);
 
-        const uploadResponse = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api'}/chat/${matchId}/upload`,
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: formData,
-          },
-        );
+        const uploadResponse = await fetch(`${API_URL}/api/chat/${matchId}/upload`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload failed: ${uploadResponse.status}`);
+        }
+
         const { mediaUrl } = await uploadResponse.json();
 
-        // Send message with media URL
-        const msg = await api.post<ChatMessage>(`/chat/${matchId}/messages`, {
+        // Send message with media URL via tRPC
+        const { message: msg } = await api.chat.sendMessage.mutate({
+          matchId,
           content: '',
           mediaUrl,
         });
         setMessages((prev) => [...prev, msg]);
         wsRef.current?.send(JSON.stringify({ type: 'message', payload: msg }));
-      } catch {
-        // Silently fail
+      } catch (e) {
+        logger.error('useChat', 'Failed to send image', e);
       }
     },
     [matchId, token],
@@ -186,11 +167,11 @@ export function useChat(matchId?: string) {
       if (!matchId) return;
       try {
         const content = JSON.stringify({ type: 'location', latitude, longitude, label });
-        const msg = await api.post<ChatMessage>(`/chat/${matchId}/messages`, { content });
+        const { message: msg } = await api.chat.sendMessage.mutate({ matchId, content });
         setMessages((prev) => [...prev, msg]);
         wsRef.current?.send(JSON.stringify({ type: 'message', payload: msg }));
-      } catch {
-        // Silently fail
+      } catch (e) {
+        logger.warn('useChat', 'Failed to send location', e);
       }
     },
     [matchId],
@@ -201,7 +182,7 @@ export function useChat(matchId?: string) {
     (typing: boolean) => {
       if (!matchId) return;
       wsRef.current?.send(
-        JSON.stringify({ type: 'typing', payload: { matchId, isTyping: typing } }),
+        JSON.stringify({ type: typing ? 'typing_start' : 'typing_stop', payload: { matchId } }),
       );
     },
     [matchId],
@@ -211,12 +192,12 @@ export function useChat(matchId?: string) {
   const markAsRead = useCallback(async () => {
     if (!matchId) return;
     try {
-      await api.post(`/chat/${matchId}/read`, {});
+      await api.chat.markMessagesRead.mutate({ matchId });
       setConversations((prev) =>
         prev.map((c) => (c.matchId === matchId ? { ...c, unreadCount: 0 } : c)),
       );
-    } catch {
-      // Silently fail
+    } catch (e) {
+      logger.debug('useChat', 'Failed to mark as read', e);
     }
   }, [matchId]);
 

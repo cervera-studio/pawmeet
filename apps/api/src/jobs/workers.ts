@@ -1,6 +1,6 @@
+import { createPhotoModerationWorker } from './photo-moderation.js';
 import { createEmailWorker } from './send-email.js';
 import { createNotificationWorker } from './send-notification.js';
-import { createPhotoModerationWorker } from './photo-moderation.js';
 
 /** Start all BullMQ workers. Call this once on server startup. */
 export function startWorkers() {

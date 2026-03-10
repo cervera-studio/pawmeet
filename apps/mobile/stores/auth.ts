@@ -1,11 +1,11 @@
+import type { RouterOutput } from '@dogwalk/api-client';
 import { create } from 'zustand';
 
-export interface AuthUser {
-  id: string;
-  email: string;
-  displayName: string;
-  avatarUrl: string | null;
-}
+/** Subset of user fields needed in the auth store (from getProfile output). */
+export type AuthUser = Pick<
+  RouterOutput['users']['getProfile']['user'],
+  'id' | 'email' | 'displayName' | 'avatarUrl'
+>;
 
 interface AuthState {
   user: AuthUser | null;

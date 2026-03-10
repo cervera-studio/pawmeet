@@ -1,7 +1,7 @@
 import { Worker } from 'bullmq';
 import { expo } from '../lib/push.js';
 import type { NotificationJobData } from './queue.js';
-import { QUEUE_NAMES, getRedisConnection } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 export function createNotificationWorker() {
   const worker = new Worker<NotificationJobData>(

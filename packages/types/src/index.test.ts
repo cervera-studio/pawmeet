@@ -1,6 +1,4 @@
 import type {
-  ApiError,
-  ApiResponse,
   BehaviorWithDogs,
   BehaviorWithPeople,
   ChatMessage,
@@ -26,12 +24,14 @@ function buildUser(overrides: Partial<User> = {}): User {
     id: 'usr_001',
     email: 'mario@example.com',
     displayName: 'Mario Rossi',
+    passwordHash: null,
     authProvider: 'email',
     avatarUrl: null,
     latitude: null,
     longitude: null,
     locationUpdatedAt: null,
     searchRadiusKm: 10,
+    emailVerified: false,
     isActive: true,
     createdAt: new Date('2025-01-01'),
     lastLoginAt: null,
@@ -98,7 +98,7 @@ function buildSwipe(overrides: Partial<Swipe> = {}): Swipe {
     id: 'swipe_001',
     swiperDogId: 'dog_001',
     swipedDogId: 'dog_002',
-    direction: 'right',
+    direction: 'like',
     createdAt: new Date('2025-02-01'),
     ...overrides,
   };
@@ -114,19 +114,6 @@ function buildChatMessage(overrides: Partial<ChatMessage> = {}): ChatMessage {
     status: 'sent',
     isDeleted: false,
     createdAt: new Date('2025-02-02'),
-    ...overrides,
-  };
-}
-
-function buildApiResponse<T>(data: T, meta?: ApiResponse<T>['meta']): ApiResponse<T> {
-  return { data, ...(meta ? { meta } : {}) };
-}
-
-function buildApiError(overrides: Partial<ApiError> = {}): ApiError {
-  return {
-    error: 'Not Found',
-    message: 'Resource not found',
-    statusCode: 404,
     ...overrides,
   };
 }
@@ -388,12 +375,12 @@ describe('Swipe', () => {
     expect(swipe.id).toBe('swipe_001');
     expect(swipe.swiperDogId).toBe('dog_001');
     expect(swipe.swipedDogId).toBe('dog_002');
-    expect(swipe.direction).toBe('right');
+    expect(swipe.direction).toBe('like');
     expect(swipe.createdAt).toBeInstanceOf(Date);
   });
 
   it('accepts both swipe directions', () => {
-    const directions = ['right', 'left'] satisfies Swipe['direction'][];
+    const directions = ['like', 'pass'] satisfies Swipe['direction'][];
 
     for (const direction of directions) {
       const swipe = buildSwipe({ direction });
@@ -447,55 +434,3 @@ describe('ChatMessage', () => {
   });
 });
 
-describe('ApiResponse', () => {
-  it('wraps a single user without pagination', () => {
-    const response = buildApiResponse(buildUser());
-
-    expect(response.data.id).toBe('usr_001');
-    expect(response.meta).toBeUndefined();
-  });
-
-  it('wraps a paginated list of dog profiles', () => {
-    const dogs = [buildDogProfile(), buildDogProfile({ id: 'dog_002', name: 'Luna' })];
-    const response = buildApiResponse(dogs, {
-      page: 1,
-      perPage: 20,
-      total: 2,
-      totalPages: 1,
-    });
-
-    expect(response.data).toHaveLength(2);
-    expect(response.meta?.page).toBe(1);
-    expect(response.meta?.perPage).toBe(20);
-    expect(response.meta?.total).toBe(2);
-    expect(response.meta?.totalPages).toBe(1);
-  });
-
-  it('pagination meta totalPages is consistent with total and perPage', () => {
-    const meta = { page: 2, perPage: 10, total: 25, totalPages: 3 };
-    const response = buildApiResponse([], meta);
-
-    expect(response.meta?.totalPages).toBe(Math.ceil(meta.total / meta.perPage));
-  });
-});
-
-describe('ApiError', () => {
-  it('builds a valid error with defaults', () => {
-    const error = buildApiError();
-
-    expect(error.error).toBe('Not Found');
-    expect(error.message).toBe('Resource not found');
-    expect(error.statusCode).toBe(404);
-  });
-
-  it('supports different HTTP error codes', () => {
-    const error = buildApiError({
-      error: 'Unauthorized',
-      message: 'Invalid token',
-      statusCode: 401,
-    });
-
-    expect(error.statusCode).toBe(401);
-    expect(error.error).toBe('Unauthorized');
-  });
-});

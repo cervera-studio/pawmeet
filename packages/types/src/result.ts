@@ -33,9 +33,7 @@ export class AppError extends Error {
  * }
  * ```
  */
-export type Result<T> =
-  | { success: true; data: T }
-  | { success: false; error: AppError };
+export type Result<T> = { success: true; data: T } | { success: false; error: AppError };
 
 /** Create a success Result. */
 export function succeed<T>(data: T): Result<T> {

@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./trpc": "./src/trpc/root.ts"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsup src/index.ts --format esm",
@@ -20,6 +24,7 @@
     "@dogwalk/utils": "workspace:*",
     "@dogwalk/validation": "workspace:*",
     "@hono/node-server": "^1.19.0",
+    "@hono/trpc-server": "^0.4.2",
     "@hono/zod-validator": "^0.7.0",
     "@neondatabase/serverless": "^1.0.0",
     "@trpc/server": "^11.12.0",

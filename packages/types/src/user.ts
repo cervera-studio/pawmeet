@@ -9,7 +9,11 @@ export interface User {
   longitude: number | null;
   locationUpdatedAt: Date | null;
   searchRadiusKm: number;
+  emailVerified: boolean;
   isActive: boolean;
   createdAt: Date;
   lastLoginAt: Date | null;
 }
+
+/** User data without sensitive fields (passwordHash). */
+export type SafeUser = Omit<User, 'passwordHash'>;

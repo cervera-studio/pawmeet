@@ -27,8 +27,11 @@
     "clsx": "^2.1.0",
     "tailwind-merge": "^2.5.0",
     "class-variance-authority": "^0.7.0",
+    "@dogwalk/api-client": "workspace:*",
     "@dogwalk/types": "workspace:*",
-    "@dogwalk/validation": "workspace:*"
+    "@dogwalk/validation": "workspace:*",
+    "@trpc/client": "^11.12.0",
+    "@trpc/react-query": "^11.12.0"
   },
   "devDependencies": {
     "@dogwalk/typescript-config": "workspace:*",

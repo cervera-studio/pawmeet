@@ -1,7 +1,7 @@
-import { Resend } from 'resend';
 import { Worker } from 'bullmq';
+import { Resend } from 'resend';
 import type { EmailJobData } from './queue.js';
-import { QUEUE_NAMES, getRedisConnection } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'DogWalk <noreply@dogwalk.app>';
 

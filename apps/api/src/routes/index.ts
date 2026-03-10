@@ -1,15 +1,16 @@
 import { Hono } from 'hono';
-import { authRoutes } from './auth.js';
-import { chatRoutes } from './chat.js';
-import { dogRoutes } from './dogs.js';
-import { matchRoutes } from './matches.js';
-import { userRoutes } from './users.js';
+import { authDeps, chatDeps, dogDeps, matchDeps, userDeps } from '../container.js';
+import { createAuthRoutes } from './auth.js';
+import { createChatRoutes } from './chat.js';
+import { createDogRoutes } from './dogs.js';
+import { createMatchRoutes } from './matches.js';
+import { createUserRoutes } from './users.js';
 
 export const routes = new Hono()
-  .route('/auth', authRoutes)
-  .route('/dogs', dogRoutes)
-  .route('/matches', matchRoutes)
-  .route('/chat', chatRoutes)
-  .route('/users', userRoutes);
+  .route('/auth', createAuthRoutes(authDeps))
+  .route('/dogs', createDogRoutes(dogDeps))
+  .route('/matches', createMatchRoutes(matchDeps))
+  .route('/chat', createChatRoutes(chatDeps))
+  .route('/users', createUserRoutes(userDeps));
 
 export type AppType = typeof routes;

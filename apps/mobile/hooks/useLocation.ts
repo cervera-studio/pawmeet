@@ -1,7 +1,8 @@
+import { logger } from '@dogwalk/utils';
 import * as Location from 'expo-location';
 import { useCallback } from 'react';
 import { Alert, Linking, Platform } from 'react-native';
-import { api } from '@/lib/api';
+import { api } from '@/lib/trpc';
 import { useLocationStore } from '@/stores/location';
 
 export function useLocation() {
@@ -72,12 +73,12 @@ export function useLocation() {
       setCoordinates(coords);
 
       // Send location to API in background
-      api
-        .patch('/users/me/location', {
+      api.users.updateLocation
+        .mutate({
           latitude: coords.latitude,
           longitude: coords.longitude,
         })
-        .catch(() => {});
+        .catch((e) => logger.warn('useLocation', 'Failed to sync location to server', e));
 
       return coords;
     } catch (_err) {

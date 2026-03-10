@@ -1,10 +1,12 @@
+import type { RouterOutput } from '@dogwalk/api-client';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import type { Conversation } from '@/hooks/useChat';
 import { useChat } from '@/hooks/useChat';
+
+type Conversation = RouterOutput['chat']['listConversations']['conversations'][number];
 
 function ChatRow({ conversation, onPress }: { conversation: Conversation; onPress: () => void }) {
   return (
@@ -12,12 +14,9 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
       onPress={onPress}
       className="flex-row items-center border-b border-gray-50 px-4 py-3"
     >
-      {/* Avatar with online indicator */}
+      {/* Avatar */}
       <View className="relative">
-        <Avatar name={conversation.dogName} size="md" />
-        {conversation.isOnline && (
-          <View className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
-        )}
+        <Avatar name={conversation.otherDogName ?? 'Cane'} size="md" />
       </View>
 
       <View className="ml-3 flex-1">
@@ -29,9 +28,11 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
                 : 'font-semibold text-gray-900'
             }`}
           >
-            {conversation.dogName} & {conversation.ownerName}
+            {conversation.otherDogName ?? 'Cane'} & {conversation.otherUser?.displayName ?? 'Utente'}
           </Text>
-          <Text className="text-xs text-gray-400">{conversation.lastMessageAt ?? ''}</Text>
+          <Text className="text-xs text-gray-400">
+            {conversation.lastMessage ? String(conversation.lastMessage.createdAt) : ''}
+          </Text>
         </View>
         <View className="flex-row items-center justify-between">
           <Text
@@ -40,7 +41,7 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
             }`}
             numberOfLines={1}
           >
-            {conversation.lastMessage ?? 'Nessun messaggio'}
+            {conversation.lastMessage?.content ?? 'Nessun messaggio'}
           </Text>
           {conversation.unreadCount > 0 && (
             <View className="ml-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5">

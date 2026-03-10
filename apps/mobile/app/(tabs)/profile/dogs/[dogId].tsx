@@ -1,11 +1,14 @@
-import type { DogProfile } from '@dogwalk/types';
+import type { RouterOutput } from '@dogwalk/api-client';
+import { logger } from '@dogwalk/utils';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+
+type Dog = RouterOutput['dogs']['get']['dog'];
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { api } from '@/lib/api';
+import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
 
 const LABEL_MAP: Record<string, string> = {
@@ -75,32 +78,35 @@ export default function DogDetailScreen() {
   const storeDog = useDogsStore((s) => s.dogs.find((d) => d.id === params.dogId));
   const updateDogInStore = useDogsStore((s) => s.updateDog);
   const removeDogFromStore = useDogsStore((s) => s.removeDog);
-  const [dog, setDog] = useState<DogProfile | null>(storeDog ?? null);
+  const [dog, setDog] = useState<Dog | null>(storeDog ?? null);
   const [loading, setLoading] = useState(!storeDog);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!storeDog && params.dogId) {
-      api
-        .get<DogProfile>(`/dogs/${params.dogId}`)
-        .then((d) => {
+      api.dogs.get
+        .query({ id: params.dogId })
+        .then(({ dog: d }) => {
           setDog(d);
           setLoading(false);
         })
-        .catch(() => setLoading(false));
+        .catch((e) => { logger.warn('DogDetail', 'Failed to fetch dog', e); setLoading(false); });
     }
   }, [storeDog, params.dogId]);
 
   const handleToggleActive = async () => {
     if (!dog) return;
     try {
-      const updated = await api.patch<DogProfile>(`/dogs/${dog.id}`, {
-        isActive: !dog.isActive,
-      });
-      setDog(updated);
-      updateDogInStore(dog.id, { isActive: updated.isActive });
-    } catch {
-      // Silently fail
+      // Toggle active status via soft delete/reactivate
+      if (dog.isActive) {
+        await api.dogs.delete.mutate({ id: dog.id });
+        setDog({ ...dog, isActive: false });
+        updateDogInStore(dog.id, { isActive: false });
+        return;
+      }
+      // Reactivation not yet supported via tRPC
+    } catch (e) {
+      logger.warn('DogDetail', 'Failed to toggle active status', e);
     }
   };
 
@@ -108,10 +114,11 @@ export default function DogDetailScreen() {
     if (!dog) return;
     setDeleting(true);
     try {
-      await api.delete(`/dogs/${dog.id}`);
+      await api.dogs.delete.mutate({ id: dog.id });
       removeDogFromStore(dog.id);
       router.back();
-    } catch {
+    } catch (e) {
+      logger.warn('DogDetail', 'Failed to delete dog', e);
       setDeleting(false);
     }
   };

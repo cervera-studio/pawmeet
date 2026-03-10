@@ -1,4 +1,3 @@
-import type { DogProfile } from '@dogwalk/types';
 import { createDogSchema } from '@dogwalk/validation';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -6,7 +5,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { api } from '@/lib/api';
+import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
 
 // Label maps for Italian UI
@@ -280,7 +279,7 @@ export default function NewDogScreen() {
     setLoading(true);
     setApiError('');
     try {
-      const dog = await api.post<DogProfile>('/dogs', result.data);
+      const { dog } = await api.dogs.create.mutate(result.data);
       addDog(dog);
       router.back();
     } catch (e) {

@@ -3,10 +3,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import MapView, { Circle, type MapMarker, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { RouterOutput } from '@dogwalk/api-client';
 import { Avatar } from '@/components/ui/Avatar';
 import { useLocation } from '@/hooks/useLocation';
-import type { NearbyUser } from '@/hooks/useNearbyUsers';
 import { useNearbyUsers } from '@/hooks/useNearbyUsers';
+
+type NearbyUser = RouterOutput['users']['findNearby']['users'][number];
 
 function UserPreviewCard({
   user,

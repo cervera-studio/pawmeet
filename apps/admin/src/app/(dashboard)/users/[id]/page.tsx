@@ -6,8 +6,8 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { api } from '@/lib/api';
 import { usePermission } from '@/hooks/use-permission';
+import { api } from '@/lib/api';
 
 interface UserDetail {
   id: string;
@@ -28,7 +28,10 @@ interface UserDetail {
   matchesCount: number;
 }
 
-const STATUS_MAP: Record<string, { label: string; variant: 'success' | 'warning' | 'destructive' }> = {
+const STATUS_MAP: Record<
+  string,
+  { label: string; variant: 'success' | 'warning' | 'destructive' }
+> = {
   active: { label: 'Attivo', variant: 'success' },
   suspended: { label: 'Sospeso', variant: 'warning' },
   banned: { label: 'Bannato', variant: 'destructive' },
@@ -90,7 +93,10 @@ export default function UserDetailPage() {
     );
   }
 
-  const statusInfo = STATUS_MAP[user.status] ?? { label: 'Sconosciuto', variant: 'outline' as const };
+  const statusInfo = STATUS_MAP[user.status] ?? {
+    label: 'Sconosciuto',
+    variant: 'outline' as const,
+  };
 
   return (
     <div className="space-y-6">

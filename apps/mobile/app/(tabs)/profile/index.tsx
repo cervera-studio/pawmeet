@@ -1,4 +1,4 @@
-import type { DogProfile } from '@dogwalk/types';
+import { logger } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogProfileCard } from '@/components/DogProfileCard';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/lib/api';
+import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
 
 function calculateAge(birthDate: Date | string): string {
@@ -28,10 +28,10 @@ export default function ProfileScreen() {
   const setDogs = useDogsStore((s) => s.setDogs);
 
   useEffect(() => {
-    api
-      .get<DogProfile[]>('/dogs/mine')
-      .then(setDogs)
-      .catch(() => {});
+    api.dogs.list
+      .query()
+      .then(({ dogs: data }) => setDogs(data))
+      .catch((e) => logger.warn('ProfileScreen', 'Failed to fetch dogs', e));
   }, [setDogs]);
 
   return (

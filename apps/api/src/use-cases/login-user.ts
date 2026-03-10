@@ -1,0 +1,73 @@
+import type { Result, User } from '@dogwalk/types';
+import { AppError, fail, succeed } from '@dogwalk/types';
+import type { AuthService } from '../ports/auth-service.js';
+import type { TokenRepository } from '../ports/token-repository.js';
+import type { UserRepository } from '../ports/user-repository.js';
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+type SafeUser = Omit<User, 'passwordHash'>;
+
+export interface LoginOutput {
+  user: SafeUser;
+  accessToken: string;
+  refreshToken: string;
+}
+
+interface Deps {
+  userRepo: UserRepository;
+  tokenRepo: TokenRepository;
+  authService: AuthService;
+}
+
+function sanitizeUser(user: User): SafeUser {
+  const { passwordHash: _, ...safeUser } = user;
+  return safeUser;
+}
+
+export function createLoginUser(deps: Deps) {
+  return async (input: LoginInput): Promise<Result<LoginOutput>> => {
+    const { userRepo, tokenRepo, authService } = deps;
+    const { email, password } = input;
+
+    // Find user by email
+    const user = await userRepo.findByEmail(email);
+    if (!user || !user.passwordHash) {
+      return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Credenziali non valide', 401));
+    }
+
+    // Verify password
+    const valid = await authService.verifyPassword(password, user.passwordHash);
+    if (!valid) {
+      return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Credenziali non valide', 401));
+    }
+
+    // Check if account is active
+    if (!user.isActive) {
+      return fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disattivato', 403));
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = await authService.generateTokenPair(user.id);
+
+    // Store refresh token hash
+    const tokenHash = await authService.hashRefreshToken(refreshToken);
+    await tokenRepo.createRefreshToken({
+      userId: user.id,
+      tokenHash,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+
+    // Update last login
+    await userRepo.update(user.id, { lastLoginAt: new Date() });
+
+    return succeed({
+      user: sanitizeUser(user),
+      accessToken,
+      refreshToken,
+    });
+  };
+}

@@ -1,0 +1,67 @@
+import { MAX_SEARCH_RADIUS_KM, MIN_SEARCH_RADIUS_KM } from '@dogwalk/config';
+import { z } from 'zod';
+import type { userDeps } from '../../container.js';
+import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
+import { protectedProcedure, router, unwrapResult } from '../trpc.js';
+
+const updateLocationSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+});
+
+const updatePreferencesSchema = z.object({
+  searchRadiusKm: z.number().min(MIN_SEARCH_RADIUS_KM).max(MAX_SEARCH_RADIUS_KM),
+});
+
+const nearbySchema = z.object({
+  radiusKm: z.number().min(MIN_SEARCH_RADIUS_KM).max(MAX_SEARCH_RADIUS_KM).optional(),
+  limit: z.number().int().min(1).max(50).optional(),
+  offset: z.number().int().min(0).optional(),
+});
+
+const uploadAvatarSchema = z.object({
+  contentType: z.enum(ALLOWED_IMAGE_TYPES as unknown as [string, ...string[]]),
+  fileSize: z.number().int().min(1).max(MAX_FILE_SIZE),
+});
+
+const confirmAvatarSchema = z.object({
+  key: z.string().min(1),
+});
+
+export function createUsersRouter(deps: typeof userDeps) {
+  return router({
+    getProfile: protectedProcedure
+      .query(async ({ ctx }) => unwrapResult(await deps.getProfile(ctx.userId))),
+
+    updateLocation: protectedProcedure
+      .input(updateLocationSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.updateLocation(ctx.userId, input.latitude, input.longitude)),
+      ),
+
+    updatePreferences: protectedProcedure
+      .input(updatePreferencesSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.updatePreferences(ctx.userId, input.searchRadiusKm)),
+      ),
+
+    findNearby: protectedProcedure
+      .input(nearbySchema)
+      .query(async ({ ctx, input }) => unwrapResult(await deps.findNearby(ctx.userId, input))),
+
+    uploadAvatarUrl: protectedProcedure
+      .input(uploadAvatarSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.uploadAvatarUrl(ctx.userId, input.contentType)),
+      ),
+
+    confirmAvatar: protectedProcedure
+      .input(confirmAvatarSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.confirmAvatar(ctx.userId, input.key)),
+      ),
+
+    deleteAvatar: protectedProcedure
+      .mutation(async ({ ctx }) => unwrapResult(await deps.deleteAvatar(ctx.userId))),
+  });
+}

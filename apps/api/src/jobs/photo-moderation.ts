@@ -3,7 +3,7 @@ import { Worker } from 'bullmq';
 import { eq } from 'drizzle-orm';
 import { db } from '../lib/db.js';
 import type { PhotoModerationJobData } from './queue.js';
-import { QUEUE_NAMES, enqueueNotification, getRedisConnection } from './queue.js';
+import { enqueueNotification, getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 /** Stub: will be replaced with actual moderation service integration */
 async function moderatePhoto(_url: string): Promise<'approved' | 'rejected'> {

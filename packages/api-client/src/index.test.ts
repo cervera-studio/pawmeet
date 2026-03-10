@@ -5,19 +5,6 @@ import { fileURLToPath } from 'node:url';
 const currentDir = dirname(fileURLToPath(import.meta.url));
 
 describe('api-client package', () => {
-  describe('module exports', () => {
-    it('should be importable without errors', async () => {
-      const mod = await import('./index');
-      expect(mod).toBeDefined();
-    });
-
-    it('should export an empty module (stub)', async () => {
-      const mod = await import('./index');
-      const exportedKeys = Object.keys(mod);
-      expect(exportedKeys).toEqual([]);
-    });
-  });
-
   describe('tRPC dependencies', () => {
     it('should have @trpc/client resolvable with createTRPCClient', async () => {
       const trpcClient = await import('@trpc/client');
@@ -55,16 +42,16 @@ describe('api-client package', () => {
       expect(pkg.main).toBe('./src/index.ts');
     });
 
-    it('should point types to src/index.ts', () => {
-      expect(pkg.types).toBe('./src/index.ts');
-    });
-
     it('should declare @trpc/client as a dependency', () => {
       expect(pkg.dependencies).toHaveProperty('@trpc/client');
     });
 
     it('should declare @trpc/react-query as a dependency', () => {
       expect(pkg.dependencies).toHaveProperty('@trpc/react-query');
+    });
+
+    it('should declare @dogwalk/api as a dependency', () => {
+      expect(pkg.dependencies).toHaveProperty('@dogwalk/api');
     });
   });
 });

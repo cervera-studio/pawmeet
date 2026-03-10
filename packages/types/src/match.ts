@@ -11,6 +11,6 @@ export interface Swipe {
   id: string;
   swiperDogId: string;
   swipedDogId: string;
-  direction: 'right' | 'left';
+  direction: 'like' | 'pass';
   createdAt: Date;
 }

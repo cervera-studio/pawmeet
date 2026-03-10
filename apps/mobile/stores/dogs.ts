@@ -1,13 +1,16 @@
-import type { DogPhoto, DogProfile } from '@dogwalk/types';
+import type { RouterOutput } from '@dogwalk/api-client';
 import { create } from 'zustand';
 
+type Dog = RouterOutput['dogs']['list']['dogs'][number];
+type DogPhoto = RouterOutput['dogs']['uploadPhotoUrl'];
+
 interface DogsState {
-  dogs: DogProfile[];
+  dogs: Dog[];
   photos: Record<string, DogPhoto[]>;
   selectedDogId: string | null;
-  setDogs: (dogs: DogProfile[]) => void;
-  addDog: (dog: DogProfile) => void;
-  updateDog: (id: string, updates: Partial<DogProfile>) => void;
+  setDogs: (dogs: Dog[]) => void;
+  addDog: (dog: Dog) => void;
+  updateDog: (id: string, updates: Partial<Dog>) => void;
   removeDog: (id: string) => void;
   setSelectedDog: (id: string | null) => void;
   setPhotos: (dogId: string, photos: DogPhoto[]) => void;

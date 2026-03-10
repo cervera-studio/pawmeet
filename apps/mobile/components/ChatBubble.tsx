@@ -1,5 +1,5 @@
-import { Image, Linking, Pressable, Text, View } from 'react-native';
 import type { MessageStatus } from '@dogwalk/types';
+import { Image, Linking, Pressable, Text, View } from 'react-native';
 
 interface LocationData {
   type: 'location';

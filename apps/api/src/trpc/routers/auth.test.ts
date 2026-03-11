@@ -335,7 +335,11 @@ describe('auth router', () => {
       const caller = createCaller(deps);
 
       await expect(
-        caller.auth.resetPassword({ email: 'test@example.com', code: '12345678', password: 'weak' }),
+        caller.auth.resetPassword({
+          email: 'test@example.com',
+          code: '12345678',
+          password: 'weak',
+        }),
       ).rejects.toThrow(TRPCError);
       expect(deps.resetPassword).not.toHaveBeenCalled();
     });

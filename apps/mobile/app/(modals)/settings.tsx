@@ -1,16 +1,81 @@
+import { useState } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { ConsentModal } from '@/components/ConsentModal';
+import { useConsentStore } from '@/stores/consent';
 import { useSettingsViewModel } from './settings.view-model';
 
 export default function SettingsModal() {
   const vm = useSettingsViewModel();
+  const consents = useConsentStore((s) => s.consents);
+  const setConsent = useConsentStore((s) => s.setConsent);
+  const [showConsentModal, setShowConsentModal] = useState(false);
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerClassName="px-6 py-4">
       <Text className="mb-6 text-2xl font-bold text-gray-900">Impostazioni</Text>
 
       <View className="gap-1">
-        {/* Notification settings section */}
+        {/* Privacy & Consent section */}
         <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-400">
+          Privacy e consensi
+        </Text>
+
+        <View className="flex-row items-center justify-between py-4">
+          <View className="flex-1 pr-4">
+            <Text className="text-base text-gray-700">Analisi di utilizzo</Text>
+            <Text className="text-xs text-gray-400">Dati anonimi per migliorare l'app</Text>
+          </View>
+          <Switch
+            value={consents.analytics}
+            onValueChange={(v) => setConsent('analytics', v)}
+            trackColor={{ true: '#065F46' }}
+          />
+        </View>
+
+        <View className="flex-row items-center justify-between py-4">
+          <View className="flex-1 pr-4">
+            <Text className="text-base text-gray-700">Esperimenti A/B</Text>
+            <Text className="text-xs text-gray-400">Partecipa a test comparativi</Text>
+          </View>
+          <Switch
+            value={consents.abTesting}
+            onValueChange={(v) => setConsent('abTesting', v)}
+            trackColor={{ true: '#065F46' }}
+          />
+        </View>
+
+        <View className="flex-row items-center justify-between py-4">
+          <View className="flex-1 pr-4">
+            <Text className="text-base text-gray-700">Segnalazione errori</Text>
+            <Text className="text-xs text-gray-400">
+              Report dettagliati (sempre anonimi senza consenso)
+            </Text>
+          </View>
+          <Switch
+            value={consents.errorTracking}
+            onValueChange={(v) => setConsent('errorTracking', v)}
+            trackColor={{ true: '#065F46' }}
+          />
+        </View>
+
+        <View className="flex-row items-center justify-between py-4">
+          <View className="flex-1 pr-4">
+            <Text className="text-base text-gray-700">Comunicazioni marketing</Text>
+            <Text className="text-xs text-gray-400">Novità, eventi e promozioni via email</Text>
+          </View>
+          <Switch
+            value={consents.marketing}
+            onValueChange={(v) => setConsent('marketing', v)}
+            trackColor={{ true: '#065F46' }}
+          />
+        </View>
+
+        <Pressable onPress={() => setShowConsentModal(true)} className="py-2">
+          <Text className="text-sm text-primary underline">Gestisci tutti i consensi</Text>
+        </Pressable>
+
+        {/* Notification settings section */}
+        <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
           Notifiche
         </Text>
 
@@ -115,6 +180,8 @@ export default function SettingsModal() {
           <Text className="text-base font-medium text-red-500">Elimina account</Text>
         </Pressable>
       </View>
+
+      <ConsentModal visible={showConsentModal} onDismiss={() => setShowConsentModal(false)} />
     </ScrollView>
   );
 }

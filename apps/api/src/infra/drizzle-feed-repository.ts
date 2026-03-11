@@ -6,9 +6,18 @@ import {
   postLikes,
   postMedia,
   posts,
+  postTags,
   users,
 } from '@dogwalk/db';
-import type { FeedItem, Post, PostComment, PostLike, PostMedia } from '@dogwalk/types';
+import type {
+  FeedItem,
+  Post,
+  PostComment,
+  PostLike,
+  PostMedia,
+  PostTag,
+  ResolvedPostTag,
+} from '@dogwalk/types';
 import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
@@ -64,6 +73,7 @@ export class DrizzleFeedRepository implements FeedRepository {
 
     const media = await this.findMediaByPost(id);
     const liked = await this.hasLiked(id, currentUserId);
+    const tags = await this.getResolvedTags(id);
 
     return {
       ...(row.post as Post),
@@ -73,6 +83,7 @@ export class DrizzleFeedRepository implements FeedRepository {
         displayName: row.displayName,
         avatarUrl: row.avatarUrl,
       },
+      tags,
       isLikedByMe: liked,
     };
   }
@@ -164,6 +175,8 @@ export class DrizzleFeedRepository implements FeedRepository {
       mediaByPost.set(m.postId, list);
     }
 
+    const tagsByPost = await this.getResolvedTagsForPosts(postIds);
+
     const items: FeedItem[] = pageRows.map((row) => ({
       ...(row.post as Post),
       media: (mediaByPost.get(row.post.id) ?? []).sort((a, b) => a.position - b.position),
@@ -172,6 +185,7 @@ export class DrizzleFeedRepository implements FeedRepository {
         displayName: row.displayName,
         avatarUrl: row.avatarUrl,
       },
+      tags: tagsByPost.get(row.post.id) ?? [],
       isLikedByMe: likedPostIds.has(row.post.id),
     }));
 
@@ -246,6 +260,8 @@ export class DrizzleFeedRepository implements FeedRepository {
       mediaByPost.set(m.postId, list);
     }
 
+    const tagsByPost = await this.getResolvedTagsForPosts(postIds);
+
     const items: FeedItem[] = pageRows.map((row) => ({
       ...(row.post as Post),
       media: (mediaByPost.get(row.post.id) ?? []).sort((a, b) => a.position - b.position),
@@ -254,6 +270,7 @@ export class DrizzleFeedRepository implements FeedRepository {
         displayName: row.displayName,
         avatarUrl: row.avatarUrl,
       },
+      tags: tagsByPost.get(row.post.id) ?? [],
       isLikedByMe: likedPostIds.has(row.post.id),
     }));
 
@@ -406,6 +423,88 @@ export class DrizzleFeedRepository implements FeedRepository {
       hasMore && lastRow ? encodeCursor(lastRow.comment.createdAt, lastRow.comment.id) : null;
 
     return { comments, nextCursor };
+  }
+
+  async addTags(
+    postId: string,
+    tags: { taggedUserId?: string | null; taggedDogId?: string | null }[],
+  ): Promise<PostTag[]> {
+    const values = tags.map((t) => ({
+      postId,
+      taggedUserId: t.taggedUserId ?? null,
+      taggedDogId: t.taggedDogId ?? null,
+    }));
+    const rows = await this.db.insert(postTags).values(values).returning();
+    return rows as PostTag[];
+  }
+
+  async removeTags(tagIds: string[]): Promise<void> {
+    if (tagIds.length === 0) return;
+    await this.db.delete(postTags).where(inArray(postTags.id, tagIds));
+  }
+
+  async getResolvedTags(postId: string): Promise<ResolvedPostTag[]> {
+    const rows = await this.db
+      .select({
+        id: postTags.id,
+        taggedUserId: postTags.taggedUserId,
+        taggedDogId: postTags.taggedDogId,
+        userName: users.displayName,
+        userAvatar: users.avatarUrl,
+        dogName: dogProfiles.name,
+      })
+      .from(postTags)
+      .leftJoin(users, eq(postTags.taggedUserId, users.id))
+      .leftJoin(dogProfiles, eq(postTags.taggedDogId, dogProfiles.id))
+      .where(eq(postTags.postId, postId));
+
+    return rows.map((r) => ({
+      id: r.id,
+      taggedUser: r.taggedUserId
+        ? { id: r.taggedUserId, displayName: r.userName ?? '', avatarUrl: r.userAvatar }
+        : null,
+      taggedDog: r.taggedDogId ? { id: r.taggedDogId, name: r.dogName ?? '' } : null,
+    }));
+  }
+
+  async findTagById(id: string): Promise<PostTag | null> {
+    const [row] = await this.db.select().from(postTags).where(eq(postTags.id, id));
+    return (row as PostTag | undefined) ?? null;
+  }
+
+  private async getResolvedTagsForPosts(
+    postIds: string[],
+  ): Promise<Map<string, ResolvedPostTag[]>> {
+    if (postIds.length === 0) return new Map();
+
+    const rows = await this.db
+      .select({
+        id: postTags.id,
+        postId: postTags.postId,
+        taggedUserId: postTags.taggedUserId,
+        taggedDogId: postTags.taggedDogId,
+        userName: users.displayName,
+        userAvatar: users.avatarUrl,
+        dogName: dogProfiles.name,
+      })
+      .from(postTags)
+      .leftJoin(users, eq(postTags.taggedUserId, users.id))
+      .leftJoin(dogProfiles, eq(postTags.taggedDogId, dogProfiles.id))
+      .where(inArray(postTags.postId, postIds));
+
+    const tagsByPost = new Map<string, ResolvedPostTag[]>();
+    for (const r of rows) {
+      const list = tagsByPost.get(r.postId) ?? [];
+      list.push({
+        id: r.id,
+        taggedUser: r.taggedUserId
+          ? { id: r.taggedUserId, displayName: r.userName ?? '', avatarUrl: r.userAvatar }
+          : null,
+        taggedDog: r.taggedDogId ? { id: r.taggedDogId, name: r.dogName ?? '' } : null,
+      });
+      tagsByPost.set(r.postId, list);
+    }
+    return tagsByPost;
   }
 
   private async getConnectedUserIds(userId: string): Promise<string[]> {

@@ -1,6 +1,13 @@
+import { createHmac } from 'node:crypto';
 import { logger } from '@dogwalk/utils';
 import { Statsig, StatsigUser } from '@statsig/statsig-node-core';
 import type { ExperimentService } from '../ports/experiment-service.js';
+
+/** One-way hash of userId to prevent sending raw UUIDs to third-party services */
+function pseudonymizeUserId(userId: string): string {
+  const salt = process.env.ANALYTICS_HASH_SALT ?? 'dogwalk-default-salt';
+  return createHmac('sha256', salt).update(userId).digest('hex').slice(0, 32);
+}
 
 export class StatsigExperimentService implements ExperimentService {
   private client: Statsig;
@@ -19,7 +26,7 @@ export class StatsigExperimentService implements ExperimentService {
   }
 
   private buildUser(userId: string): StatsigUser {
-    return new StatsigUser({ userID: userId });
+    return new StatsigUser({ userID: pseudonymizeUserId(userId) });
   }
 
   checkGate(userId: string, gateName: string): boolean {

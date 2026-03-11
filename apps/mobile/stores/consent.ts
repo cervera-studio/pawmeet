@@ -1,0 +1,42 @@
+import type { ConsentState } from '@dogwalk/types';
+import { DEFAULT_CONSENT_STATE } from '@dogwalk/types';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
+import { mmkvStorage } from '@/lib/storage';
+
+interface ConsentStoreState {
+  consents: ConsentState;
+  hasSeenConsentModal: boolean;
+  setConsent: (key: keyof ConsentState, value: boolean) => void;
+  setAllConsents: (consents: ConsentState) => void;
+  markConsentModalSeen: () => void;
+  resetConsents: () => void;
+}
+
+export const useConsentStore = create<ConsentStoreState>()(
+  persist(
+    (set) => ({
+      consents: DEFAULT_CONSENT_STATE,
+      hasSeenConsentModal: false,
+
+      setConsent: (key, value) =>
+        set((state) => ({
+          consents: { ...state.consents, [key]: value },
+        })),
+
+      setAllConsents: (consents) => set({ consents }),
+
+      markConsentModalSeen: () => set({ hasSeenConsentModal: true }),
+
+      resetConsents: () =>
+        set({
+          consents: DEFAULT_CONSENT_STATE,
+          hasSeenConsentModal: false,
+        }),
+    }),
+    {
+      name: 'dogwalk-consent',
+      storage: createJSONStorage(() => mmkvStorage),
+    },
+  ),
+);

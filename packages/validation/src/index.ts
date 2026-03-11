@@ -1,5 +1,6 @@
 export * from './auth';
 export * from './chat';
+export * from './consent';
 export * from './dog';
 export * from './feed';
 export * from './feedback';

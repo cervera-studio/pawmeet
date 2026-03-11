@@ -72,7 +72,7 @@ export function buildUser(overrides: Partial<User> = {}): User {
     searchRadiusKm: 50,
     emailVerified: true,
     pushToken: null,
-    notificationPrefs: { matches: true, messages: true, reminders: true },
+    notificationPrefs: { matches: true, messages: true, reminders: true, feed: true },
     isActive: true,
     createdAt: new Date('2026-01-01'),
     lastLoginAt: null,
@@ -693,6 +693,10 @@ export function buildFeedRepo(overrides: Partial<FeedRepository> = {}): FeedRepo
     findCommentById: vi.fn().mockResolvedValue(null),
     softDeleteComment: vi.fn().mockResolvedValue(undefined),
     getComments: vi.fn().mockResolvedValue({ comments: [], nextCursor: null }),
+    addTags: vi.fn().mockResolvedValue([]),
+    removeTags: vi.fn().mockResolvedValue(undefined),
+    getResolvedTags: vi.fn().mockResolvedValue([]),
+    findTagById: vi.fn().mockResolvedValue(null),
     ...overrides,
   };
 }

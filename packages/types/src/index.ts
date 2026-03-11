@@ -1,3 +1,4 @@
+export * from './analytics';
 export * from './badge';
 export * from './chat';
 export * from './dog';

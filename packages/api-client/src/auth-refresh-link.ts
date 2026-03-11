@@ -1,6 +1,6 @@
 import type { AppRouter } from '@dogwalk/api/trpc';
-import { TRPCClientError } from '@trpc/client';
 import type { TRPCLink } from '@trpc/client';
+import { TRPCClientError } from '@trpc/client';
 import { observable } from '@trpc/server/observable';
 
 export interface AuthRefreshCallbacks {

@@ -1,11 +1,11 @@
 import type { AppRouter } from '@dogwalk/api/trpc';
-import { type TRPCLink, createTRPCClient, httpBatchLink } from '@trpc/client';
+import { createTRPCClient, httpBatchLink, type TRPCLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 export type { AppRouter };
-export { createAuthRefreshLink } from './auth-refresh-link.js';
 export type { AuthRefreshCallbacks } from './auth-refresh-link.js';
+export { createAuthRefreshLink } from './auth-refresh-link.js';
 
 /** Inferred output types from every tRPC procedure — use instead of local types. */
 export type RouterOutput = inferRouterOutputs<AppRouter>;

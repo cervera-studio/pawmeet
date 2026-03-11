@@ -1,6 +1,6 @@
 import { MAX_SEARCH_RADIUS_KM, MIN_SEARCH_RADIUS_KM } from '@dogwalk/config';
 import { z } from 'zod';
-import { dateOfBirthSchema } from './auth.js';
+import { dateOfBirthSchema } from './auth';
 
 export const updateUserProfileSchema = z.object({
   displayName: z.string().min(2).max(50).optional(),

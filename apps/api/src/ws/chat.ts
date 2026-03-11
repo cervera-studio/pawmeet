@@ -37,7 +37,9 @@ export function setupWebSocket(server: ServerType) {
     broadcastOnlineStatus(userId, true);
 
     ws.on('message', (rawData) => {
-      handleMessage(userId, ws, rawData.toString());
+      handleMessage(userId, ws, rawData.toString()).catch((err) => {
+        logger.error('WebSocket', 'Message handler error', err);
+      });
     });
 
     ws.on('close', () => {

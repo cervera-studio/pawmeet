@@ -1,5 +1,6 @@
 import type { Result } from '@dogwalk/types';
 import { succeed } from '@dogwalk/types';
+import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
 
@@ -19,6 +20,8 @@ export function createLogoutUser(deps: Deps) {
     // Revoke the refresh token
     const tokenHash = await authService.hashRefreshToken(refreshToken);
     await tokenRepo.revokeRefreshTokenByHash(tokenHash);
+
+    logSecurityEvent({ event: SECURITY_EVENT.Logout });
 
     return succeed({ message: 'Logout effettuato' });
   };

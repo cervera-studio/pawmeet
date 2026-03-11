@@ -1,6 +1,7 @@
 import type { Result } from '@dogwalk/types';
 import { AppError, fail, succeed } from '@dogwalk/types';
 import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
+import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
@@ -30,17 +31,29 @@ export function createLoginUser(deps: Deps) {
     // Find user by email
     const user = await userRepo.findByEmail(email);
     if (!user || !user.passwordHash) {
+      logSecurityEvent({
+        event: SECURITY_EVENT.LoginFailed,
+        email,
+        metadata: { reason: 'user_not_found' },
+      });
       return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Credenziali non valide', 401));
     }
 
     // Verify password
     const valid = await authService.verifyPassword(password, user.passwordHash);
     if (!valid) {
+      logSecurityEvent({ event: SECURITY_EVENT.LoginFailed, userId: user.id, email });
       return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Credenziali non valide', 401));
     }
 
     // Check if account is active
     if (!user.isActive) {
+      logSecurityEvent({
+        event: SECURITY_EVENT.LoginFailed,
+        userId: user.id,
+        email,
+        metadata: { reason: 'account_disabled' },
+      });
       return fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disattivato', 403));
     }
 
@@ -57,6 +70,8 @@ export function createLoginUser(deps: Deps) {
 
     // Update last login
     await userRepo.update(user.id, { lastLoginAt: new Date() });
+
+    logSecurityEvent({ event: SECURITY_EVENT.LoginSuccess, userId: user.id, email });
 
     return succeed({
       user: sanitizeUser(user),

@@ -4,6 +4,7 @@ import { AppError, fail, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
 import { EMAIL_VERIFICATION_OTP_EXPIRY_MS, generateOtp } from '../lib/email.js';
 import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
+import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -75,6 +76,8 @@ export function createRegisterUser(deps: Deps) {
 
     // Update last login
     await userRepo.update(user.id, { lastLoginAt: new Date() });
+
+    logSecurityEvent({ event: SECURITY_EVENT.RegisterSuccess, userId: user.id, email });
 
     return succeed({
       user: sanitizeUser(user),

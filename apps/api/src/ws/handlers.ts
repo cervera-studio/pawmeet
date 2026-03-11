@@ -1,34 +1,35 @@
 import { WS_EVENT, type WsMessage } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
+import { Ratelimit } from '@upstash/ratelimit';
 import type { WebSocket } from 'ws';
 import { getRooms, sendToRoom } from './registry.js';
 
-// ── In-memory rate limiter for WebSocket messages ─────────────────────────────
-const WS_RATE_WINDOW_MS = 60_000;
-const WS_RATE_MAX = 60;
+// ── Redis-backed rate limiter for WebSocket messages ──────────────────────────
+let _wsLimiter: Ratelimit | null = null;
 
-const wsRateBuckets = new Map<string, { count: number; resetAt: number }>();
-
-function isWsRateLimited(userId: string): boolean {
-  const now = Date.now();
-  const bucket = wsRateBuckets.get(userId);
-
-  if (!bucket || now > bucket.resetAt) {
-    wsRateBuckets.set(userId, { count: 1, resetAt: now + WS_RATE_WINDOW_MS });
-    return false;
+async function getWsLimiter(): Promise<Ratelimit> {
+  if (!_wsLimiter) {
+    const { redis } = await import('../lib/redis.js');
+    _wsLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(60, '1m'),
+      prefix: 'rl:ws',
+    });
   }
-
-  bucket.count++;
-  return bucket.count > WS_RATE_MAX;
+  return _wsLimiter;
 }
 
-// Periodically clean up stale buckets to prevent memory leaks
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, bucket] of wsRateBuckets) {
-    if (now > bucket.resetAt) wsRateBuckets.delete(key);
+async function isWsRateLimited(userId: string): Promise<boolean> {
+  try {
+    const limiter = await getWsLimiter();
+    const { success } = await limiter.limit(userId);
+    return !success;
+  } catch (err) {
+    // If Redis is unavailable, allow the message through (fail-open)
+    logger.warn('WebSocket', 'Rate limit check failed, allowing message', err);
+    return false;
   }
-}, WS_RATE_WINDOW_MS);
+}
 
 /** Parse and validate an incoming WebSocket message */
 export function parseWsMessage(data: string): WsMessage | null {
@@ -52,9 +53,9 @@ export function handleTyping(userId: string, matchId: string, type: WsMessage['t
 }
 
 /** Handle incoming WebSocket messages from an authenticated user */
-export function handleMessage(userId: string, ws: WebSocket, data: string) {
+export async function handleMessage(userId: string, ws: WebSocket, data: string) {
   // Rate limit WebSocket messages per user
-  if (isWsRateLimited(userId)) {
+  if (await isWsRateLimited(userId)) {
     ws.send(JSON.stringify({ type: WS_EVENT.ERROR, payload: { error: 'Rate limited' } }));
     return;
   }

@@ -2,6 +2,7 @@ import type { SafeUser } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import type { SocialLoginInput } from '@dogwalk/validation';
 import { sanitizeUser } from '../lib/sanitize.js';
+import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { SocialAuthPayload, SocialAuthVerifier } from '../ports/social-auth-verifier.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -30,6 +31,10 @@ export function createSocialLogin(deps: Deps) {
     try {
       payload = await socialAuthVerifier.verify(provider, idToken, nonce);
     } catch {
+      logSecurityEvent({
+        event: SECURITY_EVENT.SocialLoginFailed,
+        metadata: { provider, reason: 'invalid_token' },
+      });
       return fail(new AppError('AUTH_INVALID_TOKEN', 'Token social non valido', 401));
     }
 
@@ -39,6 +44,12 @@ export function createSocialLogin(deps: Deps) {
     if (user) {
       // Existing user — check if account is active
       if (!user.isActive) {
+        logSecurityEvent({
+          event: SECURITY_EVENT.SocialLoginFailed,
+          userId: user.id,
+          email: payload.email,
+          metadata: { provider, reason: 'account_disabled' },
+        });
         return fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disattivato', 403));
       }
 
@@ -77,6 +88,13 @@ export function createSocialLogin(deps: Deps) {
 
     // Update last login
     await userRepo.update(user.id, { lastLoginAt: new Date() });
+
+    logSecurityEvent({
+      event: SECURITY_EVENT.SocialLoginSuccess,
+      userId: user.id,
+      email: payload.email,
+      metadata: { provider },
+    });
 
     return succeed({
       user: sanitizeUser(user),

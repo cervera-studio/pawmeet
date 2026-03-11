@@ -10,6 +10,7 @@ export * from './gamification';
 export * from './group-events';
 export * from './group-messages';
 export * from './matches';
+export * from './matching-ai';
 export * from './refresh-tokens';
 export * from './reports';
 export * from './users';

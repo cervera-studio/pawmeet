@@ -8,6 +8,7 @@ export * from './gamification';
 export * from './group-chat';
 export * from './group-event';
 export * from './match';
+export * from './matching-ai';
 export * from './result';
 export * from './user';
 export * from './walk';

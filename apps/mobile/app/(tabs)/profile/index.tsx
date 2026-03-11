@@ -153,6 +153,14 @@ export default function ProfileScreen() {
           </Pressable>
 
           <Pressable
+            onPress={vm.navigateToMatchingInsights}
+            className="flex-row items-center justify-between rounded-xl px-4 py-4"
+          >
+            <Text className="text-base text-gray-700">Statistiche Matching</Text>
+            <Text className="text-gray-400">{'\u203A'}</Text>
+          </Pressable>
+
+          <Pressable
             onPress={vm.navigateToSettings}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >

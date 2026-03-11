@@ -29,6 +29,14 @@ export default function ProfileLayout() {
           headerBackTitle: 'Profilo',
         }}
       />
+      <Stack.Screen
+        name="matching-insights"
+        options={{
+          headerShown: true,
+          title: 'Statistiche Matching',
+          headerBackTitle: 'Profilo',
+        }}
+      />
     </Stack>
   );
 }

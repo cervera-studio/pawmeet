@@ -11,6 +11,7 @@ import {
   groupChatDeps,
   groupEventDeps,
   matchDeps,
+  matchingAiDeps,
   userDeps,
   walkDeps,
 } from '../container.js';
@@ -28,6 +29,7 @@ import { createGamificationRouter } from './routers/gamification.js';
 import { createGroupChatRouter } from './routers/group-chat.js';
 import { createGroupEventsRouter } from './routers/group-events.js';
 import { createMatchesRouter } from './routers/matches.js';
+import { createMatchingAiRouter } from './routers/matching-ai.js';
 import { createUsersRouter } from './routers/users.js';
 import { createWalksRouter } from './routers/walks.js';
 import { router } from './trpc.js';
@@ -38,6 +40,7 @@ export const appRouter = router({
   dogs: createDogsRouter(dogDeps),
   users: createUsersRouter(userDeps),
   matches: createMatchesRouter(matchDeps),
+  matchingAi: createMatchingAiRouter(matchingAiDeps),
   chat: createChatRouter(chatDeps),
   admin: createAdminRouter(db),
   walks: createWalksRouter(walkDeps),

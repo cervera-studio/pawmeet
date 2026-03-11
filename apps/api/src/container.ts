@@ -13,6 +13,7 @@ import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repo
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
+import { DrizzleMatchingAiRepository } from './infra/drizzle-matching-ai-repository.js';
 import { DrizzleMessageRepository } from './infra/drizzle-message-repository.js';
 import { DrizzleStoryRepository } from './infra/drizzle-story-repository.js';
 import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
@@ -56,10 +57,12 @@ import { createDeleteDogPhoto } from './use-cases/delete-dog-photo.js';
 import { createDeletePost } from './use-cases/delete-post.js';
 // Use cases — matches
 import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
+import { createDiscoverCandidatesAi } from './use-cases/discover-candidates-ai.js';
 import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
+import { createGetAbAssignment } from './use-cases/get-ab-assignment.js';
 import { createGetActivityStats } from './use-cases/get-activity-stats.js';
 import { createGetDog } from './use-cases/get-dog.js';
 import { createGetDogHealthGoal } from './use-cases/get-dog-health-goal.js';
@@ -71,7 +74,9 @@ import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
 import { createGetGroupMessages } from './use-cases/get-group-messages.js';
 import { createGetLeaderboard } from './use-cases/get-leaderboard.js';
+import { createGetMatchingInsights } from './use-cases/get-matching-insights.js';
 import { createGetMessages } from './use-cases/get-messages.js';
+import { createGetOptimalTimes } from './use-cases/get-optimal-times.js';
 import { createGetPendingReports } from './use-cases/get-pending-reports.js';
 import { createGetPostComments } from './use-cases/get-post-comments.js';
 import { createGetPostDetail } from './use-cases/get-post-detail.js';
@@ -82,6 +87,7 @@ import { createGetWalkAlbum } from './use-cases/get-walk-album.js';
 import { createGetWalkTrack } from './use-cases/get-walk-track.js';
 import { createGetXpSummary } from './use-cases/get-xp-summary.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
+import { createLearnUserPreferences } from './use-cases/learn-user-preferences.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
 import { createLikeDog } from './use-cases/like-dog.js';
 import { createLikePost } from './use-cases/like-post.js';
@@ -97,12 +103,15 @@ import { createListUserDogs } from './use-cases/list-user-dogs.js';
 import { createListUserEvents } from './use-cases/list-user-events.js';
 import { createListWalkFeedback } from './use-cases/list-walk-feedback.js';
 import { createListWalksByMatch } from './use-cases/list-walks-by-match.js';
+import { createLogSwipeScores } from './use-cases/log-swipe-scores.js';
 import { createLoginUser } from './use-cases/login-user.js';
 import { createLogoutUser } from './use-cases/logout-user.js';
 import { createMarkGroupMessagesRead } from './use-cases/mark-group-messages-read.js';
 import { createMarkMessagesRead } from './use-cases/mark-messages-read.js';
 import { createPassDog } from './use-cases/pass-dog.js';
 import { createProposeWalk } from './use-cases/propose-walk.js';
+import { createRecordActivityWindow } from './use-cases/record-activity-window.js';
+import { createRecordMatchInteraction } from './use-cases/record-match-interaction.js';
 import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
@@ -151,6 +160,7 @@ const contentReportRepo = new DrizzleContentReportRepository(db);
 const walkAlbumRepo = new DrizzleWalkAlbumRepository(db);
 const walkTrackRepo = new DrizzleWalkTrackRepository(db);
 const activityRepo = new DrizzleActivityRepository(db);
+const matchingAiRepo = new DrizzleMatchingAiRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
 
@@ -209,6 +219,26 @@ export const matchDeps = {
   likeDog: createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }),
   passDog: createPassDog({ dogRepo, matchRepo }),
   unmatch: createUnmatch({ dogRepo, matchRepo }),
+};
+
+// ── Matching AI deps ───────────────────────────────────────────────────────────
+
+const getAbAssignment = createGetAbAssignment({ matchingAiRepo });
+
+export const matchingAiDeps = {
+  logSwipeScores: createLogSwipeScores({ matchingAiRepo }),
+  recordMatchInteraction: createRecordMatchInteraction({ matchingAiRepo, matchRepo }),
+  recordActivityWindow: createRecordActivityWindow({ matchingAiRepo }),
+  learnUserPreferences: createLearnUserPreferences({ matchingAiRepo, matchRepo, dogRepo }),
+  getOptimalTimes: createGetOptimalTimes({ matchingAiRepo, dogRepo }),
+  getMatchingInsights: createGetMatchingInsights({ matchingAiRepo, matchRepo, dogRepo }),
+  discoverCandidatesAi: createDiscoverCandidatesAi({
+    dogRepo,
+    matchRepo,
+    userRepo,
+    matchingAiRepo,
+    getAbAssignment,
+  }),
 };
 
 // ── Walk deps ───────────────────────────────────────────────────────────────────

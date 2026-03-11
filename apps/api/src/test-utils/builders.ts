@@ -53,6 +53,7 @@ import type {
   WalkRepository,
   WalkTrackRepository,
 } from '../ports/index.js';
+import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';
 
 // ── Entity builders ──────────────────────────────────────────────────────────
 
@@ -778,6 +779,61 @@ export function buildWalkTrackRepo(
     findByWalk: vi.fn().mockResolvedValue(null),
     findByUser: vi.fn().mockResolvedValue({ tracks: [], nextCursor: null }),
     findPointsByTrack: vi.fn().mockResolvedValue([]),
+    ...overrides,
+  };
+}
+
+export function buildMatchingAiRepo(
+  overrides: Partial<MatchingAiRepository> = {},
+): MatchingAiRepository {
+  return {
+    createSwipeScoreLog: vi.fn().mockResolvedValue({
+      id: 'log-1',
+      swiperDogId: 'dog-1',
+      swipedDogId: 'dog-2',
+      direction: 'like',
+      sizeScore: 0.7,
+      energyScore: 0.8,
+      behaviorScore: 0.9,
+      walkScore: 0.6,
+      distanceScore: 0.5,
+      leashScore: 0.7,
+      overallScore: 0.72,
+      createdAt: new Date(),
+    }),
+    findSwipeScoreLogsByDog: vi.fn().mockResolvedValue([]),
+    findUserPreferences: vi.fn().mockResolvedValue(null),
+    upsertUserPreferences: vi
+      .fn()
+      .mockImplementation((input) =>
+        Promise.resolve({ id: 'pref-1', updatedAt: new Date(), ...input }),
+      ),
+    createMatchInteraction: vi.fn().mockResolvedValue({
+      id: 'interaction-1',
+      matchId: 'match-1',
+      userId: 'user-1',
+      interactionType: 'walk_completed',
+      metadata: null,
+      createdAt: new Date(),
+    }),
+    findInteractionsByMatches: vi.fn().mockResolvedValue([]),
+    upsertActivityWindow: vi.fn().mockResolvedValue({
+      id: 'window-1',
+      userId: 'user-1',
+      dayOfWeek: 1,
+      hourOfDay: 9,
+      activityCount: 1,
+      updatedAt: new Date(),
+    }),
+    findActivityWindowsByUser: vi.fn().mockResolvedValue([]),
+    findNearbyActivityWindows: vi.fn().mockResolvedValue([]),
+    findExperiment: vi.fn().mockResolvedValue(null),
+    findAssignment: vi.fn().mockResolvedValue(null),
+    createAssignment: vi
+      .fn()
+      .mockImplementation((input) =>
+        Promise.resolve({ id: 'assign-1', assignedAt: new Date(), ...input }),
+      ),
     ...overrides,
   };
 }

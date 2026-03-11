@@ -46,6 +46,10 @@ export function useProfileViewModel() {
     router.push('/(tabs)/profile/activity');
   };
 
+  const navigateToMatchingInsights = () => {
+    router.push('/(tabs)/profile/matching-insights');
+  };
+
   const isLoading = !user || loadingDogs;
 
   return {
@@ -60,6 +64,7 @@ export function useProfileViewModel() {
     navigateToDogDetail,
     navigateToSettings,
     navigateToActivity,
+    navigateToMatchingInsights,
     logout,
   };
 }

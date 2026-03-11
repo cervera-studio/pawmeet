@@ -1,10 +1,4 @@
-import {
-  MAX_IMAGE_SIZE,
-  MAX_STORIES_PER_DAY,
-  MAX_VIDEO_SIZE,
-  STORY_DURATION_HOURS,
-} from '@dogwalk/config';
-import type { Story } from '@dogwalk/types';
+import { MAX_IMAGE_SIZE, MAX_STORIES_PER_DAY, MAX_VIDEO_SIZE } from '@dogwalk/config';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import type { StorageService, StoryRepository } from '../ports/index.js';
 

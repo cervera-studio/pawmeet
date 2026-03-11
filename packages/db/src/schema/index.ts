@@ -9,6 +9,7 @@ export * from './feed';
 export * from './feedback';
 export * from './fitness';
 export * from './gamification';
+export * from './gdpr-exports';
 export * from './group-events';
 export * from './group-messages';
 export * from './matches';

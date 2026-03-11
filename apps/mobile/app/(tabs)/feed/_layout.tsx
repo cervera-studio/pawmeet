@@ -13,6 +13,14 @@ export default function FeedLayout() {
         }}
       />
       <Stack.Screen
+        name="walk-album"
+        options={{
+          headerShown: true,
+          title: 'Album passeggiata',
+          headerBackTitle: 'Feed',
+        }}
+      />
+      <Stack.Screen
         name="create"
         options={{
           headerShown: true,

@@ -1,63 +1,58 @@
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
-
-const REPORT_REASONS = [
-  'Profilo falso',
-  'Contenuto inappropriato',
-  'Comportamento molesto',
-  'Spam',
-  'Altro',
-];
+import { useReportViewModel } from './report.view-model';
 
 export default function ReportModal() {
-  const router = useRouter();
-  const [selectedReason, setSelectedReason] = useState<string | null>(null);
-  const [details, setDetails] = useState('');
-
-  const handleSubmit = () => {
-    // TODO: inviare segnalazione
-    router.back();
-  };
+  const vm = useReportViewModel();
 
   return (
-    <View className="flex-1 bg-white px-6 py-4">
-      <Text className="mb-2 text-2xl font-bold text-gray-900">Segnala</Text>
-      <Text className="mb-6 text-base text-gray-500">Seleziona il motivo della segnalazione</Text>
+    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+      <View className="flex-1 px-6 py-4">
+        <Text className="mb-2 text-2xl font-bold text-gray-900">Segnala</Text>
+        <Text className="mb-6 text-base text-gray-500">Seleziona il motivo della segnalazione</Text>
 
-      <View className="gap-2">
-        {REPORT_REASONS.map((reason) => (
-          <Pressable
-            key={reason}
-            onPress={() => setSelectedReason(reason)}
-            className={`rounded-xl border px-4 py-3 ${
-              selectedReason === reason ? 'border-primary bg-primary-50' : 'border-gray-200'
-            }`}
-          >
-            <Text
-              className={`text-base ${
-                selectedReason === reason ? 'font-medium text-primary' : 'text-gray-700'
-              }`}
-            >
-              {reason}
-            </Text>
-          </Pressable>
-        ))}
+        <View className="gap-2">
+          {vm.reasons.map((reason) => {
+            const isSelected = vm.selectedReason === reason.key;
+            return (
+              <Pressable
+                key={reason.key}
+                onPress={() => vm.setSelectedReason(reason.key)}
+                className={`rounded-xl border px-4 py-3 ${
+                  isSelected ? 'border-emerald-700 bg-emerald-50' : 'border-gray-200'
+                }`}
+              >
+                <Text
+                  className={`text-base ${
+                    isSelected ? 'font-medium text-emerald-800' : 'text-gray-700'
+                  }`}
+                >
+                  {reason.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <TextInput
+          className="mt-4 h-24 rounded-xl border border-gray-200 p-4 text-base"
+          placeholder="Dettagli aggiuntivi (opzionale)"
+          value={vm.description}
+          onChangeText={vm.setDescription}
+          multiline
+          textAlignVertical="top"
+          maxLength={500}
+        />
+
+        <View className="mt-6">
+          <Button
+            onPress={vm.handleSubmit}
+            label={vm.submitting ? 'Invio in corso...' : 'Invia segnalazione'}
+            disabled={!vm.canSubmit}
+          />
+        </View>
       </View>
-
-      <TextInput
-        className="mt-4 h-24 rounded-xl border border-gray-200 p-4 text-base"
-        placeholder="Dettagli aggiuntivi (opzionale)"
-        value={details}
-        onChangeText={setDetails}
-        multiline
-        textAlignVertical="top"
-      />
-
-      <View className="mt-6">
-        <Button onPress={handleSubmit} label="Invia segnalazione" disabled={!selectedReason} />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 }

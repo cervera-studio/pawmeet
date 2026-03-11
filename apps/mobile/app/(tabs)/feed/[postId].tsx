@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import type { CommentWithAuthor, ReplyTarget } from './[postId].view-model';
+import type { CommentWithAuthor } from './[postId].view-model';
 import { usePostDetailViewModel } from './[postId].view-model';
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -34,9 +34,11 @@ function formatDate(date: Date | string): string {
 const CommentRow = memo(function CommentRow({
   comment,
   onReply,
+  onReport,
 }: {
   comment: CommentWithAuthor;
   onReply: (commentId: string, authorName: string) => void;
+  onReport: (commentId: string) => void;
 }) {
   const isReply = Boolean(comment.parentId);
   return (
@@ -50,9 +52,14 @@ const CommentRow = memo(function CommentRow({
         <View className="mt-1 flex-row items-center gap-3">
           <Text className="text-xs text-gray-400">{formatDate(comment.createdAt)}</Text>
           {!isReply ? (
-            <Pressable onPress={() => onReply(comment.id, comment.author.displayName)}>
-              <Text className="text-xs font-medium text-emerald-700">Rispondi</Text>
-            </Pressable>
+            <>
+              <Pressable onPress={() => onReply(comment.id, comment.author.displayName)}>
+                <Text className="text-xs font-medium text-emerald-700">Rispondi</Text>
+              </Pressable>
+              <Pressable onPress={() => onReport(comment.id)}>
+                <Text className="text-xs font-medium text-gray-400">Segnala</Text>
+              </Pressable>
+            </>
           ) : null}
         </View>
       </View>
@@ -138,7 +145,13 @@ export default function PostDetailScreen() {
                 </View>
               </View>
             }
-            renderItem={({ item }) => <CommentRow comment={item} onReply={handleReply} />}
+            renderItem={({ item }) => (
+              <CommentRow
+                comment={item}
+                onReply={handleReply}
+                onReport={vm.navigateToCommentReport}
+              />
+            )}
             onEndReached={vm.loadMoreComments}
             onEndReachedThreshold={0.5}
             ListEmptyComponent={

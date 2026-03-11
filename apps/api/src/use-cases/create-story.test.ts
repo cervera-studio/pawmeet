@@ -1,4 +1,4 @@
-import { MAX_IMAGE_SIZE, MAX_STORIES_PER_DAY, MAX_VIDEO_SIZE } from '@dogwalk/config';
+import { MAX_IMAGE_SIZE, MAX_STORIES_PER_DAY } from '@dogwalk/config';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildStorageService, buildStoryRepo } from '../test-utils/builders.js';

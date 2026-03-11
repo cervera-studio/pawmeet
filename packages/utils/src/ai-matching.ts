@@ -139,12 +139,12 @@ export function learnWeightsFromSwipes(
   }
 
   return normalizeWeights({
-    size: importance['size'] ?? DEFAULTS.size,
-    energy: importance['energy'] ?? DEFAULTS.energy,
-    behavior: importance['behavior'] ?? DEFAULTS.behavior,
-    walk: importance['walk'] ?? DEFAULTS.walk,
-    distance: importance['distance'] ?? DEFAULTS.distance,
-    leash: importance['leash'] ?? DEFAULTS.leash,
+    size: importance.size ?? DEFAULTS.size,
+    energy: importance.energy ?? DEFAULTS.energy,
+    behavior: importance.behavior ?? DEFAULTS.behavior,
+    walk: importance.walk ?? DEFAULTS.walk,
+    distance: importance.distance ?? DEFAULTS.distance,
+    leash: importance.leash ?? DEFAULTS.leash,
   });
 }
 

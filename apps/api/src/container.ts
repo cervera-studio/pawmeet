@@ -12,6 +12,7 @@ import { DrizzleFeedRepository } from './infra/drizzle-feed-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
 import { DrizzleFollowRepository } from './infra/drizzle-follow-repository.js';
 import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repository.js';
+import { DrizzleGdprExportRepository } from './infra/drizzle-gdpr-export-repository.js';
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
@@ -30,6 +31,7 @@ import { ResendEmailService } from './infra/resend-email-service.js';
 import { StatsigExperimentService } from './infra/statsig-experiment-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
 import { WsFeedRealtimeService } from './infra/ws-feed-realtime-service.js';
+import { enqueueGdprExport } from './jobs/queue.js';
 import { db } from './lib/db.js';
 // Use cases — feed
 import { createAddPostTags } from './use-cases/add-post-tags.js';
@@ -93,6 +95,7 @@ import { createGetPendingReports } from './use-cases/get-pending-reports.js';
 import { createGetPostComments } from './use-cases/get-post-comments.js';
 import { createGetPostDetail } from './use-cases/get-post-detail.js';
 import { createGetProfile } from './use-cases/get-profile.js';
+import { createGetStoryViewers } from './use-cases/get-story-viewers.js';
 import { createGetUserPosts } from './use-cases/get-user-posts.js';
 import { createGetUserTracks } from './use-cases/get-user-tracks.js';
 import { createGetWalkAlbum } from './use-cases/get-walk-album.js';
@@ -134,6 +137,7 @@ import { createRegisterUser } from './use-cases/register-user.js';
 import { createRemovePostTag } from './use-cases/remove-post-tag.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createReportContent } from './use-cases/report-content.js';
+import { createRequestDataExport } from './use-cases/request-data-export.js';
 import { createResendVerification } from './use-cases/resend-verification.js';
 import { createResetPassword } from './use-cases/reset-password.js';
 import { createRespondToWalk } from './use-cases/respond-to-walk.js';
@@ -187,6 +191,7 @@ const walkAlbumRepo = new DrizzleWalkAlbumRepository(db);
 const walkTrackRepo = new DrizzleWalkTrackRepository(db);
 const activityRepo = new DrizzleActivityRepository(db);
 const matchingAiRepo = new DrizzleMatchingAiRepository(db);
+const gdprExportRepo = new DrizzleGdprExportRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
 
@@ -254,7 +259,12 @@ export const userDeps = {
     storyRepo,
     emailService,
   }),
-  exportUserData: createExportUserData({ userRepo, dogRepo, feedRepo }),
+  exportUserData: createExportUserData({ gdprExportRepo }),
+  requestDataExport: createRequestDataExport({
+    userRepo,
+    gdprExportRepo,
+    enqueueExport: enqueueGdprExport,
+  }),
   submitDateOfBirth: createSubmitDateOfBirth({ userRepo }),
 };
 
@@ -387,6 +397,7 @@ export const feedDeps = {
   confirmStory: createConfirmStory({ storyRepo, storage, awardXp }),
   getFeedStories: createGetFeedStories({ storyRepo }),
   viewStory: createViewStory({ storyRepo }),
+  getStoryViewers: createGetStoryViewers({ storyRepo }),
   reportContent: createReportContent({ contentReportRepo }),
   getWalkAlbum: createGetWalkAlbum({ walkAlbumRepo, feedRepo }),
   addPostTags: createAddPostTags({ feedRepo }),
@@ -445,6 +456,22 @@ export const followDeps = {
 
 export const adminDeps = {
   adminUserRepo,
+};
+
+// ── Data cleanup worker deps ─────────────────────────────────────────────────
+
+export const dataCleanupDeps = {
+  db,
+  storage,
+};
+
+// ── GDPR export worker deps ──────────────────────────────────────────────────
+
+export const gdprExportWorkerDeps = {
+  exportUserData: createExportUserData({ gdprExportRepo }),
+  gdprExportRepo,
+  storage,
+  emailService,
 };
 
 // ── Event status deps ─────────────────────────────────────────────────────────

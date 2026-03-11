@@ -81,7 +81,7 @@ export function createBufferedAnalyticsService(apiUrl: string): AnalyticsService
   }
 
   return {
-    identify(userId: string) {
+    identify(_userId: string) {
       sessionId = Crypto.randomUUID();
     },
 

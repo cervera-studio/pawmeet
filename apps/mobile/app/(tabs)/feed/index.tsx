@@ -63,11 +63,13 @@ const FeedItemRow = memo(function FeedItemRow({
   onLike,
   onPress,
   onDelete,
+  onReport,
 }: {
   item: FeedItem;
   onLike: (postId: string) => void;
   onPress: (postId: string) => void;
   onDelete: (postId: string) => void;
+  onReport: (postId: string) => void;
 }) {
   return (
     <PostCard
@@ -75,6 +77,7 @@ const FeedItemRow = memo(function FeedItemRow({
       onLike={() => onLike(item.id)}
       onPress={() => onPress(item.id)}
       onDelete={() => onDelete(item.id)}
+      onReport={() => onReport(item.id)}
     />
   );
 });
@@ -115,9 +118,11 @@ export default function FeedScreen() {
         data={vm.items}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
-          vm.storyGroups.length > 0 ? (
-            <StoriesRow groups={vm.storyGroups} onPress={vm.navigateToStoryViewer} />
-          ) : null
+          <StoriesRow
+            groups={vm.storyGroups}
+            onPress={vm.navigateToStoryViewer}
+            onCreateStory={vm.navigateToStoryCreate}
+          />
         }
         ListEmptyComponent={<EmptyFeed />}
         renderItem={({ item }) => (
@@ -126,6 +131,7 @@ export default function FeedScreen() {
             onLike={vm.handleLike}
             onPress={vm.navigateToPost}
             onDelete={vm.handleDelete}
+            onReport={vm.navigateToReport}
           />
         )}
         refreshing={vm.refreshing}

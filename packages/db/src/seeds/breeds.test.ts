@@ -22,7 +22,7 @@ describe('Breeds seed data', () => {
   it('includes Mixed Breed entry', () => {
     const mixed = breedsData.find((b) => b.name === 'Mixed Breed');
     expect(mixed).toBeDefined();
-    expect(mixed!.nameIt).toBe('Meticcio');
+    expect(mixed?.nameIt).toBe('Meticcio');
   });
 
   it('valid size categories for breeds with size', () => {

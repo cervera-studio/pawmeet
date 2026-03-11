@@ -1,12 +1,14 @@
-import { users } from '@dogwalk/db';
+import { gdprExports, users } from '@dogwalk/db';
 import { logger } from '@dogwalk/utils';
 import { Worker } from 'bullmq';
-import { and, eq, lt, sql } from 'drizzle-orm';
+import { and, eq, isNotNull, lt, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { StorageService } from '../ports/storage-service.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 interface DataCleanupDeps {
   db: NeonHttpDatabase;
+  storage?: StorageService;
 }
 
 /**
@@ -54,6 +56,39 @@ export function createDataCleanupWorker(deps: DataCleanupDeps) {
       logger.info('DataCleanup', 'Cleaned expired verification tokens', {
         count: verificationCleanup.rowCount,
       });
+
+      // Clean up expired GDPR export files from R2 and DB
+      const expiredExports = await db
+        .select({ id: gdprExports.id, r2Key: gdprExports.r2Key })
+        .from(gdprExports)
+        .where(
+          and(
+            eq(gdprExports.status, 'completed'),
+            isNotNull(gdprExports.expiresAt),
+            lt(gdprExports.expiresAt, new Date()),
+          ),
+        );
+
+      if (expiredExports.length > 0 && deps.storage) {
+        for (const exp of expiredExports) {
+          if (exp.r2Key) {
+            try {
+              await deps.storage.deleteObject(exp.r2Key);
+            } catch (err) {
+              logger.error('DataCleanup', `Failed to delete R2 object ${exp.r2Key}`, err);
+            }
+          }
+        }
+
+        await db.delete(gdprExports).where(
+          sql`id IN (${sql.join(
+            expiredExports.map((e) => sql`${e.id}`),
+            sql`, `,
+          )})`,
+        );
+
+        logger.info('DataCleanup', `Cleaned ${expiredExports.length} expired GDPR exports`);
+      }
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );

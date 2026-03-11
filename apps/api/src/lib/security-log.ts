@@ -15,6 +15,9 @@ const SECURITY_EVENT = {
   AccountLocked: 'auth.account.locked',
   RateLimited: 'auth.rate_limited',
   AgeVerificationFailed: 'auth.age_verification.failed',
+  GdprExportRequested: 'gdpr.export.requested',
+  GdprExportCompleted: 'gdpr.export.completed',
+  GdprExportFailed: 'gdpr.export.failed',
 } as const;
 
 type SecurityEvent = (typeof SECURITY_EVENT)[keyof typeof SECURITY_EVENT];

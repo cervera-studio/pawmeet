@@ -81,12 +81,20 @@ export function useFeedViewModel() {
     router.push(`/(tabs)/feed/${postId}`);
   };
 
+  const navigateToReport = (postId: string) => {
+    router.push(`/(modals)/report?contentType=post&contentId=${postId}`);
+  };
+
   const navigateToCreate = () => {
     router.push('/(tabs)/feed/create');
   };
 
   const navigateToStoryViewer = (authorId: string) => {
     router.push(`/(modals)/story-viewer?authorId=${authorId}`);
+  };
+
+  const navigateToStoryCreate = () => {
+    router.push('/(modals)/story-create');
   };
 
   const isInitialLoad = loading && items.length === 0;
@@ -105,5 +113,7 @@ export function useFeedViewModel() {
     navigateToPost,
     navigateToCreate,
     navigateToStoryViewer,
+    navigateToStoryCreate,
+    navigateToReport,
   };
 }

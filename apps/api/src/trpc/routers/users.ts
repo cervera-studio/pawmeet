@@ -12,7 +12,7 @@ import { z } from 'zod';
 import type { userDeps } from '../../container.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { trackEvent } from '../../lib/track-event.js';
-import { protectedProcedure, router, unwrapResult } from '../trpc.js';
+import { gdprExportProtectedProcedure, protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 const uploadAvatarSchema = z.object({
   contentType: z.enum(ALLOWED_IMAGE_TYPES as unknown as [string, ...string[]]),
@@ -87,8 +87,8 @@ export function createUsersRouter(deps: typeof userDeps) {
         return { message: result.message };
       }),
 
-    exportMyData: protectedProcedure.query(async ({ ctx }) =>
-      unwrapResult(await deps.exportUserData(ctx.userId)),
+    exportMyData: gdprExportProtectedProcedure.mutation(async ({ ctx }) =>
+      unwrapResult(await deps.requestDataExport(ctx.userId)),
     ),
   });
 }

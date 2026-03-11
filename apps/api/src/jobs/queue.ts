@@ -24,6 +24,7 @@ export const QUEUE_NAMES = {
   ANALYTICS: 'analytics',
   ANALYTICS_AGGREGATION: 'analytics-aggregation',
   ANALYTICS_DLQ: 'analytics-dlq',
+  GDPR_EXPORT: 'gdpr-export',
 } as const;
 
 // --- Lazy queue instances ---
@@ -175,6 +176,16 @@ export async function enqueueStoryCleanup() {
   return getStoryCleanupQueue().add('cleanup', {}, { repeat: { every: 60 * 60 * 1000 } });
 }
 
+/** Schedule story cleanup every hour. */
+export async function scheduleStoryCleanup() {
+  const queue = getStoryCleanupQueue();
+  await queue.upsertJobScheduler(
+    'hourly-story-cleanup',
+    { pattern: '0 * * * *' },
+    { name: 'cleanup' },
+  );
+}
+
 // ── Data cleanup (daily) ────────────────────────────────────────────────────
 
 let _dataCleanupQueue: Queue | null = null;
@@ -313,6 +324,38 @@ export function getAnalyticsDlqQueue(): Queue {
     });
   }
   return _analyticsDlqQueue;
+}
+
+// ── GDPR Export ─────────────────────────────────────────────────────────────
+
+export interface GdprExportJobData {
+  userId: string;
+  email: string;
+  displayName: string;
+  exportId: string;
+}
+
+let _gdprExportQueue: Queue | null = null;
+
+export function getGdprExportQueue(): Queue {
+  if (!_gdprExportQueue) {
+    _gdprExportQueue = new Queue(QUEUE_NAMES.GDPR_EXPORT, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 2,
+        backoff: { type: 'fixed', delay: 60_000 },
+        removeOnComplete: 50,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _gdprExportQueue;
+}
+
+export async function enqueueGdprExport(data: GdprExportJobData) {
+  return getGdprExportQueue().add('export', data, {
+    jobId: `gdpr-export-${data.userId}`,
+  });
 }
 
 /** Move a failed analytics job to the dead-letter queue. */

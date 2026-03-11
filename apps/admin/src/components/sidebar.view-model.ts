@@ -18,6 +18,7 @@ export const navigation = [
     icon: ShieldIcon,
     children: [
       { name: 'Feed', href: '/moderation/feed' },
+      { name: 'Storie', href: '/moderation/stories' },
       { name: 'Foto', href: '/moderation/photos' },
       { name: 'Contenuti', href: '/moderation/content' },
       { name: 'Segnalazioni', href: '/moderation/reports' },
@@ -52,10 +53,7 @@ export function useSidebarViewModel() {
     });
   }, []);
 
-  const isSectionOpen = useCallback(
-    (href: string) => openSections.has(href),
-    [openSections],
-  );
+  const isSectionOpen = useCallback((href: string) => openSections.has(href), [openSections]);
 
   const userInitial = user?.name?.charAt(0)?.toUpperCase() ?? 'A';
   const userName = user?.name ?? 'Admin';

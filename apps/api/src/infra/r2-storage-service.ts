@@ -6,9 +6,11 @@ import {
   buildStoryMediaKey as buildStoryMediaKeyLib,
   deleteObject,
   extractKeyFromUrl,
+  generatePresignedDownloadUrl,
   generatePresignedUploadUrl,
   generateUploadUrl,
   getPublicUrl,
+  uploadObject,
 } from '../lib/storage.js';
 import type { StorageService } from '../ports/storage-service.js';
 
@@ -38,6 +40,14 @@ export class R2StorageService implements StorageService {
 
   async deleteObject(key: string): Promise<void> {
     return deleteObject(key);
+  }
+
+  async uploadObject(key: string, body: string, contentType: string): Promise<void> {
+    return uploadObject(key, body, contentType);
+  }
+
+  async generatePresignedDownloadUrl(key: string, expiresInSeconds?: number): Promise<string> {
+    return generatePresignedDownloadUrl(key, expiresInSeconds);
   }
 
   getPublicUrl(key: string): string {

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   ALLOWED_IMAGE_TYPES,
-  type AllowedImageType,
   buildAvatarKey,
   buildDogPhotoKey,
   extractKeyFromUrl,

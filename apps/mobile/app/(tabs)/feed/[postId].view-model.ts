@@ -129,6 +129,13 @@ export function usePostDetailViewModel() {
     return result;
   }, [comments]);
 
+  const navigateToCommentReport = useCallback(
+    (commentId: string) => {
+      router.push(`/(modals)/report?contentType=comment&contentId=${commentId}`);
+    },
+    [router],
+  );
+
   const handleReport = useCallback(
     async (reason: string) => {
       if (!postId) return;
@@ -158,6 +165,7 @@ export function usePostDetailViewModel() {
     handleLike,
     handleSubmitComment,
     handleReport,
+    navigateToCommentReport,
     handleReply,
     cancelReply,
     loadMoreComments,

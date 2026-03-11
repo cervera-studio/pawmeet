@@ -1,11 +1,6 @@
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import {
-  buildDog,
-  buildDogRepo,
-  buildGroupEvent,
-  buildGroupEventRepo,
-} from '../test-utils/builders.js';
+import { buildDog, buildDogRepo, buildGroupEventRepo } from '../test-utils/builders.js';
 import { createCreateGroupEvent } from './create-group-event.js';
 
 const futureDate = new Date('2027-06-15T10:00:00Z');

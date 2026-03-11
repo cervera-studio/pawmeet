@@ -81,6 +81,50 @@ export async function sendPasswordResetOtp(email: string, code: string): Promise
 /**
  * Send account deletion confirmation email (GDPR Art. 17 acknowledgment).
  */
+/**
+ * GDPR export ready — download link email.
+ */
+export async function sendGdprExportReady(
+  email: string,
+  displayName: string,
+  downloadUrl: string,
+): Promise<void> {
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: 'Il tuo export dati è pronto - DogWalk',
+    html: `
+      <h2>Ciao ${displayName},</h2>
+      <p>Il tuo export dati GDPR è pronto per il download.</p>
+      <p style="text-align: center; padding: 16px 0;">
+        <a href="${downloadUrl}" style="background-color: #065F46; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Scarica i tuoi dati</a>
+      </p>
+      <p><strong>Importante:</strong> il link scade tra 48 ore.</p>
+      <p>L'export contiene tutte le informazioni personali associate al tuo account, come previsto dal GDPR (Art. 15 e Art. 20).</p>
+      <p>Se non hai richiesto questo export, contattaci a <a href="mailto:privacy@dogwalk.app">privacy@dogwalk.app</a>.</p>
+    `,
+  });
+}
+
+/**
+ * GDPR export failed — notification email.
+ */
+export async function sendGdprExportFailed(email: string, displayName: string): Promise<void> {
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: "Errore nell'export dati - DogWalk",
+    html: `
+      <h2>Ciao ${displayName},</h2>
+      <p>Purtroppo si è verificato un errore durante la generazione del tuo export dati.</p>
+      <p>Puoi riprovare dalla sezione Impostazioni dell'app. Se il problema persiste, contattaci a <a href="mailto:privacy@dogwalk.app">privacy@dogwalk.app</a>.</p>
+    `,
+  });
+}
+
+/**
+ * Send account deletion confirmation email (GDPR Art. 17 acknowledgment).
+ */
 export async function sendAccountDeletedConfirmation(
   email: string,
   displayName: string,

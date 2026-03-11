@@ -75,6 +75,39 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   return next({ ctx: { ...ctx, userId: ctx.userId } });
 });
 
+// ── Rate-limited protected procedure for GDPR export (3 req / 24h) ──────────
+let _gdprExportRateLimiter: Ratelimit | null = null;
+
+async function getGdprExportRateLimiter(): Promise<Ratelimit> {
+  if (!_gdprExportRateLimiter) {
+    const { redis } = await import('../lib/redis.js');
+    _gdprExportRateLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(3, '24h'),
+      prefix: 'rl:trpc:gdpr-export',
+    });
+  }
+  return _gdprExportRateLimiter;
+}
+
+export const gdprExportProtectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+  }
+
+  const limiter = await getGdprExportRateLimiter();
+  const { success } = await limiter.limit(ctx.userId);
+
+  if (!success) {
+    throw new TRPCError({
+      code: 'TOO_MANY_REQUESTS',
+      message: 'Hai raggiunto il limite di export giornaliero. Riprova tra 24 ore.',
+    });
+  }
+
+  return next({ ctx: { ...ctx, userId: ctx.userId } });
+});
+
 /** Map HTTP status codes from AppError to tRPC error codes. */
 function mapStatusToTRPCCode(status: number) {
   const map: Record<number, TRPCError['code']> = {

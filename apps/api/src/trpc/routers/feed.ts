@@ -16,28 +16,41 @@ import {
 } from '@dogwalk/validation';
 import { z } from 'zod';
 import type { feedDeps } from '../../container.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createFeedRouter(deps: typeof feedDeps) {
   return router({
     // ── Posts ────────────────────────────────────────────────────────────────
 
-    createPost: protectedProcedure.input(createPostSchema).mutation(async ({ ctx, input }) =>
-      unwrapResult(
+    createPost: protectedProcedure.input(createPostSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(
         await deps.createPost(ctx.userId, {
           caption: input.caption ?? null,
           latitude: input.latitude ?? null,
           longitude: input.longitude ?? null,
           walkId: input.walkId ?? null,
         }),
-      ),
-    ),
+      );
+      trackEvent('feed_post_created', ctx.userId, {
+        mediaCount: 0,
+        hasCaption: Boolean(input.caption),
+        hasLocation: Boolean(input.latitude),
+        tagCount: 0,
+      });
+      return result;
+    }),
 
     deletePost: protectedProcedure
       .input(z.object({ postId: z.string().uuid() }))
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.deletePost(input.postId, ctx.userId)),
-      ),
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(await deps.deletePost(input.postId, ctx.userId));
+        trackEvent('feed_post_deleted', ctx.userId, {
+          postAgeHours: 0,
+          mediaCount: 0,
+        });
+        return result;
+      }),
 
     postDetail: protectedProcedure
       .input(z.object({ postId: z.string().uuid() }))
@@ -92,21 +105,28 @@ export function createFeedRouter(deps: typeof feedDeps) {
 
     // ── Likes ───────────────────────────────────────────────────────────────
 
-    like: protectedProcedure
-      .input(likePostSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.likePost(input.postId, ctx.userId)),
-      ),
+    like: protectedProcedure.input(likePostSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.likePost(input.postId, ctx.userId));
+      trackEvent('feed_post_liked', ctx.userId, {
+        postAgeHours: 0,
+      });
+      return result;
+    }),
 
     // ── Comments ────────────────────────────────────────────────────────────
 
     createComment: protectedProcedure
       .input(createCommentSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
           await deps.createComment(input.postId, ctx.userId, input.content, input.parentId ?? null),
-        ),
-      ),
+        );
+        trackEvent('feed_comment_created', ctx.userId, {
+          postAgeHours: 0,
+          isReply: Boolean(input.parentId),
+        });
+        return result;
+      }),
 
     deleteComment: protectedProcedure
       .input(z.object({ commentId: z.string().uuid() }))
@@ -128,28 +148,38 @@ export function createFeedRouter(deps: typeof feedDeps) {
         unwrapResult(await deps.createStory(ctx.userId, input.contentType, input.fileSize)),
       ),
 
-    confirmStory: protectedProcedure
-      .input(confirmStorySchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.confirmStory(ctx.userId, input.key, input.mediaType)),
-      ),
+    confirmStory: protectedProcedure.input(confirmStorySchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.confirmStory(ctx.userId, input.key, input.mediaType));
+      trackEvent('feed_story_created', ctx.userId, {
+        mediaType: input.mediaType,
+      });
+      return result;
+    }),
 
     stories: protectedProcedure.query(async ({ ctx }) =>
       unwrapResult(await deps.getFeedStories(ctx.userId)),
     ),
 
-    viewStory: protectedProcedure
-      .input(viewStorySchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.viewStory(input.storyId, ctx.userId)),
+    viewStory: protectedProcedure.input(viewStorySchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.viewStory(input.storyId, ctx.userId));
+      trackEvent('feed_story_viewed', ctx.userId, {
+        storyAgeHours: 0,
+      });
+      return result;
+    }),
+
+    storyViewers: protectedProcedure
+      .input(z.object({ storyId: z.string().uuid() }))
+      .query(async ({ ctx, input }) =>
+        unwrapResult(await deps.getStoryViewers(input.storyId, ctx.userId)),
       ),
 
     // ── Content reports ─────────────────────────────────────────────────────
 
     reportContent: protectedProcedure
       .input(reportContentSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
           await deps.reportContent(
             ctx.userId,
             input.contentType,
@@ -157,8 +187,13 @@ export function createFeedRouter(deps: typeof feedDeps) {
             input.reason,
             input.description ?? null,
           ),
-        ),
-      ),
+        );
+        trackEvent('feed_content_reported', ctx.userId, {
+          contentType: input.contentType,
+          reason: input.reason,
+        });
+        return result;
+      }),
 
     // ── Tags ───────────────────────────────────────────────────────────────
 

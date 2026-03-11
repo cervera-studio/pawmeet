@@ -148,6 +148,20 @@ export interface AnalyticsEventMap {
     placement: string;
   };
 
+  // Feed
+  feed_post_created: {
+    mediaCount: number;
+    hasCaption: boolean;
+    hasLocation: boolean;
+    tagCount: number;
+  };
+  feed_post_liked: { postAgeHours: number };
+  feed_comment_created: { postAgeHours: number; isReply: boolean };
+  feed_post_deleted: { postAgeHours: number; mediaCount: number };
+  feed_story_created: { mediaType: 'photo' | 'video' };
+  feed_story_viewed: { storyAgeHours: number };
+  feed_content_reported: { contentType: 'post' | 'comment' | 'story'; reason: string };
+
   // App
   app_opened: {
     hoursSinceLastOpen: number;

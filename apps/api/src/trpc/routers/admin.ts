@@ -1,14 +1,17 @@
 import {
-  analyticsDailyMetrics,
   analyticsEvents,
+  contentReports,
   dogPhotos,
   dogProfiles,
   matches,
+  postMedia,
+  posts,
   reports,
+  stories,
   users,
 } from '@dogwalk/db';
 import { TRPCError } from '@trpc/server';
-import { count, desc, eq, gte, ilike, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, ilike, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
@@ -75,6 +78,18 @@ const updateSettingsSchema = z.object({
   maxReportsBeforeSuspension: z.number().int().min(1).optional(),
 });
 
+const listFeedPostsSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(20),
+  status: z.enum(['pending', 'approved', 'rejected']).optional(),
+  search: z.string().optional(),
+});
+
+const updatePostModerationSchema = z.object({
+  postId: z.string().uuid(),
+  status: z.enum(['approved', 'rejected']),
+});
+
 // ── Router ─────────────────────────────────────────────────────────────────────
 
 export function createAdminRouter(db: NeonHttpDatabase) {
@@ -94,6 +109,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         [activeMatchesCount],
         [pendingPhotosCount],
         [reportsCount],
+        [pendingPostsCount],
         registrations,
         dailyMatches,
       ] = await Promise.all([
@@ -106,6 +122,10 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           .from(dogPhotos)
           .where(eq(dogPhotos.moderationStatus, 'pending')),
         db.select({ value: count() }).from(reports).where(eq(reports.status, 'pending')),
+        db
+          .select({ value: count() })
+          .from(posts)
+          .where(and(eq(posts.moderationStatus, 'pending'), eq(posts.isDeleted, false))),
         // User registrations per day (last 30 days)
         db
           .select({
@@ -135,6 +155,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         activeMatches: activeMatchesCount?.value ?? 0,
         pendingPhotos: pendingPhotosCount?.value ?? 0,
         pendingReports: reportsCount?.value ?? 0,
+        pendingFeedPosts: pendingPostsCount?.value ?? 0,
         userRegistrations: registrations,
         dailyMatches,
       };
@@ -360,6 +381,200 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       }
 
       return { success: true };
+    }),
+
+    // ── Feed management ──────────────────────────────────────────────────────
+    listFeedPosts: adminProcedure.input(listFeedPostsSchema).query(async ({ input }) => {
+      const { page, pageSize, status, search } = input;
+      const offset = (page - 1) * pageSize;
+
+      const conditions = [];
+      if (status) conditions.push(eq(posts.moderationStatus, status));
+      if (search) conditions.push(ilike(users.displayName, `%${search}%`));
+
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const [items, [totalRow]] = await Promise.all([
+        db
+          .select({
+            id: posts.id,
+            caption: posts.caption,
+            moderationStatus: posts.moderationStatus,
+            likesCount: posts.likesCount,
+            commentsCount: posts.commentsCount,
+            isDeleted: posts.isDeleted,
+            createdAt: posts.createdAt,
+            authorId: posts.authorId,
+            authorName: users.displayName,
+            authorEmail: users.email,
+          })
+          .from(posts)
+          .leftJoin(users, eq(posts.authorId, users.id))
+          .where(whereClause)
+          .orderBy(desc(posts.createdAt))
+          .limit(pageSize)
+          .offset(offset),
+        db
+          .select({ value: count() })
+          .from(posts)
+          .leftJoin(users, eq(posts.authorId, users.id))
+          .where(whereClause),
+      ]);
+
+      // Fetch media for each post
+      const postIds = items.map((p) => p.id);
+      const media =
+        postIds.length > 0
+          ? await db
+              .select({
+                id: postMedia.id,
+                postId: postMedia.postId,
+                url: postMedia.url,
+                mediaType: postMedia.mediaType,
+                thumbnailUrl: postMedia.thumbnailUrl,
+              })
+              .from(postMedia)
+              .where(or(...postIds.map((pid) => eq(postMedia.postId, pid))))
+          : [];
+
+      const mediaByPost = new Map<string, typeof media>();
+      for (const m of media) {
+        const list = mediaByPost.get(m.postId) ?? [];
+        list.push(m);
+        mediaByPost.set(m.postId, list);
+      }
+
+      // Fetch report counts per post
+      const reportCounts =
+        postIds.length > 0
+          ? await db
+              .select({
+                contentId: contentReports.contentId,
+                count: count(),
+              })
+              .from(contentReports)
+              .where(
+                and(
+                  eq(contentReports.contentType, 'post'),
+                  or(...postIds.map((pid) => eq(contentReports.contentId, pid))),
+                ),
+              )
+              .groupBy(contentReports.contentId)
+          : [];
+
+      const reportCountMap = new Map(reportCounts.map((r) => [r.contentId, r.count]));
+
+      const total = totalRow?.value ?? 0;
+
+      return {
+        data: items.map((p) => ({
+          ...p,
+          media: mediaByPost.get(p.id) ?? [],
+          reportCount: reportCountMap.get(p.id) ?? 0,
+        })),
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      };
+    }),
+
+    updatePostModeration: adminProcedure
+      .input(updatePostModerationSchema)
+      .mutation(async ({ input }) => {
+        const [post] = await db.select().from(posts).where(eq(posts.id, input.postId));
+        if (!post) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Post not found' });
+        }
+
+        await db
+          .update(posts)
+          .set({ moderationStatus: input.status, updatedAt: new Date() })
+          .where(eq(posts.id, input.postId));
+
+        // If rejected, soft-delete the post
+        if (input.status === 'rejected') {
+          await db.update(posts).set({ isDeleted: true }).where(eq(posts.id, input.postId));
+        }
+
+        return { success: true };
+      }),
+
+    listStories: adminProcedure
+      .input(
+        z.object({
+          page: z.number().int().min(1).default(1),
+          pageSize: z.number().int().min(1).max(100).default(20),
+        }),
+      )
+      .query(async ({ input }) => {
+        const { page, pageSize } = input;
+        const offset = (page - 1) * pageSize;
+
+        const [items, [totalRow]] = await Promise.all([
+          db
+            .select({
+              id: stories.id,
+              mediaUrl: stories.mediaUrl,
+              mediaType: stories.mediaType,
+              viewCount: stories.viewCount,
+              createdAt: stories.createdAt,
+              expiresAt: stories.expiresAt,
+              authorId: stories.authorId,
+              authorName: users.displayName,
+            })
+            .from(stories)
+            .leftJoin(users, eq(stories.authorId, users.id))
+            .orderBy(desc(stories.createdAt))
+            .limit(pageSize)
+            .offset(offset),
+          db.select({ value: count() }).from(stories),
+        ]);
+
+        const total = totalRow?.value ?? 0;
+        return {
+          data: items,
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        };
+      }),
+
+    deleteStory: adminProcedure
+      .input(z.object({ storyId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const [story] = await db.select().from(stories).where(eq(stories.id, input.storyId));
+        if (!story) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Story not found' });
+        }
+        await db.delete(stories).where(eq(stories.id, input.storyId));
+        return { success: true };
+      }),
+
+    getFeedStats: adminProcedure.query(async () => {
+      const [[totalPosts], [pendingPosts], [rejectedPosts], [totalStories], [pendingReports]] =
+        await Promise.all([
+          db.select({ value: count() }).from(posts).where(eq(posts.isDeleted, false)),
+          db
+            .select({ value: count() })
+            .from(posts)
+            .where(and(eq(posts.moderationStatus, 'pending'), eq(posts.isDeleted, false))),
+          db.select({ value: count() }).from(posts).where(eq(posts.moderationStatus, 'rejected')),
+          db.select({ value: count() }).from(stories),
+          db
+            .select({ value: count() })
+            .from(contentReports)
+            .where(eq(contentReports.status, 'pending')),
+        ]);
+
+      return {
+        totalPosts: totalPosts?.value ?? 0,
+        pendingPosts: pendingPosts?.value ?? 0,
+        rejectedPosts: rejectedPosts?.value ?? 0,
+        totalStories: totalStories?.value ?? 0,
+        pendingReports: pendingReports?.value ?? 0,
+      };
     }),
 
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────

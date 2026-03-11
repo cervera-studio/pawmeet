@@ -67,7 +67,7 @@ export function extractGoogleIdToken(
 ): SocialAuthResult | null {
   if (response?.type !== 'success') return null;
 
-  const idToken = response.params?.['id_token'];
+  const idToken = response.params?.id_token;
   if (!idToken) return null;
 
   return {

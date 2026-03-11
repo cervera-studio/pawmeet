@@ -133,6 +133,20 @@ export class DrizzleStoryRepository implements StoryRepository {
     };
   }
 
+  async getViewers(storyId: string) {
+    return this.db
+      .select({
+        id: users.id,
+        displayName: users.displayName,
+        avatarUrl: users.avatarUrl,
+        viewedAt: storyViews.viewedAt,
+      })
+      .from(storyViews)
+      .innerJoin(users, eq(storyViews.viewerId, users.id))
+      .where(eq(storyViews.storyId, storyId))
+      .orderBy(desc(storyViews.viewedAt));
+  }
+
   private async getConnectedUserIds(userId: string): Promise<string[]> {
     const userDogs = await this.db
       .select({ id: dogProfiles.id })

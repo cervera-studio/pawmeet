@@ -1,5 +1,7 @@
 import {
   sendAccountDeletedConfirmation,
+  sendGdprExportFailed,
+  sendGdprExportReady,
   sendPasswordResetOtp,
   sendVerificationOtp,
 } from '../lib/email.js';
@@ -16,5 +18,17 @@ export class ResendEmailService implements EmailService {
 
   async sendAccountDeletedConfirmation(email: string, displayName: string): Promise<void> {
     return sendAccountDeletedConfirmation(email, displayName);
+  }
+
+  async sendGdprExportReady(
+    email: string,
+    displayName: string,
+    downloadUrl: string,
+  ): Promise<void> {
+    return sendGdprExportReady(email, displayName, downloadUrl);
+  }
+
+  async sendGdprExportFailed(email: string, displayName: string): Promise<void> {
+    return sendGdprExportFailed(email, displayName);
   }
 }

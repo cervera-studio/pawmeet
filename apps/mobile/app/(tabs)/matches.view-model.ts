@@ -52,7 +52,7 @@ export function useMatchesViewModel() {
 
   const hasMultipleDogs = dogs.length > 1;
 
-  const renderItem = useCallback(
+  const _renderItem = useCallback(
     ({ item }: { item: EnrichedMatch }) => ({
       item,
       hasMultipleDogs,

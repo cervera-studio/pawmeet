@@ -18,6 +18,7 @@ export type {
 } from './feed-repository.js';
 export type { FeedbackRepository } from './feedback-repository.js';
 export type { FollowRepository, PaginatedQuery } from './follow-repository.js';
+export type { GdprExportRepository } from './gdpr-export-repository.js';
 export type {
   CreateGroupEventInput,
   GroupEventRepository,

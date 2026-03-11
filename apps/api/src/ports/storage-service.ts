@@ -8,6 +8,8 @@ export interface StorageService {
   buildPostMediaKey(postId: string, contentType: string): string;
   buildStoryMediaKey(userId: string, contentType: string): string;
   deleteObject(key: string): Promise<void>;
+  uploadObject(key: string, body: string, contentType: string): Promise<void>;
+  generatePresignedDownloadUrl(key: string, expiresInSeconds?: number): Promise<string>;
   getPublicUrl(key: string): string;
   extractKeyFromUrl(url: string): string;
 }

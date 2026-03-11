@@ -1,7 +1,6 @@
 import { MAX_POST_CAPTION } from '@dogwalk/config';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { FeedRepository } from '../ports/index.js';
 import { buildFeedRepo, buildPost } from '../test-utils/builders.js';
 import { createCreatePost } from './create-post.js';
 

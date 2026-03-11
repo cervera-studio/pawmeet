@@ -32,6 +32,7 @@ import { vi } from 'vitest';
 import type { ActivityRepository } from '../ports/activity-repository.js';
 import type { ExperimentService } from '../ports/experiment-service.js';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
+import type { GdprExportRepository } from '../ports/gdpr-export-repository.js';
 import type {
   AuthService,
   BadgeRepository,
@@ -544,6 +545,10 @@ export function buildStorageService(overrides: Partial<StorageService> = {}): St
     buildPostMediaKey: vi.fn(),
     buildStoryMediaKey: vi.fn(),
     deleteObject: vi.fn().mockResolvedValue(undefined),
+    uploadObject: vi.fn().mockResolvedValue(undefined),
+    generatePresignedDownloadUrl: vi
+      .fn()
+      .mockResolvedValue('https://cdn.example.com/download/file.json'),
     getPublicUrl: vi.fn().mockReturnValue('https://cdn.example.com/photo.jpg'),
     extractKeyFromUrl: vi.fn().mockReturnValue('photos/photo.jpg'),
     ...overrides,
@@ -583,6 +588,8 @@ export function buildEmailService(overrides: Partial<EmailService> = {}): EmailS
     sendVerificationOtp: vi.fn().mockResolvedValue(undefined),
     sendPasswordResetOtp: vi.fn().mockResolvedValue(undefined),
     sendAccountDeletedConfirmation: vi.fn().mockResolvedValue(undefined),
+    sendGdprExportReady: vi.fn().mockResolvedValue(undefined),
+    sendGdprExportFailed: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
@@ -770,6 +777,7 @@ export function buildStoryRepo(overrides: Partial<StoryRepository> = {}): StoryR
     addView: vi.fn().mockResolvedValue(null),
     incrementViewCount: vi.fn().mockResolvedValue(undefined),
     deleteExpiredStories: vi.fn().mockResolvedValue({ deletedCount: 0, mediaUrls: [] }),
+    getViewers: vi.fn().mockResolvedValue([]),
     ...overrides,
   };
 }
@@ -906,6 +914,49 @@ export function buildMatchingAiRepo(
     }),
     findActivityWindowsByUser: vi.fn().mockResolvedValue([]),
     findNearbyActivityWindows: vi.fn().mockResolvedValue([]),
+    ...overrides,
+  };
+}
+
+export function buildGdprExportRepo(
+  overrides: Partial<GdprExportRepository> = {},
+): GdprExportRepository {
+  return {
+    getProfile: vi.fn().mockResolvedValue(null),
+    getDogsWithPhotos: vi.fn().mockResolvedValue([]),
+    getPostsWithMedia: vi.fn().mockResolvedValue([]),
+    getMatches: vi.fn().mockResolvedValue([]),
+    getSwipes: vi.fn().mockResolvedValue([]),
+    getDmMessages: vi.fn().mockResolvedValue([]),
+    getGroupMessages: vi.fn().mockResolvedValue([]),
+    getWalks: vi.fn().mockResolvedValue([]),
+    getWalkTracksWithPoints: vi.fn().mockResolvedValue([]),
+    getStories: vi.fn().mockResolvedValue([]),
+    getFollowers: vi.fn().mockResolvedValue([]),
+    getFollowing: vi.fn().mockResolvedValue([]),
+    getBlocks: vi.fn().mockResolvedValue([]),
+    getGroupEventParticipation: vi.fn().mockResolvedValue([]),
+    getXpTransactions: vi.fn().mockResolvedValue([]),
+    getAchievements: vi.fn().mockResolvedValue([]),
+    getChallenges: vi.fn().mockResolvedValue([]),
+    getBadges: vi.fn().mockResolvedValue([]),
+    getConsents: vi.fn().mockResolvedValue([]),
+    getComments: vi.fn().mockResolvedValue([]),
+    getFeedbackGiven: vi.fn().mockResolvedValue([]),
+    getPostLikes: vi.fn().mockResolvedValue([]),
+    getDailyActivity: vi.fn().mockResolvedValue([]),
+    getMatchingPreferences: vi.fn().mockResolvedValue(null),
+    getSwipeScoreLogs: vi.fn().mockResolvedValue([]),
+    getContentReports: vi.fn().mockResolvedValue([]),
+    getUserReports: vi.fn().mockResolvedValue([]),
+    createExport: vi.fn().mockResolvedValue({
+      id: 'export-1',
+      status: 'pending',
+      requestedAt: new Date(),
+      completedAt: null,
+    }),
+    findPendingExport: vi.fn().mockResolvedValue(null),
+    updateExportStatus: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }

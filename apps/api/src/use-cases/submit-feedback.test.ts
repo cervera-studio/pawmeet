@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   buildDog,
   buildDogRepo,
-  buildFeedback,
   buildFeedbackRepo,
   buildMatch,
   buildMatchRepo,

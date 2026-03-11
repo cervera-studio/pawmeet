@@ -12,6 +12,13 @@ export type {
   ListDogsParams,
 } from './dog-repository';
 export type {
+  FeedAdminRepository,
+  FeedPost,
+  FeedPostMedia,
+  FeedPostPage,
+  FeedStats,
+} from './feed-admin-repository';
+export type {
   PendingPhoto,
   PhotoModerationRepository,
 } from './photo-moderation-repository';
@@ -29,6 +36,11 @@ export type {
   StatsRepository,
   TimeSeriesPoint,
 } from './stats-repository';
+export type {
+  AdminStory,
+  AdminStoryPage,
+  StoryAdminRepository,
+} from './story-admin-repository';
 export type {
   AdminUserDetail,
   AdminUserListItem,

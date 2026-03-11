@@ -1,7 +1,7 @@
 import { logger } from '@dogwalk/utils';
 import * as Location from 'expo-location';
 import { useCallback } from 'react';
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { api } from '@/lib/trpc';
 import { useLocationStore } from '@/stores/location';
 

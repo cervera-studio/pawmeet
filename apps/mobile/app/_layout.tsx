@@ -189,6 +189,30 @@ function RootLayout() {
                 name="(modals)/user-profile"
                 options={{ presentation: 'modal', title: 'Profilo' }}
               />
+              <Stack.Screen
+                name="(modals)/story-viewer"
+                options={{
+                  presentation: 'fullScreenModal',
+                  headerShown: false,
+                  animation: 'fade',
+                }}
+              />
+              <Stack.Screen
+                name="(modals)/story-create"
+                options={{ presentation: 'modal', headerShown: false }}
+              />
+              <Stack.Screen
+                name="(modals)/story-viewers"
+                options={{ presentation: 'modal', title: 'Visualizzazioni' }}
+              />
+              <Stack.Screen
+                name="(modals)/media-viewer"
+                options={{
+                  presentation: 'fullScreenModal',
+                  headerShown: false,
+                  animation: 'fade',
+                }}
+              />
             </Stack.Protected>
           </Stack>
 

@@ -15,6 +15,7 @@ interface StoryGroup {
 interface StoriesRowProps {
   groups: StoryGroup[];
   onPress: (authorId: string) => void;
+  onCreateStory?: () => void;
 }
 
 const StoryCircle = memo(function StoryCircle({
@@ -38,10 +39,26 @@ const StoryCircle = memo(function StoryCircle({
   );
 });
 
-export const StoriesRow = memo(function StoriesRow({ groups, onPress }: StoriesRowProps) {
+function CreateStoryButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} className="items-center px-2">
+      <View className="h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-emerald-700">
+        <Text className="text-lg text-emerald-700">+</Text>
+      </View>
+      <Text className="mt-1 text-xs text-emerald-700">La tua</Text>
+    </Pressable>
+  );
+}
+
+export const StoriesRow = memo(function StoriesRow({
+  groups,
+  onPress,
+  onCreateStory,
+}: StoriesRowProps) {
   return (
     <View className="border-b border-gray-100 py-3">
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-2">
+        {onCreateStory ? <CreateStoryButton onPress={onCreateStory} /> : null}
         {groups.map((group) => (
           <StoryCircle
             key={group.author.id}

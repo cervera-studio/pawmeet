@@ -1,3 +1,5 @@
+import type { AVPlaybackStatus } from 'expo-av';
+import { ResizeMode, Video } from 'expo-av';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Image, Pressable, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
@@ -35,6 +37,7 @@ export function StoryViewer({ stories, author, onView, onClose }: StoryViewerPro
   const [currentIndex, setCurrentIndex] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const videoRef = useRef<Video>(null);
 
   const currentStory = stories[currentIndex];
 
@@ -65,6 +68,24 @@ export function StoryViewer({ stories, author, onView, onClose }: StoryViewerPro
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [startProgress, currentStory, onView, progressAnim]);
+
+  const advanceToNext = useCallback(() => {
+    progressAnim.stopAnimation();
+    if (currentIndex < stories.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      onClose();
+    }
+  }, [currentIndex, stories.length, progressAnim, onClose]);
+
+  const handlePlaybackStatusUpdate = useCallback(
+    (status: AVPlaybackStatus) => {
+      if (status.isLoaded && status.didJustFinish) {
+        advanceToNext();
+      }
+    },
+    [advanceToNext],
+  );
 
   const goNext = () => {
     progressAnim.stopAnimation();
@@ -120,12 +141,25 @@ export function StoryViewer({ stories, author, onView, onClose }: StoryViewerPro
       </Pressable>
 
       {/* Story media */}
-      <Image
-        source={{ uri: currentStory.mediaUrl }}
-        className="flex-1"
-        resizeMode="contain"
-        style={{ width: SCREEN_WIDTH }}
-      />
+      {currentStory.mediaType === 'video' ? (
+        <Video
+          ref={videoRef}
+          source={{ uri: currentStory.mediaUrl }}
+          resizeMode={ResizeMode.CONTAIN}
+          shouldPlay
+          isLooping={false}
+          onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+          className="flex-1"
+          style={{ width: SCREEN_WIDTH }}
+        />
+      ) : (
+        <Image
+          source={{ uri: currentStory.mediaUrl }}
+          className="flex-1"
+          resizeMode="contain"
+          style={{ width: SCREEN_WIDTH }}
+        />
+      )}
 
       {/* Touch areas for navigation */}
       <View className="absolute inset-0 flex-row" style={{ top: 100 }}>

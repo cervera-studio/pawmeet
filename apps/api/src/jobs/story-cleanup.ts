@@ -1,5 +1,4 @@
 import { Worker } from 'bullmq';
-import { extractKeyFromUrl } from '../lib/storage.js';
 import type { StorageService } from '../ports/storage-service.js';
 import type { StoryRepository } from '../ports/story-repository.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';

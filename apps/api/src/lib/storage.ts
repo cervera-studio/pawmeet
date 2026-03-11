@@ -128,6 +128,35 @@ export async function generateReadUrl(key: string): Promise<string> {
 }
 
 /**
+ * Upload an object to R2 from the server side (not presigned).
+ */
+export async function uploadObject(key: string, body: string, contentType: string): Promise<void> {
+  const r2 = await getR2();
+  const command = new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: key,
+    Body: body,
+    ContentType: contentType,
+  });
+  await r2.send(command);
+}
+
+/**
+ * Generate a presigned GET URL with configurable expiry.
+ */
+export async function generatePresignedDownloadUrl(
+  key: string,
+  expiresInSeconds = 900,
+): Promise<string> {
+  const r2 = await getR2();
+  const command = new GetObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: key,
+  });
+  return getSignedUrl(r2, command, { expiresIn: expiresInSeconds });
+}
+
+/**
  * Delete an object from R2 by its key.
  */
 export async function deleteObject(key: string): Promise<void> {

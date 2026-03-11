@@ -16,4 +16,7 @@ export interface StoryRepository {
   addView(storyId: string, viewerId: string): Promise<StoryView | null>;
   incrementViewCount(storyId: string): Promise<void>;
   deleteExpiredStories(): Promise<{ deletedCount: number; mediaUrls: string[] }>;
+  getViewers(
+    storyId: string,
+  ): Promise<Array<{ id: string; displayName: string; avatarUrl: string | null; viewedAt: Date }>>;
 }

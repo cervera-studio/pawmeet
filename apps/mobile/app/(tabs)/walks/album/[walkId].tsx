@@ -1,14 +1,6 @@
 import { Stack } from 'expo-router';
 import { memo } from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  Image,
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, Image, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWalkAlbumViewModel } from './[walkId].view-model';
 

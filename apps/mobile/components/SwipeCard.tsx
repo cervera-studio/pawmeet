@@ -1,6 +1,6 @@
 import { formatDistance } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';
-import { Dimensions, Pressable, Text, View } from 'react-native';
+import { Dimensions, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,

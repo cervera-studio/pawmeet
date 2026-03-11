@@ -10,6 +10,7 @@ import { createTrpcFeedAdminRepository } from './trpc/trpc-feed-admin-repository
 import { createTrpcReportRepository } from './trpc/trpc-report-repository';
 import { createTrpcSettingsRepository } from './trpc/trpc-settings-repository';
 import { createTrpcStatsRepository } from './trpc/trpc-stats-repository';
+import { createTrpcStoryAdminRepository } from './trpc/trpc-story-admin-repository';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 const trpcClient = createApiClient(baseUrl, () => getAccessToken());
@@ -26,3 +27,4 @@ export const reportRepository = createTrpcReportRepository(trpcClient);
 export const contentModerationRepository = createTrpcContentModerationRepository(trpcClient);
 export const settingsRepository = createTrpcSettingsRepository(trpcClient);
 export const feedAdminRepository = createTrpcFeedAdminRepository(trpcClient);
+export const storyAdminRepository = createTrpcStoryAdminRepository(trpcClient);

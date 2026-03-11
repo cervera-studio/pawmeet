@@ -46,13 +46,17 @@ export class JwksSocialAuthVerifier implements SocialAuthVerifier {
   }
 
   private async verifyGoogle(idToken: string, nonce?: string): Promise<SocialAuthPayload> {
+    if (!nonce) {
+      throw new Error('Nonce is required for Google authentication');
+    }
+
     const { payload } = await jose.jwtVerify(idToken, this.googleJwks, {
       issuer: ['https://accounts.google.com', 'accounts.google.com'],
       audience: this.googleClientId,
     });
 
-    // Verify nonce if provided to prevent replay attacks
-    if (nonce && payload.nonce !== nonce) {
+    // Verify nonce to prevent replay attacks
+    if (payload.nonce !== nonce) {
       throw new Error('Google ID token nonce mismatch');
     }
 

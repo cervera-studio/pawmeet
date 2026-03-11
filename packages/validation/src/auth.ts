@@ -34,29 +34,21 @@ export const logoutSchema = z.object({
   refreshToken: z.string().min(1),
 });
 
-export const socialLoginSchema = z.object({
-  provider: z.enum(['apple', 'google']),
-  idToken: z.string().min(1),
-  nonce: z.string().min(1).optional(),
-  displayName: z.string().min(2).max(50).optional(),
-});
-
-/** @deprecated Used by current link-based flow. Will be replaced by verifyEmailOtpSchema. */
-export const verifyEmailSchema = z.object({
-  token: z.string().min(1),
-});
+export const socialLoginSchema = z
+  .object({
+    provider: z.enum(['apple', 'google']),
+    idToken: z.string().min(1),
+    nonce: z.string().min(1).optional(),
+    displayName: z.string().min(2).max(50).optional(),
+  })
+  .refine((data) => data.provider !== 'google' || data.nonce, {
+    message: 'Nonce obbligatorio per Google login',
+    path: ['nonce'],
+  });
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email(),
 });
-
-/** @deprecated Used by current link-based flow. Will be replaced by resetPasswordOtpSchema. */
-export const resetPasswordSchema = z.object({
-  token: z.string().min(1),
-  password: passwordSchema,
-});
-
-// --- OTP-based schemas (Phase C/D) ---
 
 export const verifyEmailOtpSchema = z.object({
   email: z.string().email(),
@@ -84,9 +76,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type RefreshInput = z.infer<typeof refreshSchema>;
 export type LogoutInput = z.infer<typeof logoutSchema>;
 export type SocialLoginInput = z.infer<typeof socialLoginSchema>;
-export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
 export type VerifyEmailOtpInput = z.infer<typeof verifyEmailOtpSchema>;
 export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
-export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ResetPasswordOtpInput = z.infer<typeof resetPasswordOtpSchema>;

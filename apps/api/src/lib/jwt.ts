@@ -117,7 +117,7 @@ export async function generateAdminRefreshToken(adminId: string, role: string): 
     .setSubject(adminId)
     .setIssuedAt()
     .setExpirationTime(ADMIN_REFRESH_TOKEN_EXPIRY)
-    .sign(getRefreshSecret());
+    .sign(getAdminJwtSecret());
 }
 
 export async function verifyAdminAccessToken(token: string): Promise<AdminTokenPayload> {
@@ -133,7 +133,7 @@ export async function verifyAdminAccessToken(token: string): Promise<AdminTokenP
 }
 
 export async function verifyAdminRefreshToken(token: string): Promise<AdminTokenPayload> {
-  const { payload } = await jwtVerify(token, getRefreshSecret());
+  const { payload } = await jwtVerify(token, getAdminJwtSecret());
   if (payload.type !== 'admin_refresh') {
     throw new Error('Invalid token type: expected admin refresh token');
   }

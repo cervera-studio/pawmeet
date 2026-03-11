@@ -5,8 +5,8 @@ import { memo } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeedbackModal } from '@/components/FeedbackModal';
-import type { Walk } from './walks.view-model';
-import { useWalksViewModel } from './walks.view-model';
+import type { Walk } from './index.view-model';
+import { useWalksViewModel } from './index.view-model';
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);

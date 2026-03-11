@@ -1,0 +1,84 @@
+import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
+import { useCallback, useEffect } from 'react';
+import { Alert } from 'react-native';
+import type { FeedItem, StoryGroup } from '@/hooks/useFeed';
+import { useFeed } from '@/hooks/useFeed';
+
+export type { FeedItem, StoryGroup };
+
+export function useFeedViewModel() {
+  const router = useRouter();
+  const {
+    items,
+    loading,
+    refreshing,
+    storyGroups,
+    refresh,
+    fetchMore,
+    fetchStories,
+    likePost,
+    deletePost,
+  } = useFeed();
+
+  useEffect(() => {
+    void refresh();
+    void fetchStories();
+  }, [refresh, fetchStories]);
+
+  const handleLike = useCallback(
+    async (postId: string) => {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await likePost(postId);
+    },
+    [likePost],
+  );
+
+  const handleDelete = useCallback(
+    async (postId: string) => {
+      Alert.alert('Elimina post', 'Sei sicuro di voler eliminare questo post?', [
+        { text: 'Annulla', style: 'cancel' },
+        {
+          text: 'Elimina',
+          style: 'destructive',
+          onPress: async () => {
+            const success = await deletePost(postId);
+            if (success) {
+              void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            }
+          },
+        },
+      ]);
+    },
+    [deletePost],
+  );
+
+  const navigateToPost = (postId: string) => {
+    router.push(`/(tabs)/feed/${postId}`);
+  };
+
+  const navigateToCreate = () => {
+    router.push('/(tabs)/feed/create');
+  };
+
+  const navigateToStoryViewer = (authorId: string) => {
+    router.push(`/(modals)/story-viewer?authorId=${authorId}`);
+  };
+
+  const isInitialLoad = loading && items.length === 0;
+
+  return {
+    items,
+    loading,
+    refreshing,
+    storyGroups,
+    isInitialLoad,
+    refresh,
+    fetchMore,
+    handleLike,
+    handleDelete,
+    navigateToPost,
+    navigateToCreate,
+    navigateToStoryViewer,
+  };
+}

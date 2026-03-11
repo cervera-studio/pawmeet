@@ -7,6 +7,11 @@ import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 
 const WS_URL = process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:3000/ws';
+
+function buildWsUrl(baseUrl: string, token: string): { url: string; protocols: string[] } {
+  // Never pass tokens as query params — use Sec-WebSocket-Protocol subprotocol
+  return { url: baseUrl, protocols: [`access_token.${token}`] };
+}
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 const CONVERSATIONS_CACHE_KEY = 'cache:conversations';
@@ -32,7 +37,8 @@ export function useChat(matchId?: string) {
   useEffect(() => {
     if (!token) return;
 
-    const ws = new WebSocket(`${WS_URL}?token=${token}`);
+    const { url, protocols } = buildWsUrl(WS_URL, token);
+    const ws = new WebSocket(url, protocols);
     wsRef.current = ws;
 
     ws.onopen = () => setConnected(true);

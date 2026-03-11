@@ -5,6 +5,8 @@ export interface StorageService {
     contentType: string,
   ): Promise<{ uploadUrl: string; key: string }>;
   buildDogPhotoKey(dogId: string, contentType: string): string;
+  buildPostMediaKey(postId: string, contentType: string): string;
+  buildStoryMediaKey(userId: string, contentType: string): string;
   deleteObject(key: string): Promise<void>;
   getPublicUrl(key: string): string;
   extractKeyFromUrl(url: string): string;

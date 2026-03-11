@@ -1,0 +1,52 @@
+import type { XpAction } from '@dogwalk/config';
+import { MAX_POST_CAPTION } from '@dogwalk/config';
+import type { Post, Result, XpSummary } from '@dogwalk/types';
+import { AppError, fail, succeed } from '@dogwalk/types';
+import type { FeedRepository } from '../ports/index.js';
+
+type AwardXpFn = (
+  userId: string,
+  action: XpAction,
+  metadata?: Record<string, unknown>,
+) => Promise<Result<{ xpAwarded: number; summary: XpSummary }>>;
+
+type Deps = {
+  feedRepo: FeedRepository;
+  awardXp?: AwardXpFn;
+};
+
+export function createCreatePost({ feedRepo, awardXp }: Deps) {
+  return async (
+    userId: string,
+    input: {
+      caption: string | null;
+      latitude: number | null;
+      longitude: number | null;
+      walkId: string | null;
+    },
+  ): Promise<Result<{ post: Post }>> => {
+    if (input.caption && input.caption.length > MAX_POST_CAPTION) {
+      return fail(
+        new AppError(
+          'CAPTION_TOO_LONG',
+          `La didascalia può avere al massimo ${MAX_POST_CAPTION} caratteri`,
+          400,
+        ),
+      );
+    }
+
+    const post = await feedRepo.createPost({
+      authorId: userId,
+      caption: input.caption ?? null,
+      latitude: input.latitude ?? null,
+      longitude: input.longitude ?? null,
+      walkId: input.walkId ?? null,
+    });
+
+    if (awardXp) {
+      await awardXp(userId, 'post_created', { postId: post.id });
+    }
+
+    return succeed({ post });
+  };
+}

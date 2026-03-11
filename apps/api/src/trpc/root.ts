@@ -2,8 +2,10 @@ import {
   authDeps,
   badgeDeps,
   chatDeps,
+  contentModerationDeps,
   dogDeps,
   feedbackDeps,
+  feedDeps,
   gamificationDeps,
   groupChatDeps,
   groupEventDeps,
@@ -16,7 +18,9 @@ import { createAdminRouter } from './routers/admin.js';
 import { createAuthRouter } from './routers/auth.js';
 import { createBadgesRouter } from './routers/badges.js';
 import { createChatRouter } from './routers/chat.js';
+import { createContentModerationRouter } from './routers/content-moderation.js';
 import { createDogsRouter } from './routers/dogs.js';
+import { createFeedRouter } from './routers/feed.js';
 import { createFeedbackRouter } from './routers/feedback.js';
 import { createGamificationRouter } from './routers/gamification.js';
 import { createGroupChatRouter } from './routers/group-chat.js';
@@ -36,6 +40,8 @@ export const appRouter = router({
   admin: createAdminRouter(db),
   walks: createWalksRouter(walkDeps),
   feedback: createFeedbackRouter(feedbackDeps),
+  feed: createFeedRouter(feedDeps),
+  contentModeration: createContentModerationRouter(contentModerationDeps),
   gamification: createGamificationRouter(gamificationDeps),
   groupChat: createGroupChatRouter(groupChatDeps),
   groupEvents: createGroupEventsRouter(groupEventDeps),

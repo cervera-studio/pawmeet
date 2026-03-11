@@ -14,6 +14,8 @@ export function getRedisConnection() {
 
 export const QUEUE_NAMES = {
   PHOTO_MODERATION: 'photo-moderation',
+  CONTENT_MODERATION: 'content-moderation',
+  STORY_CLEANUP: 'story-cleanup',
   NOTIFICATIONS: 'notifications',
   EMAIL: 'email',
   EVENT_STATUS: 'event-status',
@@ -22,6 +24,8 @@ export const QUEUE_NAMES = {
 // --- Lazy queue instances ---
 
 let _photoModerationQueue: Queue | null = null;
+let _contentModerationQueue: Queue | null = null;
+let _storyCleanupQueue: Queue | null = null;
 let _notificationQueue: Queue | null = null;
 let _emailQueue: Queue | null = null;
 let _eventStatusQueue: Queue | null = null;
@@ -39,6 +43,36 @@ export function getPhotoModerationQueue(): Queue {
     });
   }
   return _photoModerationQueue;
+}
+
+export function getContentModerationQueue(): Queue {
+  if (!_contentModerationQueue) {
+    _contentModerationQueue = new Queue(QUEUE_NAMES.CONTENT_MODERATION, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 1000 },
+        removeOnComplete: 100,
+        removeOnFail: 500,
+      },
+    });
+  }
+  return _contentModerationQueue;
+}
+
+export function getStoryCleanupQueue(): Queue {
+  if (!_storyCleanupQueue) {
+    _storyCleanupQueue = new Queue(QUEUE_NAMES.STORY_CLEANUP, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 2000 },
+        removeOnComplete: 50,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _storyCleanupQueue;
 }
 
 export function getNotificationQueue(): Queue {
@@ -94,6 +128,13 @@ export interface PhotoModerationJobData {
   url: string;
 }
 
+export interface ContentModerationJobData {
+  mediaId: string;
+  postId: string;
+  url: string;
+  mediaType: 'photo' | 'video';
+}
+
 export interface NotificationJobData {
   userId: string;
   title: string;
@@ -119,4 +160,12 @@ export async function enqueueNotification(data: NotificationJobData) {
 
 export async function enqueueEmail(data: EmailJobData) {
   return getEmailQueue().add('send', data);
+}
+
+export async function enqueueContentModeration(data: ContentModerationJobData) {
+  return getContentModerationQueue().add('moderate', data);
+}
+
+export async function enqueueStoryCleanup() {
+  return getStoryCleanupQueue().add('cleanup', {}, { repeat: { every: 60 * 60 * 1000 } });
 }

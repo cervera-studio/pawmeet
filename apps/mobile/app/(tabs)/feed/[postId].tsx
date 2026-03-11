@@ -1,0 +1,151 @@
+export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
+
+import { Stack } from 'expo-router';
+import { memo } from 'react';
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Avatar } from '@/components/ui/Avatar';
+import type { CommentWithAuthor } from './[postId].view-model';
+import { usePostDetailViewModel } from './[postId].view-model';
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+function formatDate(date: Date | string): string {
+  const d = new Date(date);
+  return d.toLocaleDateString('it-IT', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+// ── Comment Row ─────────────────────────────────────────────────────────
+
+const CommentRow = memo(function CommentRow({ comment }: { comment: CommentWithAuthor }) {
+  return (
+    <View className={`flex-row gap-3 px-4 py-3 ${comment.parentId ? 'pl-12' : ''}`}>
+      <Avatar size="sm" imageUrl={comment.author.avatarUrl} name={comment.author.displayName} />
+      <View className="flex-1">
+        <Text className="text-sm font-semibold text-gray-900">{comment.author.displayName}</Text>
+        <Text className="text-sm text-gray-700">{comment.content}</Text>
+        <Text className="mt-1 text-xs text-gray-400">{formatDate(comment.createdAt)}</Text>
+      </View>
+    </View>
+  );
+});
+
+// ── Loading State ──────────────────────────────────────────────────────
+
+function PostDetailSkeleton() {
+  return (
+    <View className="p-4">
+      <View className="mb-4 h-64 rounded-xl bg-gray-100" />
+      <View className="mb-2 h-4 w-3/4 rounded bg-gray-100" />
+      <View className="h-4 w-1/2 rounded bg-gray-100" />
+    </View>
+  );
+}
+
+// ── Main Screen ────────────────────────────────────────────────────────
+
+export default function PostDetailScreen() {
+  const vm = usePostDetailViewModel();
+
+  return (
+    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+      <Stack.Screen
+        options={{
+          title: 'Post',
+          headerBackTitle: 'Feed',
+        }}
+      />
+
+      {vm.loading || !vm.post ? (
+        <PostDetailSkeleton />
+      ) : (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1"
+          keyboardVerticalOffset={90}
+        >
+          <FlatList
+            data={vm.comments}
+            keyExtractor={(item) => item.id}
+            ListHeaderComponent={
+              <View className="border-b border-gray-100">
+                {/* Author */}
+                <View className="flex-row items-center gap-3 px-4 py-3">
+                  <Avatar
+                    size="sm"
+                    imageUrl={vm.post.author.avatarUrl}
+                    name={vm.post.author.displayName}
+                  />
+                  <Text className="font-semibold text-gray-900">{vm.post.author.displayName}</Text>
+                </View>
+
+                {/* Caption */}
+                {vm.post.caption ? (
+                  <Text className="px-4 pb-3 text-sm text-gray-700">{vm.post.caption}</Text>
+                ) : null}
+
+                {/* Actions */}
+                <View className="flex-row items-center gap-4 border-t border-gray-50 px-4 py-2">
+                  <Pressable onPress={vm.handleLike} className="flex-row items-center gap-1">
+                    <Text className="text-lg">{vm.post.isLikedByMe ? '❤️' : '🤍'}</Text>
+                    <Text className="text-sm text-gray-600">{vm.post.likesCount}</Text>
+                  </Pressable>
+                  <View className="flex-row items-center gap-1">
+                    <Text className="text-lg">💬</Text>
+                    <Text className="text-sm text-gray-600">{vm.post.commentsCount}</Text>
+                  </View>
+                </View>
+
+                {/* Comments header */}
+                <View className="border-t border-gray-100 px-4 py-2">
+                  <Text className="text-sm font-semibold text-gray-500">Commenti</Text>
+                </View>
+              </View>
+            }
+            renderItem={({ item }) => <CommentRow comment={item} />}
+            onEndReached={vm.loadMoreComments}
+            onEndReachedThreshold={0.5}
+            ListEmptyComponent={
+              <Text className="px-4 py-8 text-center text-sm text-gray-400">
+                Nessun commento ancora
+              </Text>
+            }
+          />
+
+          {/* Comment Input */}
+          <View className="flex-row items-center gap-2 border-t border-gray-100 px-4 py-2">
+            <TextInput
+              className="flex-1 rounded-full bg-gray-100 px-4 py-2 text-sm"
+              placeholder="Scrivi un commento..."
+              value={vm.commentText}
+              onChangeText={vm.setCommentText}
+              maxLength={500}
+            />
+            <Pressable
+              onPress={vm.handleSubmitComment}
+              disabled={vm.submitting || !vm.commentText.trim()}
+              className="rounded-full bg-emerald-800 px-4 py-2"
+            >
+              <Text className="text-sm font-semibold text-white">
+                {vm.submitting ? '...' : 'Invia'}
+              </Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      )}
+    </SafeAreaView>
+  );
+}

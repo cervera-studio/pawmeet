@@ -1,6 +1,7 @@
 export * from './badge';
 export * from './chat';
 export * from './dog';
+export * from './feed';
 export * from './feedback';
 export * from './gamification';
 export * from './group-chat';

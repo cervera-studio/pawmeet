@@ -3,6 +3,7 @@ export * from './badges';
 export * from './breeds';
 export * from './chat';
 export * from './dogs';
+export * from './feed';
 export * from './feedback';
 export * from './gamification';
 export * from './group-events';

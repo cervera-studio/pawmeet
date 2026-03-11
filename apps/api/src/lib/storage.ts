@@ -9,8 +9,24 @@ export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as 
 
 export type AllowedImageType = (typeof ALLOWED_IMAGE_TYPES)[number];
 
+/** Zod-compatible tuple version for use in z.enum() */
+export const ALLOWED_IMAGE_TYPES_TUPLE: [string, ...string[]] = [...ALLOWED_IMAGE_TYPES];
+
+/** Allowed video MIME types for uploads */
+export const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/quicktime'] as const;
+
+export type AllowedVideoType = (typeof ALLOWED_VIDEO_TYPES)[number];
+
+/** All allowed media types (images + videos) */
+export const ALLOWED_MEDIA_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES] as const;
+
+export type AllowedMediaType = (typeof ALLOWED_MEDIA_TYPES)[number];
+
 /** Max file size in bytes (5 MB) */
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+/** Max video file size in bytes (100 MB) */
+export const MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024;
 
 /** Presigned URL expiry in seconds (10 minutes) */
 const PRESIGNED_EXPIRY = 600;
@@ -37,6 +53,24 @@ export function buildAvatarKey(userId: string, contentType: AllowedImageType): s
 export function buildDogPhotoKey(dogId: string, contentType: AllowedImageType): string {
   const ext = contentType.split('/')[1];
   return `dogs/${dogId}/${Date.now()}.${ext}`;
+}
+
+/**
+ * Build the R2 object key for a post media file.
+ * Format: posts/{postId}/{timestamp}.{ext}
+ */
+export function buildPostMediaKey(postId: string, contentType: AllowedMediaType): string {
+  const ext = contentType.split('/')[1];
+  return `posts/${postId}/${Date.now()}.${ext}`;
+}
+
+/**
+ * Build the R2 object key for a story media file.
+ * Format: stories/{userId}/{timestamp}.{ext}
+ */
+export function buildStoryMediaKey(userId: string, contentType: AllowedMediaType): string {
+  const ext = contentType.split('/')[1];
+  return `stories/${userId}/${Date.now()}.${ext}`;
 }
 
 /**

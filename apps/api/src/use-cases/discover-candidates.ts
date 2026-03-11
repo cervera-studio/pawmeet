@@ -155,9 +155,16 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo }: Deps)
 
     // Get current user's location
     const user = await userRepo.findById(userId);
-    if (!user?.latitude || !user?.longitude) {
+    if (
+      user?.latitude === null ||
+      user?.latitude === undefined ||
+      user?.longitude === null ||
+      user?.longitude === undefined
+    ) {
       return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
     }
+    const userLat = user.latitude;
+    const userLon = user.longitude;
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
@@ -169,34 +176,26 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo }: Deps)
 
     // Apply discovery filters, score, and rank
     const scored = candidates
-      .filter((c) => {
-        if (!c.ownerLat || !c.ownerLon) return false;
-        if (swipedIds.has(c.dog.id)) return false;
+      .flatMap((c) => {
+        if (c.ownerLat === null || c.ownerLon === null) return [];
+        if (swipedIds.has(c.dog.id)) return [];
         // Apply user-selected filters before expensive scoring
-        if (filters && !matchesFilters(c.dog, filters)) return false;
-        return true;
-      })
-      .map((c) => {
-        const distanceKm = calculateDistance(
-          user.latitude!,
-          user.longitude!,
-          c.ownerLat!,
-          c.ownerLon!,
-        );
-        if (distanceKm > radiusKm) return null;
+        if (filters && !matchesFilters(c.dog, filters)) return [];
+
+        const distanceKm = calculateDistance(userLat, userLon, c.ownerLat, c.ownerLon);
+        if (distanceKm > radiusKm) return [];
 
         const score = calculateCompatibilityScore(myDog, c.dog, distanceKm);
+        if (score < COMPATIBILITY_THRESHOLD) return [];
 
-        return {
-          dog: c.dog,
-          distanceKm: Math.round(distanceKm * 10) / 10,
-          compatibilityScore: Math.round(score * 100) / 100,
-        };
+        return [
+          {
+            dog: c.dog,
+            distanceKm: Math.round(distanceKm * 10) / 10,
+            compatibilityScore: Math.round(score * 100) / 100,
+          },
+        ];
       })
-      .filter(
-        (c): c is NonNullable<typeof c> =>
-          c !== null && c.compatibilityScore >= COMPATIBILITY_THRESHOLD,
-      )
       .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
       .slice(0, effectiveLimit);
 

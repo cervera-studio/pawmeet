@@ -1,6 +1,9 @@
 import {
   type AllowedImageType,
+  type AllowedMediaType,
   buildDogPhotoKey as buildDogPhotoKeyLib,
+  buildPostMediaKey as buildPostMediaKeyLib,
+  buildStoryMediaKey as buildStoryMediaKeyLib,
   deleteObject,
   extractKeyFromUrl,
   generatePresignedUploadUrl,
@@ -23,6 +26,14 @@ export class R2StorageService implements StorageService {
 
   buildDogPhotoKey(dogId: string, contentType: string): string {
     return buildDogPhotoKeyLib(dogId, contentType as AllowedImageType);
+  }
+
+  buildPostMediaKey(postId: string, contentType: string): string {
+    return buildPostMediaKeyLib(postId, contentType as AllowedMediaType);
+  }
+
+  buildStoryMediaKey(userId: string, contentType: string): string {
+    return buildStoryMediaKeyLib(userId, contentType as AllowedMediaType);
   }
 
   async deleteObject(key: string): Promise<void> {

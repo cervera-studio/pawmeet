@@ -32,6 +32,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="feed"
+        options={{
+          title: 'Feed',
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>📸</Text>,
+        }}
+      />
+      <Tabs.Screen
         name="matches"
         options={{
           title: 'Match',

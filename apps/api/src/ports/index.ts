@@ -3,8 +3,16 @@ export type { AuthService, TokenPair } from './auth-service.js';
 export type { BadgeRepository } from './badge-repository.js';
 export type { Breed, BreedRepository } from './breed-repository.js';
 export type { ChatService } from './chat-service.js';
+export type { ContentReportRepository, CreateReportInput } from './content-report-repository.js';
 export type { CreateDogInput, DogRepository } from './dog-repository.js';
 export type { EmailService } from './email-service.js';
+export type {
+  AddPostMediaInput,
+  CommentsPage,
+  CreatePostInput,
+  FeedPage,
+  FeedRepository,
+} from './feed-repository.js';
 export type { FeedbackRepository } from './feedback-repository.js';
 export type {
   CreateGroupEventInput,
@@ -20,6 +28,7 @@ export type {
 } from './message-repository.js';
 export type { NotificationService } from './notification-service.js';
 export type { StorageService } from './storage-service.js';
+export type { CreateStoryInput, StoryRepository } from './story-repository.js';
 export type {
   RefreshTokenRecord,
   TokenRepository,
@@ -31,4 +40,5 @@ export type {
   NearbyUser,
   UserRepository,
 } from './user-repository.js';
+export type { WalkAlbumRepository } from './walk-album-repository.js';
 export type { WalkRepository } from './walk-repository.js';

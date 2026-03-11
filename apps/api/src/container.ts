@@ -4,15 +4,19 @@ import { BullMQNotificationService } from './infra/bullmq-notification-service.j
 import { DrizzleAdminUserRepository } from './infra/drizzle-admin-user-repository.js';
 import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
+import { DrizzleContentReportRepository } from './infra/drizzle-content-report-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
+import { DrizzleFeedRepository } from './infra/drizzle-feed-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
 import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repository.js';
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
 import { DrizzleMessageRepository } from './infra/drizzle-message-repository.js';
+import { DrizzleStoryRepository } from './infra/drizzle-story-repository.js';
 import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
 import { DrizzleUserRepository } from './infra/drizzle-user-repository.js';
+import { DrizzleWalkAlbumRepository } from './infra/drizzle-walk-album-repository.js';
 import { DrizzleWalkRepository } from './infra/drizzle-walk-repository.js';
 import { JwtAuthService } from './infra/jwt-auth-service.js';
 import { R2StorageService } from './infra/r2-storage-service.js';
@@ -32,11 +36,20 @@ import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-a
 import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
 // Use cases — dogs
 import { createConfirmDogPhoto } from './use-cases/confirm-dog-photo.js';
+// Use cases — feed
+import { createConfirmPostMedia } from './use-cases/confirm-post-media.js';
+import { createConfirmStory } from './use-cases/confirm-story.js';
+import { createCreateComment } from './use-cases/create-comment.js';
 import { createCreateDog } from './use-cases/create-dog.js';
 import { createCreateGroupEvent } from './use-cases/create-group-event.js';
+import { createCreatePost } from './use-cases/create-post.js';
+import { createCreateStory } from './use-cases/create-story.js';
+import { createCreateWalkAlbum } from './use-cases/create-walk-album.js';
 import { createDeleteAvatar } from './use-cases/delete-avatar.js';
+import { createDeleteComment } from './use-cases/delete-comment.js';
 import { createDeleteDog } from './use-cases/delete-dog.js';
 import { createDeleteDogPhoto } from './use-cases/delete-dog-photo.js';
+import { createDeletePost } from './use-cases/delete-post.js';
 // Use cases — matches
 import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
@@ -45,16 +58,24 @@ import { createForgotPassword } from './use-cases/forgot-password.js';
 import { createGetDog } from './use-cases/get-dog.js';
 // Use cases — feedback
 import { createGetDogRating } from './use-cases/get-dog-rating.js';
+import { createGetFeed } from './use-cases/get-feed.js';
+import { createGetFeedStories } from './use-cases/get-feed-stories.js';
 import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
 import { createGetGroupMessages } from './use-cases/get-group-messages.js';
 import { createGetLeaderboard } from './use-cases/get-leaderboard.js';
 import { createGetMessages } from './use-cases/get-messages.js';
+import { createGetPendingReports } from './use-cases/get-pending-reports.js';
+import { createGetPostComments } from './use-cases/get-post-comments.js';
+import { createGetPostDetail } from './use-cases/get-post-detail.js';
 import { createGetProfile } from './use-cases/get-profile.js';
+import { createGetUserPosts } from './use-cases/get-user-posts.js';
+import { createGetWalkAlbum } from './use-cases/get-walk-album.js';
 import { createGetXpSummary } from './use-cases/get-xp-summary.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
 import { createLikeDog } from './use-cases/like-dog.js';
+import { createLikePost } from './use-cases/like-post.js';
 import { createListAchievements } from './use-cases/list-achievements.js';
 import { createListActiveChallenges } from './use-cases/list-active-challenges.js';
 import { createListBadges } from './use-cases/list-badges.js';
@@ -77,8 +98,10 @@ import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
+import { createReportContent } from './use-cases/report-content.js';
 import { createResetPassword } from './use-cases/reset-password.js';
 import { createRespondToWalk } from './use-cases/respond-to-walk.js';
+import { createReviewContentReport } from './use-cases/review-content-report.js';
 import { createSearchBreeds } from './use-cases/search-breeds.js';
 import { createSendGroupMessage } from './use-cases/send-group-message.js';
 import { createSendMessage } from './use-cases/send-message.js';
@@ -92,7 +115,9 @@ import { createUpdateNotificationPrefs } from './use-cases/update-notification-p
 import { createUpdatePreferences } from './use-cases/update-preferences.js';
 import { createUploadAvatarUrl } from './use-cases/upload-avatar-url.js';
 import { createUploadDogPhotoUrl } from './use-cases/upload-dog-photo-url.js';
+import { createUploadPostMediaUrl } from './use-cases/upload-post-media-url.js';
 import { createVerifyEmail } from './use-cases/verify-email.js';
+import { createViewStory } from './use-cases/view-story.js';
 
 // ── Repositories ────────────────────────────────────────────────────────────────
 
@@ -109,6 +134,10 @@ const groupEventRepo = new DrizzleGroupEventRepository(db);
 const groupMessageRepo = new DrizzleGroupMessageRepository(db);
 const badgeRepo = new DrizzleBadgeRepository(db);
 const gamificationRepo = new DrizzleGamificationRepository(db);
+const feedRepo = new DrizzleFeedRepository(db);
+const storyRepo = new DrizzleStoryRepository(db);
+const contentReportRepo = new DrizzleContentReportRepository(db);
+const walkAlbumRepo = new DrizzleWalkAlbumRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
 
@@ -244,6 +273,41 @@ export const gamificationDeps = {
   listAchievements: createListAchievements({ gamificationRepo }),
 };
 
+// ── Feed deps ─────────────────────────────────────────────────────────────────
+
+export const feedDeps = {
+  createPost: createCreatePost({ feedRepo, awardXp }),
+  deletePost: createDeletePost({ feedRepo }),
+  getFeed: createGetFeed({ feedRepo }),
+  getUserPosts: createGetUserPosts({ feedRepo }),
+  getPostDetail: createGetPostDetail({ feedRepo }),
+  uploadPostMediaUrl: createUploadPostMediaUrl({ feedRepo, storage }),
+  confirmPostMedia: createConfirmPostMedia({ feedRepo, storage }),
+  likePost: createLikePost({ feedRepo }),
+  createComment: createCreateComment({ feedRepo }),
+  deleteComment: createDeleteComment({ feedRepo }),
+  getPostComments: createGetPostComments({ feedRepo }),
+  createStory: createCreateStory({ storyRepo, storage }),
+  confirmStory: createConfirmStory({ storyRepo, storage, awardXp }),
+  getFeedStories: createGetFeedStories({ storyRepo }),
+  viewStory: createViewStory({ storyRepo }),
+  reportContent: createReportContent({ contentReportRepo }),
+  getWalkAlbum: createGetWalkAlbum({ walkAlbumRepo, feedRepo }),
+};
+
+// ── Content moderation deps ─────────────────────────────────────────────────
+
+export const contentModerationDeps = {
+  getPendingReports: createGetPendingReports({ contentReportRepo }),
+  reviewContentReport: createReviewContentReport({ contentReportRepo }),
+};
+
+// ── Walk album deps ─────────────────────────────────────────────────────────
+
+export const walkAlbumDeps = {
+  createWalkAlbum: createCreateWalkAlbum({ walkAlbumRepo }),
+};
+
 // ── Admin deps ────────────────────────────────────────────────────────────────
 
 export const adminDeps = {
@@ -262,4 +326,18 @@ export const eventStatusDeps = {
 export const photoModerationDeps = {
   dogRepo,
   notificationService,
+};
+
+// ── Content moderation worker deps ──────────────────────────────────────────
+
+export const contentModerationWorkerDeps = {
+  feedRepo,
+  notificationService,
+};
+
+// ── Story cleanup worker deps ───────────────────────────────────────────────
+
+export const storyCleanupWorkerDeps = {
+  storyRepo,
+  storage,
 };

@@ -8,6 +8,7 @@ import {
   type Challenge,
   type ChatMessage,
   type ContentReport,
+  type DailyActivity,
   type DogProfile,
   type GroupChatMessage,
   type GroupEvent,
@@ -22,8 +23,11 @@ import {
   type Walk,
   type WalkAlbum,
   type WalkFeedback,
+  type WalkTrack,
+  type WalkTrackPoint,
 } from '@dogwalk/types';
 import { vi } from 'vitest';
+import type { ActivityRepository } from '../ports/activity-repository.js';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import type {
   AuthService,
@@ -47,6 +51,7 @@ import type {
   UserRepository,
   WalkAlbumRepository,
   WalkRepository,
+  WalkTrackRepository,
 } from '../ports/index.js';
 
 // ── Entity builders ──────────────────────────────────────────────────────────
@@ -708,6 +713,99 @@ export function buildWalkAlbumRepo(
     createAlbum: vi.fn().mockResolvedValue(buildWalkAlbum()),
     findByWalkId: vi.fn().mockResolvedValue(null),
     finalizeAlbum: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
+  };
+}
+
+// ── Fitness entity builders ──────────────────────────────────────────────────
+
+export function buildWalkTrack(overrides: Partial<WalkTrack> = {}): WalkTrack {
+  return {
+    id: 'track-1',
+    walkId: null,
+    userId: 'user-1',
+    startedAt: new Date('2026-03-10T08:00:00Z'),
+    endedAt: null,
+    distanceKm: 0,
+    durationMinutes: 0,
+    avgSpeedKmh: 0,
+    isCompleted: false,
+    createdAt: new Date('2026-03-10T08:00:00Z'),
+    ...overrides,
+  };
+}
+
+export function buildTrackPoint(overrides: Partial<WalkTrackPoint> = {}): WalkTrackPoint {
+  return {
+    id: 'point-1',
+    trackId: 'track-1',
+    latitude: 41.9028,
+    longitude: 12.4964,
+    altitude: null,
+    timestamp: new Date('2026-03-10T08:00:00Z'),
+    speedKmh: null,
+    position: 0,
+    ...overrides,
+  };
+}
+
+export function buildDailyActivity(overrides: Partial<DailyActivity> = {}): DailyActivity {
+  return {
+    id: 'activity-1',
+    userId: 'user-1',
+    date: '2026-03-10',
+    stepsCount: 5000,
+    walkDistanceKm: 3.5,
+    walkDurationMin: 45,
+    walkCount: 2,
+    source: 'app',
+    createdAt: new Date('2026-03-10'),
+    updatedAt: new Date('2026-03-10'),
+    ...overrides,
+  };
+}
+
+// ── Fitness repository builders ──────────────────────────────────────────────
+
+export function buildWalkTrackRepo(
+  overrides: Partial<WalkTrackRepository> = {},
+): WalkTrackRepository {
+  return {
+    startTrack: vi.fn().mockResolvedValue(buildWalkTrack()),
+    addPoints: vi.fn().mockResolvedValue(undefined),
+    endTrack: vi.fn().mockResolvedValue(buildWalkTrack({ isCompleted: true })),
+    findById: vi.fn().mockResolvedValue(buildWalkTrack()),
+    findByWalk: vi.fn().mockResolvedValue(null),
+    findByUser: vi.fn().mockResolvedValue({ tracks: [], nextCursor: null }),
+    findPointsByTrack: vi.fn().mockResolvedValue([]),
+    ...overrides,
+  };
+}
+
+export function buildActivityRepo(overrides: Partial<ActivityRepository> = {}): ActivityRepository {
+  return {
+    upsertDaily: vi.fn().mockResolvedValue(buildDailyActivity()),
+    getWeeklySummary: vi.fn().mockResolvedValue({
+      totalSteps: 0,
+      totalDistanceKm: 0,
+      totalDurationMin: 0,
+      totalWalks: 0,
+      avgDailySteps: 0,
+      avgDailyDistanceKm: 0,
+      avgDailyDurationMin: 0,
+      days: [],
+    }),
+    getMonthlySummary: vi.fn().mockResolvedValue({
+      totalSteps: 0,
+      totalDistanceKm: 0,
+      totalDurationMin: 0,
+      totalWalks: 0,
+      avgDailySteps: 0,
+      avgDailyDistanceKm: 0,
+      avgDailyDurationMin: 0,
+      days: [],
+    }),
+    getDailyHistory: vi.fn().mockResolvedValue([]),
     ...overrides,
   };
 }

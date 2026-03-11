@@ -1,3 +1,4 @@
+export type { ActivityRepository } from './activity-repository.js';
 export type { AdminUser, AdminUserRepository } from './admin-user-repository.js';
 export type { AuthService, TokenPair } from './auth-service.js';
 export type { BadgeRepository } from './badge-repository.js';
@@ -42,3 +43,4 @@ export type {
 } from './user-repository.js';
 export type { WalkAlbumRepository } from './walk-album-repository.js';
 export type { WalkRepository } from './walk-repository.js';
+export type { WalkTrackRepository } from './walk-track-repository.js';

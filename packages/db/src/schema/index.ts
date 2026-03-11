@@ -5,6 +5,7 @@ export * from './chat';
 export * from './dogs';
 export * from './feed';
 export * from './feedback';
+export * from './fitness';
 export * from './gamification';
 export * from './group-events';
 export * from './group-messages';

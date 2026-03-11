@@ -1,6 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { WALK_STATUS } from '@dogwalk/types';
+import { useRouter } from 'expo-router';
 import { memo } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -190,11 +191,18 @@ function WalksEmptyState() {
 
 export default function WalksScreen() {
   const vm = useWalksViewModel();
+  const router = useRouter();
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <View className="border-b border-gray-100 bg-white px-4 py-4">
+      <View className="flex-row items-center justify-between border-b border-gray-100 bg-white px-4 py-4">
         <Text className="text-2xl font-bold text-gray-900">Passeggiate</Text>
+        <Pressable
+          onPress={() => router.push('/(tabs)/walks/tracking')}
+          className="rounded-full bg-emerald-700 px-4 py-2"
+        >
+          <Text className="text-sm font-semibold text-white">Traccia</Text>
+        </Pressable>
       </View>
 
       {vm.isInitialLoad ? (

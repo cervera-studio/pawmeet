@@ -145,6 +145,14 @@ export default function ProfileScreen() {
         {/* Menu */}
         <View className="gap-1">
           <Pressable
+            onPress={vm.navigateToActivity}
+            className="flex-row items-center justify-between rounded-xl px-4 py-4"
+          >
+            <Text className="text-base text-gray-700">Attività e Statistiche</Text>
+            <Text className="text-gray-400">{'\u203A'}</Text>
+          </Pressable>
+
+          <Pressable
             onPress={vm.navigateToSettings}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >

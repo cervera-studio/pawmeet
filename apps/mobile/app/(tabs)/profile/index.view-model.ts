@@ -42,6 +42,10 @@ export function useProfileViewModel() {
     router.push('/(modals)/settings');
   };
 
+  const navigateToActivity = () => {
+    router.push('/(tabs)/profile/activity');
+  };
+
   const isLoading = !user || loadingDogs;
 
   return {
@@ -55,6 +59,7 @@ export function useProfileViewModel() {
     navigateToAddDog,
     navigateToDogDetail,
     navigateToSettings,
+    navigateToActivity,
     logout,
   };
 }

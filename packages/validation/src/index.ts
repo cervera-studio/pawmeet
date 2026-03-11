@@ -3,6 +3,7 @@ export * from './chat';
 export * from './dog';
 export * from './feed';
 export * from './feedback';
+export * from './fitness';
 export * from './gamification';
 export * from './group-chat';
 export * from './group-event';

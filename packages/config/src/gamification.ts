@@ -9,6 +9,7 @@ export const XP_ACTION = {
   CHALLENGE_COMPLETED: 'challenge_completed',
   POST_CREATED: 'post_created',
   STORY_CREATED: 'story_created',
+  WALK_TRACKED: 'walk_tracked',
 } as const;
 
 export type XpAction = (typeof XP_ACTION)[keyof typeof XP_ACTION];
@@ -22,6 +23,7 @@ export const XP_POINTS: Record<XpAction, number> = {
   [XP_ACTION.CHALLENGE_COMPLETED]: 100,
   [XP_ACTION.POST_CREATED]: 15,
   [XP_ACTION.STORY_CREATED]: 10,
+  [XP_ACTION.WALK_TRACKED]: 25,
 } as const;
 
 // ── User Levels ─────────────────────────────────────────────────────────────

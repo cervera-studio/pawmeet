@@ -1,6 +1,7 @@
 // Infra implementations
 
 import { BullMQNotificationService } from './infra/bullmq-notification-service.js';
+import { DrizzleActivityRepository } from './infra/drizzle-activity-repository.js';
 import { DrizzleAdminUserRepository } from './infra/drizzle-admin-user-repository.js';
 import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
@@ -18,11 +19,14 @@ import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
 import { DrizzleUserRepository } from './infra/drizzle-user-repository.js';
 import { DrizzleWalkAlbumRepository } from './infra/drizzle-walk-album-repository.js';
 import { DrizzleWalkRepository } from './infra/drizzle-walk-repository.js';
+import { DrizzleWalkTrackRepository } from './infra/drizzle-walk-track-repository.js';
 import { JwtAuthService } from './infra/jwt-auth-service.js';
 import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
 import { db } from './lib/db.js';
+// Use cases — fitness
+import { createAddTrackPoints } from './use-cases/add-track-points.js';
 // Use cases — gamification
 import { createAwardXp } from './use-cases/award-xp.js';
 // Use cases — group events
@@ -52,10 +56,13 @@ import { createDeleteDogPhoto } from './use-cases/delete-dog-photo.js';
 import { createDeletePost } from './use-cases/delete-post.js';
 // Use cases — matches
 import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
+import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
+import { createGetActivityStats } from './use-cases/get-activity-stats.js';
 import { createGetDog } from './use-cases/get-dog.js';
+import { createGetDogHealthGoal } from './use-cases/get-dog-health-goal.js';
 // Use cases — feedback
 import { createGetDogRating } from './use-cases/get-dog-rating.js';
 import { createGetFeed } from './use-cases/get-feed.js';
@@ -70,7 +77,9 @@ import { createGetPostComments } from './use-cases/get-post-comments.js';
 import { createGetPostDetail } from './use-cases/get-post-detail.js';
 import { createGetProfile } from './use-cases/get-profile.js';
 import { createGetUserPosts } from './use-cases/get-user-posts.js';
+import { createGetUserTracks } from './use-cases/get-user-tracks.js';
 import { createGetWalkAlbum } from './use-cases/get-walk-album.js';
+import { createGetWalkTrack } from './use-cases/get-walk-track.js';
 import { createGetXpSummary } from './use-cases/get-xp-summary.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
@@ -105,7 +114,9 @@ import { createReviewContentReport } from './use-cases/review-content-report.js'
 import { createSearchBreeds } from './use-cases/search-breeds.js';
 import { createSendGroupMessage } from './use-cases/send-group-message.js';
 import { createSendMessage } from './use-cases/send-message.js';
+import { createStartWalkTracking } from './use-cases/start-walk-tracking.js';
 import { createSubmitFeedback } from './use-cases/submit-feedback.js';
+import { createSyncHealthData } from './use-cases/sync-health-data.js';
 import { createUnmatch } from './use-cases/unmatch.js';
 import { createUpdateChallengeProgress } from './use-cases/update-challenge-progress.js';
 import { createUpdateDog } from './use-cases/update-dog.js';
@@ -138,6 +149,8 @@ const feedRepo = new DrizzleFeedRepository(db);
 const storyRepo = new DrizzleStoryRepository(db);
 const contentReportRepo = new DrizzleContentReportRepository(db);
 const walkAlbumRepo = new DrizzleWalkAlbumRepository(db);
+const walkTrackRepo = new DrizzleWalkTrackRepository(db);
+const activityRepo = new DrizzleActivityRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
 
@@ -293,6 +306,19 @@ export const feedDeps = {
   viewStory: createViewStory({ storyRepo }),
   reportContent: createReportContent({ contentReportRepo }),
   getWalkAlbum: createGetWalkAlbum({ walkAlbumRepo, feedRepo }),
+};
+
+// ── Fitness deps ────────────────────────────────────────────────────────────
+
+export const fitnessDeps = {
+  startWalkTracking: createStartWalkTracking({ walkTrackRepo, walkRepo }),
+  addTrackPoints: createAddTrackPoints({ walkTrackRepo }),
+  endWalkTracking: createEndWalkTracking({ walkTrackRepo, awardXp }),
+  getWalkTrack: createGetWalkTrack({ walkTrackRepo }),
+  getUserTracks: createGetUserTracks({ walkTrackRepo }),
+  syncHealthData: createSyncHealthData({ activityRepo }),
+  getActivityStats: createGetActivityStats({ activityRepo }),
+  getDogHealthGoal: createGetDogHealthGoal({ dogRepo, activityRepo }),
 };
 
 // ── Content moderation deps ─────────────────────────────────────────────────

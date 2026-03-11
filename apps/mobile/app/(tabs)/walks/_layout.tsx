@@ -5,6 +5,14 @@ export default function WalksLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen
+        name="tracking"
+        options={{
+          headerShown: true,
+          title: 'Traccia passeggiata',
+          headerBackTitle: 'Passeggiate',
+        }}
+      />
+      <Stack.Screen
         name="album/[walkId]"
         options={{
           headerShown: true,

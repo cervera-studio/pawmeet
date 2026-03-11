@@ -29,7 +29,7 @@ A seguito del dibattito architetturale documentato nel doc 11, il panel ha votat
 
 **Motivazione sintetica:**
 
-1. **Uniformita dello stack**: Zero nuove tecnologie, zero nuovi design system, zero nuovi paradigmi. Il backoffice usa lo stesso stack del resto del progetto (Next.js, Tailwind CSS, TanStack Query, React Hook Form + Zod, shadcn/ui). Ogni dev che lavora sul mobile o sulla web app puo lavorare sul backoffice senza ramp-up.
+1. **Uniformita dello stack**: Zero nuove tecnologie, zero nuovi design system, zero nuovi paradigmi. Il backoffice usa lo stesso stack del resto del progetto (Next.js, Tailwind CSS, React Hook Form + Zod, shadcn/ui, repository pattern). Ogni dev che lavora sul mobile o sulla web app puo lavorare sul backoffice senza ramp-up.
 
 2. **Costo di manutenzione ridotto**: ~15 dipendenze in meno da aggiornare, monitorare e debuggare. Un solo design system da mantenere allineato al brand.
 
@@ -37,7 +37,7 @@ A seguito del dibattito architetturale documentato nel doc 11, il panel ha votat
 
 4. **Time-to-MVP accettabile**: La differenza stimata e di ~7 giorni lavorativi rispetto a Refine, recuperati in zero ramp-up sul framework e manutenzione ridotta nei mesi successivi.
 
-5. **Nessun layer di astrazione superfluo**: TanStack Query chiama direttamente il client API (`@dogwalk/api-client`), senza passare per un data provider intermedio. I form usano React Hook Form + Zod direttamente, senza adattare la validazione a un sistema proprietario.
+5. **Repository layer leggero**: I view-model non chiamano tRPC/REST direttamente ma passano attraverso interfacce repository (`UserRepository`, `DogRepository`, etc.) fornite via React Context. Questo permette di migrare incrementalmente da REST a tRPC senza toccare i view-model, e di mockare facilmente i repository nei test. I form usano React Hook Form + Zod direttamente, senza adattare la validazione a un sistema proprietario.
 
 ### 1.2 Stack Completo
 
@@ -46,7 +46,7 @@ A seguito del dibattito architetturale documentato nel doc 11, il panel ha votat
 | **Framework** | Next.js (App Router) | 15.x | Stesso della web app, SSR/ISR per dashboard |
 | **UI Library** | shadcn/ui | - | Componenti copiati nel progetto, zero dipendenza runtime, stesso design system di web e mobile |
 | **Styling** | Tailwind CSS | 4.x | Stesso del resto del progetto, design system unificato |
-| **Data Fetching** | TanStack Query | 5.x | Gia usato nel mobile e nella web app, caching e invalidazione nativi |
+| **Data Fetching** | Server Components + Server Actions + Repository pattern | - | Data fetching server-side via repository interfaces, mutations via Server Actions. Nessuna dipendenza client-side per data fetching. |
 | **Tabelle** | TanStack Table | 8.x | Headless, composable, type-safe, sorting/filtri/paginazione server-side |
 | **Form** | React Hook Form + Zod | - | Gia usato ovunque nel monorepo, end-to-end type safety con `@dogwalk/validation` |
 | **Form Resolver** | @hookform/resolvers | - | Bridge React Hook Form + Zod |
@@ -89,24 +89,54 @@ interface DataTableProps<TData, TValue> {
 
 Questo componente gestisce: header con sorting cliccabile, righe con selezione, paginazione, filtri per colonna, stato di loading, selezione bulk. Si scrive una volta, si usa ovunque.
 
-#### Hook `useServerTable` per paginazione server-side
+#### Repository pattern per data fetching
 
-```tsx
-// src/hooks/use-server-table.ts
+I view-model non chiamano tRPC o REST direttamente. Ogni dominio ha un'interfaccia repository:
 
-function useServerTable<TData>(options: {
-  queryKey: string[]
-  queryFn: (params: TableParams) => Promise<PaginatedResponse<TData>>
-  defaultSort?: SortingState
-  defaultPageSize?: number
-}) {
-  // Combina TanStack Table state + TanStack Query
-  // Sincronizza sorting/filtri/paginazione con URL search params (via nuqs)
-  // Restituisce: data, columns state, pagination state, isLoading
+```typescript
+// src/repositories/interfaces/user-repository.ts
+import type { User, UserDetail } from '@dogwalk/types';
+import type { Serialized, PaginatedResult } from '@dogwalk/types';
+
+export interface UserRepository {
+  list(params: { page: number; pageSize: number; search?: string }): Promise<PaginatedResult<Serialized<User>>>;
+  getById(id: string): Promise<Serialized<UserDetail>>;
+  suspend(id: string): Promise<void>;
+  ban(id: string): Promise<void>;
+  reactivate(id: string): Promise<void>;
 }
 ```
 
-Questo hook e il sostituto del dataProvider di Refine: collega lo stato della tabella (pagina, ordinamento, filtri) a una query TanStack Query che chiama l'API con i parametri corretti. Sincronizza lo stato con i query params dell'URL tramite `nuqs` per permettere il bookmark e la condivisione dei link filtrati.
+Le implementazioni (REST o tRPC) vivono in `repositories/rest/` e `repositories/trpc/`. Un `RepositoryProvider` (React Context) inietta le implementazioni nei view-model:
+
+```typescript
+// src/repositories/repository-provider.tsx
+const repos = {
+  users: createRestUserRepository({ apiClient: api }),      // ← oggi REST
+  dogs: createTrpcDogRepository({ trpc }),                   // ← gia tRPC
+  settings: createTrpcSettingsRepository({ trpc }),
+};
+```
+
+Per migrare un endpoint da REST a tRPC, si cambia **una riga** nel provider. I view-model non si toccano.
+
+#### Hook `useServerTable` (deprecato)
+
+> **Nota**: `useServerTable` e in fase di deprecazione. La logica di paginazione server-side si sposta nelle interfacce repository (che accettano `page`, `pageSize`, `search`, `sort`). I view-model usano `useQuery` con il repository invece del generico `useServerTable`.
+
+```tsx
+// PRIMA (deprecato)
+const result = useServerTable<User>({ endpoint: '/admin/users', queryKey: 'admin-users' });
+
+// DOPO (repository)
+const { users } = useRepositories();
+const { data } = useQuery({
+  queryKey: ['users', params],
+  queryFn: () => users.list(params),
+});
+```
+
+Lo stato della tabella (sorting, filtri, paginazione) resta sincronizzato con i query params dell'URL tramite `nuqs` per permettere il bookmark e la condivisione dei link filtrati.
 
 #### Pattern `<CrudPage>` per pagine standard
 

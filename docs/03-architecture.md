@@ -452,7 +452,7 @@ packages:
 | **Expo Router** | v4 | File-based routing |
 | **React Native** | 0.76.x (via Expo) | UI framework mobile |
 | **Zustand** | ~5.0 | State management (leggero, TS-first) |
-| **TanStack Query** | ~5.x | Server state, caching, sync |
+| ~~TanStack Query~~ | ~~5.x~~ | ~~Server state~~ — **Rimosso**: sostituito da Repository pattern + SQLite offline-first |
 | **React Native Reanimated** | ~3.x | Animazioni fluide (swipe gestures) |
 | **React Native Gesture Handler** | ~2.x | Gesture recognition (swipe cards) |
 | **React Native Maps** | ~1.x | Mappa nativa (Google/Apple Maps) |
@@ -700,7 +700,7 @@ Request
 Root Layout (_layout.tsx)
 ├── Auth Guard (redirect se non autenticato)
 ├── Provider Stack:
-│   ├── TRPCProvider (client tRPC + TanStack Query)
+│   ├── RepositoryProvider (repository interfaces via Context)
 │   ├── ThemeProvider (Nativewind)
 │   ├── NotificationProvider
 │   └── LocationProvider
@@ -742,11 +742,13 @@ L'app usa una strategia ibrida di state management:
 
 | Tipo di stato | Soluzione | Esempio |
 |---------------|-----------|---------|
-| **Server state** | TanStack Query (via tRPC) | Profili cani, lista match, messaggi |
-| **Client state** | Zustand | Auth token, UI state, onboarding progress |
+| **Server state** | Repository layer (SQLite locale + sync remoto) | Profili cani, lista match, messaggi |
+| **Client state** | Zustand | UI state, onboarding progress |
 | **Form state** | React Hook Form + Zod | Form di registrazione, profilo cane |
 | **Navigation state** | Expo Router | Gestito dal framework |
-| **Persistent state** | MMKV (locale) + SecureStore (sensibile) | Preferenze, token JWT |
+| **Persistent structured data** | SQLite (`expo-sqlite`) | Dati offline-first: cani, walk, feed, messaggi, sync queue |
+| **Persistent config** | MMKV (locale) | Preferenze, flag, cache leggera |
+| **Sensitive credentials** | SecureStore | Token JWT, refresh token |
 
 #### Zustand Stores
 
@@ -771,8 +773,8 @@ matchStore
 chatStore
 ├── activeConversation: string | null
 ├── typingUsers: Map<string, boolean>
-├── pendingMessages: Message[]       # Queue offline
-└── sendMessage(msg) → void
+└── unreadCount: number
+# Note: offline message queue managed by ChatRepository + SyncEngine, not store
 
 locationStore
 ├── currentLocation: Coords | null
@@ -804,43 +806,111 @@ Screen Layer (apps/mobile/app)
   └── File-based routes che compongono componenti e hooks
 ```
 
-### 5.4 Data Fetching Pattern
+### 5.4 Data Fetching Pattern — Repository Layer
 
-Tutte le chiamate API passano attraverso il client tRPC tipizzato end-to-end:
+Le chiamate API **non** avvengono direttamente nei hook/view-model. Il frontend adotta un **repository pattern** che astrae il transport (tRPC, REST, SQLite locale) dietro interfacce pure:
 
-```typescript
-// apps/mobile/services/api.ts
-
-// Il client tRPC viene creato con TanStack Query integration
-// Esempio di utilizzo in un componente:
-
-// Query (lettura)
-const { data: dogs } = trpc.dog.getMyDogs.useQuery();
-
-// Mutation (scrittura)
-const swipeMutation = trpc.matching.swipe.useMutation({
-  onSuccess: (result) => {
-    if (result.isMatch) {
-      // Mostra animazione match
-    }
-  }
-});
-
-// Infinite Query (paginazione)
-const { data, fetchNextPage } = trpc.matching.getFeed.useInfiniteQuery(
-  { dogId: activeDogId },
-  { getNextPageParam: (lastPage) => lastPage.nextCursor }
-);
+```
+Component → ViewModel/Hook → Repository (interface) → Implementation
+                                                        ├── remote/ (tRPC)
+                                                        ├── local/  (SQLite)
+                                                        └── composite/ (offline-first)
 ```
 
-### 5.5 Offline Strategy
+**Repository interface** — dipende solo da `@dogwalk/types`, zero accoppiamento col transport:
 
-| Feature | Strategia Offline |
-|---------|-------------------|
-| Feed swipe | Pre-fetch 20 card. Swipe salvati in MMKV, sync al ritorno online. |
-| Chat | Messaggi in coda locale (chatStore.pendingMessages). Invio automatico al ripristino connessione. |
-| Profilo | Dati in cache TanStack Query. Modifiche in coda. |
-| Posizione | Ultima posizione nota da MMKV. |
+```typescript
+// apps/mobile/repositories/interfaces/walk-repository.ts
+import type { Walk } from '@dogwalk/types';
+import type { Serialized } from '@dogwalk/types';
+
+export interface WalkRepository {
+  listUpcoming(): Promise<Serialized<Walk>[]>;
+  propose(input: ProposeWalkInput): Promise<Serialized<Walk>>;
+}
+```
+
+**Type safety senza RouterOutput** — il tipo utility `Serialized<T>` (in `@dogwalk/types`) converte ricorsivamente `Date → string`, replicando la serializzazione tRPC senza dipendere da esso:
+
+```typescript
+// packages/types/src/serialized.ts
+export type Serialized<T> =
+  T extends Date ? string :
+  T extends Array<infer U> ? Serialized<U>[] :
+  T extends object ? { [K in keyof T]: Serialized<T[K]> } :
+  T;
+```
+
+**Implementazione tRPC** — l'unico punto che conosce il transport:
+
+```typescript
+// apps/mobile/repositories/remote/trpc-walk-repository.ts
+export function createTrpcWalkRepository(api: TrpcClient): WalkRepository {
+  return {
+    listUpcoming: () => api.walks.listUpcoming.query(),
+    propose: (input) => api.walks.propose.mutate(input),
+  };
+}
+```
+
+**Hook/ViewModel** — dipende solo dall'interfaccia, non sa nulla di tRPC:
+
+```typescript
+export function useWalks(walkRepo: WalkRepository) {
+  const [walks, setWalks] = useState<Serialized<Walk>[]>([]);
+  // chiama walkRepo.listUpcoming(), non api.walks.listUpcoming.query()
+}
+```
+
+**Provider centralizzato** — inietta le implementazioni via React Context:
+
+```typescript
+// apps/mobile/repositories/repository-provider.tsx
+const repos = {
+  walks: createOfflineFirstWalkRepository({ local, remote, syncQueue }),
+  dogs: createOfflineFirstDogRepository({ local, remote, syncQueue }),
+  // ...swap implementation in un punto solo
+};
+```
+
+### 5.5 Offline Strategy — SQLite + Sync Engine
+
+L'app mobile adotta una strategia **offline-first completa** con persistenza locale su SQLite e sincronizzazione bidirezionale.
+
+#### Storage per tipo di dato
+
+| Tipo | Storage | Strategia |
+|------|---------|-----------|
+| **Dati strutturati** (cani, walk, feed, messaggi) | SQLite (`expo-sqlite`) | Write locale → sync queue → remote |
+| **Config/preferenze** | MMKV | Key-value veloce, no sync |
+| **Token/credenziali** | SecureStore | Keychain/Keystore nativo |
+| **Stato UI transiente** | Zustand | In-memory, non persistito |
+
+#### Sync engine
+
+```
+Mutation (offline) → SQLite locale + sync_queue → attempt remote
+                                                    ├── success → mark synced
+                                                    └── fail → retry con exponential backoff
+
+Query → SQLite locale (risposta immediata) → background remote fetch → update locale
+
+Reconnect → drain sync_queue in FIFO order
+```
+
+Tabella `sync_queue` in SQLite:
+
+| Campo | Tipo | Descrizione |
+|-------|------|-------------|
+| id | TEXT PK | UUID |
+| entity_type | TEXT | 'message' \| 'walk' \| 'dog' \| ... |
+| operation | TEXT | 'create' \| 'update' \| 'delete' |
+| payload | TEXT | JSON serializzato |
+| status | TEXT | 'pending' \| 'in_progress' \| 'failed' |
+| retry_count | INTEGER | Default 0 |
+| created_at | TEXT | ISO 8601 |
+
+**Conflict resolution**: last-write-wins con timestamp server per la maggior parte delle entita. Per la chat, op-log con merge ordinato per timestamp.
 
 ---
 
@@ -1267,7 +1337,7 @@ LIMIT 50;
 
 ### 8.1 Scelta: tRPC (non REST puro)
 
-Si adotta **tRPC** come layer API primario. La scelta e motivata nell'ADR-002. In breve: type safety end-to-end senza code generation, perfetta integrazione con TanStack Query, e supporto nativo per subscriptions (WebSocket).
+Si adotta **tRPC** come layer API primario. La scelta e motivata nell'ADR-002. In breve: type safety end-to-end senza code generation e supporto nativo per subscriptions (WebSocket). Nota: il frontend non chiama tRPC direttamente ma attraverso il repository layer (vedi sezione 5.4).
 
 Non viene esposto un REST API pubblico nell'MVP. Se necessario in futuro (per integrazioni B2B), si aggiungera un layer REST davanti al service layer esistente.
 
@@ -2155,7 +2225,7 @@ Adottare tRPC come layer API primario.
 
 **Motivazioni:**
 - Type safety end-to-end senza code generation. Il client inferisce i tipi direttamente dal server. Qualsiasi modifica al contratto API genera errori TypeScript immediati sia lato server che client.
-- Integrazione nativa con TanStack Query: caching, invalidation, optimistic updates, infinite queries sono built-in.
+- Integrazione con il repository pattern: tRPC viene usato dentro le implementazioni remote dei repository, mantenendo type safety end-to-end senza esporre il transport ai consumer.
 - Zero overhead di serializzazione per tipi complessi. I Zod schema del backend diventano automaticamente validatori dell'input.
 - Il team e full-stack TypeScript. Tutti i consumer (mobile, web, admin) sono TypeScript. Nessun partner B2B nell'MVP.
 - Supporto nativo per WebSocket subscriptions (necessario per chat real-time).
@@ -2224,25 +2294,28 @@ Adottare Drizzle ORM.
 
 ---
 
-### ADR-005: Zustand + TanStack Query per State Management
+### ADR-005: Zustand + Repository Pattern per State Management
 
-**Status:** Accepted
+**Status:** Superseded (aggiornamento da Zustand + TanStack Query)
 
 **Contesto:**
-L'app mobile necessita di gestire stato client (auth, UI) e stato server (dati da API). Le opzioni valutate: (a) Redux Toolkit + RTK Query, (b) Zustand + TanStack Query, (c) Jotai + TanStack Query.
+L'app mobile necessita di gestire stato client (auth, UI) e stato server (dati da API). La decisione originale (Zustand + TanStack Query) e stata aggiornata per supportare offline-first completo con SQLite.
 
 **Decisione:**
-Zustand per client state, TanStack Query (via tRPC) per server state.
+Zustand per client state, Repository pattern + SQLite per server state. TanStack Query rimosso.
 
 **Motivazioni:**
 - Zustand e minimale (~1KB), TypeScript-native, nessun boilerplate. Perfetto per stato locale come auth token, active dog selection, UI state.
-- TanStack Query (integrato automaticamente con tRPC) gestisce tutta la complessita del server state: caching, background refetch, optimistic updates, retry, pagination.
-- La separazione netta tra client state (Zustand) e server state (TanStack Query) evita i problemi di sincronizzazione tipici di Redux dove tutto viene messo in un unico store.
-- Redux Toolkit aggiunge ~12KB e introduce pattern (slices, reducers, actions) piu verbosi del necessario per le dimensioni del progetto.
+- Il repository pattern (interfacce + implementazioni composite) gestisce il server state: SQLite locale per lettura immediata, sync engine per sincronizzazione col backend, coda persistente per mutations offline.
+- TanStack Query era ridondante: il suo caching e sostituito da SQLite, i retry dal sync engine, la deduplicazione dal repository composite. Rimuoverlo elimina una dipendenza e semplifica il data flow.
+- La separazione netta tra client state (Zustand) e server state (Repository) mantiene il principio della decisione originale senza i limiti dell'approccio precedente per l'offline.
+- Per l'admin (Next.js), Server Components + Server Actions + Repository sostituiscono TanStack Query lato server.
 
 **Conseguenze:**
 - Nessun DevTools avanzato come Redux DevTools (Zustand ha un middleware devtools basico)
-- Lo stato offline richiede gestione manuale (MMKV per persistenza, coda messaggi in Zustand)
+- L'offline-first e gestito dal repository layer (SQLite + sync queue), non piu da MMKV + coda in Zustand
+- I view-model/hook dipendono solo dalle interfacce repository, mai da tRPC direttamente
+- `Serialized<T>` utility type in `@dogwalk/types` per type safety senza dipendenza su RouterOutput
 
 ---
 

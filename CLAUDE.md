@@ -54,6 +54,8 @@ pnpm format:check     # Check formatting (Biome)
 ## Architecture Principles
 
 - **Clean Architecture**: separate domain logic from infrastructure. Layers: domain (entities, value objects) → use cases (application logic) → adapters (API routes, DB repositories, external services). Dependencies point inward only.
+- **Repository pattern on frontend**: hooks/view-models never call tRPC/REST directly. All data access goes through repository interfaces (`WalkRepository`, `DogRepository`, etc.) injected via React Context. Implementations live in `repositories/remote/` (tRPC), `repositories/local/` (SQLite), `repositories/composite/` (offline-first). This enables offline-first, testability, and transport independence.
+- **Offline-first (mobile)**: SQLite (`expo-sqlite`) for structured data persistence, sync queue for pending mutations, MMKV only for config/preferences. See docs/03 section 5.5.
 - **SOLID principles**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion. Every module, class, and function should have one reason to change.
 - **Const objects over enums**: use `as const` objects + derived union types instead of TypeScript `enum` (see `apps/admin/src/lib/auth.ts` for reference pattern)
 

@@ -602,7 +602,7 @@ packages:
 | **React Native** | 0.76.x (via Expo) | UI framework mobile | Cross-platform, ecosistema maturo |
 | **NativeWind** | ~4.x | Styling (Tailwind per RN) | Coerenza con Tailwind CSS web |
 | **Zustand** | ~5.0 | State management client | Leggero (1KB), TS-first, no boilerplate |
-| **TanStack Query** | ~5.x | Server state, caching, sync | Deduplication, optimistic updates, offline |
+| ~~TanStack Query~~ | ~~5.x~~ | ~~Server state~~ | **Rimosso**: il repository pattern + SQLite (mobile) e Server Components (admin) rendono TQ superfluo |
 | **React Native Reanimated** | ~3.x | Animazioni (swipe gestures) | Performance nativa (UI thread) |
 | **React Native Gesture Handler** | ~2.x | Gesture recognition | Swipe cards, pull-to-refresh |
 | **React Native Maps** | ~1.x | Mappa nativa | Google/Apple Maps |
@@ -610,7 +610,8 @@ packages:
 | **Expo Notifications** | ~0.29.x | Push notifications | Expo Push API |
 | **Expo Image** | ~2.x | Image loading | Caching, progressive loading |
 | **Expo SecureStore** | ~14.x | Storage sicuro per token | Keychain (iOS) / Keystore (Android) |
-| **React Native MMKV** | ~3.x | Storage locale veloce | 10x piu veloce di AsyncStorage |
+| **expo-sqlite** | SDK 55 | Database locale (offline-first) | SQLite per dati strutturati, sync queue, query offline |
+| **React Native MMKV** | ~3.x | Storage locale veloce (config/preferenze) | 10x piu veloce di AsyncStorage, key-value semplice |
 | **React Hook Form** | ~7.x | Gestione form | Validazione con Zod, performance |
 | **Lucide React Native** | ~0.4x | Icon set | Leggero, tree-shakeable |
 | **date-fns** | ~4.x | Manipolazione date | Modulare, tree-shakeable |

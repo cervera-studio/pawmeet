@@ -353,30 +353,54 @@ Zustand stores should only hold state and synchronous mutations. Already mostly 
 login: (user, token, refreshToken) => set({ user, token, refreshToken, isAuthenticated: true });
 ```
 
-### 6.2 Hooks — separate data fetching from state logic
+### 6.2 Repository pattern — abstract data access
 
-For complex flows, split into:
-- **API hooks** (`useUserApi`): fetch/mutate, return raw data
-- **State hooks** (`useAuth`): orchestrate store + API + navigation
+Hooks/view-models **never** call tRPC or REST directly. All data access goes through repository interfaces provided via React Context.
 
 ```typescript
-// hooks/api/useUserApi.ts — data layer only
-export function useUserApi() {
+// repositories/interfaces/dog-repository.ts — depends ONLY on @dogwalk/types
+import type { DogProfile } from '@dogwalk/types';
+import type { Serialized } from '@dogwalk/types';
+
+export interface DogRepository {
+  listByOwner(userId: string): Promise<Serialized<DogProfile>[]>;
+  getById(id: string): Promise<Serialized<DogProfile>>;
+}
+
+// repositories/remote/trpc-dog-repository.ts — the ONLY place that knows tRPC
+export function createTrpcDogRepository(api: TrpcClient): DogRepository {
   return {
-    fetchProfile: () => api.get<User>('/users/me'),
-    updateLocation: (coords: Coords) => api.put('/users/me/location', coords),
+    listByOwner: (userId) => api.dogs.listByOwner.query({ userId }),
+    getById: (id) => api.dogs.getDog.query({ id }),
   };
 }
 
-// hooks/useAuth.ts — orchestration
-export function useAuth() {
-  const store = useAuthStore();
-  const userApi = useUserApi();
-  // ...
+// hooks/useDogs.ts — depends on interface, NOT on transport
+export function useDogs(dogRepo: DogRepository) {
+  // calls dogRepo.listByOwner(), never api.dogs.*
 }
 ```
 
-### 6.3 Error handling — never silently swallow
+**Why**: enables offline-first (swap remote → composite implementation), testability (mock repository), and transport independence (swap tRPC → REST without touching hooks).
+
+### 6.3 Hooks — separate data fetching from state logic
+
+For complex flows, split into:
+- **Repository** (interface): data access, injected via Context
+- **Hook/ViewModel**: orchestrate repository + store + navigation
+
+```typescript
+// hooks/useAuth.ts — orchestration, uses repository
+export function useAuth(authRepo: AuthRepository) {
+  const store = useAuthStore();
+  const login = async (email: string, password: string) => {
+    const result = await authRepo.login({ email, password });
+    store.setUser(result.user);
+  };
+}
+```
+
+### 6.4 Error handling — never silently swallow
 
 ```typescript
 // AVOID
@@ -391,16 +415,21 @@ export function useAuth() {
 }
 ```
 
-### 6.4 Types — use shared types from `@dogwalk/types`
+### 6.5 Types — use shared types from `@dogwalk/types`
 
-Don't redefine interfaces locally when they exist in the shared package.
+Don't redefine interfaces locally when they exist in the shared package. Use `Serialized<T>` for types that go through API serialization (Date → string).
 
 ```typescript
 // AVOID: duplicating types in hooks
 export interface MatchSuggestion { id: string; ... }
 
-// PREFER: import from shared package
+// AVOID: depending on RouterOutput in hooks/view-models
+import type { RouterOutput } from '@dogwalk/api-client';
+
+// PREFER: import from shared package + Serialized utility
 import type { MatchSuggestion } from '@dogwalk/types';
+import type { Serialized } from '@dogwalk/types';
+type SerializedMatch = Serialized<MatchSuggestion>;
 ```
 
 ---

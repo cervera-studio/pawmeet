@@ -21,6 +21,7 @@ import { DrizzleUserRepository } from './infra/drizzle-user-repository.js';
 import { DrizzleWalkAlbumRepository } from './infra/drizzle-walk-album-repository.js';
 import { DrizzleWalkRepository } from './infra/drizzle-walk-repository.js';
 import { DrizzleWalkTrackRepository } from './infra/drizzle-walk-track-repository.js';
+import { JwksSocialAuthVerifier } from './infra/jwks-social-auth-verifier.js';
 import { JwtAuthService } from './infra/jwt-auth-service.js';
 import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
@@ -63,6 +64,7 @@ import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
+import { createSocialLogin } from './use-cases/social-login.js';
 import { createGetActivityStats } from './use-cases/get-activity-stats.js';
 import { createGetDog } from './use-cases/get-dog.js';
 import { createGetDogHealthGoal } from './use-cases/get-dog-health-goal.js';
@@ -165,6 +167,10 @@ const matchingAiRepo = new DrizzleMatchingAiRepository(db);
 // ── Services ────────────────────────────────────────────────────────────────────
 
 const authService = new JwtAuthService();
+const socialAuthVerifier = new JwksSocialAuthVerifier(
+  process.env.APPLE_BUNDLE_ID ?? '',
+  process.env.GOOGLE_CLIENT_ID ?? '',
+);
 const emailService = new ResendEmailService();
 const storage = new R2StorageService();
 const chat = new WsChatService();
@@ -181,6 +187,7 @@ export const authDeps = {
   verifyEmail: createVerifyEmail({ userRepo, tokenRepo, authService }),
   forgotPassword: createForgotPassword({ userRepo, tokenRepo, authService, emailService }),
   resetPassword: createResetPassword({ userRepo, tokenRepo, authService }),
+  socialLogin: createSocialLogin({ userRepo, tokenRepo, authService, socialAuthVerifier }),
 };
 
 // ── Dog deps ────────────────────────────────────────────────────────────────────

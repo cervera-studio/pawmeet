@@ -3,7 +3,7 @@ import type { User } from '@dogwalk/types';
 export interface CreateUserInput {
   email: string;
   displayName: string;
-  passwordHash: string;
+  passwordHash?: string | null;
   authProvider?: string;
 }
 

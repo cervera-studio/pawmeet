@@ -5,6 +5,7 @@ import {
   refreshSchema,
   registerSchema,
   resetPasswordSchema,
+  socialLoginSchema,
   verifyEmailSchema,
 } from '@dogwalk/validation';
 import type { authDeps } from '../../container.js';
@@ -39,5 +40,9 @@ export function createAuthRouter(deps: typeof authDeps) {
     resetPassword: publicProcedure
       .input(resetPasswordSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.resetPassword(input))),
+
+    socialLogin: publicProcedure
+      .input(socialLoginSchema)
+      .mutation(async ({ input }) => unwrapResult(await deps.socialLogin(input))),
   });
 }

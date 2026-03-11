@@ -5,6 +5,7 @@ import {
   refreshSchema,
   registerSchema,
   resetPasswordSchema,
+  socialLoginSchema,
   verifyEmailSchema,
 } from '@dogwalk/validation';
 import { zValidator } from '@hono/zod-validator';
@@ -19,6 +20,7 @@ export function createAuthRoutes(deps: typeof AuthDeps) {
     .use('/register', authRateLimitMiddleware)
     .use('/forgot-password', authRateLimitMiddleware)
     .use('/reset-password', authRateLimitMiddleware)
+    .use('/social-login', authRateLimitMiddleware)
     .post('/register', zValidator('json', registerSchema), async (c) => {
       const input = c.req.valid('json');
       const result = await deps.registerUser(input);
@@ -52,6 +54,11 @@ export function createAuthRoutes(deps: typeof AuthDeps) {
     .post('/reset-password', zValidator('json', resetPasswordSchema), async (c) => {
       const input = c.req.valid('json');
       const result = await deps.resetPassword(input);
+      return handleResult(c, result);
+    })
+    .post('/social-login', zValidator('json', socialLoginSchema), async (c) => {
+      const input = c.req.valid('json');
+      const result = await deps.socialLogin(input);
       return handleResult(c, result);
     });
 }

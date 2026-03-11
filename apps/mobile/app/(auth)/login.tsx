@@ -51,7 +51,6 @@ export default function LoginScreen() {
             disabled={vm.loading}
           />
 
-          {/* Social login placeholders */}
           <View className="mt-8">
             <View className="mb-4 flex-row items-center">
               <View className="flex-1 border-b border-gray-200" />
@@ -59,13 +58,23 @@ export default function LoginScreen() {
               <View className="flex-1 border-b border-gray-200" />
             </View>
 
-            <Pressable className="mb-3 flex-row items-center justify-center rounded-2xl border border-gray-200 py-4">
+            <Pressable
+              onPress={vm.handleGoogleLogin}
+              disabled={vm.loading || !vm.googleReady}
+              className="mb-3 flex-row items-center justify-center rounded-2xl border border-gray-200 py-4"
+            >
               <Text className="text-base font-medium text-gray-700">Continua con Google</Text>
             </Pressable>
 
-            <Pressable className="flex-row items-center justify-center rounded-2xl border border-gray-200 py-4">
-              <Text className="text-base font-medium text-gray-700">Continua con Apple</Text>
-            </Pressable>
+            {vm.showAppleLogin ? (
+              <Pressable
+                onPress={vm.handleAppleLogin}
+                disabled={vm.loading}
+                className="flex-row items-center justify-center rounded-2xl border border-gray-200 py-4"
+              >
+                <Text className="text-base font-medium text-gray-700">Continua con Apple</Text>
+              </Pressable>
+            ) : null}
           </View>
         </View>
 

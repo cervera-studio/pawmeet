@@ -9,6 +9,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.dogwalk.mobile",
+      "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Per mostrarti cani nelle vicinanze",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Per aggiornare la tua posizione",
@@ -29,6 +30,7 @@
       "expo-image-picker",
       "expo-notifications",
       "expo-secure-store",
+      "expo-apple-authentication",
       [
         "@sentry/react-native/expo",
         {

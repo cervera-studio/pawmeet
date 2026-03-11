@@ -1,13 +1,13 @@
-import type { RouterOutput } from '@dogwalk/api-client';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from '@/lib/storage';
 
-/** Subset of user fields needed in the auth store (from getProfile output). */
-export type AuthUser = Pick<
-  RouterOutput['users']['getProfile']['user'],
-  'id' | 'email' | 'displayName' | 'avatarUrl'
->;
+export interface AuthUser {
+  id: string;
+  email: string;
+  displayName: string;
+  avatarUrl: string | null;
+}
 
 interface AuthState {
   user: AuthUser | null;

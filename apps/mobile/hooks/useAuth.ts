@@ -1,10 +1,14 @@
 import { logger } from '@dogwalk/utils';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
+import { container } from 'tsyringe';
 import { storage } from '@/lib/storage';
-import { api } from '@/lib/trpc';
+import type { AuthResult } from '@/repositories/interfaces/auth-repository';
+import { AUTH_REPOSITORY } from '@/repositories/tokens';
 import type { AuthUser } from '@/stores/auth';
 import { useAuthStore } from '@/stores/auth';
+
+const authRepo = container.resolve(AUTH_REPOSITORY);
 
 function toAuthUser(user: {
   id: string;
@@ -20,6 +24,14 @@ function toAuthUser(user: {
   };
 }
 
+async function persistAuthResult(result: AuthResult, storeLogin: AuthStore['login']) {
+  await storage.setToken(result.accessToken);
+  await storage.setRefreshToken(result.refreshToken);
+  storeLogin(toAuthUser(result.user), result.accessToken, result.refreshToken);
+}
+
+type AuthStore = ReturnType<typeof useAuthStore.getState>;
+
 export function useAuth() {
   const router = useRouter();
   const {
@@ -34,10 +46,8 @@ export function useAuth() {
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const data = await api.auth.login.mutate({ email, password });
-      await storage.setToken(data.accessToken);
-      await storage.setRefreshToken(data.refreshToken);
-      storeLogin(toAuthUser(data.user), data.accessToken, data.refreshToken);
+      const result = await authRepo.login(email, password);
+      await persistAuthResult(result, storeLogin);
       router.replace('/(tabs)');
     },
     [storeLogin, router],
@@ -45,14 +55,17 @@ export function useAuth() {
 
   const register = useCallback(
     async (displayName: string, email: string, password: string) => {
-      const data = await api.auth.register.mutate({
-        displayName,
-        email,
-        password,
-      });
-      await storage.setToken(data.accessToken);
-      await storage.setRefreshToken(data.refreshToken);
-      storeLogin(toAuthUser(data.user), data.accessToken, data.refreshToken);
+      const result = await authRepo.register(displayName, email, password);
+      await persistAuthResult(result, storeLogin);
+      router.replace('/(tabs)');
+    },
+    [storeLogin, router],
+  );
+
+  const socialLogin = useCallback(
+    async (provider: 'apple' | 'google', idToken: string, displayName?: string) => {
+      const result = await authRepo.socialLogin(provider, idToken, displayName);
+      await persistAuthResult(result, storeLogin);
       router.replace('/(tabs)');
     },
     [storeLogin, router],
@@ -61,7 +74,7 @@ export function useAuth() {
   const logout = useCallback(async () => {
     try {
       const rt = useAuthStore.getState().refreshToken;
-      if (rt) await api.auth.logout.mutate({ refreshToken: rt });
+      if (rt) await authRepo.logout(rt);
     } catch (e) {
       logger.warn('useAuth', 'Server logout failed, continuing local logout', e);
     }
@@ -80,8 +93,7 @@ export function useAuth() {
       }
       useAuthStore.getState().setToken(savedToken);
       const savedRefreshToken = await storage.getRefreshToken();
-      // Validate token by fetching user profile
-      const { user: profile } = await api.users.getProfile.query();
+      const { user: profile } = await authRepo.getProfile();
       storeLogin(toAuthUser(profile), savedToken, savedRefreshToken ?? '');
       return true;
     } catch (e) {
@@ -99,6 +111,7 @@ export function useAuth() {
     isLoading,
     login,
     register,
+    socialLogin,
     logout,
     checkAuth,
   };

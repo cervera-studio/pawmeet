@@ -56,8 +56,9 @@ ENV NODE_ENV=production
 # Copy only the bundled output (tsup bundles all deps except bullmq)
 COPY --from=builder /app/apps/api/dist/ ./dist/
 
-# Install only the external dependency (bullmq has native optional deps)
-RUN echo '{"type":"module","dependencies":{"bullmq":"^5.70.0"}}' > package.json && \
+# Install external dependencies not bundled by tsup (native/binary packages)
+# Must match tsup.config.ts noExternal exclusions: bullmq, @sentry/*, @statsig/*, @opentelemetry/*
+RUN echo '{"type":"module","dependencies":{"bullmq":"^5.70.0","@sentry/node":"^10.43.0","@statsig/statsig-node-core":"^0.16.3"}}' > package.json && \
     pnpm install --prod --no-lockfile
 
 # Run as non-root user

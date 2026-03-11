@@ -9,9 +9,7 @@ const DEVELOPMENT_ORIGINS = [
 ];
 
 const allowedOrigins =
-  process.env.NODE_ENV === 'production'
-    ? PRODUCTION_ORIGINS
-    : [...PRODUCTION_ORIGINS, ...DEVELOPMENT_ORIGINS];
+  process.env.NODE_ENV === 'production' ? PRODUCTION_ORIGINS : DEVELOPMENT_ORIGINS;
 
 export const corsMiddleware = cors({
   origin: allowedOrigins,

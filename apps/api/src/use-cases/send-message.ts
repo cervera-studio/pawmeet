@@ -1,6 +1,7 @@
 import type { ChatMessage } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type {
   ChatService,
   MessageRepository,
@@ -16,11 +17,6 @@ type Deps = {
   notificationService: NotificationService;
 };
 
-/** Strip HTML tags to prevent XSS when content is rendered in WebViews or notifications */
-function sanitizeContent(text: string): string {
-  return text.replace(/<[^>]*>/g, '');
-}
-
 export function createSendMessage({ messageRepo, chat, userRepo, notificationService }: Deps) {
   return async (
     userId: string,
@@ -35,6 +31,11 @@ export function createSendMessage({ messageRepo, chat, userRepo, notificationSer
     }
 
     const sanitizedContent = sanitizeContent(content);
+
+    // Validate media URL if provided
+    if (mediaUrl && !/^https:\/\//i.test(mediaUrl)) {
+      return fail(new AppError('INVALID_INPUT', 'URL media non valido', 400));
+    }
 
     // Insert message
     const message = await messageRepo.create({

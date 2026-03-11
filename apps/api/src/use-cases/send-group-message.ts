@@ -1,6 +1,7 @@
 import type { GroupChatMessage } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
 import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
 import { WS_EVENT } from '../ws/chat.js';
@@ -11,11 +12,6 @@ type Deps = {
   userRepo: UserRepository;
   notificationService: NotificationService;
 };
-
-/** Strip HTML tags to prevent XSS when content is rendered in WebViews or notifications */
-function sanitizeContent(text: string): string {
-  return text.replace(/<[^>]*>/g, '');
-}
 
 export function createSendGroupMessage({
   groupMessageRepo,
@@ -35,6 +31,11 @@ export function createSendGroupMessage({
     }
 
     const sanitizedContent = sanitizeContent(content);
+
+    // Validate media URL if provided
+    if (mediaUrl && !/^https:\/\//i.test(mediaUrl)) {
+      return fail(new AppError('INVALID_INPUT', 'URL media non valido', 400));
+    }
 
     const message = await groupMessageRepo.create({
       eventId,

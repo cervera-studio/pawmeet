@@ -11,12 +11,11 @@ function createApp() {
 describe('corsMiddleware', () => {
   const app = createApp();
 
+  // In test/dev environment, only development origins are allowed
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:4321',
-    'https://dogwalk.app',
-    'https://admin.dogwalk.app',
   ];
 
   const blockedOrigins = [
@@ -24,6 +23,8 @@ describe('corsMiddleware', () => {
     'https://evil.com',
     'https://dogwalk.app.evil.com',
     'https://notdogwalk.app',
+    'https://dogwalk.app',
+    'https://admin.dogwalk.app',
   ];
 
   it.each(allowedOrigins)('allows requests from %s', async (origin) => {
@@ -42,7 +43,7 @@ describe('corsMiddleware', () => {
 
   it('includes credentials support', async () => {
     const res = await app.request('/test', {
-      headers: { Origin: 'https://dogwalk.app' },
+      headers: { Origin: 'http://localhost:3000' },
     });
     expect(res.headers.get('Access-Control-Allow-Credentials')).toBe('true');
   });
@@ -51,14 +52,14 @@ describe('corsMiddleware', () => {
     const res = await app.request('/test', {
       method: 'OPTIONS',
       headers: {
-        Origin: 'https://dogwalk.app',
+        Origin: 'http://localhost:3000',
         'Access-Control-Request-Method': 'POST',
         'Access-Control-Request-Headers': 'Content-Type',
       },
     });
     // Preflight should return 204 or 200
     expect(res.status).toBeLessThanOrEqual(204);
-    expect(res.headers.get('Access-Control-Allow-Origin')).toBe('https://dogwalk.app');
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:3000');
   });
 
   it('does not set allow-origin header when no Origin is sent', async () => {

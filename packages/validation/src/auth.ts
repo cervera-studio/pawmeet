@@ -54,8 +54,8 @@ export const verifyEmailOtpSchema = z.object({
   email: z.string().email(),
   code: z
     .string()
-    .length(6)
-    .regex(/^\d{6}$/, 'Codice a 6 cifre'),
+    .length(8)
+    .regex(/^\d{8}$/, 'Codice a 8 cifre'),
 });
 
 export const resendVerificationSchema = z.object({
@@ -66,8 +66,8 @@ export const resetPasswordOtpSchema = z.object({
   email: z.string().email(),
   code: z
     .string()
-    .length(6)
-    .regex(/^\d{6}$/, 'Codice a 6 cifre'),
+    .length(8)
+    .regex(/^\d{8}$/, 'Codice a 8 cifre'),
   password: passwordSchema,
 });
 

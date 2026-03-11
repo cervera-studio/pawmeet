@@ -11,11 +11,11 @@ function getResend(): Resend {
   return _resend;
 }
 
-/** Email verification OTP expiry: 10 minutes */
-export const EMAIL_VERIFICATION_OTP_EXPIRY_MS = 10 * 60 * 1000;
+/** Email verification OTP expiry: 5 minutes */
+export const EMAIL_VERIFICATION_OTP_EXPIRY_MS = 5 * 60 * 1000;
 
-/** Password reset OTP expiry: 10 minutes */
-export const PASSWORD_RESET_OTP_EXPIRY_MS = 10 * 60 * 1000;
+/** Password reset OTP expiry: 5 minutes */
+export const PASSWORD_RESET_OTP_EXPIRY_MS = 5 * 60 * 1000;
 
 /**
  * Hash a token using SHA-256 for secure storage.
@@ -29,7 +29,7 @@ export async function hashToken(token: string): Promise<string> {
 }
 
 /**
- * Generate a 6-digit OTP code.
+ * Generate an 8-digit OTP code (100M combinations vs 1M for 6-digit).
  */
 export function generateOtp(): string {
   const array = new Uint8Array(4);
@@ -39,7 +39,7 @@ export function generateOtp(): string {
   const b2 = array[2] ?? 0;
   const b3 = array[3] ?? 0;
   const num = ((b0 << 24) | (b1 << 16) | (b2 << 8) | b3) >>> 0;
-  return String(num % 1_000_000).padStart(6, '0');
+  return String(num % 100_000_000).padStart(8, '0');
 }
 
 /**
@@ -54,7 +54,7 @@ export async function sendVerificationOtp(email: string, code: string): Promise<
       <h2>Codice di verifica DogWalk</h2>
       <p>Usa il codice qui sotto per verificare la tua email:</p>
       <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 16px 0;">${code}</p>
-      <p>Il codice scade tra 10 minuti.</p>
+      <p>Il codice scade tra 5 minuti.</p>
       <p>Se non hai creato un account, ignora questa email.</p>
     `,
   });
@@ -72,9 +72,8 @@ export async function sendPasswordResetOtp(email: string, code: string): Promise
       <h2>Reset password DogWalk</h2>
       <p>Usa il codice qui sotto per reimpostare la tua password:</p>
       <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 16px 0;">${code}</p>
-      <p>Il codice scade tra 10 minuti.</p>
+      <p>Il codice scade tra 5 minuti.</p>
       <p>Se non hai richiesto il reset, ignora questa email.</p>
     `,
   });
 }
-

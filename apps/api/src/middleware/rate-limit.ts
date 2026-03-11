@@ -14,6 +14,7 @@ async function getRedis() {
 let _authLimiter: Ratelimit | null = null;
 let _apiLimiter: Ratelimit | null = null;
 let _sensitiveLimiter: Ratelimit | null = null;
+let _passwordResetLimiter: Ratelimit | null = null;
 
 async function getAuthLimiter(): Promise<Ratelimit> {
   if (!_authLimiter) {
@@ -81,3 +82,17 @@ export const rateLimitMiddleware = createRateLimitMiddleware(getApiLimiter);
 
 /** Rate limit for sensitive operations: 30 requests per minute */
 export const sensitiveRateLimitMiddleware = createRateLimitMiddleware(getSensitiveLimiter);
+
+async function getPasswordResetLimiter(): Promise<Ratelimit> {
+  if (!_passwordResetLimiter) {
+    _passwordResetLimiter = new Ratelimit({
+      redis: await getRedis(),
+      limiter: Ratelimit.slidingWindow(3, '1h'),
+      prefix: 'rl:pwd-reset',
+    });
+  }
+  return _passwordResetLimiter;
+}
+
+/** Strict rate limit for password reset: 3 attempts per hour */
+export const passwordResetRateLimitMiddleware = createRateLimitMiddleware(getPasswordResetLimiter);

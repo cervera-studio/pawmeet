@@ -13,14 +13,17 @@ import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import type { authDeps as AuthDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';
-import { authRateLimitMiddleware } from '../middleware/rate-limit.js';
+import {
+  authRateLimitMiddleware,
+  passwordResetRateLimitMiddleware,
+} from '../middleware/rate-limit.js';
 
 export function createAuthRoutes(deps: typeof AuthDeps) {
   return new Hono()
     .use('/login', authRateLimitMiddleware)
     .use('/register', authRateLimitMiddleware)
-    .use('/forgot-password', authRateLimitMiddleware)
-    .use('/reset-password', authRateLimitMiddleware)
+    .use('/forgot-password', passwordResetRateLimitMiddleware)
+    .use('/reset-password', passwordResetRateLimitMiddleware)
     .use('/social-login', authRateLimitMiddleware)
     .use('/verify-email-otp', authRateLimitMiddleware)
     .use('/resend-verification', authRateLimitMiddleware)

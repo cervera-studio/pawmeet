@@ -4,206 +4,623 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout title="Privacy Policy">
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-8">Informativa sulla Privacy</h1>
 
     <div class="prose prose-gray max-w-none space-y-6 text-gray-600">
       <p><strong>Ultimo aggiornamento:</strong> 11 marzo 2026</p>
 
+      <p>
+        La presente informativa sulla privacy (di seguito, "Informativa") descrive le modalità di
+        raccolta, trattamento e protezione dei dati personali degli utenti che utilizzano
+        l'applicazione mobile <strong>DogWalk</strong> e il sito web <strong>dogwalk.app</strong>
+        (di seguito, congiuntamente, il "Servizio"). L'Informativa è resa ai sensi degli
+        <strong>artt. 13 e 14 del Regolamento (UE) 2016/679</strong> ("GDPR") e del
+        <strong>D.Lgs. 196/2003</strong> (Codice in materia di protezione dei dati personali),
+        come modificato dal D.Lgs. 101/2018.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 1. TITOLARE DEL TRATTAMENTO                                  -->
+      <!-- ============================================================ -->
       <h2 class="text-xl font-semibold text-gray-900 mt-8">1. Titolare del trattamento</h2>
       <p>
-        Il titolare del trattamento dei dati personali è DogWalk S.r.l., con sede legale in
-        Via Roma 1, 20121 Milano (MI), Italia, P.IVA 12345678901.
+        Il titolare del trattamento dei dati personali è:
+      </p>
+      <ul class="list-none pl-0 space-y-1">
+        <li><strong>DogWalk S.r.l.</strong></li>
+        <li>Sede legale: Via Roma 1, 20121 Milano (MI), Italia</li>
+        <li>P.IVA: 12345678901</li>
+        <li>Email: <a href="mailto:privacy@dogwalk.app" class="text-emerald-700 underline">privacy@dogwalk.app</a></li>
+        <li>PEC: <a href="mailto:dogwalk@pec.it" class="text-emerald-700 underline">dogwalk@pec.it</a></li>
+      </ul>
+      <p>
+        Il Titolare non ha al momento nominato un Responsabile della Protezione dei Dati (DPO)
+        ai sensi dell'art. 37 del GDPR, non ricorrendo i presupposti obbligatori previsti dalla
+        normativa. Per qualsiasi questione relativa al trattamento dei dati personali, puoi
+        contattarci agli indirizzi sopra indicati.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 2. DATI PERSONALI RACCOLTI                                   -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">2. Dati personali raccolti</h2>
+      <p>
+        Il Servizio raccoglie le seguenti categorie di dati personali, in funzione delle
+        interazioni dell'utente con l'applicazione:
+      </p>
+
+      <h3 class="text-lg font-medium text-gray-800 mt-4">2.1 Dati forniti direttamente dall'utente</h3>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>
+          <strong>Dati di registrazione:</strong> indirizzo email, password (conservata
+          esclusivamente sotto forma di hash crittografico tramite algoritmo bcrypt; la password
+          in chiaro non viene mai memorizzata), nome visualizzato (display name).
+        </li>
+        <li>
+          <strong>Foto profilo</strong> (facoltativa): immagine caricata dall'utente, conservata
+          su infrastruttura cloud (Cloudflare R2).
+        </li>
+        <li>
+          <strong>Profili dei cani:</strong> nome, razza, taglia, livello energetico, tratti
+          comportamentali e preferenze di passeggiata. Questi dati sono necessari per il
+          funzionamento dell'algoritmo di matching.
+        </li>
+        <li>
+          <strong>Messaggi di chat:</strong> contenuti testuali scambiati tra utenti attraverso
+          la funzione di messaggistica in tempo reale (WebSocket).
+        </li>
+      </ul>
+
+      <h3 class="text-lg font-medium text-gray-800 mt-4">2.2 Dati raccolti automaticamente</h3>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>
+          <strong>Dati di geolocalizzazione:</strong> coordinate GPS (latitudine e longitudine)
+          dell'utente, raccolte quando l'utente aggiorna la propria posizione nell'app.
+          La posizione viene elaborata per calcolare la prossimità con altri utenti.
+        </li>
+        <li>
+          <strong>Token di notifica push:</strong> identificativo tecnico del dispositivo mobile,
+          necessario per l'invio di notifiche push tramite il servizio Expo Push Notifications.
+        </li>
+        <li>
+          <strong>Dati tecnici:</strong> indirizzo IP, tipo di dispositivo e user agent del
+          browser, raccolti automaticamente dai sistemi server per finalità di sicurezza e
+          funzionamento del servizio.
+        </li>
+        <li>
+          <strong>Dati di diagnostica:</strong> report di errori dell'applicazione, raccolti
+          tramite Sentry con rimozione automatica (scrubbing) dei dati personali identificativi
+          prima della trasmissione.
+        </li>
+      </ul>
+
+      <h3 class="text-lg font-medium text-gray-800 mt-4">2.3 Dati non raccolti</h3>
+      <p>
+        Il Servizio <strong>non raccoglie</strong> dati relativi alla salute, dati biometrici,
+        opinioni politiche, convinzioni religiose, orientamento sessuale o altre categorie
+        particolari di dati personali di cui all'art. 9 del GDPR. Non effettuiamo profilazione
+        a fini di marketing, né vendiamo o cediamo dati personali a terzi.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 3. FINALITA E BASE GIURIDICA                                -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">3. Finalità e base giuridica del trattamento</h2>
+      <p>
+        Ai sensi dell'art. 6 del GDPR, i dati personali sono trattati per le seguenti finalità
+        e sulla base delle seguenti basi giuridiche:
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2 pr-4">Finalità</th>
+              <th class="text-left py-2 pr-4">Dati trattati</th>
+              <th class="text-left py-2">Base giuridica</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Registrazione e gestione dell'account utente</td>
+              <td class="py-2 pr-4">Email, password (hash), display name, foto profilo</td>
+              <td class="py-2">Art. 6(1)(b) GDPR — Esecuzione del contratto</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Erogazione del servizio di matching tra proprietari di cani</td>
+              <td class="py-2 pr-4">Profili dei cani (nome, razza, taglia, energia, comportamento, preferenze)</td>
+              <td class="py-2">Art. 6(1)(b) GDPR — Esecuzione del contratto</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Messaggistica in tempo reale tra utenti con match</td>
+              <td class="py-2 pr-4">Messaggi di chat</td>
+              <td class="py-2">Art. 6(1)(b) GDPR — Esecuzione del contratto</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Geolocalizzazione per individuare utenti nelle vicinanze</td>
+              <td class="py-2 pr-4">Coordinate GPS</td>
+              <td class="py-2">Art. 6(1)(a) GDPR — Consenso esplicito dell'interessato</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Invio di notifiche push (nuovi match, messaggi, aggiornamenti)</td>
+              <td class="py-2 pr-4">Token push del dispositivo</td>
+              <td class="py-2">Art. 6(1)(a) GDPR — Consenso dell'interessato</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Invio di email transazionali (verifica account, reset password)</td>
+              <td class="py-2 pr-4">Indirizzo email</td>
+              <td class="py-2">Art. 6(1)(b) GDPR — Esecuzione del contratto</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Monitoraggio errori e stabilità dell'applicazione (Sentry)</td>
+              <td class="py-2 pr-4">Report di errori con dati personali rimossi tramite scrubbing automatico</td>
+              <td class="py-2">Art. 6(1)(a) GDPR — Consenso (gestito tramite preferenza "errorTracking")</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Sperimentazione funzionalità e test A/B (Statsig)</td>
+              <td class="py-2 pr-4">ID utente pseudonimizzato (hash), eventi di utilizzo</td>
+              <td class="py-2">Art. 6(1)(a) GDPR — Consenso (gestito tramite preferenza "abTesting")</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Analisi anonime di utilizzo per miglioramento del servizio</td>
+              <td class="py-2 pr-4">Dati di utilizzo aggregati e anonimizzati</td>
+              <td class="py-2">Art. 6(1)(a) GDPR — Consenso (gestito tramite preferenza "analytics")</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Comunicazioni di marketing (newsletter, promozioni)</td>
+              <td class="py-2 pr-4">Indirizzo email</td>
+              <td class="py-2">Art. 6(1)(a) GDPR — Consenso (gestito tramite preferenza "marketing")</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Sicurezza dell'account e prevenzione abusi (rate limiting, protezione brute-force)</td>
+              <td class="py-2 pr-4">Indirizzo IP, dati di sessione</td>
+              <td class="py-2">Art. 6(1)(f) GDPR — Legittimo interesse del Titolare</td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-4">Adempimento di obblighi di legge</td>
+              <td class="py-2 pr-4">Dati necessari caso per caso</td>
+              <td class="py-2">Art. 6(1)(c) GDPR — Obbligo legale</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-4">
+        <strong>Nota sul legittimo interesse:</strong> ove il trattamento sia basato sull'art. 6(1)(f)
+        del GDPR, il Titolare ha effettuato un bilanciamento tra il proprio legittimo interesse
+        (sicurezza dei sistemi, prevenzione di frodi e abusi) e i diritti e le libertà degli
+        interessati, ritenendo che tale trattamento non prevalga in modo sproporzionato sugli
+        interessi degli utenti. Hai il diritto di opporti a tale trattamento ai sensi dell'art. 21
+        del GDPR (vedi sezione 8).
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 4. MODALITA DI TRATTAMENTO                                  -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">4. Modalità di trattamento</h2>
+      <p>
+        I dati personali sono trattati con strumenti elettronici e automatizzati, nel rispetto dei
+        principi di liceità, correttezza, trasparenza, limitazione delle finalità, minimizzazione
+        dei dati, esattezza, limitazione della conservazione, integrità e riservatezza di cui
+        all'art. 5 del GDPR.
       </p>
       <p>
-        Per qualsiasi questione relativa alla privacy puoi contattarci all'indirizzo
-        <a href="mailto:privacy@dogwalk.app" class="text-emerald-700 underline">privacy@dogwalk.app</a>.
+        Il Titolare adotta misure tecniche e organizzative adeguate a garantire la sicurezza dei
+        dati personali, tra cui:
       </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">2. Dati raccolti</h2>
-      <p>Raccogliamo le seguenti categorie di dati personali:</p>
       <ul class="list-disc pl-6 space-y-1">
-        <li><strong>Dati di registrazione:</strong> nome, cognome, indirizzo email, password (hash crittografico), foto profilo</li>
-        <li><strong>Dati di login sociale:</strong> identificativo Apple ID o Google ID, email associata</li>
-        <li><strong>Dati di geolocalizzazione:</strong> posizione GPS (latitudine e longitudine) quando l'utente aggiorna la propria posizione nell'app</li>
-        <li><strong>Dati sugli animali:</strong> nome, razza, taglia, livello energetico, comportamento, preferenze di passeggiata, foto</li>
-        <li><strong>Dati di utilizzo:</strong> messaggi di chat, partecipazione a eventi di gruppo, contenuti pubblicati nel feed (testi, foto, video)</li>
-        <li><strong>Dati tecnici:</strong> token di notifica push, tipo di dispositivo, indirizzo IP, user agent del browser</li>
-        <li><strong>Dati di gamification:</strong> punti esperienza, badge, sfide completate</li>
-        <li><strong>Dati di tracciamento passeggiate:</strong> percorso GPS, distanza, durata, velocità media</li>
-      </ul>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">3. Finalità e basi giuridiche del trattamento</h2>
-      <table class="w-full text-sm border-collapse">
-        <thead>
-          <tr class="border-b">
-            <th class="text-left py-2 pr-4">Finalità</th>
-            <th class="text-left py-2">Base giuridica (GDPR)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b">
-            <td class="py-2 pr-4">Erogazione del servizio (matching, chat, eventi)</td>
-            <td class="py-2">Art. 6(1)(b) — Esecuzione del contratto</td>
-          </tr>
-          <tr class="border-b">
-            <td class="py-2 pr-4">Geolocalizzazione per trovare utenti vicini</td>
-            <td class="py-2">Art. 6(1)(a) — Consenso esplicito</td>
-          </tr>
-          <tr class="border-b">
-            <td class="py-2 pr-4">Notifiche push (match, messaggi, eventi)</td>
-            <td class="py-2">Art. 6(1)(a) — Consenso</td>
-          </tr>
-          <tr class="border-b">
-            <td class="py-2 pr-4">Analisi anonime e miglioramento del servizio</td>
-            <td class="py-2">Art. 6(1)(a) — Consenso (analytics)</td>
-          </tr>
-          <tr class="border-b">
-            <td class="py-2 pr-4">Monitoraggio errori e stabilità (Sentry)</td>
-            <td class="py-2">Art. 6(1)(f) — Legittimo interesse</td>
-          </tr>
-          <tr class="border-b">
-            <td class="py-2 pr-4">Sperimentazione funzionalità (Statsig)</td>
-            <td class="py-2">Art. 6(1)(a) — Consenso</td>
-          </tr>
-          <tr class="border-b">
-            <td class="py-2 pr-4">Moderazione contenuti (foto, testi)</td>
-            <td class="py-2">Art. 6(1)(f) — Legittimo interesse</td>
-          </tr>
-          <tr class="border-b">
-            <td class="py-2 pr-4">Sicurezza dell'account (lockout, audit log)</td>
-            <td class="py-2">Art. 6(1)(f) — Legittimo interesse</td>
-          </tr>
-          <tr>
-            <td class="py-2 pr-4">Obblighi di legge</td>
-            <td class="py-2">Art. 6(1)(c) — Obbligo legale</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">4. Conservazione dei dati</h2>
-      <ul class="list-disc pl-6 space-y-1">
-        <li><strong>Dati dell'account:</strong> conservati per tutta la durata dell'account attivo</li>
-        <li><strong>Account disattivati:</strong> eliminati definitivamente dopo 30 giorni dalla disattivazione (GDPR Art. 17)</li>
-        <li><strong>Tracciamento GPS:</strong> i punti GPS dettagliati vengono eliminati dopo 90 giorni (GDPR Art. 5(1)(e) — Limitazione della conservazione)</li>
-        <li><strong>Posizione utente:</strong> le coordinate vengono cancellate automaticamente se non aggiornate per oltre 90 giorni</li>
-        <li><strong>Token di refresh:</strong> eliminati alla scadenza o alla revoca</li>
-        <li><strong>Token di verifica:</strong> eliminati dopo l'utilizzo o alla scadenza</li>
-        <li><strong>Log di sicurezza:</strong> conservati per un massimo di 12 mesi</li>
-      </ul>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">5. Condivisione dei dati</h2>
-      <p>I tuoi dati personali possono essere condivisi con:</p>
-      <ul class="list-disc pl-6 space-y-1">
-        <li><strong>Altri utenti:</strong> nome, foto profilo e informazioni sui cani sono visibili agli utenti con cui hai un match</li>
-        <li><strong>Fornitori di servizi:</strong>
-          <ul class="list-disc pl-6 mt-1 space-y-1">
-            <li>Neon (database PostgreSQL) — Francoforte, Germania (EU)</li>
-            <li>Cloudflare R2 (storage foto/video) — EU</li>
-            <li>Fly.io (hosting API) — Francoforte, Germania (EU)</li>
-            <li>Resend (invio email) — con DPA</li>
-            <li>Sentry (monitoraggio errori) — dati pseudonimizzati, con DPA</li>
-            <li>Statsig (sperimentazione) — ID utente pseudonimizzato, con DPA</li>
-            <li>Expo (notifiche push) — solo token dispositivo</li>
-          </ul>
+        <li>
+          <strong>Crittografia delle password</strong> tramite algoritmo bcrypt con salt, in
+          conformità alle raccomandazioni OWASP. La password in chiaro non viene mai memorizzata
+          né trasmessa.
+        </li>
+        <li>
+          <strong>Autenticazione tramite token</strong> con firma crittografica, token di accesso
+          a breve scadenza e token di refresh con rotazione. I token di refresh sono conservati
+          in archivi sicuri del dispositivo (app mobile) o in cookie HttpOnly con flag Secure e
+          SameSite (pannello di amministrazione).
+        </li>
+        <li>
+          <strong>Comunicazioni crittografate</strong> tramite protocollo TLS/HTTPS per tutte le
+          trasmissioni di dati tra l'app e i server.
+        </li>
+        <li>
+          <strong>Protezione contro attacchi brute-force</strong> tramite rate limiting sulle API
+          e sulle connessioni in tempo reale.
+        </li>
+        <li>
+          <strong>Sanitizzazione degli input</strong> per prevenire attacchi di tipo XSS
+          (Cross-Site Scripting) e SQL injection.
+        </li>
+        <li>
+          <strong>Scrubbing automatico dei dati personali</strong> nei report di errore inviati
+          a Sentry, per minimizzare l'esposizione di informazioni identificative.
+        </li>
+        <li>
+          <strong>Pseudonimizzazione</strong> dell'identificativo utente nei servizi di
+          sperimentazione (Statsig), tramite funzione hash unidirezionale.
         </li>
       </ul>
       <p>
-        Non vendiamo i tuoi dati personali a terzi. Tutti i fornitori di servizi operano in conformità
-        al GDPR o con adeguate garanzie contrattuali (DPA, SCC).
+        L'accesso ai dati personali è limitato al personale autorizzato del Titolare e ai
+        responsabili del trattamento nominati ai sensi dell'art. 28 del GDPR, esclusivamente nella
+        misura necessaria allo svolgimento delle rispettive mansioni.
       </p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">6. Trasferimenti internazionali</h2>
+      <!-- ============================================================ -->
+      <!-- 5. DESTINATARI DEI DATI                                     -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">5. Destinatari dei dati e responsabili del trattamento</h2>
       <p>
-        I dati vengono trattati principalmente all'interno dell'Unione Europea (Francoforte, Germania).
-        Per i servizi che operano al di fuori dell'UE, applichiamo le Clausole Contrattuali Standard (SCC)
-        della Commissione Europea come garanzia appropriata ai sensi dell'Art. 46 del GDPR.
+        I dati personali possono essere comunicati alle seguenti categorie di destinatari, nominati
+        responsabili del trattamento ai sensi dell'art. 28 del GDPR ove applicabile:
       </p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">7. Consenso e preferenze</h2>
+      <h3 class="text-lg font-medium text-gray-800 mt-4">5.1 Altri utenti del Servizio</h3>
       <p>
-        Al primo utilizzo dell'app, ti verrà chiesto il consenso per:
+        Il nome visualizzato, la foto profilo e le informazioni sui profili dei cani sono visibili
+        agli altri utenti dell'applicazione nell'ambito del servizio di matching e messaggistica.
+        Non vengono mai condivisi l'indirizzo email, la posizione GPS esatta o altri dati
+        identificativi diretti con gli altri utenti.
+      </p>
+
+      <h3 class="text-lg font-medium text-gray-800 mt-4">5.2 Fornitori di servizi (sub-responsabili)</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2 pr-4">Fornitore</th>
+              <th class="text-left py-2 pr-4">Servizio</th>
+              <th class="text-left py-2 pr-4">Dati trattati</th>
+              <th class="text-left py-2 pr-4">Ubicazione server</th>
+              <th class="text-left py-2">DPA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-2 pr-4"><strong>Neon</strong> (Neon Inc.)</td>
+              <td class="py-2 pr-4">Database PostgreSQL con estensione PostGIS</td>
+              <td class="py-2 pr-4">Tutti i dati personali degli utenti (account, profili cani, messaggi, posizione)</td>
+              <td class="py-2 pr-4">Francoforte, Germania (UE)</td>
+              <td class="py-2">Si</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4"><strong>Fly.io</strong> (Fly.io Inc.)</td>
+              <td class="py-2 pr-4">Hosting server API</td>
+              <td class="py-2 pr-4">Dati in transito (richieste API, WebSocket)</td>
+              <td class="py-2 pr-4">Francoforte, Germania (UE)</td>
+              <td class="py-2">Si</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4"><strong>Cloudflare</strong> (Cloudflare Inc.)</td>
+              <td class="py-2 pr-4">Storage immagini (R2) e hosting sito web (Pages)</td>
+              <td class="py-2 pr-4">Foto profilo, avatar caricati dagli utenti</td>
+              <td class="py-2 pr-4">UE</td>
+              <td class="py-2">Si</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4"><strong>Upstash</strong> (Upstash Inc.)</td>
+              <td class="py-2 pr-4">Rate limiting e cache (Redis)</td>
+              <td class="py-2 pr-4">Indirizzo IP, identificativi di sessione (dati temporanei)</td>
+              <td class="py-2 pr-4">UE</td>
+              <td class="py-2">Si</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4"><strong>Resend</strong> (Resend Inc.)</td>
+              <td class="py-2 pr-4">Invio email transazionali</td>
+              <td class="py-2 pr-4">Indirizzo email, contenuto delle email</td>
+              <td class="py-2 pr-4">USA (con SCC)</td>
+              <td class="py-2">Si</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4"><strong>Sentry</strong> (Functional Software Inc.)</td>
+              <td class="py-2 pr-4">Monitoraggio errori applicazione</td>
+              <td class="py-2 pr-4">Report di errore con dati personali rimossi (scrubbing); attivo solo con consenso dell'utente</td>
+              <td class="py-2 pr-4">USA (con SCC)</td>
+              <td class="py-2">Si</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4"><strong>Statsig</strong> (Statsig Inc.)</td>
+              <td class="py-2 pr-4">Feature flags e test A/B</td>
+              <td class="py-2 pr-4">ID utente pseudonimizzato (hash), eventi di utilizzo; attivo solo con consenso dell'utente</td>
+              <td class="py-2 pr-4">USA (con SCC)</td>
+              <td class="py-2">Si</td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-4"><strong>Expo</strong> (650 Industries Inc.)</td>
+              <td class="py-2 pr-4">Notifiche push</td>
+              <td class="py-2 pr-4">Token push del dispositivo, contenuto della notifica</td>
+              <td class="py-2 pr-4">USA (con SCC)</td>
+              <td class="py-2">Si</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-4">
+        L'elenco aggiornato dei responsabili del trattamento è disponibile su richiesta scrivendo a
+        <a href="mailto:privacy@dogwalk.app" class="text-emerald-700 underline">privacy@dogwalk.app</a>.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 6. TRASFERIMENTO DATI EXTRA-UE                              -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">6. Trasferimento di dati personali verso paesi terzi</h2>
+      <p>
+        I dati personali degli utenti sono conservati ed elaborati principalmente all'interno
+        dell'Unione Europea (Francoforte, Germania), presso i server di Neon (database) e Fly.io
+        (API).
+      </p>
+      <p>
+        Alcuni fornitori di servizi (Resend, Sentry, Statsig, Expo) hanno sede negli
+        <strong>Stati Uniti d'America</strong>. Per tali trasferimenti, il Titolare si avvale delle
+        seguenti garanzie appropriate ai sensi del Capo V del GDPR:
       </p>
       <ul class="list-disc pl-6 space-y-1">
-        <li><strong>Analytics:</strong> raccolta di dati di utilizzo anonimi per migliorare il servizio</li>
-        <li><strong>Sperimentazione:</strong> partecipazione a test A/B e nuove funzionalità</li>
-        <li><strong>Monitoraggio errori:</strong> invio automatico di report di errori (Sentry)</li>
+        <li>
+          <strong>Decisione di adeguatezza</strong> della Commissione Europea ai sensi dell'art. 45
+          del GDPR, ove il fornitore aderisca al EU-U.S. Data Privacy Framework.
+        </li>
+        <li>
+          <strong>Clausole Contrattuali Standard (SCC)</strong> approvate dalla Commissione Europea
+          con Decisione di esecuzione (UE) 2021/914, ai sensi dell'art. 46(2)(c) del GDPR,
+          integrate ove necessario da misure supplementari (crittografia in transito e a riposo,
+          pseudonimizzazione, valutazioni di impatto sul trasferimento).
+        </li>
       </ul>
       <p>
-        Puoi modificare le tue preferenze di consenso in qualsiasi momento dalle Impostazioni dell'app.
-        La revoca del consenso non pregiudica la liceità del trattamento effettuato prima della revoca.
+        Puoi richiedere copia delle clausole contrattuali standard adottate scrivendo a
+        <a href="mailto:privacy@dogwalk.app" class="text-emerald-700 underline">privacy@dogwalk.app</a>.
       </p>
 
+      <!-- ============================================================ -->
+      <!-- 7. PERIODO DI CONSERVAZIONE                                 -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">7. Periodo di conservazione dei dati</h2>
+      <p>
+        In conformità al principio di limitazione della conservazione di cui all'art. 5(1)(e) del
+        GDPR, i dati personali sono conservati per il tempo strettamente necessario al
+        raggiungimento delle finalità per cui sono stati raccolti. In particolare:
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2 pr-4">Categoria di dati</th>
+              <th class="text-left py-2">Periodo di conservazione</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Dati dell'account (email, display name, foto, profili cani)</td>
+              <td class="py-2">Per tutta la durata dell'account attivo. In caso di cancellazione dell'account, i dati vengono eliminati definitivamente entro 30 giorni dalla richiesta.</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Messaggi di chat</td>
+              <td class="py-2">Per tutta la durata dell'account attivo. Eliminati con la cancellazione dell'account.</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Dati di geolocalizzazione</td>
+              <td class="py-2">Ultimo aggiornamento della posizione conservato fino alla cancellazione dell'account. Posizioni non aggiornate da oltre 90 giorni vengono cancellate automaticamente.</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Token di refresh e token di verifica</td>
+              <td class="py-2">Eliminati alla scadenza naturale o alla revoca da parte dell'utente.</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Dati di rate limiting e cache (Upstash Redis)</td>
+              <td class="py-2">Dati temporanei, eliminati automaticamente alla scadenza del TTL (generalmente da pochi secondi a poche ore).</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-2 pr-4">Report di errori (Sentry)</td>
+              <td class="py-2">Conservati secondo le policy di retention di Sentry (generalmente 90 giorni).</td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-4">Dati necessari per obblighi di legge</td>
+              <td class="py-2">Per il periodo previsto dalla normativa applicabile (es. 10 anni per obblighi fiscali ai sensi dell'art. 2220 c.c.).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-4">
+        Allo scadere del periodo di conservazione, i dati personali vengono cancellati o
+        anonimizzati in modo irreversibile.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 8. DIRITTI DELL'INTERESSATO                                 -->
+      <!-- ============================================================ -->
       <h2 class="text-xl font-semibold text-gray-900 mt-8">8. Diritti dell'interessato</h2>
-      <p>Ai sensi del GDPR, hai i seguenti diritti:</p>
-      <ul class="list-disc pl-6 space-y-1">
-        <li><strong>Accesso (Art. 15):</strong> richiedere una copia dei tuoi dati personali</li>
-        <li><strong>Rettifica (Art. 16):</strong> correggere dati inesatti o incompleti</li>
-        <li><strong>Cancellazione (Art. 17):</strong> richiedere l'eliminazione dei tuoi dati ("diritto all'oblio")</li>
-        <li><strong>Limitazione (Art. 18):</strong> limitare il trattamento dei tuoi dati</li>
-        <li><strong>Portabilità (Art. 20):</strong> ricevere i tuoi dati in formato strutturato e leggibile da dispositivo automatico. Disponibile direttamente dall'app tramite la funzione "Esporta i miei dati"</li>
-        <li><strong>Opposizione (Art. 21):</strong> opporti al trattamento basato su legittimo interesse</li>
-        <li><strong>Revoca del consenso (Art. 7):</strong> revocare il consenso in qualsiasi momento</li>
+      <p>
+        Ai sensi degli artt. 15-22 del GDPR e degli artt. 2-undecies e 2-duodecies del D.Lgs.
+        196/2003, in qualità di interessato hai il diritto di:
+      </p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          <strong>Accesso (art. 15 GDPR):</strong> ottenere dal Titolare la conferma che sia o
+          meno in corso un trattamento di dati personali che ti riguardano e, in tal caso,
+          ottenere l'accesso ai dati personali e alle informazioni di cui all'art. 15, par. 1,
+          del GDPR.
+        </li>
+        <li>
+          <strong>Rettifica (art. 16 GDPR):</strong> ottenere la rettifica dei dati personali
+          inesatti che ti riguardano e l'integrazione dei dati personali incompleti.
+        </li>
+        <li>
+          <strong>Cancellazione (art. 17 GDPR):</strong> ottenere la cancellazione dei dati
+          personali che ti riguardano ("diritto all'oblio"), nei casi previsti dalla norma.
+          Puoi eliminare il tuo account direttamente dall'app; tutti i dati saranno rimossi
+          definitivamente entro 30 giorni.
+        </li>
+        <li>
+          <strong>Limitazione del trattamento (art. 18 GDPR):</strong> ottenere la limitazione
+          del trattamento quando ricorra una delle condizioni previste dall'art. 18, par. 1,
+          del GDPR.
+        </li>
+        <li>
+          <strong>Portabilità dei dati (art. 20 GDPR):</strong> ricevere in un formato
+          strutturato, di uso comune e leggibile da dispositivo automatico i dati personali
+          che ti riguardano forniti al Titolare, e trasmetterli a un altro titolare del
+          trattamento senza impedimenti.
+        </li>
+        <li>
+          <strong>Opposizione (art. 21 GDPR):</strong> opporti in qualsiasi momento al
+          trattamento dei dati personali che ti riguardano basato sull'art. 6(1)(f) (legittimo
+          interesse). Il Titolare si astiene dal trattare ulteriormente i dati personali salvo
+          che dimostri l'esistenza di motivi legittimi cogenti.
+        </li>
+        <li>
+          <strong>Revoca del consenso (art. 7 GDPR):</strong> revocare il consenso in qualsiasi
+          momento, senza pregiudicare la liceità del trattamento basato sul consenso prestato
+          prima della revoca. Puoi gestire le tue preferenze di consenso direttamente dalle
+          Impostazioni dell'app.
+        </li>
+        <li>
+          <strong>Decisioni automatizzate (art. 22 GDPR):</strong> il Servizio non adotta
+          decisioni basate unicamente su un trattamento automatizzato che producano effetti
+          giuridici o incidano significativamente sulla tua persona. L'algoritmo di matching
+          fornisce suggerimenti non vincolanti, e la decisione finale di contattare un altro
+          utente spetta sempre all'interessato.
+        </li>
       </ul>
-      <p>
-        Per esercitare i tuoi diritti, contattaci all'indirizzo
-        <a href="mailto:privacy@dogwalk.app" class="text-emerald-700 underline">privacy@dogwalk.app</a>
-        o utilizza le funzioni dedicate nell'app (eliminazione account, esportazione dati, gestione consensi).
-      </p>
-      <p>
-        Puoi eliminare il tuo account direttamente dall'app. L'account verrà disattivato immediatamente
-        e tutti i dati saranno eliminati definitivamente dopo 30 giorni.
-      </p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">9. Sicurezza</h2>
-      <p>Adottiamo le seguenti misure di sicurezza per proteggere i tuoi dati:</p>
-      <ul class="list-disc pl-6 space-y-1">
-        <li>Crittografia delle password con bcrypt (hash salted)</li>
-        <li>Autenticazione tramite JWT con rotazione dei token</li>
-        <li>Comunicazioni crittografate tramite TLS/HTTPS</li>
-        <li>Protezione contro attacchi brute-force con blocco temporaneo dell'account</li>
-        <li>Rate limiting sulle API e WebSocket</li>
-        <li>Sanitizzazione dell'input per prevenire XSS e injection</li>
-        <li>Audit log degli eventi di sicurezza</li>
-        <li>Scrubbing automatico dei dati personali nei log di errore (Sentry)</li>
-      </ul>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">10. Cookie</h2>
+      <h3 class="text-lg font-medium text-gray-800 mt-4">Come esercitare i tuoi diritti</h3>
       <p>
-        L'app mobile non utilizza cookie. Il sito web utilizza esclusivamente cookie tecnici
-        necessari per il funzionamento del sito. Non utilizziamo cookie di profilazione o di terze parti.
-      </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">11. Minori</h2>
-      <p>
-        Il servizio non è destinato a minori di 16 anni. Non raccogliamo consapevolmente dati personali
-        di minori di 16 anni. Se scopriamo di aver raccolto dati di un minore, li elimineremo
-        tempestivamente.
-      </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">12. Modifiche alla privacy policy</h2>
-      <p>
-        Ci riserviamo il diritto di aggiornare questa Privacy Policy. In caso di modifiche sostanziali,
-        ti informeremo tramite notifica in-app o email. Ti invitiamo a consultare periodicamente
-        questa pagina.
-      </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">13. Reclami</h2>
-      <p>
-        Se ritieni che il trattamento dei tuoi dati violi il GDPR, hai il diritto di proporre reclamo
-        all'autorità di controllo competente. In Italia, l'autorità è il
-        <strong>Garante per la protezione dei dati personali</strong>
-        (www.garanteprivacy.it).
-      </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">14. Contatti</h2>
-      <p>
-        Per qualsiasi domanda o richiesta relativa alla presente Privacy Policy, puoi contattarci:
+        Puoi esercitare i tuoi diritti in qualsiasi momento:
       </p>
       <ul class="list-disc pl-6 space-y-1">
-        <li>Email: <a href="mailto:privacy@dogwalk.app" class="text-emerald-700 underline">privacy@dogwalk.app</a></li>
-        <li>PEC: dogwalk@pec.it</li>
-        <li>Posta: DogWalk S.r.l., Via Roma 1, 20121 Milano (MI), Italia</li>
+        <li>
+          scrivendo a
+          <a href="mailto:privacy@dogwalk.app" class="text-emerald-700 underline">privacy@dogwalk.app</a>
+          o tramite PEC a
+          <a href="mailto:dogwalk@pec.it" class="text-emerald-700 underline">dogwalk@pec.it</a>;
+        </li>
+        <li>
+          utilizzando le funzioni dedicate nell'app (eliminazione account, gestione consensi).
+        </li>
       </ul>
+      <p>
+        Il Titolare fornirà riscontro alla tua richiesta senza ingiustificato ritardo e comunque
+        entro <strong>un mese</strong> dalla ricezione, come previsto dall'art. 12, par. 3, del GDPR.
+        Tale termine può essere prorogato di due mesi, se necessario, tenuto conto della complessità
+        e del numero delle richieste.
+      </p>
+
+      <h3 class="text-lg font-medium text-gray-800 mt-4">Diritto di reclamo</h3>
+      <p>
+        Se ritieni che il trattamento dei tuoi dati personali violi il GDPR, hai il diritto di
+        proporre reclamo a un'autorità di controllo ai sensi dell'art. 77 del GDPR. In Italia,
+        l'autorità di controllo competente è il:
+      </p>
+      <p>
+        <strong>Garante per la protezione dei dati personali</strong><br>
+        Piazza Venezia, 11 - 00187 Roma<br>
+        <a href="https://www.garanteprivacy.it" class="text-emerald-700 underline" target="_blank" rel="noopener">www.garanteprivacy.it</a><br>
+        Email: <a href="mailto:protocollo@gpdp.it" class="text-emerald-700 underline">protocollo@gpdp.it</a><br>
+        PEC: <a href="mailto:protocollo@pec.gpdp.it" class="text-emerald-700 underline">protocollo@pec.gpdp.it</a>
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 9. COOKIE                                                    -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">9. Cookie e tecnologie di tracciamento</h2>
+      <p>
+        L'applicazione mobile DogWalk non utilizza cookie. Il sito web dogwalk.app utilizza
+        esclusivamente cookie tecnici strettamente necessari per il funzionamento del sito
+        (esenzione dal consenso ai sensi dell'art. 122, comma 1, del D.Lgs. 196/2003).
+      </p>
+      <p>
+        Per informazioni dettagliate sui cookie utilizzati, consulta la nostra
+        <a href="/cookie" class="text-emerald-700 underline">Cookie Policy</a>.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 10. CONSENSO E PREFERENZE                                   -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">10. Sistema di gestione del consenso</h2>
+      <p>
+        Al primo utilizzo dell'applicazione mobile, ti viene presentata un'interfaccia di raccolta
+        del consenso (Consent Modal) che ti consente di esprimere le tue preferenze in merito alle
+        seguenti categorie di trattamento facoltativo:
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li><strong>Analytics:</strong> raccolta di dati di utilizzo aggregati e anonimizzati per il miglioramento del servizio.</li>
+        <li><strong>Test A/B (abTesting):</strong> partecipazione a esperimenti sulle funzionalità dell'app tramite Statsig, con ID utente pseudonimizzato.</li>
+        <li><strong>Monitoraggio errori (errorTracking):</strong> invio automatico di report di errore a Sentry, con scrubbing dei dati personali.</li>
+        <li><strong>Marketing:</strong> ricezione di comunicazioni promozionali e newsletter via email.</li>
+      </ul>
+      <p>
+        Tutte le categorie sono <strong>disattivate per impostazione predefinita</strong> (opt-in).
+        Nessun dato viene raccolto per queste finalità fino a quando l'utente non presta
+        esplicitamente il proprio consenso.
+      </p>
+      <p>
+        Puoi modificare le tue preferenze di consenso in qualsiasi momento dalle
+        <strong>Impostazioni</strong> dell'app. La revoca del consenso non pregiudica la liceità
+        del trattamento effettuato prima della revoca, ai sensi dell'art. 7, par. 3, del GDPR.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 11. MINORI                                                   -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">11. Trattamento dei dati di minori</h2>
+      <p>
+        Il Servizio non è destinato a minori di 16 anni, in conformità all'art. 8 del GDPR e
+        all'art. 2-quinquies del D.Lgs. 196/2003. Non raccogliamo consapevolmente dati personali
+        di soggetti di età inferiore ai 16 anni. Qualora il Titolare venga a conoscenza di aver
+        raccolto dati personali di un minore senza il consenso del genitore o tutore, provvederà
+        alla cancellazione tempestiva di tali dati.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 12. MODIFICHE                                                -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">12. Modifiche alla presente informativa</h2>
+      <p>
+        Il Titolare si riserva il diritto di aggiornare o modificare la presente Informativa in
+        qualsiasi momento. La data dell'ultimo aggiornamento è indicata in cima a questa pagina.
+      </p>
+      <p>
+        In caso di modifiche sostanziali — intendendosi per tali le modifiche che incidano sulle
+        finalità del trattamento, sulle categorie di dati raccolti, sui destinatari dei dati o
+        sui diritti degli interessati — il Titolare provvederà a informare gli utenti tramite
+        notifica in-app o comunicazione via email con ragionevole anticipo, al fine di consentire
+        all'interessato di prenderne visione prima che le modifiche diventino efficaci.
+      </p>
+      <p>
+        L'utilizzo continuato del Servizio dopo l'entrata in vigore delle modifiche costituisce
+        accettazione della nuova Informativa. Ti invitiamo a consultare periodicamente questa pagina.
+      </p>
+
+      <!-- ============================================================ -->
+      <!-- 13. CONTATTI                                                 -->
+      <!-- ============================================================ -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">13. Contatti</h2>
+      <p>
+        Per qualsiasi domanda, chiarimento o richiesta relativa alla presente Informativa o al
+        trattamento dei tuoi dati personali, puoi contattarci attraverso i seguenti canali:
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>
+          Email:
+          <a href="mailto:privacy@dogwalk.app" class="text-emerald-700 underline">privacy@dogwalk.app</a>
+        </li>
+        <li>
+          PEC:
+          <a href="mailto:dogwalk@pec.it" class="text-emerald-700 underline">dogwalk@pec.it</a>
+        </li>
+        <li>
+          Posta ordinaria: DogWalk S.r.l., Via Roma 1, 20121 Milano (MI), Italia
+        </li>
+      </ul>
+
+      <p class="text-sm text-gray-500 mt-12 border-t pt-6">
+        La presente Informativa è conforme al Regolamento (UE) 2016/679 (GDPR), al D.Lgs. 196/2003
+        (Codice in materia di protezione dei dati personali) come modificato dal D.Lgs. 101/2018,
+        e alle indicazioni del Garante per la protezione dei dati personali.
+      </p>
     </div>
   </div>
 </BaseLayout>

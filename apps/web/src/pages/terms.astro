@@ -2,174 +2,434 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Termini e Condizioni">
+<BaseLayout title="Termini e Condizioni d'Uso">
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-8">Termini e Condizioni</h1>
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-8">Termini e Condizioni d'Uso</h1>
 
     <div class="prose prose-gray max-w-none space-y-6 text-gray-600">
       <p><strong>Ultimo aggiornamento:</strong> 11 marzo 2026</p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">1. Accettazione dei termini</h2>
+      <!-- 1. Premessa e definizioni -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">1. Premessa e definizioni</h2>
       <p>
-        I presenti Termini e Condizioni ("Termini") regolano l'utilizzo dell'applicazione mobile
-        DogWalk e del sito web dogwalk.app (collettivamente, il "Servizio"), gestiti da
-        DogWalk S.r.l. ("DogWalk", "noi", "nostro").
+        I presenti Termini e Condizioni d'Uso (di seguito, i "<strong>Termini</strong>") disciplinano
+        l'accesso e l'utilizzo della piattaforma DogWalk, costituita dall'applicazione mobile disponibile
+        per dispositivi iOS e Android e dal sito web <strong>dogwalk.app</strong> (di seguito,
+        collettivamente, il "<strong>Servizio</strong>" o la "<strong>Piattaforma</strong>").
       </p>
       <p>
-        Utilizzando il Servizio, accetti integralmente i presenti Termini. Se non sei d'accordo
-        con una qualsiasi parte dei Termini, ti preghiamo di non utilizzare il Servizio.
+        Il Servizio è gestito da <strong>DogWalk S.r.l.</strong>, con sede legale in Via Roma 1,
+        20121 Milano (MI), Italia, P.IVA 12345678901, PEC: dogwalk@pec.it (di seguito,
+        "<strong>DogWalk</strong>", il "<strong>Titolare</strong>", "<strong>noi</strong>" o
+        "<strong>nostro</strong>").
       </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">2. Descrizione del servizio</h2>
-      <p>
-        DogWalk è una piattaforma sociale per proprietari di cani che permette di:
-      </p>
+      <p>Ai fini dei presenti Termini, si intende per:</p>
       <ul class="list-disc pl-6 space-y-1">
-        <li>Trovare altri proprietari di cani compatibili nella propria zona tramite un algoritmo di matching comportamentale</li>
-        <li>Comunicare con altri utenti tramite chat in tempo reale</li>
-        <li>Organizzare e partecipare a passeggiate di gruppo ed eventi</li>
-        <li>Condividere contenuti nel feed (foto, video, testi)</li>
-        <li>Tracciare le passeggiate con il proprio cane</li>
-        <li>Partecipare a sfide e guadagnare badge</li>
+        <li><strong>Utente</strong>: qualsiasi persona fisica che accede al Servizio, vi si registra o lo utilizza in qualsiasi modo.</li>
+        <li><strong>Account</strong>: il profilo personale creato dall'Utente al momento della registrazione, necessario per accedere alle funzionalità del Servizio.</li>
+        <li><strong>Profilo Cane</strong>: la scheda informativa relativa a un cane di proprietà o in custodia dell'Utente, contenente dati quali nome, razza, taglia, livello energetico, tratti comportamentali e preferenze di guinzaglio.</li>
+        <li><strong>Matching</strong>: il processo algoritmico mediante il quale la Piattaforma suggerisce all'Utente altri Utenti con cani potenzialmente compatibili, sulla base di criteri predefiniti.</li>
+        <li><strong>Contenuto dell'Utente</strong> o <strong>UGC</strong> (User Generated Content): qualsiasi contenuto caricato, pubblicato o trasmesso dall'Utente tramite il Servizio, inclusi testi, fotografie, video, commenti, messaggi e informazioni del profilo.</li>
+        <li><strong>Evento di Gruppo</strong>: una passeggiata o attività organizzata da un Utente alla quale altri Utenti possono iscriversi tramite la Piattaforma.</li>
       </ul>
 
+      <!-- 2. Accettazione dei termini -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">2. Accettazione dei termini</h2>
+      <p>
+        L'accesso e l'utilizzo del Servizio sono subordinati all'accettazione integrale e incondizionata
+        dei presenti Termini, unitamente alla
+        <a href="/privacy" class="text-emerald-700 underline">Privacy Policy</a> e alla
+        <a href="/cookie" class="text-emerald-700 underline">Cookie Policy</a>, che ne costituiscono
+        parte integrante.
+      </p>
+      <p>
+        Creando un Account o utilizzando il Servizio in qualsiasi modo, l'Utente dichiara di aver letto,
+        compreso e accettato i presenti Termini. Qualora l'Utente non intenda accettare, in tutto o in
+        parte, i presenti Termini, è tenuto a non utilizzare il Servizio e, se già registrato, a
+        richiedere la cancellazione del proprio Account secondo le modalità previste all'art. 12.
+      </p>
+      <p>
+        I presenti Termini sono messi a disposizione dell'Utente in forma che ne consente la
+        memorizzazione e la riproduzione, ai sensi dell'art. 12 del D.Lgs. 70/2003 (Decreto sul
+        commercio elettronico).
+      </p>
+
+      <!-- 3. Registrazione e account -->
       <h2 class="text-xl font-semibold text-gray-900 mt-8">3. Registrazione e account</h2>
       <p>
-        Per utilizzare il Servizio devi creare un account. Al momento della registrazione, dichiari di:
+        Per accedere alle funzionalità del Servizio è necessario creare un Account fornendo: un indirizzo
+        email valido, una password, un nome visualizzato e, facoltativamente, un'immagine del profilo
+        (avatar).
       </p>
+      <p>Al momento della registrazione, l'Utente dichiara e garantisce di:</p>
       <ul class="list-disc pl-6 space-y-1">
-        <li>Avere almeno 16 anni di età</li>
-        <li>Fornire informazioni veritiere, accurate e aggiornate</li>
-        <li>Mantenere la riservatezza delle credenziali di accesso</li>
-        <li>Essere l'unico responsabile di tutte le attività svolte tramite il tuo account</li>
+        <li>possedere i requisiti di età indicati all'art. 4;</li>
+        <li>fornire informazioni veritiere, accurate, attuali e complete;</li>
+        <li>mantenere aggiornate le informazioni del proprio Account;</li>
+        <li>custodire con diligenza le proprie credenziali di accesso (email e password) e non condividerle con terzi;</li>
+        <li>essere l'unico responsabile di tutte le attività svolte tramite il proprio Account.</li>
       </ul>
       <p>
-        Puoi registrarti tramite email e password, oppure tramite Apple ID o Google. In caso di
-        accesso tramite provider terzi, autorizzi DogWalk a ricevere le informazioni necessarie
-        dal provider.
+        L'Utente è tenuto a comunicare tempestivamente a DogWalk qualsiasi utilizzo non autorizzato del
+        proprio Account o qualsiasi violazione della sicurezza, scrivendo a
+        <a href="mailto:info@dogwalk.app" class="text-emerald-700 underline">info@dogwalk.app</a>.
       </p>
       <p>
-        DogWalk si riserva il diritto di sospendere o eliminare account che violano i presenti Termini.
+        Ciascun Utente può creare un solo Account. La creazione di Account multipli da parte della stessa
+        persona fisica costituisce violazione dei presenti Termini e potrà comportare la sospensione o
+        la chiusura di tutti gli Account associati.
       </p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">4. Contenuti dell'utente</h2>
+      <!-- 4. Requisiti di età -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">4. Requisiti di età</h2>
       <p>
-        Pubblicando contenuti sul Servizio (testi, foto, video), concedi a DogWalk una licenza
-        non esclusiva, mondiale, gratuita e revocabile per utilizzare, mostrare e distribuire tali
-        contenuti nell'ambito del Servizio.
+        Il Servizio è destinato a Utenti che abbiano compiuto il diciottesimo anno di età.
       </p>
-      <p>Ti impegni a non pubblicare contenuti che siano:</p>
-      <ul class="list-disc pl-6 space-y-1">
-        <li>Illegali, offensivi, discriminatori o diffamatori</li>
-        <li>Violenti, sessualmente espliciti o inappropriati</li>
-        <li>In violazione dei diritti di proprietà intellettuale di terzi</li>
-        <li>Spam, pubblicità non autorizzata o phishing</li>
-        <li>Dannosi per animali o che promuovano maltrattamento</li>
+      <p>
+        In via eccezionale, possono accedere al Servizio i minori che abbiano compiuto il quattordicesimo
+        anno di età, a condizione che la registrazione avvenga con il consenso verificabile di chi esercita
+        la responsabilità genitoriale, ai sensi dell'art. 2-quinquies del D.Lgs. 196/2003, come modificato
+        dal D.Lgs. 101/2018, e dell'art. 8 del Regolamento (UE) 2016/679 (GDPR).
+      </p>
+      <p>
+        DogWalk si riserva il diritto di richiedere in qualsiasi momento documentazione idonea a comprovare
+        l'età dell'Utente e, ove applicabile, il consenso genitoriale. In assenza di tale documentazione,
+        l'Account potrà essere sospeso o cancellato.
+      </p>
+
+      <!-- 5. Descrizione del servizio -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">5. Descrizione del servizio</h2>
+      <p>
+        DogWalk è una piattaforma sociale dedicata ai proprietari di cani, progettata per facilitare
+        l'incontro tra persone con cani comportamentalmente compatibili. Il Servizio offre le seguenti
+        funzionalità principali:
+      </p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          <strong>Profili cane e matching comportamentale</strong>: l'Utente può creare uno o più Profili
+          Cane indicando caratteristiche quali taglia, livello energetico, tratti comportamentali, preferenze
+          di passeggiata e uso del guinzaglio. Un algoritmo proprietario calcola un punteggio di compatibilità
+          tra cani sulla base di criteri ponderati (taglia, energia, comportamento, preferenze di passeggiata,
+          distanza geografica, guinzaglio) e suggerisce Utenti con cani potenzialmente compatibili.
+        </li>
+        <li>
+          <strong>Geolocalizzazione</strong>: il Servizio utilizza la posizione geografica dell'Utente per
+          individuare altri Utenti nelle vicinanze. La condivisione della posizione è facoltativa e richiede
+          il consenso esplicito dell'Utente (cfr. art. 10).
+        </li>
+        <li>
+          <strong>Chat in tempo reale</strong>: gli Utenti abbinati possono comunicare tramite messaggistica
+          istantanea (WebSocket).
+        </li>
+        <li>
+          <strong>Eventi di Gruppo</strong>: gli Utenti possono creare, organizzare e partecipare a
+          passeggiate di gruppo ed eventi per cani.
+        </li>
+        <li>
+          <strong>Gamification</strong>: il Servizio prevede un sistema di punti esperienza (XP), badge e
+          livelli per incentivare la partecipazione e l'utilizzo della Piattaforma.
+        </li>
+        <li>
+          <strong>Feed sociale</strong>: gli Utenti possono pubblicare contenuti (foto, video, testi),
+          esprimere apprezzamenti (like), commentare e taggare altri Utenti.
+        </li>
+        <li>
+          <strong>Notifiche push</strong>: il Servizio può inviare notifiche relative a nuovi abbinamenti,
+          messaggi ricevuti, eventi e promemoria, previo consenso dell'Utente.
+        </li>
+        <li>
+          <strong>Moderazione dei contenuti</strong>: gli Utenti possono segnalare contenuti inappropriati
+          o bloccare altri Utenti.
+        </li>
       </ul>
       <p>
-        DogWalk si riserva il diritto di rimuovere qualsiasi contenuto che violi i presenti Termini
-        o le linee guida della community, anche attraverso sistemi di moderazione automatica.
+        Il Servizio è attualmente offerto a titolo completamente gratuito. Non sono previsti abbonamenti,
+        acquisti in-app o funzionalità a pagamento. Qualora in futuro venissero introdotte funzionalità a
+        pagamento, i presenti Termini saranno aggiornati e l'Utente ne sarà informato secondo le modalità
+        previste all'art. 13.
       </p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">5. Profili dei cani</h2>
-      <p>
-        Registrando un profilo per il tuo cane, dichiari di essere il legittimo proprietario
-        o il tutore autorizzato dell'animale. Le informazioni fornite (razza, taglia, comportamento,
-        livello energetico) devono essere accurate e aggiornate.
-      </p>
-      <p>
-        DogWalk utilizza queste informazioni per calcolare la compatibilità con altri cani.
-        La compatibilità suggerita non costituisce garanzia di comportamento sicuro tra gli animali.
-      </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">6. Passeggiate ed eventi</h2>
-      <p>
-        DogWalk facilita l'organizzazione di incontri tra proprietari di cani ma non è responsabile
-        per quanto avviene durante le passeggiate o gli eventi organizzati tramite la piattaforma.
-      </p>
-      <p>Ogni utente è responsabile di:</p>
+      <!-- 6. Obblighi dell'utente / Comportamento -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">6. Obblighi dell'Utente e regole di comportamento</h2>
+      <p>L'Utente si impegna a utilizzare il Servizio in modo lecito, corretto e conforme ai presenti Termini, alla normativa vigente e al buon costume. In particolare, l'Utente si impegna a:</p>
       <ul class="list-disc pl-6 space-y-1">
-        <li>Mantenere il proprio cane al guinzaglio dove richiesto dalla legge</li>
-        <li>Garantire che il proprio cane sia in buone condizioni di salute e con vaccinazioni aggiornate</li>
-        <li>Rispettare le normative locali sulla conduzione degli animali</li>
-        <li>Risarcire eventuali danni causati dal proprio animale</li>
-      </ul>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">7. Geolocalizzazione</h2>
-      <p>
-        Il Servizio utilizza la posizione geografica per mostrare utenti nelle vicinanze e
-        per il tracciamento delle passeggiate. La condivisione della posizione è facoltativa
-        e richiede il tuo consenso esplicito. Puoi disattivare la geolocalizzazione in qualsiasi
-        momento dalle impostazioni del dispositivo.
-      </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">8. Limitazione di responsabilità</h2>
-      <p>
-        Il Servizio è fornito "così com'è" e "come disponibile". DogWalk non garantisce:
-      </p>
-      <ul class="list-disc pl-6 space-y-1">
-        <li>La disponibilità continua e ininterrotta del Servizio</li>
-        <li>L'accuratezza dei punteggi di compatibilità</li>
-        <li>La veridicità delle informazioni fornite da altri utenti</li>
-        <li>La sicurezza degli incontri tra utenti e/o animali</li>
+        <li>non utilizzare il Servizio per finalità illecite, fraudolente o lesive dei diritti di terzi;</li>
+        <li>non fornire informazioni false, fuorvianti o ingannevoli nel proprio profilo o nei Profili Cane;</li>
+        <li>non molestare, minacciare, intimidire, perseguitare (stalking) o diffamare altri Utenti;</li>
+        <li>non pubblicare contenuti che incitino alla violenza, all'odio, alla discriminazione per ragioni di razza, etnia, religione, genere, orientamento sessuale, disabilità o qualsiasi altra condizione personale;</li>
+        <li>non promuovere o facilitare in alcun modo il maltrattamento, l'abbandono o lo sfruttamento di animali;</li>
+        <li>non inviare spam, comunicazioni commerciali non richieste o messaggi ripetitivi;</li>
+        <li>non tentare di accedere ad Account altrui, a sistemi o reti connesse al Servizio senza autorizzazione;</li>
+        <li>non utilizzare software automatizzati (bot, scraper, crawler) per accedere al Servizio o estrarne dati;</li>
+        <li>non eludere, disattivare o interferire con le funzionalità di sicurezza del Servizio;</li>
+        <li>non utilizzare il Servizio per finalità diverse da quelle per cui è stato progettato (socializzazione tra proprietari di cani).</li>
       </ul>
       <p>
-        Nella misura massima consentita dalla legge, DogWalk non sarà responsabile per danni
-        diretti, indiretti, incidentali o consequenziali derivanti dall'utilizzo del Servizio,
-        inclusi danni a persone o animali durante passeggiate o eventi.
-      </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">9. Proprietà intellettuale</h2>
-      <p>
-        Il Servizio, inclusi design, logo, codice sorgente, algoritmi e contenuti originali,
-        è di proprietà di DogWalk S.r.l. ed è protetto dalle leggi sulla proprietà intellettuale.
-        Non è consentito copiare, modificare, distribuire o creare opere derivate senza
-        autorizzazione scritta.
-      </p>
-
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">10. Eliminazione dell'account</h2>
-      <p>
-        Puoi eliminare il tuo account in qualsiasi momento dall'app. Alla richiesta di eliminazione:
+        Nell'ambito di passeggiate ed eventi organizzati tramite la Piattaforma, l'Utente è personalmente
+        responsabile di:
       </p>
       <ul class="list-disc pl-6 space-y-1">
-        <li>L'account verrà immediatamente disattivato</li>
-        <li>Avrai 30 giorni per ripensarci e richiedere la riattivazione</li>
-        <li>Trascorsi 30 giorni, tutti i dati saranno eliminati in modo permanente e irreversibile</li>
-        <li>I messaggi inviati ad altri utenti potrebbero restare visibili come "utente eliminato"</li>
+        <li>mantenere il proprio cane al guinzaglio ove previsto dalla normativa locale e nazionale vigente;</li>
+        <li>garantire che il proprio cane sia in buone condizioni di salute, con vaccinazioni aggiornate e microchip regolarmente registrato;</li>
+        <li>rispettare le ordinanze comunali e le normative in materia di conduzione e custodia degli animali d'affezione;</li>
+        <li>risarcire integralmente eventuali danni a persone, animali o cose causati dal proprio cane, ai sensi dell'art. 2052 del Codice Civile (responsabilità del proprietario di animali).</li>
       </ul>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">11. Segnalazioni e blocchi</h2>
+      <!-- 7. Contenuti dell'utente (UGC) -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">7. Contenuti dell'Utente (UGC)</h2>
       <p>
-        Puoi segnalare utenti o contenuti inappropriati tramite le funzioni dedicate nell'app.
-        DogWalk esaminerà le segnalazioni e potrà adottare misure che includono la rimozione
-        di contenuti, la sospensione temporanea o la chiusura definitiva dell'account dell'utente
-        segnalato.
+        L'Utente è l'unico responsabile dei Contenuti che pubblica, carica o trasmette tramite il Servizio.
+        L'Utente dichiara e garantisce di essere titolare di tutti i diritti necessari sui Contenuti
+        pubblicati, ovvero di aver ottenuto le autorizzazioni necessarie dai legittimi titolari.
+      </p>
+      <p>
+        Pubblicando Contenuti sulla Piattaforma, l'Utente concede a DogWalk una licenza non esclusiva,
+        gratuita, mondiale e revocabile per utilizzare, riprodurre, modificare (limitatamente ad
+        adattamenti tecnici quali ridimensionamento o compressione), mostrare e distribuire tali Contenuti
+        nell'ambito del funzionamento e della promozione del Servizio. Tale licenza si estingue con la
+        cancellazione del Contenuto da parte dell'Utente o con la chiusura dell'Account, fatti salvi i
+        tempi tecnici necessari per la rimozione e le eventuali copie di backup.
+      </p>
+      <p>
+        L'Utente si impegna a <strong>non</strong> pubblicare Contenuti che:
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>siano illegali, offensivi, discriminatori, diffamatori o lesivi dell'onore e della reputazione altrui;</li>
+        <li>contengano materiale violento, sessualmente esplicito, pornografico o inappropriato;</li>
+        <li>violino diritti di proprietà intellettuale, diritti d'autore, marchi o brevetti di terzi;</li>
+        <li>contengano dati personali di terzi senza il loro consenso (es. fotografie che ritraggano persone riconoscibili senza autorizzazione);</li>
+        <li>contengano malware, virus o codice dannoso;</li>
+        <li>promuovano attività illegali, sostanze stupefacenti o prodotti contraffatti;</li>
+        <li>rappresentino forme di maltrattamento, crudeltà o sfruttamento di animali.</li>
+      </ul>
+      <p>
+        DogWalk si riserva il diritto, ma non assume l'obbligo, di monitorare i Contenuti pubblicati e di
+        rimuovere, senza preavviso, qualsiasi Contenuto che, a propria ragionevole discrezione, violi i
+        presenti Termini, le linee guida della community o la normativa vigente. DogWalk potrà avvalersi
+        di sistemi di moderazione sia manuali sia automatizzati.
+      </p>
+      <p>
+        Ai sensi degli artt. 14-16 del D.Lgs. 70/2003, DogWalk, in qualità di hosting provider, non è
+        soggetto a un obbligo generale di sorveglianza sui Contenuti trasmessi o memorizzati, né a un obbligo
+        generale di ricercare attivamente fatti o circostanze che indichino la presenza di attività illecite.
       </p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">12. Modifiche ai termini</h2>
+      <!-- 8. Proprietà intellettuale -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">8. Proprietà intellettuale</h2>
       <p>
-        DogWalk si riserva il diritto di modificare i presenti Termini in qualsiasi momento.
-        Le modifiche sostanziali saranno comunicate tramite email o notifica in-app con almeno
-        30 giorni di preavviso. L'utilizzo continuato del Servizio dopo la notifica costituisce
-        accettazione dei nuovi Termini.
+        Il Servizio, inclusi a titolo esemplificativo ma non esaustivo il design, il logo, il nome
+        "DogWalk", il codice sorgente, gli algoritmi, l'architettura, le interfacce utente, i testi
+        originali, la grafica e i database, è di proprietà esclusiva di DogWalk S.r.l. ed è protetto
+        dalla normativa italiana ed europea in materia di diritto d'autore (L. 633/1941), proprietà
+        industriale (D.Lgs. 30/2005, Codice della Proprietà Industriale) e dalle convenzioni internazionali
+        applicabili.
+      </p>
+      <p>
+        I presenti Termini non conferiscono all'Utente alcun diritto di proprietà intellettuale sul
+        Servizio o sui suoi contenuti. È espressamente vietato, senza la preventiva autorizzazione scritta
+        di DogWalk:
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>copiare, modificare, distribuire o creare opere derivate dal Servizio o da parti di esso;</li>
+        <li>decompilare, disassemblare o effettuare reverse engineering del software del Servizio, salvo nei limiti espressamente consentiti dalla legge applicabile;</li>
+        <li>rimuovere o alterare avvisi di copyright, marchi o altri segni distintivi presenti sul Servizio;</li>
+        <li>utilizzare il nome, il logo o i marchi di DogWalk senza autorizzazione.</li>
+      </ul>
+      <p>
+        L'Utente conserva la piena titolarità dei diritti sui propri Contenuti, nei limiti della licenza
+        concessa ai sensi dell'art. 7.
       </p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">13. Legge applicabile e foro competente</h2>
+      <!-- 9. Limitazione di responsabilità -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">9. Limitazione di responsabilità</h2>
       <p>
-        I presenti Termini sono regolati dalla legge italiana. Per qualsiasi controversia derivante
-        dall'utilizzo del Servizio, sarà competente in via esclusiva il Foro di Milano, salvo
-        il foro del consumatore ai sensi del D.Lgs. 206/2005.
+        Il Servizio è fornito "<em>così com'è</em>" (<em>as is</em>) e "<em>come disponibile</em>"
+        (<em>as available</em>), senza garanzie di alcun tipo, espresse o implicite, nella misura massima
+        consentita dalla legge applicabile.
+      </p>
+      <p>In particolare, DogWalk <strong>non garantisce</strong>:</p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>la disponibilità continua, ininterrotta e priva di errori del Servizio;</li>
+        <li>l'accuratezza, l'affidabilità o la completezza dei punteggi di compatibilità generati dall'algoritmo di matching;</li>
+        <li>la veridicità, l'accuratezza o la completezza delle informazioni fornite dagli Utenti nei propri profili o nei Profili Cane;</li>
+        <li>la sicurezza degli incontri tra Utenti e/o tra i rispettivi animali;</li>
+        <li>l'idoneità del Servizio a soddisfare le specifiche esigenze dell'Utente.</li>
+      </ul>
+      <p>
+        <strong>DogWalk è una piattaforma di intermediazione sociale e non partecipa direttamente alle
+        interazioni tra Utenti.</strong> Pertanto, nella misura massima consentita dalla legge applicabile
+        e fatti salvi i limiti inderogabili di legge (incluso l'art. 1229 del Codice Civile), DogWalk non
+        sarà responsabile per:
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>danni diretti, indiretti, incidentali, consequenziali o punitivi derivanti dall'utilizzo o dall'impossibilità di utilizzo del Servizio;</li>
+        <li>danni a persone o animali verificatisi durante passeggiate, eventi o incontri organizzati tramite la Piattaforma;</li>
+        <li>atti, omissioni, comportamenti o Contenuti di altri Utenti;</li>
+        <li>perdita di dati dovuta a cause tecniche, salvo dolo o colpa grave di DogWalk;</li>
+        <li>interruzioni del Servizio dovute a manutenzione, aggiornamenti, cause di forza maggiore o eventi al di fuori del ragionevole controllo di DogWalk.</li>
+      </ul>
+      <p>
+        Resta fermo che le presenti limitazioni non si applicano ai diritti inderogabili riconosciuti
+        all'Utente consumatore ai sensi del Codice del Consumo (D.Lgs. 206/2005) e del Codice Civile,
+        inclusa la responsabilità per dolo o colpa grave.
       </p>
 
-      <h2 class="text-xl font-semibold text-gray-900 mt-8">14. Contatti</h2>
+      <!-- 10. Geolocalizzazione e sicurezza -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">10. Geolocalizzazione e sicurezza</h2>
       <p>
-        Per qualsiasi domanda relativa ai presenti Termini, puoi contattarci:
+        Il Servizio utilizza la posizione geografica dell'Utente per le seguenti finalità:
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>individuare altri Utenti nelle vicinanze;</li>
+        <li>calcolare la distanza nel punteggio di compatibilità;</li>
+        <li>mostrare eventi di gruppo in zona;</li>
+        <li>consentire la condivisione della posizione durante le passeggiate.</li>
+      </ul>
+      <p>
+        La condivisione della posizione è <strong>facoltativa</strong> e richiede il consenso esplicito
+        dell'Utente tramite le autorizzazioni del sistema operativo del dispositivo. L'Utente può
+        revocare tale consenso in qualsiasi momento dalle impostazioni del proprio dispositivo o
+        dell'applicazione. La revoca del consenso alla geolocalizzazione potrà limitare alcune
+        funzionalità del Servizio.
+      </p>
+      <p>
+        Per la propria sicurezza personale, DogWalk raccomanda all'Utente di:
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>incontrare altri Utenti per la prima volta in luoghi pubblici e frequentati;</li>
+        <li>informare una persona di fiducia prima di partecipare a una passeggiata o a un evento organizzato tramite la Piattaforma;</li>
+        <li>non condividere informazioni personali sensibili (indirizzo di casa, dati finanziari) con altri Utenti;</li>
+        <li>segnalare immediatamente comportamenti sospetti o molesti tramite le funzioni di segnalazione dell'app o scrivendo a <a href="mailto:info@dogwalk.app" class="text-emerald-700 underline">info@dogwalk.app</a>.</li>
+      </ul>
+      <p>
+        I dati di geolocalizzazione sono trattati in conformità alla
+        <a href="/privacy" class="text-emerald-700 underline">Privacy Policy</a> e al Regolamento (UE)
+        2016/679 (GDPR).
+      </p>
+
+      <!-- 11. Sospensione e chiusura account -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">11. Sospensione e chiusura dell'account</h2>
+      <p>
+        DogWalk si riserva il diritto di sospendere temporaneamente o chiudere definitivamente l'Account
+        di un Utente, con o senza preavviso, nei seguenti casi:
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>violazione dei presenti Termini o delle linee guida della community;</li>
+        <li>comportamento lesivo, molesto o pericoloso nei confronti di altri Utenti, di animali o di terzi;</li>
+        <li>pubblicazione ripetuta di Contenuti in violazione dell'art. 7;</li>
+        <li>utilizzo di Account multipli da parte della stessa persona fisica;</li>
+        <li>utilizzo di software automatizzati o tentativi di accesso non autorizzato;</li>
+        <li>segnalazioni gravi e circostanziate da parte di altri Utenti;</li>
+        <li>richiesta da parte dell'autorità giudiziaria o di un'autorità amministrativa competente;</li>
+        <li>qualsiasi altra condotta che DogWalk ritenga ragionevolmente incompatibile con le finalità del Servizio.</li>
+      </ul>
+      <p>
+        In caso di sospensione temporanea, DogWalk comunicherà all'Utente le motivazioni e la durata della
+        sospensione tramite l'indirizzo email associato all'Account. In caso di chiusura definitiva,
+        l'Utente sarà informato con comunicazione motivata.
+      </p>
+      <p>
+        L'Utente può contestare la decisione di sospensione o chiusura scrivendo a
+        <a href="mailto:info@dogwalk.app" class="text-emerald-700 underline">info@dogwalk.app</a> entro
+        30 (trenta) giorni dalla comunicazione. DogWalk esaminerà la contestazione e comunicherà la
+        propria decisione entro un termine ragionevole.
+      </p>
+
+      <!-- 12. Cancellazione account e dati -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">12. Cancellazione dell'account e dei dati</h2>
+      <p>
+        L'Utente può richiedere la cancellazione del proprio Account in qualsiasi momento tramite
+        l'apposita funzione disponibile nelle impostazioni dell'applicazione, oppure inviando una
+        richiesta scritta a
+        <a href="mailto:info@dogwalk.app" class="text-emerald-700 underline">info@dogwalk.app</a>.
+      </p>
+      <p>A seguito della richiesta di cancellazione:</p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>l'Account verrà immediatamente disattivato e non sarà più visibile agli altri Utenti;</li>
+        <li>l'Utente disporrà di un periodo di grazia di <strong>30 (trenta) giorni</strong> durante il quale potrà richiedere la riattivazione dell'Account contattando il supporto;</li>
+        <li>trascorso il periodo di grazia, tutti i dati personali dell'Utente saranno cancellati in modo permanente e irreversibile, inclusi il profilo, i Profili Cane, le fotografie, i dati di gamification e le impostazioni;</li>
+        <li>i messaggi inviati ad altri Utenti nella chat potranno rimanere visibili al destinatario con l'indicazione "utente eliminato", senza riferimenti identificativi all'Utente cancellato;</li>
+        <li>i Contenuti pubblicati nel feed (post, commenti, like) saranno rimossi.</li>
+      </ul>
+      <p>
+        La cancellazione dei dati è effettuata nel rispetto del diritto alla cancellazione previsto
+        dall'art. 17 del Regolamento (UE) 2016/679 (GDPR). Alcuni dati potranno essere conservati oltre
+        il periodo di grazia esclusivamente qualora ciò sia necessario per l'adempimento di obblighi di
+        legge (es. obblighi fiscali o contabili), per l'accertamento, l'esercizio o la difesa di un
+        diritto in sede giudiziaria, o per la tutela di interessi vitali.
+      </p>
+
+      <!-- 13. Modifiche ai termini -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">13. Modifiche ai termini</h2>
+      <p>
+        DogWalk si riserva il diritto di modificare i presenti Termini in qualsiasi momento, per adeguarli
+        a sopravvenute esigenze normative, organizzative, tecniche o funzionali del Servizio.
+      </p>
+      <p>
+        Le modifiche sostanziali saranno comunicate all'Utente con almeno <strong>30 (trenta) giorni di
+        preavviso</strong> tramite notifica in-app, email o avviso pubblicato sul sito web. Le modifiche
+        non sostanziali (es. correzioni tipografiche, chiarimenti) potranno essere apportate senza
+        preavviso.
+      </p>
+      <p>
+        L'utilizzo continuato del Servizio dopo la scadenza del periodo di preavviso costituisce
+        accettazione delle modifiche. Qualora l'Utente non intenda accettare le nuove condizioni, potrà
+        recedere liberamente dal Servizio cancellando il proprio Account prima dell'entrata in vigore
+        delle modifiche, senza alcuna penalità.
+      </p>
+      <p>
+        La versione aggiornata dei Termini sarà sempre disponibile alla pagina
+        <a href="/terms" class="text-emerald-700 underline">dogwalk.app/terms</a> con indicazione della
+        data dell'ultimo aggiornamento.
+      </p>
+
+      <!-- 14. Legge applicabile e foro competente -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">14. Legge applicabile e foro competente</h2>
+      <p>
+        I presenti Termini sono regolati dalla legge italiana e devono essere interpretati in conformità
+        alla stessa.
+      </p>
+      <p>
+        Per qualsiasi controversia derivante dall'interpretazione, esecuzione o risoluzione dei presenti
+        Termini o relativa all'utilizzo del Servizio, sarà competente in via esclusiva il
+        <strong>Foro di Milano</strong>.
+      </p>
+      <p>
+        Resta espressamente fatto salvo il foro del consumatore: ai sensi dell'art. 33, comma 2, lett. u)
+        del Codice del Consumo (D.Lgs. 206/2005), qualora l'Utente rivesta la qualità di consumatore
+        (persona fisica che agisce per scopi estranei all'attività imprenditoriale, commerciale,
+        artigianale o professionale eventualmente svolta), sarà competente il foro del luogo di residenza
+        o di domicilio elettivo del consumatore.
+      </p>
+      <p>
+        L'Utente consumatore residente nell'Unione Europea può inoltre ricorrere alla piattaforma europea
+        per la risoluzione delle controversie online (ODR) accessibile all'indirizzo
+        <a href="https://ec.europa.eu/consumers/odr/" class="text-emerald-700 underline" target="_blank" rel="noopener">https://ec.europa.eu/consumers/odr/</a>,
+        ai sensi del Regolamento (UE) 524/2013.
+      </p>
+
+      <!-- 15. Contatti -->
+      <h2 class="text-xl font-semibold text-gray-900 mt-8">15. Contatti</h2>
+      <p>
+        Per qualsiasi domanda, segnalazione o richiesta relativa ai presenti Termini, l'Utente può
+        contattare DogWalk attraverso i seguenti recapiti:
       </p>
       <ul class="list-disc pl-6 space-y-1">
         <li>Email: <a href="mailto:info@dogwalk.app" class="text-emerald-700 underline">info@dogwalk.app</a></li>
-        <li>PEC: dogwalk@pec.it</li>
+        <li>PEC: <a href="mailto:dogwalk@pec.it" class="text-emerald-700 underline">dogwalk@pec.it</a></li>
         <li>Posta: DogWalk S.r.l., Via Roma 1, 20121 Milano (MI), Italia</li>
       </ul>
+      <p>
+        DogWalk si impegna a riscontrare le richieste pervenute entro un termine ragionevole e in ogni
+        caso non superiore a 30 (trenta) giorni dal ricevimento.
+      </p>
+
+      <p class="text-sm text-gray-500 mt-12 border-t pt-6">
+        I presenti Termini e Condizioni d'Uso sono redatti in conformità alla normativa italiana vigente,
+        con particolare riferimento al Codice Civile, al Codice del Consumo (D.Lgs. 206/2005), al
+        D.Lgs. 70/2003 (commercio elettronico), al Regolamento (UE) 2016/679 (GDPR) e al D.Lgs. 196/2003
+        come modificato dal D.Lgs. 101/2018.
+      </p>
     </div>
   </div>
 </BaseLayout>

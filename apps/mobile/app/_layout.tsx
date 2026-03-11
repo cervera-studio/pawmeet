@@ -10,6 +10,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ConsentModal } from '@/components/ConsentModal';
 import { useAuth } from '@/hooks/useAuth';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useWebSocketManager } from '@/hooks/useWebSocket';
+import { getExpiringPins } from '@/lib/certificate-pinning';
 import '@/repositories/container';
 import { useAuthStore } from '@/stores/auth';
 import { useConsentStore } from '@/stores/consent';
@@ -54,6 +56,12 @@ function PushNotificationRegistration() {
   return null;
 }
 
+/** Manages the shared WebSocket connection lifecycle. */
+function WebSocketManager() {
+  useWebSocketManager();
+  return null;
+}
+
 /** Hydrates tokens from SecureStore and hides splash when ready. */
 function AuthHydrator() {
   const isLoading = useAuthStore((s) => s.isLoading);
@@ -86,6 +94,21 @@ function hashUserId(userId: string): string {
   return `anon_${Math.abs(hash).toString(36)}`;
 }
 
+/** Checks certificate pin expiry on startup and warns via Sentry. */
+function CertificatePinMonitor() {
+  useEffect(() => {
+    const expiring = getExpiringPins();
+    if (expiring.length > 0) {
+      Sentry.captureMessage(
+        `Certificate pins expiring soon for: ${expiring.join(', ')}`,
+        'warning',
+      );
+    }
+  }, []);
+
+  return null;
+}
+
 function RootLayout() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const userId = useAuthStore((s) => s.user?.id);
@@ -115,8 +138,10 @@ function RootLayout() {
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
         <StatsigProviderExpo sdkKey={STATSIG_CLIENT_KEY} user={statsigUser}>
+          <CertificatePinMonitor />
           <AuthHydrator />
           {isAuthenticated && <PushNotificationRegistration />}
+          {isAuthenticated && <WebSocketManager />}
           <StatusBar style="auto" />
           <Stack>
             <Stack.Protected guard={!isAuthenticated}>

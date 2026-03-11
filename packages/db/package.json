@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check src/",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:migrate": "tsx src/migrate.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "seed:admin": "tsx src/seeds/seed-admin.ts",

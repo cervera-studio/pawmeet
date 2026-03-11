@@ -101,7 +101,7 @@ Every new feature/issue MUST consider analytics tracking:
 - Commit messages in English, conventional commits style
 - **Lefthook** git hooks:
   - `pre-commit`: Biome lint+format (staged files) + typecheck
-  - `pre-push`: test + build
+  - `pre-push`: test
 
 ## Documentation
 

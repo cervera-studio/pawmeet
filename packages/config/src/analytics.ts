@@ -1,0 +1,8 @@
+// Analytics pipeline constants
+export const ANALYTICS_BATCH_MAX_EVENTS = 100;
+export const ANALYTICS_BATCH_MAX_BODY_BYTES = 50_000;
+export const ANALYTICS_RATE_LIMIT_PER_MIN = 500;
+export const ANALYTICS_MAX_EVENT_AGE_DAYS = 30;
+export const ANALYTICS_FLUSH_INTERVAL_MS = 60_000;
+export const ANALYTICS_WORKER_CONCURRENCY = 5;
+export const ANALYTICS_WORKER_BATCH_SIZE = 50;

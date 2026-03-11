@@ -2,6 +2,7 @@ import {
   authDeps,
   badgeDeps,
   chatDeps,
+  consentDeps,
   contentModerationDeps,
   dogDeps,
   feedbackDeps,
@@ -20,6 +21,7 @@ import { createAdminRouter } from './routers/admin.js';
 import { createAuthRouter } from './routers/auth.js';
 import { createBadgesRouter } from './routers/badges.js';
 import { createChatRouter } from './routers/chat.js';
+import { createConsentRouter } from './routers/consent.js';
 import { createContentModerationRouter } from './routers/content-moderation.js';
 import { createDogsRouter } from './routers/dogs.js';
 import { createFeedRouter } from './routers/feed.js';
@@ -37,6 +39,7 @@ import { router } from './trpc.js';
 export const appRouter = router({
   auth: createAuthRouter(authDeps),
   badges: createBadgesRouter(badgeDeps),
+  consent: createConsentRouter(consentDeps),
   dogs: createDogsRouter(dogDeps),
   users: createUsersRouter(userDeps),
   matches: createMatchesRouter(matchDeps),

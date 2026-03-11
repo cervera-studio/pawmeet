@@ -96,3 +96,19 @@ async function getPasswordResetLimiter(): Promise<Ratelimit> {
 
 /** Strict rate limit for password reset: 3 attempts per hour */
 export const passwordResetRateLimitMiddleware = createRateLimitMiddleware(getPasswordResetLimiter);
+
+let _analyticsLimiter: Ratelimit | null = null;
+
+async function getAnalyticsLimiter(): Promise<Ratelimit> {
+  if (!_analyticsLimiter) {
+    _analyticsLimiter = new Ratelimit({
+      redis: await getRedis(),
+      limiter: Ratelimit.slidingWindow(500, '1m'),
+      prefix: 'rl:analytics',
+    });
+  }
+  return _analyticsLimiter;
+}
+
+/** Rate limit for analytics batch endpoint: 500 requests per minute */
+export const analyticsRateLimitMiddleware = createRateLimitMiddleware(getAnalyticsLimiter);

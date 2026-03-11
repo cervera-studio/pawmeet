@@ -437,12 +437,7 @@ export class DrizzleFeedRepository implements FeedRepository {
         })
         .from(postComments)
         .innerJoin(users, eq(postComments.authorId, users.id))
-        .where(
-          and(
-            inArray(postComments.parentId, parentIds),
-            eq(postComments.isDeleted, false),
-          ),
-        )
+        .where(and(inArray(postComments.parentId, parentIds), eq(postComments.isDeleted, false)))
         .orderBy(postComments.createdAt, postComments.id);
     }
 

@@ -1,4 +1,14 @@
-import { boolean, pgTable, text, timestamp, unique, uuid, varchar } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import {
+  boolean,
+  check,
+  pgTable,
+  text,
+  timestamp,
+  unique,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const CONSENT_TYPE = {
@@ -36,5 +46,15 @@ export const userConsents = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [unique('user_consents_user_type_uniq').on(t.userId, t.consentType)],
+  (t) => [
+    unique('user_consents_user_type_uniq').on(t.userId, t.consentType),
+    check(
+      'user_consents_type_valid',
+      sql`${t.consentType} IN ('analytics', 'ab_testing', 'error_tracking', 'marketing')`,
+    ),
+    check(
+      'user_consents_source_valid',
+      sql`${t.source} IN ('mobile_onboarding', 'mobile_settings', 'web_banner')`,
+    ),
+  ],
 );

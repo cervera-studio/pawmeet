@@ -34,7 +34,7 @@ export function createAddPostTags({ feedRepo }: Deps) {
     for (const tag of tags) {
       if (tag.taggedUserId && !connectedSet.has(tag.taggedUserId)) {
         return fail(
-          new AppError('TAG_NOT_CONNECTED', "Puoi taggare solo utenti con cui hai un match", 403),
+          new AppError('TAG_NOT_CONNECTED', 'Puoi taggare solo utenti con cui hai un match', 403),
         );
       }
     }

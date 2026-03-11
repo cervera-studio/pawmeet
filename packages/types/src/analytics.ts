@@ -9,6 +9,8 @@ export const ANALYTICS_EVENT_CATEGORIES = {
   Walk: 'walk',
   Gamification: 'gamification',
   Group: 'group',
+  Social: 'social',
+  Event: 'event',
   Feed: 'feed',
   App: 'app',
   Permission: 'permission',
@@ -97,9 +99,53 @@ export interface AnalyticsEventMap {
   gamification_level_up: { newLevel: number; totalXp: number };
   gamification_streak_broken: { streakLength: number; streakType: string };
 
-  // Group
-  group_event_created: { maxParticipants: number; distanceFromCreatorKm: number };
+  // Group Events
+  group_event_created: {
+    maxParticipants: number;
+    distanceFromCreatorKm: number;
+    category: 'walk' | 'meetup' | 'training' | 'official' | 'sponsored';
+    visibility: 'public' | 'friends_only' | 'invite_only';
+    requiresApproval: boolean;
+    isRecurring: boolean;
+  };
   group_event_joined: { participantNumber: number; distanceKm: number };
+  group_event_request_sent: { eventCategory: string; isHostFriend: boolean };
+  group_event_request_approved: { requestAgeHours: number; participantNumber: number };
+  group_event_request_declined: { requestAgeHours: number; reason?: string };
+  group_event_request_cancelled: { requestAgeHours: number };
+  group_event_recurring_created: {
+    recurrenceFrequency: 'daily' | 'weekly' | 'monthly';
+    category: string;
+  };
+  group_event_occurrence_generated: { parentEventId: string; occurrenceNumber: number };
+
+  // Social (Friend System)
+  social_follow_created: { isReciprocal: boolean };
+  social_follow_removed: { wasMutual: boolean; followAgeDays: number };
+  social_user_blocked: { hadPriorFollow: boolean };
+  social_user_unblocked: Record<string, never>;
+  social_user_searched: { resultCount: number; queryLength: number };
+
+  // Main Events & Brands
+  event_main_created: {
+    organizationType: 'dogwalk_team' | 'association' | 'educator' | 'brand';
+    maxParticipants: number;
+    hasSponsor: boolean;
+  };
+  event_main_joined: {
+    participantNumber: number;
+    capacityPercent: number;
+    organizationType: string;
+  };
+  event_main_completed: {
+    participantCount: number;
+    capacityPercent: number;
+    hasSponsor: boolean;
+  };
+  event_sponsor_viewed: {
+    sponsorTier: 'title' | 'gold' | 'silver' | 'partner';
+    placement: string;
+  };
 
   // App
   app_opened: {
@@ -114,7 +160,12 @@ export interface AnalyticsEventMap {
   permission_notification_changed: { newStatus: string; wasPrompted: boolean };
 
   // Privacy
-  privacy_consent_updated: { analytics: boolean; marketing: boolean };
+  privacy_consent_updated: {
+    analytics: boolean;
+    abTesting: boolean;
+    errorTracking: boolean;
+    marketing: boolean;
+  };
 }
 
 export type AnalyticsEventName = keyof AnalyticsEventMap;

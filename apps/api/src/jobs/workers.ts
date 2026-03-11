@@ -1,4 +1,5 @@
 import { eventStatusDeps, photoModerationDeps } from '../container.js';
+import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
 import { createPhotoModerationWorker } from './photo-moderation.js';
 import { createEmailWorker } from './send-email.js';
@@ -10,6 +11,7 @@ export async function startWorkers() {
   const notifWorker = createNotificationWorker();
   const emailWorker = createEmailWorker();
   const eventStatusWorker = createEventStatusWorker(eventStatusDeps);
+  const analyticsWorker = createAnalyticsWorker();
 
   // Schedule repeatable job for event status transitions (every 5 min)
   await scheduleEventStatusCheck();
@@ -22,6 +24,7 @@ export async function startWorkers() {
       notifWorker.close(),
       emailWorker.close(),
       eventStatusWorker.close(),
+      analyticsWorker.close(),
     ]);
     console.log('[workers] All workers stopped');
   };

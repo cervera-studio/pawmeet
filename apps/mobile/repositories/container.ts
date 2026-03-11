@@ -1,5 +1,7 @@
 import { container } from 'tsyringe';
 import { api } from '@/lib/trpc';
+import { createBufferedAnalyticsService } from '@/services/buffered-analytics-service';
+import { createNoOpAnalyticsService } from '@/services/noop-analytics-service';
 import { useAuthStore } from '@/stores/auth';
 import { createTrpcActivityRepository } from './remote/trpc-activity-repository';
 import { createTrpcAuthRepository } from './remote/trpc-auth-repository';
@@ -17,6 +19,7 @@ import { createTrpcWalkRepository } from './remote/trpc-walk-repository';
 import { createTrpcWalkTrackingRepository } from './remote/trpc-walk-tracking-repository';
 import {
   ACTIVITY_REPOSITORY,
+  ANALYTICS_SERVICE,
   AUTH_REPOSITORY,
   BADGE_REPOSITORY,
   CHAT_REPOSITORY,
@@ -56,5 +59,10 @@ container.register(USER_REPOSITORY, { useValue: createTrpcUserRepository(api) })
 container.register(SMART_MATCHING_REPOSITORY, {
   useValue: createTrpcSmartMatchingRepository(api),
 });
+
+const analyticsService = __DEV__
+  ? createNoOpAnalyticsService()
+  : createBufferedAnalyticsService(process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000');
+container.register(ANALYTICS_SERVICE, { useValue: analyticsService });
 
 export { container };

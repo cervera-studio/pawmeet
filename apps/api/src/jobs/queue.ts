@@ -21,6 +21,7 @@ export const QUEUE_NAMES = {
   EVENT_STATUS: 'event-status',
   DATA_CLEANUP: 'data-cleanup',
   GPS_RETENTION: 'gps-retention',
+  ANALYTICS: 'analytics',
 } as const;
 
 // --- Lazy queue instances ---
@@ -216,4 +217,41 @@ export function getGpsRetentionQueue(): Queue {
 
 export async function enqueueGpsRetention() {
   return getGpsRetentionQueue().add('retention', {}, { repeat: { every: 24 * 60 * 60 * 1000 } });
+}
+
+// ── Analytics (async event ingestion) ────────────────────────────────────────
+
+export interface AnalyticsJobData {
+  events: Array<{
+    clientEventId: string;
+    userId: string | null;
+    sessionId?: string;
+    eventName: string;
+    properties?: Record<string, unknown>;
+    clientTimestamp: string;
+    platform: string;
+    appVersion?: string;
+    screenName?: string;
+  }>;
+}
+
+let _analyticsQueue: Queue | null = null;
+
+export function getAnalyticsQueue(): Queue {
+  if (!_analyticsQueue) {
+    _analyticsQueue = new Queue(QUEUE_NAMES.ANALYTICS, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 1000 },
+        removeOnComplete: 200,
+        removeOnFail: 500,
+      },
+    });
+  }
+  return _analyticsQueue;
+}
+
+export async function enqueueAnalyticsEvents(data: AnalyticsJobData) {
+  return getAnalyticsQueue().add('ingest', data);
 }

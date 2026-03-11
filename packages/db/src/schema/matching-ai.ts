@@ -36,10 +36,7 @@ export const swipeScoreLogs = pgTable(
   (table) => [
     index('swipe_score_logs_swiper_dog_idx').on(table.swiperDogId),
     index('swipe_score_logs_swiped_dog_idx').on(table.swipedDogId),
-    check(
-      'swipe_score_logs_direction_valid',
-      sql`${table.direction} IN ('like', 'pass')`,
-    ),
+    check('swipe_score_logs_direction_valid', sql`${table.direction} IN ('like', 'pass')`),
     check(
       'swipe_score_logs_size_score_range',
       sql`${table.sizeScore} >= 0 AND ${table.sizeScore} <= 1`,

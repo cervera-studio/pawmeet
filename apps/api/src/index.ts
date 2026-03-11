@@ -12,6 +12,7 @@ import { securityHeadersMiddleware } from './middleware/security-headers.js';
 initSentry();
 
 import { createAdminAuthRoutes } from './routes/admin-auth.js';
+import { analytics } from './routes/analytics.js';
 import { routes } from './routes/index.js';
 import { appRouter } from './trpc/root.js';
 import { createContext } from './trpc/trpc.js';
@@ -55,6 +56,9 @@ app.use('/trpc/*', trpcServer({ router: appRouter, createContext }));
 
 // REST API — kept for backwards compatibility (to be removed)
 app.route('/api', routes);
+
+// Analytics batch endpoint — raw Hono POST (not tRPC) for minimal overhead
+app.route('/api/events', analytics);
 
 // Admin auth routes — mounted at root level for the admin backoffice
 app.route('/admin/auth', createAdminAuthRoutes(adminDeps.adminUserRepo));

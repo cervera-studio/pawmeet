@@ -1,16 +1,18 @@
 # 13 — Analytics Strategy
 
 **Date:** 2026-03-11
-**Authors:** Sara Conti (Analytics Engineer), Elena Ricci (Data Engineer), Davide Moretti (Data Security), Giulia Fontana (GDPR/Privacy)
-**Status:** Proposal — awaiting team review
+**Authors:** Sara Conti (Analytics Engineer), Elena Ricci (Data Engineer), Davide Moretti (Data Security), Giulia Fontana (GDPR/Privacy), Luca Bianchi (Software Architect)
+**Status:** Approved — P0 blockers resolved, Sprint N ready
 
 ---
 
 ## Executive Summary
 
-This document consolidates the analysis of 4 specialists on introducing product analytics into DogWalk. The recommendation is **PostHog Cloud (free tier)** for client-side product analytics + **custom server-side aggregation** (Neon + BullMQ) for admin dashboards, with a clear migration path to PostHog self-hosted on Fly.io Frankfurt.
+This document consolidates the analysis of 5 specialists on introducing product analytics into DogWalk. The recommendation is a **server-first single data store** (Neon + BullMQ) at EUR 0 additional cost, with a clear 1-day migration path to **PostHog EU** when revenue arrives.
 
-**Critical finding:** The codebase currently has **zero consent infrastructure**. Both Sentry and Statsig initialize unconditionally before any user consent. Launching analytics without fixing this would violate GDPR Art. 6/7 and expose the company to Garante enforcement. **6 P0 blockers must be resolved first.**
+**P0 blockers resolved:** Consent infrastructure is implemented — `user_consents` table, mobile consent modal + settings toggles, Sentry PII scrubbing (consent-aware), Statsig userId pseudonymization, and proper GDPR legal basis separation.
+
+**Architecture principle:** All analytics events (both client-originated and server-originated) flow through a single server-side pipeline into `analytics_events` in Neon. This gives us authoritative server-side validation, a single source of truth, and transport-agnostic `AnalyticsService` interface that can swap implementations in ~1 day.
 
 ---
 
@@ -32,29 +34,35 @@ This document consolidates the analysis of 4 specialists on introducing product 
 
 ### Comparison Matrix
 
-| Criterion | PostHog Cloud (free) | PostHog Self-Hosted | Plausible | Custom (Neon + BullMQ) |
+| Criterion | Server-First (Neon + BullMQ) | PostHog Cloud (free) | PostHog EU (Teams) | PostHog Self-Hosted |
 |---|---|---|---|---|
-| **Cost** | EUR 0 (up to 1M events/mo) | EUR 15-30/mo (Fly.io VM) | EUR 9/mo (web only) | EUR 0 (existing infra) |
-| **GDPR EU hosting** | US (EU on Teams plan EUR 450/yr) | Full control, Frankfurt | EU | Full control, Neon eu-central-1 |
-| **Mobile SDK** | `posthog-react-native` (offline queue built-in) | Same SDK | No mobile SDK | Custom build required |
-| **Funnels/Cohorts** | Built-in | Same | No | Must build from scratch |
-| **Session replay** | Yes (5K sessions/mo free) | Yes | No | No |
-| **Data ownership** | PostHog retains | Full ownership | SaaS | Full ownership |
+| **Cost** | EUR 0 (existing infra) | EUR 0 (up to 1M events/mo) | EUR 37.50/mo | EUR 15-30/mo (Fly.io VM) |
+| **GDPR EU hosting** | Full control, Neon eu-central-1 | US only | EU (Frankfurt) | Full control, Frankfurt |
+| **Mobile SDK** | Custom `BufferedAnalyticsService` | `posthog-react-native` | Same | Same |
+| **Funnels/Cohorts** | Build later or defer to PostHog | Built-in | Built-in | Built-in |
+| **Session replay** | No | Yes (5K sessions/mo free) | Yes | Yes |
+| **Data ownership** | Full ownership | PostHog retains | PostHog retains | Full ownership |
 
-### Decision: Hybrid Approach
+### Decision: Server-First NOW, PostHog When Revenue Arrives
 
-1. **PostHog Cloud (free tier)** for client-side product analytics — funnels, cohorts, session replay. 1M events/month covers up to ~10K MAU.
-2. **Custom server-side aggregation** (already planned in docs/08) for admin KPI dashboards — `admin_daily_metrics`, `admin_hourly_metrics`, `admin_cohort_retention` tables populated by BullMQ cron jobs.
-3. **Cloudflare Web Analytics** (already deployed) for the landing page — no PostHog on marketing site.
-4. **Migration path**: If free tier exceeded or EU data residency becomes hard requirement, migrate to PostHog self-hosted on Fly.io Frankfurt.
+1. **NOW (EUR 0):** Server-first pipeline using existing Neon + BullMQ infrastructure. All events (client + server) flow to a single `analytics_events` table. Admin gets KPI cards only.
+2. **Cloudflare Web Analytics** (already deployed) for the landing page — no analytics SDK on marketing site.
+3. **When revenue arrives (~1 day effort):** Add PostHog EU Teams plan (~EUR 37.50/mo) as the visualization layer. Funnels, cohorts, session replay, and dashboards handled by PostHog. Admin retains KPI cards; funnel/cohort/matching pages are NOT built — PostHog provides them.
+
+### Why Not PostHog at MVP?
+
+- **EUR 0 vs EUR 0 cost is the same**, but PostHog free tier is US-hosted (GDPR risk with Garante)
+- PostHog EU requires Teams plan (EUR 450/yr) — unjustifiable before revenue
+- Our server already processes every user action — duplicating events to a third party adds complexity without value at MVP scale
+- The `AnalyticsService` interface is transport-agnostic: swapping `BufferedAnalyticsService` → `PostHogAnalyticsService` is a 1-day effort (change DI registration + add SDK)
 
 ### Cost Projection
 
-| Phase | Monthly Cost |
-|---|---|
-| MVP (0-5K users) | EUR 0 |
-| Growth (5K-20K) | EUR 0-30 (evaluate self-hosted) |
-| Scale (20K+) | EUR 15-50 (self-hosted) or EUR 37.50 (PostHog Teams EU) |
+| Phase | Monthly Cost | Notes |
+|---|---|---|
+| MVP (0-5K users) | EUR 0 | Server-first, existing Neon + BullMQ |
+| Revenue phase | ~EUR 37.50 | Add PostHog EU Teams for dashboards |
+| Scale (20K+) | EUR 37.50-69 | PostHog EU + Neon Scale tier |
 
 ---
 
@@ -64,83 +72,96 @@ This document consolidates the analysis of 4 specialists on introducing product 
 
 All events use `object_action` format in lowercase snake_case. Properties use camelCase in TypeScript code.
 
-### Auth Events
+### Event Routing
+
+Events are categorized by authoritative source to prevent spoofing:
+
+| Category | Count | Source | Rationale |
+|---|---|---|---|
+| **Client-exclusive** | 13 | Mobile → batch POST | View durations, screen transitions, UI interactions — only the client knows |
+| **Server-authoritative** | 31 | tRPC router (after `unwrapResult()`) | Matches, messages, walks, social, events, moderation — server is source of truth |
+| **Hybrid → Server** | 6 | Client initiates, server records | Registration, login — client knows timing, server confirms success |
+
+### Client-Exclusive Events
 
 | Event | Properties | Informs |
 |---|---|---|
-| `auth_registration_started` | `method: 'email' \| 'google' \| 'apple'` | Auth method investment |
+| `onboarding_step_viewed` | `stepNumber`, `stepName` | Step visibility |
+| `onboarding_step_skipped` | `stepNumber`, `stepName` | User resistance |
+| `onboarding_abandoned` | `lastStepNumber`, `lastStepName`, `totalDurationMs` | Where users give up |
+| `match_feed_loaded` | `cardsAvailable`, `avgCompatibilityScore` | Feed quality |
+| `match_card_viewed` | `compatibilityScore`, `distanceKm`, `viewDurationMs` | Card engagement |
+| `match_swipe_performed` | `direction`, `compatibilityScore`, `distanceKm`, `viewDurationMs`, `sizePair`, `energyPair` | Algorithm tuning |
+| `match_feed_exhausted` | `totalSwipesSession`, `searchRadiusKm` | Content supply |
+| `chat_opened` | `matchAgeDays`, `isFirstOpen` | Match-to-chat timing |
+| `app_opened` | `hoursSinceLastOpen`, `isNotificationDriven`, `notificationType?` | Retention, push effectiveness |
+| `app_backgrounded` | `sessionDurationMs`, `screenCount` | Session depth |
+| `privacy_consent_updated` | `analytics`, `abTesting`, `errorTracking`, `marketing` | Consent rates |
+| `social_user_searched` | `resultCount`, `queryLength` | Search usage |
+| `event_sponsor_viewed` | `sponsorTier`, `placement` | Brand visibility |
+
+### Server-Authoritative Events
+
+| Event | Properties | Informs |
+|---|---|---|
 | `auth_registration_completed` | `method`, `durationMs` | Registration funnel |
 | `auth_registration_failed` | `method`, `errorCode` | Auth UX issues |
 | `auth_login_completed` | `method` | Auth method popularity |
 | `auth_login_failed` | `method`, `errorCode` | Login friction |
 | `auth_email_verified` | `method: 'link' \| 'otp'`, `delayMs` | Verification effectiveness |
 | `auth_logout` | `reason: 'manual' \| 'token_expired' \| 'forced'` | Session health |
-
-### Onboarding Events
-
-| Event | Properties | Informs |
-|---|---|---|
-| `onboarding_started` | `source: 'organic' \| 'referral' \| 'ad' \| 'unknown'` | Acquisition quality |
-| `onboarding_step_viewed` | `stepNumber`, `stepName` | Step visibility |
-| `onboarding_step_completed` | `stepNumber`, `stepName`, `durationMs` | Drop-off identification |
-| `onboarding_step_skipped` | `stepNumber`, `stepName` | User resistance |
-| `onboarding_completed` | `totalDurationMs`, `stepsCompleted`, `authMethod` | End-to-end conversion |
-| `onboarding_abandoned` | `lastStepNumber`, `lastStepName`, `totalDurationMs` | Where users give up |
-
-Step names: `'welcome'`, `'registration'`, `'owner_profile'`, `'dog_basics'`, `'dog_physical'`, `'dog_behavior'`, `'dog_photos'`, `'permissions'`, `'tutorial'`
-
-### Dog Profile Events
-
-| Event | Properties | Informs |
-|---|---|---|
 | `dog_profile_created` | `breed`, `size`, `energyLevel`, `photoCount`, `isNeutered` | Dog demographics |
 | `dog_profile_updated` | `fieldsChanged: string[]` | UX friction |
 | `dog_photo_uploaded` | `position`, `fileSizeKb` | Photo patterns |
-| `dog_photo_moderation_result` | `result: 'approved' \| 'rejected'`, `rejectionReason?`, `durationMs` | Moderation health |
-
-### Matching Events
-
-| Event | Properties | Informs |
-|---|---|---|
-| `match_feed_loaded` | `cardsAvailable`, `avgCompatibilityScore` | Feed quality |
-| `match_card_viewed` | `compatibilityScore`, `distanceKm`, `viewDurationMs` | Card engagement |
-| `match_swipe_performed` | `direction`, `compatibilityScore`, `distanceKm`, `viewDurationMs`, `sizePair`, `energyPair` | Algorithm tuning |
+| `dog_photo_moderation_result` | `result`, `rejectionReason?`, `durationMs` | Moderation health |
 | `match_created` | `compatibilityScore`, `distanceKm`, `sizePair`, `energyPair` | Match quality |
 | `match_unmatched` | `reason`, `matchAgeDays`, `messageCount` | Match health |
-| `match_feed_exhausted` | `totalSwipesSession`, `searchRadiusKm` | Content supply |
-
-### Chat Events
-
-| Event | Properties | Informs |
-|---|---|---|
-| `chat_opened` | `matchAgeDays`, `isFirstOpen` | Match-to-chat timing |
-| `chat_message_sent` | `messageType: 'text' \| 'image'`, `chatAgeHours`, `messageCountInChat` | Chat depth |
-
-### Walk Events
-
-| Event | Properties | Informs |
-|---|---|---|
+| `chat_message_sent` | `messageType`, `chatAgeHours`, `messageCountInChat` | Chat depth |
 | `walk_proposed` | `matchAgeHours`, `messageCountBeforeProposal` | Chat-to-walk conversion |
-| `walk_response` | `response: 'accepted' \| 'declined' \| 'counter'`, `proposalAgeHours` | Proposal effectiveness |
+| `walk_response` | `response`, `proposalAgeHours` | Proposal effectiveness |
 | `walk_completed` | `durationMinutes`, `distanceKm`, `participantCount` | Walk quality |
 | `walk_feedback_submitted` | `rating`, `hasComment` | Post-walk engagement |
 
-### Gamification Events
+### Server-Authoritative Events — Social (see docs/14)
 
 | Event | Properties | Informs |
 |---|---|---|
-| `gamification_badge_earned` | `badgeId`, `badgeName`, `badgeCategory` | Badge earn rates |
-| `gamification_xp_awarded` | `amount`, `source` | XP economy health |
-| `gamification_level_up` | `newLevel`, `totalXp` | Progression pacing |
-| `gamification_streak_broken` | `streakLength`, `streakType` | Retention risk |
+| `social_follow_created` | `isReciprocal` | Social graph growth |
+| `social_follow_removed` | `wasMutual`, `followAgeDays` | Churn signal |
+| `social_user_blocked` | `hadPriorFollow` | Safety, trust issues |
+| `social_user_unblocked` | — | Conflict resolution |
 
-### App Lifecycle Events
+### Server-Authoritative Events — Events v2 (see docs/14)
 
 | Event | Properties | Informs |
 |---|---|---|
-| `app_opened` | `hoursSinceLastOpen`, `isNotificationDriven`, `notificationType?` | Retention, push effectiveness |
-| `app_backgrounded` | `sessionDurationMs`, `screenCount` | Session depth |
-| `privacy_consent_updated` | `analytics: boolean`, `marketing: boolean` | Consent rate |
+| `group_event_created` | `maxParticipants`, `category`, `visibility`, `requiresApproval`, `isRecurring` | Event supply, feature adoption |
+| `group_event_joined` | `participantNumber`, `distanceKm` | Event demand |
+| `group_event_request_sent` | `eventCategory`, `isHostFriend` | Join demand, friends-only usage |
+| `group_event_request_approved` | `requestAgeHours`, `participantNumber` | Host responsiveness |
+| `group_event_request_declined` | `requestAgeHours`, `reason?` | Rejection patterns |
+| `group_event_request_cancelled` | `requestAgeHours` | User changed mind |
+| `group_event_recurring_created` | `recurrenceFrequency`, `category` | Recurring event adoption |
+| `group_event_occurrence_generated` | `parentEventId`, `occurrenceNumber` | Recurrence system health |
+
+### Server-Authoritative Events — Main Events & Brands (see docs/14)
+
+| Event | Properties | Informs |
+|---|---|---|
+| `event_main_created` | `organizationType`, `maxParticipants`, `hasSponsor` | Official event supply |
+| `event_main_joined` | `participantNumber`, `capacityPercent`, `organizationType` | Official event demand |
+| `event_main_completed` | `participantCount`, `capacityPercent`, `hasSponsor` | Event success |
+
+### Hybrid → Server Events
+
+| Event | Client Sends | Server Records |
+|---|---|---|
+| `auth_registration_started` | `method`, client timestamp | Server validates + stores |
+| `onboarding_started` | `source` | Server confirms auth |
+| `onboarding_step_completed` | `stepNumber`, `stepName`, `durationMs` | Server validates step |
+| `onboarding_completed` | `totalDurationMs`, `stepsCompleted` | Server confirms completion |
+| `gamification_badge_earned` | — | Server awards badge |
+| `gamification_level_up` | — | Server calculates level |
 
 ### PII Rules (Hard Constraints)
 
@@ -148,10 +169,10 @@ The following MUST NEVER appear in any analytics event:
 
 | Data | Alternative |
 |---|---|
-| Email address | Opaque `userId` (hashed) |
-| Display name | Opaque `userId` (hashed) |
+| Email address | Opaque `userId` (raw UUID in own DB only) |
+| Display name | Opaque `userId` |
 | Exact GPS coordinates | `distanceKm` (rounded) |
-| IP address | PostHog config: `disableGeoip: true` |
+| IP address | Never stored in analytics events |
 | Chat message content | `messageType` + `messageCountInChat` |
 | Dog name | Opaque `dogId` |
 | Photos / media URLs | `photoCount` |
@@ -199,47 +220,79 @@ The following MUST NEVER appear in any analytics event:
 | Walk completion rate | >= 80% |
 | Unmatch rate | < 5%/month |
 
+### Social Graph (Sprint 12+, see docs/14)
+
+| Metric | Formula | Target |
+|---|---|---|
+| Follow rate | Users who follow someone / Active users | >= 40% |
+| Mutual follow rate | Mutual follows / Total follows | >= 30% |
+| Friends per user (p50) | Median mutual follow count | >= 3 |
+| Block rate | Blocks / Active users | < 2% |
+
+### Events v2 (Sprint 13+, see docs/14)
+
+| Metric | Formula | Target |
+|---|---|---|
+| Event creation rate | Events created / Week | Growing |
+| Request-to-join approval rate | Approved / (Approved + Declined) | >= 70% |
+| Host response time (p50) | Median request → decision | < 12h |
+| Friends-only event share | Friends-only events / Total events | 20-40% |
+| Recurring event retention | Users re-joining next occurrence | >= 50% |
+
+### Main Events & Brands (Sprint 14+, see docs/14)
+
+| Metric | Formula | Target |
+|---|---|---|
+| Main Event attendance rate | Participants / Max capacity | >= 60% |
+| Main Event fill time | Created → full capacity | Tracking |
+| Sponsor visibility rate | `event_sponsor_viewed` / Event page views | >= 80% |
+| Main Event → follow conversion | New follows within 48h of Main Event | Tracking |
+
 ---
 
 ## 4. Data Pipeline Architecture
 
-### Event Flow
+### Event Flow (Single-Path, Server-First)
 
 ```
-Mobile/Web Client
+Mobile Client                           Server (Hono API)
+    │                                       │
+    ├─ Client-exclusive events ─────────────┤
+    │  (SQLite buffer → POST /api/events/batch)
+    │                                       │
+    │                                       ├─ Server-authoritative events
+    │                                       │  (tracked at tRPC router level
+    │                                       │   after unwrapResult())
+    │                                       │
+    │                                       ▼
+    │                               BullMQ "analytics" queue
+    │                                       │
+    │                                       ▼
+    │                               Analytics Worker
+    │                                       │
+    │                     ┌─────────────────┼─────────────────┐
+    │                     ▼                 ▼                 ▼
+    │              analytics_events   Redis counters    (future: PostHog)
+    │              (Neon PostgreSQL)   (real-time KPIs)
     │
-    ▼  (PostHog SDK — offline queue, batch flush)
-  PostHog Cloud (EU when available)
-    │
-    ▼  (Dashboards: funnels, cohorts, session replay)
-
-Mobile/Web Client
-    │
-    ▼  (tRPC mutation or POST /events/batch — fire-and-forget)
-  Hono API (Fly.io)
-    │
-    ├──▶ BullMQ "analytics" queue (async, non-blocking)
-    │         │
-    │         ▼
-    │     Analytics Worker
-    │         │
-    │         ▼
-    │     analytics_events table (Neon PostgreSQL)
-    │
-    ▼  (cron jobs)
-  BullMQ Cron Workers
-    │
-    ├──▶ admin_hourly_metrics   (every hour)
-    ├──▶ admin_daily_metrics    (01:00 UTC)
-    ├──▶ admin_cohort_retention (03:00 UTC)
-    └──▶ admin_funnel_metrics   (every 6h)
+    └─ Offline? SQLite buffer holds events, flushes on:
+       • App foreground
+       • 60-second timer
+       • Connectivity restored
 ```
 
-### Raw Events Table (Drizzle ORM)
+### Why Server-First?
+
+1. **Authoritative data**: Server confirms actions actually happened (match created, message delivered)
+2. **Single source of truth**: One `analytics_events` table, not dual client/server paths
+3. **No third-party dependency**: Zero additional cost, full EU data residency
+4. **Transport-agnostic**: `AnalyticsService` interface can be swapped without changing any tracking code
+5. **Offline-resilient**: SQLite buffer on mobile handles connectivity gaps
+
+### Raw Events Table (Drizzle ORM) — IMPLEMENTED
 
 ```typescript
 // packages/db/src/schema/analytics.ts
-
 export const analyticsEvents = pgTable(
   'analytics_events',
   {
@@ -251,7 +304,7 @@ export const analyticsEvents = pgTable(
     properties: jsonb('properties').$type<Record<string, unknown>>(),
     clientTimestamp: timestamp('client_timestamp', { withTimezone: true }).notNull(),
     serverTimestamp: timestamp('server_timestamp', { withTimezone: true }).notNull().defaultNow(),
-    platform: varchar('platform', { length: 10 }).notNull(), // 'ios' | 'android' | 'web'
+    platform: varchar('platform', { length: 10 }).notNull(),
     appVersion: varchar('app_version', { length: 20 }),
     screenName: varchar('screen_name', { length: 100 }),
   },
@@ -268,19 +321,45 @@ Key design decisions:
 - JSONB `properties` for flexible event schemas without migrations
 - `ON DELETE SET NULL` for userId — analytics data survives GDPR erasure (anonymized)
 
-### Funnel Metrics Table
+### Server-Side Event Tracking Pattern (Clean Architecture)
 
-```sql
-CREATE TABLE admin_funnel_metrics (
-    date           DATE NOT NULL,
-    funnel_name    VARCHAR(50) NOT NULL,
-    step_name      VARCHAR(50) NOT NULL,
-    step_order     SMALLINT NOT NULL,
-    users_entered  INTEGER NOT NULL DEFAULT 0,
-    users_completed INTEGER NOT NULL DEFAULT 0,
-    computed_at    TIMESTAMP NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (date, funnel_name, step_name)
-);
+Events are tracked at the **tRPC router level**, AFTER `unwrapResult()`, NOT inside use-cases. This keeps the domain layer pure:
+
+```typescript
+// Example: apps/api/src/routes/match.router.ts
+.mutation('createMatch', {
+  input: createMatchSchema,
+  resolve: async ({ input, ctx }) => {
+    const result = await createMatchUseCase(deps)(input);
+    const match = unwrapResult(result); // throws on error
+
+    // Track AFTER confirmed success — router level, not use-case
+    await analyticsQueue.add('track', {
+      eventName: 'match_created',
+      userId: ctx.userId,
+      properties: {
+        compatibilityScore: match.score,
+        distanceKm: match.distance,
+        sizePair: `${match.dog1Size}_${match.dog2Size}`,
+        energyPair: `${match.dog1Energy}_${match.dog2Energy}`,
+      },
+    });
+
+    return match;
+  },
+});
+```
+
+### Batch Endpoint (Client Events)
+
+Raw Hono POST route (NOT tRPC) for minimal overhead:
+
+```typescript
+// POST /api/events/batch
+// Rate limit: rl:analytics, 500/min per user
+// Max 100 events per batch, 50KB body size
+// Zod validation per event
+// Returns: { accepted: number, duplicates: number }
 ```
 
 ### Data Volume Estimates
@@ -291,11 +370,9 @@ CREATE TABLE admin_funnel_metrics (
 | Growth | 10K | 67,500 | ~700 MB | Launch ($19/mo) |
 | Scale | 100K | 675,000 | ~7 GB | Scale ($69/mo) |
 
-> **Finding:** Neon Free tier (0.5 GB) is already insufficient even without analytics due to `walk_track_points` and feed tables. Upgrade to Launch is necessary.
-
 ### Deduplication Strategy
 
-1. Client generates UUID per event at capture time, stored in SQLite
+1. Client generates UUID per event at capture time, stored in SQLite `analytics_buffer` table
 2. Server worker: `INSERT ... ON CONFLICT (client_event_id) DO NOTHING`
 3. Batch endpoint returns `{ accepted, duplicates }` for delivery confirmation
 4. Reject events with `clientTimestamp` older than 30 days
@@ -306,8 +383,8 @@ CREATE TABLE admin_funnel_metrics (
 |---|---|---|
 | DAU, registrations, matches | Pre-aggregate hourly + daily | `admin_hourly_metrics`, `admin_daily_metrics` |
 | Cohort retention (D1/D7/D30) | Pre-aggregate nightly | `admin_cohort_retention` |
-| Onboarding funnel | Pre-aggregate every 6h | `admin_funnel_metrics` |
 | Feature adoption, user timeline | Compute on-the-fly | Query `analytics_events` |
+| Funnels, cohort heatmaps | **Deferred to PostHog** | — |
 
 ### Performance Isolation
 
@@ -323,45 +400,10 @@ CREATE TABLE admin_funnel_metrics (
 
 ## 5. Analytics Service Architecture
 
-### Interface (packages/types/)
+### Interface (packages/types/) — IMPLEMENTED
 
 ```typescript
 // packages/types/src/analytics.ts
-
-export const ANALYTICS_EVENT_CATEGORIES = {
-  AUTH: 'auth',
-  ONBOARDING: 'onboarding',
-  DOG: 'dog',
-  MATCH: 'match',
-  CHAT: 'chat',
-  WALK: 'walk',
-  GAMIFICATION: 'gamification',
-  GROUP: 'group',
-  FEED: 'feed',
-  APP: 'app',
-  PERMISSION: 'permission',
-  PRIVACY: 'privacy',
-} as const;
-
-export interface AnalyticsEventMap {
-  // Auth
-  auth_registration_started: { method: 'email' | 'google' | 'apple' };
-  auth_registration_completed: { method: 'email' | 'google' | 'apple'; durationMs: number };
-  // ... (all events from Section 2)
-
-  // Matching
-  match_swipe_performed: {
-    direction: 'right' | 'left';
-    compatibilityScore: number;
-    distanceKm: number;
-    viewDurationMs: number;
-    sizePair: string;
-    energyPair: string;
-  };
-  // ... etc.
-}
-
-export type AnalyticsEventName = keyof AnalyticsEventMap;
 
 export interface AnalyticsService {
   identify(userId: string, traits?: Record<string, unknown>): void;
@@ -373,7 +415,25 @@ export interface AnalyticsService {
 }
 ```
 
-### Mobile (tsyringe DI)
+Full `AnalyticsEventMap` with ~60 typed events is defined in `packages/types/src/analytics.ts`.
+
+### Mobile Implementation: BufferedAnalyticsService
+
+```typescript
+// apps/mobile/services/buffered-analytics-service.ts
+
+// SQLite buffer table: analytics_buffer
+// Columns: id, clientEventId, eventName, properties (JSON), timestamp, synced (boolean)
+//
+// Flush strategy:
+// 1. App foreground (AppState listener)
+// 2. 60-second interval timer
+// 3. Connectivity restored (NetInfo listener)
+//
+// Flush: SELECT unsent → POST /api/events/batch → mark synced → DELETE synced rows
+```
+
+### Mobile DI (tsyringe)
 
 ```typescript
 // apps/mobile/repositories/tokens.ts
@@ -381,75 +441,75 @@ export const ANALYTICS_SERVICE = Symbol('AnalyticsService') as InjectionToken<An
 
 // apps/mobile/repositories/container.ts
 const analyticsService = __DEV__
-  ? createNoOpAnalyticsService()
-  : createPostHogAnalyticsService(
-      process.env.EXPO_PUBLIC_POSTHOG_API_KEY ?? '',
-      process.env.EXPO_PUBLIC_POSTHOG_HOST ?? 'https://eu.i.posthog.com',
-    );
+  ? createNoOpAnalyticsService()    // Silent in dev mode
+  : createBufferedAnalyticsService(); // SQLite buffer + batch POST
 container.register(ANALYTICS_SERVICE, { useValue: analyticsService });
 ```
 
-PostHog React Native SDK provides built-in SQLite offline queue — no custom offline implementation needed.
+### Future: PostHog Swap (~1 Day Effort)
+
+When revenue arrives, swap the DI registration:
+
+```typescript
+// Change from:
+const analyticsService = createBufferedAnalyticsService();
+// To:
+const analyticsService = createPostHogAnalyticsService(
+  process.env.EXPO_PUBLIC_POSTHOG_API_KEY ?? '',
+  'https://eu.i.posthog.com',
+);
+```
+
+No tracking code changes needed — same `AnalyticsService` interface.
 
 ### Admin (Named Module Exports)
 
-No client-side PostHog SDK in admin. Events tracked server-side via Hono middleware. Admin only reads analytics data via `AnalyticsDataRepository`.
+No client-side analytics SDK in admin. Events tracked server-side via domain events at router level. Admin reads analytics data via `AnalyticsDataRepository`.
 
-### Server-Side (Hono Middleware)
+### Server-Side Domain Events
 
-Server-side events for un-spoofable actions (match creation, walk completion). Increments Redis counters for real-time dashboard + enqueues BullMQ jobs for aggregation.
-
-### PostHog SDK Config (GDPR)
-
-```typescript
-new PostHog(apiKey, {
-  host: 'https://eu.i.posthog.com',
-  defaultOptIn: false,                    // Opted OUT by default
-  sendFeatureFlagEvent: false,
-  captureNativeAppLifecycleEvents: false, // Manual control
-  disableGeoip: true,                     // No IP geolocation
-});
-```
+Server events tracked at tRPC router level after `unwrapResult()` — keeps domain layer pure (Clean Architecture). See Section 4 for pattern example.
 
 ---
 
 ## 6. Admin Dashboards
 
-Mapped to routes already planned in docs/08:
+### NOW: KPI Cards Only
 
-### `/(dashboard)/page.tsx` — Homepage
+The admin dashboard (`/(dashboard)/page.tsx`) displays real-time KPI cards powered by Redis counters and hourly/daily aggregation tables:
 
 - **KPI Cards (real-time):** DAU, new registrations, active matches, moderation queue
 - **Charts (hourly refresh):** DAU/MAU trend (30d), registrations vs completions (7d)
 - **Alerts:** SLA violations, spike detection, retention drops
 
-### `/(dashboard)/analytics/funnel/page.tsx`
+### Deferred to PostHog (When Revenue Arrives)
 
-Onboarding funnel visualization (Recharts):
-`onboarding_started` → `auth_registration_completed` → `dog_profile_created` → `onboarding_completed` → First swipe → First match
+The following pages are **NOT built** in the admin — PostHog provides them out-of-the-box with superior UX:
 
-### `/(dashboard)/analytics/cohorts/page.tsx`
+| Page | PostHog Feature | Why Defer |
+|---|---|---|
+| `analytics/funnel/page.tsx` | Funnels | PostHog's funnel builder is drag-and-drop, highly customizable |
+| `analytics/cohorts/page.tsx` | Retention | PostHog's retention grid with breakdown by properties |
+| `analytics/matching/page.tsx` | Insights + Dashboards | PostHog's query builder handles histograms, heatmaps, conversions |
+| Session replay | Recordings | Not possible with custom solution |
 
-Retention grid (heatmap): rows = registration week cohort, columns = D1/D7/D14/D30/D60/D90
-
-### `/(dashboard)/analytics/matching/page.tsx`
-
-- Compatibility score distribution (histogram)
-- Match rate by size/energy pair (heatmap matrix)
-- Match-to-chat-to-walk conversion funnel
+**Effort saved:** ~6d of custom Recharts development, replaced by PostHog's built-in dashboards.
 
 ---
 
 ## 7. GDPR Compliance Plan
 
-### Legal Basis
+### Legal Basis Separation — IMPLEMENTED
 
-| Processing | Legal Basis | Notes |
-|---|---|---|
-| Product analytics (mobile) | **Consent** (Art. 6(1)(a)) | ePrivacy Art. 5(3) requires opt-in for device storage access |
-| Web analytics (landing) | **Consent** | Garante 2021 guidelines: analytical trackers require prior consent |
-| Server-side API metrics | **Legitimate interest** (Art. 6(1)(f)) | Only if pseudonymized, no PII |
-| Admin operational analytics | **Legitimate interest** | Internal use, admin users are operators |
+| Service | Legal Basis | Status | Notes |
+|---|---|---|---|
+| **Sentry** (error tracking) | **Legitimate interest** (Art. 6(1)(f)) | ALWAYS active | PII scrubbed without consent; full context with consent |
+| **Statsig** (remote config) | **Contract necessity** (Art. 6(1)(b)) | ALWAYS active | userId pseudonymized (HMAC-SHA256) |
+| **Statsig** (A/B experiment logging) | **Consent** (Art. 6(1)(a)) | Consent-gated | Only event logging, not config delivery |
+| **Product analytics** (mobile) | **Consent** (Art. 6(1)(a)) | Consent-gated | ePrivacy Art. 5(3) requires opt-in |
+| **Web analytics** (landing) | **Consent** | Consent-gated | Garante 2021 guidelines |
+| **Server-side API metrics** | **Legitimate interest** (Art. 6(1)(f)) | ALWAYS active | Pseudonymized, no PII |
+| **Admin operational analytics** | **Legitimate interest** | Internal use | Admin users are operators |
 
 ### Consent Requirements
 
@@ -461,47 +521,54 @@ Per GDPR Art. 7 and Garante 2021 guidelines, consent must be:
 - **Withdrawable**: "as easy to withdraw as to give" (Art. 7(3))
 - **Re-requested**: every 6 months (Garante requirement)
 
-### Current Violations (Must Fix)
+### Resolved Violations
 
-| # | Violation | GDPR Article |
-|---|---|---|
-| 1 | Statsig + Sentry initialize unconditionally before consent | Art. 5(3) ePrivacy, Art. 6/7 |
-| 2 | No `user_consents` table exists | Art. 7(1) |
-| 3 | Registration screen has no consent checkboxes | Art. 7(2) |
-| 4 | Privacy/cookie policies are placeholders | Art. 13/14 |
-| 5 | No cookie banner on web | Garante 2021 guidelines |
-| 6 | Raw userId sent to Statsig (US) without pseudonymization | Art. 44-49, Art. 25 |
-| 7 | No consent withdrawal mechanism in Settings | Art. 7(3) |
+| # | Violation | Status | Resolution |
+|---|---|---|---|
+| 1 | Sentry/Statsig init without consent | **RESOLVED** | Sentry: legitimate interest + consent-aware `beforeSend`. Statsig: contract necessity for config, consent for experiments |
+| 2 | No `user_consents` table | **RESOLVED** | Table created in `packages/db/src/schema/user-consents.ts` |
+| 3 | No consent collection UI | **RESOLVED** | `ConsentModal` shown after auth, toggles in Settings |
+| 4 | Privacy/cookie policies are placeholders | **TODO** | Update privacy policy with analytics section |
+| 5 | No cookie banner on web | **TODO** | Astro landing page (low priority — Cloudflare Analytics is cookieless) |
+| 6 | Raw userId sent to Statsig | **RESOLVED** | HMAC-SHA256 pseudonymization in `statsig-experiment-service.ts` + client-side hash in `_layout.tsx` |
+| 7 | No consent withdrawal in Settings | **RESOLVED** | Per-consent toggles in Settings modal |
 
-### Consent Flow
+### Consent Flow — IMPLEMENTED
 
-**Mobile first launch (after registration):**
-1. Present consent modal with individual toggles: Analytics, A/B Testing, Error Reporting
+**Mobile first launch (after authentication):**
+1. Present consent modal with individual toggles: Analytics, A/B Testing, Error Tracking, Marketing
 2. "Accetta selezionati" and "Rifiuta tutto" buttons of equal prominence
-3. Store consent in MMKV (using `createMMKV()`)
-4. Gate Statsig/Sentry/PostHog initialization behind consent state
-5. Record consent server-side in `user_consents` table
+3. Store consent in MMKV via Zustand persist (`useConsentStore`)
+4. Sentry reads consent at event time via `useConsentStore.getState()` — full context if consented, PII scrubbed if not
+5. Statsig always active (remote config); experiment logging gated by `consents.abTesting`
+6. Record consent server-side in `user_consents` table
 
 **Consent withdrawal (Settings > Privacy):**
-1. `analyticsService.optOut()` + `analyticsService.reset()` (immediate)
-2. Update `analytics_consent = false` via API
-3. Enqueue BullMQ job to delete user data from PostHog via API
+1. Toggle off in Settings → immediate MMKV update
+2. Update `user_consents` table via API
+3. Analytics service: `optOut()` + `reset()`
 
-### user_consents Table (Required)
+### user_consents Table — IMPLEMENTED
 
-```sql
-CREATE TABLE user_consents (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    consent_type    TEXT NOT NULL,  -- 'analytics', 'ab_testing', 'error_tracking', 'marketing'
-    consent_version TEXT NOT NULL,  -- 'v1.0' — links to privacy policy version
-    granted         BOOLEAN NOT NULL,
-    granted_at      TIMESTAMP WITH TIME ZONE NOT NULL,
-    withdrawn_at    TIMESTAMP WITH TIME ZONE,
-    ip_address      TEXT,          -- anonymized (last octet zeroed)
-    user_agent      TEXT,
-    source          TEXT NOT NULL,  -- 'mobile_onboarding', 'web_banner', 'settings'
-    UNIQUE (user_id, consent_type)
+```typescript
+// packages/db/src/schema/user-consents.ts
+export const userConsents = pgTable(
+  'user_consents',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    consentType: varchar('consent_type', { length: 30 }).notNull(),
+    consentVersion: varchar('consent_version', { length: 10 }).notNull().default('v1.0'),
+    granted: boolean('granted').notNull(),
+    grantedAt: timestamp('granted_at', { withTimezone: true }).notNull(),
+    withdrawnAt: timestamp('withdrawn_at', { withTimezone: true }),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    source: varchar('source', { length: 30 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique('user_consents_user_type_uniq').on(t.userId, t.consentType)],
 );
 ```
 
@@ -519,7 +586,7 @@ CREATE TABLE user_consents (
 | Right | Implementation |
 |---|---|
 | Access (Art. 15) | Include analytics data in `exportMyData` response |
-| Erasure (Art. 17) | Cascade to PostHog API + analytics_events ON DELETE SET NULL |
+| Erasure (Art. 17) | `analytics_events` ON DELETE SET NULL (anonymized, not deleted) |
 | Object (Art. 21) | Opt-out toggle in Settings |
 | Portability (Art. 20) | JSON export of events + consent records |
 
@@ -540,10 +607,24 @@ CREATE TABLE user_consents (
 | Threat | Mitigation |
 |---|---|
 | PII in event payloads | Allowlist approach: strict Zod schema per event type, reject unknown properties |
-| User identity correlation | HMAC-SHA256 hash of `userId + salt` for analytics IDs |
-| Client-side event injection | All events via authenticated endpoints (`protectedProcedure`), validate `userId` matches JWT `sub` |
+| User identity correlation | HMAC-SHA256 hash of `userId + salt` for third-party destinations; raw UUID only in own Neon DB |
+| Client-side event injection | All events via authenticated endpoints, validate `userId` matches JWT `sub` |
 | Event flooding / DoS | Dedicated rate limiter: 500 events/min per user, 50/min per unauthenticated IP |
 | Analytics data breach | Pseudonymized IDs + no PII = minimized impact |
+
+### Sentry PII Scrubbing — IMPLEMENTED
+
+**Server-side** (`apps/api/src/lib/sentry.ts`): Recursive `scrubPii()` removes email, displayName, passwordHash, pushToken, latitude, longitude, ip_address from all Sentry event contexts.
+
+**Mobile** (`apps/mobile/app/_layout.tsx`): Consent-aware `beforeSend`:
+- **Consent given**: Full context (user id, device info, headers) for better debugging
+- **No consent**: PII scrubbed — only anonymized id, no headers, no coordinates
+
+### Statsig Pseudonymization — IMPLEMENTED
+
+`apps/api/src/infra/statsig-experiment-service.ts`: `pseudonymizeUserId()` using HMAC-SHA256 with `ANALYTICS_HASH_SALT` env var. Raw UUID never sent to Statsig.
+
+`apps/mobile/app/_layout.tsx`: Client-side `hashUserId()` for `StatsigProviderExpo` user.
 
 ### Rate Limiting
 
@@ -570,73 +651,90 @@ Batch endpoint limits: max 100 events per batch, max 50KB body size.
 
 | Processor | DPA Status | Action Needed |
 |---|---|---|
-| PostHog (new) | **Not signed** | Sign DPA before integration |
-| Statsig | **Not signed** | Sign DPA, pseudonymize userId |
-| Sentry | **Not signed** | Sign DPA, add PII scrubbing |
+| Statsig | **Not signed** | Sign DPA, userId pseudonymized (DONE) |
+| Sentry | **Not signed** | Sign DPA, PII scrubbing implemented (DONE) |
 | Expo Push | **Not signed** | Sign DPA |
 | Resend | **Not signed** | Sign DPA |
 | Neon | **Needs verification** | Verify DPA coverage |
+
+> **Note:** PostHog is NOT a current processor. Will need DPA when added.
 
 ---
 
 ## 9. Blockers & Implementation Order
 
-### P0 — Must Fix Before Any Analytics Event
+### P0 — Must Fix Before Any Analytics Event — DONE
 
-| # | Item | Source Finding | Effort |
-|---|---|---|---|
-| 1 | Create `user_consents` table | Audit 3.4, 3.15 | 1d |
-| 2 | Implement consent collection UI (mobile modal) | GDPR Art. 7 | 2d |
-| 3 | Gate Statsig/Sentry initialization behind consent | Audit 3.6 | 1d |
-| 4 | Hash userId before sending to any third-party | Security | 0.5d |
-| 5 | Complete privacy policy with analytics section | Audit 3.3 | 1d |
-| 6 | Fix admin refresh token secret (`jwt.ts:120`) | Audit 2.1 | 0.5d |
+| # | Item | Status |
+|---|---|---|
+| 1 | Create `user_consents` table | **DONE** — `packages/db/src/schema/user-consents.ts` |
+| 2 | Implement consent collection UI (mobile modal) | **DONE** — `ConsentModal` + Settings toggles |
+| 3 | Separate Sentry/Statsig legal basis (not blindly consent-gated) | **DONE** — Sentry: legitimate interest; Statsig config: contract necessity |
+| 4 | Hash userId before sending to any third-party | **DONE** — HMAC-SHA256 server + client hash |
+| 5 | Sentry `beforeSend` PII scrubber (consent-aware) | **DONE** — server + mobile |
+| 6 | `AnalyticsEventMap` + `AnalyticsService` interface | **DONE** — `packages/types/src/analytics.ts` |
 
-### Sprint N — Analytics Foundation
+### Sprint N — Server-First Pipeline
 
 | # | Item | Effort |
 |---|---|---|
-| 7 | `AnalyticsEventMap` + `AnalyticsService` interface in `packages/types/` | 1d |
-| 8 | PostHog mobile implementation + NoOp service | 1d |
-| 9 | DI token + container registration (tsyringe) | 0.5d |
-| 10 | Implement consent withdrawal flow in Settings | 1d |
-| 11 | Add Sentry `beforeSend` PII scrubber | 0.5d |
-| 12 | Instrument first events: auth + onboarding flows | 2d |
+| 7 | Consent API endpoint (tRPC mutation `consent.update`) | 1d |
+| 8 | DB push: `drizzle-kit push` for new tables on Neon | 0.5d |
+| 9 | `BufferedAnalyticsService` (SQLite buffer + batch POST) | 2d |
+| 10 | `NoOpAnalyticsService` (dev mode) | 0.5d |
+| 11 | DI token `ANALYTICS_SERVICE` + container registration | 0.5d |
+| 12 | `POST /api/events/batch` Hono route (Zod validation + BullMQ) | 1d |
+| 13 | Analytics rate limiter (`rl:analytics`, 500/min) | 0.5d |
+| 14 | Analytics BullMQ worker (batch INSERT + ON CONFLICT DO NOTHING) | 1d |
+| 15 | Privacy policy update with analytics section | 1d |
 
-### Sprint N+1 — Server-Side + Admin
-
-| # | Item | Effort |
-|---|---|---|
-| 13 | `analytics_events` table + BullMQ pipeline | 2d |
-| 14 | Server-side Redis counters (Hono middleware) | 1d |
-| 15 | BullMQ cron jobs (hourly, daily, cohort, funnel) | 2d |
-| 16 | Admin dashboard KPI cards | 2d |
-| 17 | Instrument matching + chat + walk events | 2d |
-
-### Sprint N+2 — Dashboards + Compliance
+### Sprint N+1 — Instrumentation + Admin KPIs
 
 | # | Item | Effort |
 |---|---|---|
-| 18 | Admin funnel visualization page | 2d |
-| 19 | Admin cohort retention page | 2d |
-| 20 | Admin matching analytics page | 2d |
-| 21 | `deleteAccount` with analytics cascade | 2d |
-| 22 | `exportMyData` including analytics data | 1d |
-| 23 | DPIA documentation | 1d |
-| 24 | Sign DPAs with all processors | 1d |
+| 16 | Server-side domain event tracking (router-level pattern) | 1d |
+| 17 | Instrument auth + onboarding flows (hybrid events) | 1d |
+| 18 | Instrument matching + chat + walk events (server-authoritative) | 2d |
+| 19 | Redis real-time counters (Hono middleware) | 1d |
+| 20 | BullMQ cron jobs (hourly, daily, cohort aggregation) | 2d |
+| 21 | Admin dashboard KPI cards | 2d |
+
+### Sprint N+2 — Compliance + Data Rights
+
+| # | Item | Effort |
+|---|---|---|
+| 22 | `deleteAccount` with analytics anonymization (SET NULL) | 1d |
+| 23 | `exportMyData` including analytics data + consent records | 1d |
+| 24 | DPIA documentation | 1d |
+| 25 | Sign DPAs with all processors | 1d |
+| 26 | Consent re-request mechanism (6-month Garante cycle) | 1d |
+
+### Future — PostHog Migration (When Revenue Arrives, ~1 Day)
+
+| # | Item | Effort |
+|---|---|---|
+| 27 | Add `posthog-react-native` SDK | 0.25d |
+| 28 | Create `PostHogAnalyticsService` implementing `AnalyticsService` | 0.25d |
+| 29 | Swap DI registration in `container.ts` | 0.1d |
+| 30 | Sign PostHog DPA (EU Teams plan) | 0.1d |
+| 31 | Configure PostHog dashboards (funnels, cohorts, retention) | 0.25d |
+| **Total** | | **~1d** |
 
 ---
 
 ## Cross-Team Consensus
 
-| Topic | Sara (Analytics) | Elena (Data Eng) | Davide (Security) | Giulia (GDPR) |
-|---|---|---|---|---|
-| **Tool** | PostHog Cloud free | Same DB, BullMQ pipeline | PostHog EU preferred | EU-hosted or self-hosted |
-| **User IDs** | Opaque userId | UUID with dedup | HMAC-hashed | Pseudonymized |
-| **Consent** | `defaultOptIn: false` | N/A (server-side) | Gate all tracking | P0 blocker, mandatory |
-| **Data retention** | 12mo raw | 90d raw + aggregates | 90d + encryption | 90d raw, 24mo aggregated |
-| **Neon tier** | Sufficient for now | Upgrade to Launch ($19) | Separate pool for workers | EU-hosted (already is) |
+| Topic | Sara (Analytics) | Elena (Data Eng) | Davide (Security) | Giulia (GDPR) | Luca (Architect) |
+|---|---|---|---|---|---|
+| **Architecture** | Server-first | Single data store | Server validates | EU-only pipeline | Clean Architecture: track at router, not use-case |
+| **Tool** | Neon now, PostHog later | Same DB, BullMQ pipeline | Server-authoritative | No third-party at MVP | Transport-agnostic interface |
+| **User IDs** | Opaque userId | UUID with dedup | HMAC-hashed for third-party | Pseudonymized | Raw UUID only in own DB |
+| **Consent** | Gate client analytics | N/A (server-side) | Gate all tracking | P0 blocker, mandatory | Consent-aware Sentry |
+| **Data retention** | 90d raw + aggregates | 90d raw + aggregates | 90d + encryption | 90d raw, 24mo aggregated | Monthly partitions |
+| **Admin dashboards** | KPI cards now | Cron aggregation | Access control | Audit log required | PostHog for complex viz |
 
+**Agreed architecture**: Server-first single data store (unanimous).
 **Agreed retention**: 90 days raw events, 24 months aggregated, unlimited anonymized.
 **Agreed ID strategy**: HMAC-SHA256 hash for all third-party destinations, raw UUID only in own Neon DB.
-**Agreed blocker**: Consent infrastructure (P0) must ship before any analytics event is sent.
+**Agreed PostHog timing**: Add when revenue arrives (~1 day effort, EUR 37.50/mo EU Teams).
+**Agreed admin scope**: KPI cards only — no funnel/cohort/matching pages (PostHog provides them later).

@@ -5,6 +5,7 @@ import { DrizzleActivityRepository } from './infra/drizzle-activity-repository.j
 import { DrizzleAdminUserRepository } from './infra/drizzle-admin-user-repository.js';
 import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
+import { DrizzleConsentRepository } from './infra/drizzle-consent-repository.js';
 import { DrizzleContentReportRepository } from './infra/drizzle-content-report-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
 import { DrizzleFeedRepository } from './infra/drizzle-feed-repository.js';
@@ -69,6 +70,7 @@ import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
 import { createGetActivityStats } from './use-cases/get-activity-stats.js';
+import { createGetConsents } from './use-cases/get-consents.js';
 import { createGetDog } from './use-cases/get-dog.js';
 import { createGetDogHealthGoal } from './use-cases/get-dog-health-goal.js';
 // Use cases — feedback
@@ -136,6 +138,7 @@ import { createSubmitFeedback } from './use-cases/submit-feedback.js';
 import { createSyncHealthData } from './use-cases/sync-health-data.js';
 import { createUnmatch } from './use-cases/unmatch.js';
 import { createUpdateChallengeProgress } from './use-cases/update-challenge-progress.js';
+import { createUpdateConsents } from './use-cases/update-consents.js';
 import { createUpdateDog } from './use-cases/update-dog.js';
 import { createUpdateGroupEvent } from './use-cases/update-group-event.js';
 import { createUpdateLocation } from './use-cases/update-location.js';
@@ -164,6 +167,7 @@ const badgeRepo = new DrizzleBadgeRepository(db);
 const gamificationRepo = new DrizzleGamificationRepository(db);
 const feedRepo = new DrizzleFeedRepository(db);
 const storyRepo = new DrizzleStoryRepository(db);
+const consentRepo = new DrizzleConsentRepository(db);
 const contentReportRepo = new DrizzleContentReportRepository(db);
 const walkAlbumRepo = new DrizzleWalkAlbumRepository(db);
 const walkTrackRepo = new DrizzleWalkTrackRepository(db);
@@ -388,6 +392,13 @@ export const contentModerationDeps = {
 
 export const walkAlbumDeps = {
   createWalkAlbum: createCreateWalkAlbum({ walkAlbumRepo }),
+};
+
+// ── Consent deps ──────────────────────────────────────────────────────────────
+
+export const consentDeps = {
+  updateConsents: createUpdateConsents({ consentRepo }),
+  getConsents: createGetConsents({ consentRepo }),
 };
 
 // ── Admin deps ────────────────────────────────────────────────────────────────

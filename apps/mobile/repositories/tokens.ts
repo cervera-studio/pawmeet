@@ -1,3 +1,4 @@
+import type { AnalyticsService } from '@dogwalk/types';
 import type { InjectionToken } from 'tsyringe';
 import type {
   ActivityRepository,
@@ -42,3 +43,4 @@ export const USER_REPOSITORY = Symbol('UserRepository') as InjectionToken<UserRe
 export const SMART_MATCHING_REPOSITORY = Symbol(
   'SmartMatchingRepository',
 ) as InjectionToken<SmartMatchingRepository>;
+export const ANALYTICS_SERVICE = Symbol('AnalyticsService') as InjectionToken<AnalyticsService>;

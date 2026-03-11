@@ -28,9 +28,12 @@ describe('users table', () => {
         'pushToken',
         'createdAt',
         'lastLoginAt',
+        'dateOfBirth',
+        'followersCount',
+        'followingCount',
       ]),
     );
-    expect(columnNames).toHaveLength(16);
+    expect(columnNames).toHaveLength(19);
   });
 
   describe('id column', () => {

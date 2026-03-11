@@ -4,8 +4,8 @@ import { createTRPCReact } from '@trpc/react-query';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 export type { AppRouter };
-export type { AuthRefreshCallbacks } from './auth-refresh-link.js';
-export { createAuthRefreshLink } from './auth-refresh-link.js';
+export type { AuthRefreshCallbacks } from './auth-refresh-link';
+export { createAuthRefreshLink } from './auth-refresh-link';
 
 /** Inferred output types from every tRPC procedure — use instead of local types. */
 export type RouterOutput = inferRouterOutputs<AppRouter>;

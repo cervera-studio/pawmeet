@@ -1,31 +1,9 @@
 import { DEFAULT_SEARCH_RADIUS_KM } from '@dogwalk/config';
-import type { User } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { NearbyUser, UserRepository } from '../ports/index.js';
+import type { NearbyUser } from '../ports/index.js';
+import { buildUser, buildUserRepo } from '../test-utils/builders.js';
 import { createFindNearby } from './find-nearby.js';
-
-function buildUser(overrides: Partial<User> = {}): User {
-  return {
-    id: 'user-1',
-    email: 'mario@example.com',
-    displayName: 'Mario Rossi',
-    passwordHash: '$2b$12$hash',
-    authProvider: 'email',
-    avatarUrl: null,
-    latitude: 41.9028,
-    longitude: 12.4964,
-    locationUpdatedAt: new Date('2026-03-01'),
-    searchRadiusKm: 15,
-    emailVerified: true,
-    pushToken: null,
-    notificationPrefs: { matches: true, messages: true, reminders: true },
-    isActive: true,
-    createdAt: new Date('2026-01-01'),
-    lastLoginAt: null,
-    ...overrides,
-  };
-}
 
 function buildNearbyUser(overrides: Partial<NearbyUser> = {}): NearbyUser {
   return {
@@ -40,23 +18,9 @@ function buildNearbyUser(overrides: Partial<NearbyUser> = {}): NearbyUser {
   };
 }
 
-function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository {
-  return {
-    findByEmail: vi.fn(),
-    findById: vi.fn(),
-    findByIds: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    findNearby: vi.fn(),
-    updatePushToken: vi.fn(),
-    findPushToken: vi.fn(),
-    ...overrides,
-  };
-}
-
 describe('findNearby', () => {
   it('returns nearby users on success', async () => {
-    const user = buildUser();
+    const user = buildUser({ searchRadiusKm: 15 });
     const nearby = [buildNearbyUser()];
     const userRepo = buildUserRepo({
       findById: vi.fn().mockResolvedValue(user),

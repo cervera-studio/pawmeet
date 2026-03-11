@@ -1,45 +1,7 @@
-import { BADGE_TYPE, type Badge, type BadgeType, isSuccess } from '@dogwalk/types';
+import { BADGE_TYPE, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { BadgeRepository } from '../ports/badge-repository.js';
-import type { WalkRepository } from '../ports/walk-repository.js';
+import { buildBadgeRepo, buildWalkRepo } from '../test-utils/builders.js';
 import { createCheckAndAwardBadges } from './check-and-award-badges.js';
-
-function buildBadge(overrides: Partial<Badge> = {}): Badge {
-  return {
-    id: 'badge-1',
-    dogId: 'dog-1',
-    type: BADGE_TYPE.FIRST_MEETING,
-    awardedAt: new Date('2026-03-01'),
-    ...overrides,
-  };
-}
-
-function buildBadgeRepo(overrides: Partial<BadgeRepository> = {}): BadgeRepository {
-  return {
-    findByDog: vi.fn().mockResolvedValue([]),
-    award: vi
-      .fn()
-      .mockImplementation((_dogId: string, type: BadgeType) =>
-        Promise.resolve(buildBadge({ type })),
-      ),
-    hasBadge: vi.fn().mockResolvedValue(false),
-    ...overrides,
-  };
-}
-
-function buildWalkRepo(overrides: Partial<WalkRepository> = {}): WalkRepository {
-  return {
-    create: vi.fn(),
-    findById: vi.fn(),
-    findByMatchId: vi.fn(),
-    findUpcoming: vi.fn(),
-    updateStatus: vi.fn(),
-    delete: vi.fn(),
-    countCompletedForDog: vi.fn().mockResolvedValue(0),
-    getAverageRatingForDog: vi.fn().mockResolvedValue({ average: 0, count: 0 }),
-    ...overrides,
-  };
-}
 
 describe('checkAndAwardBadges', () => {
   it('awards FIRST_MEETING when completedWalks >= 1', async () => {

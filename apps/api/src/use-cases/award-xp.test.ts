@@ -2,7 +2,7 @@ import { USER_LEVEL, XP_ACTION, XP_POINTS } from '@dogwalk/config';
 import type { XpTransaction } from '@dogwalk/types';
 import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { GamificationRepository } from '../ports/gamification-repository.js';
+import { buildGamificationRepo } from '../test-utils/builders.js';
 import { createAwardXp } from './award-xp.js';
 
 function buildXpTransaction(overrides: Partial<XpTransaction> = {}): XpTransaction {
@@ -17,31 +17,10 @@ function buildXpTransaction(overrides: Partial<XpTransaction> = {}): XpTransacti
   };
 }
 
-function buildGamificationRepo(
-  overrides: Partial<GamificationRepository> = {},
-): GamificationRepository {
-  return {
-    createXpTransaction: vi.fn().mockResolvedValue(buildXpTransaction()),
-    getTotalXp: vi.fn().mockResolvedValue(0),
-    getLeaderboard: vi.fn().mockResolvedValue([]),
-    findActiveChallenges: vi.fn().mockResolvedValue([]),
-    findUserChallenges: vi.fn().mockResolvedValue([]),
-    upsertUserChallenge: vi.fn().mockResolvedValue({}),
-    findActiveChallengesByType: vi.fn().mockResolvedValue([]),
-    findAchievementsByUser: vi.fn().mockResolvedValue([]),
-    hasAchievement: vi.fn().mockResolvedValue(false),
-    unlockAchievement: vi.fn().mockResolvedValue({}),
-    countCompletedWalks: vi.fn().mockResolvedValue(0),
-    countMatches: vi.fn().mockResolvedValue(0),
-    countGroupEventsJoined: vi.fn().mockResolvedValue(0),
-    getTotalWalkDistanceKm: vi.fn().mockResolvedValue(0),
-    ...overrides,
-  };
-}
-
 describe('awardXp', () => {
   it('creates an XP transaction with correct points for the action', async () => {
     const repo = buildGamificationRepo({
+      createXpTransaction: vi.fn().mockResolvedValue(buildXpTransaction()),
       getTotalXp: vi.fn().mockResolvedValue(50),
     });
     const awardXp = createAwardXp({ gamificationRepo: repo });
@@ -61,6 +40,7 @@ describe('awardXp', () => {
 
   it('returns correct level for accumulated XP', async () => {
     const repo = buildGamificationRepo({
+      createXpTransaction: vi.fn().mockResolvedValue(buildXpTransaction()),
       getTotalXp: vi.fn().mockResolvedValue(150),
     });
     const awardXp = createAwardXp({ gamificationRepo: repo });
@@ -75,6 +55,7 @@ describe('awardXp', () => {
 
   it('passes metadata through to the transaction', async () => {
     const repo = buildGamificationRepo({
+      createXpTransaction: vi.fn().mockResolvedValue(buildXpTransaction()),
       getTotalXp: vi.fn().mockResolvedValue(10),
     });
     const awardXp = createAwardXp({ gamificationRepo: repo });

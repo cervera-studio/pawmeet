@@ -1,26 +1,7 @@
-import { BADGE_TYPE, type Badge, isSuccess } from '@dogwalk/types';
+import { BADGE_TYPE, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { BadgeRepository } from '../ports/badge-repository.js';
+import { buildBadge, buildBadgeRepo } from '../test-utils/builders.js';
 import { createListBadges } from './list-badges.js';
-
-function buildBadge(overrides: Partial<Badge> = {}): Badge {
-  return {
-    id: 'badge-1',
-    dogId: 'dog-1',
-    type: BADGE_TYPE.FIRST_MEETING,
-    awardedAt: new Date('2026-03-01'),
-    ...overrides,
-  };
-}
-
-function buildBadgeRepo(overrides: Partial<BadgeRepository> = {}): BadgeRepository {
-  return {
-    findByDog: vi.fn().mockResolvedValue([]),
-    award: vi.fn(),
-    hasBadge: vi.fn(),
-    ...overrides,
-  };
-}
 
 describe('listBadges', () => {
   it('returns badges for a dog', async () => {

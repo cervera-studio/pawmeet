@@ -1,58 +1,12 @@
 import { CHALLENGE_TYPE, XP_ACTION } from '@dogwalk/config';
-import type { Challenge, UserChallenge } from '@dogwalk/types';
 import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { GamificationRepository } from '../ports/gamification-repository.js';
+import {
+  buildChallenge,
+  buildGamificationRepo,
+  buildUserChallenge,
+} from '../test-utils/builders.js';
 import { createUpdateChallengeProgress } from './update-challenge-progress.js';
-
-function buildChallenge(overrides: Partial<Challenge> = {}): Challenge {
-  return {
-    id: 'challenge-1',
-    type: CHALLENGE_TYPE.WALK_COUNT,
-    title: 'Cammina 5 volte',
-    description: 'Completa 5 passeggiate questa settimana',
-    targetValue: 5,
-    xpReward: 100,
-    startsAt: new Date('2026-03-01'),
-    endsAt: new Date('2026-03-31'),
-    createdAt: new Date('2026-03-01'),
-    ...overrides,
-  };
-}
-
-function buildUserChallenge(overrides: Partial<UserChallenge> = {}): UserChallenge {
-  return {
-    id: 'uc-1',
-    userId: 'user-1',
-    challengeId: 'challenge-1',
-    progress: 0,
-    completedAt: null,
-    createdAt: new Date('2026-03-05'),
-    ...overrides,
-  };
-}
-
-function buildGamificationRepo(
-  overrides: Partial<GamificationRepository> = {},
-): GamificationRepository {
-  return {
-    createXpTransaction: vi.fn(),
-    getTotalXp: vi.fn().mockResolvedValue(0),
-    getLeaderboard: vi.fn().mockResolvedValue([]),
-    findActiveChallenges: vi.fn().mockResolvedValue([]),
-    findUserChallenges: vi.fn().mockResolvedValue([]),
-    upsertUserChallenge: vi.fn().mockResolvedValue(buildUserChallenge()),
-    findActiveChallengesByType: vi.fn().mockResolvedValue([]),
-    findAchievementsByUser: vi.fn().mockResolvedValue([]),
-    hasAchievement: vi.fn().mockResolvedValue(false),
-    unlockAchievement: vi.fn(),
-    countCompletedWalks: vi.fn().mockResolvedValue(0),
-    countMatches: vi.fn().mockResolvedValue(0),
-    countGroupEventsJoined: vi.fn().mockResolvedValue(0),
-    getTotalWalkDistanceKm: vi.fn().mockResolvedValue(0),
-    ...overrides,
-  };
-}
 
 describe('updateChallengeProgress', () => {
   it('increments progress on an active challenge', async () => {

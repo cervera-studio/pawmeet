@@ -1,8 +1,7 @@
-import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@dogwalk/types';
+import type { GroupEventWithParticipants } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { GroupEventRepository } from '../ports/group-event-repository.js';
-import type { NotificationService } from '../ports/notification-service.js';
+import { buildGroupEventRepo, buildNotificationService } from '../test-utils/builders.js';
 import { createCancelGroupEvent } from './cancel-group-event.js';
 
 function buildGroupEventWithParticipants(
@@ -48,35 +47,11 @@ function buildGroupEventWithParticipants(
   };
 }
 
-function buildGroupEventRepo(overrides: Partial<GroupEventRepository> = {}): GroupEventRepository {
-  return {
-    create: vi.fn(),
-    findById: vi.fn(),
-    findByIdWithParticipants: vi.fn().mockResolvedValue(buildGroupEventWithParticipants()),
-    findNearby: vi.fn(),
-    findByCreator: vi.fn(),
-    findByParticipant: vi.fn(),
-    update: vi.fn(),
-    updateStatus: vi.fn(),
-    addParticipant: vi.fn(),
-    findParticipant: vi.fn(),
-    removeParticipant: vi.fn(),
-    updateParticipantStatus: vi.fn(),
-    countParticipants: vi.fn(),
-    promoteFromWaitlist: vi.fn(),
-    findScheduledPastStart: vi.fn(),
-    findInProgressPastEnd: vi.fn(),
-    ...overrides,
-  };
-}
-
-function buildNotificationService(): NotificationService {
-  return { send: vi.fn().mockResolvedValue(undefined) };
-}
-
 describe('cancelGroupEvent', () => {
   it('cancels the event and notifies participants', async () => {
-    const groupEventRepo = buildGroupEventRepo();
+    const groupEventRepo = buildGroupEventRepo({
+      findByIdWithParticipants: vi.fn().mockResolvedValue(buildGroupEventWithParticipants()),
+    });
     const notificationService = buildNotificationService();
     const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
 
@@ -92,7 +67,9 @@ describe('cancelGroupEvent', () => {
   });
 
   it('fails when user is not the organizer', async () => {
-    const groupEventRepo = buildGroupEventRepo();
+    const groupEventRepo = buildGroupEventRepo({
+      findByIdWithParticipants: vi.fn().mockResolvedValue(buildGroupEventWithParticipants()),
+    });
     const notificationService = buildNotificationService();
     const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
 

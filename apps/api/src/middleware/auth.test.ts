@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { SignJWT } from 'jose';
 import { authMiddleware } from './auth.js';
 
-const JWT_SECRET = new TextEncoder().encode('dev-secret');
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 function createApp() {
   const app = new Hono();

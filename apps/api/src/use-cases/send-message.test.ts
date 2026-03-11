@@ -1,70 +1,13 @@
-import type { ChatMessage } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type {
-  ChatService,
-  MessageRepository,
-  NotificationService,
-  UserRepository,
-} from '../ports/index.js';
+import {
+  buildChatService,
+  buildMessage,
+  buildMessageRepo,
+  buildNotificationService,
+  buildUserRepo,
+} from '../test-utils/builders.js';
 import { createSendMessage } from './send-message.js';
-
-function buildMessage(overrides: Partial<ChatMessage> = {}): ChatMessage {
-  return {
-    id: 'msg-1',
-    matchId: 'match-1',
-    senderId: 'user-1',
-    content: 'Ciao!',
-    mediaUrl: null,
-    status: 'sent',
-    isDeleted: false,
-    createdAt: new Date(),
-    ...overrides,
-  };
-}
-
-function buildMessageRepo(overrides: Partial<MessageRepository> = {}): MessageRepository {
-  return {
-    getConversationsForUser: vi.fn(),
-    findByMatch: vi.fn(),
-    create: vi.fn(),
-    markAsRead: vi.fn(),
-    isMatchParticipant: vi.fn().mockResolvedValue(true),
-    getOtherParticipant: vi.fn().mockResolvedValue(null),
-    ...overrides,
-  };
-}
-
-function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository {
-  return {
-    findByEmail: vi.fn(),
-    findById: vi.fn(),
-    findByIds: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    findNearby: vi.fn(),
-    updatePushToken: vi.fn(),
-    findPushToken: vi.fn(),
-    ...overrides,
-  };
-}
-
-function buildChat(overrides: Partial<ChatService> = {}): ChatService {
-  return {
-    joinRoom: vi.fn(),
-    sendToRoom: vi.fn(),
-    ...overrides,
-  };
-}
-
-function buildNotificationService(
-  overrides: Partial<NotificationService> = {},
-): NotificationService {
-  return {
-    send: vi.fn().mockResolvedValue(undefined),
-    ...overrides,
-  };
-}
 
 describe('sendMessage', () => {
   it('sends a message and emits WS event', async () => {
@@ -72,7 +15,7 @@ describe('sendMessage', () => {
     const messageRepo = buildMessageRepo({
       create: vi.fn().mockResolvedValue(msg),
     });
-    const chat = buildChat();
+    const chat = buildChatService();
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
     const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });
@@ -102,7 +45,7 @@ describe('sendMessage', () => {
     const messageRepo = buildMessageRepo({
       create: vi.fn().mockResolvedValue(msg),
     });
-    const chat = buildChat();
+    const chat = buildChatService();
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
     const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });
@@ -124,7 +67,7 @@ describe('sendMessage', () => {
     const messageRepo = buildMessageRepo({
       isMatchParticipant: vi.fn().mockResolvedValue(false),
     });
-    const chat = buildChat();
+    const chat = buildChatService();
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
     const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });

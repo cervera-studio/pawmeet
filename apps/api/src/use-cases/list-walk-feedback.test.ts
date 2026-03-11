@@ -1,32 +1,7 @@
-import type { WalkFeedback } from '@dogwalk/types';
 import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { FeedbackRepository } from '../ports/index.js';
+import { buildFeedback, buildFeedbackRepo } from '../test-utils/builders.js';
 import { createListWalkFeedback } from './list-walk-feedback.js';
-
-function buildFeedback(overrides: Partial<WalkFeedback> = {}): WalkFeedback {
-  return {
-    id: 'feedback-1',
-    walkId: 'walk-1',
-    fromUserId: 'user-1',
-    toDogId: 'dog-2',
-    rating: 4 as 1 | 2 | 3 | 4 | 5,
-    comment: null,
-    createdAt: new Date(),
-    ...overrides,
-  };
-}
-
-function buildFeedbackRepo(overrides: Partial<FeedbackRepository> = {}): FeedbackRepository {
-  return {
-    create: vi.fn(),
-    findByWalk: vi.fn().mockResolvedValue([]),
-    findByDog: vi.fn(),
-    getAverageRating: vi.fn(),
-    hasSubmitted: vi.fn(),
-    ...overrides,
-  };
-}
 
 describe('listWalkFeedback', () => {
   it('returns feedback for a walk', async () => {

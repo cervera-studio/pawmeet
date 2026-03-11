@@ -1,25 +1,13 @@
 import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { UserRepository } from '../ports/index.js';
+import { buildUserRepo } from '../test-utils/builders.js';
 import { createUpdateLocation } from './update-location.js';
-
-function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository {
-  return {
-    findByEmail: vi.fn(),
-    findById: vi.fn(),
-    findByIds: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn().mockResolvedValue({} as any),
-    findNearby: vi.fn(),
-    updatePushToken: vi.fn(),
-    findPushToken: vi.fn(),
-    ...overrides,
-  };
-}
 
 describe('updateLocation', () => {
   it('updates location and returns coordinates with timestamp', async () => {
-    const userRepo = buildUserRepo();
+    const userRepo = buildUserRepo({
+      update: vi.fn().mockResolvedValue({} as any),
+    });
     const updateLocation = createUpdateLocation({ userRepo });
 
     const result = await updateLocation('user-1', 45.4642, 9.19);

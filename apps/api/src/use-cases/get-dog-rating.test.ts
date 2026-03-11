@@ -1,18 +1,7 @@
 import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { FeedbackRepository } from '../ports/index.js';
+import { buildFeedbackRepo } from '../test-utils/builders.js';
 import { createGetDogRating } from './get-dog-rating.js';
-
-function buildFeedbackRepo(overrides: Partial<FeedbackRepository> = {}): FeedbackRepository {
-  return {
-    create: vi.fn(),
-    findByWalk: vi.fn(),
-    findByDog: vi.fn(),
-    getAverageRating: vi.fn().mockResolvedValue({ average: null, count: 0 }),
-    hasSubmitted: vi.fn(),
-    ...overrides,
-  };
-}
 
 describe('getDogRating', () => {
   it('returns average and count', async () => {

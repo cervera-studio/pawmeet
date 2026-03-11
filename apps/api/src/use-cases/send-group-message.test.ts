@@ -1,42 +1,15 @@
-import type { GroupChatMessage } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { GroupMessageRepository } from '../ports/group-message-repository.js';
-import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
+import type { UserRepository } from '../ports/index.js';
+import {
+  buildChatService,
+  buildGroupMessage,
+  buildGroupMessageRepo,
+  buildNotificationService,
+} from '../test-utils/builders.js';
 import { createSendGroupMessage } from './send-group-message.js';
 
-function buildMessage(overrides: Partial<GroupChatMessage> = {}): GroupChatMessage {
-  return {
-    id: 'msg-1',
-    eventId: 'event-1',
-    senderId: 'user-1',
-    content: 'Ciao a tutti!',
-    mediaUrl: null,
-    isDeleted: false,
-    createdAt: new Date(),
-    ...overrides,
-  };
-}
-
-function buildGroupMessageRepo(
-  overrides: Partial<GroupMessageRepository> = {},
-): GroupMessageRepository {
-  return {
-    create: vi.fn().mockResolvedValue(buildMessage()),
-    findByEvent: vi.fn(),
-    getConversationsForUser: vi.fn(),
-    markAsRead: vi.fn(),
-    isEventParticipant: vi.fn().mockResolvedValue(true),
-    getParticipantUserIds: vi.fn().mockResolvedValue(['user-1', 'user-2', 'user-3']),
-    ...overrides,
-  };
-}
-
-function buildChat(): ChatService {
-  return { joinRoom: vi.fn(), sendToRoom: vi.fn() };
-}
-
-function buildUserRepo(): UserRepository {
+function buildSendGroupUserRepo(): UserRepository {
   return {
     findById: vi.fn().mockResolvedValue({
       id: 'user-1',
@@ -52,15 +25,14 @@ function buildUserRepo(): UserRepository {
   } as unknown as UserRepository;
 }
 
-function buildNotificationService(): NotificationService {
-  return { send: vi.fn().mockResolvedValue(undefined) };
-}
-
 describe('sendGroupMessage', () => {
   it('creates a message and broadcasts to the group room', async () => {
-    const groupMessageRepo = buildGroupMessageRepo();
-    const chatService = buildChat();
-    const userRepo = buildUserRepo();
+    const groupMessageRepo = buildGroupMessageRepo({
+      create: vi.fn().mockResolvedValue(buildGroupMessage({ content: 'Ciao a tutti!' })),
+      getParticipantUserIds: vi.fn().mockResolvedValue(['user-1', 'user-2', 'user-3']),
+    });
+    const chatService = buildChatService();
+    const userRepo = buildSendGroupUserRepo();
     const notificationService = buildNotificationService();
     const send = createSendGroupMessage({
       groupMessageRepo,
@@ -86,8 +58,8 @@ describe('sendGroupMessage', () => {
     });
     const send = createSendGroupMessage({
       groupMessageRepo,
-      chat: buildChat(),
-      userRepo: buildUserRepo(),
+      chat: buildChatService(),
+      userRepo: buildSendGroupUserRepo(),
       notificationService: buildNotificationService(),
     });
 
@@ -101,9 +73,12 @@ describe('sendGroupMessage', () => {
   it('sends push notifications to other participants', async () => {
     const notificationService = buildNotificationService();
     const send = createSendGroupMessage({
-      groupMessageRepo: buildGroupMessageRepo(),
-      chat: buildChat(),
-      userRepo: buildUserRepo(),
+      groupMessageRepo: buildGroupMessageRepo({
+        create: vi.fn().mockResolvedValue(buildGroupMessage({ content: 'Ci vediamo!' })),
+        getParticipantUserIds: vi.fn().mockResolvedValue(['user-1', 'user-2', 'user-3']),
+      }),
+      chat: buildChatService(),
+      userRepo: buildSendGroupUserRepo(),
       notificationService,
     });
 

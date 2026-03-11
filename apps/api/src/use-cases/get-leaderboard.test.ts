@@ -2,7 +2,7 @@ import { LEADERBOARD_TYPE, USER_LEVEL } from '@dogwalk/config';
 import type { LeaderboardEntry } from '@dogwalk/types';
 import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { GamificationRepository } from '../ports/gamification-repository.js';
+import { buildGamificationRepo } from '../test-utils/builders.js';
 import { createGetLeaderboard } from './get-leaderboard.js';
 
 function buildLeaderboardEntry(overrides: Partial<LeaderboardEntry> = {}): LeaderboardEntry {
@@ -12,28 +12,6 @@ function buildLeaderboardEntry(overrides: Partial<LeaderboardEntry> = {}): Leade
     totalXp: 500,
     rank: 1,
     level: USER_LEVEL.ALPHA,
-    ...overrides,
-  };
-}
-
-function buildGamificationRepo(
-  overrides: Partial<GamificationRepository> = {},
-): GamificationRepository {
-  return {
-    createXpTransaction: vi.fn(),
-    getTotalXp: vi.fn().mockResolvedValue(0),
-    getLeaderboard: vi.fn().mockResolvedValue([]),
-    findActiveChallenges: vi.fn().mockResolvedValue([]),
-    findUserChallenges: vi.fn().mockResolvedValue([]),
-    upsertUserChallenge: vi.fn(),
-    findActiveChallengesByType: vi.fn().mockResolvedValue([]),
-    findAchievementsByUser: vi.fn().mockResolvedValue([]),
-    hasAchievement: vi.fn().mockResolvedValue(false),
-    unlockAchievement: vi.fn(),
-    countCompletedWalks: vi.fn().mockResolvedValue(0),
-    countMatches: vi.fn().mockResolvedValue(0),
-    countGroupEventsJoined: vi.fn().mockResolvedValue(0),
-    getTotalWalkDistanceKm: vi.fn().mockResolvedValue(0),
     ...overrides,
   };
 }

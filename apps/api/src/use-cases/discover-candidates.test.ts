@@ -1,136 +1,16 @@
 import { COMPATIBILITY_THRESHOLD } from '@dogwalk/config';
-import type { DiscoveryFilters, DogProfile, User } from '@dogwalk/types';
+import type { DiscoveryFilters } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type {
-  CandidateDog,
-  DogRepository,
-  MatchRepository,
-  UserRepository,
-} from '../ports/index.js';
+import {
+  buildCandidate,
+  buildDog,
+  buildDogRepo,
+  buildMatchRepo,
+  buildUser,
+  buildUserRepo,
+} from '../test-utils/builders.js';
 import { createDiscoverCandidates } from './discover-candidates.js';
-
-function buildDog(overrides: Partial<DogProfile> = {}): DogProfile {
-  return {
-    id: 'dog-1',
-    ownerId: 'user-1',
-    name: 'Rex',
-    birthDate: new Date('2022-01-01'),
-    breed: 'Labrador',
-    breedSecondary: null,
-    size: 'grande',
-    weightKg: 30,
-    gender: 'maschio',
-    isNeutered: true,
-    energyLevel: 'alta',
-    behaviorWithDogs: 'socievole',
-    behaviorWithPeople: 'molto_socievole',
-    leashBehavior: 'buono',
-    recallReliability: 'affidabile',
-    bio: null,
-    walkPrefTime: ['mattina', 'pomeriggio'],
-    walkPrefDurationMin: 30,
-    walkPrefDurationMax: 60,
-    walkPrefTerrain: ['parco', 'urbano'],
-    isActive: true,
-    createdAt: new Date('2026-01-01'),
-    updatedAt: new Date('2026-01-01'),
-    ...overrides,
-  };
-}
-
-function buildUser(overrides: Partial<User> = {}): User {
-  return {
-    id: 'user-1',
-    email: 'mario@example.com',
-    displayName: 'Mario Rossi',
-    passwordHash: '$2b$12$hash',
-    authProvider: 'email',
-    avatarUrl: null,
-    latitude: 41.9028,
-    longitude: 12.4964,
-    locationUpdatedAt: new Date('2026-03-01'),
-    searchRadiusKm: 50,
-    emailVerified: true,
-    pushToken: null,
-    notificationPrefs: { matches: true, messages: true, reminders: true },
-    isActive: true,
-    createdAt: new Date('2026-01-01'),
-    lastLoginAt: null,
-    ...overrides,
-  };
-}
-
-function buildCandidate(overrides: Partial<CandidateDog> = {}): CandidateDog {
-  return {
-    dog: buildDog({
-      id: 'dog-2',
-      ownerId: 'user-2',
-      name: 'Bella',
-      size: 'grande',
-      energyLevel: 'alta',
-      behaviorWithDogs: 'socievole',
-      leashBehavior: 'buono',
-      walkPrefTime: ['mattina', 'pomeriggio'],
-      walkPrefDurationMin: 30,
-      walkPrefDurationMax: 60,
-      walkPrefTerrain: ['parco', 'urbano'],
-    }),
-    ownerLat: 41.91,
-    ownerLon: 12.5,
-    ...overrides,
-  };
-}
-
-function buildDogRepo(overrides: Partial<DogRepository> = {}): DogRepository {
-  return {
-    findById: vi.fn(),
-    findByIds: vi.fn(),
-    findByOwner: vi.fn(),
-    findByIdAndOwner: vi.fn(),
-    countByOwner: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    softDelete: vi.fn(),
-    findPhotos: vi.fn(),
-    countPhotos: vi.fn(),
-    addPhoto: vi.fn(),
-    findPhoto: vi.fn(),
-    deletePhoto: vi.fn(),
-    updatePhotoPositions: vi.fn(),
-    ...overrides,
-  };
-}
-
-function buildMatchRepo(overrides: Partial<MatchRepository> = {}): MatchRepository {
-  return {
-    findActiveByDogIds: vi.fn(),
-    findById: vi.fn(),
-    create: vi.fn(),
-    softDelete: vi.fn(),
-    findSwipedDogIds: vi.fn().mockResolvedValue([]),
-    countDailySwipes: vi.fn(),
-    findSwipe: vi.fn(),
-    findReciprocalLike: vi.fn(),
-    createSwipe: vi.fn(),
-    findCandidateDogs: vi.fn().mockResolvedValue([]),
-    ...overrides,
-  };
-}
-
-function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepository {
-  return {
-    findByEmail: vi.fn(),
-    findById: vi.fn(),
-    findByIds: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    findNearby: vi.fn(),
-    updatePushToken: vi.fn(),
-    findPushToken: vi.fn(),
-    ...overrides,
-  };
-}
 
 describe('discoverCandidates', () => {
   it('returns scored and sorted suggestions', async () => {

@@ -1,45 +1,8 @@
 import { ACHIEVEMENT_TYPE } from '@dogwalk/config';
-import type { Achievement, AchievementType } from '@dogwalk/types';
 import { isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { GamificationRepository } from '../ports/gamification-repository.js';
+import { buildGamificationRepo } from '../test-utils/builders.js';
 import { createCheckAndUnlockAchievements } from './check-and-unlock-achievements.js';
-
-function buildAchievement(overrides: Partial<Achievement> = {}): Achievement {
-  return {
-    id: 'ach-1',
-    userId: 'user-1',
-    type: ACHIEVEMENT_TYPE.FIRST_WALK,
-    unlockedAt: new Date('2026-03-01'),
-    ...overrides,
-  };
-}
-
-function buildGamificationRepo(
-  overrides: Partial<GamificationRepository> = {},
-): GamificationRepository {
-  return {
-    createXpTransaction: vi.fn(),
-    getTotalXp: vi.fn().mockResolvedValue(0),
-    getLeaderboard: vi.fn().mockResolvedValue([]),
-    findActiveChallenges: vi.fn().mockResolvedValue([]),
-    findUserChallenges: vi.fn().mockResolvedValue([]),
-    upsertUserChallenge: vi.fn(),
-    findActiveChallengesByType: vi.fn().mockResolvedValue([]),
-    findAchievementsByUser: vi.fn().mockResolvedValue([]),
-    hasAchievement: vi.fn().mockResolvedValue(false),
-    unlockAchievement: vi
-      .fn()
-      .mockImplementation((_userId: string, type: AchievementType) =>
-        Promise.resolve(buildAchievement({ type })),
-      ),
-    countCompletedWalks: vi.fn().mockResolvedValue(0),
-    countMatches: vi.fn().mockResolvedValue(0),
-    countGroupEventsJoined: vi.fn().mockResolvedValue(0),
-    getTotalWalkDistanceKm: vi.fn().mockResolvedValue(0),
-    ...overrides,
-  };
-}
 
 describe('checkAndUnlockAchievements', () => {
   it('unlocks FIRST_WALK when user has 1 completed walk', async () => {

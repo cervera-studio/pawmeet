@@ -1,32 +1,10 @@
-import type { User } from '@dogwalk/types';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository, VerificationTokenRecord } from '../ports/token-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
+import { buildUser } from '../test-utils/builders.js';
 import { createVerifyEmail } from './verify-email.js';
-
-function buildUser(overrides: Partial<User> = {}): User {
-  return {
-    id: 'usr_1',
-    email: 'test@example.com',
-    displayName: 'Test User',
-    passwordHash: 'hashed',
-    authProvider: 'email',
-    avatarUrl: null,
-    latitude: null,
-    longitude: null,
-    locationUpdatedAt: null,
-    searchRadiusKm: 10,
-    emailVerified: false,
-    pushToken: null,
-    notificationPrefs: { matches: true, messages: true, reminders: true },
-    isActive: true,
-    createdAt: new Date('2024-01-01'),
-    lastLoginAt: null,
-    ...overrides,
-  };
-}
 
 function buildVerificationToken(
   overrides: Partial<VerificationTokenRecord> = {},
@@ -50,7 +28,12 @@ function buildDeps(
     authService: Partial<AuthService>;
   }> = {},
 ) {
-  const user = buildUser();
+  const user = buildUser({
+    id: 'usr_1',
+    email: 'test@example.com',
+    passwordHash: 'hashed',
+    emailVerified: false,
+  });
   return {
     userRepo: {
       findByEmail: vi.fn().mockResolvedValue(null),

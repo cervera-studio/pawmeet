@@ -9,13 +9,13 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { dogDeps as DogDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';
-import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../lib/storage.js';
+import { ALLOWED_IMAGE_TYPES_TUPLE, MAX_FILE_SIZE } from '../lib/storage.js';
 import { authMiddleware } from '../middleware/auth.js';
 
 type Env = { Variables: { userId: string } };
 
 const photoUploadUrlSchema = z.object({
-  contentType: z.enum(ALLOWED_IMAGE_TYPES as unknown as [string, ...string[]]),
+  contentType: z.enum(ALLOWED_IMAGE_TYPES_TUPLE),
   fileSize: z.number().int().min(1).max(MAX_FILE_SIZE),
 });
 

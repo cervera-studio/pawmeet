@@ -5,6 +5,8 @@ import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { adminDeps } from './container.js';
 import { corsMiddleware } from './middleware/cors.js';
+import { rateLimitMiddleware } from './middleware/rate-limit.js';
+import { securityHeadersMiddleware } from './middleware/security-headers.js';
 import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { routes } from './routes/index.js';
 import { appRouter } from './trpc/root.js';
@@ -14,18 +16,22 @@ import { setupWebSocket } from './ws/chat.js';
 const app = new Hono();
 
 app.use('*', logger());
+app.use('*', securityHeadersMiddleware);
 app.use('*', corsMiddleware);
+app.use('/api/*', rateLimitMiddleware);
+app.use('/trpc/*', rateLimitMiddleware);
 
 // Global error handler — consistent JSON error responses
 app.onError((err, c) => {
-  console.error(`[ERROR] ${c.req.method} ${c.req.url}:`, err.message);
+  const errorId = crypto.randomUUID().slice(0, 8);
+  console.error(`[ERROR:${errorId}] ${c.req.method} ${c.req.url}:`, err.message);
 
-  // Zod validation errors return 400
+  // Zod validation errors return 400 — never expose raw details to client
   if (err.message.includes('Validation')) {
-    return c.json({ error: 'Dati non validi', details: err.message }, 400);
+    return c.json({ error: 'Dati non validi', errorId }, 400);
   }
 
-  return c.json({ error: 'Errore interno del server' }, 500);
+  return c.json({ error: 'Errore interno del server', errorId }, 500);
 });
 
 // 404 handler

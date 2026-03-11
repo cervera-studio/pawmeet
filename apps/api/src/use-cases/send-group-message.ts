@@ -12,6 +12,11 @@ type Deps = {
   notificationService: NotificationService;
 };
 
+/** Strip HTML tags to prevent XSS when content is rendered in WebViews or notifications */
+function sanitizeContent(text: string): string {
+  return text.replace(/<[^>]*>/g, '');
+}
+
 export function createSendGroupMessage({
   groupMessageRepo,
   chat,
@@ -29,10 +34,12 @@ export function createSendGroupMessage({
       return fail(new AppError('NOT_PARTICIPANT', 'Non sei partecipante di questo evento', 403));
     }
 
+    const sanitizedContent = sanitizeContent(content);
+
     const message = await groupMessageRepo.create({
       eventId,
       senderId: userId,
-      content,
+      content: sanitizedContent,
       mediaUrl: mediaUrl ?? null,
     });
 

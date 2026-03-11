@@ -18,6 +18,6 @@ export function createGamificationRouter(deps: typeof gamificationDeps) {
 
     listAchievements: protectedProcedure
       .input(listAchievementsSchema)
-      .query(async ({ input }) => unwrapResult(await deps.listAchievements(input.userId))),
+      .query(async ({ ctx }) => unwrapResult(await deps.listAchievements(ctx.userId))),
   });
 }

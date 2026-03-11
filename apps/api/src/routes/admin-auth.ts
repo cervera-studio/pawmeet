@@ -1,6 +1,8 @@
+import { zValidator } from '@hono/zod-validator';
 import { compare } from 'bcryptjs';
 import { Hono } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
+import { z } from 'zod';
 import {
   generateAdminAccessToken,
   generateAdminRefreshToken,
@@ -8,28 +10,30 @@ import {
   verifyAdminAccessToken,
   verifyAdminRefreshToken,
 } from '../lib/jwt.js';
+import { authRateLimitMiddleware } from '../middleware/rate-limit.js';
 import type { AdminUserRepository } from '../ports/admin-user-repository.js';
+
+const adminLoginSchema = z.object({
+  email: z
+    .string()
+    .email()
+    .transform((e) => e.toLowerCase().trim()),
+  password: z.string().min(1),
+});
 
 const REFRESH_COOKIE_NAME = 'admin_refresh_token';
 const REFRESH_COOKIE_MAX_AGE = 8 * 60 * 60; // 8 hours in seconds
 
 export function createAdminAuthRoutes(adminUserRepo: AdminUserRepository) {
   return new Hono()
-    .post('/login', async (c) => {
-      const body = await c.req.json<{ email: string; password: string }>();
+    .use('/login', authRateLimitMiddleware)
+    .post('/login', zValidator('json', adminLoginSchema), async (c) => {
+      const body = c.req.valid('json');
 
-      if (!body.email || !body.password) {
-        return c.json({ error: 'Email and password are required' }, 400);
-      }
+      const admin = await adminUserRepo.findByEmail(body.email);
 
-      const admin = await adminUserRepo.findByEmail(body.email.toLowerCase().trim());
-
-      if (!admin) {
+      if (!admin || !admin.isActive) {
         return c.json({ error: 'Credenziali non valide' }, 401);
-      }
-
-      if (!admin.isActive) {
-        return c.json({ error: 'Account disattivato' }, 403);
       }
 
       const passwordValid = await compare(body.password, admin.passwordHash);

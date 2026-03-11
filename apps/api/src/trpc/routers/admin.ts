@@ -14,8 +14,14 @@ import { protectedProcedure, router } from '../trpc.js';
 function createAdminProcedure(db: NeonHttpDatabase) {
   return protectedProcedure.use(async ({ ctx, next }) => {
     // Check ADMIN_EMAILS env var first (comma-separated list)
-    const adminEmails =
-      process.env.ADMIN_EMAILS?.split(',').map((email: string) => email.trim()) ?? [];
+    const adminEmailsEnv = process.env.ADMIN_EMAILS;
+    if (!adminEmailsEnv) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Admin access not configured',
+      });
+    }
+    const adminEmails = adminEmailsEnv.split(',').map((email: string) => email.trim());
 
     const [user] = await db.select().from(users).where(eq(users.id, ctx.userId));
     if (!user) {

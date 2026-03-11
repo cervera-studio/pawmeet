@@ -16,6 +16,11 @@ type Deps = {
   notificationService: NotificationService;
 };
 
+/** Strip HTML tags to prevent XSS when content is rendered in WebViews or notifications */
+function sanitizeContent(text: string): string {
+  return text.replace(/<[^>]*>/g, '');
+}
+
 export function createSendMessage({ messageRepo, chat, userRepo, notificationService }: Deps) {
   return async (
     userId: string,
@@ -29,11 +34,13 @@ export function createSendMessage({ messageRepo, chat, userRepo, notificationSer
       return fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversazione non trovata', 404));
     }
 
+    const sanitizedContent = sanitizeContent(content);
+
     // Insert message
     const message = await messageRepo.create({
       matchId,
       senderId: userId,
-      content,
+      content: sanitizedContent,
       mediaUrl: mediaUrl ?? null,
     });
 

@@ -3,6 +3,33 @@ import { logger } from '@dogwalk/utils';
 import type { WebSocket } from 'ws';
 import { getRooms, sendToRoom } from './registry.js';
 
+// ── In-memory rate limiter for WebSocket messages ─────────────────────────────
+const WS_RATE_WINDOW_MS = 60_000;
+const WS_RATE_MAX = 60;
+
+const wsRateBuckets = new Map<string, { count: number; resetAt: number }>();
+
+function isWsRateLimited(userId: string): boolean {
+  const now = Date.now();
+  const bucket = wsRateBuckets.get(userId);
+
+  if (!bucket || now > bucket.resetAt) {
+    wsRateBuckets.set(userId, { count: 1, resetAt: now + WS_RATE_WINDOW_MS });
+    return false;
+  }
+
+  bucket.count++;
+  return bucket.count > WS_RATE_MAX;
+}
+
+// Periodically clean up stale buckets to prevent memory leaks
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, bucket] of wsRateBuckets) {
+    if (now > bucket.resetAt) wsRateBuckets.delete(key);
+  }
+}, WS_RATE_WINDOW_MS);
+
 /** Parse and validate an incoming WebSocket message */
 export function parseWsMessage(data: string): WsMessage | null {
   try {
@@ -24,6 +51,12 @@ export function handleTyping(userId: string, matchId: string, type: WsMessage['t
 
 /** Handle incoming WebSocket messages from an authenticated user */
 export function handleMessage(userId: string, ws: WebSocket, data: string) {
+  // Rate limit WebSocket messages per user
+  if (isWsRateLimited(userId)) {
+    ws.send(JSON.stringify({ type: WS_EVENT.ERROR, payload: { error: 'Rate limited' } }));
+    return;
+  }
+
   const message = parseWsMessage(data);
   if (!message) {
     ws.send(JSON.stringify({ type: WS_EVENT.ERROR, payload: { error: 'Invalid message format' } }));

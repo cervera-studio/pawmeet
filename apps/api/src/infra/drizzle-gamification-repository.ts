@@ -21,6 +21,7 @@ import type {
 import { and, desc, eq, gte, inArray, lte, or, sql, sum } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
+import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleGamificationRepository implements GamificationRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -37,7 +38,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
       .insert(xpTransactions)
       .values({ userId, action, points, metadata: metadata ?? null })
       .returning();
-    return rows[0] as XpTransaction;
+    return firstRow<XpTransaction>(rows);
   }
 
   async getTotalXp(userId: string): Promise<number> {
@@ -90,7 +91,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
       .select()
       .from(challenges)
       .where(and(lte(challenges.startsAt, now), gte(challenges.endsAt, now)));
-    return rows as Challenge[];
+    return rowsAs<Challenge>(rows);
   }
 
   async findUserChallenges(userId: string, challengeIds: string[]): Promise<UserChallenge[]> {
@@ -101,7 +102,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
       .where(
         and(eq(userChallenges.userId, userId), inArray(userChallenges.challengeId, challengeIds)),
       );
-    return rows as UserChallenge[];
+    return rowsAs<UserChallenge>(rows);
   }
 
   async upsertUserChallenge(
@@ -118,7 +119,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
         set: { progress, completedAt },
       })
       .returning();
-    return rows[0] as UserChallenge;
+    return firstRow<UserChallenge>(rows);
   }
 
   async findActiveChallengesByType(type: ChallengeType, now: Date): Promise<Challenge[]> {
@@ -128,14 +129,14 @@ export class DrizzleGamificationRepository implements GamificationRepository {
       .where(
         and(eq(challenges.type, type), lte(challenges.startsAt, now), gte(challenges.endsAt, now)),
       );
-    return rows as Challenge[];
+    return rowsAs<Challenge>(rows);
   }
 
   // ── Achievements ──────────────────────────────────────────────────────────
 
   async findAchievementsByUser(userId: string): Promise<Achievement[]> {
     const rows = await this.db.select().from(achievements).where(eq(achievements.userId, userId));
-    return rows as Achievement[];
+    return rowsAs<Achievement>(rows);
   }
 
   async hasAchievement(userId: string, type: AchievementType): Promise<boolean> {
@@ -148,7 +149,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
 
   async unlockAchievement(userId: string, type: AchievementType): Promise<Achievement> {
     const rows = await this.db.insert(achievements).values({ userId, type }).returning();
-    return rows[0] as Achievement;
+    return firstRow<Achievement>(rows);
   }
 
   // ── Stats ─────────────────────────────────────────────────────────────────

@@ -7,6 +7,7 @@ import type {
   MessageRepository,
   PaginatedMessages,
 } from '../ports/message-repository.js';
+import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleMessageRepository implements MessageRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -120,7 +121,7 @@ export class DrizzleMessageRepository implements MessageRepository {
     const nextCursor = hasMore ? (messageList[messageList.length - 1]?.id ?? null) : null;
 
     return {
-      messages: messageList as ChatMessage[],
+      messages: rowsAs<ChatMessage>(messageList),
       nextCursor,
       hasMore,
     };
@@ -141,7 +142,7 @@ export class DrizzleMessageRepository implements MessageRepository {
         mediaUrl: input.mediaUrl ?? null,
       })
       .returning();
-    return rows[0] as ChatMessage;
+    return firstRow<ChatMessage>(rows);
   }
 
   async markAsRead(matchId: string, readerId: string): Promise<void> {

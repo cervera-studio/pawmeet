@@ -7,18 +7,19 @@ import type {
   GroupEventRepository,
   NearbyEventsQuery,
 } from '../ports/group-event-repository.js';
+import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleGroupEventRepository implements GroupEventRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
   async create(input: CreateGroupEventInput): Promise<GroupEvent> {
     const rows = await this.db.insert(groupEvents).values(input).returning();
-    return rows[0] as GroupEvent;
+    return firstRow<GroupEvent>(rows);
   }
 
   async findById(id: string): Promise<GroupEvent | null> {
-    const [event] = await this.db.select().from(groupEvents).where(eq(groupEvents.id, id));
-    return (event as GroupEvent | undefined) ?? null;
+    const rows = await this.db.select().from(groupEvents).where(eq(groupEvents.id, id));
+    return firstRowOrNull<GroupEvent>(rows);
   }
 
   async findByIdWithParticipants(id: string): Promise<GroupEventWithParticipants | null> {
@@ -34,7 +35,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
 
     return {
       ...event,
-      participants: participants as GroupEventParticipant[],
+      participants: rowsAs<GroupEventParticipant>(participants),
       participantCount: participants.filter((p) => p.status === 'accepted').length,
     };
   }
@@ -84,7 +85,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .orderBy(sql`${distanceExpr}`)
       .limit(limit);
 
-    return rows as (GroupEvent & { distanceKm: number })[];
+    return rowsAs<GroupEvent & { distanceKm: number }>(rows);
   }
 
   async findByCreator(userId: string): Promise<GroupEvent[]> {
@@ -93,7 +94,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .from(groupEvents)
       .where(eq(groupEvents.createdBy, userId))
       .orderBy(desc(groupEvents.scheduledAt));
-    return rows as GroupEvent[];
+    return rowsAs<GroupEvent>(rows);
   }
 
   async findByParticipant(userId: string): Promise<GroupEvent[]> {
@@ -108,7 +109,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
         ),
       )
       .orderBy(desc(groupEvents.scheduledAt));
-    return rows.map((r) => r.event) as GroupEvent[];
+    return rowsAs<GroupEvent>(rows.map((r) => r.event));
   }
 
   async update(id: string, data: Partial<CreateGroupEventInput>): Promise<GroupEvent> {
@@ -117,7 +118,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .set({ ...data, updatedAt: new Date() })
       .where(eq(groupEvents.id, id))
       .returning();
-    return rows[0] as GroupEvent;
+    return firstRow<GroupEvent>(rows);
   }
 
   async updateStatus(id: string, status: string): Promise<void> {
@@ -133,7 +134,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .select()
       .from(groupEvents)
       .where(and(eq(groupEvents.status, 'scheduled'), lte(groupEvents.scheduledAt, now)));
-    return rows as GroupEvent[];
+    return rowsAs<GroupEvent>(rows);
   }
 
   async findInProgressPastEnd(): Promise<GroupEvent[]> {
@@ -147,7 +148,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
           sql`${groupEvents.scheduledAt} + (${groupEvents.durationMin} || ' minutes')::interval <= ${now}`,
         ),
       );
-    return rows as GroupEvent[];
+    return rowsAs<GroupEvent>(rows);
   }
 
   // Participants
@@ -169,17 +170,17 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
         isOrganizer: input.isOrganizer ?? false,
       })
       .returning();
-    return rows[0] as GroupEventParticipant;
+    return firstRow<GroupEventParticipant>(rows);
   }
 
   async findParticipant(eventId: string, userId: string): Promise<GroupEventParticipant | null> {
-    const [participant] = await this.db
+    const rows = await this.db
       .select()
       .from(groupEventParticipants)
       .where(
         and(eq(groupEventParticipants.eventId, eventId), eq(groupEventParticipants.userId, userId)),
       );
-    return (participant as GroupEventParticipant | undefined) ?? null;
+    return firstRowOrNull<GroupEventParticipant>(rows);
   }
 
   async removeParticipant(eventId: string, userId: string): Promise<void> {

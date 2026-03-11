@@ -6,6 +6,7 @@ import type {
   TokenRepository,
   VerificationTokenRecord,
 } from '../ports/token-repository.js';
+import { firstRow, firstRowOrNull } from './drizzle-helpers.js';
 
 export class DrizzleTokenRepository implements TokenRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -18,15 +19,15 @@ export class DrizzleTokenRepository implements TokenRepository {
     expiresAt: Date;
   }): Promise<RefreshTokenRecord> {
     const rows = await this.db.insert(refreshTokens).values(input).returning();
-    return rows[0] as RefreshTokenRecord;
+    return firstRow<RefreshTokenRecord>(rows);
   }
 
   async findRefreshToken(tokenHash: string): Promise<RefreshTokenRecord | null> {
-    const [token] = await this.db
+    const rows = await this.db
       .select()
       .from(refreshTokens)
       .where(eq(refreshTokens.tokenHash, tokenHash));
-    return (token as RefreshTokenRecord | undefined) ?? null;
+    return firstRowOrNull<RefreshTokenRecord>(rows);
   }
 
   async revokeRefreshToken(id: string): Promise<void> {
@@ -56,14 +57,14 @@ export class DrizzleTokenRepository implements TokenRepository {
     expiresAt: Date;
   }): Promise<VerificationTokenRecord> {
     const rows = await this.db.insert(verificationTokens).values(input).returning();
-    return rows[0] as VerificationTokenRecord;
+    return firstRow<VerificationTokenRecord>(rows);
   }
 
   async findValidVerificationToken(
     tokenHash: string,
     type: TokenType,
   ): Promise<VerificationTokenRecord | null> {
-    const [token] = await this.db
+    const rows = await this.db
       .select()
       .from(verificationTokens)
       .where(
@@ -74,7 +75,7 @@ export class DrizzleTokenRepository implements TokenRepository {
           isNull(verificationTokens.usedAt),
         ),
       );
-    return (token as VerificationTokenRecord | undefined) ?? null;
+    return firstRowOrNull<VerificationTokenRecord>(rows);
   }
 
   async markVerificationTokenUsed(id: string): Promise<void> {

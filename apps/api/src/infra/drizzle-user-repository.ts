@@ -8,24 +8,25 @@ import type {
   NearbyUser,
   UserRepository,
 } from '../ports/user-repository.js';
+import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleUserRepository implements UserRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
   async findByEmail(email: string): Promise<User | null> {
-    const [user] = await this.db.select().from(users).where(eq(users.email, email));
-    return (user as User | undefined) ?? null;
+    const rows = await this.db.select().from(users).where(eq(users.email, email));
+    return firstRowOrNull<User>(rows);
   }
 
   async findById(id: string): Promise<User | null> {
-    const [user] = await this.db.select().from(users).where(eq(users.id, id));
-    return (user as User | undefined) ?? null;
+    const rows = await this.db.select().from(users).where(eq(users.id, id));
+    return firstRowOrNull<User>(rows);
   }
 
   async findByIds(ids: string[]): Promise<User[]> {
     if (ids.length === 0) return [];
     const rows = await this.db.select().from(users).where(inArray(users.id, ids));
-    return rows as User[];
+    return rowsAs<User>(rows);
   }
 
   async create(input: CreateUserInput): Promise<User> {
@@ -38,7 +39,7 @@ export class DrizzleUserRepository implements UserRepository {
         authProvider: input.authProvider ?? 'email',
       })
       .returning();
-    return rows[0] as User;
+    return firstRow<User>(rows);
   }
 
   async update(
@@ -60,7 +61,7 @@ export class DrizzleUserRepository implements UserRepository {
     >,
   ): Promise<User> {
     const rows = await this.db.update(users).set(data).where(eq(users.id, id)).returning();
-    return rows[0] as User;
+    return firstRow<User>(rows);
   }
 
   async updatePushToken(userId: string, token: string | null): Promise<void> {
@@ -147,8 +148,8 @@ export class DrizzleUserRepository implements UserRepository {
       displayName: r.displayName,
       avatarUrl: r.avatarUrl,
       distanceKm: r.distanceKm,
-      latitude: r.latitude!,
-      longitude: r.longitude!,
+      latitude: r.latitude ?? 0,
+      longitude: r.longitude ?? 0,
       dogs: dogsByOwner.get(r.id) ?? [],
     }));
   }

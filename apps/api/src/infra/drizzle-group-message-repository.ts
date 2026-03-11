@@ -7,6 +7,7 @@ import type {
 import { and, desc, eq, lt, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
+import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleGroupMessageRepository implements GroupMessageRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -26,7 +27,7 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
         mediaUrl: input.mediaUrl ?? null,
       })
       .returning();
-    return rows[0] as GroupChatMessage;
+    return firstRow<GroupChatMessage>(rows);
   }
 
   async findByEvent(
@@ -59,7 +60,7 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
     const nextCursor = hasMore ? (messageList[messageList.length - 1]?.id ?? null) : null;
 
     return {
-      messages: messageList as GroupChatMessage[],
+      messages: rowsAs<GroupChatMessage>(messageList),
       nextCursor,
       hasMore,
     };

@@ -3,23 +3,24 @@ import type { Walk, WalkStatus } from '@dogwalk/types';
 import { and, avg, count, eq, gt, inArray, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { WalkRepository } from '../ports/walk-repository.js';
+import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleWalkRepository implements WalkRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
   async create(walk: Omit<Walk, 'id' | 'createdAt' | 'updatedAt'>): Promise<Walk> {
     const rows = await this.db.insert(walks).values(walk).returning();
-    return rows[0] as Walk;
+    return firstRow<Walk>(rows);
   }
 
   async findById(id: string): Promise<Walk | null> {
-    const [walk] = await this.db.select().from(walks).where(eq(walks.id, id));
-    return (walk as Walk | undefined) ?? null;
+    const rows = await this.db.select().from(walks).where(eq(walks.id, id));
+    return firstRowOrNull<Walk>(rows);
   }
 
   async findByMatchId(matchId: string): Promise<Walk[]> {
     const rows = await this.db.select().from(walks).where(eq(walks.matchId, matchId));
-    return rows as Walk[];
+    return rowsAs<Walk>(rows);
   }
 
   async findUpcoming(userId: string): Promise<Walk[]> {
@@ -64,7 +65,7 @@ export class DrizzleWalkRepository implements WalkRepository {
       );
 
     // Sort by scheduledAt ascending
-    return (rows as Walk[]).sort(
+    return rowsAs<Walk>(rows).sort(
       (a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime(),
     );
   }
@@ -75,7 +76,7 @@ export class DrizzleWalkRepository implements WalkRepository {
       .set({ status, updatedAt: new Date() })
       .where(eq(walks.id, id))
       .returning();
-    return rows[0] as Walk;
+    return firstRow<Walk>(rows);
   }
 
   async delete(id: string): Promise<void> {

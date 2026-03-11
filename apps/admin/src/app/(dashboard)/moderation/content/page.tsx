@@ -64,7 +64,9 @@ export default function ContentModerationPage() {
                     Segnalante: <span className="font-mono text-xs">{report.reporterId}</span>
                   </p>
                   {report.description ? (
-                    <p className="text-sm text-neutral-500 italic">&quot;{report.description}&quot;</p>
+                    <p className="text-sm text-neutral-500 italic">
+                      &quot;{report.description}&quot;
+                    </p>
                   ) : null}
                   <p className="text-xs text-neutral-400">
                     {new Date(report.createdAt).toLocaleDateString('it-IT', {

@@ -3,19 +3,20 @@ import type { DogPhoto, DogProfile } from '@dogwalk/types';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CreateDogInput, DogRepository } from '../ports/dog-repository.js';
+import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleDogRepository implements DogRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
   async findById(id: string): Promise<DogProfile | null> {
-    const [dog] = await this.db.select().from(dogProfiles).where(eq(dogProfiles.id, id));
-    return (dog as DogProfile | undefined) ?? null;
+    const rows = await this.db.select().from(dogProfiles).where(eq(dogProfiles.id, id));
+    return firstRowOrNull<DogProfile>(rows);
   }
 
   async findByIds(ids: string[]): Promise<DogProfile[]> {
     if (ids.length === 0) return [];
     const rows = await this.db.select().from(dogProfiles).where(inArray(dogProfiles.id, ids));
-    return rows as DogProfile[];
+    return rowsAs<DogProfile>(rows);
   }
 
   async findByOwner(ownerId: string, activeOnly = true): Promise<DogProfile[]> {
@@ -27,15 +28,15 @@ export class DrizzleDogRepository implements DogRepository {
       .select()
       .from(dogProfiles)
       .where(and(...conditions));
-    return rows as DogProfile[];
+    return rowsAs<DogProfile>(rows);
   }
 
   async findByIdAndOwner(id: string, ownerId: string): Promise<DogProfile | null> {
-    const [dog] = await this.db
+    const rows = await this.db
       .select()
       .from(dogProfiles)
       .where(and(eq(dogProfiles.id, id), eq(dogProfiles.ownerId, ownerId)));
-    return (dog as DogProfile | undefined) ?? null;
+    return firstRowOrNull<DogProfile>(rows);
   }
 
   async countByOwner(ownerId: string): Promise<number> {
@@ -48,7 +49,7 @@ export class DrizzleDogRepository implements DogRepository {
 
   async create(input: CreateDogInput): Promise<DogProfile> {
     const rows = await this.db.insert(dogProfiles).values(input).returning();
-    return rows[0] as DogProfile;
+    return firstRow<DogProfile>(rows);
   }
 
   async update(id: string, data: Partial<CreateDogInput>): Promise<DogProfile> {
@@ -57,7 +58,7 @@ export class DrizzleDogRepository implements DogRepository {
       .set({ ...data, updatedAt: new Date() })
       .where(eq(dogProfiles.id, id))
       .returning();
-    return rows[0] as DogProfile;
+    return firstRow<DogProfile>(rows);
   }
 
   async softDelete(id: string): Promise<void> {
@@ -75,7 +76,7 @@ export class DrizzleDogRepository implements DogRepository {
       .from(dogPhotos)
       .where(eq(dogPhotos.dogId, dogId))
       .orderBy(asc(dogPhotos.position));
-    return rows as DogPhoto[];
+    return rowsAs<DogPhoto>(rows);
   }
 
   async countPhotos(dogId: string): Promise<number> {
@@ -93,15 +94,15 @@ export class DrizzleDogRepository implements DogRepository {
     isPrimary: boolean;
   }): Promise<DogPhoto> {
     const rows = await this.db.insert(dogPhotos).values(input).returning();
-    return rows[0] as DogPhoto;
+    return firstRow<DogPhoto>(rows);
   }
 
   async findPhoto(photoId: string, dogId: string): Promise<DogPhoto | null> {
-    const [photo] = await this.db
+    const rows = await this.db
       .select()
       .from(dogPhotos)
       .where(and(eq(dogPhotos.id, photoId), eq(dogPhotos.dogId, dogId)));
-    return (photo as DogPhoto | undefined) ?? null;
+    return firstRowOrNull<DogPhoto>(rows);
   }
 
   async deletePhoto(photoId: string): Promise<void> {
@@ -120,8 +121,8 @@ export class DrizzleDogRepository implements DogRepository {
   }
 
   async findPhotoById(photoId: string): Promise<DogPhoto | null> {
-    const [photo] = await this.db.select().from(dogPhotos).where(eq(dogPhotos.id, photoId));
-    return (photo as DogPhoto | undefined) ?? null;
+    const rows = await this.db.select().from(dogPhotos).where(eq(dogPhotos.id, photoId));
+    return firstRowOrNull<DogPhoto>(rows);
   }
 
   async updatePhotoModerationStatus(

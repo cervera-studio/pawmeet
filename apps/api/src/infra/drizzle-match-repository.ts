@@ -3,6 +3,7 @@ import type { DogProfile, Match, Swipe } from '@dogwalk/types';
 import { and, eq, gte, ne, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CandidateDog, MatchRepository } from '../ports/match-repository.js';
+import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleMatchRepository implements MatchRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -22,12 +23,12 @@ export class DrizzleMatchRepository implements MatchRepository {
           ),
         ),
       );
-    return rows as Match[];
+    return rowsAs<Match>(rows);
   }
 
   async findById(id: string): Promise<Match | null> {
-    const [match] = await this.db.select().from(matches).where(eq(matches.id, id));
-    return (match as Match | undefined) ?? null;
+    const rows = await this.db.select().from(matches).where(eq(matches.id, id));
+    return firstRowOrNull<Match>(rows);
   }
 
   async create(input: {
@@ -36,7 +37,7 @@ export class DrizzleMatchRepository implements MatchRepository {
     compatibilityScore: number;
   }): Promise<Match> {
     const rows = await this.db.insert(matches).values(input).returning();
-    return rows[0] as Match;
+    return firstRow<Match>(rows);
   }
 
   async softDelete(id: string): Promise<void> {
@@ -62,15 +63,15 @@ export class DrizzleMatchRepository implements MatchRepository {
   }
 
   async findSwipe(swiperDogId: string, swipedDogId: string): Promise<Swipe | null> {
-    const [swipe] = await this.db
+    const rows = await this.db
       .select()
       .from(swipes)
       .where(and(eq(swipes.swiperDogId, swiperDogId), eq(swipes.swipedDogId, swipedDogId)));
-    return (swipe as Swipe | undefined) ?? null;
+    return firstRowOrNull<Swipe>(rows);
   }
 
   async findReciprocalLike(swiperDogId: string, swipedDogId: string): Promise<Swipe | null> {
-    const [swipe] = await this.db
+    const rows = await this.db
       .select()
       .from(swipes)
       .where(
@@ -80,7 +81,7 @@ export class DrizzleMatchRepository implements MatchRepository {
           eq(swipes.direction, 'like'),
         ),
       );
-    return (swipe as Swipe | undefined) ?? null;
+    return firstRowOrNull<Swipe>(rows);
   }
 
   async createSwipe(input: {
@@ -89,7 +90,7 @@ export class DrizzleMatchRepository implements MatchRepository {
     direction: 'like' | 'pass';
   }): Promise<Swipe> {
     const rows = await this.db.insert(swipes).values(input).returning();
-    return rows[0] as Swipe;
+    return firstRow<Swipe>(rows);
   }
 
   // Discovery

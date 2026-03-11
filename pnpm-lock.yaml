@@ -140,13 +140,13 @@ importers:
         version: link:../../packages/validation
       '@hono/node-server':
         specifier: ^1.19.0
-        version: 1.19.11(hono@4.12.5)
+        version: 1.19.11(hono@4.12.7)
       '@hono/trpc-server':
         specifier: ^0.4.2
-        version: 0.4.2(@trpc/server@11.12.0(typescript@5.9.3))(hono@4.12.5)
+        version: 0.4.2(@trpc/server@11.12.0(typescript@5.9.3))(hono@4.12.7)
       '@hono/zod-validator':
         specifier: ^0.7.0
-        version: 0.7.6(hono@4.12.5)(zod@4.3.6)
+        version: 0.7.6(hono@4.12.7)(zod@4.3.6)
       '@neondatabase/serverless':
         specifier: ^1.0.0
         version: 1.0.2
@@ -178,8 +178,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       hono:
-        specifier: ^4.12.0
-        version: 4.12.5
+        specifier: ^4.12.7
+        version: 4.12.7
       jose:
         specifier: ^6.2.0
         version: 6.2.1
@@ -5317,8 +5317,8 @@ packages:
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
-  hono@4.12.5:
-    resolution: {integrity: sha512-3qq+FUBtlTHhtYxbxheZgY8NIFnkkC/MR8u5TTsr7YZ3wixryQ3cCwn3iZbg8p8B88iDBBAYSfZDS75t8MN7Vg==}
+  hono@4.12.7:
+    resolution: {integrity: sha512-jq9l1DM0zVIvsm3lv9Nw9nlJnMNPOcAtsbsgiUhWcFzPE99Gvo6yRTlszSLLYacMeQ6quHD6hMfId8crVHvexw==}
     engines: {node: '>=16.9.0'}
 
   hosted-git-info@7.0.2:
@@ -9885,18 +9885,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@hono/node-server@1.19.11(hono@4.12.5)':
+  '@hono/node-server@1.19.11(hono@4.12.7)':
     dependencies:
-      hono: 4.12.5
+      hono: 4.12.7
 
-  '@hono/trpc-server@0.4.2(@trpc/server@11.12.0(typescript@5.9.3))(hono@4.12.5)':
+  '@hono/trpc-server@0.4.2(@trpc/server@11.12.0(typescript@5.9.3))(hono@4.12.7)':
     dependencies:
       '@trpc/server': 11.12.0(typescript@5.9.3)
-      hono: 4.12.5
+      hono: 4.12.7
 
-  '@hono/zod-validator@0.7.6(hono@4.12.5)(zod@4.3.6)':
+  '@hono/zod-validator@0.7.6(hono@4.12.7)(zod@4.3.6)':
     dependencies:
-      hono: 4.12.5
+      hono: 4.12.7
       zod: 4.3.6
 
   '@hookform/resolvers@3.10.0(react-hook-form@7.71.2(react@19.2.4))':
@@ -13560,7 +13560,7 @@ snapshots:
     dependencies:
       react-is: 16.13.1
 
-  hono@4.12.5: {}
+  hono@4.12.7: {}
 
   hosted-git-info@7.0.2:
     dependencies:

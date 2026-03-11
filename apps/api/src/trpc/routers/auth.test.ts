@@ -345,7 +345,11 @@ describe('auth router', () => {
       const caller = createCaller(deps);
 
       await expect(
-        caller.auth.resetPassword({ email: 'test@example.com', code: '000000', password: 'NewStr0ng!' }),
+        caller.auth.resetPassword({
+          email: 'test@example.com',
+          code: '000000',
+          password: 'NewStr0ng!',
+        }),
       ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
     });
 

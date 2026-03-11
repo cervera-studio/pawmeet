@@ -2,7 +2,7 @@ import { TOKEN_TYPE } from '@dogwalk/db';
 import type { Result } from '@dogwalk/types';
 import { succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
-import { PASSWORD_RESET_OTP_EXPIRY_MS, generateOtp } from '../lib/email.js';
+import { generateOtp, PASSWORD_RESET_OTP_EXPIRY_MS } from '../lib/email.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';

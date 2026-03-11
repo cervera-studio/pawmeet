@@ -1,6 +1,11 @@
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import { buildAuthService, buildTokenRepo, buildUser, buildUserRepo } from '../test-utils/builders.js';
+import {
+  buildAuthService,
+  buildTokenRepo,
+  buildUser,
+  buildUserRepo,
+} from '../test-utils/builders.js';
 import { createVerifyEmailOtp } from './verify-email-otp.js';
 
 function buildDeps(

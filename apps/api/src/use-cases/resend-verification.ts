@@ -26,7 +26,7 @@ export function createResendVerification(deps: Deps) {
 
     // Always return success to avoid email enumeration
     if (!user || user.emailVerified) {
-      return succeed({ message: 'Se l\'email esiste, riceverai un codice di verifica' });
+      return succeed({ message: "Se l'email esiste, riceverai un codice di verifica" });
     }
 
     // Revoke any existing verification tokens
@@ -44,6 +44,6 @@ export function createResendVerification(deps: Deps) {
 
     await emailService.sendVerificationOtp(email, otp);
 
-    return succeed({ message: 'Se l\'email esiste, riceverai un codice di verifica' });
+    return succeed({ message: "Se l'email esiste, riceverai un codice di verifica" });
   };
 }

@@ -115,10 +115,10 @@ import { createRecordActivityWindow } from './use-cases/record-activity-window.j
 import { createRecordMatchInteraction } from './use-cases/record-match-interaction.js';
 import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
-import { createResendVerification } from './use-cases/resend-verification.js';
 import { createRegisterUser } from './use-cases/register-user.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createReportContent } from './use-cases/report-content.js';
+import { createResendVerification } from './use-cases/resend-verification.js';
 import { createResetPassword } from './use-cases/reset-password.js';
 import { createRespondToWalk } from './use-cases/respond-to-walk.js';
 import { createReviewContentReport } from './use-cases/review-content-report.js';

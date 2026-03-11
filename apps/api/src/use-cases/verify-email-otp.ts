@@ -16,10 +16,7 @@ interface Deps {
 }
 
 export function createVerifyEmailOtp(deps: Deps) {
-  return async (input: {
-    email: string;
-    code: string;
-  }): Promise<Result<VerifyEmailOtpOutput>> => {
+  return async (input: { email: string; code: string }): Promise<Result<VerifyEmailOtpOutput>> => {
     const { userRepo, tokenRepo, authService } = deps;
 
     const user = await userRepo.findByEmail(input.email);

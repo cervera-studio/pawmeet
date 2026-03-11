@@ -53,8 +53,6 @@ export function createAuthRouter(deps: typeof authDeps) {
 
     resendVerification: rateLimitedPublicProcedure
       .input(resendVerificationSchema)
-      .mutation(async ({ input }) =>
-        unwrapResult(await deps.resendVerification(input.email)),
-      ),
+      .mutation(async ({ input }) => unwrapResult(await deps.resendVerification(input.email))),
   });
 }

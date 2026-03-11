@@ -1,62 +1,62 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
-
-interface PendingPhoto {
-  id: string;
-  userId: string;
-  userName: string;
-  dogId: string | null;
-  dogName: string | null;
-  imageUrl: string;
-  type: 'profile' | 'dog';
-  uploadedAt: string;
-}
+import { type PendingPhoto, photoModerationRepository } from '@/repositories';
 
 export function usePhotoModerationViewModel() {
-  const queryClient = useQueryClient();
+  const [photos, setPhotos] = useState<PendingPhoto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: photos = [], isLoading } = useQuery({
-    queryKey: ['moderation-photos'],
-    queryFn: () => api.get<PendingPhoto[]>('/admin/moderation/photos'),
-  });
+  const fetchPhotos = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await photoModerationRepository.listPending();
+      setPhotos(data);
+    } catch (error) {
+      console.error('[PhotoModeration] Failed to fetch photos:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const approveMutation = useMutation({
-    mutationFn: (photoId: string) => api.post(`/admin/moderation/photos/${photoId}/approve`),
-    onSuccess: (_data, photoId) => {
-      queryClient.setQueryData<PendingPhoto[]>(['moderation-photos'], (old) =>
-        old?.filter((p) => p.id !== photoId),
-      );
+  useEffect(() => {
+    void fetchPhotos();
+  }, [fetchPhotos]);
+
+  async function handleApprove(photoId: string) {
+    try {
+      await photoModerationRepository.approve(photoId);
+      setPhotos((prev) => prev.filter((p) => p.id !== photoId));
       toast.success('Foto approvata');
-    },
-    onError: () => toast.error("Errore durante l'approvazione"),
-  });
+    } catch {
+      toast.error("Errore durante l'approvazione");
+    }
+  }
 
-  const rejectMutation = useMutation({
-    mutationFn: (photoId: string) => api.post(`/admin/moderation/photos/${photoId}/reject`),
-    onSuccess: (_data, photoId) => {
-      queryClient.setQueryData<PendingPhoto[]>(['moderation-photos'], (old) =>
-        old?.filter((p) => p.id !== photoId),
-      );
+  async function handleReject(photoId: string) {
+    try {
+      await photoModerationRepository.reject(photoId);
+      setPhotos((prev) => prev.filter((p) => p.id !== photoId));
       toast.success('Foto rifiutata');
-    },
-    onError: () => toast.error('Errore durante il rifiuto'),
-  });
+    } catch {
+      toast.error('Errore durante il rifiuto');
+    }
+  }
 
-  const approveAllMutation = useMutation({
-    mutationFn: () => api.post('/admin/moderation/photos/approve-all'),
-    onSuccess: () => {
-      queryClient.setQueryData<PendingPhoto[]>(['moderation-photos'], []);
+  async function handleApproveAll() {
+    try {
+      await photoModerationRepository.approveAll();
+      setPhotos([]);
       toast.success('Tutte le foto approvate');
-    },
-    onError: () => toast.error("Errore durante l'approvazione"),
-  });
+    } catch {
+      toast.error("Errore durante l'approvazione");
+    }
+  }
 
   return {
     photos,
     isLoading,
-    approveMutation,
-    rejectMutation,
-    approveAllMutation,
+    handleApprove,
+    handleReject,
+    handleApproveAll,
   };
 }

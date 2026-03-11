@@ -1,50 +1,64 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { trpc } from '@/lib/trpc';
+import { settingsRepository } from '@/repositories';
 
 export function useSettingsViewModel() {
-  const { data: settings, isLoading } = trpc.admin.getSettings.useQuery();
-  const utils = trpc.useUtils();
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [appName, setAppName] = useState('');
   const [supportEmail, setSupportEmail] = useState('');
   const [photoConfidence, setPhotoConfidence] = useState(95);
   const [maxReports, setMaxReports] = useState(5);
 
-  // Sync form state with fetched data
-  useEffect(() => {
-    if (settings) {
+  const fetchSettings = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const settings = await settingsRepository.get();
       setAppName(settings.appName);
       setSupportEmail(settings.supportEmail);
       setPhotoConfidence(settings.photoConfidenceThreshold);
       setMaxReports(settings.maxReportsBeforeSuspension);
+    } catch (error) {
+      console.error('[Settings] Failed to fetch settings:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [settings]);
+  }, []);
 
-  const updateMutation = trpc.admin.updateSettings.useMutation({
-    onSuccess: () => {
-      utils.admin.getSettings.invalidate();
+  useEffect(() => {
+    void fetchSettings();
+  }, [fetchSettings]);
+
+  async function handleSaveGeneral() {
+    setIsSaving(true);
+    try {
+      await settingsRepository.update({ appName, supportEmail });
       toast.success('Impostazioni salvate');
-    },
-    onError: () => toast.error('Errore durante il salvataggio'),
-  });
-
-  function handleSaveGeneral() {
-    updateMutation.mutate({ appName, supportEmail });
+    } catch {
+      toast.error('Errore durante il salvataggio');
+    } finally {
+      setIsSaving(false);
+    }
   }
 
-  function handleSaveModeration() {
-    updateMutation.mutate({
-      photoConfidenceThreshold: photoConfidence,
-      maxReportsBeforeSuspension: maxReports,
-    });
+  async function handleSaveModeration() {
+    setIsSaving(true);
+    try {
+      await settingsRepository.update({
+        photoConfidenceThreshold: photoConfidence,
+        maxReportsBeforeSuspension: maxReports,
+      });
+      toast.success('Impostazioni salvate');
+    } catch {
+      toast.error('Errore durante il salvataggio');
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   function handleClearCache() {
     toast.info('Funzionalita non ancora implementata');
   }
-
-  const isSaving = updateMutation.isPending;
 
   return {
     isLoading,

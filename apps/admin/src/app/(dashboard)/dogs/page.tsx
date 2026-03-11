@@ -93,7 +93,7 @@ export default function DogsPage() {
         columns={columns}
         data={(vm.data?.data as DogRow[]) ?? []}
         total={vm.data?.total ?? 0}
-        totalPages={vm.data?.totalPages ?? 1}
+        totalPages={vm.data ? Math.ceil(vm.data.total / vm.pagination.pageSize) : 1}
         isLoading={vm.isLoading}
         pagination={vm.pagination}
         onPaginationChange={vm.setPagination}

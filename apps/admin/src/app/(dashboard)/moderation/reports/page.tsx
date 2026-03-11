@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
 import { REPORT_STATUS_CONFIG, StatusBadge } from '@/components/StatusBadge';
@@ -11,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { trpc } from '@/lib/trpc';
+import { type ResolveAction, reportRepository } from '@/repositories';
 import { STATUS_TABS, useReportsViewModel } from './page.view-model';
 
 interface ReportRow {
@@ -38,22 +39,23 @@ const REASON_LABEL: Record<string, string> = {
   other: 'Altro',
 };
 
-function ReportActions({ reportId, status }: { reportId: string; status: string }) {
-  const utils = trpc.useUtils();
+const ACTION_LABELS: Record<string, string> = {
+  dismiss: 'Segnalazione archiviata',
+  warn: 'Avvertimento inviato',
+  suspend: 'Utente sospeso',
+  ban: 'Utente bannato',
+};
 
-  const resolveMutation = trpc.admin.resolveReport.useMutation({
-    onSuccess: (_data, variables) => {
-      utils.admin.listReports.invalidate();
-      const labels: Record<string, string> = {
-        dismiss: 'Segnalazione archiviata',
-        warn: 'Avvertimento inviato',
-        suspend: 'Utente sospeso',
-        ban: 'Utente bannato',
-      };
-      toast.success(labels[variables.action] ?? 'Azione completata');
-    },
-    onError: () => toast.error("Errore durante l'azione"),
-  });
+function ReportActions({
+  reportId,
+  status,
+  onResolved,
+}: {
+  reportId: string;
+  status: string;
+  onResolved: () => void;
+}) {
+  const [isPending, setIsPending] = useState(false);
 
   if (status !== 'pending') {
     return (
@@ -63,30 +65,29 @@ function ReportActions({ reportId, status }: { reportId: string; status: string 
     );
   }
 
+  async function handleAction(action: ResolveAction) {
+    setIsPending(true);
+    try {
+      await reportRepository.resolve(reportId, action);
+      toast.success(ACTION_LABELS[action] ?? 'Azione completata');
+      onResolved();
+    } catch {
+      toast.error("Errore durante l'azione");
+    } finally {
+      setIsPending(false);
+    }
+  }
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        {resolveMutation.isPending ? 'Attendere...' : 'Gestisci'}
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger>{isPending ? 'Attendere...' : 'Gestisci'}</DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem
-          onClick={() => resolveMutation.mutate({ id: reportId, action: 'dismiss' })}
-        >
-          Archivia
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => resolveMutation.mutate({ id: reportId, action: 'warn' })}>
-          Avverti utente
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => resolveMutation.mutate({ id: reportId, action: 'suspend' })}
-          className="text-orange-600"
-        >
+        <DropdownMenuItem onClick={() => handleAction('dismiss')}>Archivia</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleAction('warn')}>Avverti utente</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleAction('suspend')} className="text-orange-600">
           Sospendi utente
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => resolveMutation.mutate({ id: reportId, action: 'ban' })}
-          className="text-red-600"
-        >
+        <DropdownMenuItem onClick={() => handleAction('ban')} className="text-red-600">
           Banna utente
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -94,76 +95,78 @@ function ReportActions({ reportId, status }: { reportId: string; status: string 
   );
 }
 
-const columns: ColumnDef<ReportRow>[] = [
-  {
-    accessorKey: 'reporterName',
-    header: 'Segnalante',
-    cell: ({ row }) => (
-      <a
-        href={`/users/${row.original.reporterId}`}
-        className="text-sm font-medium hover:text-primary-600"
-      >
-        {row.original.reporterName}
-      </a>
-    ),
-  },
-  {
-    accessorKey: 'reportedName',
-    header: 'Segnalato',
-    cell: ({ row }) => (
-      <a
-        href={`/users/${row.original.reportedUserId}`}
-        className="text-sm font-medium hover:text-primary-600"
-      >
-        {row.original.reportedName}
-      </a>
-    ),
-  },
-  {
-    accessorKey: 'reason',
-    header: 'Motivo',
-    cell: ({ row }) => {
-      const reason = row.getValue('reason') as string;
-      return REASON_LABEL[reason] ?? reason;
-    },
-  },
-  {
-    accessorKey: 'status',
-    header: 'Stato',
-    cell: ({ row }) => {
-      const status = row.getValue('status') as string;
-      return <StatusBadge status={status} type="report" />;
-    },
-  },
-  {
-    accessorKey: 'resolvedAction',
-    header: 'Azione',
-    cell: ({ row }) => {
-      const action = row.getValue('resolvedAction') as string | null;
-      if (!action) return <span className="text-neutral-400">-</span>;
-      const labels: Record<string, string> = {
-        dismiss: 'Archiviato',
-        warn: 'Avvertimento',
-        suspend: 'Sospeso',
-        ban: 'Bannato',
-      };
-      return <span className="text-sm">{labels[action] ?? action}</span>;
-    },
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Data',
-    cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleDateString('it-IT'),
-  },
-  {
-    id: 'actions',
-    header: '',
-    cell: ({ row }) => <ReportActions reportId={row.original.id} status={row.original.status} />,
-  },
-];
-
 export default function ReportsPage() {
   const vm = useReportsViewModel();
+
+  const totalPages = vm.data ? Math.ceil(vm.data.total / vm.pagination.pageSize) : 1;
+
+  const columns: ColumnDef<ReportRow>[] = [
+    {
+      accessorKey: 'reporterName',
+      header: 'Segnalante',
+      cell: ({ row }) => (
+        <a
+          href={`/users/${row.original.reporterId}`}
+          className="text-sm font-medium hover:text-primary-600"
+        >
+          {row.original.reporterName}
+        </a>
+      ),
+    },
+    {
+      accessorKey: 'reportedName',
+      header: 'Segnalato',
+      cell: ({ row }) => (
+        <a
+          href={`/users/${row.original.reportedUserId}`}
+          className="text-sm font-medium hover:text-primary-600"
+        >
+          {row.original.reportedName}
+        </a>
+      ),
+    },
+    {
+      accessorKey: 'reason',
+      header: 'Motivo',
+      cell: ({ row }) => {
+        const reason = row.getValue('reason') as string;
+        return REASON_LABEL[reason] ?? reason;
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Stato',
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string;
+        return <StatusBadge status={status} type="report" />;
+      },
+    },
+    {
+      accessorKey: 'resolvedAction',
+      header: 'Azione',
+      cell: ({ row }) => {
+        const action = row.getValue('resolvedAction') as string | null;
+        if (!action) return <span className="text-neutral-400">-</span>;
+        return <span className="text-sm">{ACTION_LABELS[action] ?? action}</span>;
+      },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Data',
+      cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleDateString('it-IT'),
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => (
+        <ReportActions
+          reportId={row.original.id}
+          status={row.original.status}
+          onResolved={() => vm.handleStatusFilterChange(vm.statusFilter)}
+        />
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -190,7 +193,7 @@ export default function ReportsPage() {
         columns={columns}
         data={(vm.data?.data as ReportRow[]) ?? []}
         total={vm.data?.total ?? 0}
-        totalPages={vm.data?.totalPages ?? 1}
+        totalPages={totalPages}
         isLoading={vm.isLoading}
         pagination={vm.pagination}
         onPaginationChange={vm.setPagination}

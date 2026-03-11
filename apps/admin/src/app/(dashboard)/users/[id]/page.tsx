@@ -44,31 +44,16 @@ export default function UserDetailPage() {
           <StatusBadge status={vm.user.status} type="user" />
           {vm.isAdmin && vm.user.status === 'active' && (
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => vm.suspendMutation.mutate()}
-                disabled={vm.suspendMutation.isPending}
-              >
+              <Button variant="outline" size="sm" onClick={() => vm.handleSuspend()}>
                 Sospendi
               </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => vm.banMutation.mutate()}
-                disabled={vm.banMutation.isPending}
-              >
+              <Button variant="destructive" size="sm" onClick={() => vm.handleBan()}>
                 Banna
               </Button>
             </>
           )}
           {vm.isAdmin && (vm.user.status === 'suspended' || vm.user.status === 'banned') && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => vm.reactivateMutation.mutate()}
-              disabled={vm.reactivateMutation.isPending}
-            >
+            <Button variant="secondary" size="sm" onClick={() => vm.handleReactivate()}>
               Riattiva
             </Button>
           )}

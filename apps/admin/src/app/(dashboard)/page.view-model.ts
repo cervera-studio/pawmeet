@@ -1,7 +1,25 @@
-import { trpc } from '@/lib/trpc';
+import { useCallback, useEffect, useState } from 'react';
+import { type DashboardStats, statsRepository } from '@/repositories';
 
 export function useDashboardViewModel() {
-  const { data: stats, isLoading } = trpc.admin.getStats.useQuery();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchStats = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await statsRepository.getStats();
+      setStats(data);
+    } catch (error) {
+      console.error('[Dashboard] Failed to fetch stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchStats();
+  }, [fetchStats]);
 
   const kpiCards = [
     {

@@ -17,13 +17,8 @@ export default function PhotoModerationPage() {
         </div>
         <div className="flex items-center gap-2">
           {vm.photos.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => vm.approveAllMutation.mutate()}
-              disabled={vm.approveAllMutation.isPending}
-            >
-              {vm.approveAllMutation.isPending ? 'Approvazione...' : 'Approva tutte'}
+            <Button variant="outline" size="sm" onClick={() => vm.handleApproveAll()}>
+              Approva tutte
             </Button>
           )}
         </div>
@@ -83,8 +78,7 @@ export default function PhotoModerationPage() {
                     variant="secondary"
                     size="sm"
                     className="flex-1"
-                    onClick={() => vm.approveMutation.mutate(photo.id)}
-                    disabled={vm.approveMutation.isPending}
+                    onClick={() => vm.handleApprove(photo.id)}
                   >
                     Approva
                   </Button>
@@ -92,8 +86,7 @@ export default function PhotoModerationPage() {
                     variant="destructive"
                     size="sm"
                     className="flex-1"
-                    onClick={() => vm.rejectMutation.mutate(photo.id)}
-                    disabled={vm.rejectMutation.isPending}
+                    onClick={() => vm.handleReject(photo.id)}
                   >
                     Rifiuta
                   </Button>

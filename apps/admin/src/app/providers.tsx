@@ -1,35 +1,25 @@
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
 import type { AdminUser } from '@/lib/auth';
 import { AuthContext, setAccessToken } from '@/lib/auth-store';
-import { getTRPCClientConfig, trpc } from '@/lib/trpc';
+import { authRepository } from '@/repositories';
 
 export function Providers({ children }: { children: ReactNode }) {
+  return <AuthProvider>{children}</AuthProvider>;
+}
+
+function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000,
-            retry: 1,
-          },
-        },
-      }),
-  );
-  const [trpcClient] = useState(() => trpc.createClient(getTRPCClientConfig()));
 
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // On mount, try to refresh the session via HttpOnly refresh cookie
   useEffect(() => {
-    api
-      .post<{ token: string; user: AdminUser }>('/admin/auth/refresh')
+    authRepository
+      .refresh()
       .then((response) => {
         setAccessToken(response.token);
         api.setToken(response.token);
@@ -45,20 +35,16 @@ export function Providers({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const response = await api.post<{ user: AdminUser; token: string }>('/admin/auth/login', {
-      email,
-      password,
-    });
+    const response = await authRepository.login(email, password);
     setAccessToken(response.token);
     api.setToken(response.token);
     setUser(response.user);
-    // Set session indicator cookie so the middleware can gate access server-side
     document.cookie = 'admin_session=1; path=/; max-age=28800; SameSite=Lax';
   }, []);
 
   const logout = useCallback(async () => {
     try {
-      await api.post('/admin/auth/logout');
+      await authRepository.logout();
     } catch {
       // Ignore errors during logout
     }
@@ -80,11 +66,5 @@ export function Providers({ children }: { children: ReactNode }) {
     [user, isLoading, login, logout],
   );
 
-  return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>
-      </QueryClientProvider>
-    </trpc.Provider>
-  );
+  return <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>;
 }

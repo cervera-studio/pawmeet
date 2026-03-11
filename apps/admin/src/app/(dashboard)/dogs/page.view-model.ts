@@ -1,6 +1,7 @@
+import type { PaginatedResult } from '@dogwalk/types';
 import type { PaginationState } from '@tanstack/react-table';
-import { useState } from 'react';
-import { trpc } from '@/lib/trpc';
+import { useCallback, useEffect, useState } from 'react';
+import { type AdminDogListItem, dogRepository } from '@/repositories';
 
 export function useDogsViewModel() {
   const [search, setSearch] = useState('');
@@ -9,6 +10,8 @@ export function useDogsViewModel() {
     pageIndex: 0,
     pageSize: 20,
   });
+  const [data, setData] = useState<PaginatedResult<AdminDogListItem> | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Simple debounce via timeout ref
   const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
@@ -23,11 +26,25 @@ export function useDogsViewModel() {
     setDebounceTimer(timer);
   }
 
-  const { data, isLoading } = trpc.admin.listDogs.useQuery({
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    search: debouncedSearch || undefined,
-  });
+  const fetchDogs = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await dogRepository.list({
+        page: pagination.pageIndex + 1,
+        pageSize: pagination.pageSize,
+        search: debouncedSearch || undefined,
+      });
+      setData(result);
+    } catch (error) {
+      console.error('[Dogs] Failed to fetch dogs:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch]);
+
+  useEffect(() => {
+    void fetchDogs();
+  }, [fetchDogs]);
 
   return {
     search,

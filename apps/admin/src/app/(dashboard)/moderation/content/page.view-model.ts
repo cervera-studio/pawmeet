@@ -1,37 +1,54 @@
-import { useState } from 'react';
-import { trpc } from '@/lib/trpc';
+import { useCallback, useEffect, useState } from 'react';
+import { type ContentReport, contentModerationRepository, type ReviewAction } from '@/repositories';
 
 export function useContentModerationViewModel() {
-  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const [reports, setReports] = useState<ContentReport[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isReviewing, setIsReviewing] = useState(false);
 
-  const { data, isLoading, refetch } = trpc.contentModeration.pendingReports.useQuery({
-    cursor,
-    limit: 20,
-  });
+  const fetchReports = useCallback(async (cursor?: string) => {
+    setIsLoading(true);
+    try {
+      const result = await contentModerationRepository.listPending({ cursor, limit: 20 });
+      setReports(result.reports);
+      setNextCursor(result.nextCursor);
+    } catch (error) {
+      console.error('[ContentModeration] Failed to fetch reports:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const reviewMutation = trpc.contentModeration.reviewReport.useMutation({
-    onSuccess: () => {
-      void refetch();
-    },
-  });
+  useEffect(() => {
+    void fetchReports();
+  }, [fetchReports]);
 
-  function handleReview(reportId: string, action: 'reviewed' | 'dismissed') {
-    reviewMutation.mutate({ reportId, action });
+  async function handleReview(reportId: string, action: ReviewAction) {
+    setIsReviewing(true);
+    try {
+      await contentModerationRepository.review(reportId, action);
+      void fetchReports();
+    } catch (error) {
+      console.error('[ContentModeration] Failed to review report:', error);
+    } finally {
+      setIsReviewing(false);
+    }
   }
 
   function loadMore() {
-    if (data?.nextCursor) {
-      setCursor(data.nextCursor);
+    if (nextCursor) {
+      void fetchReports(nextCursor);
     }
   }
 
   return {
-    reports: data?.reports ?? [],
-    nextCursor: data?.nextCursor ?? null,
+    reports,
+    nextCursor,
     isLoading,
-    isReviewing: reviewMutation.isPending,
+    isReviewing,
     handleReview,
     loadMore,
-    refetch,
+    refetch: fetchReports,
   };
 }

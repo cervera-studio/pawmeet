@@ -1,80 +1,66 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { USER_STATUS_CONFIG } from '@/components/StatusBadge';
 import { usePermission } from '@/hooks/use-permission';
-import { api } from '@/lib/api';
-
-interface UserDetail {
-  id: string;
-  displayName: string;
-  email: string;
-  avatarUrl: string | null;
-  status: 'active' | 'suspended' | 'banned';
-  authProvider: string;
-  createdAt: string;
-  lastLoginAt: string | null;
-  dogs: {
-    id: string;
-    name: string;
-    breed: string;
-    isActive: boolean;
-  }[];
-  reportsReceived: number;
-  matchesCount: number;
-}
+import { type AdminUserDetail, userRepository } from '@/repositories';
 
 /** @deprecated Use USER_STATUS_CONFIG from StatusBadge instead */
 export const STATUS_MAP = USER_STATUS_CONFIG;
-
-function useUserActionMutation(
-  userId: string,
-  action: string,
-  successMsg: string,
-  errorMsg: string,
-) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => api.post(`/admin/users/${userId}/${action}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-user', userId] });
-      toast.success(successMsg);
-    },
-    onError: () => toast.error(errorMsg),
-  });
-}
 
 export function useUserDetailViewModel() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { isAdmin } = usePermission();
 
-  const { data: user, isLoading } = useQuery({
-    queryKey: ['admin-user', params.id],
-    queryFn: () => api.get<UserDetail>(`/admin/users/${params.id}`),
-  });
+  const [user, setUser] = useState<AdminUserDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const suspendMutation = useUserActionMutation(
-    params.id,
-    'suspend',
-    'Utente sospeso',
-    'Errore durante la sospensione',
-  );
+  const fetchUser = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await userRepository.getById(params.id);
+      setUser(data);
+    } catch (error) {
+      console.error('[UserDetail] Failed to fetch user:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params.id]);
 
-  const banMutation = useUserActionMutation(
-    params.id,
-    'ban',
-    'Utente bannato',
-    'Errore durante il ban',
-  );
+  useEffect(() => {
+    void fetchUser();
+  }, [fetchUser]);
 
-  const reactivateMutation = useUserActionMutation(
-    params.id,
-    'reactivate',
-    'Utente riattivato',
-    'Errore durante la riattivazione',
-  );
+  async function handleSuspend() {
+    try {
+      await userRepository.suspend(params.id);
+      toast.success('Utente sospeso');
+      void fetchUser();
+    } catch {
+      toast.error('Errore durante la sospensione');
+    }
+  }
+
+  async function handleBan() {
+    try {
+      await userRepository.ban(params.id);
+      toast.success('Utente bannato');
+      void fetchUser();
+    } catch {
+      toast.error('Errore durante il ban');
+    }
+  }
+
+  async function handleReactivate() {
+    try {
+      await userRepository.reactivate(params.id);
+      toast.success('Utente riattivato');
+      void fetchUser();
+    } catch {
+      toast.error('Errore durante la riattivazione');
+    }
+  }
 
   const statusInfo = user
     ? (STATUS_MAP[user.status] ?? { label: 'Sconosciuto', variant: 'outline' as const })
@@ -93,9 +79,9 @@ export function useUserDetailViewModel() {
     isLoading,
     isAdmin,
     statusInfo,
-    suspendMutation,
-    banMutation,
-    reactivateMutation,
+    handleSuspend,
+    handleBan,
+    handleReactivate,
     navigateToReports,
     navigateToPhotos,
   };

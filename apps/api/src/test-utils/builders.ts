@@ -546,6 +546,7 @@ export function buildEmailService(overrides: Partial<EmailService> = {}): EmailS
     sendVerificationEmail: vi.fn().mockResolvedValue(undefined),
     sendVerificationOtp: vi.fn().mockResolvedValue(undefined),
     sendPasswordResetEmail: vi.fn().mockResolvedValue(undefined),
+    sendPasswordResetOtp: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }

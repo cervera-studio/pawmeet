@@ -31,9 +31,9 @@ export function createTrpcAuthRepository(api: ApiClient): AuthRepository {
       await api.auth.forgotPassword.mutate({ email });
       return { message: 'ok' };
     },
-    async resetPassword(_email, _code, _password) {
-      // TODO: Phase D — wire to api.auth.resetPasswordOtp.mutate() once backend procedure exists
-      throw new Error('Password reset OTP not yet implemented');
+    async resetPassword(email, code, password) {
+      const result = await api.auth.resetPassword.mutate({ email, code, password });
+      return result as { message: string };
     },
   };
 }

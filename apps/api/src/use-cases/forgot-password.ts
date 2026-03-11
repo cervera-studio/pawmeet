@@ -2,7 +2,7 @@ import { TOKEN_TYPE } from '@dogwalk/db';
 import type { Result } from '@dogwalk/types';
 import { succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
-import { PASSWORD_RESET_EXPIRY_MS } from '../lib/email.js';
+import { PASSWORD_RESET_OTP_EXPIRY_MS, generateOtp } from '../lib/email.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -27,22 +27,25 @@ export function createForgotPassword(deps: Deps) {
     const user = await userRepo.findByEmail(email);
 
     if (user) {
-      const token = authService.generateToken();
-      const tokenHash = await authService.hashToken(token);
+      // Revoke any existing password reset tokens
+      await tokenRepo.revokeAllVerificationTokens(user.id, TOKEN_TYPE.PASSWORD_RESET);
+
+      const otp = generateOtp();
+      const otpHash = await authService.hashToken(otp);
 
       await tokenRepo.createVerificationToken({
         userId: user.id,
-        tokenHash,
+        tokenHash: otpHash,
         type: TOKEN_TYPE.PASSWORD_RESET,
-        expiresAt: new Date(Date.now() + PASSWORD_RESET_EXPIRY_MS),
+        expiresAt: new Date(Date.now() + PASSWORD_RESET_OTP_EXPIRY_MS),
       });
 
       // Fire-and-forget
       emailService
-        .sendPasswordResetEmail(email, token)
-        .catch((e) => logger.warn('ForgotPassword', 'Failed to send password reset email', e));
+        .sendPasswordResetOtp(email, otp)
+        .catch((e) => logger.warn('ForgotPassword', 'Failed to send password reset OTP', e));
     }
 
-    return succeed({ message: "Se l'email esiste, riceverai un link per il reset" });
+    return succeed({ message: "Se l'email esiste, riceverai un codice per il reset" });
   };
 }

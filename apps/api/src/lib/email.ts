@@ -18,7 +18,10 @@ export const EMAIL_VERIFICATION_OTP_EXPIRY_MS = 10 * 60 * 1000;
 /** @deprecated Link-based verification. Use EMAIL_VERIFICATION_OTP_EXPIRY_MS. */
 export const EMAIL_VERIFICATION_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
-/** Password reset link expiry: 1 hour */
+/** Password reset OTP expiry: 10 minutes */
+export const PASSWORD_RESET_OTP_EXPIRY_MS = 10 * 60 * 1000;
+
+/** @deprecated Link-based password reset. Use PASSWORD_RESET_OTP_EXPIRY_MS. */
 export const PASSWORD_RESET_EXPIRY_MS = 60 * 60 * 1000;
 
 /** Token length in bytes (generates 64-char hex string) */
@@ -99,7 +102,25 @@ export async function sendVerificationOtp(email: string, code: string): Promise<
 }
 
 /**
- * Send a password reset email.
+ * Send a password reset OTP email.
+ */
+export async function sendPasswordResetOtp(email: string, code: string): Promise<void> {
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: 'Codice di reset password - DogWalk',
+    html: `
+      <h2>Reset password DogWalk</h2>
+      <p>Usa il codice qui sotto per reimpostare la tua password:</p>
+      <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 16px 0;">${code}</p>
+      <p>Il codice scade tra 10 minuti.</p>
+      <p>Se non hai richiesto il reset, ignora questa email.</p>
+    `,
+  });
+}
+
+/**
+ * @deprecated Link-based password reset. Use sendPasswordResetOtp.
  */
 export async function sendPasswordResetEmail(email: string, token: string): Promise<void> {
   const resetUrl = `${APP_URL}/reset-password?token=${token}`;

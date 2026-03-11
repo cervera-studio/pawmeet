@@ -5,7 +5,7 @@ import {
   refreshSchema,
   registerSchema,
   resendVerificationSchema,
-  resetPasswordSchema,
+  resetPasswordOtpSchema,
   socialLoginSchema,
   verifyEmailOtpSchema,
   verifyEmailSchema,
@@ -40,7 +40,7 @@ export function createAuthRouter(deps: typeof authDeps) {
       .mutation(async ({ input }) => unwrapResult(await deps.forgotPassword(input.email))),
 
     resetPassword: rateLimitedPublicProcedure
-      .input(resetPasswordSchema)
+      .input(resetPasswordOtpSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.resetPassword(input))),
 
     socialLogin: rateLimitedPublicProcedure

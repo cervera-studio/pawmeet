@@ -316,34 +316,36 @@ describe('auth router', () => {
   });
 
   describe('resetPassword', () => {
-    it('returns success on valid token and password', async () => {
+    it('returns success on valid OTP and password', async () => {
       const deps = buildAuthDeps();
       const caller = createCaller(deps);
 
       const result = await caller.auth.resetPassword({
-        token: 'reset_token',
+        email: 'test@example.com',
+        code: '123456',
         password: 'NewStr0ng!',
       });
 
       expect(result.message).toBe('Password reimpostata con successo');
       expect(deps.resetPassword).toHaveBeenCalledWith({
-        token: 'reset_token',
+        email: 'test@example.com',
+        code: '123456',
         password: 'NewStr0ng!',
       });
     });
 
-    it('throws BAD_REQUEST on invalid reset token', async () => {
+    it('throws BAD_REQUEST on invalid reset OTP', async () => {
       const deps = buildAuthDeps({
         resetPassword: vi
           .fn()
           .mockResolvedValue(
-            fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido o scaduto', 400)),
+            fail(new AppError('AUTH_INVALID_TOKEN', 'Codice non valido o scaduto', 400)),
           ),
       });
       const caller = createCaller(deps);
 
       await expect(
-        caller.auth.resetPassword({ token: 'bad', password: 'NewStr0ng!' }),
+        caller.auth.resetPassword({ email: 'test@example.com', code: '000000', password: 'NewStr0ng!' }),
       ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
     });
 
@@ -351,9 +353,9 @@ describe('auth router', () => {
       const deps = buildAuthDeps();
       const caller = createCaller(deps);
 
-      await expect(caller.auth.resetPassword({ token: 'tok', password: 'weak' })).rejects.toThrow(
-        TRPCError,
-      );
+      await expect(
+        caller.auth.resetPassword({ email: 'test@example.com', code: '123456', password: 'weak' }),
+      ).rejects.toThrow(TRPCError);
       expect(deps.resetPassword).not.toHaveBeenCalled();
     });
   });

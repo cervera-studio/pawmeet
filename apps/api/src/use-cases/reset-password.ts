@@ -6,7 +6,8 @@ import type { TokenRepository } from '../ports/token-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
 
 export interface ResetPasswordInput {
-  token: string;
+  email: string;
+  code: string;
   password: string;
 }
 
@@ -23,15 +24,22 @@ interface Deps {
 export function createResetPassword(deps: Deps) {
   return async (input: ResetPasswordInput): Promise<Result<ResetPasswordOutput>> => {
     const { userRepo, tokenRepo, authService } = deps;
-    const { token, password } = input;
+    const { email, code, password } = input;
 
-    const tokenHash = await authService.hashToken(token);
+    const user = await userRepo.findByEmail(email);
+    if (!user) {
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Codice non valido o scaduto', 400));
+    }
 
-    // Find valid, unused reset token
-    const stored = await tokenRepo.findValidVerificationToken(tokenHash, TOKEN_TYPE.PASSWORD_RESET);
+    const codeHash = await authService.hashToken(code);
+    const stored = await tokenRepo.findValidVerificationTokenByUser(
+      user.id,
+      codeHash,
+      TOKEN_TYPE.PASSWORD_RESET,
+    );
 
     if (!stored) {
-      return fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido o scaduto', 400));
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Codice non valido o scaduto', 400));
     }
 
     // Mark token as used
@@ -39,10 +47,10 @@ export function createResetPassword(deps: Deps) {
 
     // Update user password
     const passwordHash = await authService.hashPassword(password);
-    await userRepo.update(stored.userId, { passwordHash });
+    await userRepo.update(user.id, { passwordHash });
 
     // Revoke all refresh tokens for this user (force re-login)
-    await tokenRepo.revokeAllUserRefreshTokens(stored.userId);
+    await tokenRepo.revokeAllUserRefreshTokens(user.id);
 
     return succeed({ message: 'Password reimpostata con successo' });
   };

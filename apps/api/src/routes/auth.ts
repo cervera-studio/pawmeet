@@ -5,7 +5,7 @@ import {
   refreshSchema,
   registerSchema,
   resendVerificationSchema,
-  resetPasswordSchema,
+  resetPasswordOtpSchema,
   socialLoginSchema,
   verifyEmailOtpSchema,
   verifyEmailSchema,
@@ -55,7 +55,7 @@ export function createAuthRoutes(deps: typeof AuthDeps) {
       const result = await deps.forgotPassword(email);
       return handleResult(c, result);
     })
-    .post('/reset-password', zValidator('json', resetPasswordSchema), async (c) => {
+    .post('/reset-password', zValidator('json', resetPasswordOtpSchema), async (c) => {
       const input = c.req.valid('json');
       const result = await deps.resetPassword(input);
       return handleResult(c, result);

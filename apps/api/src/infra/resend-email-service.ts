@@ -1,5 +1,6 @@
 import {
   sendPasswordResetEmail,
+  sendPasswordResetOtp,
   sendVerificationEmail,
   sendVerificationOtp,
 } from '../lib/email.js';
@@ -16,5 +17,9 @@ export class ResendEmailService implements EmailService {
 
   async sendPasswordResetEmail(email: string, token: string): Promise<void> {
     return sendPasswordResetEmail(email, token);
+  }
+
+  async sendPasswordResetOtp(email: string, code: string): Promise<void> {
+    return sendPasswordResetOtp(email, code);
   }
 }

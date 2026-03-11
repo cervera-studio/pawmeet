@@ -7,6 +7,14 @@ import type { UserRepository } from '../ports/user-repository.js';
 import { buildUser } from '../test-utils/builders.js';
 import { createRegisterUser } from './register-user.js';
 
+vi.mock('../lib/email.js', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../lib/email.js')>();
+  return {
+    ...original,
+    generateOtp: vi.fn().mockReturnValue('123456'),
+  };
+});
+
 function buildDeps(
   overrides: Partial<{
     userRepo: Partial<UserRepository>;
@@ -41,7 +49,9 @@ function buildDeps(
       revokeAllUserRefreshTokens: vi.fn().mockResolvedValue(undefined),
       createVerificationToken: vi.fn().mockResolvedValue({ id: 'vt_1' }),
       findValidVerificationToken: vi.fn().mockResolvedValue(null),
+      findValidVerificationTokenByUser: vi.fn().mockResolvedValue(null),
       markVerificationTokenUsed: vi.fn().mockResolvedValue(undefined),
+      revokeAllVerificationTokens: vi.fn().mockResolvedValue(undefined),
       ...overrides.tokenRepo,
     } as TokenRepository,
     authService: {
@@ -59,6 +69,7 @@ function buildDeps(
     } as AuthService,
     emailService: {
       sendVerificationEmail: vi.fn().mockResolvedValue(undefined),
+      sendVerificationOtp: vi.fn().mockResolvedValue(undefined),
       sendPasswordResetEmail: vi.fn().mockResolvedValue(undefined),
       ...overrides.emailService,
     } as EmailService,
@@ -106,15 +117,15 @@ describe('createRegisterUser', () => {
     expect(result.error.status).toBe(409);
   });
 
-  it('sends a verification email', async () => {
+  it('sends a verification OTP email', async () => {
     const deps = buildDeps();
     const registerUser = createRegisterUser(deps);
 
     await registerUser(input);
 
-    expect(deps.emailService.sendVerificationEmail).toHaveBeenCalledWith(
+    expect(deps.emailService.sendVerificationOtp).toHaveBeenCalledWith(
       'new@example.com',
-      'verification_token',
+      '123456',
     );
   });
 });

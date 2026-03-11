@@ -4,8 +4,10 @@ import {
   logoutSchema,
   refreshSchema,
   registerSchema,
+  resendVerificationSchema,
   resetPasswordSchema,
   socialLoginSchema,
+  verifyEmailOtpSchema,
   verifyEmailSchema,
 } from '@dogwalk/validation';
 import type { authDeps } from '../../container.js';
@@ -44,5 +46,15 @@ export function createAuthRouter(deps: typeof authDeps) {
     socialLogin: rateLimitedPublicProcedure
       .input(socialLoginSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.socialLogin(input))),
+
+    verifyEmailOtp: rateLimitedPublicProcedure
+      .input(verifyEmailOtpSchema)
+      .mutation(async ({ input }) => unwrapResult(await deps.verifyEmailOtp(input))),
+
+    resendVerification: rateLimitedPublicProcedure
+      .input(resendVerificationSchema)
+      .mutation(async ({ input }) =>
+        unwrapResult(await deps.resendVerification(input.email)),
+      ),
   });
 }

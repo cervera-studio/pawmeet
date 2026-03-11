@@ -12,7 +12,10 @@ function getResend(): Resend {
   return _resend;
 }
 
-/** Email verification link expiry: 24 hours */
+/** Email verification OTP expiry: 10 minutes */
+export const EMAIL_VERIFICATION_OTP_EXPIRY_MS = 10 * 60 * 1000;
+
+/** @deprecated Link-based verification. Use EMAIL_VERIFICATION_OTP_EXPIRY_MS. */
 export const EMAIL_VERIFICATION_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
 /** Password reset link expiry: 1 hour */
@@ -58,6 +61,38 @@ export async function sendVerificationEmail(email: string, token: string): Promi
       <p>Clicca il link qui sotto per confermare la tua email:</p>
       <p><a href="${verifyUrl}">Conferma email</a></p>
       <p>Il link scade tra 24 ore.</p>
+      <p>Se non hai creato un account, ignora questa email.</p>
+    `,
+  });
+}
+
+/**
+ * Generate a 6-digit OTP code.
+ */
+export function generateOtp(): string {
+  const array = new Uint8Array(4);
+  crypto.getRandomValues(array);
+  const b0 = array[0] ?? 0;
+  const b1 = array[1] ?? 0;
+  const b2 = array[2] ?? 0;
+  const b3 = array[3] ?? 0;
+  const num = ((b0 << 24) | (b1 << 16) | (b2 << 8) | b3) >>> 0;
+  return String(num % 1_000_000).padStart(6, '0');
+}
+
+/**
+ * Send an email verification OTP.
+ */
+export async function sendVerificationOtp(email: string, code: string): Promise<void> {
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: 'Il tuo codice di verifica - DogWalk',
+    html: `
+      <h2>Codice di verifica DogWalk</h2>
+      <p>Usa il codice qui sotto per verificare la tua email:</p>
+      <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 16px 0;">${code}</p>
+      <p>Il codice scade tra 10 minuti.</p>
       <p>Se non hai creato un account, ignora questa email.</p>
     `,
   });

@@ -544,6 +544,7 @@ export function buildExperimentService(
 export function buildEmailService(overrides: Partial<EmailService> = {}): EmailService {
   return {
     sendVerificationEmail: vi.fn().mockResolvedValue(undefined),
+    sendVerificationOtp: vi.fn().mockResolvedValue(undefined),
     sendPasswordResetEmail: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
@@ -573,6 +574,8 @@ export function buildTokenRepo(overrides: Partial<TokenRepository> = {}): TokenR
       createdAt: new Date(),
     }),
     findValidVerificationToken: vi.fn(),
+    findValidVerificationTokenByUser: vi.fn(),
+    revokeAllVerificationTokens: vi.fn(),
     markVerificationTokenUsed: vi.fn(),
     ...overrides,
   };

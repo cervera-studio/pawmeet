@@ -2,7 +2,7 @@ import { TOKEN_TYPE } from '@dogwalk/db';
 import type { Result } from '@dogwalk/types';
 import { AppError, fail, succeed } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
-import { EMAIL_VERIFICATION_EXPIRY_MS } from '../lib/email.js';
+import { EMAIL_VERIFICATION_OTP_EXPIRY_MS, generateOtp } from '../lib/email.js';
 import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { EmailService } from '../ports/email-service.js';
@@ -48,19 +48,19 @@ export function createRegisterUser(deps: Deps) {
       authProvider: 'email',
     });
 
-    // Send verification email
-    const token = authService.generateToken();
-    const tokenHash = await authService.hashToken(token);
+    // Send verification OTP
+    const otp = generateOtp();
+    const otpHash = await authService.hashToken(otp);
     await tokenRepo.createVerificationToken({
       userId: user.id,
-      tokenHash,
+      tokenHash: otpHash,
       type: TOKEN_TYPE.EMAIL_VERIFICATION,
-      expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_EXPIRY_MS),
+      expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_OTP_EXPIRY_MS),
     });
     // Fire-and-forget: don't block registration on email delivery
     emailService
-      .sendVerificationEmail(email, token)
-      .catch((e) => logger.warn('RegisterUser', 'Failed to send verification email', e));
+      .sendVerificationOtp(email, otp)
+      .catch((e) => logger.warn('RegisterUser', 'Failed to send verification OTP', e));
 
     // Generate auth tokens
     const { accessToken, refreshToken } = await authService.generateTokenPair(user.id);

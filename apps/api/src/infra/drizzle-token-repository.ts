@@ -78,6 +78,39 @@ export class DrizzleTokenRepository implements TokenRepository {
     return firstRowOrNull<VerificationTokenRecord>(rows);
   }
 
+  async findValidVerificationTokenByUser(
+    userId: string,
+    tokenHash: string,
+    type: TokenType,
+  ): Promise<VerificationTokenRecord | null> {
+    const rows = await this.db
+      .select()
+      .from(verificationTokens)
+      .where(
+        and(
+          eq(verificationTokens.userId, userId),
+          eq(verificationTokens.tokenHash, tokenHash),
+          eq(verificationTokens.type, type),
+          gt(verificationTokens.expiresAt, new Date()),
+          isNull(verificationTokens.usedAt),
+        ),
+      );
+    return firstRowOrNull<VerificationTokenRecord>(rows);
+  }
+
+  async revokeAllVerificationTokens(userId: string, type: TokenType): Promise<void> {
+    await this.db
+      .update(verificationTokens)
+      .set({ usedAt: new Date() })
+      .where(
+        and(
+          eq(verificationTokens.userId, userId),
+          eq(verificationTokens.type, type),
+          isNull(verificationTokens.usedAt),
+        ),
+      );
+  }
+
   async markVerificationTokenUsed(id: string): Promise<void> {
     await this.db
       .update(verificationTokens)

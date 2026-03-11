@@ -19,13 +19,13 @@ export function createTrpcAuthRepository(api: ApiClient): AuthRepository {
       const result = await api.users.getProfile.query();
       return result as Awaited<ReturnType<AuthRepository['getProfile']>>;
     },
-    async verifyEmail(_email, _code) {
-      // TODO: Phase C — wire to api.auth.verifyEmailOtp.mutate() once backend procedure exists
-      throw new Error('Email verification not yet implemented');
+    async verifyEmail(email, code) {
+      const result = await api.auth.verifyEmailOtp.mutate({ email, code });
+      return result as { message: string };
     },
-    async resendVerificationEmail(_email) {
-      // TODO: Phase C — wire to api.auth.resendVerification.mutate() once backend procedure exists
-      throw new Error('Resend verification not yet implemented');
+    async resendVerificationEmail(email) {
+      const result = await api.auth.resendVerification.mutate({ email });
+      return result as { message: string };
     },
     async forgotPassword(email) {
       await api.auth.forgotPassword.mutate({ email });

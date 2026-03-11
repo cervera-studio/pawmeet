@@ -42,5 +42,11 @@ export interface TokenRepository {
     tokenHash: string,
     type: TokenType,
   ): Promise<VerificationTokenRecord | null>;
+  findValidVerificationTokenByUser(
+    userId: string,
+    tokenHash: string,
+    type: TokenType,
+  ): Promise<VerificationTokenRecord | null>;
+  revokeAllVerificationTokens(userId: string, type: TokenType): Promise<void>;
   markVerificationTokenUsed(id: string): Promise<void>;
 }

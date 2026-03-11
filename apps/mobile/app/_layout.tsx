@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useAuth } from '@/hooks/useAuth';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import '@/repositories/container';
 import { useAuthStore } from '@/stores/auth';
@@ -25,9 +26,14 @@ function PushNotificationRegistration() {
   return null;
 }
 
-/** Hides splash screen once auth state has been hydrated from MMKV. */
-function SplashController() {
+/** Hydrates tokens from SecureStore and hides splash when ready. */
+function AuthHydrator() {
   const isLoading = useAuthStore((s) => s.isLoading);
+  const { checkAuth } = useAuth();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -50,7 +56,7 @@ function RootLayout() {
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
         <StatsigProviderExpo sdkKey={STATSIG_CLIENT_KEY} user={statsigUser}>
-          <SplashController />
+          <AuthHydrator />
           {isAuthenticated && <PushNotificationRegistration />}
           <StatusBar style="auto" />
           <Stack>

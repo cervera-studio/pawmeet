@@ -1,9 +1,11 @@
 import type { AppRouter } from '@dogwalk/api/trpc';
-import { createTRPCClient, httpBatchLink } from '@trpc/client';
+import { type TRPCLink, createTRPCClient, httpBatchLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 export type { AppRouter };
+export { createAuthRefreshLink } from './auth-refresh-link.js';
+export type { AuthRefreshCallbacks } from './auth-refresh-link.js';
 
 /** Inferred output types from every tRPC procedure — use instead of local types. */
 export type RouterOutput = inferRouterOutputs<AppRouter>;
@@ -22,9 +24,14 @@ export type RouterInput = inferRouterInputs<AppRouter>;
  * const { dogs } = await api.dogs.list.query();
  * ```
  */
-export function createApiClient(baseUrl: string, getToken?: () => string | null) {
+export function createApiClient(
+  baseUrl: string,
+  getToken?: () => string | null,
+  extraLinks?: TRPCLink<AppRouter>[],
+) {
   return createTRPCClient<AppRouter>({
     links: [
+      ...(extraLinks ?? []),
       httpBatchLink({
         url: `${baseUrl}/trpc`,
         headers: () => {

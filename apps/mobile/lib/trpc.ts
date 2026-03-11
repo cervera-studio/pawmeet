@@ -1,5 +1,6 @@
 import { createApiClient } from '@dogwalk/api-client';
 import { useAuthStore } from '@/stores/auth';
+import { createMobileAuthRefreshLink } from './auth-link';
 
 function getApiUrl(): string {
   const url = process.env.EXPO_PUBLIC_API_URL;
@@ -11,4 +12,6 @@ function getApiUrl(): string {
 
 const API_URL = getApiUrl();
 
-export const api = createApiClient(API_URL, () => useAuthStore.getState().token);
+export const api = createApiClient(API_URL, () => useAuthStore.getState().token, [
+  createMobileAuthRefreshLink(API_URL),
+]);

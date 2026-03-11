@@ -14,6 +14,7 @@ describe('app constants', () => {
       'MAX_BIO_LENGTH',
       'MAX_DISPLAY_NAME_LENGTH',
       'MIN_PASSWORD_LENGTH',
+      'MIN_USER_AGE',
       'WALK_DURATION_MIN',
       'WALK_DURATION_MAX',
       'DOG_WEIGHT_MIN_KG',

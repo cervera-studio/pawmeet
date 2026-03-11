@@ -1,6 +1,10 @@
 import { cors } from 'hono/cors';
 
-const PRODUCTION_ORIGINS = ['https://dogwalk.app', 'https://admin.dogwalk.app'];
+const PRODUCTION_ORIGINS = [
+  'https://dogwalk.app',
+  'https://admin.dogwalk.app',
+  'https://dogwalk-admin.vercel.app',
+];
 
 const DEVELOPMENT_ORIGINS = [
   'http://localhost:3000',

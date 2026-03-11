@@ -27,7 +27,10 @@ import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
 import { StatsigExperimentService } from './infra/statsig-experiment-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
+import { WsFeedRealtimeService } from './infra/ws-feed-realtime-service.js';
 import { db } from './lib/db.js';
+// Use cases — feed
+import { createAddPostTags } from './use-cases/add-post-tags.js';
 // Use cases — fitness
 import { createAddTrackPoints } from './use-cases/add-track-points.js';
 // Use cases — gamification
@@ -43,7 +46,6 @@ import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-a
 import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
 // Use cases — dogs
 import { createConfirmDogPhoto } from './use-cases/confirm-dog-photo.js';
-// Use cases — feed
 import { createConfirmPostMedia } from './use-cases/confirm-post-media.js';
 import { createConfirmStory } from './use-cases/confirm-story.js';
 import { createCreateComment } from './use-cases/create-comment.js';
@@ -52,6 +54,7 @@ import { createCreateGroupEvent } from './use-cases/create-group-event.js';
 import { createCreatePost } from './use-cases/create-post.js';
 import { createCreateStory } from './use-cases/create-story.js';
 import { createCreateWalkAlbum } from './use-cases/create-walk-album.js';
+import { createDeleteAccount } from './use-cases/delete-account.js';
 import { createDeleteAvatar } from './use-cases/delete-avatar.js';
 import { createDeleteComment } from './use-cases/delete-comment.js';
 import { createDeleteDog } from './use-cases/delete-dog.js';
@@ -61,6 +64,7 @@ import { createDeletePost } from './use-cases/delete-post.js';
 import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
 import { createDiscoverCandidatesAi } from './use-cases/discover-candidates-ai.js';
 import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
+import { createExportUserData } from './use-cases/export-user-data.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
@@ -116,6 +120,7 @@ import { createRecordMatchInteraction } from './use-cases/record-match-interacti
 import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
+import { createRemovePostTag } from './use-cases/remove-post-tag.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createReportContent } from './use-cases/report-content.js';
 import { createResendVerification } from './use-cases/resend-verification.js';
@@ -176,6 +181,7 @@ const emailService = new ResendEmailService();
 const storage = new R2StorageService();
 const chat = new WsChatService();
 const notificationService = new BullMQNotificationService();
+const feedRealtime = new WsFeedRealtimeService();
 const experimentService = new StatsigExperimentService(process.env.STATSIG_SERVER_SECRET ?? '');
 
 // ── Auth deps ───────────────────────────────────────────────────────────────────
@@ -219,6 +225,8 @@ export const userDeps = {
   deleteAvatar: createDeleteAvatar({ userRepo, storage }),
   registerPushToken: createRegisterPushToken({ userRepo }),
   updateNotificationPrefs: createUpdateNotificationPrefs({ userRepo }),
+  deleteAccount: createDeleteAccount({ userRepo, tokenRepo, authService, storage }),
+  exportUserData: createExportUserData({ userRepo, dogRepo, feedRepo }),
 };
 
 // ── Match deps ──────────────────────────────────────────────────────────────────
@@ -342,8 +350,8 @@ export const feedDeps = {
   getPostDetail: createGetPostDetail({ feedRepo }),
   uploadPostMediaUrl: createUploadPostMediaUrl({ feedRepo, storage }),
   confirmPostMedia: createConfirmPostMedia({ feedRepo, storage }),
-  likePost: createLikePost({ feedRepo }),
-  createComment: createCreateComment({ feedRepo }),
+  likePost: createLikePost({ feedRepo, userRepo, notificationService, feedRealtime }),
+  createComment: createCreateComment({ feedRepo, userRepo, notificationService, feedRealtime }),
   deleteComment: createDeleteComment({ feedRepo }),
   getPostComments: createGetPostComments({ feedRepo }),
   createStory: createCreateStory({ storyRepo, storage }),
@@ -352,6 +360,8 @@ export const feedDeps = {
   viewStory: createViewStory({ storyRepo }),
   reportContent: createReportContent({ contentReportRepo }),
   getWalkAlbum: createGetWalkAlbum({ walkAlbumRepo, feedRepo }),
+  addPostTags: createAddPostTags({ feedRepo }),
+  removePostTag: createRemovePostTag({ feedRepo }),
 };
 
 // ── Fitness deps ────────────────────────────────────────────────────────────

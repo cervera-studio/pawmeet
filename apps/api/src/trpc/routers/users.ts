@@ -65,5 +65,13 @@ export function createUsersRouter(deps: typeof userDeps) {
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.updateNotificationPrefs(ctx.userId, input)),
       ),
+
+    deleteAccount: protectedProcedure.mutation(async ({ ctx }) =>
+      unwrapResult(await deps.deleteAccount(ctx.userId)),
+    ),
+
+    exportMyData: protectedProcedure.query(async ({ ctx }) =>
+      unwrapResult(await deps.exportUserData(ctx.userId)),
+    ),
   });
 }

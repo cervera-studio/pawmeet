@@ -19,6 +19,8 @@ export const QUEUE_NAMES = {
   NOTIFICATIONS: 'notifications',
   EMAIL: 'email',
   EVENT_STATUS: 'event-status',
+  DATA_CLEANUP: 'data-cleanup',
+  GPS_RETENTION: 'gps-retention',
 } as const;
 
 // --- Lazy queue instances ---
@@ -168,4 +170,50 @@ export async function enqueueContentModeration(data: ContentModerationJobData) {
 
 export async function enqueueStoryCleanup() {
   return getStoryCleanupQueue().add('cleanup', {}, { repeat: { every: 60 * 60 * 1000 } });
+}
+
+// ── Data cleanup (daily) ────────────────────────────────────────────────────
+
+let _dataCleanupQueue: Queue | null = null;
+
+export function getDataCleanupQueue(): Queue {
+  if (!_dataCleanupQueue) {
+    _dataCleanupQueue = new Queue(QUEUE_NAMES.DATA_CLEANUP, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 50,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _dataCleanupQueue;
+}
+
+export async function enqueueDataCleanup() {
+  return getDataCleanupQueue().add('cleanup', {}, { repeat: { every: 24 * 60 * 60 * 1000 } });
+}
+
+// ── GPS retention (daily) ───────────────────────────────────────────────────
+
+let _gpsRetentionQueue: Queue | null = null;
+
+export function getGpsRetentionQueue(): Queue {
+  if (!_gpsRetentionQueue) {
+    _gpsRetentionQueue = new Queue(QUEUE_NAMES.GPS_RETENTION, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 50,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _gpsRetentionQueue;
+}
+
+export async function enqueueGpsRetention() {
+  return getGpsRetentionQueue().add('retention', {}, { repeat: { every: 24 * 60 * 60 * 1000 } });
 }

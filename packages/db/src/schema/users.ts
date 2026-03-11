@@ -42,17 +42,11 @@ export const users = pgTable(
   (table) => [
     index('users_location_idx').on(table.latitude, table.longitude),
     check('users_latitude_range', sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`),
-    check(
-      'users_longitude_range',
-      sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`,
-    ),
+    check('users_longitude_range', sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`),
     check(
       'users_search_radius_range',
       sql`${table.searchRadiusKm} >= 1 AND ${table.searchRadiusKm} <= 50`,
     ),
-    check(
-      'users_auth_provider_valid',
-      sql`${table.authProvider} IN ('email', 'apple', 'google')`,
-    ),
+    check('users_auth_provider_valid', sql`${table.authProvider} IN ('email', 'apple', 'google')`),
   ],
 );

@@ -9,5 +9,5 @@ export function createDb(databaseUrl: string) {
 
 export type Database = ReturnType<typeof createDb>;
 
-export * from './schema';
 export { runMigrations } from './migrate.js';
+export * from './schema';

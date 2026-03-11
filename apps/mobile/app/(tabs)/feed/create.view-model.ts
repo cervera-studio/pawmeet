@@ -1,3 +1,4 @@
+import { logger } from '@dogwalk/utils';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
@@ -6,7 +7,6 @@ import { Alert } from 'react-native';
 import { useLocation } from '@/hooks/useLocation';
 import { usePostUpload } from '@/hooks/usePostUpload';
 import { api } from '@/lib/trpc';
-import { logger } from '@dogwalk/utils';
 
 interface SelectedMedia {
   uri: string;

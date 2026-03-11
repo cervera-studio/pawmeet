@@ -104,7 +104,10 @@ describe('createCreateComment', () => {
   it('sends notification to post author on comment', async () => {
     const post = buildPost({ authorId: 'author-1' });
     const comment = buildComment({ id: 'new-comment' });
-    const author = buildUser({ id: 'author-1', notificationPrefs: { matches: true, messages: true, reminders: true, feed: true } });
+    const author = buildUser({
+      id: 'author-1',
+      notificationPrefs: { matches: true, messages: true, reminders: true, feed: true },
+    });
     const commenter = buildUser({ id: 'user-1', displayName: 'Luigi' });
     const feedRepo = buildFeedRepo({
       findPostById: vi.fn().mockResolvedValue(post),
@@ -118,7 +121,9 @@ describe('createCreateComment', () => {
       }),
     });
     const notificationService = buildNotificationService();
-    const createComment = createCreateComment(buildDeps({ feedRepo, userRepo, notificationService }));
+    const createComment = createCreateComment(
+      buildDeps({ feedRepo, userRepo, notificationService }),
+    );
 
     await createComment('post-1', 'user-1', 'Bel post!', null);
 
@@ -147,10 +152,22 @@ describe('createCreateComment', () => {
 
   it('notifies parent comment author on reply', async () => {
     const post = buildPost({ authorId: 'author-1' });
-    const parentComment = buildComment({ id: 'parent-1', authorId: 'commenter-1', postId: 'post-1', parentId: null });
+    const parentComment = buildComment({
+      id: 'parent-1',
+      authorId: 'commenter-1',
+      postId: 'post-1',
+      parentId: null,
+    });
     const reply = buildComment({ id: 'reply-1', parentId: 'parent-1' });
-    const postAuthor = buildUser({ id: 'author-1', notificationPrefs: { matches: true, messages: true, reminders: true, feed: true } });
-    const parentAuthor = buildUser({ id: 'commenter-1', displayName: 'Anna', notificationPrefs: { matches: true, messages: true, reminders: true, feed: true } });
+    const postAuthor = buildUser({
+      id: 'author-1',
+      notificationPrefs: { matches: true, messages: true, reminders: true, feed: true },
+    });
+    const parentAuthor = buildUser({
+      id: 'commenter-1',
+      displayName: 'Anna',
+      notificationPrefs: { matches: true, messages: true, reminders: true, feed: true },
+    });
     const replier = buildUser({ id: 'user-1', displayName: 'Marco' });
     const feedRepo = buildFeedRepo({
       findPostById: vi.fn().mockResolvedValue(post),
@@ -166,7 +183,9 @@ describe('createCreateComment', () => {
       }),
     });
     const notificationService = buildNotificationService();
-    const createComment = createCreateComment(buildDeps({ feedRepo, userRepo, notificationService }));
+    const createComment = createCreateComment(
+      buildDeps({ feedRepo, userRepo, notificationService }),
+    );
 
     await createComment('post-1', 'user-1', 'Risposta!', 'parent-1');
 

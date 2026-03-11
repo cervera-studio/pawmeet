@@ -71,7 +71,10 @@ function scheduleReconnect() {
   if (reconnectTimer) return;
   const delay = getReconnectDelay();
   reconnectAttempt++;
-  logger.debug('useWebSocket', `Reconnecting in ${Math.round(delay)}ms (attempt ${reconnectAttempt})`);
+  logger.debug(
+    'useWebSocket',
+    `Reconnecting in ${Math.round(delay)}ms (attempt ${reconnectAttempt})`,
+  );
   reconnectTimer = setTimeout(() => {
     reconnectTimer = null;
     if (sharedToken && listeners.size > 0) {

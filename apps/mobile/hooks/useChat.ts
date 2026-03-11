@@ -1,25 +1,11 @@
 import type { RouterOutput } from '@dogwalk/api-client';
-import type { WsMessage } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { cache } from '@/lib/storage';
 import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
+import { getSharedWs, useWebSocketListener } from '@/hooks/useWebSocket';
 
-function getWsUrl(): string {
-  const url = process.env.EXPO_PUBLIC_WS_URL;
-  if (!url && !__DEV__) {
-    throw new Error('EXPO_PUBLIC_WS_URL is required in production');
-  }
-  return url ?? 'ws://localhost:3000/ws';
-}
-
-const WS_URL = getWsUrl();
-
-function buildWsUrl(baseUrl: string, token: string): { url: string; protocols: string[] } {
-  // Never pass tokens as query params — use Sec-WebSocket-Protocol subprotocol
-  return { url: baseUrl, protocols: [`access_token.${token}`] };
-}
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? (__DEV__ ? 'http://localhost:3000' : '');
 
 const CONVERSATIONS_CACHE_KEY = 'cache:conversations';
@@ -28,7 +14,6 @@ type Conversation = RouterOutput['chat']['listConversations']['conversations'][n
 type Message = RouterOutput['chat']['getMessages']['messages'][number];
 
 export function useChat(matchId?: string) {
-  const wsRef = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   // Hydrate conversations from cache (stale-while-revalidate)
@@ -38,65 +23,52 @@ export function useChat(matchId?: string) {
   const [isTyping, setIsTyping] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [loadingConversations, setLoadingConversations] = useState(false);
+
+  // Track shared WS connection state
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setConnected(getSharedWs()?.readyState === WebSocket.OPEN);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
   const token = useAuthStore((s) => s.token);
   const userId = useAuthStore((s) => s.user?.id);
 
-  // Connect WebSocket
-  useEffect(() => {
-    if (!token) return;
-
-    const { url, protocols } = buildWsUrl(WS_URL, token);
-    const ws = new WebSocket(url, protocols);
-    wsRef.current = ws;
-
-    ws.onopen = () => setConnected(true);
-    ws.onclose = () => setConnected(false);
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data) as WsMessage;
-        switch (data.type) {
-          case 'new_message': {
-            const msg = data.payload as unknown as Message;
-            if (matchId && msg.matchId === matchId) {
-              setMessages((prev) => [...prev, msg]);
-            }
-            setConversations((prev) =>
-              prev.map((c) =>
-                c.matchId === msg.matchId
-                  ? {
-                      ...c,
-                      lastMessage: msg,
-                      unreadCount: msg.senderId !== userId ? c.unreadCount + 1 : c.unreadCount,
-                    }
-                  : c,
-              ),
-            );
-            break;
-          }
-          case 'typing_start':
-          case 'typing_stop': {
-            const typingMatchId = data.payload.matchId as string;
-            if (matchId && typingMatchId === matchId) {
-              setIsTyping(data.type === 'typing_start');
-            }
-            break;
-          }
-          case 'online_status': {
-            // Online presence tracked via WS but not persisted in conversation type
-            break;
-          }
+  // Listen for chat events on the shared WebSocket
+  useWebSocketListener((data) => {
+    switch (data.type) {
+      case 'new_message': {
+        const msg = data.payload as unknown as Message;
+        if (matchId && msg.matchId === matchId) {
+          setMessages((prev) => [...prev, msg]);
         }
-      } catch (e) {
-        logger.debug('useChat', 'Malformed WS message', e);
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.matchId === msg.matchId
+              ? {
+                  ...c,
+                  lastMessage: msg,
+                  unreadCount: msg.senderId !== userId ? c.unreadCount + 1 : c.unreadCount,
+                }
+              : c,
+          ),
+        );
+        break;
       }
-    };
-
-    return () => {
-      ws.close();
-      wsRef.current = null;
-    };
-  }, [token, matchId, userId]);
+      case 'typing_start':
+      case 'typing_stop': {
+        const typingMatchId = data.payload.matchId as string;
+        if (matchId && typingMatchId === matchId) {
+          setIsTyping(data.type === 'typing_start');
+        }
+        break;
+      }
+      case 'online_status': {
+        // Online presence tracked via WS but not persisted in conversation type
+        break;
+      }
+    }
+  });
 
   // Fetch conversations
   const fetchConversations = useCallback(async () => {
@@ -134,7 +106,7 @@ export function useChat(matchId?: string) {
         const { message: msg } = await api.chat.sendMessage.mutate({ matchId, content });
         setMessages((prev) => [...prev, msg]);
         // Also send via WS for real-time
-        wsRef.current?.send(JSON.stringify({ type: 'message', payload: msg }));
+        getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));
       } catch (e) {
         logger.warn('useChat', 'Failed to send message', e);
       }
@@ -174,7 +146,7 @@ export function useChat(matchId?: string) {
           mediaUrl,
         });
         setMessages((prev) => [...prev, msg]);
-        wsRef.current?.send(JSON.stringify({ type: 'message', payload: msg }));
+        getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));
       } catch (e) {
         logger.error('useChat', 'Failed to send image', e);
       }
@@ -190,7 +162,7 @@ export function useChat(matchId?: string) {
         const content = JSON.stringify({ type: 'location', latitude, longitude, label });
         const { message: msg } = await api.chat.sendMessage.mutate({ matchId, content });
         setMessages((prev) => [...prev, msg]);
-        wsRef.current?.send(JSON.stringify({ type: 'message', payload: msg }));
+        getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));
       } catch (e) {
         logger.warn('useChat', 'Failed to send location', e);
       }
@@ -202,8 +174,11 @@ export function useChat(matchId?: string) {
   const sendTyping = useCallback(
     (typing: boolean) => {
       if (!matchId) return;
-      wsRef.current?.send(
-        JSON.stringify({ type: typing ? 'typing_start' : 'typing_stop', payload: { matchId } }),
+      getSharedWs()?.send(
+        JSON.stringify({
+          type: typing ? 'typing_start' : 'typing_stop',
+          payload: { matchId },
+        }),
       );
     },
     [matchId],

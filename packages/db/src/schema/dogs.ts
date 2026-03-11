@@ -47,10 +47,7 @@ export const dogProfiles = pgTable(
       'dog_profiles_size_valid',
       sql`${table.size} IN ('toy', 'piccola', 'media', 'grande', 'gigante')`,
     ),
-    check(
-      'dog_profiles_weight_range',
-      sql`${table.weightKg} >= 0.5 AND ${table.weightKg} <= 100`,
-    ),
+    check('dog_profiles_weight_range', sql`${table.weightKg} >= 0.5 AND ${table.weightKg} <= 100`),
     check('dog_profiles_gender_valid', sql`${table.gender} IN ('maschio', 'femmina')`),
     check(
       'dog_profiles_energy_level_valid',

@@ -115,7 +115,10 @@ CREATE TABLE "content_reports" (
 	"status" varchar(10) DEFAULT 'pending' NOT NULL,
 	"reviewed_by" uuid,
 	"reviewed_at" timestamp with time zone,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "content_reports_content_type_valid" CHECK ("content_reports"."content_type" IN ('post', 'comment', 'story')),
+	CONSTRAINT "content_reports_reason_valid" CHECK ("content_reports"."reason" IN ('inappropriate', 'spam', 'harassment', 'violence', 'other')),
+	CONSTRAINT "content_reports_status_valid" CHECK ("content_reports"."status" IN ('pending', 'reviewed', 'dismissed'))
 );
 --> statement-breakpoint
 CREATE TABLE "post_comments" (
@@ -144,7 +147,10 @@ CREATE TABLE "post_media" (
 	"thumbnail_url" text,
 	"position" integer DEFAULT 0 NOT NULL,
 	"moderation_status" varchar(10) DEFAULT 'pending' NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "post_media_type_valid" CHECK ("post_media"."media_type" IN ('photo', 'video')),
+	CONSTRAINT "post_media_position_range" CHECK ("post_media"."position" >= 0 AND "post_media"."position" <= 9),
+	CONSTRAINT "post_media_moderation_status_valid" CHECK ("post_media"."moderation_status" IN ('pending', 'approved', 'rejected'))
 );
 --> statement-breakpoint
 CREATE TABLE "post_tags" (
@@ -167,7 +173,12 @@ CREATE TABLE "posts" (
 	"moderation_status" varchar(10) DEFAULT 'pending' NOT NULL,
 	"is_deleted" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "posts_likes_count_non_negative" CHECK ("posts"."likes_count" >= 0),
+	CONSTRAINT "posts_comments_count_non_negative" CHECK ("posts"."comments_count" >= 0),
+	CONSTRAINT "posts_latitude_range" CHECK ("posts"."latitude" >= -90 AND "posts"."latitude" <= 90),
+	CONSTRAINT "posts_longitude_range" CHECK ("posts"."longitude" >= -180 AND "posts"."longitude" <= 180),
+	CONSTRAINT "posts_moderation_status_valid" CHECK ("posts"."moderation_status" IN ('pending', 'approved', 'rejected'))
 );
 --> statement-breakpoint
 CREATE TABLE "stories" (
@@ -178,7 +189,9 @@ CREATE TABLE "stories" (
 	"thumbnail_url" text,
 	"expires_at" timestamp with time zone NOT NULL,
 	"view_count" integer DEFAULT 0 NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "stories_media_type_valid" CHECK ("stories"."media_type" IN ('photo', 'video')),
+	CONSTRAINT "stories_view_count_non_negative" CHECK ("stories"."view_count" >= 0)
 );
 --> statement-breakpoint
 CREATE TABLE "story_views" (
@@ -205,7 +218,8 @@ CREATE TABLE "walk_feedback" (
 	"rating" integer NOT NULL,
 	"comment" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "walk_feedback_walk_user_unique" UNIQUE("walk_id","from_user_id")
+	CONSTRAINT "walk_feedback_walk_user_unique" UNIQUE("walk_id","from_user_id"),
+	CONSTRAINT "walk_feedback_rating_range" CHECK ("walk_feedback"."rating" >= 1 AND "walk_feedback"."rating" <= 5)
 );
 --> statement-breakpoint
 CREATE TABLE "daily_activity" (
@@ -218,7 +232,11 @@ CREATE TABLE "daily_activity" (
 	"walk_count" integer DEFAULT 0 NOT NULL,
 	"source" text DEFAULT 'app' NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "daily_activity_steps_non_negative" CHECK ("daily_activity"."steps_count" >= 0),
+	CONSTRAINT "daily_activity_distance_non_negative" CHECK ("daily_activity"."walk_distance_km" >= 0),
+	CONSTRAINT "daily_activity_duration_non_negative" CHECK ("daily_activity"."walk_duration_min" >= 0),
+	CONSTRAINT "daily_activity_walk_count_non_negative" CHECK ("daily_activity"."walk_count" >= 0)
 );
 --> statement-breakpoint
 CREATE TABLE "walk_track_points" (
@@ -229,7 +247,11 @@ CREATE TABLE "walk_track_points" (
 	"altitude" double precision,
 	"timestamp" timestamp with time zone NOT NULL,
 	"speed_kmh" double precision,
-	"position" integer NOT NULL
+	"position" integer NOT NULL,
+	CONSTRAINT "walk_track_points_latitude_range" CHECK ("walk_track_points"."latitude" >= -90 AND "walk_track_points"."latitude" <= 90),
+	CONSTRAINT "walk_track_points_longitude_range" CHECK ("walk_track_points"."longitude" >= -180 AND "walk_track_points"."longitude" <= 180),
+	CONSTRAINT "walk_track_points_position_non_negative" CHECK ("walk_track_points"."position" >= 0),
+	CONSTRAINT "walk_track_points_speed_non_negative" CHECK ("walk_track_points"."speed_kmh" IS NULL OR "walk_track_points"."speed_kmh" >= 0)
 );
 --> statement-breakpoint
 CREATE TABLE "walk_tracks" (
@@ -242,7 +264,10 @@ CREATE TABLE "walk_tracks" (
 	"duration_minutes" integer DEFAULT 0 NOT NULL,
 	"avg_speed_kmh" double precision DEFAULT 0 NOT NULL,
 	"is_completed" boolean DEFAULT false NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "walk_tracks_distance_non_negative" CHECK ("walk_tracks"."distance_km" >= 0),
+	CONSTRAINT "walk_tracks_duration_non_negative" CHECK ("walk_tracks"."duration_minutes" >= 0),
+	CONSTRAINT "walk_tracks_avg_speed_non_negative" CHECK ("walk_tracks"."avg_speed_kmh" >= 0)
 );
 --> statement-breakpoint
 CREATE TABLE "achievements" (
@@ -262,7 +287,10 @@ CREATE TABLE "challenges" (
 	"xp_reward" integer NOT NULL,
 	"starts_at" timestamp with time zone NOT NULL,
 	"ends_at" timestamp with time zone NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "challenges_target_value_positive" CHECK ("challenges"."target_value" > 0),
+	CONSTRAINT "challenges_xp_reward_positive" CHECK ("challenges"."xp_reward" > 0),
+	CONSTRAINT "challenges_dates_order" CHECK ("challenges"."starts_at" < "challenges"."ends_at")
 );
 --> statement-breakpoint
 CREATE TABLE "user_challenges" (
@@ -272,7 +300,8 @@ CREATE TABLE "user_challenges" (
 	"progress" integer DEFAULT 0 NOT NULL,
 	"completed_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "user_challenges_user_id_challenge_id_unique" UNIQUE("user_id","challenge_id")
+	CONSTRAINT "user_challenges_user_id_challenge_id_unique" UNIQUE("user_id","challenge_id"),
+	CONSTRAINT "user_challenges_progress_non_negative" CHECK ("user_challenges"."progress" >= 0)
 );
 --> statement-breakpoint
 CREATE TABLE "xp_transactions" (
@@ -281,7 +310,8 @@ CREATE TABLE "xp_transactions" (
 	"action" text NOT NULL,
 	"points" integer NOT NULL,
 	"metadata" jsonb,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "xp_transactions_points_positive" CHECK ("xp_transactions"."points" > 0)
 );
 --> statement-breakpoint
 CREATE TABLE "group_event_participants" (
@@ -291,7 +321,8 @@ CREATE TABLE "group_event_participants" (
 	"dog_id" uuid NOT NULL,
 	"status" varchar(15) DEFAULT 'accepted' NOT NULL,
 	"is_organizer" boolean DEFAULT false NOT NULL,
-	"joined_at" timestamp with time zone DEFAULT now() NOT NULL
+	"joined_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "group_event_participants_status_valid" CHECK ("group_event_participants"."status" IN ('accepted', 'declined', 'removed'))
 );
 --> statement-breakpoint
 CREATE TABLE "group_events" (
@@ -308,7 +339,13 @@ CREATE TABLE "group_events" (
 	"visibility" varchar(10) DEFAULT 'public' NOT NULL,
 	"status" varchar(15) DEFAULT 'scheduled' NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "group_events_duration_range" CHECK ("group_events"."duration_min" >= 15 AND "group_events"."duration_min" <= 180),
+	CONSTRAINT "group_events_latitude_range" CHECK ("group_events"."latitude" >= -90 AND "group_events"."latitude" <= 90),
+	CONSTRAINT "group_events_longitude_range" CHECK ("group_events"."longitude" >= -180 AND "group_events"."longitude" <= 180),
+	CONSTRAINT "group_events_max_participants_range" CHECK ("group_events"."max_participants" >= 3 AND "group_events"."max_participants" <= 50),
+	CONSTRAINT "group_events_visibility_valid" CHECK ("group_events"."visibility" IN ('public', 'private')),
+	CONSTRAINT "group_events_status_valid" CHECK ("group_events"."status" IN ('scheduled', 'in_progress', 'completed', 'cancelled'))
 );
 --> statement-breakpoint
 CREATE TABLE "group_message_reads" (
@@ -415,7 +452,10 @@ CREATE TABLE "reports" (
 	"resolved_by" uuid,
 	"resolved_action" text,
 	"resolved_at" timestamp with time zone,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "reports_reason_valid" CHECK ("reports"."reason" IN ('inappropriate', 'fake', 'harassment', 'spam', 'other')),
+	CONSTRAINT "reports_status_valid" CHECK ("reports"."status" IN ('pending', 'resolved', 'dismissed')),
+	CONSTRAINT "reports_resolved_action_valid" CHECK ("reports"."resolved_action" IS NULL OR "reports"."resolved_action" IN ('dismiss', 'warn', 'suspend', 'ban'))
 );
 --> statement-breakpoint
 CREATE TABLE "user_consents" (

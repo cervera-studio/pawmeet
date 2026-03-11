@@ -41,10 +41,7 @@ export const groupEvents = pgTable(
       'group_events_duration_range',
       sql`${table.durationMin} >= 15 AND ${table.durationMin} <= 180`,
     ),
-    check(
-      'group_events_latitude_range',
-      sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`,
-    ),
+    check('group_events_latitude_range', sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`),
     check(
       'group_events_longitude_range',
       sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`,
@@ -53,10 +50,7 @@ export const groupEvents = pgTable(
       'group_events_max_participants_range',
       sql`${table.maxParticipants} >= 3 AND ${table.maxParticipants} <= 50`,
     ),
-    check(
-      'group_events_visibility_valid',
-      sql`${table.visibility} IN ('public', 'private')`,
-    ),
+    check('group_events_visibility_valid', sql`${table.visibility} IN ('public', 'private')`),
     check(
       'group_events_status_valid',
       sql`${table.status} IN ('scheduled', 'in_progress', 'completed', 'cancelled')`,

@@ -1,7 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { Stack } from 'expo-router';
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import type { TextInput as TextInputType } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import type { CommentWithAuthor, ReplyTarget } from './[postId].view-model';
@@ -39,7 +40,9 @@ const CommentRow = memo(function CommentRow({
 }) {
   const isReply = Boolean(comment.parentId);
   return (
-    <View className={`flex-row gap-3 px-4 py-3 ${isReply ? 'ml-10 border-l-2 border-gray-100 pl-4' : ''}`}>
+    <View
+      className={`flex-row gap-3 px-4 py-3 ${isReply ? 'ml-10 border-l-2 border-gray-100 pl-4' : ''}`}
+    >
       <Avatar size="sm" imageUrl={comment.author.avatarUrl} name={comment.author.displayName} />
       <View className="flex-1">
         <Text className="text-sm font-semibold text-gray-900">{comment.author.displayName}</Text>
@@ -73,6 +76,12 @@ function PostDetailSkeleton() {
 
 export default function PostDetailScreen() {
   const vm = usePostDetailViewModel();
+  const inputRef = useRef<TextInputType>(null);
+
+  const handleReply = (commentId: string, authorName: string) => {
+    vm.handleReply(commentId, authorName);
+    inputRef.current?.focus();
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
@@ -129,7 +138,7 @@ export default function PostDetailScreen() {
                 </View>
               </View>
             }
-            renderItem={({ item }) => <CommentRow comment={item} onReply={vm.handleReply} />}
+            renderItem={({ item }) => <CommentRow comment={item} onReply={handleReply} />}
             onEndReached={vm.loadMoreComments}
             onEndReachedThreshold={0.5}
             ListEmptyComponent={
@@ -154,6 +163,7 @@ export default function PostDetailScreen() {
           {/* Comment Input */}
           <View className="flex-row items-center gap-2 border-t border-gray-100 px-4 py-2">
             <TextInput
+              ref={inputRef}
               className="flex-1 rounded-full bg-gray-100 px-4 py-2 text-sm"
               placeholder={vm.replyingTo ? 'Scrivi una risposta...' : 'Scrivi un commento...'}
               value={vm.commentText}

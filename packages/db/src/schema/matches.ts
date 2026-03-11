@@ -45,7 +45,5 @@ export const swipes = pgTable(
     direction: varchar('direction', { length: 5 }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [
-    check('swipes_direction_valid', sql`${table.direction} IN ('like', 'pass')`),
-  ],
+  (table) => [check('swipes_direction_valid', sql`${table.direction} IN ('like', 'pass')`)],
 );

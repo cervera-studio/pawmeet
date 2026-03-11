@@ -1,5 +1,7 @@
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   date,
   doublePrecision,
   index,
@@ -32,6 +34,9 @@ export const walkTracks = pgTable(
   (table) => [
     index('walk_tracks_walk_idx').on(table.walkId),
     index('walk_tracks_user_idx').on(table.userId),
+    check('walk_tracks_distance_non_negative', sql`${table.distanceKm} >= 0`),
+    check('walk_tracks_duration_non_negative', sql`${table.durationMinutes} >= 0`),
+    check('walk_tracks_avg_speed_non_negative', sql`${table.avgSpeedKmh} >= 0`),
   ],
 );
 
@@ -49,7 +54,22 @@ export const walkTrackPoints = pgTable(
     speedKmh: doublePrecision('speed_kmh'),
     position: integer('position').notNull(),
   },
-  (table) => [index('walk_track_points_track_idx').on(table.trackId)],
+  (table) => [
+    index('walk_track_points_track_idx').on(table.trackId),
+    check(
+      'walk_track_points_latitude_range',
+      sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`,
+    ),
+    check(
+      'walk_track_points_longitude_range',
+      sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`,
+    ),
+    check('walk_track_points_position_non_negative', sql`${table.position} >= 0`),
+    check(
+      'walk_track_points_speed_non_negative',
+      sql`${table.speedKmh} IS NULL OR ${table.speedKmh} >= 0`,
+    ),
+  ],
 );
 
 export const dailyActivity = pgTable(
@@ -70,5 +90,9 @@ export const dailyActivity = pgTable(
   },
   (table) => [
     uniqueIndex('daily_activity_user_date_source_idx').on(table.userId, table.date, table.source),
+    check('daily_activity_steps_non_negative', sql`${table.stepsCount} >= 0`),
+    check('daily_activity_distance_non_negative', sql`${table.walkDistanceKm} >= 0`),
+    check('daily_activity_duration_non_negative', sql`${table.walkDurationMin} >= 0`),
+    check('daily_activity_walk_count_non_negative', sql`${table.walkCount} >= 0`),
   ],
 );

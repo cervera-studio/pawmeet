@@ -39,14 +39,8 @@ export const posts = pgTable(
     index('posts_walk_idx').on(table.walkId),
     check('posts_likes_count_non_negative', sql`${table.likesCount} >= 0`),
     check('posts_comments_count_non_negative', sql`${table.commentsCount} >= 0`),
-    check(
-      'posts_latitude_range',
-      sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`,
-    ),
-    check(
-      'posts_longitude_range',
-      sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`,
-    ),
+    check('posts_latitude_range', sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`),
+    check('posts_longitude_range', sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`),
     check(
       'posts_moderation_status_valid',
       sql`${table.moderationStatus} IN ('pending', 'approved', 'rejected')`,
@@ -71,10 +65,7 @@ export const postMedia = pgTable(
   (table) => [
     index('post_media_post_idx').on(table.postId),
     check('post_media_type_valid', sql`${table.mediaType} IN ('photo', 'video')`),
-    check(
-      'post_media_position_range',
-      sql`${table.position} >= 0 AND ${table.position} <= 9`,
-    ),
+    check('post_media_position_range', sql`${table.position} >= 0 AND ${table.position} <= 9`),
     check(
       'post_media_moderation_status_valid',
       sql`${table.moderationStatus} IN ('pending', 'approved', 'rejected')`,

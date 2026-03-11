@@ -1,5 +1,5 @@
 {
-  "id": "ff3ca6a3-0252-41a0-8614-6a4549e23381",
+  "id": "6d491bbb-1274-4ed8-8c40-0fad2453731f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -873,7 +873,20 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "content_reports_content_type_valid": {
+          "name": "content_reports_content_type_valid",
+          "value": "\"content_reports\".\"content_type\" IN ('post', 'comment', 'story')"
+        },
+        "content_reports_reason_valid": {
+          "name": "content_reports_reason_valid",
+          "value": "\"content_reports\".\"reason\" IN ('inappropriate', 'spam', 'harassment', 'violence', 'other')"
+        },
+        "content_reports_status_valid": {
+          "name": "content_reports_status_valid",
+          "value": "\"content_reports\".\"status\" IN ('pending', 'reviewed', 'dismissed')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.post_comments": {
@@ -1222,7 +1235,20 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "post_media_type_valid": {
+          "name": "post_media_type_valid",
+          "value": "\"post_media\".\"media_type\" IN ('photo', 'video')"
+        },
+        "post_media_position_range": {
+          "name": "post_media_position_range",
+          "value": "\"post_media\".\"position\" >= 0 AND \"post_media\".\"position\" <= 9"
+        },
+        "post_media_moderation_status_valid": {
+          "name": "post_media_moderation_status_valid",
+          "value": "\"post_media\".\"moderation_status\" IN ('pending', 'approved', 'rejected')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.post_tags": {
@@ -1545,7 +1571,28 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "posts_likes_count_non_negative": {
+          "name": "posts_likes_count_non_negative",
+          "value": "\"posts\".\"likes_count\" >= 0"
+        },
+        "posts_comments_count_non_negative": {
+          "name": "posts_comments_count_non_negative",
+          "value": "\"posts\".\"comments_count\" >= 0"
+        },
+        "posts_latitude_range": {
+          "name": "posts_latitude_range",
+          "value": "\"posts\".\"latitude\" >= -90 AND \"posts\".\"latitude\" <= 90"
+        },
+        "posts_longitude_range": {
+          "name": "posts_longitude_range",
+          "value": "\"posts\".\"longitude\" >= -180 AND \"posts\".\"longitude\" <= 180"
+        },
+        "posts_moderation_status_valid": {
+          "name": "posts_moderation_status_valid",
+          "value": "\"posts\".\"moderation_status\" IN ('pending', 'approved', 'rejected')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.stories": {
@@ -1639,7 +1686,16 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "stories_media_type_valid": {
+          "name": "stories_media_type_valid",
+          "value": "\"stories\".\"media_type\" IN ('photo', 'video')"
+        },
+        "stories_view_count_non_negative": {
+          "name": "stories_view_count_non_negative",
+          "value": "\"stories\".\"view_count\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.story_views": {
@@ -1947,7 +2003,12 @@
         }
       },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "walk_feedback_rating_range": {
+          "name": "walk_feedback_rating_range",
+          "value": "\"walk_feedback\".\"rating\" >= 1 AND \"walk_feedback\".\"rating\" <= 5"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.daily_activity": {
@@ -2070,7 +2131,24 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "daily_activity_steps_non_negative": {
+          "name": "daily_activity_steps_non_negative",
+          "value": "\"daily_activity\".\"steps_count\" >= 0"
+        },
+        "daily_activity_distance_non_negative": {
+          "name": "daily_activity_distance_non_negative",
+          "value": "\"daily_activity\".\"walk_distance_km\" >= 0"
+        },
+        "daily_activity_duration_non_negative": {
+          "name": "daily_activity_duration_non_negative",
+          "value": "\"daily_activity\".\"walk_duration_min\" >= 0"
+        },
+        "daily_activity_walk_count_non_negative": {
+          "name": "daily_activity_walk_count_non_negative",
+          "value": "\"daily_activity\".\"walk_count\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.walk_track_points": {
@@ -2162,7 +2240,24 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "walk_track_points_latitude_range": {
+          "name": "walk_track_points_latitude_range",
+          "value": "\"walk_track_points\".\"latitude\" >= -90 AND \"walk_track_points\".\"latitude\" <= 90"
+        },
+        "walk_track_points_longitude_range": {
+          "name": "walk_track_points_longitude_range",
+          "value": "\"walk_track_points\".\"longitude\" >= -180 AND \"walk_track_points\".\"longitude\" <= 180"
+        },
+        "walk_track_points_position_non_negative": {
+          "name": "walk_track_points_position_non_negative",
+          "value": "\"walk_track_points\".\"position\" >= 0"
+        },
+        "walk_track_points_speed_non_negative": {
+          "name": "walk_track_points_speed_non_negative",
+          "value": "\"walk_track_points\".\"speed_kmh\" IS NULL OR \"walk_track_points\".\"speed_kmh\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.walk_tracks": {
@@ -2300,7 +2395,20 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "walk_tracks_distance_non_negative": {
+          "name": "walk_tracks_distance_non_negative",
+          "value": "\"walk_tracks\".\"distance_km\" >= 0"
+        },
+        "walk_tracks_duration_non_negative": {
+          "name": "walk_tracks_duration_non_negative",
+          "value": "\"walk_tracks\".\"duration_minutes\" >= 0"
+        },
+        "walk_tracks_avg_speed_non_negative": {
+          "name": "walk_tracks_avg_speed_non_negative",
+          "value": "\"walk_tracks\".\"avg_speed_kmh\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.achievements": {
@@ -2431,7 +2539,20 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "challenges_target_value_positive": {
+          "name": "challenges_target_value_positive",
+          "value": "\"challenges\".\"target_value\" > 0"
+        },
+        "challenges_xp_reward_positive": {
+          "name": "challenges_xp_reward_positive",
+          "value": "\"challenges\".\"xp_reward\" > 0"
+        },
+        "challenges_dates_order": {
+          "name": "challenges_dates_order",
+          "value": "\"challenges\".\"starts_at\" < \"challenges\".\"ends_at\""
+        }
+      },
       "isRLSEnabled": false
     },
     "public.user_challenges": {
@@ -2535,7 +2656,12 @@
         }
       },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "user_challenges_progress_non_negative": {
+          "name": "user_challenges_progress_non_negative",
+          "value": "\"user_challenges\".\"progress\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.xp_transactions": {
@@ -2616,7 +2742,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "xp_transactions_points_positive": {
+          "name": "xp_transactions_points_positive",
+          "value": "\"xp_transactions\".\"points\" > 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.group_event_participants": {
@@ -2761,7 +2892,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "group_event_participants_status_valid": {
+          "name": "group_event_participants_status_valid",
+          "value": "\"group_event_participants\".\"status\" IN ('accepted', 'declined', 'removed')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.group_events": {
@@ -2916,7 +3052,32 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "group_events_duration_range": {
+          "name": "group_events_duration_range",
+          "value": "\"group_events\".\"duration_min\" >= 15 AND \"group_events\".\"duration_min\" <= 180"
+        },
+        "group_events_latitude_range": {
+          "name": "group_events_latitude_range",
+          "value": "\"group_events\".\"latitude\" >= -90 AND \"group_events\".\"latitude\" <= 90"
+        },
+        "group_events_longitude_range": {
+          "name": "group_events_longitude_range",
+          "value": "\"group_events\".\"longitude\" >= -180 AND \"group_events\".\"longitude\" <= 180"
+        },
+        "group_events_max_participants_range": {
+          "name": "group_events_max_participants_range",
+          "value": "\"group_events\".\"max_participants\" >= 3 AND \"group_events\".\"max_participants\" <= 50"
+        },
+        "group_events_visibility_valid": {
+          "name": "group_events_visibility_valid",
+          "value": "\"group_events\".\"visibility\" IN ('public', 'private')"
+        },
+        "group_events_status_valid": {
+          "name": "group_events_status_valid",
+          "value": "\"group_events\".\"status\" IN ('scheduled', 'in_progress', 'completed', 'cancelled')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.group_message_reads": {
@@ -3970,7 +4131,20 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "reports_reason_valid": {
+          "name": "reports_reason_valid",
+          "value": "\"reports\".\"reason\" IN ('inappropriate', 'fake', 'harassment', 'spam', 'other')"
+        },
+        "reports_status_valid": {
+          "name": "reports_status_valid",
+          "value": "\"reports\".\"status\" IN ('pending', 'resolved', 'dismissed')"
+        },
+        "reports_resolved_action_valid": {
+          "name": "reports_resolved_action_valid",
+          "value": "\"reports\".\"resolved_action\" IS NULL OR \"reports\".\"resolved_action\" IN ('dismiss', 'warn', 'suspend', 'ban')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.user_consents": {

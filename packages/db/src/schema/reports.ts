@@ -1,4 +1,5 @@
-import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import { check, index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const reports = pgTable(
@@ -22,5 +23,17 @@ export const reports = pgTable(
   (table) => [
     index('reports_reporter_idx').on(table.reporterId),
     index('reports_reported_user_idx').on(table.reportedUserId),
+    check(
+      'reports_reason_valid',
+      sql`${table.reason} IN ('inappropriate', 'fake', 'harassment', 'spam', 'other')`,
+    ),
+    check(
+      'reports_status_valid',
+      sql`${table.status} IN ('pending', 'resolved', 'dismissed')`,
+    ),
+    check(
+      'reports_resolved_action_valid',
+      sql`${table.resolvedAction} IS NULL OR ${table.resolvedAction} IN ('dismiss', 'warn', 'suspend', 'ban')`,
+    ),
   ],
 );

@@ -89,12 +89,20 @@ describe('createLikePost', () => {
 
   it('sends notification to post author on like', async () => {
     const post = buildPost({ authorId: 'author-1' });
-    const author = buildUser({ id: 'author-1', notificationPrefs: { matches: true, messages: true, reminders: true, feed: true } });
+    const author = buildUser({
+      id: 'author-1',
+      notificationPrefs: { matches: true, messages: true, reminders: true, feed: true },
+    });
     const liker = buildUser({ id: 'user-1', displayName: 'Mario' });
     const feedRepo = buildFeedRepo({
       findPostById: vi.fn().mockResolvedValue(post),
       hasLiked: vi.fn().mockResolvedValue(false),
-      addLike: vi.fn().mockResolvedValue({ id: 'like-1', postId: 'post-1', userId: 'user-1', createdAt: new Date() }),
+      addLike: vi.fn().mockResolvedValue({
+        id: 'like-1',
+        postId: 'post-1',
+        userId: 'user-1',
+        createdAt: new Date(),
+      }),
     });
     const userRepo = buildUserRepo({
       findById: vi.fn().mockImplementation((id: string) => {
@@ -121,7 +129,12 @@ describe('createLikePost', () => {
     const feedRepo = buildFeedRepo({
       findPostById: vi.fn().mockResolvedValue(post),
       hasLiked: vi.fn().mockResolvedValue(false),
-      addLike: vi.fn().mockResolvedValue({ id: 'like-1', postId: 'post-1', userId: 'user-1', createdAt: new Date() }),
+      addLike: vi.fn().mockResolvedValue({
+        id: 'like-1',
+        postId: 'post-1',
+        userId: 'user-1',
+        createdAt: new Date(),
+      }),
     });
     const notificationService = buildNotificationService();
     const likePost = createLikePost(buildDeps({ feedRepo, notificationService }));
@@ -133,11 +146,19 @@ describe('createLikePost', () => {
 
   it('does not notify when author has feed notifications disabled', async () => {
     const post = buildPost({ authorId: 'author-1' });
-    const author = buildUser({ id: 'author-1', notificationPrefs: { matches: true, messages: true, reminders: true, feed: false } });
+    const author = buildUser({
+      id: 'author-1',
+      notificationPrefs: { matches: true, messages: true, reminders: true, feed: false },
+    });
     const feedRepo = buildFeedRepo({
       findPostById: vi.fn().mockResolvedValue(post),
       hasLiked: vi.fn().mockResolvedValue(false),
-      addLike: vi.fn().mockResolvedValue({ id: 'like-1', postId: 'post-1', userId: 'user-1', createdAt: new Date() }),
+      addLike: vi.fn().mockResolvedValue({
+        id: 'like-1',
+        postId: 'post-1',
+        userId: 'user-1',
+        createdAt: new Date(),
+      }),
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(author) });
     const notificationService = buildNotificationService();

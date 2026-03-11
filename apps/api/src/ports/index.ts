@@ -8,6 +8,7 @@ export type { ContentReportRepository, CreateReportInput } from './content-repor
 export type { CreateDogInput, DogRepository } from './dog-repository.js';
 export type { EmailService } from './email-service.js';
 export type { ExperimentService } from './experiment-service.js';
+export type { FeedRealtimeService } from './feed-realtime-service.js';
 export type {
   AddPostMediaInput,
   CommentsPage,
@@ -15,7 +16,6 @@ export type {
   FeedPage,
   FeedRepository,
 } from './feed-repository.js';
-export type { FeedRealtimeService } from './feed-realtime-service.js';
 export type { FeedbackRepository } from './feedback-repository.js';
 export type {
   CreateGroupEventInput,

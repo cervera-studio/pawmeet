@@ -5,11 +5,7 @@
 // Usage: Add to app.json plugins array:
 //   ["./plugins/with-certificate-pinning"]
 
-const {
-  withInfoPlist,
-  withAndroidManifest,
-  withDangerousMod,
-} = require('expo/config-plugins');
+const { withInfoPlist, withAndroidManifest, withDangerousMod } = require('expo/config-plugins');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -116,8 +112,7 @@ function withAndroidCertificatePinning(config) {
   config = withAndroidManifest(config, (modConfig) => {
     const mainApplication = modConfig.modResults.manifest.application?.[0];
     if (mainApplication) {
-      mainApplication.$['android:networkSecurityConfig'] =
-        '@xml/network_security_config';
+      mainApplication.$['android:networkSecurityConfig'] = '@xml/network_security_config';
     }
     return modConfig;
   });

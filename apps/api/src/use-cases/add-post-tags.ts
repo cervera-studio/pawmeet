@@ -18,7 +18,7 @@ export function createAddPostTags({ feedRepo }: Deps) {
     }
 
     if (post.authorId !== userId) {
-      return fail(new AppError('FORBIDDEN', 'Solo l\'autore può aggiungere tag', 403));
+      return fail(new AppError('FORBIDDEN', "Solo l'autore può aggiungere tag", 403));
     }
 
     // Validate at least one target per tag

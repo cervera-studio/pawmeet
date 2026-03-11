@@ -33,15 +33,9 @@ export const walks = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    check(
-      'walks_duration_range',
-      sql`${table.durationMin} >= 15 AND ${table.durationMin} <= 180`,
-    ),
+    check('walks_duration_range', sql`${table.durationMin} >= 15 AND ${table.durationMin} <= 180`),
     check('walks_latitude_range', sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`),
-    check(
-      'walks_longitude_range',
-      sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`,
-    ),
+    check('walks_longitude_range', sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`),
     check(
       'walks_status_valid',
       sql`${table.status} IN ('pending', 'accepted', 'declined', 'cancelled', 'completed')`,

@@ -33,8 +33,11 @@ export function useCreatePostViewModel() {
   const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
   const [showTagPicker, setShowTagPicker] = useState(false);
 
-  // Load available tag options (user's matched connections and their dogs)
+  // Lazy-load tag options only when the picker is opened
+  const [tagOptionsLoaded, setTagOptionsLoaded] = useState(false);
   useEffect(() => {
+    if (!showTagPicker || tagOptionsLoaded) return;
+
     async function loadTagOptions() {
       try {
         const [dogsData, matchesData] = await Promise.all([
@@ -70,12 +73,13 @@ export function useCreatePostViewModel() {
         }
 
         setTagOptions(options);
+        setTagOptionsLoaded(true);
       } catch (e) {
         logger.warn('createPost', 'Failed to load tag options', e);
       }
     }
     void loadTagOptions();
-  }, []);
+  }, [showTagPicker, tagOptionsLoaded]);
 
   const pickMedia = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

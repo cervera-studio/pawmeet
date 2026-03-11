@@ -1,10 +1,11 @@
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import type { FeedItem, StoryGroup } from '@/hooks/useFeed';
 import { useFeed } from '@/hooks/useFeed';
 import { useFeedRealtime } from '@/hooks/useFeedRealtime';
+import { useFeedStore } from '@/stores/feed';
 
 export type { FeedItem, StoryGroup };
 
@@ -22,7 +23,8 @@ export function useFeedViewModel() {
     deletePost,
   } = useFeed();
 
-  const [hasNewPosts, setHasNewPosts] = useState(false);
+  const hasNewPosts = useFeedStore((s) => s.hasNewPosts);
+  const setHasNewPosts = useFeedStore((s) => s.setHasNewPosts);
 
   const realtimeCallbacks = useMemo(
     () => ({
@@ -33,7 +35,7 @@ export function useFeedViewModel() {
         void fetchStories();
       },
     }),
-    [fetchStories],
+    [fetchStories, setHasNewPosts],
   );
 
   useFeedRealtime(realtimeCallbacks);
@@ -46,7 +48,7 @@ export function useFeedViewModel() {
   const handleRefreshWithReset = useCallback(async () => {
     setHasNewPosts(false);
     await refresh();
-  }, [refresh]);
+  }, [refresh, setHasNewPosts]);
 
   const handleLike = useCallback(
     async (postId: string) => {

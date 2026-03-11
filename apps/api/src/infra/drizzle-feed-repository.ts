@@ -313,25 +313,29 @@ export class DrizzleFeedRepository implements FeedRepository {
   }
 
   async addLike(postId: string, userId: string): Promise<PostLike> {
-    const rows = await this.db.insert(postLikes).values({ postId, userId }).returning();
-    await this.db
-      .update(posts)
-      .set({ likesCount: sql`${posts.likesCount} + 1` })
-      .where(eq(posts.id, postId));
-    return rows[0] as PostLike;
+    return await this.db.transaction(async (tx) => {
+      const rows = await tx.insert(postLikes).values({ postId, userId }).returning();
+      await tx
+        .update(posts)
+        .set({ likesCount: sql`${posts.likesCount} + 1` })
+        .where(eq(posts.id, postId));
+      return rows[0] as PostLike;
+    });
   }
 
   async removeLike(postId: string, userId: string): Promise<void> {
-    const deleted = await this.db
-      .delete(postLikes)
-      .where(and(eq(postLikes.postId, postId), eq(postLikes.userId, userId)))
-      .returning();
-    if (deleted.length > 0) {
-      await this.db
-        .update(posts)
-        .set({ likesCount: sql`GREATEST(${posts.likesCount} - 1, 0)` })
-        .where(eq(posts.id, postId));
-    }
+    await this.db.transaction(async (tx) => {
+      const deleted = await tx
+        .delete(postLikes)
+        .where(and(eq(postLikes.postId, postId), eq(postLikes.userId, userId)))
+        .returning();
+      if (deleted.length > 0) {
+        await tx
+          .update(posts)
+          .set({ likesCount: sql`GREATEST(${posts.likesCount} - 1, 0)` })
+          .where(eq(posts.id, postId));
+      }
+    });
   }
 
   async hasLiked(postId: string, userId: string): Promise<boolean> {
@@ -349,12 +353,14 @@ export class DrizzleFeedRepository implements FeedRepository {
     content: string;
     parentId: string | null;
   }): Promise<PostComment> {
-    const rows = await this.db.insert(postComments).values(input).returning();
-    await this.db
-      .update(posts)
-      .set({ commentsCount: sql`${posts.commentsCount} + 1` })
-      .where(eq(posts.id, input.postId));
-    return rows[0] as PostComment;
+    return await this.db.transaction(async (tx) => {
+      const rows = await tx.insert(postComments).values(input).returning();
+      await tx
+        .update(posts)
+        .set({ commentsCount: sql`${posts.commentsCount} + 1` })
+        .where(eq(posts.id, input.postId));
+      return rows[0] as PostComment;
+    });
   }
 
   async findCommentById(id: string): Promise<PostComment | null> {
@@ -363,28 +369,36 @@ export class DrizzleFeedRepository implements FeedRepository {
   }
 
   async softDeleteComment(id: string): Promise<void> {
-    const [comment] = await this.db
-      .select({ postId: postComments.postId })
-      .from(postComments)
-      .where(eq(postComments.id, id));
-    await this.db.update(postComments).set({ isDeleted: true }).where(eq(postComments.id, id));
-    if (comment) {
-      await this.db
-        .update(posts)
-        .set({ commentsCount: sql`GREATEST(${posts.commentsCount} - 1, 0)` })
-        .where(eq(posts.id, comment.postId));
-    }
+    await this.db.transaction(async (tx) => {
+      const [comment] = await tx
+        .select({ postId: postComments.postId })
+        .from(postComments)
+        .where(eq(postComments.id, id));
+      await tx.update(postComments).set({ isDeleted: true }).where(eq(postComments.id, id));
+      if (comment) {
+        await tx
+          .update(posts)
+          .set({ commentsCount: sql`GREATEST(${posts.commentsCount} - 1, 0)` })
+          .where(eq(posts.id, comment.postId));
+      }
+    });
   }
 
   async getComments(postId: string, cursor: string | null, limit: number): Promise<CommentsPage> {
-    const baseWhere = and(eq(postComments.postId, postId), eq(postComments.isDeleted, false));
+    // Paginate only parent (top-level) comments, then fetch all their replies.
+    // This prevents orphan replies appearing without their parent on a page.
+    const parentWhere = and(
+      eq(postComments.postId, postId),
+      eq(postComments.isDeleted, false),
+      sql`${postComments.parentId} IS NULL`,
+    );
 
-    let cursorWhere = baseWhere;
+    let cursorWhere = parentWhere;
     if (cursor) {
       const parsed = decodeCursor(cursor);
       if (parsed) {
         cursorWhere = and(
-          baseWhere,
+          parentWhere,
           or(
             lt(postComments.createdAt, parsed.createdAt),
             and(eq(postComments.createdAt, parsed.createdAt), lt(postComments.id, parsed.id)),
@@ -393,7 +407,8 @@ export class DrizzleFeedRepository implements FeedRepository {
       }
     }
 
-    const rows = await this.db
+    // Fetch parent comments for this page
+    const parentRows = await this.db
       .select({
         comment: postComments,
         authorId: users.id,
@@ -406,10 +421,48 @@ export class DrizzleFeedRepository implements FeedRepository {
       .orderBy(desc(postComments.createdAt), desc(postComments.id))
       .limit(limit + 1);
 
-    const hasMore = rows.length > limit;
-    const pageRows = hasMore ? rows.slice(0, limit) : rows;
+    const hasMore = parentRows.length > limit;
+    const pageParents = hasMore ? parentRows.slice(0, limit) : parentRows;
+    const parentIds = pageParents.map((r) => r.comment.id);
 
-    const comments = pageRows.map((row) => ({
+    // Fetch all replies for these parents
+    let replyRows: typeof parentRows = [];
+    if (parentIds.length > 0) {
+      replyRows = await this.db
+        .select({
+          comment: postComments,
+          authorId: users.id,
+          displayName: users.displayName,
+          avatarUrl: users.avatarUrl,
+        })
+        .from(postComments)
+        .innerJoin(users, eq(postComments.authorId, users.id))
+        .where(
+          and(
+            inArray(postComments.parentId, parentIds),
+            eq(postComments.isDeleted, false),
+          ),
+        )
+        .orderBy(postComments.createdAt, postComments.id);
+    }
+
+    // Interleave: parent → its replies → next parent → its replies
+    const repliesByParent = new Map<string, typeof parentRows>();
+    for (const row of replyRows) {
+      const pid = row.comment.parentId as string;
+      const list = repliesByParent.get(pid) ?? [];
+      list.push(row);
+      repliesByParent.set(pid, list);
+    }
+
+    const allRows = [];
+    for (const parent of pageParents) {
+      allRows.push(parent);
+      const replies = repliesByParent.get(parent.comment.id);
+      if (replies) allRows.push(...replies);
+    }
+
+    const comments = allRows.map((row) => ({
       ...(row.comment as PostComment),
       author: {
         id: row.authorId,
@@ -418,9 +471,11 @@ export class DrizzleFeedRepository implements FeedRepository {
       },
     }));
 
-    const lastRow = pageRows[pageRows.length - 1];
+    const lastParent = pageParents[pageParents.length - 1];
     const nextCursor =
-      hasMore && lastRow ? encodeCursor(lastRow.comment.createdAt, lastRow.comment.id) : null;
+      hasMore && lastParent
+        ? encodeCursor(lastParent.comment.createdAt, lastParent.comment.id)
+        : null;
 
     return { comments, nextCursor };
   }

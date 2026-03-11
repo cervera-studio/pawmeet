@@ -63,9 +63,8 @@ export function createCreateComment({
     });
 
     // Fetch commenter name once for all notifications
-    const commenter = post.authorId !== userId || parentComment
-      ? await userRepo.findById(userId)
-      : null;
+    const commenter =
+      post.authorId !== userId || parentComment ? await userRepo.findById(userId) : null;
     const commenterName = commenter?.displayName ?? 'Qualcuno';
 
     // Notify the post author (unless they commented on their own post)

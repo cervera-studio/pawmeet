@@ -21,13 +21,25 @@ export function createAddPostTags({ feedRepo }: Deps) {
       return fail(new AppError('FORBIDDEN', "Solo l'autore può aggiungere tag", 403));
     }
 
-    // Validate at least one target per tag
-    const validTags = tags.filter((t) => t.taggedUserId || t.taggedDogId);
-    if (validTags.length === 0) {
+    // Validate every tag has at least one target
+    const hasInvalid = tags.some((t) => !t.taggedUserId && !t.taggedDogId);
+    if (hasInvalid) {
       return fail(new AppError('INVALID_TAGS', 'Ogni tag deve avere un utente o un cane', 400));
     }
 
-    const created = await feedRepo.addTags(postId, validTags);
+    // Verify tagged users/dogs are connected to the author
+    const connectedUserIds = await feedRepo.getConnectedUserIds(userId);
+    const connectedSet = new Set(connectedUserIds);
+
+    for (const tag of tags) {
+      if (tag.taggedUserId && !connectedSet.has(tag.taggedUserId)) {
+        return fail(
+          new AppError('TAG_NOT_CONNECTED', "Puoi taggare solo utenti con cui hai un match", 403),
+        );
+      }
+    }
+
+    const created = await feedRepo.addTags(postId, tags);
     return succeed({ tags: created });
   };
 }

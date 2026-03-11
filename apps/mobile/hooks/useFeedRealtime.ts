@@ -27,10 +27,7 @@ export function useFeedRealtime(callbacks: FeedRealtimeCallbacks) {
         cb.onPostLiked?.(data.payload.postId as string, data.payload.likerName as string);
         break;
       case WS_EVENT.FEED_POST_COMMENTED:
-        cb.onPostCommented?.(
-          data.payload.postId as string,
-          data.payload.commenterName as string,
-        );
+        cb.onPostCommented?.(data.payload.postId as string, data.payload.commenterName as string);
         break;
       case WS_EVENT.FEED_NEW_STORY:
         cb.onNewStory?.(data.payload.authorId as string);

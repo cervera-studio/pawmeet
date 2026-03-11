@@ -2,6 +2,7 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 
 import { Stack } from 'expo-router';
 import { memo, useRef } from 'react';
+import type { TextInput as TextInputType } from 'react-native';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -11,7 +12,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import type { TextInput as TextInputType } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import type { CommentWithAuthor, ReplyTarget } from './[postId].view-model';

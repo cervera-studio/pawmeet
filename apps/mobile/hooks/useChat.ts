@@ -1,10 +1,10 @@
 import type { RouterOutput } from '@dogwalk/api-client';
 import { logger } from '@dogwalk/utils';
 import { useCallback, useEffect, useState } from 'react';
+import { getSharedWs, useWebSocketListener } from '@/hooks/useWebSocket';
 import { cache } from '@/lib/storage';
 import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
-import { getSharedWs, useWebSocketListener } from '@/hooks/useWebSocket';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? (__DEV__ ? 'http://localhost:3000' : '');
 

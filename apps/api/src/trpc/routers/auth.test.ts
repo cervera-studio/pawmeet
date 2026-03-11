@@ -6,6 +6,21 @@ import type { authDeps } from '../../container.js';
 import { router } from '../trpc.js';
 import { createAuthRouter } from './auth.js';
 
+vi.mock('../../lib/redis.js', () => ({
+  redis: {},
+}));
+
+vi.mock('@upstash/ratelimit', () => ({
+  Ratelimit: class MockRatelimit {
+    static slidingWindow() {
+      return {};
+    }
+    async limit() {
+      return { success: true };
+    }
+  },
+}));
+
 // ── Builders ──────────────────────────────────────────────────────────────────
 
 function buildSafeUser(overrides: Partial<SafeUser> = {}): SafeUser {
@@ -64,7 +79,7 @@ function buildAuthDeps(overrides: Partial<typeof authDeps> = {}): typeof authDep
 function createCaller(deps: typeof authDeps) {
   const appRouter = router({ auth: createAuthRouter(deps) });
   // Auth procedures are all public, so userId is not required
-  return appRouter.createCaller({ userId: null });
+  return appRouter.createCaller({ userId: null, clientIp: '127.0.0.1' });
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────

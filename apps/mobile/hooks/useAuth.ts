@@ -1,5 +1,4 @@
 import { logger } from '@dogwalk/utils';
-import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { container } from 'tsyringe';
 import { storage } from '@/lib/storage';
@@ -33,7 +32,6 @@ async function persistAuthResult(result: AuthResult, storeLogin: AuthStore['logi
 type AuthStore = ReturnType<typeof useAuthStore.getState>;
 
 export function useAuth() {
-  const router = useRouter();
   const {
     user,
     token,
@@ -44,31 +42,29 @@ export function useAuth() {
     setLoading,
   } = useAuthStore();
 
+  // Stack.Protected handles navigation automatically when isAuthenticated changes
   const login = useCallback(
     async (email: string, password: string) => {
       const result = await authRepo.login(email, password);
       await persistAuthResult(result, storeLogin);
-      router.replace('/(tabs)');
     },
-    [storeLogin, router],
+    [storeLogin],
   );
 
   const register = useCallback(
     async (displayName: string, email: string, password: string) => {
       const result = await authRepo.register(displayName, email, password);
       await persistAuthResult(result, storeLogin);
-      router.replace('/(tabs)');
     },
-    [storeLogin, router],
+    [storeLogin],
   );
 
   const socialLogin = useCallback(
     async (provider: 'apple' | 'google', idToken: string, displayName?: string) => {
       const result = await authRepo.socialLogin(provider, idToken, displayName);
       await persistAuthResult(result, storeLogin);
-      router.replace('/(tabs)');
     },
-    [storeLogin, router],
+    [storeLogin],
   );
 
   const logout = useCallback(async () => {
@@ -80,8 +76,7 @@ export function useAuth() {
     }
     await storage.clear();
     storeLogout();
-    router.replace('/(auth)/welcome');
-  }, [storeLogout, router]);
+  }, [storeLogout]);
 
   const checkAuth = useCallback(async () => {
     setLoading(true);

@@ -1,7 +1,7 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as AuthSession from 'expo-auth-session';
-import * as Crypto from 'expo-crypto';
 import Constants from 'expo-constants';
+import * as Crypto from 'expo-crypto';
 
 const GOOGLE_CLIENT_ID = Constants.expoConfig?.extra?.googleClientId ?? '';
 
@@ -14,6 +14,7 @@ const googleDiscovery: AuthSession.DiscoveryDocument = {
 export interface SocialAuthResult {
   provider: 'apple' | 'google';
   idToken: string;
+  nonce?: string;
   displayName?: string;
 }
 
@@ -44,25 +45,28 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
 export function useGoogleAuth() {
   const redirectUri = AuthSession.makeRedirectUri();
 
+  const nonce = Crypto.getRandomBytes(16).reduce(
+    (s, b) => s + b.toString(16).padStart(2, '0'),
+    '',
+  );
+
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: GOOGLE_CLIENT_ID,
       scopes: ['openid', 'profile', 'email'],
       responseType: AuthSession.ResponseType.IdToken,
       redirectUri,
-      usePKCE: false,
-      extraParams: {
-        nonce: Crypto.getRandomBytes(16).reduce((s, b) => s + b.toString(16).padStart(2, '0'), ''),
-      },
+      extraParams: { nonce },
     },
     googleDiscovery,
   );
 
-  return { request, response, promptAsync };
+  return { request, response, promptAsync, nonce };
 }
 
 export function extractGoogleIdToken(
   response: AuthSession.AuthSessionResult | null,
+  nonce?: string,
 ): SocialAuthResult | null {
   if (response?.type !== 'success') return null;
 
@@ -72,5 +76,6 @@ export function extractGoogleIdToken(
   return {
     provider: 'google',
     idToken,
+    nonce,
   };
 }

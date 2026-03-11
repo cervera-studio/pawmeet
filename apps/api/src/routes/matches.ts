@@ -5,6 +5,7 @@ import { z } from 'zod';
 import type { matchDeps as MatchDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { uuidParamOrBail } from '../lib/validate-param.js';
 
 type Env = { Variables: { userId: string } };
 
@@ -46,7 +47,7 @@ export function createMatchRoutes(deps: typeof MatchDeps) {
 
     .delete('/:id', async (c) => {
       const userId = c.get('userId');
-      const matchId = c.req.param('id');
+      const matchId = uuidParamOrBail(c, 'id');
       const result = await deps.unmatch(userId, matchId);
       return handleResult(c, result);
     });

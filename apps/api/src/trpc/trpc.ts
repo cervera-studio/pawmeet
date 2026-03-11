@@ -1,27 +1,34 @@
 import type { Result } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
+import { Ratelimit } from '@upstash/ratelimit';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { verifyAccessToken } from '../lib/jwt.js';
 
 export interface Context {
   userId: string | null;
+  clientIp: string;
   [key: string]: unknown;
 }
 
 /** Create tRPC context from the incoming request. Extracts userId from Bearer token if present. */
 export async function createContext(opts: { req: Request }): Promise<Context> {
+  const clientIp =
+    opts.req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    opts.req.headers.get('x-real-ip') ??
+    'unknown';
+
   const authHeader = opts.req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
-    return { userId: null };
+    return { userId: null, clientIp };
   }
 
   try {
     const token = authHeader.slice(7);
     const payload = await verifyAccessToken(token);
-    return { userId: payload.sub };
+    return { userId: payload.sub, clientIp };
   } catch (e) {
     logger.warn('tRPC', 'Failed to verify access token in context', e);
-    return { userId: null };
+    return { userId: null, clientIp };
   }
 }
 
@@ -29,6 +36,36 @@ const t = initTRPC.context<Context>().create();
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
+
+// ── Rate-limited public procedure for auth endpoints (10 req / 15 min) ──────
+let _authRateLimiter: Ratelimit | null = null;
+
+async function getAuthRateLimiter(): Promise<Ratelimit> {
+  if (!_authRateLimiter) {
+    const { redis } = await import('../lib/redis.js');
+    _authRateLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, '15m'),
+      prefix: 'rl:trpc:auth',
+    });
+  }
+  return _authRateLimiter;
+}
+
+export const rateLimitedPublicProcedure = t.procedure.use(async ({ ctx, next }) => {
+  const identifier = ctx.userId ?? ctx.clientIp;
+  const limiter = await getAuthRateLimiter();
+  const { success } = await limiter.limit(identifier);
+
+  if (!success) {
+    throw new TRPCError({
+      code: 'TOO_MANY_REQUESTS',
+      message: 'Troppe richieste, riprova più tardi',
+    });
+  }
+
+  return next();
+});
 
 /** Protected procedure — requires authenticated user. */
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {

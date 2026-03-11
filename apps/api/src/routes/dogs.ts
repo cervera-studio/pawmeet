@@ -11,6 +11,7 @@ import type { dogDeps as DogDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';
 import { ALLOWED_IMAGE_TYPES_TUPLE, MAX_FILE_SIZE } from '../lib/storage.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { uuidParamOrBail } from '../lib/validate-param.js';
 
 type Env = { Variables: { userId: string } };
 
@@ -47,14 +48,14 @@ export function createDogRoutes(deps: typeof DogDeps) {
     })
 
     .get('/:id', async (c) => {
-      const dogId = c.req.param('id');
+      const dogId = uuidParamOrBail(c, 'id');
       const result = await deps.getDog(dogId);
       return handleResult(c, result);
     })
 
     .put('/:id', zValidator('json', updateDogSchema), async (c) => {
       const userId = c.get('userId');
-      const dogId = c.req.param('id');
+      const dogId = uuidParamOrBail(c, 'id');
       const input = c.req.valid('json');
       const result = await deps.updateDog(dogId, userId, input);
       return handleResult(c, result);
@@ -62,14 +63,14 @@ export function createDogRoutes(deps: typeof DogDeps) {
 
     .delete('/:id', async (c) => {
       const userId = c.get('userId');
-      const dogId = c.req.param('id');
+      const dogId = uuidParamOrBail(c, 'id');
       const result = await deps.deleteDog(dogId, userId);
       return handleResult(c, result);
     })
 
     .post('/:id/photos/upload-url', zValidator('json', photoUploadUrlSchema), async (c) => {
       const userId = c.get('userId');
-      const dogId = c.req.param('id');
+      const dogId = uuidParamOrBail(c, 'id');
       const { contentType } = c.req.valid('json');
       const result = await deps.uploadDogPhotoUrl(dogId, userId, contentType);
       return handleResult(c, result);
@@ -77,7 +78,7 @@ export function createDogRoutes(deps: typeof DogDeps) {
 
     .post('/:id/photos/confirm', zValidator('json', photoConfirmSchema), async (c) => {
       const userId = c.get('userId');
-      const dogId = c.req.param('id');
+      const dogId = uuidParamOrBail(c, 'id');
       const { key } = c.req.valid('json');
       const result = await deps.confirmDogPhoto(dogId, userId, key);
       return handleResult(c, result, 201);
@@ -85,15 +86,15 @@ export function createDogRoutes(deps: typeof DogDeps) {
 
     .delete('/:id/photos/:photoId', async (c) => {
       const userId = c.get('userId');
-      const dogId = c.req.param('id');
-      const photoId = c.req.param('photoId');
+      const dogId = uuidParamOrBail(c, 'id');
+      const photoId = uuidParamOrBail(c, 'photoId');
       const result = await deps.deleteDogPhoto(dogId, photoId, userId);
       return handleResult(c, result);
     })
 
     .put('/:id/photos/reorder', zValidator('json', photoReorderSchema), async (c) => {
       const userId = c.get('userId');
-      const dogId = c.req.param('id');
+      const dogId = uuidParamOrBail(c, 'id');
       const { photoIds } = c.req.valid('json');
       const result = await deps.reorderDogPhotos(dogId, userId, photoIds);
       return handleResult(c, result);

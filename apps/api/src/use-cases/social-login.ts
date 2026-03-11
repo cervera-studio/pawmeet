@@ -1,11 +1,11 @@
 import type { SafeUser } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import type { SocialLoginInput } from '@dogwalk/validation';
-import { type Result, AppError, fail, succeed } from '@dogwalk/types';
+import { sanitizeUser } from '../lib/sanitize.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { SocialAuthPayload, SocialAuthVerifier } from '../ports/social-auth-verifier.js';
 import type { TokenRepository } from '../ports/token-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
-import { sanitizeUser } from '../lib/sanitize.js';
 
 interface Deps {
   userRepo: UserRepository;
@@ -23,12 +23,12 @@ export interface SocialLoginOutput {
 export function createSocialLogin(deps: Deps) {
   return async (input: SocialLoginInput): Promise<Result<SocialLoginOutput>> => {
     const { userRepo, tokenRepo, authService, socialAuthVerifier } = deps;
-    const { provider, idToken } = input;
+    const { provider, idToken, nonce } = input;
 
-    // Verify the social provider's ID token
+    // Verify the social provider's ID token (with nonce for replay protection)
     let payload: SocialAuthPayload;
     try {
-      payload = await socialAuthVerifier.verify(provider, idToken);
+      payload = await socialAuthVerifier.verify(provider, idToken, nonce);
     } catch {
       return fail(new AppError('AUTH_INVALID_TOKEN', 'Token social non valido', 401));
     }

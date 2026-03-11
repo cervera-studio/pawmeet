@@ -1,7 +1,7 @@
 import type { ApiClient } from '@dogwalk/api-client';
 import type { ChatRepository } from '../interfaces';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? (__DEV__ ? 'http://localhost:3000' : '');
 
 export function createTrpcChatRepository(
   api: ApiClient,

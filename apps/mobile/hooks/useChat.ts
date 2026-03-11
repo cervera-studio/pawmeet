@@ -6,13 +6,21 @@ import { cache } from '@/lib/storage';
 import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 
-const WS_URL = process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:3000/ws';
+function getWsUrl(): string {
+  const url = process.env.EXPO_PUBLIC_WS_URL;
+  if (!url && !__DEV__) {
+    throw new Error('EXPO_PUBLIC_WS_URL is required in production');
+  }
+  return url ?? 'ws://localhost:3000/ws';
+}
+
+const WS_URL = getWsUrl();
 
 function buildWsUrl(baseUrl: string, token: string): { url: string; protocols: string[] } {
   // Never pass tokens as query params — use Sec-WebSocket-Protocol subprotocol
   return { url: baseUrl, protocols: [`access_token.${token}`] };
 }
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? (__DEV__ ? 'http://localhost:3000' : '');
 
 const CONVERSATIONS_CACHE_KEY = 'cache:conversations';
 

@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  type SocialAuthResult,
   extractGoogleIdToken,
+  type SocialAuthResult,
   signInWithApple,
   useGoogleAuth,
 } from '@/lib/social-auth';

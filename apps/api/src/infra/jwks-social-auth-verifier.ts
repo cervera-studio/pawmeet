@@ -16,11 +16,15 @@ export class JwksSocialAuthVerifier implements SocialAuthVerifier {
     this.googleJwks = jose.createRemoteJWKSet(new URL(GOOGLE_JWKS_URI));
   }
 
-  async verify(provider: 'apple' | 'google', idToken: string): Promise<SocialAuthPayload> {
+  async verify(
+    provider: 'apple' | 'google',
+    idToken: string,
+    nonce?: string,
+  ): Promise<SocialAuthPayload> {
     if (provider === 'apple') {
       return this.verifyApple(idToken);
     }
-    return this.verifyGoogle(idToken);
+    return this.verifyGoogle(idToken, nonce);
   }
 
   private async verifyApple(idToken: string): Promise<SocialAuthPayload> {
@@ -41,11 +45,16 @@ export class JwksSocialAuthVerifier implements SocialAuthVerifier {
     };
   }
 
-  private async verifyGoogle(idToken: string): Promise<SocialAuthPayload> {
+  private async verifyGoogle(idToken: string, nonce?: string): Promise<SocialAuthPayload> {
     const { payload } = await jose.jwtVerify(idToken, this.googleJwks, {
       issuer: ['https://accounts.google.com', 'accounts.google.com'],
       audience: this.googleClientId,
     });
+
+    // Verify nonce if provided to prevent replay attacks
+    if (nonce && payload.nonce !== nonce) {
+      throw new Error('Google ID token nonce mismatch');
+    }
 
     const email = payload.email as string | undefined;
     if (!email) {

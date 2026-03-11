@@ -4,12 +4,24 @@ import type { StateStorage } from 'zustand/middleware';
 
 const TOKEN_KEY = 'dogwalk_auth_token';
 const REFRESH_TOKEN_KEY = 'dogwalk_refresh_token';
+const MMKV_ENCRYPTION_KEY = 'dogwalk_mmkv_enc_key';
 
 // ---------------------------------------------------------------------------
 // MMKV — fast synchronous key-value storage for caching & Zustand persistence
 // ---------------------------------------------------------------------------
 
-export const mmkv = createMMKV();
+function getOrCreateEncryptionKey(): string {
+  const existing = SecureStore.getItem(MMKV_ENCRYPTION_KEY);
+  if (existing) return existing;
+
+  const key = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  SecureStore.setItem(MMKV_ENCRYPTION_KEY, key);
+  return key;
+}
+
+export const mmkv = createMMKV({ id: 'dogwalk', encryptionKey: getOrCreateEncryptionKey() });
 
 /** Type-safe JSON cache helpers built on top of MMKV. */
 export const cache = {

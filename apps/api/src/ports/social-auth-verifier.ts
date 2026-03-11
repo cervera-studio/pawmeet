@@ -5,8 +5,5 @@ export interface SocialAuthPayload {
 }
 
 export interface SocialAuthVerifier {
-  verify(
-    provider: 'apple' | 'google',
-    idToken: string,
-  ): Promise<SocialAuthPayload>;
+  verify(provider: 'apple' | 'google', idToken: string, nonce?: string): Promise<SocialAuthPayload>;
 }

@@ -36,7 +36,7 @@
     "bullmq": "^5.70.0",
     "drizzle-orm": "^0.45.0",
     "expo-server-sdk": "^6.0.0",
-    "hono": "^4.12.0",
+    "hono": "^4.12.7",
     "jose": "^6.2.0",
     "resend": "^6.9.0",
     "ts-pattern": "^5.9.0",

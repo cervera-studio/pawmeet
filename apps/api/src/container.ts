@@ -64,7 +64,6 @@ import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
-import { createSocialLogin } from './use-cases/social-login.js';
 import { createGetActivityStats } from './use-cases/get-activity-stats.js';
 import { createGetDog } from './use-cases/get-dog.js';
 import { createGetDogHealthGoal } from './use-cases/get-dog-health-goal.js';
@@ -125,6 +124,7 @@ import { createReviewContentReport } from './use-cases/review-content-report.js'
 import { createSearchBreeds } from './use-cases/search-breeds.js';
 import { createSendGroupMessage } from './use-cases/send-group-message.js';
 import { createSendMessage } from './use-cases/send-message.js';
+import { createSocialLogin } from './use-cases/social-login.js';
 import { createStartWalkTracking } from './use-cases/start-walk-tracking.js';
 import { createSubmitFeedback } from './use-cases/submit-feedback.js';
 import { createSyncHealthData } from './use-cases/sync-health-data.js';

@@ -11,6 +11,7 @@ function requireEnv(name: string): Uint8Array {
 /** Lazy-initialized secrets — crash at first use, not at import time */
 let _jwtSecret: Uint8Array | null = null;
 let _refreshSecret: Uint8Array | null = null;
+let _adminJwtSecret: Uint8Array | null = null;
 
 function getJwtSecret(): Uint8Array {
   if (!_jwtSecret) {
@@ -24,6 +25,18 @@ function getRefreshSecret(): Uint8Array {
     _refreshSecret = requireEnv('JWT_REFRESH_SECRET');
   }
   return _refreshSecret;
+}
+
+function getAdminJwtSecret(): Uint8Array {
+  if (!_adminJwtSecret) {
+    // Falls back to JWT_SECRET for backwards compatibility during migration
+    const value = process.env.JWT_ADMIN_SECRET ?? process.env.JWT_SECRET;
+    if (!value) {
+      throw new Error('JWT_ADMIN_SECRET (or JWT_SECRET) environment variable is required');
+    }
+    _adminJwtSecret = new TextEncoder().encode(value);
+  }
+  return _adminJwtSecret;
 }
 
 const ACCESS_TOKEN_EXPIRY = '15m';
@@ -95,7 +108,7 @@ export async function generateAdminAccessToken(adminId: string, role: string): P
     .setSubject(adminId)
     .setIssuedAt()
     .setExpirationTime(ADMIN_ACCESS_TOKEN_EXPIRY)
-    .sign(getJwtSecret());
+    .sign(getAdminJwtSecret());
 }
 
 export async function generateAdminRefreshToken(adminId: string, role: string): Promise<string> {
@@ -108,7 +121,7 @@ export async function generateAdminRefreshToken(adminId: string, role: string): 
 }
 
 export async function verifyAdminAccessToken(token: string): Promise<AdminTokenPayload> {
-  const { payload } = await jwtVerify(token, getJwtSecret());
+  const { payload } = await jwtVerify(token, getAdminJwtSecret());
   if (payload.type !== 'admin') {
     throw new Error('Invalid token type: expected admin access token');
   }

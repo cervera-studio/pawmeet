@@ -63,6 +63,10 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        // MMKV is synchronous, so this fires immediately — mark loading done
+        state?.setLoading(false);
+      },
     },
   ),
 );

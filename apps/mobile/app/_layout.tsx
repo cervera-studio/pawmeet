@@ -2,9 +2,9 @@ import '../global.css';
 
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';
-import { Stack } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
@@ -17,9 +17,24 @@ Sentry.init({
   enabled: !__DEV__,
 });
 
+SplashScreen.preventAutoHideAsync();
+
 /** Registers for push notifications only when user is authenticated. */
 function PushNotificationRegistration() {
   usePushNotifications();
+  return null;
+}
+
+/** Hides splash screen once auth state has been hydrated from MMKV. */
+function SplashController() {
+  const isLoading = useAuthStore((s) => s.isLoading);
+
+  useEffect(() => {
+    if (!isLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [isLoading]);
+
   return null;
 }
 
@@ -35,23 +50,29 @@ function RootLayout() {
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
         <StatsigProviderExpo sdkKey={STATSIG_CLIENT_KEY} user={statsigUser}>
+          <SplashController />
           {isAuthenticated && <PushNotificationRegistration />}
           <StatusBar style="auto" />
           <Stack>
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="(modals)/dog-detail"
-              options={{ presentation: 'modal', title: 'Dettaglio Cane' }}
-            />
-            <Stack.Screen
-              name="(modals)/settings"
-              options={{ presentation: 'modal', title: 'Impostazioni' }}
-            />
-            <Stack.Screen
-              name="(modals)/report"
-              options={{ presentation: 'modal', title: 'Segnala' }}
-            />
+            <Stack.Protected guard={!isAuthenticated}>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            </Stack.Protected>
+
+            <Stack.Protected guard={isAuthenticated}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(modals)/dog-detail"
+                options={{ presentation: 'modal', title: 'Dettaglio Cane' }}
+              />
+              <Stack.Screen
+                name="(modals)/settings"
+                options={{ presentation: 'modal', title: 'Impostazioni' }}
+              />
+              <Stack.Screen
+                name="(modals)/report"
+                options={{ presentation: 'modal', title: 'Segnala' }}
+              />
+            </Stack.Protected>
           </Stack>
         </StatsigProviderExpo>
       </SafeAreaProvider>

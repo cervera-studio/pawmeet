@@ -9,15 +9,15 @@ import {
   verifyEmailSchema,
 } from '@dogwalk/validation';
 import type { authDeps } from '../../container.js';
-import { publicProcedure, router, unwrapResult } from '../trpc.js';
+import { publicProcedure, rateLimitedPublicProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createAuthRouter(deps: typeof authDeps) {
   return router({
-    register: publicProcedure
+    register: rateLimitedPublicProcedure
       .input(registerSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.registerUser(input))),
 
-    login: publicProcedure
+    login: rateLimitedPublicProcedure
       .input(loginSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.loginUser(input))),
 
@@ -33,15 +33,15 @@ export function createAuthRouter(deps: typeof authDeps) {
       .input(verifyEmailSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.verifyEmail(input.token))),
 
-    forgotPassword: publicProcedure
+    forgotPassword: rateLimitedPublicProcedure
       .input(forgotPasswordSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.forgotPassword(input.email))),
 
-    resetPassword: publicProcedure
+    resetPassword: rateLimitedPublicProcedure
       .input(resetPasswordSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.resetPassword(input))),
 
-    socialLogin: publicProcedure
+    socialLogin: rateLimitedPublicProcedure
       .input(socialLoginSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.socialLogin(input))),
   });

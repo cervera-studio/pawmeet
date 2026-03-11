@@ -44,8 +44,10 @@ export function parseWsMessage(data: string): WsMessage | null {
   }
 }
 
-/** Handle typing start/stop events by relaying to room peers */
+/** Handle typing start/stop events by relaying to room peers (only if user is in the room) */
 export function handleTyping(userId: string, matchId: string, type: WsMessage['type']) {
+  const room = getRooms().get(matchId);
+  if (!room?.has(userId)) return;
   sendToRoom(matchId, { type, payload: { userId, matchId } }, userId);
 }
 

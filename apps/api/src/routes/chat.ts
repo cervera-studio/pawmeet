@@ -5,6 +5,7 @@ import { z } from 'zod';
 import type { chatDeps as ChatDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { uuidParamOrBail } from '../lib/validate-param.js';
 
 type Env = { Variables: { userId: string } };
 
@@ -25,7 +26,7 @@ export function createChatRoutes(deps: typeof ChatDeps) {
 
     .get('/conversations/:matchId/messages', zValidator('query', paginationSchema), async (c) => {
       const userId = c.get('userId');
-      const matchId = c.req.param('matchId');
+      const matchId = uuidParamOrBail(c, 'matchId');
       const { cursor, limit } = c.req.valid('query');
       const result = await deps.getMessages(userId, matchId, cursor, limit);
       return handleResult(c, result);
@@ -33,7 +34,7 @@ export function createChatRoutes(deps: typeof ChatDeps) {
 
     .post('/conversations/:matchId/messages', zValidator('json', sendMessageSchema), async (c) => {
       const userId = c.get('userId');
-      const matchId = c.req.param('matchId');
+      const matchId = uuidParamOrBail(c, 'matchId');
       const { content, mediaUrl } = c.req.valid('json');
       const result = await deps.sendMessage(userId, matchId, content, mediaUrl);
       return handleResult(c, result, 201);
@@ -41,7 +42,7 @@ export function createChatRoutes(deps: typeof ChatDeps) {
 
     .patch('/conversations/:matchId/read', async (c) => {
       const userId = c.get('userId');
-      const matchId = c.req.param('matchId');
+      const matchId = uuidParamOrBail(c, 'matchId');
       const result = await deps.markMessagesRead(userId, matchId);
       return handleResult(c, result);
     });

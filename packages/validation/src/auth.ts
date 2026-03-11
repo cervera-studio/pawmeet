@@ -37,6 +37,7 @@ export const logoutSchema = z.object({
 export const socialLoginSchema = z.object({
   provider: z.enum(['apple', 'google']),
   idToken: z.string().min(1),
+  nonce: z.string().min(1).optional(),
   displayName: z.string().min(2).max(50).optional(),
 });
 

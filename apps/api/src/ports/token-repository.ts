@@ -38,10 +38,6 @@ export interface TokenRepository {
     type: TokenType;
     expiresAt: Date;
   }): Promise<VerificationTokenRecord>;
-  findValidVerificationToken(
-    tokenHash: string,
-    type: TokenType,
-  ): Promise<VerificationTokenRecord | null>;
   findValidVerificationTokenByUser(
     userId: string,
     tokenHash: string,

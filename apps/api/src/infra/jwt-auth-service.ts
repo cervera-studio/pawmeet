@@ -1,4 +1,4 @@
-import { generateToken, hashToken } from '../lib/email.js';
+import { hashToken } from '../lib/email.js';
 import { generateTokenPair, verifyRefreshToken } from '../lib/jwt.js';
 import { hashPassword, verifyPassword } from '../lib/password.js';
 import type { AuthService, TokenPair } from '../ports/auth-service.js';
@@ -27,10 +27,6 @@ export class JwtAuthService implements AuthService {
 
   async verifyRefreshToken(token: string): Promise<{ sub: string }> {
     return verifyRefreshToken(token);
-  }
-
-  generateToken(): string {
-    return generateToken();
   }
 
   async hashToken(token: string): Promise<string> {

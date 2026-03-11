@@ -8,7 +8,6 @@ import {
   resetPasswordOtpSchema,
   socialLoginSchema,
   verifyEmailOtpSchema,
-  verifyEmailSchema,
 } from '@dogwalk/validation';
 import type { authDeps } from '../../container.js';
 import { publicProcedure, rateLimitedPublicProcedure, router, unwrapResult } from '../trpc.js';
@@ -30,10 +29,6 @@ export function createAuthRouter(deps: typeof authDeps) {
     logout: publicProcedure
       .input(logoutSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.logoutUser(input.refreshToken))),
-
-    verifyEmail: publicProcedure
-      .input(verifyEmailSchema)
-      .mutation(async ({ input }) => unwrapResult(await deps.verifyEmail(input.token))),
 
     forgotPassword: rateLimitedPublicProcedure
       .input(forgotPasswordSchema)

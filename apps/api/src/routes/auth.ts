@@ -8,7 +8,6 @@ import {
   resetPasswordOtpSchema,
   socialLoginSchema,
   verifyEmailOtpSchema,
-  verifyEmailSchema,
 } from '@dogwalk/validation';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
@@ -43,11 +42,6 @@ export function createAuthRoutes(deps: typeof AuthDeps) {
     .post('/logout', zValidator('json', logoutSchema), async (c) => {
       const { refreshToken } = c.req.valid('json');
       const result = await deps.logoutUser(refreshToken);
-      return handleResult(c, result);
-    })
-    .post('/verify-email', zValidator('json', verifyEmailSchema), async (c) => {
-      const { token } = c.req.valid('json');
-      const result = await deps.verifyEmail(token);
       return handleResult(c, result);
     })
     .post('/forgot-password', zValidator('json', forgotPasswordSchema), async (c) => {

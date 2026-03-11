@@ -60,24 +60,6 @@ export class DrizzleTokenRepository implements TokenRepository {
     return firstRow<VerificationTokenRecord>(rows);
   }
 
-  async findValidVerificationToken(
-    tokenHash: string,
-    type: TokenType,
-  ): Promise<VerificationTokenRecord | null> {
-    const rows = await this.db
-      .select()
-      .from(verificationTokens)
-      .where(
-        and(
-          eq(verificationTokens.tokenHash, tokenHash),
-          eq(verificationTokens.type, type),
-          gt(verificationTokens.expiresAt, new Date()),
-          isNull(verificationTokens.usedAt),
-        ),
-      );
-    return firstRowOrNull<VerificationTokenRecord>(rows);
-  }
-
   async findValidVerificationTokenByUser(
     userId: string,
     tokenHash: string,

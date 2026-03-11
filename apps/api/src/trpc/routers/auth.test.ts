@@ -65,13 +65,25 @@ function buildAuthDeps(overrides: Partial<typeof authDeps> = {}): typeof authDep
       }),
     ),
     logoutUser: vi.fn().mockResolvedValue(succeed({ message: 'Logout effettuato' })),
-    verifyEmail: vi.fn().mockResolvedValue(succeed({ message: 'Email verificata con successo' })),
     forgotPassword: vi
       .fn()
       .mockResolvedValue(succeed({ message: "Se l'email esiste, riceverai un link per il reset" })),
     resetPassword: vi
       .fn()
       .mockResolvedValue(succeed({ message: 'Password reimpostata con successo' })),
+    socialLogin: vi.fn().mockResolvedValue(
+      succeed({
+        user: buildSafeUser(),
+        accessToken: 'access_tok',
+        refreshToken: 'refresh_tok',
+      }),
+    ),
+    verifyEmailOtp: vi
+      .fn()
+      .mockResolvedValue(succeed({ message: 'Email verificata con successo' })),
+    resendVerification: vi
+      .fn()
+      .mockResolvedValue(succeed({ message: 'Codice di verifica inviato' })),
     ...overrides,
   };
 }
@@ -255,41 +267,6 @@ describe('auth router', () => {
 
       expect(result.message).toBe('Logout effettuato');
       expect(deps.logoutUser).toHaveBeenCalledWith('some_token');
-    });
-  });
-
-  describe('verifyEmail', () => {
-    it('returns success on valid token', async () => {
-      const deps = buildAuthDeps();
-      const caller = createCaller(deps);
-
-      const result = await caller.auth.verifyEmail({ token: 'valid_token' });
-
-      expect(result.message).toBe('Email verificata con successo');
-      expect(deps.verifyEmail).toHaveBeenCalledWith('valid_token');
-    });
-
-    it('throws BAD_REQUEST on invalid token', async () => {
-      const deps = buildAuthDeps({
-        verifyEmail: vi
-          .fn()
-          .mockResolvedValue(
-            fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido o scaduto', 400)),
-          ),
-      });
-      const caller = createCaller(deps);
-
-      await expect(caller.auth.verifyEmail({ token: 'bad_token' })).rejects.toMatchObject({
-        code: 'BAD_REQUEST',
-      });
-    });
-
-    it('rejects empty token', async () => {
-      const deps = buildAuthDeps();
-      const caller = createCaller(deps);
-
-      await expect(caller.auth.verifyEmail({ token: '' })).rejects.toThrow(TRPCError);
-      expect(deps.verifyEmail).not.toHaveBeenCalled();
     });
   });
 

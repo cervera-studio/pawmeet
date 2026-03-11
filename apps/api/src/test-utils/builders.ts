@@ -520,7 +520,6 @@ export function buildAuthService(overrides: Partial<AuthService> = {}): AuthServ
       .fn()
       .mockResolvedValue({ accessToken: 'access', refreshToken: 'refresh' }),
     verifyRefreshToken: vi.fn().mockResolvedValue({ sub: 'user-1' }),
-    generateToken: vi.fn().mockReturnValue('token-123'),
     hashToken: vi.fn().mockResolvedValue('hashed-token'),
     hashRefreshToken: vi.fn().mockResolvedValue('hashed-refresh'),
     ...overrides,
@@ -543,9 +542,7 @@ export function buildExperimentService(
 
 export function buildEmailService(overrides: Partial<EmailService> = {}): EmailService {
   return {
-    sendVerificationEmail: vi.fn().mockResolvedValue(undefined),
     sendVerificationOtp: vi.fn().mockResolvedValue(undefined),
-    sendPasswordResetEmail: vi.fn().mockResolvedValue(undefined),
     sendPasswordResetOtp: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
@@ -574,7 +571,6 @@ export function buildTokenRepo(overrides: Partial<TokenRepository> = {}): TokenR
       usedAt: null,
       createdAt: new Date(),
     }),
-    findValidVerificationToken: vi.fn(),
     findValidVerificationTokenByUser: vi.fn(),
     revokeAllVerificationTokens: vi.fn(),
     markVerificationTokenUsed: vi.fn(),

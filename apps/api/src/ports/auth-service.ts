@@ -8,7 +8,6 @@ export interface AuthService {
   verifyPassword(password: string, hash: string): Promise<boolean>;
   generateTokenPair(userId: string): Promise<TokenPair>;
   verifyRefreshToken(token: string): Promise<{ sub: string }>;
-  generateToken(): string;
   hashToken(token: string): Promise<string>;
   hashRefreshToken(token: string): Promise<string>;
 }

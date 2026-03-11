@@ -139,7 +139,6 @@ import { createUpdatePreferences } from './use-cases/update-preferences.js';
 import { createUploadAvatarUrl } from './use-cases/upload-avatar-url.js';
 import { createUploadDogPhotoUrl } from './use-cases/upload-dog-photo-url.js';
 import { createUploadPostMediaUrl } from './use-cases/upload-post-media-url.js';
-import { createVerifyEmail } from './use-cases/verify-email.js';
 import { createVerifyEmailOtp } from './use-cases/verify-email-otp.js';
 import { createViewStory } from './use-cases/view-story.js';
 
@@ -186,7 +185,6 @@ export const authDeps = {
   loginUser: createLoginUser({ userRepo, tokenRepo, authService }),
   refreshTokens: createRefreshTokens({ tokenRepo, authService }),
   logoutUser: createLogoutUser({ tokenRepo, authService }),
-  verifyEmail: createVerifyEmail({ userRepo, tokenRepo, authService }),
   forgotPassword: createForgotPassword({ userRepo, tokenRepo, authService, emailService }),
   resetPassword: createResetPassword({ userRepo, tokenRepo, authService }),
   socialLogin: createSocialLogin({ userRepo, tokenRepo, authService, socialAuthVerifier }),

@@ -4,11 +4,10 @@ const PUBLIC_PATHS = ['/login'];
 
 /**
  * Server-side auth gate. Checks for the `admin_session` cookie which is set
- * by the client after a successful login. The actual JWT validation happens
- * client-side via the AuthProvider (access token in memory + refresh via API).
+ * by the auth proxy API routes after a successful login/refresh.
  *
- * The HttpOnly refresh cookie lives on the API domain (cross-origin) and
- * cannot be read here, so we use a lightweight session indicator cookie instead.
+ * All auth cookies (access_token, refresh_token, session) are now same-origin,
+ * managed by Next.js API routes that proxy to the Fly.io API.
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

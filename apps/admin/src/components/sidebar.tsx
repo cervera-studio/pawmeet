@@ -21,24 +21,41 @@ export function Sidebar() {
       <nav className="flex-1 space-y-1 px-3 py-4">
         {vm.navigation.map((item) => {
           const isActive = vm.isNavActive(item.href);
+          const hasChildren = !!item.children;
 
           return (
             <div key={item.name}>
-              <Link
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {item.name}
-              </Link>
+              {hasChildren ? (
+                <button
+                  type="button"
+                  onClick={() => vm.toggleSection(item.href)}
+                  className={cn(
+                    'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary-50 text-primary-700'
+                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  {item.name}
+                </button>
+              ) : (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary-50 text-primary-700'
+                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  {item.name}
+                </Link>
+              )}
 
               {/* Sub-navigation */}
-              {item.children && isActive && (
+              {hasChildren && (isActive || vm.isSectionOpen(item.href)) && (
                 <div className="ml-8 mt-1 space-y-1">
                   {item.children.map((child) => (
                     <Link

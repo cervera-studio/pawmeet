@@ -1,19 +1,46 @@
-import type { api as ApiClientInstance } from '@/lib/api';
 import type { AdminUser } from '@/lib/auth';
 import type { AuthRepository, AuthResponse } from '../interfaces';
 
-type RestClient = typeof ApiClientInstance;
-
-export function createRestAuthRepository(client: RestClient): AuthRepository {
+/**
+ * Auth repository that uses same-origin Next.js API routes as proxy.
+ * The proxy handles cookie management (HttpOnly, same-origin) and
+ * forwards requests to the actual API on Fly.io.
+ *
+ * This eliminates cross-origin cookie issues (SameSite, third-party blocking)
+ * and enables future server-side data fetching.
+ */
+export function createRestAuthRepository(): AuthRepository {
   return {
     async login(email: string, password: string): Promise<AuthResponse> {
-      return client.post<AuthResponse>('/admin/auth/login', { email, password });
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error ?? 'Login failed');
+      }
+
+      return response.json() as Promise<AuthResponse>;
     },
+
     async refresh(): Promise<AuthResponse> {
-      return client.post<{ token: string; user: AdminUser }>('/admin/auth/refresh');
+      const response = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        throw new Error('Refresh failed');
+      }
+
+      return response.json() as Promise<{ token: string; user: AdminUser }>;
     },
+
     async logout(): Promise<void> {
-      await client.post('/admin/auth/logout');
+      await fetch('/api/auth/logout', { method: 'POST' });
     },
   };
 }

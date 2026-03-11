@@ -1,4 +1,5 @@
 import { usePathname } from 'next/navigation';
+import { useCallback, useState } from 'react';
 import {
   LayoutDashboardIcon,
   PawPrintIcon,
@@ -16,6 +17,7 @@ export const navigation = [
     href: '/moderation',
     icon: ShieldIcon,
     children: [
+      { name: 'Feed', href: '/moderation/feed' },
       { name: 'Foto', href: '/moderation/photos' },
       { name: 'Contenuti', href: '/moderation/content' },
       { name: 'Segnalazioni', href: '/moderation/reports' },
@@ -28,6 +30,7 @@ export const navigation = [
 export function useSidebarViewModel() {
   const pathname = usePathname();
   const { user, logout } = useAuthContext();
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   function isNavActive(href: string) {
     return href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -36,6 +39,23 @@ export function useSidebarViewModel() {
   function isChildActive(href: string) {
     return pathname === href;
   }
+
+  const toggleSection = useCallback((href: string) => {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(href)) {
+        next.delete(href);
+      } else {
+        next.add(href);
+      }
+      return next;
+    });
+  }, []);
+
+  const isSectionOpen = useCallback(
+    (href: string) => openSections.has(href),
+    [openSections],
+  );
 
   const userInitial = user?.name?.charAt(0)?.toUpperCase() ?? 'A';
   const userName = user?.name ?? 'Admin';
@@ -46,6 +66,8 @@ export function useSidebarViewModel() {
     navigation,
     isNavActive,
     isChildActive,
+    toggleSection,
+    isSectionOpen,
     userInitial,
     userName,
     userEmail,

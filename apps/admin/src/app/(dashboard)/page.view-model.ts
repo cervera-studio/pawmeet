@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useAuthContext } from '@/lib/auth-store';
 import { type AnalyticsKpis, type DashboardStats, statsRepository } from '@/repositories';
 
 export function useDashboardViewModel() {
+  const { isAuthenticated } = useAuthContext();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [analyticsKpis, setAnalyticsKpis] = useState<AnalyticsKpis | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,8 +25,8 @@ export function useDashboardViewModel() {
   }, []);
 
   useEffect(() => {
-    void fetchStats();
-  }, [fetchStats]);
+    if (isAuthenticated) void fetchStats();
+  }, [fetchStats, isAuthenticated]);
 
   const kpiCards = [
     {

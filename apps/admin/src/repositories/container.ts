@@ -6,6 +6,7 @@ import { createRestPhotoModerationRepository } from './rest/rest-photo-moderatio
 import { createRestUserRepository } from './rest/rest-user-repository';
 import { createTrpcContentModerationRepository } from './trpc/trpc-content-moderation-repository';
 import { createTrpcDogRepository } from './trpc/trpc-dog-repository';
+import { createTrpcFeedAdminRepository } from './trpc/trpc-feed-admin-repository';
 import { createTrpcReportRepository } from './trpc/trpc-report-repository';
 import { createTrpcSettingsRepository } from './trpc/trpc-settings-repository';
 import { createTrpcStatsRepository } from './trpc/trpc-stats-repository';
@@ -13,8 +14,8 @@ import { createTrpcStatsRepository } from './trpc/trpc-stats-repository';
 const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 const trpcClient = createApiClient(baseUrl, () => getAccessToken());
 
-// REST implementations (pending migration to tRPC)
-export const authRepository = createRestAuthRepository(api);
+// Auth uses same-origin proxy (Next.js API routes → Fly.io API)
+export const authRepository = createRestAuthRepository();
 export const userRepository = createRestUserRepository(api);
 export const photoModerationRepository = createRestPhotoModerationRepository(api);
 
@@ -24,3 +25,4 @@ export const dogRepository = createTrpcDogRepository(trpcClient);
 export const reportRepository = createTrpcReportRepository(trpcClient);
 export const contentModerationRepository = createTrpcContentModerationRepository(trpcClient);
 export const settingsRepository = createTrpcSettingsRepository(trpcClient);
+export const feedAdminRepository = createTrpcFeedAdminRepository(trpcClient);

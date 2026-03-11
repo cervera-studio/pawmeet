@@ -24,7 +24,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
         setAccessToken(response.token);
         api.setToken(response.token);
         setUser(response.user);
-        document.cookie = 'admin_session=1; path=/; max-age=28800; SameSite=Lax';
         setIsLoading(false);
       })
       .catch(() => {
@@ -39,7 +38,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(response.token);
     api.setToken(response.token);
     setUser(response.user);
-    document.cookie = 'admin_session=1; path=/; max-age=28800; SameSite=Lax';
   }, []);
 
   const logout = useCallback(async () => {
@@ -51,7 +49,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(null);
     api.setToken(null);
     setUser(null);
-    document.cookie = 'admin_session=; path=/; max-age=0';
     router.push('/login');
   }, [router]);
 

@@ -1,7 +1,18 @@
-import { index, integer, jsonb, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import {
+  check,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  unique,
+  uuid,
+} from 'drizzle-orm/pg-core';
 import { users } from './users';
 
-// ── XP Transactions ─────────────────────────────────────────────────────────
+// -- XP Transactions ---------------------------------------------------------
 
 export const xpTransactions = pgTable(
   'xp_transactions',
@@ -15,22 +26,33 @@ export const xpTransactions = pgTable(
     metadata: jsonb('metadata').$type<Record<string, unknown>>(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index('xp_transactions_user_idx').on(table.userId)],
+  (table) => [
+    index('xp_transactions_user_idx').on(table.userId),
+    check('xp_transactions_points_positive', sql`${table.points} > 0`),
+  ],
 );
 
-// ── Challenges ──────────────────────────────────────────────────────────────
+// -- Challenges --------------------------------------------------------------
 
-export const challenges = pgTable('challenges', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  type: text('type').notNull(),
-  title: text('title').notNull(),
-  description: text('description').notNull(),
-  targetValue: integer('target_value').notNull(),
-  xpReward: integer('xp_reward').notNull(),
-  startsAt: timestamp('starts_at', { withTimezone: true }).notNull(),
-  endsAt: timestamp('ends_at', { withTimezone: true }).notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const challenges = pgTable(
+  'challenges',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    type: text('type').notNull(),
+    title: text('title').notNull(),
+    description: text('description').notNull(),
+    targetValue: integer('target_value').notNull(),
+    xpReward: integer('xp_reward').notNull(),
+    startsAt: timestamp('starts_at', { withTimezone: true }).notNull(),
+    endsAt: timestamp('ends_at', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    check('challenges_target_value_positive', sql`${table.targetValue} > 0`),
+    check('challenges_xp_reward_positive', sql`${table.xpReward} > 0`),
+    check('challenges_dates_order', sql`${table.startsAt} < ${table.endsAt}`),
+  ],
+);
 
 export const userChallenges = pgTable(
   'user_challenges',
@@ -49,10 +71,11 @@ export const userChallenges = pgTable(
   (t) => [
     unique('user_challenges_user_id_challenge_id_unique').on(t.userId, t.challengeId),
     index('user_challenges_challenge_idx').on(t.challengeId),
+    check('user_challenges_progress_non_negative', sql`${t.progress} >= 0`),
   ],
 );
 
-// ── Achievements ────────────────────────────────────────────────────────────
+// -- Achievements ------------------------------------------------------------
 
 export const achievements = pgTable(
   'achievements',

@@ -1,5 +1,7 @@
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   doublePrecision,
   index,
   integer,
@@ -35,6 +37,20 @@ export const posts = pgTable(
   (table) => [
     index('posts_author_idx').on(table.authorId),
     index('posts_walk_idx').on(table.walkId),
+    check('posts_likes_count_non_negative', sql`${table.likesCount} >= 0`),
+    check('posts_comments_count_non_negative', sql`${table.commentsCount} >= 0`),
+    check(
+      'posts_latitude_range',
+      sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`,
+    ),
+    check(
+      'posts_longitude_range',
+      sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`,
+    ),
+    check(
+      'posts_moderation_status_valid',
+      sql`${table.moderationStatus} IN ('pending', 'approved', 'rejected')`,
+    ),
   ],
 );
 
@@ -52,7 +68,18 @@ export const postMedia = pgTable(
     moderationStatus: varchar('moderation_status', { length: 10 }).notNull().default('pending'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index('post_media_post_idx').on(table.postId)],
+  (table) => [
+    index('post_media_post_idx').on(table.postId),
+    check('post_media_type_valid', sql`${table.mediaType} IN ('photo', 'video')`),
+    check(
+      'post_media_position_range',
+      sql`${table.position} >= 0 AND ${table.position} <= 9`,
+    ),
+    check(
+      'post_media_moderation_status_valid',
+      sql`${table.moderationStatus} IN ('pending', 'approved', 'rejected')`,
+    ),
+  ],
 );
 
 export const postLikes = pgTable(
@@ -83,7 +110,7 @@ export const postComments = pgTable(
     authorId: uuid('author_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    parentId: uuid('parent_id'),
+    parentId: uuid('parent_id').references((): any => postComments.id, { onDelete: 'cascade' }),
     content: text('content').notNull(),
     isDeleted: boolean('is_deleted').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -111,6 +138,8 @@ export const postTags = pgTable(
     index('post_tags_post_idx').on(table.postId),
     index('post_tags_user_idx').on(table.taggedUserId),
     index('post_tags_dog_idx').on(table.taggedDogId),
+    uniqueIndex('post_tags_post_user_unique').on(table.postId, table.taggedUserId),
+    uniqueIndex('post_tags_post_dog_unique').on(table.postId, table.taggedDogId),
   ],
 );
 
@@ -128,7 +157,11 @@ export const stories = pgTable(
     viewCount: integer('view_count').notNull().default(0),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index('stories_author_idx').on(table.authorId)],
+  (table) => [
+    index('stories_author_idx').on(table.authorId),
+    check('stories_media_type_valid', sql`${table.mediaType} IN ('photo', 'video')`),
+    check('stories_view_count_non_negative', sql`${table.viewCount} >= 0`),
+  ],
 );
 
 export const storyViews = pgTable(
@@ -168,6 +201,18 @@ export const contentReports = pgTable(
   (table) => [
     index('content_reports_reporter_idx').on(table.reporterId),
     index('content_reports_reviewed_by_idx').on(table.reviewedBy),
+    check(
+      'content_reports_content_type_valid',
+      sql`${table.contentType} IN ('post', 'comment', 'story')`,
+    ),
+    check(
+      'content_reports_reason_valid',
+      sql`${table.reason} IN ('inappropriate', 'spam', 'harassment', 'violence', 'other')`,
+    ),
+    check(
+      'content_reports_status_valid',
+      sql`${table.status} IN ('pending', 'reviewed', 'dismissed')`,
+    ),
   ],
 );
 

@@ -1,4 +1,4 @@
-import { integer, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
 import { dogProfiles } from './dogs';
 import { users } from './users';
 import { walks } from './walks';
@@ -20,5 +20,9 @@ export const walkFeedback = pgTable(
     comment: text('comment'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [unique('walk_feedback_walk_user_unique').on(table.walkId, table.fromUserId)],
+  (table) => [
+    unique('walk_feedback_walk_user_unique').on(table.walkId, table.fromUserId),
+    index('walk_feedback_from_user_idx').on(table.fromUserId),
+    index('walk_feedback_to_dog_idx').on(table.toDogId),
+  ],
 );

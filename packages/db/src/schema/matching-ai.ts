@@ -1,5 +1,6 @@
 import {
   doublePrecision,
+  index,
   integer,
   jsonb,
   pgTable,
@@ -10,24 +11,31 @@ import {
 } from 'drizzle-orm/pg-core';
 import { dogProfiles, matches, users } from './index';
 
-export const swipeScoreLogs = pgTable('swipe_score_logs', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  swiperDogId: uuid('swiper_dog_id')
-    .notNull()
-    .references(() => dogProfiles.id, { onDelete: 'cascade' }),
-  swipedDogId: uuid('swiped_dog_id')
-    .notNull()
-    .references(() => dogProfiles.id, { onDelete: 'cascade' }),
-  direction: varchar('direction', { length: 5 }).notNull(),
-  sizeScore: doublePrecision('size_score').notNull(),
-  energyScore: doublePrecision('energy_score').notNull(),
-  behaviorScore: doublePrecision('behavior_score').notNull(),
-  walkScore: doublePrecision('walk_score').notNull(),
-  distanceScore: doublePrecision('distance_score').notNull(),
-  leashScore: doublePrecision('leash_score').notNull(),
-  overallScore: doublePrecision('overall_score').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const swipeScoreLogs = pgTable(
+  'swipe_score_logs',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    swiperDogId: uuid('swiper_dog_id')
+      .notNull()
+      .references(() => dogProfiles.id, { onDelete: 'cascade' }),
+    swipedDogId: uuid('swiped_dog_id')
+      .notNull()
+      .references(() => dogProfiles.id, { onDelete: 'cascade' }),
+    direction: varchar('direction', { length: 5 }).notNull(),
+    sizeScore: doublePrecision('size_score').notNull(),
+    energyScore: doublePrecision('energy_score').notNull(),
+    behaviorScore: doublePrecision('behavior_score').notNull(),
+    walkScore: doublePrecision('walk_score').notNull(),
+    distanceScore: doublePrecision('distance_score').notNull(),
+    leashScore: doublePrecision('leash_score').notNull(),
+    overallScore: doublePrecision('overall_score').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('swipe_score_logs_swiper_dog_idx').on(table.swiperDogId),
+    index('swipe_score_logs_swiped_dog_idx').on(table.swipedDogId),
+  ],
+);
 
 export const userMatchingPreferences = pgTable('user_matching_preferences', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -46,18 +54,25 @@ export const userMatchingPreferences = pgTable('user_matching_preferences', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const matchInteractions = pgTable('match_interactions', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  matchId: uuid('match_id')
-    .notNull()
-    .references(() => matches.id, { onDelete: 'cascade' }),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  interactionType: varchar('interaction_type', { length: 30 }).notNull(),
-  metadata: jsonb('metadata'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const matchInteractions = pgTable(
+  'match_interactions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    matchId: uuid('match_id')
+      .notNull()
+      .references(() => matches.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    interactionType: varchar('interaction_type', { length: 30 }).notNull(),
+    metadata: jsonb('metadata'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('match_interactions_match_idx').on(table.matchId),
+    index('match_interactions_user_idx').on(table.userId),
+  ],
+);
 
 export const userActivityWindows = pgTable(
   'user_activity_windows',

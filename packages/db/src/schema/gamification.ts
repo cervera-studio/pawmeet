@@ -1,18 +1,22 @@
-import { integer, jsonb, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, jsonb, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 // ── XP Transactions ─────────────────────────────────────────────────────────
 
-export const xpTransactions = pgTable('xp_transactions', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  action: text('action').notNull(),
-  points: integer('points').notNull(),
-  metadata: jsonb('metadata').$type<Record<string, unknown>>(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const xpTransactions = pgTable(
+  'xp_transactions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    action: text('action').notNull(),
+    points: integer('points').notNull(),
+    metadata: jsonb('metadata').$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('xp_transactions_user_idx').on(table.userId)],
+);
 
 // ── Challenges ──────────────────────────────────────────────────────────────
 
@@ -42,7 +46,10 @@ export const userChallenges = pgTable(
     completedAt: timestamp('completed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [unique('user_challenges_user_id_challenge_id_unique').on(t.userId, t.challengeId)],
+  (t) => [
+    unique('user_challenges_user_id_challenge_id_unique').on(t.userId, t.challengeId),
+    index('user_challenges_challenge_idx').on(t.challengeId),
+  ],
 );
 
 // ── Achievements ────────────────────────────────────────────────────────────

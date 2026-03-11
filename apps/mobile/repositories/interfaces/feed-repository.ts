@@ -1,0 +1,49 @@
+import type { ContentReportReason } from '@dogwalk/types';
+
+export interface FeedItem {
+  [key: string]: unknown;
+}
+
+export interface StoryGroup {
+  [key: string]: unknown;
+}
+
+export interface FeedComment {
+  [key: string]: unknown;
+}
+
+export interface FeedPage {
+  items: FeedItem[];
+  nextCursor: string | null;
+}
+
+export interface CommentsPage {
+  comments: FeedComment[];
+  nextCursor: string | null;
+}
+
+export interface CreatePostInput {
+  caption?: string;
+  latitude?: number;
+  longitude?: number;
+  walkId?: string;
+}
+
+export interface FeedRepository {
+  timeline(cursor?: string, limit?: number): Promise<FeedPage>;
+  stories(): Promise<{ groups: StoryGroup[] }>;
+  like(postId: string): Promise<{ liked: boolean }>;
+  createComment(
+    postId: string,
+    content: string,
+    parentId?: string,
+  ): Promise<{ comment: FeedComment }>;
+  getComments(postId: string, cursor?: string, limit?: number): Promise<CommentsPage>;
+  deletePost(postId: string): Promise<void>;
+  viewStory(storyId: string): Promise<void>;
+  reportContent(
+    contentType: 'post' | 'comment' | 'story',
+    contentId: string,
+    reason: ContentReportReason,
+  ): Promise<void>;
+}

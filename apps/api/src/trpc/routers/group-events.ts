@@ -8,18 +8,28 @@ import {
   updateGroupEventSchema,
 } from '@dogwalk/validation';
 import type { groupEventDeps } from '../../container.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createGroupEventsRouter(deps: typeof groupEventDeps) {
   return router({
-    create: protectedProcedure.input(createGroupEventSchema).mutation(async ({ ctx, input }) =>
-      unwrapResult(
+    create: protectedProcedure.input(createGroupEventSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(
         await deps.createGroupEvent(ctx.userId, {
           ...input,
           scheduledAt: new Date(input.scheduledAt),
         }),
-      ),
-    ),
+      );
+      trackEvent('group_event_created', ctx.userId, {
+        maxParticipants: input.maxParticipants,
+        distanceFromCreatorKm: 0,
+        category: 'walk',
+        visibility: input.visibility as 'public' | 'friends_only' | 'invite_only',
+        requiresApproval: false,
+        isRecurring: false,
+      });
+      return result;
+    }),
 
     get: protectedProcedure
       .input(getGroupEventSchema)
@@ -35,11 +45,14 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
       unwrapResult(await deps.listUserEvents(ctx.userId)),
     ),
 
-    join: protectedProcedure
-      .input(joinGroupEventSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.joinGroupEvent(ctx.userId, input)),
-      ),
+    join: protectedProcedure.input(joinGroupEventSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.joinGroupEvent(ctx.userId, input));
+      trackEvent('group_event_joined', ctx.userId, {
+        participantNumber: 0,
+        distanceKm: 0,
+      });
+      return result;
+    }),
 
     leave: protectedProcedure
       .input(leaveGroupEventSchema)

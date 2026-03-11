@@ -7,7 +7,10 @@ type Deps = {
 };
 
 export function createUnmatch({ dogRepo, matchRepo }: Deps) {
-  return async (userId: string, matchId: string): Promise<Result<{ message: string }>> => {
+  return async (
+    userId: string,
+    matchId: string,
+  ): Promise<Result<{ message: string; matchAgeDays: number }>> => {
     // Find the match
     const match = await matchRepo.findById(matchId);
     if (!match || !match.isActive) {
@@ -24,6 +27,10 @@ export function createUnmatch({ dogRepo, matchRepo }: Deps) {
     // Soft-delete the match
     await matchRepo.softDelete(matchId);
 
-    return succeed({ message: 'Match annullato' });
+    const matchAgeDays = Math.floor(
+      (Date.now() - new Date(match.createdAt).getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    return succeed({ message: 'Match annullato', matchAgeDays });
   };
 }

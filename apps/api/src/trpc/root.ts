@@ -8,6 +8,7 @@ import {
   feedbackDeps,
   feedDeps,
   fitnessDeps,
+  followDeps,
   gamificationDeps,
   groupChatDeps,
   groupEventDeps,
@@ -27,6 +28,7 @@ import { createDogsRouter } from './routers/dogs.js';
 import { createFeedRouter } from './routers/feed.js';
 import { createFeedbackRouter } from './routers/feedback.js';
 import { createFitnessRouter } from './routers/fitness.js';
+import { createFollowsRouter } from './routers/follows.js';
 import { createGamificationRouter } from './routers/gamification.js';
 import { createGroupChatRouter } from './routers/group-chat.js';
 import { createGroupEventsRouter } from './routers/group-events.js';
@@ -49,6 +51,7 @@ export const appRouter = router({
   walks: createWalksRouter(walkDeps),
   feedback: createFeedbackRouter(feedbackDeps),
   feed: createFeedRouter(feedDeps),
+  follows: createFollowsRouter(followDeps),
   fitness: createFitnessRouter(fitnessDeps),
   contentModeration: createContentModerationRouter(contentModerationDeps),
   gamification: createGamificationRouter(gamificationDeps),

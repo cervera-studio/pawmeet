@@ -1,7 +1,9 @@
 import {
   confirmUploadSchema,
+  deleteAccountSchema,
   nearbySchema,
   registerPushTokenSchema,
+  submitDateOfBirthSchema,
   updateLocationSchema,
   updateNotificationPrefsSchema,
   updatePreferencesSchema,
@@ -9,6 +11,7 @@ import {
 import { z } from 'zod';
 import type { userDeps } from '../../container.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 const uploadAvatarSchema = z.object({
@@ -66,9 +69,23 @@ export function createUsersRouter(deps: typeof userDeps) {
         unwrapResult(await deps.updateNotificationPrefs(ctx.userId, input)),
       ),
 
-    deleteAccount: protectedProcedure.mutation(async ({ ctx }) =>
-      unwrapResult(await deps.deleteAccount(ctx.userId)),
-    ),
+    submitDateOfBirth: protectedProcedure
+      .input(submitDateOfBirthSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.submitDateOfBirth(ctx.userId, input.dateOfBirth)),
+      ),
+
+    deleteAccount: protectedProcedure
+      .input(deleteAccountSchema)
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(await deps.deleteAccount(ctx.userId, input.password));
+        trackEvent('auth_account_deleted', ctx.userId, {
+          accountAgeDays: result.accountAgeDays,
+          dogCount: result.dogCount,
+          matchCount: 0, // matches are already cascaded at this point
+        });
+        return { message: result.message };
+      }),
 
     exportMyData: protectedProcedure.query(async ({ ctx }) =>
       unwrapResult(await deps.exportUserData(ctx.userId)),

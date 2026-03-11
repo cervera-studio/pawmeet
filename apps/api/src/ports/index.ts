@@ -17,6 +17,7 @@ export type {
   FeedRepository,
 } from './feed-repository.js';
 export type { FeedbackRepository } from './feedback-repository.js';
+export type { FollowRepository, PaginatedQuery } from './follow-repository.js';
 export type {
   CreateGroupEventInput,
   GroupEventRepository,
@@ -42,6 +43,7 @@ export type {
   CreateUserInput,
   NearbyQuery,
   NearbyUser,
+  SearchResult,
   UserRepository,
 } from './user-repository.js';
 export type { WalkAlbumRepository } from './walk-album-repository.js';

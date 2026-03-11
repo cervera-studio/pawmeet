@@ -6,6 +6,8 @@ export interface AdminUserListItem {
   email: string;
   status: 'active' | 'suspended' | 'banned';
   dogsCount: number;
+  followersCount: number;
+  followingCount: number;
   createdAt: string;
 }
 
@@ -24,6 +26,8 @@ export interface AdminUserDetail {
     breed: string;
     isActive: boolean;
   }[];
+  followersCount: number;
+  followingCount: number;
   reportsReceived: number;
   matchesCount: number;
 }

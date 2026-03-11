@@ -91,6 +91,8 @@ export default function UserDetailPage() {
                   : 'Mai'
               }
             />
+            <InfoRow label="Follower" value={String(vm.user.followersCount)} />
+            <InfoRow label="Seguiti" value={String(vm.user.followingCount)} />
             <InfoRow label="Segnalazioni ricevute" value={String(vm.user.reportsReceived)} />
             <InfoRow label="Match totali" value={String(vm.user.matchesCount)} />
           </CardContent>

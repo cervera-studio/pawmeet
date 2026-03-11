@@ -1,6 +1,7 @@
 import { submitFeedbackSchema } from '@dogwalk/validation';
 import { z } from 'zod';
 import type { feedbackDeps } from '../../container.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 const listByWalkSchema = z.object({
@@ -13,16 +14,21 @@ const getDogRatingSchema = z.object({
 
 export function createFeedbackRouter(deps: typeof feedbackDeps) {
   return router({
-    submit: protectedProcedure.input(submitFeedbackSchema).mutation(async ({ ctx, input }) =>
-      unwrapResult(
+    submit: protectedProcedure.input(submitFeedbackSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(
         await deps.submitFeedback(ctx.userId, {
           walkId: input.walkId,
           toDogId: input.toDogId,
           rating: input.rating,
           comment: input.comment,
         }),
-      ),
-    ),
+      );
+      trackEvent('walk_feedback_submitted', ctx.userId, {
+        rating: input.rating,
+        hasComment: !!input.comment,
+      });
+      return result;
+    }),
 
     listByWalk: protectedProcedure
       .input(listByWalkSchema)

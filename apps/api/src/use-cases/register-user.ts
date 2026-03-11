@@ -14,6 +14,7 @@ export interface RegisterInput {
   email: string;
   password: string;
   displayName: string;
+  dateOfBirth: Date;
 }
 
 export interface RegisterOutput {
@@ -32,7 +33,7 @@ interface Deps {
 export function createRegisterUser(deps: Deps) {
   return async (input: RegisterInput): Promise<Result<RegisterOutput>> => {
     const { userRepo, tokenRepo, authService, emailService } = deps;
-    const { email, password, displayName } = input;
+    const { email, password, displayName, dateOfBirth } = input;
 
     // Check if email already exists
     const existing = await userRepo.findByEmail(email);
@@ -47,6 +48,7 @@ export function createRegisterUser(deps: Deps) {
       displayName,
       passwordHash,
       authProvider: 'email',
+      dateOfBirth,
     });
 
     // Send verification OTP

@@ -12,6 +12,14 @@ export type {
   StoryGroup,
 } from './feed-repository';
 export type { DogRating, FeedbackRepository } from './feedback-repository';
+export type {
+  BlockedPage,
+  BlockedUser,
+  FollowPage,
+  FollowRepository,
+  FollowStatus,
+  FollowUser,
+} from './follow-repository';
 export type { GroupChatRepository, GroupConversation } from './group-chat-repository';
 export type {
   CreateGroupEventInput,

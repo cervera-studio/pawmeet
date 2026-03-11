@@ -1,5 +1,14 @@
 import { sql } from 'drizzle-orm';
-import { check, index, jsonb, pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  check,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const analyticsEvents = pgTable(
@@ -16,10 +25,14 @@ export const analyticsEvents = pgTable(
     platform: varchar('platform', { length: 10 }).notNull(),
     appVersion: varchar('app_version', { length: 20 }),
     screenName: varchar('screen_name', { length: 100 }),
+    schemaVersion: integer('schema_version').notNull().default(1),
   },
   (t) => [
     index('analytics_events_name_ts_idx').on(t.eventName, t.serverTimestamp),
     index('analytics_events_user_ts_idx').on(t.userId, t.serverTimestamp),
-    check('analytics_events_platform_valid', sql`${t.platform} IN ('ios', 'android', 'web')`),
+    check(
+      'analytics_events_platform_valid',
+      sql`${t.platform} IN ('ios', 'android', 'web', 'server')`,
+    ),
   ],
 );

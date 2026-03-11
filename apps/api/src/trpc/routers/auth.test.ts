@@ -102,6 +102,7 @@ describe('auth router', () => {
       email: 'new@example.com',
       password: 'Str0ng!Pass',
       displayName: 'New User',
+      dateOfBirth: '2000-01-15',
     };
 
     it('returns user and tokens on valid input', async () => {
@@ -113,7 +114,10 @@ describe('auth router', () => {
       expect(result.accessToken).toBe('access_tok');
       expect(result.refreshToken).toBe('refresh_tok');
       expect(result.user.email).toBe('test@example.com');
-      expect(deps.registerUser).toHaveBeenCalledWith(validInput);
+      expect(deps.registerUser).toHaveBeenCalledWith({
+        ...validInput,
+        dateOfBirth: new Date('2000-01-15'),
+      });
     });
 
     it('throws CONFLICT when email already taken', async () => {

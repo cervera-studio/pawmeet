@@ -1,7 +1,11 @@
 import { eventStatusDeps, photoModerationDeps } from '../container.js';
+import { db } from '../lib/db.js';
+import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
+import { createDataCleanupWorker } from './data-cleanup.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
 import { createPhotoModerationWorker } from './photo-moderation.js';
+import { scheduleAnalyticsAggregation, scheduleDataCleanup } from './queue.js';
 import { createEmailWorker } from './send-email.js';
 import { createNotificationWorker } from './send-notification.js';
 
@@ -12,9 +16,13 @@ export async function startWorkers() {
   const emailWorker = createEmailWorker();
   const eventStatusWorker = createEventStatusWorker(eventStatusDeps);
   const analyticsWorker = createAnalyticsWorker();
+  const aggregationWorker = createAnalyticsAggregationWorker();
+  const dataCleanupWorker = createDataCleanupWorker({ db });
 
-  // Schedule repeatable job for event status transitions (every 5 min)
+  // Schedule repeatable jobs
   await scheduleEventStatusCheck();
+  await scheduleAnalyticsAggregation();
+  await scheduleDataCleanup();
 
   // Handle graceful shutdown
   const shutdown = async () => {
@@ -25,6 +33,8 @@ export async function startWorkers() {
       emailWorker.close(),
       eventStatusWorker.close(),
       analyticsWorker.close(),
+      aggregationWorker.close(),
+      dataCleanupWorker.close(),
     ]);
     console.log('[workers] All workers stopped');
   };

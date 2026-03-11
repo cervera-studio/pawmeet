@@ -5,12 +5,13 @@ import {
   respondWalkSchema,
 } from '@dogwalk/validation';
 import type { walkDeps } from '../../container.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createWalksRouter(deps: typeof walkDeps) {
   return router({
-    propose: protectedProcedure.input(proposeWalkSchema).mutation(async ({ ctx, input }) =>
-      unwrapResult(
+    propose: protectedProcedure.input(proposeWalkSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(
         await deps.proposeWalk(ctx.userId, {
           matchId: input.matchId,
           scheduledAt: new Date(input.scheduledAt),
@@ -21,14 +22,22 @@ export function createWalksRouter(deps: typeof walkDeps) {
           longitude: input.longitude,
           notes: input.notes,
         }),
-      ),
-    ),
+      );
+      trackEvent('walk_proposed', ctx.userId, {
+        matchAgeHours: 0,
+        messageCountBeforeProposal: 0,
+      });
+      return result;
+    }),
 
-    respond: protectedProcedure
-      .input(respondWalkSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.respondToWalk(ctx.userId, input.walkId, input.accept)),
-      ),
+    respond: protectedProcedure.input(respondWalkSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.respondToWalk(ctx.userId, input.walkId, input.accept));
+      trackEvent('walk_response', ctx.userId, {
+        response: input.accept ? 'accepted' : 'declined',
+        proposalAgeHours: 0,
+      });
+      return result;
+    }),
 
     cancel: protectedProcedure
       .input(cancelWalkSchema)

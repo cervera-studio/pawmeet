@@ -74,7 +74,12 @@ function buildDeps(
 }
 
 describe('createRegisterUser', () => {
-  const input = { email: 'new@example.com', password: 'Str0ng!Pass', displayName: 'New User' };
+  const input = {
+    email: 'new@example.com',
+    password: 'Str0ng!Pass',
+    displayName: 'New User',
+    dateOfBirth: new Date('2000-01-15'),
+  };
 
   it('registers a new user and returns tokens', async () => {
     const deps = buildDeps();

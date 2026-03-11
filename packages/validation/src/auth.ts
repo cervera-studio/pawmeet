@@ -1,3 +1,5 @@
+import { MIN_USER_AGE } from '@dogwalk/config';
+import { calculateAge } from '@dogwalk/utils';
 import { z } from 'zod';
 
 export const AUTH_PROVIDER = {
@@ -15,10 +17,18 @@ export const passwordSchema = z
   .regex(/[A-Z]/, 'Almeno una maiuscola')
   .regex(/[0-9]/, 'Almeno un numero');
 
+export const dateOfBirthSchema = z.coerce
+  .date({ error: 'Data di nascita obbligatoria' })
+  .refine((d) => d <= new Date(), { message: 'La data di nascita non può essere nel futuro' })
+  .refine((d) => calculateAge(d) >= MIN_USER_AGE, {
+    message: `Devi avere almeno ${MIN_USER_AGE} anni per usare DogWalk`,
+  });
+
 export const registerSchema = z.object({
   email: z.string().email('Email non valida'),
   password: passwordSchema,
   displayName: z.string().min(2).max(50),
+  dateOfBirth: dateOfBirthSchema,
 });
 
 export const loginSchema = z.object({

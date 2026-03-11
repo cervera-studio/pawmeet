@@ -11,6 +11,7 @@ export function useRegisterViewModel() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ export function useRegisterViewModel() {
       return;
     }
 
-    const result = registerSchema.safeParse({ displayName, email, password });
+    const result = registerSchema.safeParse({ displayName, email, password, dateOfBirth });
     if (!result.success) {
       setErrors(zodToFieldErrors(result.error));
       return;
@@ -33,13 +34,13 @@ export function useRegisterViewModel() {
 
     setLoading(true);
     try {
-      await register(displayName, email, password);
+      await register(displayName, email, password, dateOfBirth);
     } catch (e) {
       setApiError(e instanceof Error ? e.message : 'Errore durante la registrazione');
     } finally {
       setLoading(false);
     }
-  }, [displayName, email, password, confirmPassword, register]);
+  }, [displayName, email, password, confirmPassword, dateOfBirth, register]);
 
   const navigateToLogin = useCallback(() => {
     router.back();
@@ -54,6 +55,8 @@ export function useRegisterViewModel() {
     setPassword,
     confirmPassword,
     setConfirmPassword,
+    dateOfBirth,
+    setDateOfBirth,
     errors,
     apiError,
     loading,

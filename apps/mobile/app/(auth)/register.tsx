@@ -56,6 +56,14 @@ export default function RegisterScreen() {
             onChangeText={vm.setConfirmPassword}
             secureTextEntry
             error={vm.errors.confirmPassword}
+          />
+
+          <FormField
+            placeholder="Data di nascita (AAAA-MM-GG)"
+            value={vm.dateOfBirth}
+            onChangeText={vm.setDateOfBirth}
+            keyboardType="numbers-and-punctuation"
+            error={vm.errors.dateOfBirth}
             spacingClassName="mb-8"
           />
 

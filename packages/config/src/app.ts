@@ -10,6 +10,7 @@ export const COMPATIBILITY_THRESHOLD = 0.4;
 export const MAX_BIO_LENGTH = 500;
 export const MAX_DISPLAY_NAME_LENGTH = 50;
 export const MIN_PASSWORD_LENGTH = 8;
+export const MIN_USER_AGE = 14;
 export const WALK_DURATION_MIN = 15;
 export const WALK_DURATION_MAX = 180;
 export const DOG_WEIGHT_MIN_KG = 0.5;

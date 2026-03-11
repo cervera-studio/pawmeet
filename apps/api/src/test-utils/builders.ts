@@ -19,7 +19,9 @@ import {
   type Story,
   type Swipe,
   type User,
+  type UserBlock,
   type UserChallenge,
+  type UserFollow,
   type Walk,
   type WalkAlbum,
   type WalkFeedback,
@@ -42,6 +44,7 @@ import type {
   FeedbackRepository,
   FeedRealtimeService,
   FeedRepository,
+  FollowRepository,
   GroupEventRepository,
   GroupMessageRepository,
   MatchRepository,
@@ -74,9 +77,12 @@ export function buildUser(overrides: Partial<User> = {}): User {
     emailVerified: true,
     pushToken: null,
     notificationPrefs: { matches: true, messages: true, reminders: true, feed: true },
+    dateOfBirth: new Date('1995-06-15'),
     isActive: true,
     createdAt: new Date('2026-01-01'),
     lastLoginAt: null,
+    followersCount: 0,
+    followingCount: 0,
     ...overrides,
   };
 }
@@ -312,6 +318,7 @@ export function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepo
     findNearby: vi.fn(),
     updatePushToken: vi.fn(),
     findPushToken: vi.fn(),
+    searchByName: vi.fn().mockResolvedValue([]),
     ...overrides,
   };
 }
@@ -375,6 +382,24 @@ export function buildFeedbackRepo(overrides: Partial<FeedbackRepository> = {}): 
     findByDog: vi.fn().mockResolvedValue([]),
     getAverageRating: vi.fn().mockResolvedValue({ average: null, count: 0 }),
     hasSubmitted: vi.fn().mockResolvedValue(false),
+    ...overrides,
+  };
+}
+
+export function buildFollowRepo(overrides: Partial<FollowRepository> = {}): FollowRepository {
+  return {
+    follow: vi.fn().mockResolvedValue(buildUserFollow()),
+    unfollow: vi.fn().mockResolvedValue(true),
+    isFollowing: vi.fn().mockResolvedValue(false),
+    areFriends: vi.fn().mockResolvedValue(false),
+    listFollowers: vi.fn().mockResolvedValue([]),
+    listFollowing: vi.fn().mockResolvedValue([]),
+    listFriends: vi.fn().mockResolvedValue([]),
+    block: vi.fn().mockResolvedValue(buildUserBlock()),
+    unblock: vi.fn().mockResolvedValue(true),
+    isBlocked: vi.fn().mockResolvedValue(false),
+    isBlockedEitherWay: vi.fn().mockResolvedValue(false),
+    listBlocked: vi.fn().mockResolvedValue([]),
     ...overrides,
   };
 }
@@ -557,6 +582,7 @@ export function buildEmailService(overrides: Partial<EmailService> = {}): EmailS
   return {
     sendVerificationOtp: vi.fn().mockResolvedValue(undefined),
     sendPasswordResetOtp: vi.fn().mockResolvedValue(undefined),
+    sendAccountDeletedConfirmation: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
@@ -664,6 +690,26 @@ export function buildContentReport(overrides: Partial<ContentReport> = {}): Cont
     status: 'pending',
     reviewedBy: null,
     reviewedAt: null,
+    createdAt: new Date('2026-03-01'),
+    ...overrides,
+  };
+}
+
+export function buildUserFollow(overrides: Partial<UserFollow> = {}): UserFollow {
+  return {
+    id: 'follow-1',
+    followerId: 'user-1',
+    followingId: 'user-2',
+    createdAt: new Date('2026-03-01'),
+    ...overrides,
+  };
+}
+
+export function buildUserBlock(overrides: Partial<UserBlock> = {}): UserBlock {
+  return {
+    id: 'block-1',
+    blockerId: 'user-1',
+    blockedId: 'user-2',
     createdAt: new Date('2026-03-01'),
     ...overrides,
   };

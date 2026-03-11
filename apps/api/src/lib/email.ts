@@ -77,3 +77,24 @@ export async function sendPasswordResetOtp(email: string, code: string): Promise
     `,
   });
 }
+
+/**
+ * Send account deletion confirmation email (GDPR Art. 17 acknowledgment).
+ */
+export async function sendAccountDeletedConfirmation(
+  email: string,
+  displayName: string,
+): Promise<void> {
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: 'Il tuo account DogWalk è stato disattivato',
+    html: `
+      <h2>Ciao ${displayName},</h2>
+      <p>Confermiamo che il tuo account DogWalk è stato disattivato con successo.</p>
+      <p>I tuoi dati personali verranno eliminati definitivamente entro 30 giorni, come previsto dal GDPR (Art. 17).</p>
+      <p>Se cambi idea, puoi contattarci entro 30 giorni all'indirizzo <a href="mailto:privacy@dogwalk.app">privacy@dogwalk.app</a> per richiedere il ripristino.</p>
+      <p>Grazie per aver fatto parte della community DogWalk.</p>
+    `,
+  });
+}

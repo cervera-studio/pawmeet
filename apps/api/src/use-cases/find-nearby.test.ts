@@ -2,7 +2,7 @@ import { DEFAULT_SEARCH_RADIUS_KM } from '@dogwalk/config';
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
 import type { NearbyUser } from '../ports/index.js';
-import { buildUser, buildUserRepo } from '../test-utils/builders.js';
+import { buildFollowRepo, buildUser, buildUserRepo } from '../test-utils/builders.js';
 import { createFindNearby } from './find-nearby.js';
 
 function buildNearbyUser(overrides: Partial<NearbyUser> = {}): NearbyUser {
@@ -26,7 +26,7 @@ describe('findNearby', () => {
       findById: vi.fn().mockResolvedValue(user),
       findNearby: vi.fn().mockResolvedValue(nearby),
     });
-    const findNearby = createFindNearby({ userRepo });
+    const findNearby = createFindNearby({ userRepo, followRepo: buildFollowRepo() });
 
     const result = await findNearby('user-1', {});
 
@@ -44,7 +44,7 @@ describe('findNearby', () => {
       findById: vi.fn().mockResolvedValue(user),
       findNearby: vi.fn().mockResolvedValue([]),
     });
-    const findNearby = createFindNearby({ userRepo });
+    const findNearby = createFindNearby({ userRepo, followRepo: buildFollowRepo() });
 
     const result = await findNearby('user-1', {});
 
@@ -59,7 +59,7 @@ describe('findNearby', () => {
       findById: vi.fn().mockResolvedValue(user),
       findNearby: vi.fn().mockResolvedValue([]),
     });
-    const findNearby = createFindNearby({ userRepo });
+    const findNearby = createFindNearby({ userRepo, followRepo: buildFollowRepo() });
 
     const result = await findNearby('user-1', { radiusKm: 25 });
 
@@ -72,7 +72,7 @@ describe('findNearby', () => {
   it('fails with LOCATION_NOT_SET when user has no location', async () => {
     const user = buildUser({ latitude: null, longitude: null });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
-    const findNearby = createFindNearby({ userRepo });
+    const findNearby = createFindNearby({ userRepo, followRepo: buildFollowRepo() });
 
     const result = await findNearby('user-1', {});
 
@@ -84,7 +84,7 @@ describe('findNearby', () => {
 
   it('fails with LOCATION_NOT_SET when user does not exist', async () => {
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(null) });
-    const findNearby = createFindNearby({ userRepo });
+    const findNearby = createFindNearby({ userRepo, followRepo: buildFollowRepo() });
 
     const result = await findNearby('nonexistent', {});
 

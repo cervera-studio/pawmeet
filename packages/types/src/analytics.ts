@@ -31,6 +31,7 @@ export interface AnalyticsEventMap {
   auth_login_failed: { method: string; errorCode: string };
   auth_email_verified: { method: 'link' | 'otp'; delayMs: number };
   auth_logout: { reason: 'manual' | 'token_expired' | 'forced' };
+  auth_account_deleted: { accountAgeDays: number; dogCount: number; matchCount: number };
 
   // Onboarding
   onboarding_started: { source: 'organic' | 'referral' | 'ad' | 'unknown' };

@@ -17,6 +17,7 @@ export function useProfileViewModel() {
   const setSelectedDog = useDogsStore((s) => s.setSelectedDog);
   const { uploading, uploadAvatar } = useImageUpload();
   const [loadingDogs, setLoadingDogs] = useState(true);
+  const [followCounts, setFollowCounts] = useState({ followers: 0, following: 0 });
 
   useEffect(() => {
     api.dogs.list
@@ -25,6 +26,19 @@ export function useProfileViewModel() {
       .catch((e) => logger.warn('ProfileScreen', 'Failed to fetch dogs', e))
       .finally(() => setLoadingDogs(false));
   }, [setDogs]);
+
+  // Fetch denormalized counts from user profile
+  useEffect(() => {
+    api.users.getProfile
+      .query()
+      .then((profile) => {
+        setFollowCounts({
+          followers: profile.followersCount ?? 0,
+          following: profile.followingCount ?? 0,
+        });
+      })
+      .catch((e) => logger.warn('ProfileScreen', 'Failed to fetch follow counts', e));
+  }, []);
 
   const handleAvatarPress = async () => {
     await uploadAvatar();
@@ -50,6 +64,26 @@ export function useProfileViewModel() {
     router.push('/(tabs)/profile/matching-insights');
   };
 
+  const navigateToFollowers = () => {
+    router.push('/(tabs)/profile/followers');
+  };
+
+  const navigateToFollowing = () => {
+    router.push('/(tabs)/profile/following');
+  };
+
+  const navigateToFriends = () => {
+    router.push('/(tabs)/profile/friends');
+  };
+
+  const navigateToBlocked = () => {
+    router.push('/(modals)/blocked');
+  };
+
+  const navigateToSearchUsers = () => {
+    router.push('/(modals)/search-users');
+  };
+
   const isLoading = !user || loadingDogs;
 
   return {
@@ -59,12 +93,18 @@ export function useProfileViewModel() {
     setSelectedDog,
     uploading,
     isLoading,
+    followCounts,
     handleAvatarPress,
     navigateToAddDog,
     navigateToDogDetail,
     navigateToSettings,
     navigateToActivity,
     navigateToMatchingInsights,
+    navigateToFollowers,
+    navigateToFollowing,
+    navigateToFriends,
+    navigateToBlocked,
+    navigateToSearchUsers,
     logout,
   };
 }

@@ -80,7 +80,31 @@ export default function ProfileScreen() {
           </Text>
           <Text className="text-sm text-gray-500">{vm.user?.email}</Text>
           <Text className="mt-1 text-xs text-gray-400">Tocca la foto per cambiarla</Text>
+
+          {/* Follow counts */}
+          <View className="mt-4 flex-row gap-6">
+            <Pressable onPress={vm.navigateToFollowers} className="items-center">
+              <Text className="text-lg font-bold text-gray-900">{vm.followCounts.followers}</Text>
+              <Text className="text-xs text-gray-500">Follower</Text>
+            </Pressable>
+            <Pressable onPress={vm.navigateToFollowing} className="items-center">
+              <Text className="text-lg font-bold text-gray-900">{vm.followCounts.following}</Text>
+              <Text className="text-xs text-gray-500">Seguiti</Text>
+            </Pressable>
+            <Pressable onPress={vm.navigateToFriends} className="items-center">
+              <Text className="text-lg font-bold text-primary">Amici</Text>
+              <Text className="text-xs text-gray-500">Reciproci</Text>
+            </Pressable>
+          </View>
         </View>
+
+        {/* Search users */}
+        <Pressable
+          onPress={vm.navigateToSearchUsers}
+          className="mb-6 flex-row items-center justify-center gap-2 rounded-xl bg-gray-50 py-3"
+        >
+          <Text className="text-sm text-gray-500">Cerca utenti da seguire</Text>
+        </Pressable>
 
         {/* My dogs */}
         <View className="mb-6">
@@ -170,6 +194,14 @@ export default function ProfileScreen() {
 
           <Pressable className="flex-row items-center justify-between rounded-xl px-4 py-4">
             <Text className="text-base text-gray-700">Privacy e Sicurezza</Text>
+            <Text className="text-gray-400">{'\u203A'}</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={vm.navigateToBlocked}
+            className="flex-row items-center justify-between rounded-xl px-4 py-4"
+          >
+            <Text className="text-base text-gray-700">Utenti bloccati</Text>
             <Text className="text-gray-400">{'\u203A'}</Text>
           </Pressable>
 

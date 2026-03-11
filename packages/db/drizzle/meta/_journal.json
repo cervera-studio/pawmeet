@@ -8,6 +8,27 @@
       "when": 1773237862527,
       "tag": "0000_green_zombie",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773246629226,
+      "tag": "0001_medical_toad_men",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773247289296,
+      "tag": "0002_free_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1773249517072,
+      "tag": "0003_ambitious_puppet_master",
+      "breakpoints": true
     }
   ]
 }

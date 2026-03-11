@@ -1,4 +1,4 @@
-import type { ConsentState } from '@dogwalk/types';
+import type { AnalyticsService, ConsentState } from '@dogwalk/types';
 import { DEFAULT_CONSENT_STATE } from '@dogwalk/types';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -40,3 +40,23 @@ export const useConsentStore = create<ConsentStoreState>()(
     },
   ),
 );
+
+/**
+ * Subscribe to analytics consent changes and toggle the analytics service.
+ * Call once after DI container is initialized.
+ */
+export function initConsentSubscription(service: AnalyticsService): void {
+  let prevAnalytics = useConsentStore.getState().consents.analytics;
+
+  useConsentStore.subscribe((state) => {
+    const current = state.consents.analytics;
+    if (current !== prevAnalytics) {
+      prevAnalytics = current;
+      if (current) {
+        service.optIn();
+      } else {
+        service.optOut();
+      }
+    }
+  });
+}

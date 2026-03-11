@@ -7,6 +7,7 @@ function buildRegisterInput(overrides: Partial<Record<string, unknown>> = {}) {
     email: 'user@example.com',
     password: 'SecureP4ss',
     displayName: 'Mario Rossi',
+    dateOfBirth: '2000-01-15',
     ...overrides,
   };
 }
@@ -94,6 +95,53 @@ describe('registerSchema', () => {
     expect(
       registerSchema.safeParse(buildRegisterInput({ displayName: 'A'.repeat(50) })).success,
     ).toBe(true);
+  });
+
+  // -- dateOfBirth --
+
+  it('rejects missing dateOfBirth', () => {
+    const result = registerSchema.safeParse(buildRegisterInput({ dateOfBirth: undefined }));
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a future dateOfBirth', () => {
+    const future = new Date();
+    future.setFullYear(future.getFullYear() + 1);
+    const result = registerSchema.safeParse(
+      buildRegisterInput({ dateOfBirth: future.toISOString() }),
+    );
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('La data di nascita non può essere nel futuro');
+    }
+  });
+
+  it('rejects underage users (< 14)', () => {
+    const now = new Date();
+    const underage = new Date(now.getFullYear() - 13, now.getMonth(), now.getDate());
+    const result = registerSchema.safeParse(
+      buildRegisterInput({ dateOfBirth: underage.toISOString() }),
+    );
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('Devi avere almeno 14 anni per usare DogWalk');
+    }
+  });
+
+  it('accepts users exactly 14 years old', () => {
+    const now = new Date();
+    const exactly14 = new Date(now.getFullYear() - 14, now.getMonth(), now.getDate());
+    const result = registerSchema.safeParse(
+      buildRegisterInput({ dateOfBirth: exactly14.toISOString() }),
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts adult users', () => {
+    const result = registerSchema.safeParse(buildRegisterInput({ dateOfBirth: '1990-05-20' }));
+    expect(result.success).toBe(true);
   });
 });
 

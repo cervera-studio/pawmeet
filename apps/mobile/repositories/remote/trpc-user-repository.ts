@@ -12,5 +12,9 @@ export function createTrpcUserRepository(api: ApiClient): UserRepository {
     async registerPushToken(token) {
       await api.users.registerPushToken.mutate({ token });
     },
+    async submitDateOfBirth(dateOfBirth) {
+      const result = await api.users.submitDateOfBirth.mutate({ dateOfBirth });
+      return result as { message: string };
+    },
   };
 }

@@ -23,7 +23,12 @@ export type {
   ResolveAction,
 } from './report-repository';
 export type { AppSettings, SettingsRepository, UpdateSettingsInput } from './settings-repository';
-export type { DashboardStats, StatsRepository, TimeSeriesPoint } from './stats-repository';
+export type {
+  AnalyticsKpis,
+  DashboardStats,
+  StatsRepository,
+  TimeSeriesPoint,
+} from './stats-repository';
 export type {
   AdminUserDetail,
   AdminUserListItem,

@@ -22,6 +22,8 @@ export const QUEUE_NAMES = {
   DATA_CLEANUP: 'data-cleanup',
   GPS_RETENTION: 'gps-retention',
   ANALYTICS: 'analytics',
+  ANALYTICS_AGGREGATION: 'analytics-aggregation',
+  ANALYTICS_DLQ: 'analytics-dlq',
 } as const;
 
 // --- Lazy queue instances ---
@@ -196,6 +198,16 @@ export async function enqueueDataCleanup() {
   return getDataCleanupQueue().add('cleanup', {}, { repeat: { every: 24 * 60 * 60 * 1000 } });
 }
 
+/** Schedule daily data cleanup at 03:00 UTC (after analytics aggregation at 02:00). */
+export async function scheduleDataCleanup() {
+  const queue = getDataCleanupQueue();
+  await queue.upsertJobScheduler(
+    'daily-data-cleanup',
+    { pattern: '0 3 * * *' },
+    { name: 'cleanup' },
+  );
+}
+
 // ── GPS retention (daily) ───────────────────────────────────────────────────
 
 let _gpsRetentionQueue: Queue | null = null;
@@ -254,4 +266,65 @@ export function getAnalyticsQueue(): Queue {
 
 export async function enqueueAnalyticsEvents(data: AnalyticsJobData) {
   return getAnalyticsQueue().add('ingest', data);
+}
+
+// --- Analytics Aggregation Queue ---
+
+let _analyticsAggregationQueue: Queue | null = null;
+
+export function getAnalyticsAggregationQueue(): Queue {
+  if (!_analyticsAggregationQueue) {
+    _analyticsAggregationQueue = new Queue(QUEUE_NAMES.ANALYTICS_AGGREGATION, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _analyticsAggregationQueue;
+}
+
+/** Schedule daily analytics aggregation at 02:00 UTC. */
+export async function scheduleAnalyticsAggregation() {
+  const queue = getAnalyticsAggregationQueue();
+  await queue.upsertJobScheduler(
+    'daily-aggregation',
+    { pattern: '0 2 * * *' },
+    { name: 'aggregate' },
+  );
+}
+
+// ── Analytics Dead-Letter Queue ──────────────────────────────────────────────
+// Failed analytics jobs (after all retries) are moved here for manual inspection.
+
+let _analyticsDlqQueue: Queue | null = null;
+
+export function getAnalyticsDlqQueue(): Queue {
+  if (!_analyticsDlqQueue) {
+    _analyticsDlqQueue = new Queue(QUEUE_NAMES.ANALYTICS_DLQ, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        removeOnComplete: 500,
+        removeOnFail: false, // keep failed DLQ jobs for inspection
+      },
+    });
+  }
+  return _analyticsDlqQueue;
+}
+
+/** Move a failed analytics job to the dead-letter queue. */
+export async function moveToAnalyticsDlq(
+  jobName: string,
+  data: unknown,
+  error: string,
+): Promise<void> {
+  await getAnalyticsDlqQueue().add('dead-letter', {
+    originalJob: jobName,
+    data,
+    error,
+    failedAt: new Date().toISOString(),
+  });
 }

@@ -5,6 +5,7 @@ export interface CreateUserInput {
   displayName: string;
   passwordHash?: string | null;
   authProvider?: string;
+  dateOfBirth?: Date | null;
 }
 
 export interface NearbyUser {
@@ -33,6 +34,12 @@ export interface NearbyQuery {
   offset: number;
 }
 
+export interface SearchResult {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+}
+
 export interface UserRepository {
   findByEmail(email: string): Promise<User | null>;
   findById(id: string): Promise<User | null>;
@@ -53,10 +60,17 @@ export interface UserRepository {
         | 'lastLoginAt'
         | 'isActive'
         | 'notificationPrefs'
+        | 'dateOfBirth'
       >
     >,
   ): Promise<User>;
   findNearby(query: NearbyQuery): Promise<NearbyUser[]>;
   updatePushToken(userId: string, token: string | null): Promise<void>;
   findPushToken(userId: string): Promise<string | null>;
+  searchByName(
+    query: string,
+    excludeUserId: string,
+    limit: number,
+    offset: number,
+  ): Promise<SearchResult[]>;
 }

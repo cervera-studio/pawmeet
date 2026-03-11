@@ -1,9 +1,10 @@
 import { DEFAULT_SEARCH_RADIUS_KM } from '@dogwalk/config';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import type { NearbyUser, UserRepository } from '../ports/index.js';
+import type { FollowRepository, NearbyUser, UserRepository } from '../ports/index.js';
 
 type Deps = {
   userRepo: UserRepository;
+  followRepo: FollowRepository;
 };
 
 type FindNearbyOpts = {
@@ -12,7 +13,7 @@ type FindNearbyOpts = {
   offset?: number;
 };
 
-export function createFindNearby({ userRepo }: Deps) {
+export function createFindNearby({ userRepo, followRepo }: Deps) {
   return async (
     userId: string,
     opts: FindNearbyOpts,
@@ -41,6 +42,15 @@ export function createFindNearby({ userRepo }: Deps) {
       offset: effectiveOffset,
     });
 
-    return succeed({ users, radius: effectiveRadius, total: users.length });
+    // Filter out blocked users
+    const filtered: NearbyUser[] = [];
+    for (const u of users) {
+      const blocked = await followRepo.isBlockedEitherWay(userId, u.id);
+      if (!blocked) {
+        filtered.push(u);
+      }
+    }
+
+    return succeed({ users: filtered, radius: effectiveRadius, total: filtered.length });
   };
 }

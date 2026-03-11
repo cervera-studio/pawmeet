@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@dogwalk/config": "workspace:*",
+    "@dogwalk/utils": "workspace:^",
     "zod": "^4.3.0"
   },
   "devDependencies": {

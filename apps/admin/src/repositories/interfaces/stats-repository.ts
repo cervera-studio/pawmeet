@@ -14,6 +14,16 @@ export interface DashboardStats {
   dailyMatches: TimeSeriesPoint[];
 }
 
+export interface AnalyticsKpis {
+  dauToday: number;
+  registrationsToday: number;
+  matchesToday: number;
+  totalEvents: number;
+  eventsLast24h: number;
+  dauTimeSeries: TimeSeriesPoint[];
+}
+
 export interface StatsRepository {
   getStats(): Promise<DashboardStats>;
+  getAnalyticsKpis(): Promise<AnalyticsKpis>;
 }

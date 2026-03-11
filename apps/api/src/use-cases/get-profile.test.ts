@@ -13,9 +13,9 @@ describe('getProfile', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.user.email).toBe('mario@example.com');
-    expect(result.data.user.displayName).toBe('Mario Rossi');
-    expect(result.data.user).not.toHaveProperty('passwordHash');
+    expect(result.data.email).toBe('mario@example.com');
+    expect(result.data.displayName).toBe('Mario Rossi');
+    expect(result.data).not.toHaveProperty('passwordHash');
   });
 
   it('fails with USER_NOT_FOUND when user does not exist', async () => {

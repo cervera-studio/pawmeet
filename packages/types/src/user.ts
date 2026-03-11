@@ -27,8 +27,11 @@ export interface User {
   pushToken: string | null;
   notificationPrefs: NotificationPrefs;
   isActive: boolean;
+  dateOfBirth: Date | null;
   createdAt: Date;
   lastLoginAt: Date | null;
+  followersCount: number;
+  followingCount: number;
 }
 
 /** User data without sensitive fields (passwordHash, pushToken). */

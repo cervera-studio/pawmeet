@@ -34,6 +34,12 @@ analytics.post('/batch', async (c) => {
     return c.json({ error: 'Dati non validi', details: parsed.error.issues }, 400);
   }
 
+  // GDPR Art. 6(1)(a): reject client analytics without explicit consent
+  if (!parsed.data.consentGiven) {
+    return c.json({ error: 'Consenso analytics richiesto' }, 403);
+  }
+
+  // Events already validated against client allowlist by Zod schema
   const events = parsed.data.events.map((e) => ({
     ...e,
     userId,

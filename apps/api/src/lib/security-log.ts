@@ -14,6 +14,7 @@ const SECURITY_EVENT = {
   SocialLoginFailed: 'auth.social_login.failed',
   AccountLocked: 'auth.account.locked',
   RateLimited: 'auth.rate_limited',
+  AgeVerificationFailed: 'auth.age_verification.failed',
 } as const;
 
 type SecurityEvent = (typeof SECURITY_EVENT)[keyof typeof SECURITY_EVENT];

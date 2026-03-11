@@ -195,8 +195,14 @@ export default function SettingsModal() {
           <Text className="text-base font-medium text-red-500">Esci</Text>
         </Pressable>
 
-        <Pressable className="items-center py-4">
-          <Text className="text-base font-medium text-red-500">Elimina account</Text>
+        <Pressable
+          onPress={vm.deleteAccount}
+          disabled={vm.isDeleting}
+          className="items-center py-4"
+        >
+          <Text className="text-base font-medium text-red-500">
+            {vm.isDeleting ? 'Eliminazione in corso...' : 'Elimina account'}
+          </Text>
         </Pressable>
       </View>
 

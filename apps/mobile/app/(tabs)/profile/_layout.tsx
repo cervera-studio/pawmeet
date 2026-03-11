@@ -37,6 +37,30 @@ export default function ProfileLayout() {
           headerBackTitle: 'Profilo',
         }}
       />
+      <Stack.Screen
+        name="followers"
+        options={{
+          headerShown: true,
+          title: 'Follower',
+          headerBackTitle: 'Profilo',
+        }}
+      />
+      <Stack.Screen
+        name="following"
+        options={{
+          headerShown: true,
+          title: 'Seguiti',
+          headerBackTitle: 'Profilo',
+        }}
+      />
+      <Stack.Screen
+        name="friends"
+        options={{
+          headerShown: true,
+          title: 'Amici',
+          headerBackTitle: 'Profilo',
+        }}
+      />
     </Stack>
   );
 }

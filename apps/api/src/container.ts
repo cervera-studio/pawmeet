@@ -10,6 +10,7 @@ import { DrizzleContentReportRepository } from './infra/drizzle-content-report-r
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
 import { DrizzleFeedRepository } from './infra/drizzle-feed-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
+import { DrizzleFollowRepository } from './infra/drizzle-follow-repository.js';
 import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repository.js';
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-repository.js';
@@ -36,6 +37,8 @@ import { createAddPostTags } from './use-cases/add-post-tags.js';
 import { createAddTrackPoints } from './use-cases/add-track-points.js';
 // Use cases — gamification
 import { createAwardXp } from './use-cases/award-xp.js';
+// Use cases — follows
+import { createBlockUser } from './use-cases/block-user.js';
 // Use cases — group events
 import { createCancelGroupEvent } from './use-cases/cancel-group-event.js';
 // Use cases — walks
@@ -67,6 +70,7 @@ import { createDiscoverCandidatesAi } from './use-cases/discover-candidates-ai.j
 import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
 import { createExportUserData } from './use-cases/export-user-data.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
+import { createFollowUser } from './use-cases/follow-user.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
 import { createGetActivityStats } from './use-cases/get-activity-stats.js';
@@ -77,6 +81,7 @@ import { createGetDogHealthGoal } from './use-cases/get-dog-health-goal.js';
 import { createGetDogRating } from './use-cases/get-dog-rating.js';
 import { createGetFeed } from './use-cases/get-feed.js';
 import { createGetFeedStories } from './use-cases/get-feed-stories.js';
+import { createGetFollowStatus } from './use-cases/get-follow-status.js';
 import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
 import { createGetGroupMessages } from './use-cases/get-group-messages.js';
@@ -101,7 +106,11 @@ import { createLikePost } from './use-cases/like-post.js';
 import { createListAchievements } from './use-cases/list-achievements.js';
 import { createListActiveChallenges } from './use-cases/list-active-challenges.js';
 import { createListBadges } from './use-cases/list-badges.js';
+import { createListBlocked } from './use-cases/list-blocked.js';
 import { createListConversations } from './use-cases/list-conversations.js';
+import { createListFollowers } from './use-cases/list-followers.js';
+import { createListFollowing } from './use-cases/list-following.js';
+import { createListFriends } from './use-cases/list-friends.js';
 import { createListGroupConversations } from './use-cases/list-group-conversations.js';
 import { createListMatches } from './use-cases/list-matches.js';
 import { createListNearbyEvents } from './use-cases/list-nearby-events.js';
@@ -130,12 +139,16 @@ import { createResetPassword } from './use-cases/reset-password.js';
 import { createRespondToWalk } from './use-cases/respond-to-walk.js';
 import { createReviewContentReport } from './use-cases/review-content-report.js';
 import { createSearchBreeds } from './use-cases/search-breeds.js';
+import { createSearchUsers } from './use-cases/search-users.js';
 import { createSendGroupMessage } from './use-cases/send-group-message.js';
 import { createSendMessage } from './use-cases/send-message.js';
 import { createSocialLogin } from './use-cases/social-login.js';
 import { createStartWalkTracking } from './use-cases/start-walk-tracking.js';
+import { createSubmitDateOfBirth } from './use-cases/submit-date-of-birth.js';
 import { createSubmitFeedback } from './use-cases/submit-feedback.js';
 import { createSyncHealthData } from './use-cases/sync-health-data.js';
+import { createUnblockUser } from './use-cases/unblock-user.js';
+import { createUnfollowUser } from './use-cases/unfollow-user.js';
 import { createUnmatch } from './use-cases/unmatch.js';
 import { createUpdateChallengeProgress } from './use-cases/update-challenge-progress.js';
 import { createUpdateConsents } from './use-cases/update-consents.js';
@@ -169,6 +182,7 @@ const feedRepo = new DrizzleFeedRepository(db);
 const storyRepo = new DrizzleStoryRepository(db);
 const consentRepo = new DrizzleConsentRepository(db);
 const contentReportRepo = new DrizzleContentReportRepository(db);
+const followRepo = new DrizzleFollowRepository(db);
 const walkAlbumRepo = new DrizzleWalkAlbumRepository(db);
 const walkTrackRepo = new DrizzleWalkTrackRepository(db);
 const activityRepo = new DrizzleActivityRepository(db);
@@ -223,21 +237,32 @@ export const userDeps = {
   getProfile: createGetProfile({ userRepo }),
   updateLocation: createUpdateLocation({ userRepo }),
   updatePreferences: createUpdatePreferences({ userRepo }),
-  findNearby: createFindNearby({ userRepo }),
+  findNearby: createFindNearby({ userRepo, followRepo }),
   uploadAvatarUrl: createUploadAvatarUrl({ storage }),
   confirmAvatar: createConfirmAvatar({ userRepo, storage }),
   deleteAvatar: createDeleteAvatar({ userRepo, storage }),
   registerPushToken: createRegisterPushToken({ userRepo }),
   updateNotificationPrefs: createUpdateNotificationPrefs({ userRepo }),
-  deleteAccount: createDeleteAccount({ userRepo, tokenRepo, authService, storage }),
+  deleteAccount: createDeleteAccount({
+    db,
+    userRepo,
+    tokenRepo,
+    authService,
+    storage,
+    dogRepo,
+    feedRepo,
+    storyRepo,
+    emailService,
+  }),
   exportUserData: createExportUserData({ userRepo, dogRepo, feedRepo }),
+  submitDateOfBirth: createSubmitDateOfBirth({ userRepo }),
 };
 
 // ── Match deps ──────────────────────────────────────────────────────────────────
 
 export const matchDeps = {
   listMatches: createListMatches({ dogRepo, matchRepo, userRepo }),
-  discoverCandidates: createDiscoverCandidates({ dogRepo, matchRepo, userRepo }),
+  discoverCandidates: createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followRepo }),
   likeDog: createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }),
   passDog: createPassDog({ dogRepo, matchRepo }),
   unmatch: createUnmatch({ dogRepo, matchRepo }),
@@ -399,6 +424,21 @@ export const walkAlbumDeps = {
 export const consentDeps = {
   updateConsents: createUpdateConsents({ consentRepo }),
   getConsents: createGetConsents({ consentRepo }),
+};
+
+// ── Follow deps ──────────────────────────────────────────────────────────────
+
+export const followDeps = {
+  getFollowStatus: createGetFollowStatus({ followRepo }),
+  followUser: createFollowUser({ followRepo, userRepo, notificationService }),
+  unfollowUser: createUnfollowUser({ followRepo }),
+  listFollowers: createListFollowers({ followRepo }),
+  listFollowing: createListFollowing({ followRepo }),
+  listFriends: createListFriends({ followRepo }),
+  blockUser: createBlockUser({ followRepo, userRepo }),
+  unblockUser: createUnblockUser({ followRepo }),
+  listBlocked: createListBlocked({ followRepo }),
+  searchUsers: createSearchUsers({ userRepo, followRepo }),
 };
 
 // ── Admin deps ────────────────────────────────────────────────────────────────

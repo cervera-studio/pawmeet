@@ -21,7 +21,9 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
     userId: string,
     dogId: string,
     targetDogId: string,
-  ): Promise<Result<{ match?: Match; isMatch: boolean }>> => {
+  ): Promise<
+    Result<{ match?: Match; isMatch: boolean; sizePair?: string; energyPair?: string }>
+  > => {
     // Verify ownership
     const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!myDog) {
@@ -72,7 +74,12 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
         }
       }
 
-      return succeed({ match, isMatch: true });
+      return succeed({
+        match,
+        isMatch: true,
+        sizePair: targetDog ? `${myDog.size}-${targetDog.size}` : undefined,
+        energyPair: targetDog ? `${myDog.energyLevel}-${targetDog.energyLevel}` : undefined,
+      });
     }
 
     return succeed({ isMatch: false });

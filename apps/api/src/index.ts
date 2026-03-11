@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { adminDeps, experimentService } from './container.js';
 import { initSentry, Sentry } from './lib/sentry.js';
+import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { corsMiddleware } from './middleware/cors.js';
 import { rateLimitMiddleware } from './middleware/rate-limit.js';
 import { securityHeadersMiddleware } from './middleware/security-headers.js';
@@ -25,6 +26,7 @@ app.use('*', securityHeadersMiddleware);
 app.use('*', corsMiddleware);
 app.use('/api/*', rateLimitMiddleware);
 app.use('/trpc/*', rateLimitMiddleware);
+app.use('/trpc/*', analyticsCountersMiddleware);
 
 // Global error handler — consistent JSON error responses
 app.onError((err, c) => {

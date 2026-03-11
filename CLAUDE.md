@@ -77,6 +77,17 @@ pnpm format:check     # Check formatting (Biome)
 - App content/UI text: Italian (it-IT)
 - Code/comments/docs: English
 
+## Analytics
+
+Every new feature/issue MUST consider analytics tracking:
+
+1. **Identify events**: which user actions are worth tracking? Check `AnalyticsEventMap` in `packages/types/src/analytics.ts`
+2. **Classify source**: is the event client-exclusive (view durations, UI interactions) or server-authoritative (confirmed actions like match_created, message_sent)?
+3. **Server-authoritative**: track at tRPC router level AFTER `unwrapResult()` using `trackEvent()` helper from `apps/api/src/lib/track-event.ts`. Do NOT track inside use-cases (keeps domain layer pure).
+4. **Client-exclusive**: track via `AnalyticsService.track()` resolved from DI (`ANALYTICS_SERVICE` token)
+5. **Add to taxonomy**: if the event doesn't exist yet, add it to `AnalyticsEventMap` + update `docs/13-analytics-strategy.md` Section 2
+6. **PII rules**: NEVER include email, display name, GPS coordinates, chat content, dog name, photos, push tokens in event properties
+
 ## Key Design Decisions (see docs/ for details)
 
 - Fly.io for API (not serverless/Workers) — real Node.js server for WebSocket, BullMQ, long-running processes

@@ -7,4 +7,5 @@ export interface UserRepository {
   findNearby(radiusKm: number): Promise<{ users: NearbyUser[] }>;
   updateLocation(latitude: number, longitude: number): Promise<void>;
   registerPushToken(token: string): Promise<void>;
+  submitDateOfBirth(dateOfBirth: string): Promise<{ message: string }>;
 }

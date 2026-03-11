@@ -6,6 +6,7 @@ import type {
   CreateUserInput,
   NearbyQuery,
   NearbyUser,
+  SearchResult,
   UserRepository,
 } from '../ports/user-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
@@ -37,6 +38,7 @@ export class DrizzleUserRepository implements UserRepository {
         displayName: input.displayName,
         passwordHash: input.passwordHash,
         authProvider: input.authProvider ?? 'email',
+        dateOfBirth: input.dateOfBirth ?? null,
       })
       .returning();
     return firstRow<User>(rows);
@@ -74,6 +76,36 @@ export class DrizzleUserRepository implements UserRepository {
       .from(users)
       .where(eq(users.id, userId));
     return row?.pushToken ?? null;
+  }
+
+  async searchByName(
+    query: string,
+    excludeUserId: string,
+    limit: number,
+    offset: number,
+  ): Promise<SearchResult[]> {
+    // Use ILIKE for case-insensitive prefix/contains search
+    // For production scale, add pg_trgm index: CREATE INDEX users_display_name_trgm ON users USING gin (display_name gin_trgm_ops);
+    const pattern = `%${query}%`;
+    const rows = await this.db
+      .select({
+        id: users.id,
+        displayName: users.displayName,
+        avatarUrl: users.avatarUrl,
+      })
+      .from(users)
+      .where(
+        and(
+          ne(users.id, excludeUserId),
+          eq(users.isActive, true),
+          sql`${users.displayName} ILIKE ${pattern}`,
+        ),
+      )
+      .orderBy(users.displayName)
+      .limit(limit)
+      .offset(offset);
+
+    return rowsAs<SearchResult>(rows);
   }
 
   async findNearby(query: NearbyQuery): Promise<NearbyUser[]> {

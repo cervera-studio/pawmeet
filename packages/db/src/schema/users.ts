@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   boolean,
   check,
+  date,
   doublePrecision,
   index,
   integer,
@@ -36,8 +37,11 @@ export const users = pgTable(
         messages: true,
         reminders: true,
       }),
+    dateOfBirth: date('date_of_birth', { mode: 'date' }),
     pushToken: text('push_token'),
     lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
+    followersCount: integer('followers_count').notNull().default(0),
+    followingCount: integer('following_count').notNull().default(0),
   },
   (table) => [
     index('users_location_idx').on(table.latitude, table.longitude),
@@ -48,5 +52,11 @@ export const users = pgTable(
       sql`${table.searchRadiusKm} >= 1 AND ${table.searchRadiusKm} <= 50`,
     ),
     check('users_auth_provider_valid', sql`${table.authProvider} IN ('email', 'apple', 'google')`),
+    check(
+      'users_dob_in_past',
+      sql`${table.dateOfBirth} IS NULL OR ${table.dateOfBirth} <= CURRENT_DATE`,
+    ),
+    check('users_followers_count_non_negative', sql`${table.followersCount} >= 0`),
+    check('users_following_count_non_negative', sql`${table.followingCount} >= 0`),
   ],
 );

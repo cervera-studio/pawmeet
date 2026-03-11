@@ -6,6 +6,7 @@ import {
   buildCandidate,
   buildDog,
   buildDogRepo,
+  buildFollowRepo,
   buildMatchRepo,
   buildUser,
   buildUserRepo,
@@ -24,7 +25,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const result = await discover('user-1', 'dog-1');
 
     expect(isSuccess(result)).toBe(true);
@@ -62,7 +68,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const result = await discover('user-1', 'dog-1');
 
     expect(isSuccess(result)).toBe(true);
@@ -85,7 +96,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const result = await discover('user-1', 'dog-1');
 
     expect(isSuccess(result)).toBe(true);
@@ -98,7 +114,12 @@ describe('discoverCandidates', () => {
     const matchRepo = buildMatchRepo();
     const userRepo = buildUserRepo();
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const result = await discover('user-1', 'dog-1');
 
     expect(isFailure(result)).toBe(true);
@@ -114,7 +135,12 @@ describe('discoverCandidates', () => {
     const matchRepo = buildMatchRepo();
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const result = await discover('user-1', 'dog-1');
 
     expect(isFailure(result)).toBe(true);
@@ -141,7 +167,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const filters: DiscoveryFilters = { size: ['grande'] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
@@ -167,7 +198,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const filters: DiscoveryFilters = { energyLevel: ['alta'] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
@@ -192,7 +228,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const filters: DiscoveryFilters = { gender: ['femmina'] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
@@ -241,7 +282,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const filters: DiscoveryFilters = { size: ['grande'], energyLevel: ['alta'] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
@@ -265,7 +311,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     // Pass an empty filters object — should not filter anything
     const result = await discover('user-1', 'dog-1', undefined, {});
 
@@ -297,7 +348,12 @@ describe('discoverCandidates', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
-    const discover = createDiscoverCandidates({ dogRepo, matchRepo, userRepo });
+    const discover = createDiscoverCandidates({
+      dogRepo,
+      matchRepo,
+      userRepo,
+      followRepo: buildFollowRepo(),
+    });
     const filters: DiscoveryFilters = { maxDistanceKm: 2 };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 

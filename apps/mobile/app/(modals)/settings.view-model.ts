@@ -1,5 +1,6 @@
 import { logger } from '@dogwalk/utils';
 import { useCallback, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/trpc';
 
@@ -20,14 +21,15 @@ export function useSettingsViewModel() {
   const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
   const [locationSharing, setLocationSharing] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Load notification preferences from user profile
   useEffect(() => {
     api.users.getProfile
       .query()
       .then((data) => {
-        if (data.user.notificationPrefs) {
-          setPrefs(data.user.notificationPrefs);
+        if (data.notificationPrefs) {
+          setPrefs(data.notificationPrefs);
         }
       })
       .catch((e) => logger.warn('Settings', 'Failed to load notification prefs', e));
@@ -48,6 +50,55 @@ export function useSettingsViewModel() {
     [prefs],
   );
 
+  const deleteAccount = useCallback(() => {
+    Alert.alert(
+      'Elimina account',
+      'Sei sicuro? Il tuo account verrà disattivato immediatamente e i dati eliminati entro 30 giorni. Questa azione non può essere annullata.',
+      [
+        { text: 'Annulla', style: 'cancel' },
+        {
+          text: 'Elimina',
+          style: 'destructive',
+          onPress: () => {
+            Alert.prompt(
+              'Conferma con password',
+              "Inserisci la tua password per confermare la cancellazione dell'account.",
+              [
+                { text: 'Annulla', style: 'cancel' },
+                {
+                  text: 'Conferma eliminazione',
+                  style: 'destructive',
+                  onPress: (password: string | undefined) => {
+                    if (!password) return;
+                    setIsDeleting(true);
+                    api.users.deleteAccount
+                      .mutate({ password })
+                      .then(() => {
+                        Alert.alert(
+                          'Account eliminato',
+                          'Il tuo account è stato disattivato. Riceverai una email di conferma.',
+                          [{ text: 'OK', onPress: logout }],
+                        );
+                      })
+                      .catch((err) => {
+                        setIsDeleting(false);
+                        const message =
+                          err?.data?.code === 'INVALID_PASSWORD'
+                            ? 'Password non valida. Riprova.'
+                            : 'Errore durante la cancellazione. Riprova più tardi.';
+                        Alert.alert('Errore', message);
+                      });
+                  },
+                },
+              ],
+              'secure-text',
+            );
+          },
+        },
+      ],
+    );
+  }, [logout]);
+
   return {
     prefs,
     locationSharing,
@@ -56,5 +107,7 @@ export function useSettingsViewModel() {
     setDarkMode,
     updatePref,
     logout,
+    deleteAccount,
+    isDeleting,
   };
 }

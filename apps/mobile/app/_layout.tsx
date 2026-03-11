@@ -12,9 +12,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useWebSocketManager } from '@/hooks/useWebSocket';
 import { getExpiringPins } from '@/lib/certificate-pinning';
-import '@/repositories/container';
+import { container } from '@/repositories/container';
+import { ANALYTICS_SERVICE } from '@/repositories/tokens';
 import { useAuthStore } from '@/stores/auth';
-import { useConsentStore } from '@/stores/consent';
+import { initConsentSubscription, useConsentStore } from '@/stores/consent';
+
+// Wire analytics service optIn/optOut to consent store changes
+initConsentSubscription(container.resolve(ANALYTICS_SERVICE));
 
 /**
  * Sentry: always active under legitimate interest (Art. 6(1)(f) GDPR).
@@ -111,6 +115,7 @@ function CertificatePinMonitor() {
 
 function RootLayout() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const requiresAgeVerification = useAuthStore((s) => s.requiresAgeVerification);
   const userId = useAuthStore((s) => s.user?.id);
   const hasSeenConsentModal = useConsentStore((s) => s.hasSeenConsentModal);
   const [showConsentModal, setShowConsentModal] = useState(false);
@@ -148,7 +153,17 @@ function RootLayout() {
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             </Stack.Protected>
 
-            <Stack.Protected guard={isAuthenticated}>
+            <Stack.Protected guard={isAuthenticated && requiresAgeVerification}>
+              <Stack.Screen
+                name="(modals)/age-gate"
+                options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                }}
+              />
+            </Stack.Protected>
+
+            <Stack.Protected guard={isAuthenticated && !requiresAgeVerification}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen
                 name="(modals)/dog-detail"
@@ -161,6 +176,18 @@ function RootLayout() {
               <Stack.Screen
                 name="(modals)/report"
                 options={{ presentation: 'modal', title: 'Segnala' }}
+              />
+              <Stack.Screen
+                name="(modals)/blocked"
+                options={{ presentation: 'modal', title: 'Utenti bloccati' }}
+              />
+              <Stack.Screen
+                name="(modals)/search-users"
+                options={{ presentation: 'modal', title: 'Cerca utenti' }}
+              />
+              <Stack.Screen
+                name="(modals)/user-profile"
+                options={{ presentation: 'modal', title: 'Profilo' }}
               />
             </Stack.Protected>
           </Stack>

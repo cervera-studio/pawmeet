@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
-import { type DashboardStats, statsRepository } from '@/repositories';
+import { type AnalyticsKpis, type DashboardStats, statsRepository } from '@/repositories';
 
 export function useDashboardViewModel() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [analyticsKpis, setAnalyticsKpis] = useState<AnalyticsKpis | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchStats = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await statsRepository.getStats();
+      const [data, kpis] = await Promise.all([
+        statsRepository.getStats(),
+        statsRepository.getAnalyticsKpis(),
+      ]);
       setStats(data);
+      setAnalyticsKpis(kpis);
     } catch (error) {
       console.error('[Dashboard] Failed to fetch stats:', error);
     } finally {
@@ -48,6 +53,29 @@ export function useDashboardViewModel() {
     },
   ];
 
+  const analyticsCards = [
+    {
+      title: 'DAU (Oggi)',
+      value: analyticsKpis?.dauToday ?? 0,
+    },
+    {
+      title: 'Registrazioni Oggi',
+      value: analyticsKpis?.registrationsToday ?? 0,
+    },
+    {
+      title: 'Match Oggi',
+      value: analyticsKpis?.matchesToday ?? 0,
+    },
+    {
+      title: 'Eventi Ultimi 24h',
+      value: analyticsKpis?.eventsLast24h ?? 0,
+    },
+    {
+      title: 'Eventi Totali',
+      value: analyticsKpis?.totalEvents ?? 0,
+    },
+  ];
+
   const hasUserRegistrations = !isLoading && stats?.userRegistrations;
   const userRegistrationsEmpty = hasUserRegistrations && stats.userRegistrations.length === 0;
   const userRegistrationsData = hasUserRegistrations ? stats.userRegistrations : [];
@@ -56,14 +84,22 @@ export function useDashboardViewModel() {
   const dailyMatchesEmpty = hasDailyMatches && stats.dailyMatches.length === 0;
   const dailyMatchesData = hasDailyMatches ? stats.dailyMatches : [];
 
+  const hasDauTimeSeries = !isLoading && analyticsKpis?.dauTimeSeries;
+  const dauTimeSeriesEmpty = hasDauTimeSeries && analyticsKpis.dauTimeSeries.length === 0;
+  const dauTimeSeriesData = hasDauTimeSeries ? analyticsKpis.dauTimeSeries : [];
+
   return {
     isLoading,
     kpiCards,
+    analyticsCards,
     hasUserRegistrations,
     userRegistrationsEmpty,
     userRegistrationsData,
     hasDailyMatches,
     dailyMatchesEmpty,
     dailyMatchesData,
+    hasDauTimeSeries,
+    dauTimeSeriesEmpty,
+    dauTimeSeriesData,
   };
 }

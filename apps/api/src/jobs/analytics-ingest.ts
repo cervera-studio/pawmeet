@@ -4,7 +4,7 @@ import { logger } from '@dogwalk/utils';
 import { Worker } from 'bullmq';
 import { db } from '../lib/db.js';
 import type { AnalyticsJobData } from './queue.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
 
 export function createAnalyticsWorker() {
   const maxAgeMs = ANALYTICS_MAX_EVENT_AGE_DAYS * 24 * 60 * 60 * 1000;
@@ -34,6 +34,7 @@ export function createAnalyticsWorker() {
         platform: e.platform,
         appVersion: e.appVersion ?? null,
         screenName: e.screenName ?? null,
+        schemaVersion: 1,
       }));
 
       await db.insert(analyticsEvents).values(values).onConflictDoNothing({
@@ -51,6 +52,14 @@ export function createAnalyticsWorker() {
 
   worker.on('failed', (job, err) => {
     logger.error('analytics', `Job ${job?.id} failed: ${err.message}`);
+
+    // Move to DLQ after all retries exhausted
+    const maxAttempts = job?.opts?.attempts ?? 3;
+    if (job && job.attemptsMade >= maxAttempts) {
+      moveToAnalyticsDlq('ingest', job.data, err.message).catch((dlqErr) => {
+        logger.error('analytics', `Failed to move job ${job.id} to DLQ: ${dlqErr}`);
+      });
+    }
   });
 
   return worker;

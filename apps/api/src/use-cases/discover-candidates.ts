@@ -8,12 +8,18 @@ import {
   calculateEnergyScore,
   calculateSizeScore,
 } from '@dogwalk/utils';
-import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  FollowRepository,
+  MatchRepository,
+  UserRepository,
+} from '../ports/index.js';
 
 type Deps = {
   dogRepo: DogRepository;
   matchRepo: MatchRepository;
   userRepo: UserRepository;
+  followRepo: FollowRepository;
 };
 
 // ── Weights from MVP spec ──────────────────────────────────────────────────────
@@ -138,7 +144,7 @@ function matchesFilters(dog: DogProfile, filters: DiscoveryFilters): boolean {
 
 // ── Use case factory ────────────────────────────────────────────────────────
 
-export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo }: Deps) {
+export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followRepo }: Deps) {
   return async (
     userId: string,
     dogId: string,
@@ -168,7 +174,7 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo }: Deps)
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
-    // Get already-swiped dog IDs
+    // Get already-swiped dog IDs and blocked users
     const swipedIds = new Set(await matchRepo.findSwipedDogIds(dogId));
 
     // Get candidate dogs
@@ -191,14 +197,28 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo }: Deps)
         return [
           {
             dog: c.dog,
+            ownerId: c.dog.ownerId,
             distanceKm: Math.round(distanceKm * 10) / 10,
             compatibilityScore: Math.round(score * 100) / 100,
           },
         ];
       })
-      .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
-      .slice(0, effectiveLimit);
+      .sort((a, b) => b.compatibilityScore - a.compatibilityScore);
 
-    return succeed({ suggestions: scored });
+    // Filter out blocked users
+    const suggestions: Suggestion[] = [];
+    for (const s of scored) {
+      if (suggestions.length >= effectiveLimit) break;
+      const blocked = await followRepo.isBlockedEitherWay(userId, s.ownerId);
+      if (!blocked) {
+        suggestions.push({
+          dog: s.dog,
+          distanceKm: s.distanceKm,
+          compatibilityScore: s.compatibilityScore,
+        });
+      }
+    }
+
+    return succeed({ suggestions });
   };
 }

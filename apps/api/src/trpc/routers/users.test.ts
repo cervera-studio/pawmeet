@@ -53,7 +53,7 @@ function buildNearbyUser(overrides: Partial<NearbyUser> = {}): NearbyUser {
 
 function buildUserDeps(overrides: Partial<typeof userDeps> = {}): typeof userDeps {
   return {
-    getProfile: vi.fn().mockResolvedValue(succeed({ user: buildSafeUser() })),
+    getProfile: vi.fn().mockResolvedValue(succeed(buildSafeUser())),
     updateLocation: vi.fn().mockResolvedValue(
       succeed({
         latitude: 41.9028,
@@ -104,8 +104,8 @@ describe('users router', () => {
 
       const result = await caller.users.getProfile();
 
-      expect(result.user.id).toBe('user-1');
-      expect(result.user.email).toBe('test@example.com');
+      expect(result.id).toBe('user-1');
+      expect(result.email).toBe('test@example.com');
       expect(deps.getProfile).toHaveBeenCalledWith('user-1');
     });
 

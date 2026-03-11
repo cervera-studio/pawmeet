@@ -1,5 +1,6 @@
 export * from './admin-users';
 export * from './analytics';
+export * from './analytics-daily';
 export * from './badges';
 export * from './breeds';
 export * from './chat';
@@ -14,7 +15,9 @@ export * from './matches';
 export * from './matching-ai';
 export * from './refresh-tokens';
 export * from './reports';
+export * from './user-blocks';
 export * from './user-consents';
+export * from './user-follows';
 export * from './users';
 export * from './verification-tokens';
 export * from './walks';

@@ -1,8 +1,17 @@
-import { dogPhotos, dogProfiles, matches, reports, users } from '@dogwalk/db';
+import {
+  analyticsDailyMetrics,
+  analyticsEvents,
+  dogPhotos,
+  dogProfiles,
+  matches,
+  reports,
+  users,
+} from '@dogwalk/db';
 import { TRPCError } from '@trpc/server';
 import { count, desc, eq, gte, ilike, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
+import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import { protectedProcedure, router } from '../trpc.js';
 
 // ── Admin middleware ────────────────────────────────────────────────────────────
@@ -128,6 +137,53 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         pendingReports: reportsCount?.value ?? 0,
         userRegistrations: registrations,
         dailyMatches,
+      };
+    }),
+
+    // ── Analytics KPIs ──────────────────────────────────────────────────────
+    // Reads from: Redis HyperLogLog (DAU only) + Postgres (everything else).
+    // Postgres is the single source of truth for event counts.
+    getAnalyticsKpis: adminProcedure.query(async () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const todayStart = new Date(`${today}T00:00:00.000Z`);
+
+      const [dauToday, dauTimeSeries, todayMetrics, [totalEventsRow], [eventsLast24hRow]] =
+        await Promise.all([
+          // Redis HLL — real-time DAU
+          getDauCount(today),
+          getDauTimeSeries(30),
+          // Postgres — today's registrations & matches from analytics_events directly
+          // (pre-aggregated table only has yesterday's data until 02:00 cron runs)
+          db
+            .select({
+              eventName: analyticsEvents.eventName,
+              value: count(),
+            })
+            .from(analyticsEvents)
+            .where(
+              sql`${analyticsEvents.serverTimestamp} >= ${todayStart} AND ${analyticsEvents.eventName} IN ('auth_registration_completed', 'match_created')`,
+            )
+            .groupBy(analyticsEvents.eventName),
+          // Postgres — total event count
+          db.select({ value: count() }).from(analyticsEvents),
+          // Postgres — events in last 24h
+          db
+            .select({ value: count() })
+            .from(analyticsEvents)
+            .where(
+              gte(analyticsEvents.serverTimestamp, new Date(Date.now() - 24 * 60 * 60 * 1000)),
+            ),
+        ]);
+
+      const todayMap = new Map(todayMetrics.map((m) => [m.eventName, m.value]));
+
+      return {
+        dauToday,
+        registrationsToday: todayMap.get('auth_registration_completed') ?? 0,
+        matchesToday: todayMap.get('match_created') ?? 0,
+        totalEvents: totalEventsRow?.value ?? 0,
+        eventsLast24h: eventsLast24hRow?.value ?? 0,
+        dauTimeSeries,
       };
     }),
 

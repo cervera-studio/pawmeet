@@ -6,8 +6,13 @@ export function createTrpcAuthRepository(api: ApiClient): AuthRepository {
     async login(email, password): Promise<AuthResult> {
       return api.auth.login.mutate({ email, password }) as Promise<AuthResult>;
     },
-    async register(displayName, email, password): Promise<AuthResult> {
-      return api.auth.register.mutate({ displayName, email, password }) as Promise<AuthResult>;
+    async register(displayName, email, password, dateOfBirth): Promise<AuthResult> {
+      return api.auth.register.mutate({
+        displayName,
+        email,
+        password,
+        dateOfBirth,
+      }) as Promise<AuthResult>;
     },
     async socialLogin(provider, idToken, displayName): Promise<AuthResult> {
       return api.auth.socialLogin.mutate({ provider, idToken, displayName }) as Promise<AuthResult>;

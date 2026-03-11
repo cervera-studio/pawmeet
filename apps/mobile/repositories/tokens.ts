@@ -7,6 +7,7 @@ import type {
   ChatRepository,
   FeedbackRepository,
   FeedRepository,
+  FollowRepository,
   GroupChatRepository,
   GroupEventRepository,
   MatchRepository,
@@ -43,4 +44,5 @@ export const USER_REPOSITORY = Symbol('UserRepository') as InjectionToken<UserRe
 export const SMART_MATCHING_REPOSITORY = Symbol(
   'SmartMatchingRepository',
 ) as InjectionToken<SmartMatchingRepository>;
+export const FOLLOW_REPOSITORY = Symbol('FollowRepository') as InjectionToken<FollowRepository>;
 export const ANALYTICS_SERVICE = Symbol('AnalyticsService') as InjectionToken<AnalyticsService>;

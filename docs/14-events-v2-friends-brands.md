@@ -179,7 +179,8 @@ Add fields to `groupEvents`:
 - When `recurrenceRule` is set, the event is a **template** (not directly joinable)
 - System generates **occurrence** events from the template (parentEventId = template.id)
 - Each occurrence is an independent event with its own participants, chat, status
-- Occurrences are generated on-demand (e.g., 2 weeks ahead) via a BullMQ cron job
+- Occurrences are generated on-demand (4 ahead) via a BullMQ daily cron job (03:00 UTC)
+- **Limit:** Max 3 active recurring event templates per basic user. Verified organizations: no limit.
 
 ### 4.2 Event Visibility
 
@@ -311,7 +312,7 @@ Add to `groupEvents`:
 | Aspect | User Event | Main Event |
 |--------|-----------|------------|
 | Creator | Any user | Organization member (verified) |
-| Max participants | 3-50 | 50-500+ (configurable) |
+| Max participants | 2-50 | 2-300 (up to 500 admin-approved mega) |
 | Approval required | Yes (default) | No (open join, first-come) |
 | Visibility | public / friends_only / invite_only | Always public |
 | Discovery | Nearby events list | Featured section + nearby |
@@ -572,22 +573,48 @@ Phase 3 (continued from Sprint 11)
 
 ---
 
-## 12. Open Questions
+## 12. Decisions (resolved 2026-03-11)
 
-1. **Moderation for Main Events:** Should we require pre-approval for Main Events by DogWalk admin, or can verified orgs self-publish?
-   - **Recommendation:** Admin approval for first 3 events, then self-publish for verified orgs with good track record.
+Team feedback integrated from Piero, Benedetta + collaborators.
 
-2. **Revenue model for brand partnerships:** Is this a paid sponsorship (B2B revenue) or value exchange (brand provides products/prizes)?
-   - **Recommendation:** Start with value exchange (products, prizes for participants). Add paid tiers post-launch.
+### 1. Moderation for Main Events
+**Decision:** Admin approves first 3 events per org, then self-publish for verified orgs with good track record.
+**Status:** ✅ Agreed
 
-3. **Recurring event limit:** How many occurrences ahead should we generate?
-   - **Recommendation:** 4 occurrences ahead, generated weekly by BullMQ cron.
+### 2. Revenue model for brand partnerships
+**Decision:** Start with **value exchange** (products, prizes for participants). Paid B2B tiers to be evaluated post-launch once the model is validated. Affiliate system also under evaluation (similar open question from affiliate system design — separate doc needed).
+**Status:** ✅ Agreed
 
-4. **Friends-only vs private events:** Are these the same? Or is "private" still invite-only?
-   - **Recommendation:** Three tiers: `public` (everyone), `friends_only` (mutual follows), `invite_only` (direct invite/link only).
+### 3. Recurring event limits
+**Decision:** Max **3 active recurring events per basic user**. A basic user's typical use case is their own daily walk (3-4 times/day) that they want company for. Verified organizations: no limit. System generates **4 occurrences ahead**, checked daily by BullMQ cron.
+**Status:** ✅ Agreed
 
-5. **Main Event capacity:** What's the realistic max for in-person dog events?
-   - **Recommendation:** Start with max 200, adjustable per event. Safety concern with too many dogs in one place.
+### 4. Event visibility levels
+**Decision:** 3 levels confirmed: `public`, `friends_only`, `invite_only`. Validated user journey:
+1. Create **public** events (don't know anyone yet)
+2. People join → you get along → mutual follow (become friends)
+3. Create **friends_only** events (walk with your trusted group)
+4. Create **invite_only** for selective walks with specific people from your circle
+**Status:** ✅ Agreed
 
-6. **Brand data access:** Should brands see participant profiles or only aggregate analytics?
-   - **Recommendation:** Aggregate only (headcount, engagement). No PII shared with brands (GDPR compliance).
+### 5. Main Event capacity
+**Research completed:** See [`docs/research/main-event-capacity-research.md`](research/main-event-capacity-research.md) for full report.
+
+**Key findings:**
+- Largest Italian breed raduno: **300 dogs + 700 people** (Golden Retriever Family, Lignano Sabbiadoro 2024, sold out)
+- Largest single-breed meetup worldwide: **2,397 dogs** (Buenos Aires 2025, pending Guinness)
+- Italian raduni are **community-managed** by associations (~400 members) with sponsor support — no external logistics companies needed
+- Volunteer ratio: ~1:15-20 (dogs per volunteer) for large events
+- The community tends to be "tranquillo" — breed-specific events attract experienced, responsible owners
+
+**Decision:** Tiered capacity system:
+- User events: max **50** participants
+- Main Events (verified org): default **100**, configurable up to **300**
+- Mega Events (admin-approved only): up to **500** (requires safety plan)
+
+Safety requirements scale with capacity (vet on-call >100, safety plan >200, admin-only >300).
+**Status:** ✅ Research complete, ready for Sprint 14 implementation
+
+### 6. Brand data access
+**Decision:** Aggregate analytics only (headcount, engagement). No PII shared with brands (GDPR compliance).
+**Status:** ✅ Agreed

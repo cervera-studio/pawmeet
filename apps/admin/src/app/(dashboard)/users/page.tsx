@@ -12,6 +12,8 @@ interface User {
   email: string;
   status: 'active' | 'suspended' | 'banned';
   dogsCount: number;
+  followersCount: number;
+  followingCount: number;
   createdAt: string;
 }
 
@@ -35,6 +37,14 @@ const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'dogsCount',
     header: 'Cani',
+  },
+  {
+    accessorKey: 'followersCount',
+    header: 'Follower',
+  },
+  {
+    accessorKey: 'followingCount',
+    header: 'Seguiti',
   },
   {
     accessorKey: 'createdAt',

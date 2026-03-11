@@ -9,6 +9,7 @@ import { createTrpcBadgeRepository } from './remote/trpc-badge-repository';
 import { createTrpcChatRepository } from './remote/trpc-chat-repository';
 import { createTrpcFeedRepository } from './remote/trpc-feed-repository';
 import { createTrpcFeedbackRepository } from './remote/trpc-feedback-repository';
+import { createTrpcFollowRepository } from './remote/trpc-follow-repository';
 import { createTrpcGroupChatRepository } from './remote/trpc-group-chat-repository';
 import { createTrpcGroupEventRepository } from './remote/trpc-group-event-repository';
 import { createTrpcMatchRepository } from './remote/trpc-match-repository';
@@ -25,6 +26,7 @@ import {
   CHAT_REPOSITORY,
   FEED_REPOSITORY,
   FEEDBACK_REPOSITORY,
+  FOLLOW_REPOSITORY,
   GROUP_CHAT_REPOSITORY,
   GROUP_EVENT_REPOSITORY,
   MATCH_REPOSITORY,
@@ -45,6 +47,7 @@ container.register(WALK_TRACKING_REPOSITORY, {
   useValue: createTrpcWalkTrackingRepository(api),
 });
 container.register(FEED_REPOSITORY, { useValue: createTrpcFeedRepository(api) });
+container.register(FOLLOW_REPOSITORY, { useValue: createTrpcFollowRepository(api) });
 container.register(MEDIA_REPOSITORY, { useValue: createTrpcMediaRepository(api) });
 container.register(GROUP_EVENT_REPOSITORY, {
   useValue: createTrpcGroupEventRepository(api),

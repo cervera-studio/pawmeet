@@ -14,6 +14,7 @@
 8. [Testing Patterns](#8-testing-patterns)
 9. [SOLID Checklist](#9-solid-checklist)
 10. [Migration Roadmap](#10-migration-roadmap)
+11. [Security Checklist](#11-security-checklist)
 
 ---
 
@@ -529,6 +530,147 @@ Refactor incrementally. Each step is independently shippable.
 1. Create `hooks/api/` directory for pure data-fetching hooks
 2. Refactor orchestration hooks to use API hooks
 3. Deduplicate types with `@dogwalk/types`
+
+---
+
+---
+
+## 11. Security Checklist
+
+> These rules exist because we found real vulnerabilities in audits. Every rule maps to a past incident. **Do not skip them.**
+
+### 11.1 Secrets & Environment Variables
+
+- **NEVER** commit `.env` files. Use `.env.example` with empty values only.
+- **NEVER** use fallback defaults for secrets: `process.env.SECRET || 'dev-secret'` is a critical vulnerability. Use `requireEnv()` or throw.
+- Use lazy initialization for secret-dependent modules so tests don't crash at import time:
+
+```typescript
+// GOOD — lazy init, crashes at first use, not at import
+let _secret: Uint8Array | null = null;
+function getSecret(): Uint8Array {
+  if (!_secret) _secret = requireEnv('JWT_SECRET');
+  return _secret;
+}
+
+// BAD — crashes at import, breaks all tests that import this module
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret');
+```
+
+- Rotate secrets immediately if exposed. Use `git filter-repo` to remove from history.
+
+### 11.2 Authentication & Authorization
+
+- **Always use `ctx.userId`** in tRPC procedures. Never trust a `userId` from client input:
+
+```typescript
+// BAD — IDOR vulnerability, client can pass any userId
+.query(async ({ input }) => deps.listAchievements(input.userId))
+
+// GOOD — userId comes from the verified JWT
+.query(async ({ ctx }) => deps.listAchievements(ctx.userId))
+```
+
+- **Admin auth must require `ADMIN_EMAILS`** — throw `INTERNAL_SERVER_ERROR` if env var is missing, never fall through with an empty list.
+- **Unified error messages** for auth — always return `"Credenziali non valide"` regardless of whether the account exists, is inactive, or the password is wrong. This prevents email enumeration.
+- **Refresh token rotation** — always revoke old token before issuing new pair.
+
+### 11.3 Rate Limiting
+
+Every endpoint category must have rate limiting:
+
+| Category | Limit | Middleware |
+|----------|-------|-----------|
+| Auth (login, register, forgot-password) | 10 req / 15 min | `authRateLimitMiddleware` |
+| General API (`/api/*`, `/trpc/*`) | 100 req / 1 min | `rateLimitMiddleware` |
+| Sensitive ops (uploads, messages) | 30 req / 1 min | `sensitiveRateLimitMiddleware` |
+| WebSocket messages | 60 msg / 1 min | In-memory per-user bucket |
+
+New endpoints must declare their rate limit tier. When adding a new route:
+1. Decide: is it auth, general, or sensitive?
+2. Apply the corresponding middleware.
+
+### 11.4 Input Validation & Sanitization
+
+- **All routes** must use `zValidator` (REST) or `.input(zodSchema)` (tRPC). No `c.req.json<T>()` without validation.
+- **Strip HTML from user-generated text** (messages, bios, comments) before storage:
+
+```typescript
+function sanitizeContent(text: string): string {
+  return text.replace(/<[^>]*>/g, '');
+}
+```
+
+- **Validate coordinate bounds** for geolocation input: lat `[-90, 90]`, lng `[-180, 180]`.
+- **Anti-teleport check**: compute haversine distance and reject updates exceeding 500 km/h.
+
+### 11.5 WebSocket Security
+
+- **Never pass tokens as query parameters**. Use `Sec-WebSocket-Protocol` header:
+
+```typescript
+// Client (mobile)
+const ws = new WebSocket(url, [`access_token.${token}`]);
+
+// Server extracts from Sec-WebSocket-Protocol header
+const tokenProtocol = protocols.find(p => p.startsWith('access_token.'));
+```
+
+- **Rate limit WebSocket messages** per user (in-memory bucket, 60 msg/min).
+- **Enforce WSS** in production — never allow `ws://` in production configs.
+
+### 11.6 CORS & Headers
+
+- **Environment-aware CORS**: localhost origins only in development, production domains only in production.
+- **Never include staging/preview URLs** (e.g., `*.vercel.app`) in production CORS.
+- **Security headers** on all responses:
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: DENY`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+  - `Strict-Transport-Security` (production only)
+
+### 11.7 Error Handling
+
+- **Never expose internal error details** to clients. Return generic messages with a correlation `errorId`:
+
+```typescript
+// GOOD
+return c.json({ error: 'Dati non validi', errorId }, 400);
+
+// BAD — reveals schema structure to attacker
+return c.json({ error: 'Dati non validi', details: err.message }, 400);
+```
+
+- Log full error details server-side with the `errorId` for debugging.
+
+### 11.8 Data Access & IDOR Prevention
+
+- **Ownership checks** on every mutation that modifies a resource: verify `resource.ownerId === ctx.userId` or equivalent.
+- **Soft-delete checks** must be consistent: if `findByOwner()` filters by `isActive`, then `findById()` should too.
+- **Limit query results**: use pagination with max page sizes (e.g., `.max(100)`).
+- **Race conditions**: use DB transactions or constraints for limits (e.g., max dogs per user). A count-then-insert pattern is vulnerable to concurrent requests.
+
+### 11.9 Mobile Client Security
+
+- **Token storage**: refresh tokens in `SecureStore` (encrypted), never in MMKV or plain AsyncStorage.
+- **Cache TTL**: cached data (conversations, messages) must expire. Clear sensitive caches on logout.
+- **Certificate pinning**: required before production launch.
+- **Enforce HTTPS/WSS**: validate URLs at startup, reject insecure schemes in production.
+
+### 11.10 Pre-merge Security Checklist
+
+Use this before merging any PR:
+
+- [ ] No hardcoded secrets, API keys, or tokens in code
+- [ ] All user input validated with Zod (server-side, at minimum)
+- [ ] User-generated text sanitized (HTML stripped)
+- [ ] Ownership/authorization checks on all mutations
+- [ ] `ctx.userId` used instead of client-provided `userId`
+- [ ] Rate limiting applied to new endpoints
+- [ ] Error responses don't leak internal details
+- [ ] New WebSocket handlers have rate limiting
+- [ ] No `.env` files or secrets in the diff
 
 ---
 

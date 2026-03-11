@@ -4,7 +4,7 @@ import type {
   GroupConversationSummary,
   PaginatedGroupMessages,
 } from '@dogwalk/types';
-import { and, desc, eq, lt, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
@@ -80,71 +80,166 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
 
     if (participations.length === 0) return [];
 
-    const conversations = await Promise.all(
-      participations.map(async ({ eventId }) => {
-        const [event] = await this.db
-          .select({ title: groupEvents.title })
-          .from(groupEvents)
-          .where(and(eq(groupEvents.id, eventId), ne(groupEvents.status, 'cancelled')));
+    const eventIds = participations.map((p) => p.eventId);
 
-        if (!event) return null;
+    // Batch-fetch event details for all eventIds (exclude cancelled)
+    const eventsRows = await this.db
+      .select({ id: groupEvents.id, title: groupEvents.title })
+      .from(groupEvents)
+      .where(and(inArray(groupEvents.id, eventIds), ne(groupEvents.status, 'cancelled')));
 
-        const [countResult] = await this.db
-          .select({ count: sql<number>`count(*)::int` })
-          .from(groupEventParticipants)
-          .where(
-            and(
-              eq(groupEventParticipants.eventId, eventId),
-              eq(groupEventParticipants.status, 'accepted'),
-            ),
-          );
+    if (eventsRows.length === 0) return [];
 
-        const [lastMessage] = await this.db
-          .select()
-          .from(groupMessages)
-          .where(and(eq(groupMessages.eventId, eventId), eq(groupMessages.isDeleted, false)))
-          .orderBy(desc(groupMessages.createdAt))
-          .limit(1);
+    const eventById = new Map<string, { title: string }>();
+    const activeEventIds: string[] = [];
+    for (const event of eventsRows) {
+      eventById.set(event.id, { title: event.title });
+      activeEventIds.push(event.id);
+    }
 
-        // Unread count: messages after user's last read timestamp
-        const [readRecord] = await this.db
-          .select({ lastReadAt: groupMessageReads.lastReadAt })
-          .from(groupMessageReads)
-          .where(and(eq(groupMessageReads.eventId, eventId), eq(groupMessageReads.userId, userId)));
+    // Batch-fetch participant counts for all active events
+    const participantCountRows = await this.db
+      .select({
+        eventId: groupEventParticipants.eventId,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(groupEventParticipants)
+      .where(
+        and(
+          inArray(groupEventParticipants.eventId, activeEventIds),
+          eq(groupEventParticipants.status, 'accepted'),
+        ),
+      )
+      .groupBy(groupEventParticipants.eventId);
 
-        const unreadConditions = [
-          eq(groupMessages.eventId, eventId),
-          eq(groupMessages.isDeleted, false),
-          sql`${groupMessages.senderId} != ${userId}`,
-        ];
-        if (readRecord) {
-          unreadConditions.push(sql`${groupMessages.createdAt} > ${readRecord.lastReadAt}`);
-        }
+    const participantCountByEvent = new Map<string, number>();
+    for (const row of participantCountRows) {
+      participantCountByEvent.set(row.eventId, row.count);
+    }
 
-        const [unreadResult] = await this.db
-          .select({ count: sql<number>`count(*)::int` })
-          .from(groupMessages)
-          .where(and(...unreadConditions));
+    // Batch-fetch last messages for all active events
+    const allMessagesRows = await this.db
+      .select()
+      .from(groupMessages)
+      .where(
+        and(inArray(groupMessages.eventId, activeEventIds), eq(groupMessages.isDeleted, false)),
+      )
+      .orderBy(groupMessages.eventId, desc(groupMessages.createdAt));
 
-        return {
-          eventId,
-          eventTitle: event.title,
-          participantCount: countResult?.count ?? 0,
-          lastMessage: (lastMessage as GroupChatMessage | undefined) ?? null,
-          unreadCount: unreadResult?.count ?? 0,
-        };
-      }),
-    );
+    // Pick the first (most recent) message per eventId
+    const lastMessageByEvent = new Map<string, GroupChatMessage>();
+    for (const row of allMessagesRows) {
+      const msg = row as unknown as GroupChatMessage;
+      if (!lastMessageByEvent.has(msg.eventId)) {
+        lastMessageByEvent.set(msg.eventId, msg);
+      }
+    }
 
-    const filtered = conversations.filter((c): c is GroupConversationSummary => c !== null);
+    // Batch-fetch read records for all active events for this user
+    const readRows = await this.db
+      .select({
+        eventId: groupMessageReads.eventId,
+        lastReadAt: groupMessageReads.lastReadAt,
+      })
+      .from(groupMessageReads)
+      .where(
+        and(
+          inArray(groupMessageReads.eventId, activeEventIds),
+          eq(groupMessageReads.userId, userId),
+        ),
+      );
 
-    filtered.sort((a, b) => {
+    const lastReadByEvent = new Map<string, Date>();
+    for (const row of readRows) {
+      lastReadByEvent.set(row.eventId, row.lastReadAt);
+    }
+
+    // Batch-fetch unread counts for all active events
+    // We need per-event counts of messages not sent by userId, not deleted,
+    // and created after the user's last read timestamp (if any)
+    // Split into two groups: events with a read record and events without
+    const eventsWithRead = activeEventIds.filter((id) => lastReadByEvent.has(id));
+    const eventsWithoutRead = activeEventIds.filter((id) => !lastReadByEvent.has(id));
+
+    const unreadByEvent = new Map<string, number>();
+
+    // For events without a read record, count all non-self messages
+    if (eventsWithoutRead.length > 0) {
+      const unreadNoReadRows = await this.db
+        .select({
+          eventId: groupMessages.eventId,
+          count: sql<number>`count(*)::int`,
+        })
+        .from(groupMessages)
+        .where(
+          and(
+            inArray(groupMessages.eventId, eventsWithoutRead),
+            eq(groupMessages.isDeleted, false),
+            sql`${groupMessages.senderId} != ${userId}`,
+          ),
+        )
+        .groupBy(groupMessages.eventId);
+
+      for (const row of unreadNoReadRows) {
+        unreadByEvent.set(row.eventId, row.count);
+      }
+    }
+
+    // For events with a read record, count messages after lastReadAt
+    // We do individual conditions per event since each has a different timestamp
+    // But we can still batch into a single query using CASE/UNION or raw SQL
+    if (eventsWithRead.length > 0) {
+      // Build a single query with OR conditions per event
+      const unreadWithReadRows = await this.db
+        .select({
+          eventId: groupMessages.eventId,
+          count: sql<number>`count(*)::int`,
+        })
+        .from(groupMessages)
+        .where(
+          and(
+            inArray(groupMessages.eventId, eventsWithRead),
+            eq(groupMessages.isDeleted, false),
+            sql`${groupMessages.senderId} != ${userId}`,
+            // Filter: only messages after the user's lastReadAt for that event
+            // Use a subquery approach: createdAt > the user's lastReadAt for that event
+            sql`${groupMessages.createdAt} > (
+              SELECT ${groupMessageReads.lastReadAt}
+              FROM ${groupMessageReads}
+              WHERE ${groupMessageReads.eventId} = ${groupMessages.eventId}
+                AND ${groupMessageReads.userId} = ${userId}
+            )`,
+          ),
+        )
+        .groupBy(groupMessages.eventId);
+
+      for (const row of unreadWithReadRows) {
+        unreadByEvent.set(row.eventId, row.count);
+      }
+    }
+
+    // Assemble results
+    const conversations: GroupConversationSummary[] = [];
+    for (const eventId of activeEventIds) {
+      const event = eventById.get(eventId);
+      if (!event) continue;
+
+      conversations.push({
+        eventId,
+        eventTitle: event.title,
+        participantCount: participantCountByEvent.get(eventId) ?? 0,
+        lastMessage: lastMessageByEvent.get(eventId) ?? null,
+        unreadCount: unreadByEvent.get(eventId) ?? 0,
+      });
+    }
+
+    conversations.sort((a, b) => {
       const aTime = a.lastMessage?.createdAt?.getTime() ?? 0;
       const bTime = b.lastMessage?.createdAt?.getTime() ?? 0;
       return bTime - aTime;
     });
 
-    return filtered;
+    return conversations;
   }
 
   async markAsRead(eventId: string, userId: string): Promise<void> {

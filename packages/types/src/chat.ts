@@ -20,6 +20,11 @@ export const WS_EVENT = {
   TYPING_STOP: 'typing_stop',
   ONLINE_STATUS: 'online_status',
   ERROR: 'error',
+  // Feed events
+  FEED_NEW_POST: 'feed_new_post',
+  FEED_POST_LIKED: 'feed_post_liked',
+  FEED_POST_COMMENTED: 'feed_post_commented',
+  FEED_NEW_STORY: 'feed_new_story',
 } as const;
 
 export type WsEvent = (typeof WS_EVENT)[keyof typeof WS_EVENT];

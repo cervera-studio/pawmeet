@@ -1,6 +1,6 @@
 import { dogProfiles, matches, messages, users } from '@dogwalk/db';
 import type { ChatMessage } from '@dogwalk/types';
-import { and, desc, eq, lt, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   ConversationSummary,
@@ -26,60 +26,103 @@ export class DrizzleMessageRepository implements MessageRepository {
         ),
       );
 
-    // For each match, get the last message and other participant info
-    const conversations = await Promise.all(
-      userMatches.map(async (match) => {
-        // Get last message
-        const [lastMessage] = await this.db
-          .select()
-          .from(messages)
-          .where(and(eq(messages.matchId, match.id), eq(messages.isDeleted, false)))
-          .orderBy(desc(messages.createdAt))
-          .limit(1);
+    if (userMatches.length === 0) return [];
 
-        // Get unread count (messages sent by others, not yet read)
-        const [unreadResult] = await this.db
-          .select({ count: sql<number>`count(*)::int` })
-          .from(messages)
-          .where(
-            and(
-              eq(messages.matchId, match.id),
-              eq(messages.status, 'sent'),
-              eq(messages.isDeleted, false),
-              sql`${messages.senderId} != ${userId}`,
-            ),
-          );
+    const matchIds = userMatches.map((m) => m.id);
 
-        // Get the other user's info
-        const otherDogId = dogIds.includes(match.dogAId) ? match.dogBId : match.dogAId;
-        const [otherDog] = await this.db
-          .select({ ownerId: dogProfiles.ownerId, name: dogProfiles.name })
-          .from(dogProfiles)
-          .where(eq(dogProfiles.id, otherDogId));
+    // Batch-fetch last messages for all matches using DISTINCT ON
+    const lastMessagesRows = await this.db
+      .select()
+      .from(messages)
+      .where(and(inArray(messages.matchId, matchIds), eq(messages.isDeleted, false)))
+      .orderBy(messages.matchId, desc(messages.createdAt));
 
-        let otherUser = null;
-        if (otherDog) {
-          const [user] = await this.db
+    // Group and pick the first (most recent) message per matchId
+    const lastMessageByMatch = new Map<string, ChatMessage>();
+    for (const row of lastMessagesRows) {
+      const msg = row as unknown as ChatMessage;
+      if (!lastMessageByMatch.has(msg.matchId)) {
+        lastMessageByMatch.set(msg.matchId, msg);
+      }
+    }
+
+    // Batch-fetch unread counts for all matches
+    const unreadRows = await this.db
+      .select({
+        matchId: messages.matchId,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(messages)
+      .where(
+        and(
+          inArray(messages.matchId, matchIds),
+          eq(messages.status, 'sent'),
+          eq(messages.isDeleted, false),
+          sql`${messages.senderId} != ${userId}`,
+        ),
+      )
+      .groupBy(messages.matchId);
+
+    const unreadByMatch = new Map<string, number>();
+    for (const row of unreadRows) {
+      unreadByMatch.set(row.matchId, row.count);
+    }
+
+    // Collect all "other" dogIds (the dog that doesn't belong to the current user)
+    const otherDogIds = userMatches.map((m) => (dogIds.includes(m.dogAId) ? m.dogBId : m.dogAId));
+    const uniqueOtherDogIds = [...new Set(otherDogIds)];
+
+    // Batch-fetch dog profiles for all other dogs
+    const otherDogs =
+      uniqueOtherDogIds.length > 0
+        ? await this.db
+            .select({ id: dogProfiles.id, ownerId: dogProfiles.ownerId, name: dogProfiles.name })
+            .from(dogProfiles)
+            .where(inArray(dogProfiles.id, uniqueOtherDogIds))
+        : [];
+
+    const dogById = new Map<string, { ownerId: string; name: string }>();
+    for (const dog of otherDogs) {
+      dogById.set(dog.id, { ownerId: dog.ownerId, name: dog.name });
+    }
+
+    // Batch-fetch user info for all dog owners
+    const ownerIds = [...new Set(otherDogs.map((d) => d.ownerId))];
+    const otherUsers =
+      ownerIds.length > 0
+        ? await this.db
             .select({
               id: users.id,
               displayName: users.displayName,
               avatarUrl: users.avatarUrl,
             })
             .from(users)
-            .where(eq(users.id, otherDog.ownerId));
-          otherUser = user ?? null;
-        }
+            .where(inArray(users.id, ownerIds))
+        : [];
 
-        return {
-          matchId: match.id,
-          compatibilityScore: match.compatibilityScore,
-          otherUser,
-          otherDogName: otherDog?.name ?? null,
-          lastMessage: (lastMessage as ChatMessage | undefined) ?? null,
-          unreadCount: unreadResult?.count ?? 0,
-        };
-      }),
-    );
+    const userById = new Map<
+      string,
+      { id: string; displayName: string; avatarUrl: string | null }
+    >();
+    for (const user of otherUsers) {
+      userById.set(user.id, user);
+    }
+
+    // Assemble results
+    const conversations: ConversationSummary[] = userMatches.map((match) => {
+      const otherDogId = dogIds.includes(match.dogAId) ? match.dogBId : match.dogAId;
+      const dog = dogById.get(otherDogId);
+      const otherUser = dog ? (userById.get(dog.ownerId) ?? null) : null;
+
+      return {
+        matchId: match.id,
+        compatibilityScore: match.compatibilityScore,
+        otherUser,
+        otherDogName: dog?.name ?? null,
+        lastMessage: lastMessageByMatch.get(match.id) ?? null,
+        unreadCount: unreadByMatch.get(match.id) ?? 0,
+      };
+    });
 
     // Sort by last message date (most recent first)
     conversations.sort((a, b) => {
@@ -159,33 +202,38 @@ export class DrizzleMessageRepository implements MessageRepository {
   }
 
   async isMatchParticipant(matchId: string, userId: string): Promise<boolean> {
-    const [match] = await this.db.select().from(matches).where(eq(matches.id, matchId));
-    if (!match || !match.isActive) return false;
+    // Single JOIN query instead of 3 separate queries
+    const rows = await this.db
+      .select({ id: matches.id })
+      .from(matches)
+      .innerJoin(
+        dogProfiles,
+        or(eq(dogProfiles.id, matches.dogAId), eq(dogProfiles.id, matches.dogBId)),
+      )
+      .where(
+        and(eq(matches.id, matchId), eq(matches.isActive, true), eq(dogProfiles.ownerId, userId)),
+      )
+      .limit(1);
 
-    const [dogA] = await this.db
-      .select({ ownerId: dogProfiles.ownerId })
-      .from(dogProfiles)
-      .where(eq(dogProfiles.id, match.dogAId));
-    const [dogB] = await this.db
-      .select({ ownerId: dogProfiles.ownerId })
-      .from(dogProfiles)
-      .where(eq(dogProfiles.id, match.dogBId));
-
-    return dogA?.ownerId === userId || dogB?.ownerId === userId;
+    return rows.length > 0;
   }
 
   async getOtherParticipant(matchId: string, userId: string): Promise<string | null> {
-    const [match] = await this.db.select().from(matches).where(eq(matches.id, matchId));
-    if (!match || !match.isActive) return null;
+    // Single query: join match with both dogs, find the owner that isn't the current user
+    const [match] = await this.db
+      .select()
+      .from(matches)
+      .where(and(eq(matches.id, matchId), eq(matches.isActive, true)));
+    if (!match) return null;
 
-    const [dogA] = await this.db
-      .select({ ownerId: dogProfiles.ownerId })
+    // Batch-fetch both dogs in a single query
+    const dogs = await this.db
+      .select({ id: dogProfiles.id, ownerId: dogProfiles.ownerId })
       .from(dogProfiles)
-      .where(eq(dogProfiles.id, match.dogAId));
-    const [dogB] = await this.db
-      .select({ ownerId: dogProfiles.ownerId })
-      .from(dogProfiles)
-      .where(eq(dogProfiles.id, match.dogBId));
+      .where(inArray(dogProfiles.id, [match.dogAId, match.dogBId]));
+
+    const dogA = dogs.find((d) => d.id === match.dogAId);
+    const dogB = dogs.find((d) => d.id === match.dogBId);
 
     if (dogA?.ownerId === userId) return dogB?.ownerId ?? null;
     if (dogB?.ownerId === userId) return dogA?.ownerId ?? null;

@@ -45,10 +45,7 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
 export function useGoogleAuth() {
   const redirectUri = AuthSession.makeRedirectUri();
 
-  const nonce = Crypto.getRandomBytes(16).reduce(
-    (s, b) => s + b.toString(16).padStart(2, '0'),
-    '',
-  );
+  const nonce = Crypto.getRandomBytes(16).reduce((s, b) => s + b.toString(16).padStart(2, '0'), '');
 
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {

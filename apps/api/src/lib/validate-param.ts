@@ -1,5 +1,5 @@
-import { HTTPException } from 'hono/http-exception';
 import type { Context } from 'hono';
+import { HTTPException } from 'hono/http-exception';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

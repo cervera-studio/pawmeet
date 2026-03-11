@@ -4,8 +4,8 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { chatDeps as ChatDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';
-import { authMiddleware } from '../middleware/auth.js';
 import { uuidParamOrBail } from '../lib/validate-param.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 type Env = { Variables: { userId: string } };
 

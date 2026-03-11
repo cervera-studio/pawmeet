@@ -1,12 +1,15 @@
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
 import type { SocialAuthVerifier } from '../ports/social-auth-verifier.js';
-import { buildAuthService, buildTokenRepo, buildUser, buildUserRepo } from '../test-utils/builders.js';
+import {
+  buildAuthService,
+  buildTokenRepo,
+  buildUser,
+  buildUserRepo,
+} from '../test-utils/builders.js';
 import { createSocialLogin } from './social-login.js';
 
-function buildSocialAuthVerifier(
-  overrides: Partial<SocialAuthVerifier> = {},
-): SocialAuthVerifier {
+function buildSocialAuthVerifier(overrides: Partial<SocialAuthVerifier> = {}): SocialAuthVerifier {
   return {
     verify: vi.fn().mockResolvedValue({
       email: 'social@example.com',
@@ -41,11 +44,20 @@ describe('createSocialLogin', () => {
     const userRepo = buildUserRepo({
       findByEmail: vi.fn().mockResolvedValue(null),
       create: vi.fn().mockResolvedValue(
-        buildUser({ id: 'new-1', email: 'social@example.com', authProvider: 'google', emailVerified: true }),
+        buildUser({
+          id: 'new-1',
+          email: 'social@example.com',
+          authProvider: 'google',
+          emailVerified: true,
+        }),
       ),
-      update: vi.fn().mockImplementation((_id, _data) =>
-        Promise.resolve(buildUser({ id: 'new-1', email: 'social@example.com', emailVerified: true })),
-      ),
+      update: vi
+        .fn()
+        .mockImplementation((_id, _data) =>
+          Promise.resolve(
+            buildUser({ id: 'new-1', email: 'social@example.com', emailVerified: true }),
+          ),
+        ),
     });
     const deps = buildDeps({ userRepo });
     const socialLogin = createSocialLogin(deps);
@@ -68,9 +80,9 @@ describe('createSocialLogin', () => {
   it('uses input displayName over provider displayName', async () => {
     const userRepo = buildUserRepo({
       findByEmail: vi.fn().mockResolvedValue(null),
-      create: vi.fn().mockResolvedValue(
-        buildUser({ displayName: 'Custom Name', emailVerified: true }),
-      ),
+      create: vi
+        .fn()
+        .mockResolvedValue(buildUser({ displayName: 'Custom Name', emailVerified: true })),
       update: vi.fn().mockResolvedValue(buildUser({ emailVerified: true })),
     });
     const deps = buildDeps({ userRepo });
@@ -93,9 +105,7 @@ describe('createSocialLogin', () => {
     });
     const userRepo = buildUserRepo({
       findByEmail: vi.fn().mockResolvedValue(null),
-      create: vi.fn().mockResolvedValue(
-        buildUser({ displayName: 'noname', emailVerified: true }),
-      ),
+      create: vi.fn().mockResolvedValue(buildUser({ displayName: 'noname', emailVerified: true })),
       update: vi.fn().mockResolvedValue(buildUser({ emailVerified: true })),
     });
     const deps = buildDeps({ userRepo, socialAuthVerifier });

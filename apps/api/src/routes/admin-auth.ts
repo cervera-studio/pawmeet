@@ -47,10 +47,11 @@ export function createAdminAuthRoutes(adminUserRepo: AdminUserRepository) {
       const { accessToken, refreshToken } = await generateAdminTokenPair(admin.id, admin.role);
 
       // Set refresh token as HttpOnly cookie
+      // SameSite=None required for cross-origin cookie (admin on Vercel, API on Fly.io)
       setCookie(c, REFRESH_COOKIE_NAME, refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Lax',
+        secure: true,
+        sameSite: 'None',
         path: '/',
         maxAge: REFRESH_COOKIE_MAX_AGE,
       });
@@ -114,8 +115,8 @@ export function createAdminAuthRoutes(adminUserRepo: AdminUserRepository) {
         const newRefreshToken = await generateAdminRefreshToken(admin.id, admin.role);
         setCookie(c, REFRESH_COOKIE_NAME, newRefreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'Lax',
+          secure: true,
+          sameSite: 'None',
           path: '/',
           maxAge: REFRESH_COOKIE_MAX_AGE,
         });
@@ -137,8 +138,8 @@ export function createAdminAuthRoutes(adminUserRepo: AdminUserRepository) {
       // Clear the refresh token cookie
       setCookie(c, REFRESH_COOKIE_NAME, '', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Lax',
+        secure: true,
+        sameSite: 'None',
         path: '/',
         maxAge: 0,
       });

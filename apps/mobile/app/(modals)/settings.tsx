@@ -1,14 +1,29 @@
-import { useState } from 'react';
-import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import type { ConsentState } from '@dogwalk/types';
+import { logger } from '@dogwalk/utils';
+import { useCallback, useState } from 'react';
+import { Linking, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { ConsentModal } from '@/components/ConsentModal';
+import { syncSingleConsentToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';
 import { useSettingsViewModel } from './settings.view-model';
+
+const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'https://dogwalk.app';
 
 export default function SettingsModal() {
   const vm = useSettingsViewModel();
   const consents = useConsentStore((s) => s.consents);
-  const setConsent = useConsentStore((s) => s.setConsent);
+  const storeSetConsent = useConsentStore((s) => s.setConsent);
   const [showConsentModal, setShowConsentModal] = useState(false);
+
+  const setConsent = useCallback(
+    (key: keyof ConsentState, value: boolean) => {
+      storeSetConsent(key, value);
+      syncSingleConsentToApi(key, value).catch((e) =>
+        logger.warn('Settings', `Failed to sync consent ${key}`, e),
+      );
+    },
+    [storeSetConsent],
+  );
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerClassName="px-6 py-4">
@@ -153,12 +168,16 @@ export default function SettingsModal() {
         </View>
 
         <View className="mt-4 border-t border-gray-100 pt-4">
-          <Pressable className="py-4">
+          <Pressable className="py-4" onPress={() => Linking.openURL(`${WEB_URL}/terms`)}>
             <Text className="text-base text-gray-700">Termini di servizio</Text>
           </Pressable>
 
-          <Pressable className="py-4">
+          <Pressable className="py-4" onPress={() => Linking.openURL(`${WEB_URL}/privacy`)}>
             <Text className="text-base text-gray-700">Privacy Policy</Text>
+          </Pressable>
+
+          <Pressable className="py-4" onPress={() => Linking.openURL(`${WEB_URL}/cookie`)}>
+            <Text className="text-base text-gray-700">Cookie Policy</Text>
           </Pressable>
 
           <Pressable className="py-4">

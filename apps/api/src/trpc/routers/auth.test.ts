@@ -215,6 +215,23 @@ describe('auth router', () => {
       });
     });
 
+    it('throws TOO_MANY_REQUESTS when account is locked', async () => {
+      const deps = buildAuthDeps({
+        loginUser: vi
+          .fn()
+          .mockResolvedValue(
+            fail(
+              new AppError('AUTH_ACCOUNT_LOCKED', 'Troppi tentativi. Riprova tra 15 minuti.', 429),
+            ),
+          ),
+      });
+      const caller = createCaller(deps);
+
+      await expect(caller.auth.login(validInput)).rejects.toMatchObject({
+        code: 'TOO_MANY_REQUESTS',
+      });
+    });
+
     it('rejects invalid email format', async () => {
       const deps = buildAuthDeps();
       const caller = createCaller(deps);

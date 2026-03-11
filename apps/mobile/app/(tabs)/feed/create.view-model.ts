@@ -1,15 +1,24 @@
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useLocation } from '@/hooks/useLocation';
 import { usePostUpload } from '@/hooks/usePostUpload';
+import { api } from '@/lib/trpc';
+import { logger } from '@dogwalk/utils';
 
 interface SelectedMedia {
   uri: string;
   type: string;
   fileSize: number;
+}
+
+export interface TagOption {
+  type: 'user' | 'dog';
+  id: string;
+  name: string;
+  avatarUrl?: string | null;
 }
 
 export function useCreatePostViewModel() {
@@ -20,6 +29,53 @@ export function useCreatePostViewModel() {
   const [caption, setCaption] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<SelectedMedia[]>([]);
   const [includeLocation, setIncludeLocation] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+  const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
+  const [showTagPicker, setShowTagPicker] = useState(false);
+
+  // Load available tag options (user's matched connections and their dogs)
+  useEffect(() => {
+    async function loadTagOptions() {
+      try {
+        const [dogsData, matchesData] = await Promise.all([
+          api.dogs.list.query(),
+          api.matches.list.query(),
+        ]);
+
+        const options: TagOption[] = [];
+        const addedIds = new Set<string>();
+
+        // Add user's own dogs
+        for (const dog of dogsData.dogs) {
+          if (!addedIds.has(dog.id)) {
+            options.push({ type: 'dog', id: dog.id, name: dog.name });
+            addedIds.add(dog.id);
+          }
+        }
+
+        // Add matched users and their dogs
+        for (const match of matchesData.matches) {
+          if (match.otherOwner && !addedIds.has(match.otherOwner.id)) {
+            options.push({
+              type: 'user',
+              id: match.otherOwner.id,
+              name: match.otherOwner.displayName,
+            });
+            addedIds.add(match.otherOwner.id);
+          }
+          if (match.otherDog && !addedIds.has(match.otherDog.id)) {
+            options.push({ type: 'dog', id: match.otherDog.id, name: match.otherDog.name });
+            addedIds.add(match.otherDog.id);
+          }
+        }
+
+        setTagOptions(options);
+      } catch (e) {
+        logger.warn('createPost', 'Failed to load tag options', e);
+      }
+    }
+    void loadTagOptions();
+  }, []);
 
   const pickMedia = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -41,6 +97,14 @@ export function useCreatePostViewModel() {
 
   const removeMedia = useCallback((index: number) => {
     setSelectedMedia((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const toggleTag = useCallback((tag: TagOption) => {
+    setSelectedTags((prev) => {
+      const exists = prev.some((t) => t.type === tag.type && t.id === tag.id);
+      if (exists) return prev.filter((t) => !(t.type === tag.type && t.id === tag.id));
+      return [...prev, tag];
+    });
   }, []);
 
   const handleSubmit = useCallback(async () => {
@@ -73,6 +137,21 @@ export function useCreatePostViewModel() {
 
     const success = await uploadMedia(post.id, selectedMedia);
 
+    // Add tags if any selected
+    if (selectedTags.length > 0) {
+      try {
+        await api.feed.addTags.mutate({
+          postId: post.id,
+          tags: selectedTags.map((t) => ({
+            taggedUserId: t.type === 'user' ? t.id : null,
+            taggedDogId: t.type === 'dog' ? t.id : null,
+          })),
+        });
+      } catch (e) {
+        logger.warn('createPost', 'Failed to add tags', e);
+      }
+    }
+
     if (success) {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
@@ -81,6 +160,7 @@ export function useCreatePostViewModel() {
     }
   }, [
     selectedMedia,
+    selectedTags,
     caption,
     includeLocation,
     coordinates,
@@ -104,6 +184,11 @@ export function useCreatePostViewModel() {
     pickMedia,
     removeMedia,
     handleSubmit,
+    selectedTags,
+    tagOptions,
+    showTagPicker,
+    setShowTagPicker,
+    toggleTag,
     goBack: () => router.back(),
   };
 }

@@ -3,6 +3,7 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 import { Stack } from 'expo-router';
 import { Image, Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { TagOption } from './create.view-model';
 import { useCreatePostViewModel } from './create.view-model';
 
 export default function CreatePostScreen() {
@@ -62,6 +63,61 @@ export default function CreatePostScreen() {
             </Pressable>
           ) : null}
         </View>
+
+        {/* Tags */}
+        <Pressable
+          onPress={() => vm.setShowTagPicker(!vm.showTagPicker)}
+          className="mb-4 rounded-xl bg-gray-50 p-4"
+        >
+          <View className="flex-row items-center gap-2">
+            <Text className="text-base">🏷️</Text>
+            <Text className="text-sm text-gray-700">
+              {vm.selectedTags.length > 0
+                ? `${vm.selectedTags.length} tag selezionati`
+                : 'Tagga persone o cani'}
+            </Text>
+          </View>
+
+          {/* Selected tags preview */}
+          {vm.selectedTags.length > 0 ? (
+            <View className="mt-2 flex-row flex-wrap gap-1">
+              {vm.selectedTags.map((tag: TagOption) => (
+                <Pressable
+                  key={`${tag.type}-${tag.id}`}
+                  onPress={() => vm.toggleTag(tag)}
+                  className="flex-row items-center gap-1 rounded-full bg-emerald-100 px-2 py-1"
+                >
+                  <Text className="text-xs text-emerald-800">{tag.name}</Text>
+                  <Text className="text-xs text-emerald-600">✕</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+        </Pressable>
+
+        {/* Tag picker */}
+        {vm.showTagPicker && vm.tagOptions.length > 0 ? (
+          <View className="mb-4 rounded-xl border border-gray-100 bg-white">
+            {vm.tagOptions.map((option: TagOption) => {
+              const isSelected = vm.selectedTags.some(
+                (t: TagOption) => t.type === option.type && t.id === option.id,
+              );
+              return (
+                <Pressable
+                  key={`${option.type}-${option.id}`}
+                  onPress={() => vm.toggleTag(option)}
+                  className={`flex-row items-center justify-between border-b border-gray-50 px-4 py-3 ${isSelected ? 'bg-emerald-50' : ''}`}
+                >
+                  <View className="flex-row items-center gap-2">
+                    <Text className="text-sm">{option.type === 'user' ? '👤' : '🐕'}</Text>
+                    <Text className="text-sm text-gray-800">{option.name}</Text>
+                  </View>
+                  {isSelected ? <Text className="text-sm text-emerald-700">✓</Text> : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
 
         {/* Location toggle */}
         <View className="mb-4 flex-row items-center justify-between rounded-xl bg-gray-50 p-4">

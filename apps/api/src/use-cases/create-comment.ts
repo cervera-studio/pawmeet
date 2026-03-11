@@ -1,13 +1,22 @@
 import { MAX_COMMENT_LENGTH } from '@dogwalk/config';
 import type { PostComment } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import type { FeedRepository } from '../ports/index.js';
+import { logger } from '@dogwalk/utils';
+import type {
+  FeedRealtimeService,
+  FeedRepository,
+  NotificationService,
+  UserRepository,
+} from '../ports/index.js';
 
 type Deps = {
   feedRepo: FeedRepository;
+  userRepo: UserRepository;
+  notificationService: NotificationService;
+  feedRealtime: FeedRealtimeService;
 };
 
-export function createCreateComment({ feedRepo }: Deps) {
+export function createCreateComment({ feedRepo, userRepo, notificationService, feedRealtime }: Deps) {
   return async (
     postId: string,
     userId: string,
@@ -46,6 +55,59 @@ export function createCreateComment({ feedRepo }: Deps) {
       content,
       parentId: parentId ?? null,
     });
+
+    // Notify the post author (unless they commented on their own post)
+    if (post.authorId !== userId) {
+      const commenter = await userRepo.findById(userId);
+      const commenterName = commenter?.displayName ?? 'Qualcuno';
+
+      // Real-time WebSocket event
+      feedRealtime.notifyPostCommented(post.authorId, postId, commenterName);
+
+      const recipient = await userRepo.findById(post.authorId);
+      if (recipient?.notificationPrefs?.feed !== false) {
+        const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
+
+        notificationService
+          .send({
+            userId: post.authorId,
+            title: `${commenterName} ha commentato`,
+            body: preview,
+            data: { postId, commentId: comment.id, type: 'post_comment' },
+          })
+          .catch((err) =>
+            logger.error('createComment', 'Failed to enqueue comment notification', err),
+          );
+      }
+    }
+
+    // If replying, also notify the parent comment author (if different from post author and commenter)
+    if (parentId) {
+      const parentComment = await feedRepo.findCommentById(parentId);
+      if (
+        parentComment &&
+        parentComment.authorId !== userId &&
+        parentComment.authorId !== post.authorId
+      ) {
+        const parentAuthor = await userRepo.findById(parentComment.authorId);
+        if (parentAuthor?.notificationPrefs?.feed !== false) {
+          const commenter = await userRepo.findById(userId);
+          const commenterName = commenter?.displayName ?? 'Qualcuno';
+          const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
+
+          notificationService
+            .send({
+              userId: parentComment.authorId,
+              title: `${commenterName} ha risposto al tuo commento`,
+              body: preview,
+              data: { postId, commentId: comment.id, type: 'comment_reply' },
+            })
+            .catch((err) =>
+              logger.error('createComment', 'Failed to enqueue reply notification', err),
+            );
+        }
+      }
+    }
 
     return succeed({ comment });
   };

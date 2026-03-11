@@ -507,7 +507,7 @@ export class DrizzleFeedRepository implements FeedRepository {
     return tagsByPost;
   }
 
-  private async getConnectedUserIds(userId: string): Promise<string[]> {
+  async getConnectedUserIds(userId: string): Promise<string[]> {
     // Get user's dog IDs
     const userDogs = await this.db
       .select({ id: dogProfiles.id })

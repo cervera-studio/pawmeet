@@ -40,6 +40,7 @@ import type {
   DogRepository,
   EmailService,
   FeedbackRepository,
+  FeedRealtimeService,
   FeedRepository,
   GroupEventRepository,
   GroupMessageRepository,
@@ -498,6 +499,18 @@ export function buildChatService(overrides: Partial<ChatService> = {}): ChatServ
   };
 }
 
+export function buildFeedRealtimeService(
+  overrides: Partial<FeedRealtimeService> = {},
+): FeedRealtimeService {
+  return {
+    notifyNewPost: vi.fn(),
+    notifyPostLiked: vi.fn(),
+    notifyPostCommented: vi.fn(),
+    notifyNewStory: vi.fn(),
+    ...overrides,
+  };
+}
+
 export function buildStorageService(overrides: Partial<StorageService> = {}): StorageService {
   return {
     generatePresignedUploadUrl: vi.fn(),
@@ -697,6 +710,7 @@ export function buildFeedRepo(overrides: Partial<FeedRepository> = {}): FeedRepo
     removeTags: vi.fn().mockResolvedValue(undefined),
     getResolvedTags: vi.fn().mockResolvedValue([]),
     findTagById: vi.fn().mockResolvedValue(null),
+    getConnectedUserIds: vi.fn().mockResolvedValue([]),
     ...overrides,
   };
 }

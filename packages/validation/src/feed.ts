@@ -72,3 +72,20 @@ export const postCommentsQuerySchema = z.object({
 export const viewStorySchema = z.object({
   storyId: z.string().uuid(),
 });
+
+export const addPostTagsSchema = z.object({
+  postId: z.string().uuid(),
+  tags: z
+    .array(
+      z.object({
+        taggedUserId: z.string().uuid().nullable().optional(),
+        taggedDogId: z.string().uuid().nullable().optional(),
+      }),
+    )
+    .min(1)
+    .max(20),
+});
+
+export const removePostTagSchema = z.object({
+  tagId: z.string().uuid(),
+});

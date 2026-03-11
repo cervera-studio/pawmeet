@@ -9,6 +9,12 @@ interface PostMedia {
   position: number;
 }
 
+interface ResolvedTag {
+  id: string;
+  taggedUser: { id: string; displayName: string; avatarUrl: string | null } | null;
+  taggedDog: { id: string; name: string } | null;
+}
+
 interface PostCardProps {
   post: {
     id: string;
@@ -23,6 +29,7 @@ interface PostCardProps {
       displayName: string;
       avatarUrl: string | null;
     };
+    tags?: ResolvedTag[];
   };
   onLike: () => void;
   onPress: () => void;
@@ -74,6 +81,20 @@ export const PostCard = memo(function PostCard({ post, onLike, onPress, onDelete
         <View className="flex-row items-center justify-center gap-1 py-1">
           {sortedMedia.map((m) => (
             <View key={`dot-${m.id}`} className="h-1.5 w-1.5 rounded-full bg-gray-300" />
+          ))}
+        </View>
+      ) : null}
+
+      {/* Tags */}
+      {post.tags && post.tags.length > 0 ? (
+        <View className="flex-row flex-wrap gap-1 px-4 pb-2">
+          {post.tags.map((tag) => (
+            <View key={tag.id} className="rounded-full bg-emerald-50 px-2 py-0.5">
+              <Text className="text-xs text-emerald-800">
+                {tag.taggedUser ? tag.taggedUser.displayName : null}
+                {tag.taggedDog ? tag.taggedDog.name : null}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

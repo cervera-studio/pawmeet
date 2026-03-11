@@ -1,4 +1,12 @@
-import type { FeedItem, Post, PostComment, PostLike, PostMedia } from '@dogwalk/types';
+import type {
+  FeedItem,
+  Post,
+  PostComment,
+  PostLike,
+  PostMedia,
+  PostTag,
+  ResolvedPostTag,
+} from '@dogwalk/types';
 
 export interface CreatePostInput {
   authorId: string;
@@ -59,4 +67,14 @@ export interface FeedRepository {
   findCommentById(id: string): Promise<PostComment | null>;
   softDeleteComment(id: string): Promise<void>;
   getComments(postId: string, cursor: string | null, limit: number): Promise<CommentsPage>;
+
+  addTags(
+    postId: string,
+    tags: { taggedUserId?: string | null; taggedDogId?: string | null }[],
+  ): Promise<PostTag[]>;
+  removeTags(tagIds: string[]): Promise<void>;
+  getResolvedTags(postId: string): Promise<ResolvedPostTag[]>;
+  findTagById(id: string): Promise<PostTag | null>;
+
+  getConnectedUserIds(userId: string): Promise<string[]>;
 }

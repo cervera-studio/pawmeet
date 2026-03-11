@@ -2,7 +2,7 @@ import type { XpAction } from '@dogwalk/config';
 import { MAX_POST_CAPTION } from '@dogwalk/config';
 import type { Post, Result, XpSummary } from '@dogwalk/types';
 import { AppError, fail, succeed } from '@dogwalk/types';
-import type { FeedRepository } from '../ports/index.js';
+import type { FeedRealtimeService, FeedRepository } from '../ports/index.js';
 
 type AwardXpFn = (
   userId: string,
@@ -12,10 +12,11 @@ type AwardXpFn = (
 
 type Deps = {
   feedRepo: FeedRepository;
+  feedRealtime?: FeedRealtimeService;
   awardXp?: AwardXpFn;
 };
 
-export function createCreatePost({ feedRepo, awardXp }: Deps) {
+export function createCreatePost({ feedRepo, feedRealtime, awardXp }: Deps) {
   return async (
     userId: string,
     input: {
@@ -45,6 +46,17 @@ export function createCreatePost({ feedRepo, awardXp }: Deps) {
 
     if (awardXp) {
       await awardXp(userId, 'post_created', { postId: post.id });
+    }
+
+    if (feedRealtime) {
+      feedRepo
+        .getConnectedUserIds(userId)
+        .then((connectedUserIds) => {
+          feedRealtime.notifyNewPost(userId, post.id, connectedUserIds);
+        })
+        .catch(() => {
+          // Fire-and-forget: don't fail post creation if realtime notification fails
+        });
     }
 
     return succeed({ post });

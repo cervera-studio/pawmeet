@@ -94,6 +94,13 @@ export interface PostTag {
   postId: string;
   taggedUserId: string | null;
   taggedDogId: string | null;
+  createdAt: Date;
+}
+
+export interface ResolvedPostTag {
+  id: string;
+  taggedUser: { id: string; displayName: string; avatarUrl: string | null } | null;
+  taggedDog: { id: string; name: string } | null;
 }
 
 export interface Story {
@@ -142,6 +149,7 @@ export interface FeedItem extends Post {
     displayName: string;
     avatarUrl: string | null;
   };
+  tags: ResolvedPostTag[];
   isLikedByMe: boolean;
 }
 

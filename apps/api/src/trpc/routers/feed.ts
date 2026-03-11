@@ -1,4 +1,5 @@
 import {
+  addPostTagsSchema,
   confirmPostMediaSchema,
   confirmStorySchema,
   createCommentSchema,
@@ -8,6 +9,7 @@ import {
   likePostSchema,
   postCommentsQuerySchema,
   postMediaUploadSchema,
+  removePostTagSchema,
   reportContentSchema,
   userPostsQuerySchema,
   viewStorySchema,
@@ -156,6 +158,20 @@ export function createFeedRouter(deps: typeof feedDeps) {
             input.description ?? null,
           ),
         ),
+      ),
+
+    // ── Tags ───────────────────────────────────────────────────────────────
+
+    addTags: protectedProcedure
+      .input(addPostTagsSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.addPostTags(input.postId, ctx.userId, input.tags)),
+      ),
+
+    removeTag: protectedProcedure
+      .input(removePostTagSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.removePostTag(input.tagId, ctx.userId)),
       ),
 
     // ── Walk albums ─────────────────────────────────────────────────────────

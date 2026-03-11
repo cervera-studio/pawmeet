@@ -2,12 +2,14 @@ export interface NotificationPrefs {
   matches: boolean; // New match notifications
   messages: boolean; // New message notifications
   reminders: boolean; // Walk reminders
+  feed: boolean; // Likes and comments on your posts
 }
 
 export const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
   matches: true,
   messages: true,
   reminders: true,
+  feed: true,
 };
 
 export interface User {

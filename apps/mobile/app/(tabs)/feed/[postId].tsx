@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import type { CommentWithAuthor } from './[postId].view-model';
+import type { CommentWithAuthor, ReplyTarget } from './[postId].view-model';
 import { usePostDetailViewModel } from './[postId].view-model';
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -30,14 +30,28 @@ function formatDate(date: Date | string): string {
 
 // ── Comment Row ─────────────────────────────────────────────────────────
 
-const CommentRow = memo(function CommentRow({ comment }: { comment: CommentWithAuthor }) {
+const CommentRow = memo(function CommentRow({
+  comment,
+  onReply,
+}: {
+  comment: CommentWithAuthor;
+  onReply: (commentId: string, authorName: string) => void;
+}) {
+  const isReply = Boolean(comment.parentId);
   return (
-    <View className={`flex-row gap-3 px-4 py-3 ${comment.parentId ? 'pl-12' : ''}`}>
+    <View className={`flex-row gap-3 px-4 py-3 ${isReply ? 'ml-10 border-l-2 border-gray-100 pl-4' : ''}`}>
       <Avatar size="sm" imageUrl={comment.author.avatarUrl} name={comment.author.displayName} />
       <View className="flex-1">
         <Text className="text-sm font-semibold text-gray-900">{comment.author.displayName}</Text>
         <Text className="text-sm text-gray-700">{comment.content}</Text>
-        <Text className="mt-1 text-xs text-gray-400">{formatDate(comment.createdAt)}</Text>
+        <View className="mt-1 flex-row items-center gap-3">
+          <Text className="text-xs text-gray-400">{formatDate(comment.createdAt)}</Text>
+          {!isReply ? (
+            <Pressable onPress={() => onReply(comment.id, comment.author.displayName)}>
+              <Text className="text-xs font-medium text-emerald-700">Rispondi</Text>
+            </Pressable>
+          ) : null}
+        </View>
       </View>
     </View>
   );
@@ -115,7 +129,7 @@ export default function PostDetailScreen() {
                 </View>
               </View>
             }
-            renderItem={({ item }) => <CommentRow comment={item} />}
+            renderItem={({ item }) => <CommentRow comment={item} onReply={vm.handleReply} />}
             onEndReached={vm.loadMoreComments}
             onEndReachedThreshold={0.5}
             ListEmptyComponent={
@@ -125,11 +139,23 @@ export default function PostDetailScreen() {
             }
           />
 
+          {/* Reply banner */}
+          {vm.replyingTo ? (
+            <View className="flex-row items-center justify-between border-t border-gray-100 bg-gray-50 px-4 py-2">
+              <Text className="text-xs text-gray-500">
+                Rispondi a <Text className="font-semibold">{vm.replyingTo.authorName}</Text>
+              </Text>
+              <Pressable onPress={vm.cancelReply}>
+                <Text className="text-xs font-medium text-gray-400">Annulla</Text>
+              </Pressable>
+            </View>
+          ) : null}
+
           {/* Comment Input */}
           <View className="flex-row items-center gap-2 border-t border-gray-100 px-4 py-2">
             <TextInput
               className="flex-1 rounded-full bg-gray-100 px-4 py-2 text-sm"
-              placeholder="Scrivi un commento..."
+              placeholder={vm.replyingTo ? 'Scrivi una risposta...' : 'Scrivi un commento...'}
               value={vm.commentText}
               onChangeText={vm.setCommentText}
               maxLength={500}

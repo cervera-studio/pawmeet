@@ -1,11 +1,16 @@
 import type { RouterOutput } from '@dogwalk/api-client';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFeed } from '@/hooks/useFeed';
 
 type PostDetail = RouterOutput['feed']['postDetail']['post'];
 type CommentWithAuthor = RouterOutput['feed']['getComments']['comments'][number];
+
+export interface ReplyTarget {
+  commentId: string;
+  authorName: string;
+}
 
 export type { CommentWithAuthor, PostDetail };
 
@@ -20,6 +25,7 @@ export function usePostDetailViewModel() {
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<ReplyTarget | null>(null);
 
   const fetchPost = useCallback(async () => {
     if (!postId) return;
@@ -77,16 +83,51 @@ export function usePostDetailViewModel() {
     if (!postId || !commentText.trim()) return;
     setSubmitting(true);
     try {
-      const result = await createComment(postId, commentText.trim());
+      const parentId = replyingTo?.commentId ?? null;
+      const result = await createComment(postId, commentText.trim(), parentId);
       if (result) {
         setCommentText('');
+        setReplyingTo(null);
         void loadComments(null);
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
     } finally {
       setSubmitting(false);
     }
-  }, [postId, commentText, createComment, loadComments]);
+  }, [postId, commentText, replyingTo, createComment, loadComments]);
+
+  const handleReply = useCallback((commentId: string, authorName: string) => {
+    setReplyingTo({ commentId, authorName });
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, []);
+
+  const cancelReply = useCallback(() => {
+    setReplyingTo(null);
+  }, []);
+
+  // Organize comments into threads: parent comments first, replies grouped under their parent
+  const threadedComments = useMemo(() => {
+    const parents = comments.filter((c) => !c.parentId);
+    const repliesByParent = new Map<string, CommentWithAuthor[]>();
+    for (const c of comments) {
+      if (c.parentId) {
+        const list = repliesByParent.get(c.parentId) ?? [];
+        list.push(c);
+        repliesByParent.set(c.parentId, list);
+      }
+    }
+
+    const result: CommentWithAuthor[] = [];
+    for (const parent of parents) {
+      result.push(parent);
+      const replies = repliesByParent.get(parent.id);
+      if (replies) {
+        result.push(...replies);
+      }
+    }
+
+    return result;
+  }, [comments]);
 
   const handleReport = useCallback(
     async (reason: string) => {
@@ -107,15 +148,18 @@ export function usePostDetailViewModel() {
 
   return {
     post,
-    comments,
+    comments: threadedComments,
     loading,
     commentText,
     setCommentText,
     submitting,
     commentsCursor,
+    replyingTo,
     handleLike,
     handleSubmitComment,
     handleReport,
+    handleReply,
+    cancelReply,
     loadMoreComments,
     goBack: () => router.back(),
   };

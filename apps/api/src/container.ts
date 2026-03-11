@@ -343,7 +343,7 @@ export const gamificationDeps = {
 // ── Feed deps ─────────────────────────────────────────────────────────────────
 
 export const feedDeps = {
-  createPost: createCreatePost({ feedRepo, awardXp }),
+  createPost: createCreatePost({ feedRepo, feedRealtime, awardXp }),
   deletePost: createDeletePost({ feedRepo }),
   getFeed: createGetFeed({ feedRepo }),
   getUserPosts: createGetUserPosts({ feedRepo }),

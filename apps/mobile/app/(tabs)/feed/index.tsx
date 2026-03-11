@@ -101,6 +101,16 @@ export default function FeedScreen() {
         <Text className="text-xl font-bold text-gray-900">Feed</Text>
       </View>
 
+      {/* New posts banner */}
+      {vm.hasNewPosts ? (
+        <Pressable
+          onPress={vm.refresh}
+          className="items-center border-b border-emerald-100 bg-emerald-50 py-2"
+        >
+          <Text className="text-sm font-medium text-emerald-800">Nuovi post disponibili</Text>
+        </Pressable>
+      ) : null}
+
       <FlatList
         data={vm.items}
         keyExtractor={(item) => item.id}

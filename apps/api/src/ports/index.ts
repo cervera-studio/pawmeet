@@ -15,6 +15,7 @@ export type {
   FeedPage,
   FeedRepository,
 } from './feed-repository.js';
+export type { FeedRealtimeService } from './feed-realtime-service.js';
 export type { FeedbackRepository } from './feedback-repository.js';
 export type {
   CreateGroupEventInput,

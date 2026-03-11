@@ -7,6 +7,7 @@ export type { ChatService } from './chat-service.js';
 export type { ContentReportRepository, CreateReportInput } from './content-report-repository.js';
 export type { CreateDogInput, DogRepository } from './dog-repository.js';
 export type { EmailService } from './email-service.js';
+export type { ExperimentService } from './experiment-service.js';
 export type {
   AddPostMediaInput,
   CommentsPage,

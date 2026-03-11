@@ -1,20 +1,20 @@
 import '../global.css';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as Sentry from '@sentry/react-native';
+import { StatsigProviderExpo } from '@statsig/expo-bindings';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useMemo } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import '@/repositories/container';
 import { useAuthStore } from '@/stores/auth';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,
-      retry: 2,
-    },
-  },
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? '',
+  tracesSampleRate: __DEV__ ? 1.0 : 0.2,
+  enabled: !__DEV__,
 });
 
 /** Registers for push notifications only when user is authenticated. */
@@ -23,13 +23,18 @@ function PushNotificationRegistration() {
   return null;
 }
 
-export default function RootLayout() {
+const STATSIG_CLIENT_KEY = process.env.EXPO_PUBLIC_STATSIG_CLIENT_KEY ?? '';
+
+function RootLayout() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const userId = useAuthStore((s) => s.user?.id);
+
+  const statsigUser = useMemo(() => ({ userID: userId ?? undefined }), [userId]);
 
   return (
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
+        <StatsigProviderExpo sdkKey={STATSIG_CLIENT_KEY} user={statsigUser}>
           {isAuthenticated && <PushNotificationRegistration />}
           <StatusBar style="auto" />
           <Stack>
@@ -48,8 +53,10 @@ export default function RootLayout() {
               options={{ presentation: 'modal', title: 'Segnala' }}
             />
           </Stack>
-        </QueryClientProvider>
+        </StatsigProviderExpo>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);

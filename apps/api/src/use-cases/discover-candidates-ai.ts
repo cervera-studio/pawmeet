@@ -1,4 +1,4 @@
-import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM, EXPERIMENT } from '@dogwalk/config';
+import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM, STATSIG_GATE } from '@dogwalk/config';
 import type { DiscoveryFilters, DogProfile } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
 import {
@@ -13,6 +13,7 @@ import {
 } from '@dogwalk/utils';
 import type {
   DogRepository,
+  ExperimentService,
   MatchingAiRepository,
   MatchRepository,
   UserRepository,
@@ -23,10 +24,7 @@ type Deps = {
   matchRepo: MatchRepository;
   userRepo: UserRepository;
   matchingAiRepo: MatchingAiRepository;
-  getAbAssignment: (
-    userId: string,
-    experimentId: typeof EXPERIMENT.MATCHING_V2,
-  ) => Promise<Result<{ assignment: { variant: string } }>>;
+  experimentService: ExperimentService;
 };
 
 // ── Scoring helpers ────────────────────────────────────────────────────────────
@@ -139,7 +137,7 @@ export function createDiscoverCandidatesAi({
   matchRepo,
   userRepo,
   matchingAiRepo,
-  getAbAssignment,
+  experimentService,
 }: Deps) {
   return async (
     userId: string,
@@ -170,15 +168,13 @@ export function createDiscoverCandidatesAi({
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
-    // Get A/B test variant
-    const assignmentResult = await getAbAssignment(userId, EXPERIMENT.MATCHING_V2);
-    const variant = assignmentResult.success
-      ? assignmentResult.data.assignment.variant
-      : 'rule_based';
+    // Check Statsig feature gate for AI matching
+    const useAi = experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
+    const variant = useAi ? 'ai_enhanced' : 'rule_based';
 
     // Determine weights based on variant
     let weights: MatchingWeights;
-    if (variant === 'ai_enhanced') {
+    if (useAi) {
       const prefs = await matchingAiRepo.findUserPreferences(userId);
       weights = blendWeights(prefs);
     } else {

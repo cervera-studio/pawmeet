@@ -1,12 +1,16 @@
-import type { Server } from 'node:http';
 import { serve } from '@hono/node-server';
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import { adminDeps } from './container.js';
+import { adminDeps, experimentService } from './container.js';
+import { initSentry, Sentry } from './lib/sentry.js';
 import { corsMiddleware } from './middleware/cors.js';
 import { rateLimitMiddleware } from './middleware/rate-limit.js';
 import { securityHeadersMiddleware } from './middleware/security-headers.js';
+
+// Initialize Sentry before anything else
+initSentry();
+
 import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { routes } from './routes/index.js';
 import { appRouter } from './trpc/root.js';
@@ -25,6 +29,13 @@ app.use('/trpc/*', rateLimitMiddleware);
 app.onError((err, c) => {
   const errorId = crypto.randomUUID().slice(0, 8);
   console.error(`[ERROR:${errorId}] ${c.req.method} ${c.req.url}:`, err.message);
+
+  Sentry.withScope((scope) => {
+    scope.setTag('errorId', errorId);
+    scope.setExtra('method', c.req.method);
+    scope.setExtra('url', c.req.url);
+    Sentry.captureException(err);
+  });
 
   // Zod validation errors return 400 — never expose raw details to client
   if (err.message.includes('Validation')) {
@@ -52,9 +63,14 @@ app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOStri
 
 const port = Number(process.env.PORT) || 3000;
 
+// Initialize Statsig for A/B testing and feature flags
+experimentService.initialize().then(() => {
+  console.log('Statsig experiment service ready');
+});
+
 console.log(`DogWalk API running on port ${port}`);
 
-const server = serve({ fetch: app.fetch, port }) as unknown as Server;
+const server = serve({ fetch: app.fetch, port });
 
 // Attach WebSocket server to the HTTP server
 setupWebSocket(server);

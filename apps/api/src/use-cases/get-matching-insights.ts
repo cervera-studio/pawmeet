@@ -1,15 +1,26 @@
-import { EXPERIMENT } from '@dogwalk/config';
+import { STATSIG_GATE } from '@dogwalk/config';
 import type { MatchingInsights, OptimalTimeWindow } from '@dogwalk/types';
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import type { DogRepository, MatchingAiRepository, MatchRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  ExperimentService,
+  MatchingAiRepository,
+  MatchRepository,
+} from '../ports/index.js';
 
 type Deps = {
   matchingAiRepo: MatchingAiRepository;
   matchRepo: MatchRepository;
   dogRepo: DogRepository;
+  experimentService: ExperimentService;
 };
 
-export function createGetMatchingInsights({ matchingAiRepo, matchRepo, dogRepo }: Deps) {
+export function createGetMatchingInsights({
+  matchingAiRepo,
+  matchRepo,
+  dogRepo,
+  experimentService,
+}: Deps) {
   return async (userId: string, dogId: string): Promise<Result<{ insights: MatchingInsights }>> => {
     const dog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!dog) {
@@ -50,9 +61,9 @@ export function createGetMatchingInsights({ matchingAiRepo, matchRepo, dogRepo }
       nearbyActiveUsers: 0,
     }));
 
-    // Get A/B variant
-    const assignment = await matchingAiRepo.findAssignment(userId, EXPERIMENT.MATCHING_V2);
-    const experimentVariant = assignment?.variant ?? null;
+    // Get A/B variant via Statsig
+    const useAi = experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
+    const experimentVariant = useAi ? 'ai_enhanced' : 'rule_based';
 
     return succeed({
       insights: {

@@ -14,12 +14,13 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.0",
     "@dogwalk/typescript-config": "workspace:*",
     "@dogwalk/vitest-config": "workspace:*",
-    "@biomejs/biome": "^2.4.0",
+    "@opentelemetry/api": "^1.9.0",
     "lefthook": "^2.1.0",
-    "vitest": "^4.0.0",
-    "turbo": "^2.8.0"
+    "turbo": "^2.8.0",
+    "vitest": "^4.0.0"
   },
   "packageManager": "pnpm@10.6.0",
   "engines": {

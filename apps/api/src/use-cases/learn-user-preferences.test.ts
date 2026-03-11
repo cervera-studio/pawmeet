@@ -18,9 +18,6 @@ function buildMatchingAiRepo(overrides: Partial<MatchingAiRepository> = {}): Mat
     upsertActivityWindow: vi.fn(),
     findActivityWindowsByUser: vi.fn().mockResolvedValue([]),
     findNearbyActivityWindows: vi.fn().mockResolvedValue([]),
-    findExperiment: vi.fn().mockResolvedValue(null),
-    findAssignment: vi.fn().mockResolvedValue(null),
-    createAssignment: vi.fn(),
     ...overrides,
   };
 }

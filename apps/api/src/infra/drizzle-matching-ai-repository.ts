@@ -1,15 +1,11 @@
-import type { AbVariant, ExperimentId, MatchInteractionType } from '@dogwalk/config';
+import type { MatchInteractionType } from '@dogwalk/config';
 import {
-  abAssignments,
-  abExperiments,
   matchInteractions,
   swipeScoreLogs,
   userActivityWindows,
   userMatchingPreferences,
 } from '@dogwalk/db';
 import type {
-  AbAssignment,
-  AbExperiment,
   MatchInteraction,
   SwipeScoreLog,
   UserActivityWindow,
@@ -176,32 +172,5 @@ export class DrizzleMatchingAiRepository implements MatchingAiRepository {
         ),
       );
     return rows;
-  }
-
-  // ── A/B Experiments ──────────────────────────────────────────────────────
-
-  async findExperiment(experimentId: ExperimentId): Promise<AbExperiment | null> {
-    const rows = await this.db
-      .select()
-      .from(abExperiments)
-      .where(eq(abExperiments.experimentId, experimentId));
-    return firstRowOrNull<AbExperiment>(rows);
-  }
-
-  async findAssignment(userId: string, experimentId: ExperimentId): Promise<AbAssignment | null> {
-    const rows = await this.db
-      .select()
-      .from(abAssignments)
-      .where(and(eq(abAssignments.userId, userId), eq(abAssignments.experimentId, experimentId)));
-    return firstRowOrNull<AbAssignment>(rows);
-  }
-
-  async createAssignment(input: {
-    userId: string;
-    experimentId: ExperimentId;
-    variant: AbVariant;
-  }): Promise<AbAssignment> {
-    const rows = await this.db.insert(abAssignments).values(input).returning();
-    return firstRow<AbAssignment>(rows);
   }
 }

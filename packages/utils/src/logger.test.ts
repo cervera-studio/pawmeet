@@ -2,6 +2,7 @@ import { logger } from './logger';
 
 beforeEach(() => {
   logger.setLevel('info');
+  logger.onError(() => {});
   vi.restoreAllMocks();
 });
 
@@ -94,6 +95,51 @@ describe('logger', () => {
       logger.info('tag', 'no data');
 
       expect(infoSpy).toHaveBeenCalledWith('[tag]', 'no data');
+    });
+  });
+
+  describe('onError hook', () => {
+    it('calls hook on logger.error', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const hook = vi.fn();
+      logger.onError(hook);
+
+      logger.error('tag', 'boom', { detail: 42 });
+
+      expect(hook).toHaveBeenCalledWith('tag', 'boom', { detail: 42 });
+    });
+
+    it('calls hook on logger.warn', () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const hook = vi.fn();
+      logger.onError(hook);
+
+      logger.warn('tag', 'careful');
+
+      expect(hook).toHaveBeenCalledWith('tag', 'careful', undefined);
+    });
+
+    it('still calls hook even when log level suppresses output', () => {
+      logger.setLevel('silent');
+      const hook = vi.fn();
+      logger.onError(hook);
+
+      logger.error('tag', 'suppressed but hooked');
+
+      expect(hook).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not call hook on info or debug', () => {
+      logger.setLevel('debug');
+      vi.spyOn(console, 'debug').mockImplementation(() => {});
+      vi.spyOn(console, 'info').mockImplementation(() => {});
+      const hook = vi.fn();
+      logger.onError(hook);
+
+      logger.debug('tag', 'debug msg');
+      logger.info('tag', 'info msg');
+
+      expect(hook).not.toHaveBeenCalled();
     });
   });
 });

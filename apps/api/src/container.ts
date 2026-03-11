@@ -24,6 +24,7 @@ import { DrizzleWalkTrackRepository } from './infra/drizzle-walk-track-repositor
 import { JwtAuthService } from './infra/jwt-auth-service.js';
 import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
+import { StatsigExperimentService } from './infra/statsig-experiment-service.js';
 import { WsChatService } from './infra/ws-chat-service.js';
 import { db } from './lib/db.js';
 // Use cases — fitness
@@ -62,7 +63,6 @@ import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
 // Use cases — auth
 import { createForgotPassword } from './use-cases/forgot-password.js';
-import { createGetAbAssignment } from './use-cases/get-ab-assignment.js';
 import { createGetActivityStats } from './use-cases/get-activity-stats.js';
 import { createGetDog } from './use-cases/get-dog.js';
 import { createGetDogHealthGoal } from './use-cases/get-dog-health-goal.js';
@@ -169,6 +169,7 @@ const emailService = new ResendEmailService();
 const storage = new R2StorageService();
 const chat = new WsChatService();
 const notificationService = new BullMQNotificationService();
+const experimentService = new StatsigExperimentService(process.env.STATSIG_SERVER_SECRET ?? '');
 
 // ── Auth deps ───────────────────────────────────────────────────────────────────
 
@@ -223,23 +224,29 @@ export const matchDeps = {
 
 // ── Matching AI deps ───────────────────────────────────────────────────────────
 
-const getAbAssignment = createGetAbAssignment({ matchingAiRepo });
-
 export const matchingAiDeps = {
   logSwipeScores: createLogSwipeScores({ matchingAiRepo }),
   recordMatchInteraction: createRecordMatchInteraction({ matchingAiRepo, matchRepo }),
   recordActivityWindow: createRecordActivityWindow({ matchingAiRepo }),
   learnUserPreferences: createLearnUserPreferences({ matchingAiRepo, matchRepo, dogRepo }),
   getOptimalTimes: createGetOptimalTimes({ matchingAiRepo, dogRepo }),
-  getMatchingInsights: createGetMatchingInsights({ matchingAiRepo, matchRepo, dogRepo }),
+  getMatchingInsights: createGetMatchingInsights({
+    matchingAiRepo,
+    matchRepo,
+    dogRepo,
+    experimentService,
+  }),
   discoverCandidatesAi: createDiscoverCandidatesAi({
     dogRepo,
     matchRepo,
     userRepo,
     matchingAiRepo,
-    getAbAssignment,
+    experimentService,
   }),
 };
+
+// Export for server startup/shutdown
+export { experimentService };
 
 // ── Walk deps ───────────────────────────────────────────────────────────────────
 

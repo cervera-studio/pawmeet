@@ -1,6 +1,6 @@
-import type { Server as HttpServer } from 'node:http';
 import { WS_EVENT, type WsEvent, type WsMessage } from '@dogwalk/types';
 import { logger } from '@dogwalk/utils';
+import type { ServerType } from '@hono/node-server';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
 import { handleUpgrade } from './auth.js';
@@ -23,7 +23,7 @@ export { getConnections, getRooms, isUserOnline, joinRoom, leaveRoom, sendToRoom
 export { parseWsMessage } from './handlers.js';
 
 /** Set up the WebSocket server attached to an HTTP server */
-export function setupWebSocket(server: HttpServer) {
+export function setupWebSocket(server: ServerType) {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on('upgrade', (request, socket, head) => {

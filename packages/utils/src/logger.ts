@@ -10,7 +10,10 @@ const LOG_LEVEL = { debug: 0, info: 1, warn: 2, error: 3, silent: 4 } as const;
 
 type Level = keyof typeof LOG_LEVEL;
 
+type ErrorHook = (tag: string, msg: string, data?: unknown) => void;
+
 let minLevel: Level = 'info';
+let errorHook: ErrorHook | null = null;
 
 export const logger = {
   setLevel(level: Level) {
@@ -19,6 +22,11 @@ export const logger = {
 
   getLevel(): Level {
     return minLevel;
+  },
+
+  /** Register a hook called on every warn/error log (e.g. Sentry.captureException). */
+  onError(hook: ErrorHook) {
+    errorHook = hook;
   },
 
   debug(tag: string, msg: string, data?: unknown) {
@@ -34,10 +42,12 @@ export const logger = {
   warn(tag: string, msg: string, data?: unknown) {
     if (LOG_LEVEL[minLevel] <= LOG_LEVEL.warn)
       console.warn(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
+    errorHook?.(tag, msg, data);
   },
 
   error(tag: string, msg: string, data?: unknown) {
     if (LOG_LEVEL[minLevel] <= LOG_LEVEL.error)
       console.error(`[${tag}]`, msg, ...(data !== undefined ? [data] : []));
+    errorHook?.(tag, msg, data);
   },
 };

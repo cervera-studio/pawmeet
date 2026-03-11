@@ -60,25 +60,6 @@ export interface UserActivityWindow {
   updatedAt: Date;
 }
 
-/** A/B experiment configuration */
-export interface AbExperiment {
-  id: string;
-  experimentId: string;
-  description: string;
-  aiVariantPercentage: number;
-  isActive: boolean;
-  createdAt: Date;
-}
-
-/** User assignment to an A/B experiment variant */
-export interface AbAssignment {
-  id: string;
-  userId: string;
-  experimentId: string;
-  variant: string;
-  assignedAt: Date;
-}
-
 /** Optimal time window suggestion */
 export interface OptimalTimeWindow {
   dayOfWeek: number;

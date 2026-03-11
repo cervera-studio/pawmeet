@@ -16,23 +16,25 @@ export const MIN_SWIPES_FOR_LEARNING = 15;
 /** How much learned weights influence vs defaults (0 = all default, 1 = all learned) */
 export const LEARNING_BLEND_FACTOR = 0.6;
 
-/** A/B test variant allocation */
-export const AB_VARIANT = {
-  RULE_BASED: 'rule_based',
-  AI_ENHANCED: 'ai_enhanced',
-} as const;
+// ── Statsig Experiments & Gates ─────────────────────────────────────────────
 
-export type AbVariant = (typeof AB_VARIANT)[keyof typeof AB_VARIANT];
-
-/** Percentage of users assigned to AI variant (0-100) */
-export const AI_VARIANT_PERCENTAGE = 30;
-
-/** Experiment identifiers */
-export const EXPERIMENT = {
+/** Statsig experiment name for AI matching A/B test */
+export const STATSIG_EXPERIMENT = {
   MATCHING_V2: 'matching_v2',
 } as const;
 
-export type ExperimentId = (typeof EXPERIMENT)[keyof typeof EXPERIMENT];
+/** Statsig feature gate names */
+export const STATSIG_GATE = {
+  AI_MATCHING: 'ai_matching_enabled',
+} as const;
+
+/** Statsig event names for metrics */
+export const STATSIG_EVENT = {
+  SWIPE: 'swipe',
+  MATCH_CREATED: 'match_created',
+  WALK_COMPLETED: 'walk_completed',
+  FEEDBACK_GIVEN: 'feedback_given',
+} as const;
 
 /** Match interaction types for engagement tracking */
 export const MATCH_INTERACTION_TYPE = {

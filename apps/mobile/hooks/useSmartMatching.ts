@@ -1,6 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import { useEffect } from 'react';
 import { api } from '@/lib/trpc';
 
 interface OptimalTimeWindow {

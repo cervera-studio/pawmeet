@@ -1,7 +1,5 @@
-import type { AbVariant, ExperimentId, MatchInteractionType } from '@dogwalk/config';
+import type { MatchInteractionType } from '@dogwalk/config';
 import type {
-  AbAssignment,
-  AbExperiment,
   MatchInteraction,
   SwipeScoreLog,
   UserActivityWindow,
@@ -65,14 +63,5 @@ export interface MatchingAiRepository {
     hourOfDay: number,
   ): Promise<Array<{ userId: string; activityCount: number }>>;
 
-  // A/B experiments
-  findExperiment(experimentId: ExperimentId): Promise<AbExperiment | null>;
-
-  findAssignment(userId: string, experimentId: ExperimentId): Promise<AbAssignment | null>;
-
-  createAssignment(input: {
-    userId: string;
-    experimentId: ExperimentId;
-    variant: AbVariant;
-  }): Promise<AbAssignment>;
+  // A/B experiments managed via Statsig — no custom DB methods needed
 }

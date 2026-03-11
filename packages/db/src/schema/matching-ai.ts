@@ -1,5 +1,4 @@
 import {
-  boolean,
   doublePrecision,
   integer,
   jsonb,
@@ -81,27 +80,5 @@ export const userActivityWindows = pgTable(
   ],
 );
 
-export const abExperiments = pgTable('ab_experiments', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  experimentId: varchar('experiment_id', { length: 50 }).notNull().unique(),
-  description: varchar('description', { length: 500 }).notNull(),
-  aiVariantPercentage: integer('ai_variant_percentage').notNull().default(30),
-  isActive: boolean('is_active').notNull().default(true),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const abAssignments = pgTable(
-  'ab_assignments',
-  {
-    id: uuid('id').defaultRandom().primaryKey(),
-    userId: uuid('user_id')
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    experimentId: varchar('experiment_id', { length: 50 }).notNull(),
-    variant: varchar('variant', { length: 20 }).notNull(),
-    assignedAt: timestamp('assigned_at', { withTimezone: true }).notNull().defaultNow(),
-  },
-  (table) => [
-    uniqueIndex('ab_assignments_user_experiment_idx').on(table.userId, table.experimentId),
-  ],
-);
+// A/B experiments and assignments are managed via Statsig (statsig.com).
+// No custom tables needed — Statsig handles variant assignment, targeting, and metrics.

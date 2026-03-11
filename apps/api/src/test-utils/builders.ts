@@ -28,6 +28,7 @@ import {
 } from '@dogwalk/types';
 import { vi } from 'vitest';
 import type { ActivityRepository } from '../ports/activity-repository.js';
+import type { ExperimentService } from '../ports/experiment-service.js';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import type {
   AuthService,
@@ -526,6 +527,20 @@ export function buildAuthService(overrides: Partial<AuthService> = {}): AuthServ
   };
 }
 
+export function buildExperimentService(
+  overrides: Partial<ExperimentService> = {},
+): ExperimentService {
+  return {
+    initialize: vi.fn().mockResolvedValue(undefined),
+    shutdown: vi.fn().mockResolvedValue(undefined),
+    checkGate: vi.fn().mockReturnValue(false),
+    getExperiment: vi.fn().mockReturnValue({ value: false, groupName: null }),
+    getConfigValue: vi.fn().mockImplementation((_u, _c, _p, fallback) => fallback),
+    logEvent: vi.fn(),
+    ...overrides,
+  };
+}
+
 export function buildEmailService(overrides: Partial<EmailService> = {}): EmailService {
   return {
     sendVerificationEmail: vi.fn().mockResolvedValue(undefined),
@@ -827,13 +842,6 @@ export function buildMatchingAiRepo(
     }),
     findActivityWindowsByUser: vi.fn().mockResolvedValue([]),
     findNearbyActivityWindows: vi.fn().mockResolvedValue([]),
-    findExperiment: vi.fn().mockResolvedValue(null),
-    findAssignment: vi.fn().mockResolvedValue(null),
-    createAssignment: vi
-      .fn()
-      .mockImplementation((input) =>
-        Promise.resolve({ id: 'assign-1', assignedAt: new Date(), ...input }),
-      ),
     ...overrides,
   };
 }

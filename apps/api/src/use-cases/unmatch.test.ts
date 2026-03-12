@@ -1,6 +1,12 @@
 import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
-import { buildDog, buildDogRepo, buildMatch, buildMatchRepo } from '../test-utils/builders.js';
+import {
+  buildDog,
+  buildDogRepo,
+  buildMatch,
+  buildMatchRepo,
+  buildMessageRepo,
+} from '../test-utils/builders.js';
 import { createUnmatch } from './unmatch.js';
 
 describe('unmatch', () => {
@@ -13,7 +19,8 @@ describe('unmatch', () => {
       findById: vi.fn().mockResolvedValue(match),
       softDelete: vi.fn().mockResolvedValue(undefined),
     });
-    const unmatch = createUnmatch({ dogRepo, matchRepo });
+    const messageRepo = buildMessageRepo();
+    const unmatch = createUnmatch({ dogRepo, matchRepo, messageRepo });
 
     const result = await unmatch('user-1', 'match-1');
 
@@ -28,7 +35,8 @@ describe('unmatch', () => {
     const matchRepo = buildMatchRepo({
       findById: vi.fn().mockResolvedValue(null),
     });
-    const unmatch = createUnmatch({ dogRepo, matchRepo });
+    const messageRepo = buildMessageRepo();
+    const unmatch = createUnmatch({ dogRepo, matchRepo, messageRepo });
 
     const result = await unmatch('user-1', 'match-1');
 
@@ -44,7 +52,8 @@ describe('unmatch', () => {
     const matchRepo = buildMatchRepo({
       findById: vi.fn().mockResolvedValue(match),
     });
-    const unmatch = createUnmatch({ dogRepo, matchRepo });
+    const messageRepo = buildMessageRepo();
+    const unmatch = createUnmatch({ dogRepo, matchRepo, messageRepo });
 
     const result = await unmatch('user-1', 'match-1');
 
@@ -61,7 +70,8 @@ describe('unmatch', () => {
     const matchRepo = buildMatchRepo({
       findById: vi.fn().mockResolvedValue(match),
     });
-    const unmatch = createUnmatch({ dogRepo, matchRepo });
+    const messageRepo = buildMessageRepo();
+    const unmatch = createUnmatch({ dogRepo, matchRepo, messageRepo });
 
     const result = await unmatch('user-1', 'match-1');
 

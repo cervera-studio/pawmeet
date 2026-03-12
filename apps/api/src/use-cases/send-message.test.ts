@@ -2,6 +2,7 @@ import { isFailure, isSuccess } from '@dogwalk/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildChatService,
+  buildMatchRepo,
   buildMessage,
   buildMessageRepo,
   buildNotificationService,
@@ -18,7 +19,8 @@ describe('sendMessage', () => {
     const chat = buildChatService();
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
-    const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });
+    const matchRepo = buildMatchRepo();
+    const sendMessage = createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 
@@ -48,7 +50,8 @@ describe('sendMessage', () => {
     const chat = buildChatService();
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
-    const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });
+    const matchRepo = buildMatchRepo();
+    const sendMessage = createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService });
 
     const result = await sendMessage(
       'user-1',
@@ -70,7 +73,8 @@ describe('sendMessage', () => {
     const chat = buildChatService();
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
-    const sendMessage = createSendMessage({ messageRepo, chat, userRepo, notificationService });
+    const matchRepo = buildMatchRepo();
+    const sendMessage = createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 

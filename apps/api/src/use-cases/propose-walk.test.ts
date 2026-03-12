@@ -5,6 +5,7 @@ import {
   buildDogRepo,
   buildMatch,
   buildMatchRepo,
+  buildMessageRepo,
   buildWalk,
   buildWalkRepo,
 } from '../test-utils/builders.js';
@@ -18,7 +19,8 @@ describe('proposeWalk', () => {
     const matchRepo = buildMatchRepo({ findById: vi.fn().mockResolvedValue(match) });
     const dogRepo = buildDogRepo({ findByOwner: vi.fn().mockResolvedValue([buildDog()]) });
     const walkRepo = buildWalkRepo({ create: vi.fn().mockResolvedValue(buildWalk()) });
-    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, dogRepo });
+    const messageRepo = buildMessageRepo();
+    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo });
 
     const result = await proposeWalk('user-1', {
       matchId: 'match-1',
@@ -42,7 +44,8 @@ describe('proposeWalk', () => {
     const matchRepo = buildMatchRepo({ findById: vi.fn().mockResolvedValue(null) });
     const dogRepo = buildDogRepo();
     const walkRepo = buildWalkRepo();
-    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, dogRepo });
+    const messageRepo = buildMessageRepo();
+    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo });
 
     const result = await proposeWalk('user-1', {
       matchId: 'match-1',
@@ -62,7 +65,8 @@ describe('proposeWalk', () => {
       findByOwner: vi.fn().mockResolvedValue([buildDog({ id: 'dog-1' })]),
     });
     const walkRepo = buildWalkRepo();
-    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, dogRepo });
+    const messageRepo = buildMessageRepo();
+    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo });
 
     const result = await proposeWalk('user-1', {
       matchId: 'match-1',
@@ -81,7 +85,8 @@ describe('proposeWalk', () => {
     const matchRepo = buildMatchRepo({ findById: vi.fn().mockResolvedValue(match) });
     const dogRepo = buildDogRepo({ findByOwner: vi.fn().mockResolvedValue([buildDog()]) });
     const walkRepo = buildWalkRepo();
-    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, dogRepo });
+    const messageRepo = buildMessageRepo();
+    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo });
 
     const result = await proposeWalk('user-1', {
       matchId: 'match-1',

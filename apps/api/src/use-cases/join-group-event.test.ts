@@ -41,7 +41,7 @@ describe('joinGroupEvent', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.status).toBe('accepted');
+    expect(result.data.participant.status).toBe('accepted');
     expect(groupEventRepo.addParticipant).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'accepted' }),
     );

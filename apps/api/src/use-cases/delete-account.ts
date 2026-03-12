@@ -9,11 +9,11 @@ import type { AuthService } from '../ports/auth-service.js';
 import type { DogRepository } from '../ports/dog-repository.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { FeedRepository } from '../ports/feed-repository.js';
+import type { MatchRepository } from '../ports/match-repository.js';
 import type { StorageService } from '../ports/storage-service.js';
 import type { StoryRepository } from '../ports/story-repository.js';
 import type { TokenRepository } from '../ports/token-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
-import type { MatchRepository } from '../ports/match-repository.js';
 
 export interface DeleteAccountOutput {
   message: string;
@@ -48,7 +48,17 @@ interface Deps {
  */
 export function createDeleteAccount(deps: Deps) {
   return async (userId: string, password: string): Promise<Result<DeleteAccountOutput>> => {
-    const { db, userRepo, tokenRepo, authService, storage, dogRepo, matchRepo, feedRepo, emailService } = deps;
+    const {
+      db,
+      userRepo,
+      tokenRepo,
+      authService,
+      storage,
+      dogRepo,
+      matchRepo,
+      feedRepo,
+      emailService,
+    } = deps;
 
     const user = await userRepo.findById(userId);
     if (!user) {

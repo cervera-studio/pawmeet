@@ -19,13 +19,21 @@ type Deps = {
   notificationService: NotificationService;
 };
 
-export function createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService }: Deps) {
+export function createSendMessage({
+  messageRepo,
+  matchRepo,
+  chat,
+  userRepo,
+  notificationService,
+}: Deps) {
   return async (
     userId: string,
     matchId: string,
     content: string,
     mediaUrl?: string,
-  ): Promise<Result<{ message: ChatMessage; chatAgeHours: number; messageCountInChat: number }>> => {
+  ): Promise<
+    Result<{ message: ChatMessage; chatAgeHours: number; messageCountInChat: number }>
+  > => {
     // Check participation
     const isParticipant = await messageRepo.isMatchParticipant(matchId, userId);
     if (!isParticipant) {

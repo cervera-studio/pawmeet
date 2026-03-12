@@ -28,7 +28,9 @@ export function createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo }:
   return async (
     userId: string,
     input: ProposeWalkInput,
-  ): Promise<Result<{ walkId: string; matchAgeHours: number; messageCountBeforeProposal: number }>> => {
+  ): Promise<
+    Result<{ walkId: string; matchAgeHours: number; messageCountBeforeProposal: number }>
+  > => {
     // Validate match exists and is active
     const match = await matchRepo.findById(input.matchId);
     if (!match || !match.isActive) {

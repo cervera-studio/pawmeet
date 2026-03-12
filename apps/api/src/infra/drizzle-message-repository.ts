@@ -239,4 +239,12 @@ export class DrizzleMessageRepository implements MessageRepository {
     if (dogB?.ownerId === userId) return dogA?.ownerId ?? null;
     return null;
   }
+
+  async countByMatch(matchId: string): Promise<number> {
+    const [result] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(messages)
+      .where(and(eq(messages.matchId, matchId), eq(messages.isDeleted, false)));
+    return result?.count ?? 0;
+  }
 }

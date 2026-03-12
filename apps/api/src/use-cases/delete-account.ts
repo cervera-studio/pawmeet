@@ -13,11 +13,13 @@ import type { StorageService } from '../ports/storage-service.js';
 import type { StoryRepository } from '../ports/story-repository.js';
 import type { TokenRepository } from '../ports/token-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
+import type { MatchRepository } from '../ports/match-repository.js';
 
 export interface DeleteAccountOutput {
   message: string;
   accountAgeDays: number;
   dogCount: number;
+  matchCount: number;
 }
 
 interface Deps {
@@ -27,6 +29,7 @@ interface Deps {
   authService: AuthService;
   storage: StorageService;
   dogRepo: DogRepository;
+  matchRepo: MatchRepository;
   feedRepo: FeedRepository;
   storyRepo: StoryRepository;
   emailService: EmailService;
@@ -45,7 +48,7 @@ interface Deps {
  */
 export function createDeleteAccount(deps: Deps) {
   return async (userId: string, password: string): Promise<Result<DeleteAccountOutput>> => {
-    const { db, userRepo, tokenRepo, authService, storage, dogRepo, feedRepo, emailService } = deps;
+    const { db, userRepo, tokenRepo, authService, storage, dogRepo, matchRepo, feedRepo, emailService } = deps;
 
     const user = await userRepo.findById(userId);
     if (!user) {
@@ -84,8 +87,13 @@ export function createDeleteAccount(deps: Deps) {
       }
     }
 
-    // 1b. Delete all dog photos
+    // 1b. Count active matches before deletion (for analytics)
     const dogs = await dogRepo.findByOwner(userId, false);
+    const dogIds = dogs.map((d) => d.id);
+    const activeMatches = dogIds.length > 0 ? await matchRepo.findActiveByDogIds(dogIds) : [];
+    const matchCount = activeMatches.length;
+
+    // 1c. Delete all dog photos
     for (const dog of dogs) {
       const photos = await dogRepo.findPhotos(dog.id);
       for (const photo of photos) {
@@ -165,6 +173,7 @@ export function createDeleteAccount(deps: Deps) {
       message: 'Account disattivato. I tuoi dati verranno eliminati entro 30 giorni.',
       accountAgeDays,
       dogCount: dogs.length,
+      matchCount,
     });
   };
 }

@@ -484,6 +484,7 @@ export function buildMessageRepo(overrides: Partial<MessageRepository> = {}): Me
     markAsRead: vi.fn(),
     isMatchParticipant: vi.fn().mockResolvedValue(true),
     getOtherParticipant: vi.fn().mockResolvedValue(null),
+    countByMatch: vi.fn().mockResolvedValue(0),
     ...overrides,
   };
 }

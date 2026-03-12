@@ -27,7 +27,7 @@ export function createCreateComment({
     userId: string,
     content: string,
     parentId: string | null,
-  ): Promise<Result<{ comment: PostComment }>> => {
+  ): Promise<Result<{ comment: PostComment; postAgeHours: number }>> => {
     if (content.length > MAX_COMMENT_LENGTH) {
       return fail(
         new AppError(
@@ -112,6 +112,10 @@ export function createCreateComment({
       }
     }
 
-    return succeed({ comment });
+    const postAgeHours = Math.floor(
+      (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60),
+    );
+
+    return succeed({ comment, postAgeHours });
   };
 }

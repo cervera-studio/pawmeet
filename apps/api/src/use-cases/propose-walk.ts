@@ -1,9 +1,15 @@
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@dogwalk/types';
-import type { DogRepository, MatchRepository, WalkRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  MatchRepository,
+  MessageRepository,
+  WalkRepository,
+} from '../ports/index.js';
 
 type Deps = {
   walkRepo: WalkRepository;
   matchRepo: MatchRepository;
+  messageRepo: MessageRepository;
   dogRepo: DogRepository;
 };
 
@@ -18,8 +24,11 @@ type ProposeWalkInput = {
   notes?: string | null;
 };
 
-export function createProposeWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
-  return async (userId: string, input: ProposeWalkInput): Promise<Result<{ walkId: string }>> => {
+export function createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo }: Deps) {
+  return async (
+    userId: string,
+    input: ProposeWalkInput,
+  ): Promise<Result<{ walkId: string; matchAgeHours: number; messageCountBeforeProposal: number }>> => {
     // Validate match exists and is active
     const match = await matchRepo.findById(input.matchId);
     if (!match || !match.isActive) {
@@ -51,8 +60,14 @@ export function createProposeWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
       notes: input.notes ?? null,
     });
 
+    // Analytics context
+    const matchAgeHours = Math.floor(
+      (Date.now() - new Date(match.createdAt).getTime()) / (1000 * 60 * 60),
+    );
+    const messageCountBeforeProposal = await messageRepo.countByMatch(input.matchId);
+
     // TODO: enqueue push notification to the other user
 
-    return succeed({ walkId: walk.id });
+    return succeed({ walkId: walk.id, matchAgeHours, messageCountBeforeProposal });
   };
 }

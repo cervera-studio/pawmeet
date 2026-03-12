@@ -1,16 +1,17 @@
 import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import type { DogRepository, MatchRepository } from '../ports/index.js';
+import type { DogRepository, MatchRepository, MessageRepository } from '../ports/index.js';
 
 type Deps = {
   dogRepo: DogRepository;
   matchRepo: MatchRepository;
+  messageRepo: MessageRepository;
 };
 
-export function createUnmatch({ dogRepo, matchRepo }: Deps) {
+export function createUnmatch({ dogRepo, matchRepo, messageRepo }: Deps) {
   return async (
     userId: string,
     matchId: string,
-  ): Promise<Result<{ message: string; matchAgeDays: number }>> => {
+  ): Promise<Result<{ message: string; matchAgeDays: number; messageCount: number }>> => {
     // Find the match
     const match = await matchRepo.findById(matchId);
     if (!match || !match.isActive) {
@@ -24,6 +25,9 @@ export function createUnmatch({ dogRepo, matchRepo }: Deps) {
       return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
     }
 
+    // Count messages before soft-deleting (for analytics)
+    const messageCount = await messageRepo.countByMatch(matchId);
+
     // Soft-delete the match
     await matchRepo.softDelete(matchId);
 
@@ -31,6 +35,6 @@ export function createUnmatch({ dogRepo, matchRepo }: Deps) {
       (Date.now() - new Date(match.createdAt).getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    return succeed({ message: 'Match annullato', matchAgeDays });
+    return succeed({ message: 'Match annullato', matchAgeDays, messageCount });
   };
 }

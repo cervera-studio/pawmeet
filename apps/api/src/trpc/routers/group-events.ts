@@ -48,10 +48,10 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
     join: protectedProcedure.input(joinGroupEventSchema).mutation(async ({ ctx, input }) => {
       const result = unwrapResult(await deps.joinGroupEvent(ctx.userId, input));
       trackEvent('group_event_joined', ctx.userId, {
-        participantNumber: 0,
-        distanceKm: 0,
+        participantNumber: result.participantNumber,
+        distanceKm: 0, // TODO: compute from PostGIS user/event locations
       });
-      return result;
+      return result.participant;
     }),
 
     leave: protectedProcedure

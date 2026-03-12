@@ -24,7 +24,7 @@ export function createJoinGroupEvent({ groupEventRepo, dogRepo, notificationServ
   return async (
     userId: string,
     input: JoinGroupEventInput,
-  ): Promise<Result<GroupEventParticipant>> => {
+  ): Promise<Result<{ participant: GroupEventParticipant; participantNumber: number }>> => {
     const event = await groupEventRepo.findById(input.eventId);
     if (!event) {
       return fail(new AppError('EVENT_NOT_FOUND', 'Evento non trovato', 404));
@@ -74,6 +74,7 @@ export function createJoinGroupEvent({ groupEventRepo, dogRepo, notificationServ
         console.error('[join-group-event] Failed to send notification:', err);
       });
 
-    return succeed(participant);
+    // participantNumber = count + 1 (the newly added participant)
+    return succeed({ participant, participantNumber: count + 1 });
   };
 }

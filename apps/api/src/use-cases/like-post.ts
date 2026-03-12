@@ -15,17 +15,24 @@ type Deps = {
 };
 
 export function createLikePost({ feedRepo, userRepo, notificationService, feedRealtime }: Deps) {
-  return async (postId: string, userId: string): Promise<Result<{ liked: boolean }>> => {
+  return async (
+    postId: string,
+    userId: string,
+  ): Promise<Result<{ liked: boolean; postAgeHours: number }>> => {
     const post = await feedRepo.findPostById(postId);
     if (!post || post.isDeleted) {
       return fail(new AppError('POST_NOT_FOUND', 'Post non trovato', 404));
     }
 
+    const postAgeHours = Math.floor(
+      (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60),
+    );
+
     const alreadyLiked = await feedRepo.hasLiked(postId, userId);
 
     if (alreadyLiked) {
       await feedRepo.removeLike(postId, userId);
-      return succeed({ liked: false });
+      return succeed({ liked: false, postAgeHours });
     }
 
     await feedRepo.addLike(postId, userId);
@@ -54,6 +61,6 @@ export function createLikePost({ feedRepo, userRepo, notificationService, feedRe
       feedRealtime.notifyPostLiked(post.authorId, postId, likerName);
     }
 
-    return succeed({ liked: true });
+    return succeed({ liked: true, postAgeHours });
   };
 }

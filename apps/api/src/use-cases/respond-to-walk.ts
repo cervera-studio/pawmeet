@@ -12,7 +12,7 @@ export function createRespondToWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
     userId: string,
     walkId: string,
     accept: boolean,
-  ): Promise<Result<{ message: string }>> => {
+  ): Promise<Result<{ message: string; proposalAgeHours: number }>> => {
     const walk = await walkRepo.findById(walkId);
     if (!walk) {
       return fail(new AppError('WALK_NOT_FOUND', 'Passeggiata non trovata', 404));
@@ -50,7 +50,11 @@ export function createRespondToWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
 
     // TODO: enqueue push notification to creator
 
+    const proposalAgeHours = Math.floor(
+      (Date.now() - new Date(walk.createdAt).getTime()) / (1000 * 60 * 60),
+    );
+
     const message = accept ? 'Passeggiata accettata' : 'Passeggiata rifiutata';
-    return succeed({ message });
+    return succeed({ message, proposalAgeHours });
   };
 }

@@ -46,10 +46,9 @@ export function createFeedRouter(deps: typeof feedDeps) {
       .mutation(async ({ ctx, input }) => {
         const result = unwrapResult(await deps.deletePost(input.postId, ctx.userId));
         trackEvent('feed_post_deleted', ctx.userId, {
-          postAgeHours: 0,
-          mediaCount: 0,
+          postAgeHours: result.postAgeHours,
+          mediaCount: result.mediaCount,
         });
-        return result;
       }),
 
     postDetail: protectedProcedure
@@ -108,9 +107,9 @@ export function createFeedRouter(deps: typeof feedDeps) {
     like: protectedProcedure.input(likePostSchema).mutation(async ({ ctx, input }) => {
       const result = unwrapResult(await deps.likePost(input.postId, ctx.userId));
       trackEvent('feed_post_liked', ctx.userId, {
-        postAgeHours: 0,
+        postAgeHours: result.postAgeHours,
       });
-      return result;
+      return { liked: result.liked };
     }),
 
     // ── Comments ────────────────────────────────────────────────────────────
@@ -122,10 +121,10 @@ export function createFeedRouter(deps: typeof feedDeps) {
           await deps.createComment(input.postId, ctx.userId, input.content, input.parentId ?? null),
         );
         trackEvent('feed_comment_created', ctx.userId, {
-          postAgeHours: 0,
+          postAgeHours: result.postAgeHours,
           isReply: Boolean(input.parentId),
         });
-        return result;
+        return { comment: result.comment };
       }),
 
     deleteComment: protectedProcedure
@@ -163,9 +162,8 @@ export function createFeedRouter(deps: typeof feedDeps) {
     viewStory: protectedProcedure.input(viewStorySchema).mutation(async ({ ctx, input }) => {
       const result = unwrapResult(await deps.viewStory(input.storyId, ctx.userId));
       trackEvent('feed_story_viewed', ctx.userId, {
-        storyAgeHours: 0,
+        storyAgeHours: result.storyAgeHours,
       });
-      return result;
     }),
 
     storyViewers: protectedProcedure

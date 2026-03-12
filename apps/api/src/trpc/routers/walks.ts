@@ -24,19 +24,19 @@ export function createWalksRouter(deps: typeof walkDeps) {
         }),
       );
       trackEvent('walk_proposed', ctx.userId, {
-        matchAgeHours: 0,
-        messageCountBeforeProposal: 0,
+        matchAgeHours: result.matchAgeHours,
+        messageCountBeforeProposal: result.messageCountBeforeProposal,
       });
-      return result;
+      return { walkId: result.walkId };
     }),
 
     respond: protectedProcedure.input(respondWalkSchema).mutation(async ({ ctx, input }) => {
       const result = unwrapResult(await deps.respondToWalk(ctx.userId, input.walkId, input.accept));
       trackEvent('walk_response', ctx.userId, {
         response: input.accept ? 'accepted' : 'declined',
-        proposalAgeHours: 0,
+        proposalAgeHours: result.proposalAgeHours,
       });
-      return result;
+      return { message: result.message };
     }),
 
     cancel: protectedProcedure

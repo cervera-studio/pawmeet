@@ -82,7 +82,7 @@ export function createUsersRouter(deps: typeof userDeps) {
         trackEvent('auth_account_deleted', ctx.userId, {
           accountAgeDays: result.accountAgeDays,
           dogCount: result.dogCount,
-          matchCount: 0, // matches are already cascaded at this point
+          matchCount: result.matchCount,
         });
         return { message: result.message };
       }),

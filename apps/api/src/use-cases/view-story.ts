@@ -6,7 +6,7 @@ type Deps = {
 };
 
 export function createViewStory({ storyRepo }: Deps) {
-  return async (storyId: string, userId: string): Promise<Result<void>> => {
+  return async (storyId: string, userId: string): Promise<Result<{ storyAgeHours: number }>> => {
     const story = await storyRepo.findById(storyId);
     if (!story) {
       return fail(new AppError('STORY_NOT_FOUND', 'Storia non trovata', 404));
@@ -24,6 +24,10 @@ export function createViewStory({ storyRepo }: Deps) {
       }
     }
 
-    return succeed(undefined);
+    const storyAgeHours = Math.floor(
+      (Date.now() - new Date(story.createdAt).getTime()) / (1000 * 60 * 60),
+    );
+
+    return succeed({ storyAgeHours });
   };
 }

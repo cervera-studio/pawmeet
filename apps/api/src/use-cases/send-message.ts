@@ -4,6 +4,7 @@ import { logger } from '@dogwalk/utils';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type {
   ChatService,
+  MatchRepository,
   MessageRepository,
   NotificationService,
   UserRepository,
@@ -12,18 +13,19 @@ import { WS_EVENT } from '../ws/chat.js';
 
 type Deps = {
   messageRepo: MessageRepository;
+  matchRepo: MatchRepository;
   chat: ChatService;
   userRepo: UserRepository;
   notificationService: NotificationService;
 };
 
-export function createSendMessage({ messageRepo, chat, userRepo, notificationService }: Deps) {
+export function createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService }: Deps) {
   return async (
     userId: string,
     matchId: string,
     content: string,
     mediaUrl?: string,
-  ): Promise<Result<{ message: ChatMessage }>> => {
+  ): Promise<Result<{ message: ChatMessage; chatAgeHours: number; messageCountInChat: number }>> => {
     // Check participation
     const isParticipant = await messageRepo.isMatchParticipant(matchId, userId);
     if (!isParticipant) {
@@ -75,6 +77,13 @@ export function createSendMessage({ messageRepo, chat, userRepo, notificationSer
       }
     }
 
-    return succeed({ message });
+    // Compute analytics metadata
+    const match = await matchRepo.findById(matchId);
+    const chatAgeHours = match
+      ? Math.floor((Date.now() - new Date(match.createdAt).getTime()) / (1000 * 60 * 60))
+      : 0;
+    const messageCountInChat = await messageRepo.countByMatch(matchId);
+
+    return succeed({ message, chatAgeHours, messageCountInChat });
   };
 }

@@ -44,9 +44,9 @@ export function createMatchesRouter(deps: typeof matchDeps) {
         trackEvent('match_unmatched', ctx.userId, {
           reason: 'manual',
           matchAgeDays: result.matchAgeDays,
-          messageCount: 0, // TODO: add ChatRepository.countByMatch() when available
+          messageCount: result.messageCount,
         });
-        return result;
+        return { message: result.message };
       }),
   });
 }

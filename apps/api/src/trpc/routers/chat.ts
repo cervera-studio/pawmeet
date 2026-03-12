@@ -36,10 +36,10 @@ export function createChatRouter(deps: typeof chatDeps) {
         );
         trackEvent('chat_message_sent', ctx.userId, {
           messageType: input.mediaUrl ? 'image' : 'text',
-          chatAgeHours: 0,
-          messageCountInChat: 0,
+          chatAgeHours: result.chatAgeHours,
+          messageCountInChat: result.messageCountInChat,
         });
-        return result;
+        return { message: result.message };
       }),
 
     markMessagesRead: protectedProcedure

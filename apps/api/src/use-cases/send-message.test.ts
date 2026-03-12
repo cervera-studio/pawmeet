@@ -20,7 +20,13 @@ describe('sendMessage', () => {
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
     const matchRepo = buildMatchRepo();
-    const sendMessage = createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService });
+    const sendMessage = createSendMessage({
+      messageRepo,
+      matchRepo,
+      chat,
+      userRepo,
+      notificationService,
+    });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 
@@ -51,7 +57,13 @@ describe('sendMessage', () => {
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
     const matchRepo = buildMatchRepo();
-    const sendMessage = createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService });
+    const sendMessage = createSendMessage({
+      messageRepo,
+      matchRepo,
+      chat,
+      userRepo,
+      notificationService,
+    });
 
     const result = await sendMessage(
       'user-1',
@@ -74,7 +86,13 @@ describe('sendMessage', () => {
     const userRepo = buildUserRepo();
     const notificationService = buildNotificationService();
     const matchRepo = buildMatchRepo();
-    const sendMessage = createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService });
+    const sendMessage = createSendMessage({
+      messageRepo,
+      matchRepo,
+      chat,
+      userRepo,
+      notificationService,
+    });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 

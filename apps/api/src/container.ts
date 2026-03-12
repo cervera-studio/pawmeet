@@ -255,6 +255,7 @@ export const userDeps = {
     authService,
     storage,
     dogRepo,
+    matchRepo,
     feedRepo,
     storyRepo,
     emailService,
@@ -275,7 +276,7 @@ export const matchDeps = {
   discoverCandidates: createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followRepo }),
   likeDog: createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }),
   passDog: createPassDog({ dogRepo, matchRepo }),
-  unmatch: createUnmatch({ dogRepo, matchRepo }),
+  unmatch: createUnmatch({ dogRepo, matchRepo, messageRepo }),
 };
 
 // ── Matching AI deps ───────────────────────────────────────────────────────────
@@ -307,7 +308,7 @@ export { experimentService };
 // ── Walk deps ───────────────────────────────────────────────────────────────────
 
 export const walkDeps = {
-  proposeWalk: createProposeWalk({ walkRepo, matchRepo, dogRepo }),
+  proposeWalk: createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo }),
   respondToWalk: createRespondToWalk({ walkRepo, matchRepo, dogRepo }),
   cancelWalk: createCancelWalk({ walkRepo, matchRepo, dogRepo }),
   listUpcomingWalks: createListUpcomingWalks({ walkRepo }),
@@ -334,7 +335,7 @@ export const badgeDeps = {
 export const chatDeps = {
   listConversations: createListConversations({ dogRepo, messageRepo, chat }),
   getMessages: createGetMessages({ messageRepo, chat }),
-  sendMessage: createSendMessage({ messageRepo, chat, userRepo, notificationService }),
+  sendMessage: createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService }),
   markMessagesRead: createMarkMessagesRead({ messageRepo, chat }),
 };
 

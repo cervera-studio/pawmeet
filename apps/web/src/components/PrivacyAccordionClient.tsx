@@ -48,6 +48,7 @@ export default function PrivacyAccordionClient() {
             <li><strong>Token di notifica push:</strong> identificativo tecnico per Expo Push Notifications.</li>
             <li><strong>Dati tecnici:</strong> indirizzo IP, tipo di dispositivo e user agent.</li>
             <li><strong>Dati di diagnostica:</strong> report di errori (Sentry) con scrubbing automatico dei dati personali.</li>
+            <li><strong>Dati di analytics:</strong> eventi di utilizzo pseudonimizzati (es. azioni nell'app, funzionalità usate). L'ID utente è sostituito con un hash irreversibile (HMAC-SHA256). Non vengono mai trasmessi a terzi: email, nome, coordinate GPS, contenuti chat, foto o nomi dei cani.</li>
           </ul>
 
           <h4 className="font-semibold text-neutral-900 mt-4 mb-2">2.3 Dati non raccolti</h4>
@@ -85,7 +86,7 @@ export default function PrivacyAccordionClient() {
                 <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Email transazionali</td><td className="py-2 pr-4">Indirizzo email</td><td className="py-2">Art. 6(1)(b) — Esecuzione contratto</td></tr>
                 <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Monitoraggio errori (Sentry)</td><td className="py-2 pr-4">Report con scrubbing</td><td className="py-2">Art. 6(1)(a) — Consenso</td></tr>
                 <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Test A/B (Statsig)</td><td className="py-2 pr-4">ID pseudonimizzato</td><td className="py-2">Art. 6(1)(a) — Consenso</td></tr>
-                <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Analytics anonime</td><td className="py-2 pr-4">Dati aggregati</td><td className="py-2">Art. 6(1)(a) — Consenso</td></tr>
+                <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Analytics prodotto (PostHog EU)</td><td className="py-2 pr-4">Eventi pseudonimizzati (HMAC-SHA256)</td><td className="py-2">Art. 6(1)(a) — Consenso</td></tr>
                 <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Marketing</td><td className="py-2 pr-4">Indirizzo email</td><td className="py-2">Art. 6(1)(a) — Consenso</td></tr>
                 <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Sicurezza e prevenzione abusi</td><td className="py-2 pr-4">IP, dati sessione</td><td className="py-2">Art. 6(1)(f) — Legittimo interesse</td></tr>
                 <tr><td className="py-2 pr-4">Obblighi di legge</td><td className="py-2 pr-4">Dati caso per caso</td><td className="py-2">Art. 6(1)(c) — Obbligo legale</td></tr>
@@ -116,7 +117,7 @@ export default function PrivacyAccordionClient() {
             <li><strong>Rate limiting</strong> contro attacchi brute-force.</li>
             <li><strong>Sanitizzazione input</strong> contro XSS e SQL injection.</li>
             <li><strong>Scrubbing automatico</strong> dei dati personali nei report Sentry.</li>
-            <li><strong>Pseudonimizzazione</strong> dell'ID utente in Statsig.</li>
+            <li><strong>Pseudonimizzazione</strong> dell'ID utente in Statsig e PostHog (HMAC-SHA256).</li>
           </ul>
         </>
       ),
@@ -149,7 +150,8 @@ export default function PrivacyAccordionClient() {
                 <tr className="border-b border-neutral-200"><td className="py-1.5 pr-3">Resend</td><td className="py-1.5 pr-3">Email transazionali</td><td className="py-1.5">USA (con SCC)</td></tr>
                 <tr className="border-b border-neutral-200"><td className="py-1.5 pr-3">Sentry</td><td className="py-1.5 pr-3">Monitoraggio errori</td><td className="py-1.5">USA (con SCC)</td></tr>
                 <tr className="border-b border-neutral-200"><td className="py-1.5 pr-3">Statsig</td><td className="py-1.5 pr-3">Feature flags + test A/B</td><td className="py-1.5">USA (con SCC)</td></tr>
-                <tr><td className="py-1.5 pr-3">Expo</td><td className="py-1.5 pr-3">Notifiche push</td><td className="py-1.5">USA (con SCC)</td></tr>
+                <tr className="border-b border-neutral-200"><td className="py-1.5 pr-3">Expo</td><td className="py-1.5 pr-3">Notifiche push</td><td className="py-1.5">USA (con SCC)</td></tr>
+                <tr><td className="py-1.5 pr-3">PostHog</td><td className="py-1.5 pr-3">Analytics prodotto (dati pseudonimizzati)</td><td className="py-1.5">Francoforte (UE)</td></tr>
               </tbody>
             </table>
           </div>
@@ -199,6 +201,7 @@ export default function PrivacyAccordionClient() {
               <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Token di refresh/verifica</td><td className="py-2">Eliminati alla scadenza o revoca.</td></tr>
               <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Cache (Upstash Redis)</td><td className="py-2">Temporanei, eliminati alla scadenza TTL.</td></tr>
               <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Report errori (Sentry)</td><td className="py-2">Retention Sentry (~90 gg).</td></tr>
+              <tr className="border-b border-neutral-200"><td className="py-2 pr-4">Analytics (PostHog EU)</td><td className="py-2">Eventi grezzi: 90 gg. Dati aggregati: 24 mesi. Anonimizzazione alla cancellazione account.</td></tr>
               <tr><td className="py-2 pr-4">Obblighi legali</td><td className="py-2">Periodo previsto dalla normativa (es. 10 anni per obblighi fiscali).</td></tr>
             </tbody>
           </table>
@@ -255,7 +258,7 @@ export default function PrivacyAccordionClient() {
         <>
           <p>Al primo utilizzo dell'app, puoi esprimere le tue preferenze su:</p>
           <ul className="list-disc pl-6 space-y-1 mt-3">
-            <li><strong>Analytics:</strong> dati di utilizzo aggregati e anonimizzati.</li>
+            <li><strong>Analytics (PostHog Cloud EU):</strong> eventi di utilizzo pseudonimizzati, elaborati su server europei (Francoforte). Nessun dato personale identificativo viene trasmesso.</li>
             <li><strong>Test A/B:</strong> sperimentazione funzionalità (Statsig, ID pseudonimizzato).</li>
             <li><strong>Monitoraggio errori:</strong> report Sentry con scrubbing automatico.</li>
             <li><strong>Marketing:</strong> comunicazioni promozionali via email.</li>

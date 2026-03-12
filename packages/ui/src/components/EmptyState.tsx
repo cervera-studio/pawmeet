@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { lightColors, spacing, typography } from '@pawmeet/design-tokens';
 import { Button } from './Button';
 
 interface EmptyStateProps {
@@ -31,23 +32,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
-    paddingVertical: 48,
+    paddingHorizontal: spacing['2xl'],
+    paddingVertical: spacing['4xl'],
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    lineHeight: 28,
-    color: '#1A1A2E',
+    fontSize: typography.headingMedium.fontSize,
+    fontWeight: typography.headingMedium.fontWeight,
+    lineHeight: typography.headingMedium.lineHeight,
+    color: lightColors.textPrimary,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   description: {
-    fontSize: 15,
-    fontWeight: '400',
-    lineHeight: 22,
-    color: '#8E8E93',
+    fontSize: typography.bodyMedium.fontSize,
+    fontWeight: typography.bodyMedium.fontWeight,
+    lineHeight: typography.bodyMedium.lineHeight,
+    color: lightColors.textPlaceholder,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: spacing.xl,
   },
 });

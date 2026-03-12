@@ -1,26 +1,5 @@
 ---
-import { steps } from '../data/steps';
+import HowItWorksClient from './HowItWorksClient';
 ---
 
-<section id="come-funziona" class="py-20 sm:py-28 bg-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Come funziona</h2>
-      <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-        Tre semplici passi per iniziare a passeggiare in compagnia.
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-      {steps.map((step) => (
-        <div class="text-center">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-50 text-primary-600 text-2xl font-bold mb-6">
-            {step.number}
-          </div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">{step.title}</h3>
-          <p class="text-gray-600">{step.description}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
+<HowItWorksClient client:visible />

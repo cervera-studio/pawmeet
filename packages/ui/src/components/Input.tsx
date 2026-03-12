@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, type TextInputProps, View } from 'react-native';
+import { lightColors, radius, spacing, typography } from '@pawmeet/design-tokens';
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   label?: string;
@@ -37,7 +38,7 @@ export function Input({ label, error, testID, onFocus, onBlur, ...rest }: InputP
         {...rest}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        placeholderTextColor="#8E8E93"
+        placeholderTextColor={lightColors.textPlaceholder}
         accessibilityLabel={label}
         testID={testID ? `${testID}-input` : undefined}
         style={[styles.input, borderStyle]}
@@ -56,34 +57,34 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   label: {
-    fontSize: 13,
-    fontWeight: '500',
-    lineHeight: 18,
-    color: '#4A4A5A',
-    marginBottom: 4,
+    fontSize: typography.labelMedium.fontSize,
+    fontWeight: typography.labelMedium.fontWeight,
+    lineHeight: typography.labelMedium.lineHeight,
+    color: lightColors.textSecondary,
+    marginBottom: spacing.xs,
   },
   input: {
-    height: 48,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    fontSize: 15,
-    color: '#1A1A2E',
+    height: spacing['4xl'],
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    fontSize: typography.bodyMedium.fontSize,
+    color: lightColors.textPrimary,
   },
   borderDefault: {
     borderWidth: 1,
-    borderColor: '#C7C7CC',
+    borderColor: lightColors.border,
   },
   borderFocus: {
     borderWidth: 2,
-    borderColor: '#065F46',
+    borderColor: lightColors.primary,
   },
   borderError: {
     borderWidth: 2,
-    borderColor: '#FF3B30',
+    borderColor: lightColors.error,
   },
   error: {
-    fontSize: 12,
-    color: '#FF3B30',
-    marginTop: 4,
+    fontSize: typography.bodySmall.fontSize - 1,
+    color: lightColors.error,
+    marginTop: spacing.xs,
   },
 });

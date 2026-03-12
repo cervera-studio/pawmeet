@@ -2,7 +2,7 @@
 import { navLinks } from '../data/navigation';
 ---
 
-<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200">
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
     <a href="/" class="flex items-center gap-2">
       <img src="/favicon.svg" alt="PawMeet" class="w-8 h-8" />
@@ -14,7 +14,7 @@ import { navLinks } from '../data/navigation';
         <li>
           <a
             href={link.href}
-            class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+            class="text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors"
           >
             {link.label}
           </a>
@@ -31,8 +31,10 @@ import { navLinks } from '../data/navigation';
 
     <!-- Mobile menu button -->
     <button
-      class="md:hidden p-2 text-gray-600"
+      class="md:hidden p-2 text-neutral-700"
       aria-label="Apri menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
       id="mobile-menu-btn"
     >
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,13 +44,13 @@ import { navLinks } from '../data/navigation';
   </nav>
 
   <!-- Mobile menu -->
-  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white">
+  <div id="mobile-menu" class="hidden md:hidden border-t border-neutral-200 bg-white">
     <ul class="px-4 py-4 space-y-3">
       {navLinks.map((link) => (
         <li>
           <a
             href={link.href}
-            class="block text-sm font-medium text-gray-600 hover:text-primary-600"
+            class="block text-sm font-medium text-neutral-700 hover:text-primary-600"
           >
             {link.label}
           </a>
@@ -70,6 +72,8 @@ import { navLinks } from '../data/navigation';
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
   btn?.addEventListener('click', () => {
-    menu?.classList.toggle('hidden');
+    const isOpen = menu?.classList.toggle('hidden') === false;
+    btn.setAttribute('aria-expanded', String(isOpen));
+    btn.setAttribute('aria-label', isOpen ? 'Chiudi menu' : 'Apri menu');
   });
 </script>

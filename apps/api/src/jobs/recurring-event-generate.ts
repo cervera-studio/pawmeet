@@ -54,7 +54,9 @@ async function generateOccurrences({ groupEventRepo }: Deps): Promise<void> {
 
     // Determine start date for new occurrences
     const lastOccurrence =
-      occurrences.length > 0 ? occurrences[occurrences.length - 1]?.scheduledAt : now;
+      occurrences.length > 0
+        ? (occurrences[occurrences.length - 1]?.scheduledAt ?? now)
+        : now;
 
     const afterDate = new Date(Math.max(lastOccurrence.getTime(), now.getTime()));
 

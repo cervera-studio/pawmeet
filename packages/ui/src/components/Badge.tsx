@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { lightColors, radius, spacing, typography } from '@pawmeet/design-tokens';
 
 type BadgeVariant =
   | 'compatibilityHigh'
@@ -13,23 +14,35 @@ type BadgeVariant =
 type BadgeSize = 'sm' | 'md' | 'lg';
 
 const VARIANT_STYLES: Record<BadgeVariant, { backgroundColor: string; color: string }> = {
-  compatibilityHigh: { backgroundColor: 'rgba(52, 199, 89, 0.1)', color: '#34C759' },
-  compatibilityMedium: { backgroundColor: 'rgba(255, 149, 0, 0.1)', color: '#FF9500' },
-  verified: { backgroundColor: 'rgba(0, 122, 255, 0.1)', color: '#007AFF' },
-  premium: { backgroundColor: '#FFF8E1', color: '#FFD700' },
-  size: { backgroundColor: '#F2F2F7', color: '#4A4A5A' },
-  energy: { backgroundColor: '#F2F2F7', color: '#4A4A5A' },
-  new: { backgroundColor: '#065F46', color: '#FFFFFF' },
-  counter: { backgroundColor: '#065F46', color: '#FFFFFF' },
+  compatibilityHigh: { backgroundColor: `${lightColors.success}1A`, color: lightColors.success },
+  compatibilityMedium: { backgroundColor: `${lightColors.warning}1A`, color: lightColors.warning },
+  verified: { backgroundColor: `${lightColors.info}1A`, color: lightColors.info },
+  premium: { backgroundColor: lightColors.secondary50, color: lightColors.secondaryText },
+  size: { backgroundColor: lightColors.surfaceCard, color: lightColors.textSecondary },
+  energy: { backgroundColor: lightColors.surfaceCard, color: lightColors.textSecondary },
+  new: { backgroundColor: lightColors.primary, color: lightColors.textInverse },
+  counter: { backgroundColor: lightColors.primary, color: lightColors.textInverse },
 };
 
 const SIZE_STYLES: Record<
   BadgeSize,
   { height: number; paddingHorizontal: number; fontSize: number }
 > = {
-  sm: { height: 20, paddingHorizontal: 6, fontSize: 11 },
-  md: { height: 24, paddingHorizontal: 8, fontSize: 13 },
-  lg: { height: 32, paddingHorizontal: 12, fontSize: 13 },
+  sm: {
+    height: spacing.lg,
+    paddingHorizontal: spacing.sm - 2,
+    fontSize: typography.labelSmall.fontSize,
+  },
+  md: {
+    height: spacing.xl,
+    paddingHorizontal: spacing.sm,
+    fontSize: typography.labelMedium.fontSize,
+  },
+  lg: {
+    height: spacing['2xl'],
+    paddingHorizontal: spacing.md,
+    fontSize: typography.labelMedium.fontSize,
+  },
 };
 
 const ROUND_VARIANTS: ReadonlySet<BadgeVariant> = new Set([
@@ -51,7 +64,7 @@ interface BadgeProps {
 export function Badge({ label, variant = 'size', size = 'md', testID }: BadgeProps) {
   const variantStyle = VARIANT_STYLES[variant];
   const sizeStyle = SIZE_STYLES[size];
-  const borderRadius = ROUND_VARIANTS.has(variant) ? 9999 : 4;
+  const borderRadius = ROUND_VARIANTS.has(variant) ? radius.full : radius.sm;
 
   return (
     <View
@@ -83,6 +96,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   text: {
-    fontWeight: '500',
+    fontWeight: typography.labelMedium.fontWeight,
   },
 });

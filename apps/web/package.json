@@ -9,20 +9,24 @@
     "preview": "astro preview",
     "lint": "biome check src/",
     "test": "vitest run",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "a11y": "pa11y-ci --config .pa11yci.json"
   },
   "dependencies": {
-    "astro": "^5.18.0",
-    "@tailwindcss/vite": "^4.2.0",
     "@astrojs/react": "^4.0.0",
     "@astrojs/sitemap": "^3.0.0",
+    "@pawmeet/types": "workspace:*",
+    "@tailwindcss/vite": "^4.2.0",
+    "astro": "^5.18.0",
+    "framer-motion": "^12.36.0",
+    "lucide-react": "^0.577.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "tailwindcss": "^4.2.0",
-    "@pawmeet/types": "workspace:*"
+    "tailwindcss": "^4.2.0"
   },
   "devDependencies": {
     "@pawmeet/typescript-config": "workspace:*",
+    "pa11y-ci": "^4.1.0",
     "typescript": "^5.9.0"
   }
 }

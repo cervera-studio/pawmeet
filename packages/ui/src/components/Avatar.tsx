@@ -1,11 +1,12 @@
 import { Image, type ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { lightColors, spacing } from '@pawmeet/design-tokens';
 
 const SIZES = {
-  xs: 24,
-  sm: 32,
-  md: 40,
-  lg: 48,
-  xl: 64,
+  xs: spacing.xl,       // 24
+  sm: spacing['2xl'],   // 32
+  md: spacing['3xl'],   // 40
+  lg: spacing['4xl'],   // 48
+  xl: spacing['5xl'],   // 64
   '2xl': 96,
 } as const;
 
@@ -28,7 +29,7 @@ export function Avatar({
   testID,
 }: AvatarProps) {
   const dimension = SIZES[size];
-  const placeholderColor = type === 'dog' ? '#FFF3ED' : '#E5E5EA';
+  const placeholderColor = type === 'dog' ? lightColors.primary50 : lightColors.surfaceCard;
 
   return (
     <View
@@ -69,6 +70,6 @@ const styles = StyleSheet.create({
   },
   bordered: {
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: lightColors.textInverse,
   },
 });

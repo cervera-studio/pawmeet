@@ -1,35 +1,5 @@
 ---
+import HeroClient from './HeroClient';
 ---
 
-<section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
-    <div class="max-w-3xl mx-auto text-center">
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight">
-        Trova il compagno di passeggiata
-        <span class="text-primary">perfetto</span> per il tuo cane
-      </h1>
-      <p class="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-        Connettiti con altri proprietari di cani nella tua zona. Organizza passeggiate di gruppo,
-        trova nuovi amici per il tuo amico a quattro zampe e rendi ogni uscita un'avventura.
-      </p>
-      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a
-          href="/waitlist"
-          class="w-full sm:w-auto px-8 py-3 rounded-full bg-primary text-white font-semibold text-lg hover:bg-primary-600 transition-colors shadow-lg shadow-primary/25"
-        >
-          Iscriviti alla waitlist
-        </a>
-        <a
-          href="#come-funziona"
-          class="w-full sm:w-auto px-8 py-3 rounded-full border-2 border-gray-300 text-gray-700 font-semibold text-lg hover:border-primary hover:text-primary transition-colors"
-        >
-          Scopri come funziona
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Decorative blobs -->
-  <div class="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-100 rounded-full opacity-30 blur-3xl"></div>
-  <div class="absolute bottom-0 right-0 translate-x-1/3 translate-y-1/3 w-96 h-96 bg-secondary-100 rounded-full opacity-30 blur-3xl"></div>
-</section>
+<HeroClient client:load />

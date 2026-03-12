@@ -5,34 +5,35 @@ import {
   TouchableOpacity,
   type ViewStyle,
 } from 'react-native';
+import { lightColors, radius, spacing, typography } from '@pawmeet/design-tokens';
 
 const VARIANT_STYLES = {
   primary: {
-    backgroundColor: '#065F46',
+    backgroundColor: lightColors.primary,
   },
   secondary: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#065F46',
+    borderColor: lightColors.primary,
   },
   ghost: {
     backgroundColor: 'transparent',
   },
   destructive: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: lightColors.error,
   },
 } as const satisfies Record<string, ViewStyle>;
 
 const TEXT_COLORS: Record<ButtonVariant, string> = {
-  primary: '#FFFFFF',
-  secondary: '#065F46',
-  ghost: '#4A4A5A',
-  destructive: '#FFFFFF',
+  primary: lightColors.textInverse,
+  secondary: lightColors.primary,
+  ghost: lightColors.textSecondary,
+  destructive: lightColors.textInverse,
 };
 
 const HEIGHTS: Record<ButtonSize, number> = {
-  compact: 40,
-  standard: 48,
+  compact: spacing['3xl'],   // 40
+  standard: spacing['4xl'],  // 48
   large: 56,
 };
 
@@ -87,8 +88,8 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 24,
-    paddingHorizontal: 24,
+    borderRadius: radius['2xl'],
+    paddingHorizontal: spacing.xl,
     justifyContent: 'center',
     alignItems: 'center',
     minWidth: 44,
@@ -98,8 +99,8 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   text: {
-    fontSize: 17,
-    fontWeight: '500',
-    lineHeight: 22,
+    fontSize: typography.labelLarge.fontSize,
+    fontWeight: typography.labelLarge.fontWeight,
+    lineHeight: typography.labelLarge.lineHeight,
   },
 });

@@ -34,3 +34,29 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  a11y:
+    name: Accessibility (Pa11y)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build web
+        run: pnpm --filter @pawmeet/web build
+
+      - name: Run Pa11y CI
+        run: |
+          pnpm --filter @pawmeet/web preview &
+          sleep 3
+          pnpm --filter @pawmeet/web a11y

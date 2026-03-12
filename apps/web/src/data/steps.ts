@@ -1,27 +1,31 @@
 export interface Step {
-  number: string;
+  number: number;
   title: string;
   description: string;
+  iconName: string;
 }
 
 /** "How it works" steps displayed on the landing page */
 export const steps: readonly Step[] = [
   {
-    number: '01',
+    number: 1,
     title: 'Crea il profilo del tuo cane',
     description:
       'Registrati e aggiungi il tuo amico a quattro zampe con foto, razza, taglia e le sue preferenze di socializzazione.',
+    iconName: 'PawPrint',
   },
   {
-    number: '02',
-    title: 'Trova passeggiate vicino a te',
+    number: 2,
+    title: 'Trova il match perfetto',
     description:
-      'Esplora la mappa e scopri passeggiate organizzate nella tua zona o crea la tua e invita altri proprietari.',
+      'Esplora i cani compatibili nella tua zona. Il nostro algoritmo analizza taglia, energia e comportamento.',
+    iconName: 'Heart',
   },
   {
-    number: '03',
+    number: 3,
     title: 'Passeggia insieme',
     description:
-      'Incontra nuovi amici (a due e quattro zampe), condividi percorsi e rendi ogni uscita un momento speciale.',
+      'Incontra nuovi amici a due e quattro zampe, condividi percorsi e rendi ogni uscita un momento speciale.',
+    iconName: 'TreePine',
   },
 ];

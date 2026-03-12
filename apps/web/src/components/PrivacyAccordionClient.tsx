@@ -1,5 +1,5 @@
-import type { Locale } from '../i18n/locales';
 import { getPrivacySections } from '../data/privacy-sections';
+import type { Locale } from '../i18n/locales';
 import AccordionClient from './AccordionClient';
 
 interface Props {

@@ -915,9 +915,7 @@ function getEnglishSections(): PrivacySection[] {
               </tr>
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Chat messages</td>
-                <td className="py-2">
-                  Duration of active account. Deleted upon account deletion.
-                </td>
+                <td className="py-2">Duration of active account. Deleted upon account deletion.</td>
               </tr>
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Geolocation</td>
@@ -940,8 +938,7 @@ function getEnglishSections(): PrivacySection[] {
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Analytics (PostHog EU)</td>
                 <td className="py-2">
-                  Raw events: 90 days. Aggregated data: 24 months. Anonymized upon account
-                  deletion.
+                  Raw events: 90 days. Aggregated data: 24 months. Anonymized upon account deletion.
                 </td>
               </tr>
               <tr>
@@ -1056,7 +1053,7 @@ function getEnglishSections(): PrivacySection[] {
     },
     {
       id: '11',
-      title: '11. Processing of minors\' data',
+      title: "11. Processing of minors' data",
       children: (
         <p>
           The Service is not intended for minors under 16 years of age (Art. 8 GDPR, Art.

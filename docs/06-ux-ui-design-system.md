@@ -1,9 +1,9 @@
 # PawMeet - UX/UI Design System
 
-> **Versione:** 1.0
-> **Data:** 9 marzo 2026
+> **Versione:** 2.0
+> **Data:** 12 marzo 2026
 > **Autore:** UX/UI Design & Service Design Team
-> **Stato:** Draft
+> **Stato:** Active
 > **Target:** Sviluppatori frontend Expo/React Native
 
 ---
@@ -308,23 +308,25 @@ NavigationContainer
 
 | Nome | Hex | Utilizzo |
 |------|-----|----------|
-| **Primary** | `#FF6B35` | CTA principali, accenti, tab attivo, link |
-| **Primary Light** | `#FF8F62` | Hover/press state, background leggero |
-| **Primary Dark** | `#E55A25` | Testo su sfondo chiaro quando serve piu contrasto |
-| **Primary 50** | `#FFF3ED` | Background tinted, card selezionate, badge background |
+| **Primary** | `#065F46` | CTA principali, accenti, tab attivo, link |
+| **Primary Light** | `#059669` | Hover/press state, background leggero |
+| **Primary Dark** | `#064E3B` | Testo su sfondo chiaro quando serve piu contrasto |
+| **Primary 50** | `#ECFDF5` | Background tinted, card selezionate, badge background |
 
-L'arancione caldo e stato scelto perche evoca energia, calore e allegria -- qualita associate alle passeggiate con il cane. E sufficientemente distinto dal rosso (errore) e dal verde (successo) per evitare ambiguita semantiche.
+Il verde smeraldo profondo e stato scelto perche evoca la natura, la fiducia e un senso di qualita premium -- in linea con il mood "vita nella natura di lusso". E sufficientemente distinto dal rosso (errore) e dal giallo (warning) per evitare ambiguita semantiche.
 
 #### Palette Secondaria
 
 | Nome | Hex | Utilizzo |
 |------|-----|----------|
-| **Secondary** | `#2D6A4F` | Elementi secondari, badge compatibilita alta, icone natura |
-| **Secondary Light** | `#52B788` | Background secondari, indicatori positivi |
-| **Secondary Dark** | `#1B4332` | Testo secondario su sfondo chiaro |
-| **Secondary 50** | `#F0F7F4` | Background sezione, card sfondo alternativo |
+| **Secondary** | `#C9A84C` | Elementi secondari, badge compatibilita alta, accenti dorati |
+| **Secondary Light** | `#E0B04E` | Background secondari, indicatori positivi |
+| **Secondary Dark** | `#8B6914` | Testo secondario su sfondo chiaro (secondary-text) |
+| **Secondary 50** | `#FDF8EF` | Background sezione, card sfondo alternativo |
 
-Il verde bosco richiama la natura, le passeggiate all'aperto e la compatibilita/sicurezza.
+Il champagne gold richiama eleganza e calore, bilanciando il verde smeraldo primario con un accento luminoso e premium.
+
+**Nota accessibilita:** Il colore `Secondary (#C9A84C)` non deve MAI essere usato come testo su sfondi chiari (contrasto 2.29:1 FAIL). Per testo su sfondo chiaro, usare `Secondary Dark (#8B6914)` che ha contrasto 4.86:1 (AA).
 
 #### Palette Neutra
 
@@ -356,9 +358,9 @@ Il verde bosco richiama la natura, le passeggiate all'aperto e la compatibilita/
 | **Compatibility Medium** | `#FF9500` | Badge compatibilita 50-74% |
 | **Compatibility Low** | `#FF3B30` | Badge compatibilita < 50% (raramente mostrato) |
 | **Premium Gold** | `#FFD700` | Badge premium, feature premium |
-| **Chat Bubble Sent** | `#FF6B35` | Bolla messaggio inviato |
+| **Chat Bubble Sent** | `#065F46` | Bolla messaggio inviato |
 | **Chat Bubble Received** | `#F2F2F7` (light) / `#2C2C2E` (dark) | Bolla messaggio ricevuto |
-| **Map Radius** | `#FF6B3520` | Area raggio di ricerca sulla mappa (20% opacita) |
+| **Map Radius** | `#065F4620` | Area raggio di ricerca sulla mappa (20% opacita) |
 
 #### Light/Dark Mode
 
@@ -366,7 +368,7 @@ Il supporto dark mode e implementato tramite il sistema di design tokens (vedi s
 
 Regole per il dark mode:
 - Le superfici usano grigi scuri, MAI nero puro (#000000) per le superfici elevate
-- Il colore Primary resta invariato (#FF6B35) -- ha contrasto sufficiente su sfondo scuro
+- Il colore Primary resta invariato (#065F46) -- ha contrasto sufficiente su sfondo scuro
 - Le ombre diventano piu sottili e scure
 - Le immagini e le foto non vengono alterate
 - Le illustrazioni hanno una variante dark mode con sfondi adattati
@@ -399,9 +401,9 @@ Motivazioni:
 | **bodyLarge** | 17px | 24px | 400 (Regular) | Testo corpo principale, messaggi chat |
 | **bodyMedium** | 15px | 22px | 400 (Regular) | Testo corpo secondario, descrizione card |
 | **bodySmall** | 13px | 18px | 400 (Regular) | Testo di supporto, timestamp, distanza |
-| **labelLarge** | 17px | 22px | 500 (Medium) | Label bottone, tab label attivo |
-| **labelMedium** | 13px | 18px | 500 (Medium) | Badge, chip, tag, tab label inattivo |
-| **labelSmall** | 11px | 16px | 500 (Medium) | Caption, helper text, contatori |
+| **labelLarge** | 17px | 22px | 600 (SemiBold) | Label bottone, tab label attivo |
+| **labelMedium** | 13px | 18px | 600 (SemiBold) | Badge, chip, tag, tab label inattivo |
+| **labelSmall** | 11px | 16px | 600 (SemiBold) | Caption, helper text, contatori |
 | **caption** | 11px | 16px | 400 (Regular) | Timestamp, note, disclaimer |
 
 **Note implementative:**
@@ -483,7 +485,7 @@ Quattro varianti principali:
 
 | Variante | Background | Testo | Border | Utilizzo |
 |----------|-----------|-------|--------|----------|
-| **Primary** | `Primary (#FF6B35)` | `White` | Nessuno | CTA principali: "Registrati", "Invia messaggio", "Salva" |
+| **Primary** | `Primary (#065F46)` | `White` | Nessuno | CTA principali: "Registrati", "Invia messaggio", "Salva" |
 | **Secondary** | `Transparent` | `Primary` | `1px Primary` | Azioni secondarie: "Annulla", "Modifica", "Vedi profilo" |
 | **Ghost** | `Transparent` | `Neutral 700` | Nessuno | Azioni terziarie: "Salta", "Dopo", link inline |
 | **Destructive** | `Error` | `White` | Nessuno | Azioni distruttive: "Blocca", "Elimina account", "Segnala" |
@@ -710,7 +712,7 @@ Struttura dello stack di card:
                                     14:32  ✓✓
 ```
 
-- Background: `Chat Bubble Sent` (#FF6B35)
+- Background: `Chat Bubble Sent` (#065F46)
 - Testo: `White`, `bodyLarge`
 - Border radius: 16px top-left, 16px top-right, 4px bottom-right, 16px bottom-left
 - Padding: 12px orizzontale, 8px verticale
@@ -1139,15 +1141,11 @@ PawMeet deve essere conforme al livello AA delle Web Content Accessibility Guide
 | Elemento | Requisito Minimo | Verifica |
 |----------|-----------------|----------|
 | Testo normale (< 18px) | 4.5:1 su sfondo | `Neutral 900` su `White` = 15.4:1 (passa) |
-| Testo grande (>= 18px bold o >= 24px) | 3:1 su sfondo | `Primary` su `White` = 3.4:1 (passa) |
+| Testo grande (>= 18px bold o >= 24px) | 3:1 su sfondo | `Primary` su `White` = 7.68:1 (passa AAA) |
 | Elementi UI (icone, bordi, controlli) | 3:1 su sfondo | `Neutral 500` su `White` = 4.0:1 (passa) |
-| Testo su `Primary` background | 4.5:1 | `White` su `Primary (#FF6B35)` = 3.2:1 -- usare `bodyLarge` Bold minimo o testo grande |
-| Testo bolla chat inviata | 4.5:1 | `White` su `#FF6B35` = 3.2:1 -- accettabile con testo 17px. Per small text, usare `Primary Dark` come sfondo |
-
-**Nota critica:** Il colore `Primary (#FF6B35)` ha un contrasto di 3.2:1 con il bianco, che passa per testo grande (WCAG AA) ma non per testo piccolo. Azioni correttive:
-- Testo bianco su sfondo `Primary` solo per elementi >= 17px e peso >= 500 (Medium)
-- Per testo piccolo su sfondo `Primary`, usare `Primary Dark (#E55A25)` che ha contrasto 4.0:1
-- I bottoni primari usano testo `labelLarge` (17px Medium) e passano il criterio per testo grande
+| Testo su `Primary` background | 4.5:1 | `White` su `Primary (#065F46)` = 7.68:1 (passa AAA) |
+| Testo bolla chat inviata | 4.5:1 | `White` su `#065F46` = 7.68:1 (passa AAA) |
+| Testo `Secondary Dark` su sfondo chiaro | 4.5:1 | `Secondary Dark (#8B6914)` su `White` = 4.86:1 (passa AA) |
 
 #### Contrasto in Dark Mode
 
@@ -1259,16 +1257,16 @@ src/
 
 export const palette = {
   // Primary
-  primary: '#FF6B35',
-  primaryLight: '#FF8F62',
-  primaryDark: '#E55A25',
-  primary50: '#FFF3ED',
+  primary: '#065F46',
+  primaryLight: '#059669',
+  primaryDark: '#064E3B',
+  primary50: '#ECFDF5',
 
   // Secondary
-  secondary: '#2D6A4F',
-  secondaryLight: '#52B788',
-  secondaryDark: '#1B4332',
-  secondary50: '#F0F7F4',
+  secondary: '#C9A84C',
+  secondaryLight: '#E0B04E',
+  secondaryDark: '#8B6914',
+  secondary50: '#FDF8EF',
 
   // Neutrals
   neutral900: '#1A1A2E',
@@ -1341,7 +1339,7 @@ export const lightColors = {
   tabBarBackground: palette.white,
   tabBarActive: palette.primary,
   tabBarInactive: palette.neutral500,
-  mapRadius: 'rgba(255, 107, 53, 0.12)',
+  mapRadius: 'rgba(6, 95, 70, 0.12)',
   overlay: 'rgba(0, 0, 0, 0.5)',
   shimmerBase: palette.neutral200,
   shimmerHighlight: palette.neutral100,
@@ -1364,10 +1362,10 @@ export const darkColors: typeof lightColors = {
   primary: palette.primary,
   primaryLight: palette.primaryLight,
   primaryDark: palette.primaryDark,
-  primaryTinted: '#3D2A1E',
+  primaryTinted: '#1A2E28',
   secondary: palette.secondaryLight,
   secondaryLight: palette.secondaryLight,
-  secondaryTinted: '#1A2E24',
+  secondaryTinted: '#2E2A1A',
 
   // Semantic
   success: '#30D158',
@@ -1388,7 +1386,7 @@ export const darkColors: typeof lightColors = {
   tabBarBackground: '#1C1C1E',
   tabBarActive: palette.primary,
   tabBarInactive: '#8E8E93',
-  mapRadius: 'rgba(255, 107, 53, 0.20)',
+  mapRadius: 'rgba(6, 95, 70, 0.20)',
   overlay: 'rgba(0, 0, 0, 0.7)',
   shimmerBase: '#38383A',
   shimmerHighlight: '#48484A',
@@ -1406,7 +1404,6 @@ import { TextStyle, Platform } from 'react-native';
 
 export const fontFamily = {
   regular: 'Inter_400Regular',
-  medium: 'Inter_500Medium',
   semiBold: 'Inter_600SemiBold',
   bold: 'Inter_700Bold',
 } as const;
@@ -1470,22 +1467,22 @@ export const typography = {
     fontWeight: '400' as TextStyle['fontWeight'],
   },
   labelLarge: {
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.semiBold,
     fontSize: 17,
     lineHeight: 22,
-    fontWeight: '500' as TextStyle['fontWeight'],
+    fontWeight: '600' as TextStyle['fontWeight'],
   },
   labelMedium: {
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.semiBold,
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: '500' as TextStyle['fontWeight'],
+    fontWeight: '600' as TextStyle['fontWeight'],
   },
   labelSmall: {
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.semiBold,
     fontSize: 11,
     lineHeight: 16,
-    fontWeight: '500' as TextStyle['fontWeight'],
+    fontWeight: '600' as TextStyle['fontWeight'],
   },
   caption: {
     fontFamily: fontFamily.regular,
@@ -1846,10 +1843,10 @@ export function Button({
 
 # PawMeet - UX/UI Design System
 
-> **Versione:** 1.0
-> **Data:** 9 marzo 2026
+> **Versione:** 2.0
+> **Data:** 12 marzo 2026
 > **Autore:** UX/UI Design & Service Design Team
-> **Stato:** Draft
+> **Stato:** Active
 > **Target:** Sviluppatori frontend Expo/React Native
 
 ---
@@ -2154,23 +2151,25 @@ NavigationContainer
 
 | Nome | Hex | Utilizzo |
 |------|-----|----------|
-| **Primary** | `#FF6B35` | CTA principali, accenti, tab attivo, link |
-| **Primary Light** | `#FF8F62` | Hover/press state, background leggero |
-| **Primary Dark** | `#E55A25` | Testo su sfondo chiaro quando serve piu contrasto |
-| **Primary 50** | `#FFF3ED` | Background tinted, card selezionate, badge background |
+| **Primary** | `#065F46` | CTA principali, accenti, tab attivo, link |
+| **Primary Light** | `#059669` | Hover/press state, background leggero |
+| **Primary Dark** | `#064E3B` | Testo su sfondo chiaro quando serve piu contrasto |
+| **Primary 50** | `#ECFDF5` | Background tinted, card selezionate, badge background |
 
-L'arancione caldo e stato scelto perche evoca energia, calore e allegria -- qualita associate alle passeggiate con il cane. E sufficientemente distinto dal rosso (errore) e dal verde (successo) per evitare ambiguita semantiche.
+Il verde smeraldo profondo e stato scelto perche evoca la natura, la fiducia e un senso di qualita premium -- in linea con il mood "vita nella natura di lusso". E sufficientemente distinto dal rosso (errore) e dal giallo (warning) per evitare ambiguita semantiche.
 
 #### Palette Secondaria
 
 | Nome | Hex | Utilizzo |
 |------|-----|----------|
-| **Secondary** | `#2D6A4F` | Elementi secondari, badge compatibilita alta, icone natura |
-| **Secondary Light** | `#52B788` | Background secondari, indicatori positivi |
-| **Secondary Dark** | `#1B4332` | Testo secondario su sfondo chiaro |
-| **Secondary 50** | `#F0F7F4` | Background sezione, card sfondo alternativo |
+| **Secondary** | `#C9A84C` | Elementi secondari, badge compatibilita alta, accenti dorati |
+| **Secondary Light** | `#E0B04E` | Background secondari, indicatori positivi |
+| **Secondary Dark** | `#8B6914` | Testo secondario su sfondo chiaro (secondary-text) |
+| **Secondary 50** | `#FDF8EF` | Background sezione, card sfondo alternativo |
 
-Il verde bosco richiama la natura, le passeggiate all'aperto e la compatibilita/sicurezza.
+Il champagne gold richiama eleganza e calore, bilanciando il verde smeraldo primario con un accento luminoso e premium.
+
+**Nota accessibilita:** Il colore `Secondary (#C9A84C)` non deve MAI essere usato come testo su sfondi chiari (contrasto 2.29:1 FAIL). Per testo su sfondo chiaro, usare `Secondary Dark (#8B6914)` che ha contrasto 4.86:1 (AA).
 
 #### Palette Neutra
 
@@ -2202,9 +2201,9 @@ Il verde bosco richiama la natura, le passeggiate all'aperto e la compatibilita/
 | **Compatibility Medium** | `#FF9500` | Badge compatibilita 50-74% |
 | **Compatibility Low** | `#FF3B30` | Badge compatibilita < 50% (raramente mostrato) |
 | **Premium Gold** | `#FFD700` | Badge premium, feature premium |
-| **Chat Bubble Sent** | `#FF6B35` | Bolla messaggio inviato |
+| **Chat Bubble Sent** | `#065F46` | Bolla messaggio inviato |
 | **Chat Bubble Received** | `#F2F2F7` (light) / `#2C2C2E` (dark) | Bolla messaggio ricevuto |
-| **Map Radius** | `#FF6B3520` | Area raggio di ricerca sulla mappa (20% opacita) |
+| **Map Radius** | `#065F4620` | Area raggio di ricerca sulla mappa (20% opacita) |
 
 #### Light/Dark Mode
 
@@ -2212,7 +2211,7 @@ Il supporto dark mode e implementato tramite il sistema di design tokens (vedi s
 
 Regole per il dark mode:
 - Le superfici usano grigi scuri, MAI nero puro (#000000) per le superfici elevate
-- Il colore Primary resta invariato (#FF6B35) -- ha contrasto sufficiente su sfondo scuro
+- Il colore Primary resta invariato (#065F46) -- ha contrasto sufficiente su sfondo scuro
 - Le ombre diventano piu sottili e scure
 - Le immagini e le foto non vengono alterate
 - Le illustrazioni hanno una variante dark mode con sfondi adattati
@@ -2245,9 +2244,9 @@ Motivazioni:
 | **bodyLarge** | 17px | 24px | 400 (Regular) | Testo corpo principale, messaggi chat |
 | **bodyMedium** | 15px | 22px | 400 (Regular) | Testo corpo secondario, descrizione card |
 | **bodySmall** | 13px | 18px | 400 (Regular) | Testo di supporto, timestamp, distanza |
-| **labelLarge** | 17px | 22px | 500 (Medium) | Label bottone, tab label attivo |
-| **labelMedium** | 13px | 18px | 500 (Medium) | Badge, chip, tag, tab label inattivo |
-| **labelSmall** | 11px | 16px | 500 (Medium) | Caption, helper text, contatori |
+| **labelLarge** | 17px | 22px | 600 (SemiBold) | Label bottone, tab label attivo |
+| **labelMedium** | 13px | 18px | 600 (SemiBold) | Badge, chip, tag, tab label inattivo |
+| **labelSmall** | 11px | 16px | 600 (SemiBold) | Caption, helper text, contatori |
 | **caption** | 11px | 16px | 400 (Regular) | Timestamp, note, disclaimer |
 
 **Note implementative:**
@@ -2329,7 +2328,7 @@ Quattro varianti principali:
 
 | Variante | Background | Testo | Border | Utilizzo |
 |----------|-----------|-------|--------|----------|
-| **Primary** | `Primary (#FF6B35)` | `White` | Nessuno | CTA principali: "Registrati", "Invia messaggio", "Salva" |
+| **Primary** | `Primary (#065F46)` | `White` | Nessuno | CTA principali: "Registrati", "Invia messaggio", "Salva" |
 | **Secondary** | `Transparent` | `Primary` | `1px Primary` | Azioni secondarie: "Annulla", "Modifica", "Vedi profilo" |
 | **Ghost** | `Transparent` | `Neutral 700` | Nessuno | Azioni terziarie: "Salta", "Dopo", link inline |
 | **Destructive** | `Error` | `White` | Nessuno | Azioni distruttive: "Blocca", "Elimina account", "Segnala" |
@@ -2556,7 +2555,7 @@ Struttura dello stack di card:
                                     14:32  vv
 ```
 
-- Background: `Chat Bubble Sent` (#FF6B35)
+- Background: `Chat Bubble Sent` (#065F46)
 - Testo: `White`, `bodyLarge`
 - Border radius: 16px top-left, 16px top-right, 4px bottom-right, 16px bottom-left
 - Padding: 12px orizzontale, 8px verticale
@@ -2985,15 +2984,11 @@ PawMeet deve essere conforme al livello AA delle Web Content Accessibility Guide
 | Elemento | Requisito Minimo | Verifica |
 |----------|-----------------|----------|
 | Testo normale (< 18px) | 4.5:1 su sfondo | `Neutral 900` su `White` = 15.4:1 (passa) |
-| Testo grande (>= 18px bold o >= 24px) | 3:1 su sfondo | `Primary` su `White` = 3.4:1 (passa) |
+| Testo grande (>= 18px bold o >= 24px) | 3:1 su sfondo | `Primary` su `White` = 7.68:1 (passa AAA) |
 | Elementi UI (icone, bordi, controlli) | 3:1 su sfondo | `Neutral 500` su `White` = 4.0:1 (passa) |
-| Testo su `Primary` background | 4.5:1 | `White` su `Primary (#FF6B35)` = 3.2:1 -- usare `bodyLarge` Bold minimo o testo grande |
-| Testo bolla chat inviata | 4.5:1 | `White` su `#FF6B35` = 3.2:1 -- accettabile con testo 17px. Per small text, usare `Primary Dark` come sfondo |
-
-**Nota critica:** Il colore `Primary (#FF6B35)` ha un contrasto di 3.2:1 con il bianco, che passa per testo grande (WCAG AA) ma non per testo piccolo. Azioni correttive:
-- Testo bianco su sfondo `Primary` solo per elementi >= 17px e peso >= 500 (Medium)
-- Per testo piccolo su sfondo `Primary`, usare `Primary Dark (#E55A25)` che ha contrasto 4.0:1
-- I bottoni primari usano testo `labelLarge` (17px Medium) e passano il criterio per testo grande
+| Testo su `Primary` background | 4.5:1 | `White` su `Primary (#065F46)` = 7.68:1 (passa AAA) |
+| Testo bolla chat inviata | 4.5:1 | `White` su `#065F46` = 7.68:1 (passa AAA) |
+| Testo `Secondary Dark` su sfondo chiaro | 4.5:1 | `Secondary Dark (#8B6914)` su `White` = 4.86:1 (passa AA) |
 
 #### Contrasto in Dark Mode
 
@@ -3105,16 +3100,16 @@ src/
 
 export const palette = {
   // Primary
-  primary: '#FF6B35',
-  primaryLight: '#FF8F62',
-  primaryDark: '#E55A25',
-  primary50: '#FFF3ED',
+  primary: '#065F46',
+  primaryLight: '#059669',
+  primaryDark: '#064E3B',
+  primary50: '#ECFDF5',
 
   // Secondary
-  secondary: '#2D6A4F',
-  secondaryLight: '#52B788',
-  secondaryDark: '#1B4332',
-  secondary50: '#F0F7F4',
+  secondary: '#C9A84C',
+  secondaryLight: '#E0B04E',
+  secondaryDark: '#8B6914',
+  secondary50: '#FDF8EF',
 
   // Neutrals
   neutral900: '#1A1A2E',
@@ -3187,7 +3182,7 @@ export const lightColors = {
   tabBarBackground: palette.white,
   tabBarActive: palette.primary,
   tabBarInactive: palette.neutral500,
-  mapRadius: 'rgba(255, 107, 53, 0.12)',
+  mapRadius: 'rgba(6, 95, 70, 0.12)',
   overlay: 'rgba(0, 0, 0, 0.5)',
   shimmerBase: palette.neutral200,
   shimmerHighlight: palette.neutral100,
@@ -3210,10 +3205,10 @@ export const darkColors: typeof lightColors = {
   primary: palette.primary,
   primaryLight: palette.primaryLight,
   primaryDark: palette.primaryDark,
-  primaryTinted: '#3D2A1E',
+  primaryTinted: '#1A2E28',
   secondary: palette.secondaryLight,
   secondaryLight: palette.secondaryLight,
-  secondaryTinted: '#1A2E24',
+  secondaryTinted: '#2E2A1A',
 
   // Semantic
   success: '#30D158',
@@ -3234,7 +3229,7 @@ export const darkColors: typeof lightColors = {
   tabBarBackground: '#1C1C1E',
   tabBarActive: palette.primary,
   tabBarInactive: '#8E8E93',
-  mapRadius: 'rgba(255, 107, 53, 0.20)',
+  mapRadius: 'rgba(6, 95, 70, 0.20)',
   overlay: 'rgba(0, 0, 0, 0.7)',
   shimmerBase: '#38383A',
   shimmerHighlight: '#48484A',
@@ -3252,7 +3247,6 @@ import { TextStyle, Platform } from 'react-native';
 
 export const fontFamily = {
   regular: 'Inter_400Regular',
-  medium: 'Inter_500Medium',
   semiBold: 'Inter_600SemiBold',
   bold: 'Inter_700Bold',
 } as const;
@@ -3316,22 +3310,22 @@ export const typography = {
     fontWeight: '400' as TextStyle['fontWeight'],
   },
   labelLarge: {
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.semiBold,
     fontSize: 17,
     lineHeight: 22,
-    fontWeight: '500' as TextStyle['fontWeight'],
+    fontWeight: '600' as TextStyle['fontWeight'],
   },
   labelMedium: {
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.semiBold,
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: '500' as TextStyle['fontWeight'],
+    fontWeight: '600' as TextStyle['fontWeight'],
   },
   labelSmall: {
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.semiBold,
     fontSize: 11,
     lineHeight: 16,
-    fontWeight: '500' as TextStyle['fontWeight'],
+    fontWeight: '600' as TextStyle['fontWeight'],
   },
   caption: {
     fontFamily: fontFamily.regular,

@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   buildDog,
   buildDogRepo,
+  buildFollowRepo,
   buildGroupEvent,
   buildGroupEventRepo,
   buildNotificationService,
@@ -23,19 +24,42 @@ function buildParticipant(overrides: Partial<GroupEventParticipant> = {}): Group
   };
 }
 
+function setup(overrides: {
+  event?: ReturnType<typeof buildGroupEvent> | null;
+  count?: number;
+  existingParticipant?: GroupEventParticipant | null;
+  areFriends?: boolean;
+} = {}) {
+  const event =
+    overrides.event !== undefined ? overrides.event : buildGroupEvent();
+
+  const groupEventRepo = buildGroupEventRepo({
+    findById: vi.fn().mockResolvedValue(event),
+    countParticipants: vi.fn().mockResolvedValue(overrides.count ?? 3),
+    addParticipant: vi.fn().mockResolvedValue(buildParticipant()),
+    findParticipant: vi.fn().mockResolvedValue(overrides.existingParticipant ?? null),
+  });
+  const dogRepo = buildDogRepo({
+    findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
+  });
+  const followRepo = buildFollowRepo({
+    areFriends: vi.fn().mockResolvedValue(overrides.areFriends ?? true),
+  });
+  const notificationService = buildNotificationService();
+
+  const joinEvent = createJoinGroupEvent({
+    groupEventRepo,
+    dogRepo,
+    followRepo,
+    notificationService,
+  });
+
+  return { joinEvent, groupEventRepo, notificationService };
+}
+
 describe('joinGroupEvent', () => {
   it('joins an event with accepted status when capacity available', async () => {
-    const groupEventRepo = buildGroupEventRepo({
-      findById: vi.fn().mockResolvedValue(buildGroupEvent()),
-      countParticipants: vi.fn().mockResolvedValue(3),
-      addParticipant: vi.fn().mockResolvedValue(buildParticipant()),
-      findParticipant: vi.fn().mockResolvedValue(null),
-    });
-    const dogRepo = buildDogRepo({
-      findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
-    });
-    const notificationService = buildNotificationService();
-    const joinEvent = createJoinGroupEvent({ groupEventRepo, dogRepo, notificationService });
+    const { joinEvent, groupEventRepo } = setup();
 
     const result = await joinEvent('user-2', { eventId: 'event-1', dogId: 'dog-2' });
 
@@ -47,35 +71,44 @@ describe('joinGroupEvent', () => {
     );
   });
 
-  it('joins with waitlisted status when event is full', async () => {
-    const groupEventRepo = buildGroupEventRepo({
-      findById: vi.fn().mockResolvedValue(buildGroupEvent()),
-      countParticipants: vi.fn().mockResolvedValue(10),
-      addParticipant: vi.fn().mockResolvedValue(buildParticipant({ status: 'waitlisted' })),
-      findParticipant: vi.fn().mockResolvedValue(null),
+  it('fails when event is full', async () => {
+    const { joinEvent } = setup({ count: 10 });
+
+    const result = await joinEvent('user-2', { eventId: 'event-1', dogId: 'dog-2' });
+
+    expect(isFailure(result)).toBe(true);
+    if (!isFailure(result)) return;
+    expect(result.error.code).toBe('EVENT_FULL');
+  });
+
+  it('creates pending request when requiresApproval is true', async () => {
+    const { joinEvent, groupEventRepo } = setup({
+      event: buildGroupEvent({ requiresApproval: true }),
     });
-    const dogRepo = buildDogRepo({
-      findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
-    });
-    const notificationService = buildNotificationService();
-    const joinEvent = createJoinGroupEvent({ groupEventRepo, dogRepo, notificationService });
 
     const result = await joinEvent('user-2', { eventId: 'event-1', dogId: 'dog-2' });
 
     expect(isSuccess(result)).toBe(true);
-    if (!isSuccess(result)) return;
     expect(groupEventRepo.addParticipant).toHaveBeenCalledWith(
-      expect.objectContaining({ status: 'waitlisted' }),
+      expect.objectContaining({ status: 'pending' }),
     );
   });
 
-  it('fails when event does not exist', async () => {
-    const groupEventRepo = buildGroupEventRepo({ findById: vi.fn().mockResolvedValue(null) });
-    const dogRepo = buildDogRepo({
-      findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
+  it('blocks non-friends from friends_only events', async () => {
+    const { joinEvent } = setup({
+      event: buildGroupEvent({ visibility: 'friends_only', createdBy: 'host-1' }),
+      areFriends: false,
     });
-    const notificationService = buildNotificationService();
-    const joinEvent = createJoinGroupEvent({ groupEventRepo, dogRepo, notificationService });
+
+    const result = await joinEvent('user-2', { eventId: 'event-1', dogId: 'dog-2' });
+
+    expect(isFailure(result)).toBe(true);
+    if (!isFailure(result)) return;
+    expect(result.error.code).toBe('EVENT_FRIENDS_ONLY');
+  });
+
+  it('fails when event does not exist', async () => {
+    const { joinEvent } = setup({ event: null });
 
     const result = await joinEvent('user-2', { eventId: 'event-1', dogId: 'dog-2' });
 
@@ -85,15 +118,9 @@ describe('joinGroupEvent', () => {
   });
 
   it('fails when already joined', async () => {
-    const groupEventRepo = buildGroupEventRepo({
-      findById: vi.fn().mockResolvedValue(buildGroupEvent()),
-      findParticipant: vi.fn().mockResolvedValue(buildParticipant()),
+    const { joinEvent } = setup({
+      existingParticipant: buildParticipant(),
     });
-    const dogRepo = buildDogRepo({
-      findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
-    });
-    const notificationService = buildNotificationService();
-    const joinEvent = createJoinGroupEvent({ groupEventRepo, dogRepo, notificationService });
 
     const result = await joinEvent('user-2', { eventId: 'event-1', dogId: 'dog-2' });
 
@@ -103,15 +130,9 @@ describe('joinGroupEvent', () => {
   });
 
   it('fails when event is cancelled', async () => {
-    const groupEventRepo = buildGroupEventRepo({
-      findById: vi.fn().mockResolvedValue(buildGroupEvent({ status: 'cancelled' })),
-      findParticipant: vi.fn().mockResolvedValue(null),
+    const { joinEvent } = setup({
+      event: buildGroupEvent({ status: 'cancelled' }),
     });
-    const dogRepo = buildDogRepo({
-      findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
-    });
-    const notificationService = buildNotificationService();
-    const joinEvent = createJoinGroupEvent({ groupEventRepo, dogRepo, notificationService });
 
     const result = await joinEvent('user-2', { eventId: 'event-1', dogId: 'dog-2' });
 

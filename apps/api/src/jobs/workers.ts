@@ -4,12 +4,17 @@ import {
   eventStatusDeps,
   gdprExportWorkerDeps,
   photoModerationDeps,
+  recurringEventDeps,
   storyCleanupWorkerDeps,
 } from '../container.js';
 import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createDataCleanupWorker } from './data-cleanup.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
+import {
+  createRecurringEventWorker,
+  scheduleRecurringEventGeneration,
+} from './recurring-event-generate.js';
 import { createGdprExportWorker } from './gdpr-export.js';
 import { createPhotoModerationWorker } from './photo-moderation.js';
 import {
@@ -32,12 +37,14 @@ export async function startWorkers() {
   const dataCleanupWorker = createDataCleanupWorker(dataCleanupDeps);
   const gdprExportWorker = createGdprExportWorker(gdprExportWorkerDeps);
   const storyCleanupWorker = createStoryCleanupWorker(storyCleanupWorkerDeps);
+  const recurringEventWorker = createRecurringEventWorker(recurringEventDeps);
 
   // Schedule repeatable jobs
   await scheduleEventStatusCheck();
   await scheduleAnalyticsAggregation();
   await scheduleDataCleanup();
   await scheduleStoryCleanup();
+  await scheduleRecurringEventGeneration();
 
   // Handle graceful shutdown
   const shutdown = async () => {
@@ -53,6 +60,7 @@ export async function startWorkers() {
       dataCleanupWorker.close(),
       gdprExportWorker.close(),
       storyCleanupWorker.close(),
+      recurringEventWorker.close(),
     ]);
     // Flush analytics providers after workers stop to prevent event loss on deploys
     await Promise.allSettled(analyticsProviders.map((p) => p.shutdown()));

@@ -1,10 +1,16 @@
 import {
+  approveParticipantSchema,
   cancelGroupEventSchema,
+  cancelRequestSchema,
   createGroupEventSchema,
+  createRecurringEventSchema,
+  declineParticipantSchema,
   getGroupEventSchema,
   joinGroupEventSchema,
   leaveGroupEventSchema,
   listNearbyEventsSchema,
+  listOccurrencesSchema,
+  listPendingRequestsSchema,
   updateGroupEventSchema,
 } from '@pawmeet/validation';
 import type { groupEventDeps } from '../../container.js';
@@ -23,9 +29,9 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
       trackEvent('group_event_created', ctx.userId, {
         maxParticipants: input.maxParticipants,
         distanceFromCreatorKm: 0,
-        category: 'walk',
-        visibility: input.visibility as 'public' | 'friends_only' | 'invite_only',
-        requiresApproval: false,
+        category: input.category ?? 'walk',
+        visibility: input.visibility ?? 'public',
+        requiresApproval: input.requiresApproval ?? false,
         isRecurring: false,
       });
       return result;
@@ -49,7 +55,7 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
       const result = unwrapResult(await deps.joinGroupEvent(ctx.userId, input));
       trackEvent('group_event_joined', ctx.userId, {
         participantNumber: result.participantNumber,
-        distanceKm: 0, // TODO: compute from PostGIS user/event locations
+        distanceKm: 0,
       });
       return result.participant;
     }),
@@ -74,6 +80,74 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
       .input(cancelGroupEventSchema)
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.cancelGroupEvent(ctx.userId, input.eventId)),
+      ),
+
+    // Approval flow
+    requestJoin: protectedProcedure
+      .input(joinGroupEventSchema)
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(await deps.requestJoinEvent(ctx.userId, input));
+        trackEvent('group_event_request_sent', ctx.userId, {
+          eventCategory: 'walk',
+          isHostFriend: false,
+        });
+        return result.participant;
+      }),
+
+    approveParticipant: protectedProcedure
+      .input(approveParticipantSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(
+          await deps.approveParticipant(ctx.userId, input.eventId, input.userId),
+        ),
+      ),
+
+    declineParticipant: protectedProcedure
+      .input(declineParticipantSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(
+          await deps.declineParticipant(ctx.userId, input.eventId, input.userId),
+        ),
+      ),
+
+    cancelRequest: protectedProcedure
+      .input(cancelRequestSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.cancelRequest(ctx.userId, input.eventId)),
+      ),
+
+    listPendingRequests: protectedProcedure
+      .input(listPendingRequestsSchema)
+      .query(async ({ ctx, input }) =>
+        unwrapResult(await deps.listPendingRequests(ctx.userId, input.eventId)),
+      ),
+
+    // Recurrence
+    createRecurring: protectedProcedure
+      .input(createRecurringEventSchema)
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
+          await deps.createRecurringEvent(ctx.userId, {
+            ...input,
+            scheduledAt: new Date(input.scheduledAt),
+            recurrenceEnd: input.recurrenceEnd ? new Date(input.recurrenceEnd) : undefined,
+          }),
+        );
+        trackEvent('group_event_created', ctx.userId, {
+          maxParticipants: input.maxParticipants,
+          distanceFromCreatorKm: 0,
+          category: input.category ?? 'walk',
+          visibility: input.visibility ?? 'public',
+          requiresApproval: input.requiresApproval ?? false,
+          isRecurring: true,
+        });
+        return result;
+      }),
+
+    listOccurrences: protectedProcedure
+      .input(listOccurrencesSchema)
+      .query(async ({ input }) =>
+        unwrapResult(await deps.listOccurrences(input.eventId)),
       ),
   });
 }

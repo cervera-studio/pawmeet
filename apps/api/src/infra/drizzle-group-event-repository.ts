@@ -1,11 +1,14 @@
 import { groupEventParticipants, groupEvents } from '@pawmeet/db';
 import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
-import { and, desc, eq, lte, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, lte, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import { dogProfiles } from '@pawmeet/db';
+import { users } from '@pawmeet/db';
 import type {
   CreateGroupEventInput,
   GroupEventRepository,
   NearbyEventsQuery,
+  PendingParticipant,
 } from '../ports/group-event-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
@@ -30,7 +33,12 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .select()
       .from(groupEventParticipants)
       .where(
-        and(eq(groupEventParticipants.eventId, id), ne(groupEventParticipants.status, 'declined')),
+        and(
+          eq(groupEventParticipants.eventId, id),
+          ne(groupEventParticipants.status, 'declined'),
+          ne(groupEventParticipants.status, 'removed'),
+          ne(groupEventParticipants.status, 'cancelled'),
+        ),
       );
 
     return {
@@ -41,7 +49,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
   }
 
   async findNearby(query: NearbyEventsQuery): Promise<(GroupEvent & { distanceKm: number })[]> {
-    const { latitude, longitude, radiusKm, limit = 20, excludeUserId } = query;
+    const { latitude, longitude, radiusKm, limit = 20, excludeUserId, friendUserIds } = query;
 
     const distanceExpr = sql<number>`
       6371 * acos(
@@ -52,11 +60,23 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
     `;
 
     const conditions = [
-      eq(groupEvents.visibility, 'public'),
       eq(groupEvents.status, 'scheduled'),
+      ne(groupEvents.status, 'template'),
       sql`${groupEvents.scheduledAt} > now()`,
       sql`${distanceExpr} <= ${radiusKm}`,
     ];
+
+    // Visibility filter: public OR (friends_only AND creator is a friend)
+    if (friendUserIds && friendUserIds.length > 0) {
+      conditions.push(
+        sql`(${groupEvents.visibility} = 'public' OR (${groupEvents.visibility} = 'friends_only' AND ${groupEvents.createdBy} IN (${sql.join(
+          friendUserIds.map((id) => sql`${id}`),
+          sql`, `,
+        )})))`,
+      );
+    } else {
+      conditions.push(eq(groupEvents.visibility, 'public'));
+    }
 
     if (excludeUserId) {
       conditions.push(ne(groupEvents.createdBy, excludeUserId));
@@ -76,6 +96,12 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
         maxParticipants: groupEvents.maxParticipants,
         visibility: groupEvents.visibility,
         status: groupEvents.status,
+        recurrenceRule: groupEvents.recurrenceRule,
+        recurrenceEnd: groupEvents.recurrenceEnd,
+        parentEventId: groupEvents.parentEventId,
+        category: groupEvents.category,
+        requiresApproval: groupEvents.requiresApproval,
+        coverImageUrl: groupEvents.coverImageUrl,
         createdAt: groupEvents.createdAt,
         updatedAt: groupEvents.updatedAt,
         distanceKm: distanceExpr,
@@ -151,13 +177,51 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
     return rowsAs<GroupEvent>(rows);
   }
 
+  // Recurrence
+
+  async findTemplates(): Promise<GroupEvent[]> {
+    const rows = await this.db
+      .select()
+      .from(groupEvents)
+      .where(
+        and(
+          isNotNull(groupEvents.recurrenceRule),
+          eq(groupEvents.status, 'template'),
+        ),
+      );
+    return rowsAs<GroupEvent>(rows);
+  }
+
+  async findOccurrences(parentEventId: string): Promise<GroupEvent[]> {
+    const rows = await this.db
+      .select()
+      .from(groupEvents)
+      .where(eq(groupEvents.parentEventId, parentEventId))
+      .orderBy(groupEvents.scheduledAt);
+    return rowsAs<GroupEvent>(rows);
+  }
+
+  async countActiveTemplates(userId: string): Promise<number> {
+    const rows = await this.db
+      .select({ id: groupEvents.id })
+      .from(groupEvents)
+      .where(
+        and(
+          eq(groupEvents.createdBy, userId),
+          eq(groupEvents.status, 'template'),
+          isNotNull(groupEvents.recurrenceRule),
+        ),
+      );
+    return rows.length;
+  }
+
   // Participants
 
   async addParticipant(input: {
     eventId: string;
     userId: string;
     dogId: string;
-    status: 'accepted' | 'waitlisted';
+    status: 'pending' | 'accepted';
     isOrganizer?: boolean;
   }): Promise<GroupEventParticipant> {
     const rows = await this.db
@@ -194,7 +258,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
   async updateParticipantStatus(
     eventId: string,
     userId: string,
-    status: 'accepted' | 'waitlisted' | 'declined',
+    status: 'pending' | 'accepted' | 'declined' | 'removed' | 'cancelled',
   ): Promise<void> {
     await this.db
       .update(groupEventParticipants)
@@ -217,15 +281,42 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
     return rows.length;
   }
 
+  async findPendingParticipants(eventId: string): Promise<PendingParticipant[]> {
+    const rows = await this.db
+      .select({
+        participant: groupEventParticipants,
+        displayName: users.displayName,
+        avatarUrl: users.avatarUrl,
+        dogName: dogProfiles.name,
+      })
+      .from(groupEventParticipants)
+      .innerJoin(users, eq(groupEventParticipants.userId, users.id))
+      .innerJoin(dogProfiles, eq(groupEventParticipants.dogId, dogProfiles.id))
+      .where(
+        and(
+          eq(groupEventParticipants.eventId, eventId),
+          eq(groupEventParticipants.status, 'pending'),
+        ),
+      )
+      .orderBy(groupEventParticipants.joinedAt);
+
+    return rows.map((r) => ({
+      participant: r.participant as unknown as GroupEventParticipant,
+      displayName: r.displayName,
+      avatarUrl: r.avatarUrl,
+      dogName: r.dogName,
+    }));
+  }
+
   async promoteFromWaitlist(eventId: string): Promise<GroupEventParticipant | null> {
-    // Find the earliest waitlisted participant
+    // Find the earliest waitlisted participant (kept for backward compat, though waitlisted is removed)
     const [waitlisted] = await this.db
       .select()
       .from(groupEventParticipants)
       .where(
         and(
           eq(groupEventParticipants.eventId, eventId),
-          eq(groupEventParticipants.status, 'waitlisted'),
+          eq(groupEventParticipants.status, 'pending'),
         ),
       )
       .orderBy(groupEventParticipants.joinedAt)

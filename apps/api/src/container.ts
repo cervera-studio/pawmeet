@@ -44,7 +44,9 @@ import { createAwardXp } from './use-cases/award-xp.js';
 // Use cases — follows
 import { createBlockUser } from './use-cases/block-user.js';
 // Use cases — group events
+import { createApproveParticipant } from './use-cases/approve-participant.js';
 import { createCancelGroupEvent } from './use-cases/cancel-group-event.js';
+import { createCancelRequest } from './use-cases/cancel-request.js';
 // Use cases — walks
 import { createCancelWalk } from './use-cases/cancel-walk.js';
 // Use cases — badges
@@ -59,6 +61,7 @@ import { createConfirmStory } from './use-cases/confirm-story.js';
 import { createCreateComment } from './use-cases/create-comment.js';
 import { createCreateDog } from './use-cases/create-dog.js';
 import { createCreateGroupEvent } from './use-cases/create-group-event.js';
+import { createCreateRecurringEvent } from './use-cases/create-recurring-event.js';
 import { createCreatePost } from './use-cases/create-post.js';
 import { createCreateStory } from './use-cases/create-story.js';
 import { createCreateWalkAlbum } from './use-cases/create-walk-album.js';
@@ -103,6 +106,7 @@ import { createGetUserTracks } from './use-cases/get-user-tracks.js';
 import { createGetWalkAlbum } from './use-cases/get-walk-album.js';
 import { createGetWalkTrack } from './use-cases/get-walk-track.js';
 import { createGetXpSummary } from './use-cases/get-xp-summary.js';
+import { createDeclineParticipant } from './use-cases/decline-participant.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
 import { createLearnUserPreferences } from './use-cases/learn-user-preferences.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
@@ -119,9 +123,12 @@ import { createListFriends } from './use-cases/list-friends.js';
 import { createListGroupConversations } from './use-cases/list-group-conversations.js';
 import { createListMatches } from './use-cases/list-matches.js';
 import { createListNearbyEvents } from './use-cases/list-nearby-events.js';
+import { createListOccurrences } from './use-cases/list-occurrences.js';
+import { createListPendingRequests } from './use-cases/list-pending-requests.js';
 import { createListUpcomingWalks } from './use-cases/list-upcoming-walks.js';
 import { createListUserDogs } from './use-cases/list-user-dogs.js';
 import { createListUserEvents } from './use-cases/list-user-events.js';
+import { createRequestJoinEvent } from './use-cases/request-join-event.js';
 import { createListWalkFeedback } from './use-cases/list-walk-feedback.js';
 import { createListWalksByMatch } from './use-cases/list-walks-by-match.js';
 import { createLogSwipeScores } from './use-cases/log-swipe-scores.js';
@@ -360,12 +367,29 @@ export const groupChatDeps = {
 export const groupEventDeps = {
   createGroupEvent: createCreateGroupEvent({ groupEventRepo, dogRepo }),
   getGroupEvent: createGetGroupEvent({ groupEventRepo }),
-  listNearbyEvents: createListNearbyEvents({ groupEventRepo }),
+  listNearbyEvents: createListNearbyEvents({ groupEventRepo, followRepo }),
   listUserEvents: createListUserEvents({ groupEventRepo }),
-  joinGroupEvent: createJoinGroupEvent({ groupEventRepo, dogRepo, notificationService }),
+  joinGroupEvent: createJoinGroupEvent({
+    groupEventRepo,
+    dogRepo,
+    followRepo,
+    notificationService,
+  }),
   leaveGroupEvent: createLeaveGroupEvent({ groupEventRepo, notificationService }),
   updateGroupEvent: createUpdateGroupEvent({ groupEventRepo }),
   cancelGroupEvent: createCancelGroupEvent({ groupEventRepo, notificationService }),
+  requestJoinEvent: createRequestJoinEvent({
+    groupEventRepo,
+    dogRepo,
+    followRepo,
+    notificationService,
+  }),
+  approveParticipant: createApproveParticipant({ groupEventRepo, notificationService }),
+  declineParticipant: createDeclineParticipant({ groupEventRepo, notificationService }),
+  cancelRequest: createCancelRequest({ groupEventRepo }),
+  listPendingRequests: createListPendingRequests({ groupEventRepo }),
+  createRecurringEvent: createCreateRecurringEvent({ groupEventRepo, dogRepo }),
+  listOccurrences: createListOccurrences({ groupEventRepo }),
 };
 
 // ── Gamification deps ────────────────────────────────────────────────────────
@@ -482,6 +506,12 @@ export const gdprExportWorkerDeps = {
 export const eventStatusDeps = {
   groupEventRepo,
   notificationService,
+};
+
+// ── Recurring event deps ─────────────────────────────────────────────────────
+
+export const recurringEventDeps = {
+  groupEventRepo,
 };
 
 // ── Photo moderation deps ─────────────────────────────────────────────────────

@@ -55,14 +55,14 @@ describe('createGroupEvent', () => {
     expect(result.error.code).toBe('EVENT_INVALID_DATE');
   });
 
-  it('fails when maxParticipants is less than 3', async () => {
+  it('fails when maxParticipants is less than 2', async () => {
     const groupEventRepo = buildGroupEventRepo();
     const dogRepo = buildDogRepo({
       findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
     });
     const createEvent = createCreateGroupEvent({ groupEventRepo, dogRepo });
 
-    const result = await createEvent('user-1', { ...validInput, maxParticipants: 2 });
+    const result = await createEvent('user-1', { ...validInput, maxParticipants: 1 });
 
     expect(isFailure(result)).toBe(true);
     if (!isFailure(result)) return;

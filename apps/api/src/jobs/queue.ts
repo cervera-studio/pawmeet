@@ -25,6 +25,7 @@ export const QUEUE_NAMES = {
   ANALYTICS_AGGREGATION: 'analytics-aggregation',
   ANALYTICS_DLQ: 'analytics-dlq',
   GDPR_EXPORT: 'gdpr-export',
+  RECURRING_EVENT: 'recurring-event',
 } as const;
 
 // --- Lazy queue instances ---

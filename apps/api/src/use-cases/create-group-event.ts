@@ -15,8 +15,11 @@ type CreateGroupEventInput = {
   latitude: number;
   longitude: number;
   maxParticipants: number;
-  visibility: 'public' | 'private';
+  visibility: 'public' | 'friends_only' | 'invite_only';
+  category?: 'walk' | 'meetup' | 'training';
+  requiresApproval?: boolean;
   dogId: string;
+  coverImageUrl?: string | null;
 };
 
 export function createCreateGroupEvent({ groupEventRepo, dogRepo }: Deps) {
@@ -25,11 +28,11 @@ export function createCreateGroupEvent({ groupEventRepo, dogRepo }: Deps) {
       return fail(new AppError('EVENT_INVALID_DATE', 'La data deve essere nel futuro', 400));
     }
 
-    if (input.maxParticipants < 3) {
+    if (input.maxParticipants < 2) {
       return fail(
         new AppError(
           'EVENT_MIN_PARTICIPANTS',
-          'Minimo 3 partecipanti per un evento di gruppo',
+          'Minimo 2 partecipanti per un evento di gruppo',
           400,
         ),
       );
@@ -52,6 +55,9 @@ export function createCreateGroupEvent({ groupEventRepo, dogRepo }: Deps) {
       longitude: input.longitude,
       maxParticipants: input.maxParticipants,
       visibility: input.visibility,
+      category: input.category ?? 'walk',
+      requiresApproval: input.requiresApproval ?? false,
+      coverImageUrl: input.coverImageUrl ?? null,
     });
 
     // Add the creator as organizer participant

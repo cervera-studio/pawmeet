@@ -16,7 +16,10 @@ export interface CreateGroupEventInput {
   description?: string;
   durationMin?: number;
   maxParticipants?: number;
-  visibility?: 'public' | 'private';
+  visibility?: 'public' | 'friends_only' | 'invite_only';
+  category?: 'walk' | 'meetup' | 'training';
+  requiresApproval?: boolean;
+  coverImageUrl?: string;
 }
 
 export interface GroupEventRepository {

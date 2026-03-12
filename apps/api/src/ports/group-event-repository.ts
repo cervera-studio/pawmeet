@@ -1,4 +1,8 @@
-import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
+import type {
+  GroupEvent,
+  GroupEventParticipant,
+  GroupEventWithParticipants,
+} from '@pawmeet/types';
 
 export interface CreateGroupEventInput {
   createdBy: string;
@@ -10,7 +14,14 @@ export interface CreateGroupEventInput {
   latitude: number;
   longitude: number;
   maxParticipants: number;
-  visibility: 'public' | 'private';
+  visibility: 'public' | 'friends_only' | 'invite_only';
+  category?: 'walk' | 'meetup' | 'training';
+  requiresApproval?: boolean;
+  recurrenceRule?: string | null;
+  recurrenceEnd?: Date | null;
+  parentEventId?: string | null;
+  coverImageUrl?: string | null;
+  status?: string;
 }
 
 export interface NearbyEventsQuery {
@@ -19,6 +30,14 @@ export interface NearbyEventsQuery {
   radiusKm: number;
   limit?: number;
   excludeUserId?: string;
+  friendUserIds?: string[];
+}
+
+export interface PendingParticipant {
+  participant: GroupEventParticipant;
+  displayName: string;
+  avatarUrl: string | null;
+  dogName: string;
 }
 
 export interface GroupEventRepository {
@@ -33,12 +52,17 @@ export interface GroupEventRepository {
   findScheduledPastStart(): Promise<GroupEvent[]>;
   findInProgressPastEnd(): Promise<GroupEvent[]>;
 
+  // Recurrence
+  findTemplates(): Promise<GroupEvent[]>;
+  findOccurrences(parentEventId: string): Promise<GroupEvent[]>;
+  countActiveTemplates(userId: string): Promise<number>;
+
   // Participants
   addParticipant(input: {
     eventId: string;
     userId: string;
     dogId: string;
-    status: 'accepted' | 'waitlisted';
+    status: 'pending' | 'accepted';
     isOrganizer?: boolean;
   }): Promise<GroupEventParticipant>;
   findParticipant(eventId: string, userId: string): Promise<GroupEventParticipant | null>;
@@ -46,8 +70,9 @@ export interface GroupEventRepository {
   updateParticipantStatus(
     eventId: string,
     userId: string,
-    status: 'accepted' | 'waitlisted' | 'declined',
+    status: 'pending' | 'accepted' | 'declined' | 'removed' | 'cancelled',
   ): Promise<void>;
   countParticipants(eventId: string): Promise<number>;
+  findPendingParticipants(eventId: string): Promise<PendingParticipant[]>;
   promoteFromWaitlist(eventId: string): Promise<GroupEventParticipant | null>;
 }

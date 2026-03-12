@@ -2,16 +2,18 @@ import {
   AppError,
   fail,
   GROUP_EVENT_STATUS,
+  GROUP_EVENT_VISIBILITY,
   type GroupEventParticipant,
   type Result,
   succeed,
 } from '@pawmeet/types';
-import type { DogRepository, GroupEventRepository } from '../ports/index.js';
+import type { DogRepository, FollowRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
 type Deps = {
   groupEventRepo: GroupEventRepository;
   dogRepo: DogRepository;
+  followRepo: FollowRepository;
   notificationService: NotificationService;
 };
 
@@ -20,7 +22,12 @@ type JoinGroupEventInput = {
   dogId: string;
 };
 
-export function createJoinGroupEvent({ groupEventRepo, dogRepo, notificationService }: Deps) {
+export function createJoinGroupEvent({
+  groupEventRepo,
+  dogRepo,
+  followRepo,
+  notificationService,
+}: Deps) {
   return async (
     userId: string,
     input: JoinGroupEventInput,
@@ -40,6 +47,20 @@ export function createJoinGroupEvent({ groupEventRepo, dogRepo, notificationServ
       return fail(new AppError('EVENT_PAST', 'Evento già passato', 400));
     }
 
+    // Friends-only visibility check
+    if (event.visibility === GROUP_EVENT_VISIBILITY.FRIENDS_ONLY) {
+      const isFriend = await followRepo.areFriends(userId, event.createdBy);
+      if (!isFriend) {
+        return fail(
+          new AppError(
+            'EVENT_FRIENDS_ONLY',
+            'Questo evento è riservato agli amici dell\'organizzatore',
+            403,
+          ),
+        );
+      }
+    }
+
     // Verify the dog belongs to the user
     const dog = await dogRepo.findByIdAndOwner(input.dogId, userId);
     if (!dog) {
@@ -48,13 +69,17 @@ export function createJoinGroupEvent({ groupEventRepo, dogRepo, notificationServ
 
     // Check if already participating
     const existing = await groupEventRepo.findParticipant(input.eventId, userId);
-    if (existing && existing.status !== 'declined') {
+    if (existing && existing.status !== 'declined' && existing.status !== 'cancelled') {
       return fail(new AppError('ALREADY_JOINED', 'Sei già iscritto a questo evento', 409));
     }
 
-    // Determine status based on capacity
+    // Determine status based on capacity and approval setting
     const count = await groupEventRepo.countParticipants(input.eventId);
-    const status = count >= event.maxParticipants ? 'waitlisted' : 'accepted';
+    if (count >= event.maxParticipants) {
+      return fail(new AppError('EVENT_FULL', 'Evento al completo', 400));
+    }
+
+    const status = event.requiresApproval ? 'pending' : 'accepted';
 
     const participant = await groupEventRepo.addParticipant({
       eventId: input.eventId,
@@ -64,17 +89,23 @@ export function createJoinGroupEvent({ groupEventRepo, dogRepo, notificationServ
     });
 
     // Notify the organizer
+    const notifTitle = status === 'accepted' ? 'Nuovo partecipante' : 'Nuova richiesta';
+    const notifBody =
+      status === 'accepted'
+        ? `Un utente si è unito al tuo evento "${event.title}"`
+        : `Un utente ha richiesto di partecipare al tuo evento "${event.title}"`;
+
     notificationService
       .send({
         userId: event.createdBy,
-        title: status === 'accepted' ? 'Nuovo partecipante' : "Nuova lista d'attesa",
-        body: `Un utente si è ${status === 'accepted' ? 'unito al' : "messo in lista d'attesa per il"} tuo evento "${event.title}"`,
+        title: notifTitle,
+        body: notifBody,
+        data: { eventId: event.id, type: 'event_join' },
       })
       .catch((err) => {
         console.error('[join-group-event] Failed to send notification:', err);
       });
 
-    // participantNumber = count + 1 (the newly added participant)
     return succeed({ participant, participantNumber: count + 1 });
   };
 }

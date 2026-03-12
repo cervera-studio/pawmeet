@@ -4,8 +4,8 @@ import { Providers } from './providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'DogWalk Admin',
-  description: 'Pannello di amministrazione DogWalk',
+  title: 'PawMeet Admin',
+  description: 'Pannello di amministrazione PawMeet',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

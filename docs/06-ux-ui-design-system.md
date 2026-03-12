@@ -1,4 +1,4 @@
-# DogWalk - UX/UI Design System
+# PawMeet - UX/UI Design System
 
 > **Versione:** 1.0
 > **Data:** 9 marzo 2026
@@ -23,11 +23,11 @@
 
 ## 1. Design Principles
 
-Sei principi guida che informano ogni decisione di design in DogWalk. Devono essere applicati in ordine di priorita in caso di conflitto.
+Sei principi guida che informano ogni decisione di design in PawMeet. Devono essere applicati in ordine di priorita in caso di conflitto.
 
 ### 1.1 Fiducia prima di tutto (Trust First)
 
-Ogni interazione deve trasmettere sicurezza e affidabilita. L'utente affida a DogWalk la sicurezza del proprio cane e di se stesso. Questo si traduce in: informazioni chiare prima del match, identita verificabili, comunicazione trasparente sugli algoritmi, e un sistema di segnalazione sempre accessibile.
+Ogni interazione deve trasmettere sicurezza e affidabilita. L'utente affida a PawMeet la sicurezza del proprio cane e di se stesso. Questo si traduce in: informazioni chiare prima del match, identita verificabili, comunicazione trasparente sugli algoritmi, e un sistema di segnalazione sempre accessibile.
 
 *Applicazione pratica:* Il punteggio di compatibilita e sempre visibile. I badge di verifica sono prominenti. Il pulsante "Segnala" non e mai a piu di 2 tap di distanza.
 
@@ -178,7 +178,7 @@ TEMPO:         Giorno 0       Giorno 0           Giorno 0         Giorno 0-1    
 ### 3.1 Sitemap dell'App
 
 ```
-DogWalk App
+PawMeet App
 |
 +-- Splash Screen
 |
@@ -348,7 +348,7 @@ Il verde bosco richiama la natura, le passeggiate all'aperto e la compatibilita/
 | **Warning** | `#FF9500` | `#FFD60A` | Attenzione, profilo incompleto, compatibilita bassa |
 | **Info** | `#007AFF` | `#0A84FF` | Informazioni, tooltip, link, messaggi di sistema |
 
-#### Colori Specifici DogWalk
+#### Colori Specifici PawMeet
 
 | Nome | Hex | Utilizzo |
 |------|-----|----------|
@@ -651,7 +651,7 @@ Dimensioni badge:
 
 #### 4.6.6 SwipeCard (Componente Principale)
 
-Il componente di swipe e il cuore dell'esperienza DogWalk. Implementazione consigliata: `react-native-gesture-handler` + `react-native-reanimated`.
+Il componente di swipe e il cuore dell'esperienza PawMeet. Implementazione consigliata: `react-native-gesture-handler` + `react-native-reanimated`.
 
 ```
 Struttura dello stack di card:
@@ -942,7 +942,7 @@ Lista completa di tutte le schermate dell'MVP con descrizione, componenti chiave
 
 | # | Schermata | Descrizione | Componenti Chiave | Note |
 |---|-----------|-------------|-------------------|------|
-| O-01 | **Splash Screen** | Logo DogWalk centrato, sfondo `Primary`. Mostrato durante il caricamento iniziale dell'app | Logo, sfondo colore | Durata max 2s. Animazione fade-out |
+| O-01 | **Splash Screen** | Logo PawMeet centrato, sfondo `Primary`. Mostrato durante il caricamento iniziale dell'app | Logo, sfondo colore | Durata max 2s. Animazione fade-out |
 | O-02 | **Welcome Slide 1** | "Trova il compagno perfetto per il tuo cane" + illustrazione cani che passeggiano | Illustrazione, titolo, descrizione, page indicator, bottone "Avanti" | Pager orizzontale con 3 slide |
 | O-03 | **Welcome Slide 2** | "Matching intelligente" + illustrazione algoritmo/compatibilita | Come O-02 | Swipe o tap "Avanti" |
 | O-04 | **Welcome Slide 3** | "Chat sicura per organizzare passeggiate" + illustrazione chat | Come O-02 + bottone "Inizia" e link "Hai gia un account?" | Ultima slide, CTA prominente |
@@ -990,7 +990,7 @@ Lista completa di tutte le schermate dell'MVP con descrizione, componenti chiave
 | X-03 | **Segnala Messaggio** | Segnalazione di un messaggio specifico | Come X-02 ma con preview del messaggio segnalato e categorie chat (molestia, spam, contenuto esplicito, minaccia, altro) | Long press sul messaggio per attivare |
 | X-04 | **Blocca Utente** | Conferma blocco | Modal centrato: "Vuoi bloccare [Nome]?", spiegazione conseguenze, bottone "Blocca" (distruttivo), bottone "Annulla" | Azione immediata, reversibile da impostazioni |
 | X-05 | **Conferma Unmatch** | Conferma annullamento match | Modal centrato: "Vuoi annullare il match con [NomeCane]?", spiegazione (chat sara eliminata), bottone "Annulla match" (distruttivo), bottone "Torna alla chat" | Azione irreversibile |
-| X-06 | **Aggiornamento Richiesto** | Force update quando la versione e troppo vecchia | Modal non dismissabile: icona aggiornamento, testo "Aggiorna DogWalk", descrizione, bottone "Aggiorna" (link allo store) | Bloccante. Solo per breaking changes API |
+| X-06 | **Aggiornamento Richiesto** | Force update quando la versione e troppo vecchia | Modal non dismissabile: icona aggiornamento, testo "Aggiorna PawMeet", descrizione, bottone "Aggiorna" (link allo store) | Bloccante. Solo per breaking changes API |
 | X-07 | **Errore di Rete** | Overlay quando non c'e connessione | Banner top: icona wifi-off, "Nessuna connessione", bottone "Riprova" | Non bloccante, sovrapposto al contenuto cached |
 | X-08 | **Permessi Mancanti** | Schermata quando un permesso necessario e stato negato | Illustrazione, spiegazione, bottone "Apri Impostazioni" (link alle impostazioni di sistema) | Per geolocalizzazione negata nel tab Discovery |
 
@@ -1132,7 +1132,7 @@ Per le particelle, usare `react-native-reanimated` con `createAnimatedComponent`
 
 ### 7.1 Conformita WCAG 2.1 AA
 
-DogWalk deve essere conforme al livello AA delle Web Content Accessibility Guidelines 2.1 adattate al contesto mobile.
+PawMeet deve essere conforme al livello AA delle Web Content Accessibility Guidelines 2.1 adattate al contesto mobile.
 
 #### Contrasto Colori
 
@@ -1291,7 +1291,7 @@ export const palette = {
   info: '#007AFF',
   infoDark: '#0A84FF',
 
-  // DogWalk specifici
+  // PawMeet specifici
   premiumGold: '#FFD700',
   compatibilityHigh: '#34C759',
   compatibilityMedium: '#FF9500',
@@ -1840,11 +1840,11 @@ export function Button({
 
 ---
 
-> **Documento preparato da:** UX/UI Design & Service Design Team - DogWalk
+> **Documento preparato da:** UX/UI Design & Service Design Team - PawMeet
 > **Prossima revisione:** Aprile 2026 (dopo primo round di user testing su prototipo)
 > **Distribuzione:** Team di sviluppo frontend, Product Owner, QA
 
-# DogWalk - UX/UI Design System
+# PawMeet - UX/UI Design System
 
 > **Versione:** 1.0
 > **Data:** 9 marzo 2026
@@ -1869,11 +1869,11 @@ export function Button({
 
 ## 1. Design Principles
 
-Sei principi guida che informano ogni decisione di design in DogWalk. Devono essere applicati in ordine di priorita in caso di conflitto.
+Sei principi guida che informano ogni decisione di design in PawMeet. Devono essere applicati in ordine di priorita in caso di conflitto.
 
 ### 1.1 Fiducia prima di tutto (Trust First)
 
-Ogni interazione deve trasmettere sicurezza e affidabilita. L'utente affida a DogWalk la sicurezza del proprio cane e di se stesso. Questo si traduce in: informazioni chiare prima del match, identita verificabili, comunicazione trasparente sugli algoritmi, e un sistema di segnalazione sempre accessibile.
+Ogni interazione deve trasmettere sicurezza e affidabilita. L'utente affida a PawMeet la sicurezza del proprio cane e di se stesso. Questo si traduce in: informazioni chiare prima del match, identita verificabili, comunicazione trasparente sugli algoritmi, e un sistema di segnalazione sempre accessibile.
 
 *Applicazione pratica:* Il punteggio di compatibilita e sempre visibile. I badge di verifica sono prominenti. Il pulsante "Segnala" non e mai a piu di 2 tap di distanza.
 
@@ -2024,7 +2024,7 @@ TEMPO:         Giorno 0       Giorno 0           Giorno 0         Giorno 0-1    
 ### 3.1 Sitemap dell'App
 
 ```
-DogWalk App
+PawMeet App
 |
 +-- Splash Screen
 |
@@ -2194,7 +2194,7 @@ Il verde bosco richiama la natura, le passeggiate all'aperto e la compatibilita/
 | **Warning** | `#FF9500` | `#FFD60A` | Attenzione, profilo incompleto, compatibilita bassa |
 | **Info** | `#007AFF` | `#0A84FF` | Informazioni, tooltip, link, messaggi di sistema |
 
-#### Colori Specifici DogWalk
+#### Colori Specifici PawMeet
 
 | Nome | Hex | Utilizzo |
 |------|-----|----------|
@@ -2497,7 +2497,7 @@ Dimensioni badge:
 
 #### 4.6.6 SwipeCard (Componente Principale)
 
-Il componente di swipe e il cuore dell'esperienza DogWalk. Implementazione consigliata: `react-native-gesture-handler` + `react-native-reanimated`.
+Il componente di swipe e il cuore dell'esperienza PawMeet. Implementazione consigliata: `react-native-gesture-handler` + `react-native-reanimated`.
 
 ```
 Struttura dello stack di card:
@@ -2788,7 +2788,7 @@ Lista completa di tutte le schermate dell'MVP con descrizione, componenti chiave
 
 | # | Schermata | Descrizione | Componenti Chiave | Note |
 |---|-----------|-------------|-------------------|------|
-| O-01 | **Splash Screen** | Logo DogWalk centrato, sfondo `Primary`. Mostrato durante il caricamento iniziale dell'app | Logo, sfondo colore | Durata max 2s. Animazione fade-out |
+| O-01 | **Splash Screen** | Logo PawMeet centrato, sfondo `Primary`. Mostrato durante il caricamento iniziale dell'app | Logo, sfondo colore | Durata max 2s. Animazione fade-out |
 | O-02 | **Welcome Slide 1** | "Trova il compagno perfetto per il tuo cane" + illustrazione cani che passeggiano | Illustrazione, titolo, descrizione, page indicator, bottone "Avanti" | Pager orizzontale con 3 slide |
 | O-03 | **Welcome Slide 2** | "Matching intelligente" + illustrazione algoritmo/compatibilita | Come O-02 | Swipe o tap "Avanti" |
 | O-04 | **Welcome Slide 3** | "Chat sicura per organizzare passeggiate" + illustrazione chat | Come O-02 + bottone "Inizia" e link "Hai gia un account?" | Ultima slide, CTA prominente |
@@ -2836,7 +2836,7 @@ Lista completa di tutte le schermate dell'MVP con descrizione, componenti chiave
 | X-03 | **Segnala Messaggio** | Segnalazione di un messaggio specifico | Come X-02 ma con preview del messaggio segnalato e categorie chat (molestia, spam, contenuto esplicito, minaccia, altro) | Long press sul messaggio per attivare |
 | X-04 | **Blocca Utente** | Conferma blocco | Modal centrato: "Vuoi bloccare [Nome]?", spiegazione conseguenze, bottone "Blocca" (distruttivo), bottone "Annulla" | Azione immediata, reversibile da impostazioni |
 | X-05 | **Conferma Unmatch** | Conferma annullamento match | Modal centrato: "Vuoi annullare il match con [NomeCane]?", spiegazione (chat sara eliminata), bottone "Annulla match" (distruttivo), bottone "Torna alla chat" | Azione irreversibile |
-| X-06 | **Aggiornamento Richiesto** | Force update quando la versione e troppo vecchia | Modal non dismissabile: icona aggiornamento, testo "Aggiorna DogWalk", descrizione, bottone "Aggiorna" (link allo store) | Bloccante. Solo per breaking changes API |
+| X-06 | **Aggiornamento Richiesto** | Force update quando la versione e troppo vecchia | Modal non dismissabile: icona aggiornamento, testo "Aggiorna PawMeet", descrizione, bottone "Aggiorna" (link allo store) | Bloccante. Solo per breaking changes API |
 | X-07 | **Errore di Rete** | Overlay quando non c'e connessione | Banner top: icona wifi-off, "Nessuna connessione", bottone "Riprova" | Non bloccante, sovrapposto al contenuto cached |
 | X-08 | **Permessi Mancanti** | Schermata quando un permesso necessario e stato negato | Illustrazione, spiegazione, bottone "Apri Impostazioni" (link alle impostazioni di sistema) | Per geolocalizzazione negata nel tab Discovery |
 
@@ -2978,7 +2978,7 @@ Per le particelle, usare `react-native-reanimated` con `createAnimatedComponent`
 
 ### 7.1 Conformita WCAG 2.1 AA
 
-DogWalk deve essere conforme al livello AA delle Web Content Accessibility Guidelines 2.1 adattate al contesto mobile.
+PawMeet deve essere conforme al livello AA delle Web Content Accessibility Guidelines 2.1 adattate al contesto mobile.
 
 #### Contrasto Colori
 
@@ -3137,7 +3137,7 @@ export const palette = {
   info: '#007AFF',
   infoDark: '#0A84FF',
 
-  // DogWalk specifici
+  // PawMeet specifici
   premiumGold: '#FFD700',
   compatibilityHigh: '#34C759',
   compatibilityMedium: '#FF9500',
@@ -3686,7 +3686,7 @@ export function Button({
 
 ---
 
-> **Documento preparato da:** UX/UI Design & Service Design Team - DogWalk
+> **Documento preparato da:** UX/UI Design & Service Design Team - PawMeet
 > **Prossima revisione:** Aprile 2026 (dopo primo round di user testing su prototipo)
 > **Distribuzione:** Team di sviluppo frontend, Product Owner, QA
 

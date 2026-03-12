@@ -117,7 +117,7 @@ describe('exportUserData', () => {
           grantedAt: NOW,
           withdrawnAt: null,
           ipAddress: '192.168.1.1',
-          userAgent: 'DogWalk/1.0',
+          userAgent: 'PawMeet/1.0',
           source: 'mobile_onboarding',
         },
       ]),

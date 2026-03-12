@@ -581,8 +581,8 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     getSettings: adminProcedure.query(async () => {
       // MVP: return defaults. Real persistence via key-value table or Redis later.
       return {
-        appName: 'DogWalk',
-        supportEmail: 'support@dogwalk.app',
+        appName: 'PawMeet',
+        supportEmail: 'support@pawmeet.io',
         photoConfidenceThreshold: 95,
         maxReportsBeforeSuspension: 5,
       };
@@ -592,8 +592,8 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       // MVP: accept the input and return it. No persistence yet.
       // In production, store in a settings table or Redis.
       return {
-        appName: input.appName ?? 'DogWalk',
-        supportEmail: input.supportEmail ?? 'support@dogwalk.app',
+        appName: input.appName ?? 'PawMeet',
+        supportEmail: input.supportEmail ?? 'support@pawmeet.io',
         photoConfidenceThreshold: input.photoConfidenceThreshold ?? 95,
         maxReportsBeforeSuspension: input.maxReportsBeforeSuspension ?? 5,
       };

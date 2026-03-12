@@ -6,7 +6,7 @@ import type { NotificationService } from '../ports/notification-service.js';
 import type { PhotoModerationJobData } from './queue.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
-const R2_BUCKET = process.env.R2_BUCKET || 'dogwalk';
+const R2_BUCKET = process.env.R2_BUCKET || 'pawmeet';
 
 /**
  * Verify that the photo exists in R2 and meets basic requirements.

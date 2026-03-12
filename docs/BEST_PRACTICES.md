@@ -1,4 +1,4 @@
-# DogWalk — Best Practices & Architecture Guide
+# PawMeet — Best Practices & Architecture Guide
 
 > Reference document for all developers. Describes the target architecture, current gaps, and concrete patterns to follow.
 

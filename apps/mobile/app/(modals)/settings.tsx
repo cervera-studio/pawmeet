@@ -7,7 +7,7 @@ import { syncSingleConsentToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';
 import { useSettingsViewModel } from './settings.view-model';
 
-const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'https://dogwalk.app';
+const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'https://pawmeet.io';
 
 export default function SettingsModal() {
   const vm = useSettingsViewModel();

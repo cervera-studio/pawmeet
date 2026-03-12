@@ -12,9 +12,9 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-neutral-200 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500 text-white font-bold text-sm">
-          DW
+          PM
         </div>
-        <span className="text-lg font-semibold text-neutral-900">DogWalk Admin</span>
+        <span className="text-lg font-semibold text-neutral-900">PawMeet Admin</span>
       </div>
 
       {/* Navigation */}

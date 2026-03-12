@@ -20,7 +20,7 @@ export default function AgeGateScreen() {
         >
           <Text className="mb-2 text-4xl font-bold text-gray-900">Verifica età</Text>
           <Text className="mb-8 text-lg text-gray-500">
-            Per continuare a usare DogWalk, inserisci la tua data di nascita. Devi avere almeno{' '}
+            Per continuare a usare PawMeet, inserisci la tua data di nascita. Devi avere almeno{' '}
             {MIN_USER_AGE} anni (D.Lgs. 101/2018).
           </Text>
 

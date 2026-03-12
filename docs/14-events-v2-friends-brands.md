@@ -29,7 +29,7 @@ This document specifies four interconnected features requested by the team (Benn
 
 1. **Friend System** — Users can follow each other and build a social graph
 2. **Events v2** — Recurring events, friends-only visibility, request-to-join with host approval
-3. **Main Events** — Official/sponsored events hosted by verified organizers (DogWalk team, associations, educators)
+3. **Main Events** — Official/sponsored events hosted by verified organizers (PawMeet team, associations, educators)
 4. **Brand Partnerships** — Co-branded events with pet industry partners (Royal Canin, Purina, Monge, etc.)
 
 ### User Workflows (from team brainstorming)
@@ -50,7 +50,7 @@ Workflow 3: Discovery (existing + friends)
   Mappa → Profili vicino → Profilo cane → Invito passeggiata / Segui
 
 Workflow 4: Main Events (new)
-  Team DogWalk / Associazione / Brand crea evento ufficiale
+  Team PawMeet / Associazione / Brand crea evento ufficiale
   → Featured nella home + sezione dedicata
   → Partecipazione aperta (no approval) o con limite posti
   → Possibile co-branding con partner
@@ -201,7 +201,7 @@ Add `category` field to `groupEvents`:
 | `walk` | Standard group walk |
 | `meetup` | Social meetup (park, café) |
 | `training` | Training session with educator |
-| `official` | Official DogWalk event |
+| `official` | Official PawMeet event |
 | `sponsored` | Brand-sponsored event |
 
 ### 4.4 Request-to-Join & Host Approval
@@ -257,7 +257,7 @@ Main Events are **official, high-profile events** that serve to:
 - Enable brand collaborations
 
 **Hosts:**
-- DogWalk team (noi ideatori)
+- PawMeet team (noi ideatori)
 - Verified associations (associazioni cinofile, educatori)
 - Brand partners (in collaboration)
 
@@ -269,7 +269,7 @@ export const organizations = pgTable('organizations', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 200 }).notNull(),
   slug: varchar('slug', { length: 100 }).notNull().unique(),
-  type: varchar('type', { length: 30 }).notNull(), // 'dogwalk_team' | 'association' | 'educator' | 'brand'
+  type: varchar('type', { length: 30 }).notNull(), // 'pawmeet_team' | 'association' | 'educator' | 'brand'
   description: text('description'),
   logoUrl: varchar('logo_url', { length: 500 }),
   websiteUrl: varchar('website_url', { length: 500 }),
@@ -335,7 +335,7 @@ Add to `groupEvents`:
 ### 5.7 Examples of Main Events
 
 - **Raduno Golden Retriever** — organized by association "Golden Retriever Club Italia"
-- **Passeggiata urbana DogWalk** — organized by DogWalk team
+- **Passeggiata urbana PawMeet** — organized by PawMeet team
 - **Socializzazione cuccioli** — organized by certified educator
 - **Royal Canin Day** — co-branded with Royal Canin (sponsored category)
 
@@ -350,7 +350,7 @@ Brand partnerships enable pet industry companies to:
 - Get visibility in the app (featured events, brand page)
 - Build PR and trust with the community
 
-**This is NOT an ad platform.** Brand partnerships are curated, approved by DogWalk team, and always tied to real events that provide value to users.
+**This is NOT an ad platform.** Brand partnerships are curated, approved by PawMeet team, and always tied to real events that provide value to users.
 
 ### 6.2 Schema: `eventSponsors`
 

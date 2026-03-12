@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 import type { EmailJobData } from './queue.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'DogWalk <noreply@dogwalk.app>';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'PawMeet <noreply@pawmeet.io>';
 
 export function createEmailWorker() {
   const worker = new Worker<EmailJobData>(

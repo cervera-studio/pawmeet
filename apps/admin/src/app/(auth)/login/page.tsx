@@ -29,7 +29,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-neutral-50">
       <div className="w-full max-w-sm space-y-6 rounded-lg border border-neutral-200 bg-white p-8 shadow-sm">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900">DogWalk Admin</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">PawMeet Admin</h1>
           <p className="mt-1 text-sm text-neutral-500">Accedi al pannello di amministrazione</p>
         </div>
 
@@ -41,7 +41,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@dogwalk.app"
+              placeholder="admin@pawmeet.io"
               value={vm.email}
               onChange={(e) => vm.setEmail(e.target.value)}
               required

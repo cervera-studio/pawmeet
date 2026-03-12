@@ -1,4 +1,4 @@
-# DogWalk - Architettura Web
+# PawMeet - Architettura Web
 
 > **Versione:** 1.0
 > **Data:** 9 marzo 2026
@@ -106,7 +106,7 @@
 ### 2.1 Posizionamento nel monorepo
 
 ```
-dogwalk-app/
+pawmeet-app/
 ├── apps/
 │   ├── mobile/              → Expo (React Native)
 │   ├── web/                 → Sito web (Astro + React) ← QUESTO DOCUMENTO
@@ -274,7 +274,7 @@ import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 
 export default defineConfig({
-  site: 'https://dogwalk.app',
+  site: 'https://pawmeet.io',
   output: 'hybrid',  // SSG di default, SSR opt-in per route
   adapter: cloudflare({
     platformProxy: {
@@ -327,7 +327,7 @@ export default defineConfig({
 | `/legal/terms` | Termini e Condizioni | **SSG** | Content Collection Markdown |
 | `/legal/cookies` | Cookie Policy | **SSG** | Content Collection Markdown |
 | `/dog/[id]` | Profilo cane pubblico | **SSR** | Profilo condivisibile sui social, con Open Graph dinamico |
-| `/events` | Lista eventi | **SSR** | Eventi pubblici DogWalk, filtrabili per citta' |
+| `/events` | Lista eventi | **SSR** | Eventi pubblici PawMeet, filtrabili per citta' |
 | `/events/[slug]` | Singolo evento | **SSR** | Dettaglio evento con mappa, partecipanti, CTA |
 | `/sitemap.xml` | Sitemap | **SSG** | Generata automaticamente da @astrojs/sitemap |
 
@@ -411,15 +411,15 @@ Tutte le route sotto `/app/*` sono gestite da una singola pagina Astro (`pages/a
 
 **Configurazione deploy:**
 
-- Branch `main` -> production (`dogwalk.app`)
-- Branch `develop` -> preview (`preview.dogwalk.app`)
+- Branch `main` -> production (`pawmeet.io`)
+- Branch `develop` -> preview (`preview.pawmeet.io`)
 - Build command: `pnpm turbo build --filter=web`
 - Output directory: `apps/web/dist`
 - Node.js version: 20.x (per il build)
 
 ### 4.2 API calls via Fly.io
 
-Le API vivono in `apps/api/` come servizio Node.js su Fly.io, esposto su `api.dogwalk.app`. Il web lo chiama tramite `@pawmeet/api-client`:
+Le API vivono in `apps/api/` come servizio Node.js su Fly.io, esposto su `api.pawmeet.io`. Il web lo chiama tramite `@pawmeet/api-client`:
 
 ```typescript
 // packages/api-client/src/index.ts
@@ -450,7 +450,7 @@ La web app usa il client cosi':
 // apps/web/src/spa/hooks/useApi.ts
 import { createApiClient } from '@pawmeet/api-client';
 
-export const api = createApiClient('https://api.dogwalk.app');
+export const api = createApiClient('https://api.pawmeet.io');
 
 // Esempio con TanStack Query
 export const useDogProfile = (dogId: string) => {
@@ -675,10 +675,10 @@ const { type, data } = Astro.props;
   "@type": "Thing",
   "name": "Luna",
   "description": "Labrador femmina di 2 anni, molto socievole. Adora le passeggiate al parco.",
-  "image": "https://cdn.dogwalk.app/dogs/abc123/photo-1.jpg",
-  "additionalType": "https://dogwalk.app/schema/DogProfile",
+  "image": "https://cdn.pawmeet.io/dogs/abc123/photo-1.jpg",
+  "additionalType": "https://pawmeet.io/schema/DogProfile",
   "breed": "Labrador Retriever",
-  "sameAs": "https://dogwalk.app/dog/abc123"
+  "sameAs": "https://pawmeet.io/dog/abc123"
 }
 ```
 
@@ -701,7 +701,7 @@ const { title, description, image = '/og-default.jpg', type = 'website', noindex
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
-<title>{title} | DogWalk</title>
+<title>{title} | PawMeet</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalUrl} />
 
@@ -713,7 +713,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 <meta property="og:image" content={new URL(image, Astro.site)} />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:type" content={type} />
-<meta property="og:site_name" content="DogWalk" />
+<meta property="og:site_name" content="PawMeet" />
 <meta property="og:locale" content="it_IT" />
 
 <!-- Twitter -->
@@ -724,12 +724,12 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
 <!-- App links -->
 <meta property="al:ios:app_store_id" content="XXXXXXXXX" />
-<meta property="al:ios:app_name" content="DogWalk" />
-<meta property="al:android:package" content="app.dogwalk.android" />
-<meta property="al:android:app_name" content="DogWalk" />
+<meta property="al:ios:app_name" content="PawMeet" />
+<meta property="al:android:package" content="app.pawmeet.android" />
+<meta property="al:android:app_name" content="PawMeet" />
 ```
 
-**Social card per profilo cane** (`/dog/[id]`): L'immagine OG viene generata dinamicamente da una Cloudflare Pages Function dedicata (`og.dogwalk.app/dog/[id].png`) usando `@cloudflare/pages-plugin-vercel-og` o `satori` + `resvg-wasm`. La card mostra la foto del cane, nome, razza e punteggio di compatibilita'.
+**Social card per profilo cane** (`/dog/[id]`): L'immagine OG viene generata dinamicamente da una Cloudflare Pages Function dedicata (`og.pawmeet.io/dog/[id].png`) usando `@cloudflare/pages-plugin-vercel-og` o `satori` + `resvg-wasm`. La card mostra la foto del cane, nome, razza e punteggio di compatibilita'.
 
 ### 5.5 Sitemap
 
@@ -749,7 +749,7 @@ export const GET: APIRoute = async ({ locals }) => {
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       ${data.dogs.map((dog: { id: string; updatedAt: string }) => `
         <url>
-          <loc>https://dogwalk.app/dog/${dog.id}</loc>
+          <loc>https://pawmeet.io/dog/${dog.id}</loc>
           <lastmod>${dog.updatedAt}</lastmod>
           <changefreq>weekly</changefreq>
           <priority>0.6</priority>
@@ -780,7 +780,7 @@ Allow: /
 Disallow: /app/
 Disallow: /api/
 
-Sitemap: https://dogwalk.app/sitemap-index.xml
+Sitemap: https://pawmeet.io/sitemap-index.xml
 ```
 
 Le pagine sotto `/app/` sono escluse dall'indicizzazione perche' richiedono autenticazione e non hanno valore SEO.
@@ -1224,20 +1224,20 @@ export function getLocaleFromUrl(url: URL): Locale {
   },
   "waitlist": {
     "title": "Unisciti alla lista d'attesa",
-    "subtitle": "Sii tra i primi a provare DogWalk nella tua citta'.",
+    "subtitle": "Sii tra i primi a provare PawMeet nella tua citta'.",
     "email_placeholder": "La tua email",
     "name_placeholder": "Il tuo nome (opzionale)",
     "city_placeholder": "La tua citta' (opzionale)",
     "has_dog_label": "Ho gia' un cane",
     "submit": "Iscrivimi",
-    "success": "Perfetto! Ti avviseremo quando DogWalk sara' disponibile nella tua zona.",
+    "success": "Perfetto! Ti avviseremo quando PawMeet sara' disponibile nella tua zona.",
     "error": "Si e' verificato un errore. Riprova."
   },
   "footer": {
     "privacy": "Privacy Policy",
     "terms": "Termini e Condizioni",
     "cookies": "Cookie Policy",
-    "copyright": "DogWalk. Tutti i diritti riservati."
+    "copyright": "PawMeet. Tutti i diritti riservati."
   }
 }
 ```
@@ -1248,10 +1248,10 @@ Ogni pagina localizzata include i tag `hreflang` per indicare le versioni altern
 
 ```astro
 <!-- Generato automaticamente in SEOHead.astro -->
-<link rel="alternate" hreflang="it" href="https://dogwalk.app/" />
-<link rel="alternate" hreflang="en" href="https://dogwalk.app/en/" />
-<link rel="alternate" hreflang="es" href="https://dogwalk.app/es/" />
-<link rel="alternate" hreflang="x-default" href="https://dogwalk.app/" />
+<link rel="alternate" hreflang="it" href="https://pawmeet.io/" />
+<link rel="alternate" hreflang="en" href="https://pawmeet.io/en/" />
+<link rel="alternate" hreflang="es" href="https://pawmeet.io/es/" />
+<link rel="alternate" hreflang="x-default" href="https://pawmeet.io/" />
 ```
 
 ### 8.4 Web App (SPA) i18n
@@ -1311,7 +1311,7 @@ Questo permette di generare automaticamente i link `hreflang` tra le versioni tr
 
 ## Appendice A: Checklist di Lancio
 
-- [ ] Cloudflare Pages configurato con custom domain `dogwalk.app`
+- [ ] Cloudflare Pages configurato con custom domain `pawmeet.io`
 - [ ] SSL/TLS Full (Strict) abilitato
 - [ ] `_headers` file con security headers (CSP, X-Frame-Options, etc.)
 - [ ] Cloudflare Web Analytics token configurato

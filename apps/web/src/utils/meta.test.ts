@@ -10,17 +10,17 @@ import {
 
 describe('formatPageTitle', () => {
   it('appends the site name with a pipe separator', () => {
-    expect(formatPageTitle('Home')).toBe('Home | DogWalk');
+    expect(formatPageTitle('Home')).toBe('Home | PawMeet');
   });
 
   it('works with longer page titles', () => {
     expect(formatPageTitle('Passeggia insieme al tuo cane')).toBe(
-      'Passeggia insieme al tuo cane | DogWalk',
+      'Passeggia insieme al tuo cane | PawMeet',
     );
   });
 
   it('handles empty string input', () => {
-    expect(formatPageTitle('')).toBe(' | DogWalk');
+    expect(formatPageTitle('')).toBe(' | PawMeet');
   });
 });
 
@@ -41,22 +41,22 @@ describe('getCopyrightYear', () => {
 
 describe('buildCanonicalUrl', () => {
   it('builds a full URL from pathname and origin', () => {
-    expect(buildCanonicalUrl('/chi-siamo', 'https://dogwalk.app')).toBe(
-      'https://dogwalk.app/chi-siamo',
+    expect(buildCanonicalUrl('/chi-siamo', 'https://pawmeet.io')).toBe(
+      'https://pawmeet.io/chi-siamo',
     );
   });
 
   it('handles root pathname', () => {
-    expect(buildCanonicalUrl('/', 'https://dogwalk.app')).toBe('https://dogwalk.app/');
+    expect(buildCanonicalUrl('/', 'https://pawmeet.io')).toBe('https://pawmeet.io/');
   });
 
   it('handles trailing slash in origin', () => {
-    expect(buildCanonicalUrl('/blog', 'https://dogwalk.app/')).toBe('https://dogwalk.app/blog');
+    expect(buildCanonicalUrl('/blog', 'https://pawmeet.io/')).toBe('https://pawmeet.io/blog');
   });
 
   it('handles nested pathnames', () => {
-    expect(buildCanonicalUrl('/blog/first-post', 'https://dogwalk.app')).toBe(
-      'https://dogwalk.app/blog/first-post',
+    expect(buildCanonicalUrl('/blog/first-post', 'https://pawmeet.io')).toBe(
+      'https://pawmeet.io/blog/first-post',
     );
   });
 });
@@ -64,7 +64,7 @@ describe('buildCanonicalUrl', () => {
 describe('resolvePageMeta', () => {
   it('returns formatted title with site name', () => {
     const meta = resolvePageMeta({ title: 'Home' });
-    expect(meta.title).toBe('Home | DogWalk');
+    expect(meta.title).toBe('Home | PawMeet');
   });
 
   it('uses default description when none is provided', () => {
@@ -94,16 +94,16 @@ describe('resolvePageMeta', () => {
 });
 
 describe('constants', () => {
-  it('SITE_NAME is DogWalk', () => {
-    expect(SITE_NAME).toBe('DogWalk');
+  it('SITE_NAME is PawMeet', () => {
+    expect(SITE_NAME).toBe('PawMeet');
   });
 
   it('DEFAULT_DESCRIPTION is a non-empty string', () => {
     expect(DEFAULT_DESCRIPTION.length).toBeGreaterThan(0);
   });
 
-  it('DEFAULT_DESCRIPTION mentions DogWalk', () => {
-    expect(DEFAULT_DESCRIPTION).toContain('DogWalk');
+  it('DEFAULT_DESCRIPTION mentions PawMeet', () => {
+    expect(DEFAULT_DESCRIPTION).toContain('PawMeet');
   });
 
   it('DEFAULT_OG_IMAGE is a path to a png', () => {

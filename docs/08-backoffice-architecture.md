@@ -1,4 +1,4 @@
-# DogWalk - Architettura Backoffice / Admin Panel
+# PawMeet - Architettura Backoffice / Admin Panel
 
 > **Versione:** 2.0
 > **Data:** 9 marzo 2026
@@ -176,7 +176,7 @@ Recharts resta la scelta per i grafici. Essendo il backoffice ora basato su Tail
 ### 2.1 Posizione nel Monorepo Turborepo
 
 ```
-dogwalk-app/
+pawmeet-app/
 ├── apps/
 │   ├── mobile/                → App React Native (Expo)
 │   ├── web/                   → Landing page / webapp (Next.js)
@@ -689,14 +689,14 @@ app.use('/admin/v1/*', async (c, next) => {
        │                 ▼
        │        ┌──────────────────┐
        │        │ Cloudflare Pages  │  Next.js (@opennextjs/cloudflare)
-       │        │ admin.dogwalk.app │  SSR + Static assets
+       │        │ admin.pawmeet.io │  SSR + Static assets
        │        └──────────────────┘
        │
        └──── API ─────────┐
                            ▼
                   ┌──────────────────┐
                   │   Fly.io (Node)  │  Hono API
-                  │  api.dogwalk.app │  Admin + User APIs
+                  │  api.pawmeet.io │  Admin + User APIs
                   └──┬───┬───┬──────┘
                      │   │   │
         ┌────────────┘   │   └────────────┐
@@ -710,7 +710,7 @@ app.use('/admin/v1/*', async (c, next) => {
 
 ### 4.2 Cloudflare Pages - Admin Next.js
 
-**Dominio:** `admin.dogwalk.app`
+**Dominio:** `admin.pawmeet.io`
 
 **Deploy:** Il backoffice e un'app Next.js deployata su Cloudflare Pages tramite `@opennextjs/cloudflare`. Questo permette SSR/ISR per le dashboard (dati pre-calcolati server-side) e routing file-based nativo.
 
@@ -718,7 +718,7 @@ app.use('/admin/v1/*', async (c, next) => {
 
 ```toml
 # wrangler.toml (sezione Pages)
-name = "dogwalk-admin"
+name = "pawmeet-admin"
 compatibility_date = "2026-03-01"
 
 # Headers di sicurezza
@@ -727,11 +727,11 @@ compatibility_date = "2026-03-01"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://api.dogwalk.app wss://api.dogwalk.app; img-src 'self' https://*.r2.dev https://api.mapbox.com; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://api.pawmeet.io wss://api.pawmeet.io; img-src 'self' https://*.r2.dev https://api.mapbox.com; style-src 'self' 'unsafe-inline'; script-src 'self'"
     Referrer-Policy = "strict-origin-when-cross-origin"
 ```
 
-**Accesso ristretto:** Cloudflare Access (Zero Trust) protegge `admin.dogwalk.app` con un policy che richiede autenticazione aziendale (email domain `@dogwalk.app`) prima ancora di servire l'applicazione. Questo aggiunge un layer di sicurezza prima dell'autenticazione applicativa.
+**Accesso ristretto:** Cloudflare Access (Zero Trust) protegge `admin.pawmeet.io` con un policy che richiede autenticazione aziendale (email domain `@pawmeet.io`) prima ancora di servire l'applicazione. Questo aggiunge un layer di sicurezza prima dell'autenticazione applicativa.
 
 ### 4.3 Fly.io - API Admin
 
@@ -769,7 +769,7 @@ Flusso:
 **Struttura bucket R2:**
 
 ```
-dogwalk-media/
+pawmeet-media/
 ├── dogs/
 │   ├── {dog_id}/
 │   │   ├── original/     → Foto originali (per moderazione)
@@ -1573,5 +1573,5 @@ CREATE TABLE dog_breeds (
 
 ---
 
-> **Documento redatto per il team DogWalk.**
+> **Documento redatto per il team PawMeet.**
 > **Prossima revisione:** Dopo completamento Sprint 3 (integrazione moderazione nel backoffice).

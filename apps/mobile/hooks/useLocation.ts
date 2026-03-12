@@ -34,7 +34,7 @@ export function useLocation() {
       if (!granted) {
         Alert.alert(
           'Posizione richiesta',
-          'DogWalk ha bisogno della tua posizione per mostrare cani nelle vicinanze. Abilita la posizione nelle impostazioni.',
+          'PawMeet ha bisogno della tua posizione per mostrare cani nelle vicinanze. Abilita la posizione nelle impostazioni.',
           [
             { text: 'Annulla', style: 'cancel' },
             {

@@ -31,7 +31,7 @@ export function createSubmitDateOfBirth({ userRepo }: Deps) {
       return fail(
         new AppError(
           'AGE_VERIFICATION_FAILED',
-          `Devi avere almeno ${MIN_USER_AGE} anni per usare DogWalk`,
+          `Devi avere almeno ${MIN_USER_AGE} anni per usare PawMeet`,
           403,
         ),
       );

@@ -1,4 +1,4 @@
-# DogWalk - Architettura Consolidata (FONTE DI VERITA)
+# PawMeet - Architettura Consolidata (FONTE DI VERITA)
 
 > **Versione:** 2.0 (Decisione B+)
 > **Data:** 9 marzo 2026
@@ -213,7 +213,7 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 | **Doc 09** v1.0 | Cloudflare Workers per tutto il backend API | **Fly.io** (Node.js runtime) per API backend |
 | **Doc 10** (Analisi Workers vs Server) | Analisi comparativa Workers vs Server tradizionale | Decisione **B+**: Hono su Node.js/Fly.io |
 
-**Motivazione:** L'analisi del doc 10 ha evidenziato limiti critici di Cloudflare Workers per il caso d'uso DogWalk:
+**Motivazione:** L'analisi del doc 10 ha evidenziato limiti critici di Cloudflare Workers per il caso d'uso PawMeet:
 - **CPU time limit** (10-50ms su free, 30s su paid): insufficiente per algoritmo di matching complesso con PostGIS
 - **No WebSocket server nativo**: richiede Durable Objects (complessita aggiuntiva, costi elevati a scala)
 - **No Node.js API completo**: incompatibilita con BullMQ, librerie native, stream processing
@@ -254,7 +254,7 @@ Cloudflare resta per: Pages (web + admin), R2 (storage), CDN, Turnstile, Workers
 ## 2. Struttura Monorepo Definitiva
 
 ```
-dogwalk/
+pawmeet/
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml                        # Lint, type-check, test su ogni PR
@@ -720,11 +720,11 @@ packages:
          ┌──────────▼──────────┐
          │  Cloudflare Pages    │
          │                      │
-         │  dogwalk.app (web)   │
-         │  admin.dogwalk.app   │
+         │  pawmeet.io (web)   │
+         │  admin.pawmeet.io   │
          │                      │                    ┌─────────────────────────┐
          │  ┌────────────────┐  │                    │     Fly.io (multi-region)│
-         │  │ Astro SSG/SSR  │  │    API calls       │     api.dogwalk.app     │
+         │  │ Astro SSG/SSR  │  │    API calls       │     api.pawmeet.io     │
          │  │ (marketing)    │──┼───────────────────▶│                         │
          │  └────────────────┘  │                    │     Hono + tRPC         │
          │  ┌────────────────┐  │                    │     Node.js runtime     │
@@ -758,7 +758,7 @@ packages:
 └────────┘   │ Pub/Sub (WS) │
               └──────────────┘
 
-Expo Mobile App ──── API calls + WebSocket ────▶ Fly.io (api.dogwalk.app)
+Expo Mobile App ──── API calls + WebSocket ────▶ Fly.io (api.pawmeet.io)
 
 Servizi Esterni:
 ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  ┌──────────┐
@@ -772,16 +772,16 @@ Servizi Esterni:
 
 #### Fly.io (API Backend)
 
-| Servizio | Uso in DogWalk | Configurazione | Note |
+| Servizio | Uso in PawMeet | Configurazione | Note |
 |---------|----------------|---------------|------|
-| **Fly Machines** | API backend (Hono + tRPC + BullMQ) | `fly.toml` in `apps/api/` | Deploy su `api.dogwalk.app`, multi-region EU |
+| **Fly Machines** | API backend (Hono + tRPC + BullMQ) | `fly.toml` in `apps/api/` | Deploy su `api.pawmeet.io`, multi-region EU |
 | **WebSocket nativo** | Chat real-time | Sticky sessions via `fly-replay` header | Nessun Durable Object necessario |
 
 #### Cloudflare (Frontend + Storage)
 
-| Servizio | Uso in DogWalk | Note |
+| Servizio | Uso in PawMeet | Note |
 |---------|----------------|------|
-| **Pages** | Web marketing + Admin SPA | `dogwalk.app` + `admin.dogwalk.app` |
+| **Pages** | Web marketing + Admin SPA | `pawmeet.io` + `admin.pawmeet.io` |
 | **R2** | Storage foto cani, avatar | Accesso via presigned URL generato dall'API su Fly.io |
 | **Workers AI** | Classificazione NSFW foto | Chiamato via REST API dall'API su Fly.io |
 | **Cloudflare Images** | Resize on-the-fly foto cani | Transform via URL (`/cdn-cgi/image/`) |
@@ -790,7 +790,7 @@ Servizi Esterni:
 
 #### Upstash (Cache + Queue)
 
-| Servizio | Uso in DogWalk | Note |
+| Servizio | Uso in PawMeet | Note |
 |---------|----------------|------|
 | **Upstash Redis** | Cache, sessioni, rate limiting | Env var `UPSTASH_REDIS_URL` + `UPSTASH_REDIS_TOKEN` |
 | **BullMQ su Redis** | Job asincroni (moderazione, email, push) | Code: `photo-moderation`, `push-notification`, `email`, `cleanup` |
@@ -1042,7 +1042,7 @@ packages/utils       ──┘        │
 | 2 | **Cloudflare** | Creare account (Pages, R2, Workers AI) | DevOps | Free |
 | 3 | **Upstash** | Creare account, creare database Redis (regione EU) | DevOps | Free |
 | 4 | **Neon** | Creare account, creare progetto con PostGIS | DevOps | Free |
-| 5 | **GitHub** | Creare organizzazione `dogwalk-app`, repo `dogwalk` | DevOps | Free (o Team $4/user/mese) |
+| 5 | **GitHub** | Creare organizzazione `pawmeet-app`, repo `pawmeet` | DevOps | Free (o Team $4/user/mese) |
 | 6 | **Expo / EAS** | Creare account Expo, attivare piano Production ($99/mese) | DevOps | $99/mese |
 | 7 | **Apple Developer** | Registrare account sviluppatore | PO | $99/anno |
 | 8 | **Google Play Console** | Registrare account sviluppatore | PO | $25 una tantum |
@@ -1051,7 +1051,7 @@ packages/utils       ──┘        │
 | 11 | **Sentry** | Creare organizzazione, progetto per mobile + API | DevOps | $26/mese (Team) |
 | 12 | **Figma** | Creare team, invitare designer | UX Lead | $15/editor/mese |
 | 13 | **Linear** | Creare workspace, configurare progetti | SM | $8/user/mese |
-| 14 | **Dominio** | Registrare `dogwalk.app`, `dogwalk.it` | DevOps | ~$30/anno |
+| 14 | **Dominio** | Registrare `pawmeet.io`, `pawmeet.pet` | DevOps | ~$30/anno |
 
 ### 7.2 Repository Setup
 
@@ -1089,7 +1089,7 @@ packages/utils       ──┘        │
 - [ ] Definire palette colori (gia in doc 06, sezione 4.1)
   - Primary: `#FF6B35`
   - Secondary: `#2D6A4F`
-  - Neutri, semantici, DogWalk-specifici
+  - Neutri, semantici, PawMeet-specifici
 - [ ] Definire scala tipografica (Inter, 11 livelli)
 - [ ] Definire spacing scale (base 4px, 11 livelli)
 - [ ] Definire border radius tokens
@@ -1135,8 +1135,8 @@ packages/utils       ──┘        │
 |---------|-----|-----|-------|----------|-------|-------|
 | **Local** | `node --watch` (Hono) | `astro dev` | `vite dev` | Docker PostgreSQL | Docker Redis | Sviluppo quotidiano |
 | **Preview** | Fly.io preview app | Pages preview | Pages preview | Neon branch per PR | Upstash Redis (dev) | Review PR |
-| **Staging** | `api-staging.dogwalk.app` (Fly.io) | `staging.dogwalk.app` | `admin-staging.dogwalk.app` | Neon branch `staging` | Upstash Redis (staging) | Test pre-release |
-| **Production** | `api.dogwalk.app` (Fly.io) | `dogwalk.app` | `admin.dogwalk.app` | Neon main branch | Upstash Redis (prod) | Live |
+| **Staging** | `api-staging.pawmeet.io` (Fly.io) | `staging.pawmeet.io` | `admin-staging.pawmeet.io` | Neon branch `staging` | Upstash Redis (staging) | Test pre-release |
+| **Production** | `api.pawmeet.io` (Fly.io) | `pawmeet.io` | `admin.pawmeet.io` | Neon main branch | Upstash Redis (prod) | Live |
 
 ### 7.8 Sicurezza Pre-Lancio
 
@@ -1152,7 +1152,7 @@ packages/utils       ──┘        │
 
 ---
 
-> **Questo documento e la FONTE DI VERITA per tutte le decisioni architetturali del progetto DogWalk.**
+> **Questo documento e la FONTE DI VERITA per tutte le decisioni architetturali del progetto PawMeet.**
 > In caso di conflitto tra questo documento e qualsiasi altro documento (01-10), questo documento prevale.
 > **Decisione B+:** API su Fly.io (Node.js), cache/queue su Upstash Redis, frontend su Cloudflare Pages/R2/CDN.
 >

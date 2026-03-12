@@ -6,7 +6,7 @@ import type { NotificationService } from '../ports/notification-service.js';
 import type { ContentModerationJobData } from './queue.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
-const R2_BUCKET = process.env.R2_BUCKET || 'dogwalk';
+const R2_BUCKET = process.env.R2_BUCKET || 'pawmeet';
 
 async function verifyMediaInR2(url: string): Promise<{ exists: boolean; contentLength: number }> {
   const { r2 } = await import('../lib/r2.js');

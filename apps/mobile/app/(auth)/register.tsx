@@ -18,7 +18,7 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <Text className="mb-2 text-4xl font-bold text-gray-900">Crea account</Text>
-          <Text className="mb-8 text-lg text-gray-500">Unisciti alla community DogWalk</Text>
+          <Text className="mb-8 text-lg text-gray-500">Unisciti alla community PawMeet</Text>
 
           {vm.apiError ? (
             <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">

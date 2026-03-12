@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'DogWalk <noreply@dogwalk.app>';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'PawMeet <noreply@pawmeet.io>';
 
 /** Lazy-initialized Resend client to avoid env-var checks at import time */
 let _resend: Resend | null = null;
@@ -49,9 +49,9 @@ export async function sendVerificationOtp(email: string, code: string): Promise<
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Il tuo codice di verifica - DogWalk',
+    subject: 'Il tuo codice di verifica - PawMeet',
     html: `
-      <h2>Codice di verifica DogWalk</h2>
+      <h2>Codice di verifica PawMeet</h2>
       <p>Usa il codice qui sotto per verificare la tua email:</p>
       <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 16px 0;">${code}</p>
       <p>Il codice scade tra 5 minuti.</p>
@@ -67,9 +67,9 @@ export async function sendPasswordResetOtp(email: string, code: string): Promise
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Codice di reset password - DogWalk',
+    subject: 'Codice di reset password - PawMeet',
     html: `
-      <h2>Reset password DogWalk</h2>
+      <h2>Reset password PawMeet</h2>
       <p>Usa il codice qui sotto per reimpostare la tua password:</p>
       <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 16px 0;">${code}</p>
       <p>Il codice scade tra 5 minuti.</p>
@@ -92,7 +92,7 @@ export async function sendGdprExportReady(
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Il tuo export dati è pronto - DogWalk',
+    subject: 'Il tuo export dati è pronto - PawMeet',
     html: `
       <h2>Ciao ${displayName},</h2>
       <p>Il tuo export dati GDPR è pronto per il download.</p>
@@ -101,7 +101,7 @@ export async function sendGdprExportReady(
       </p>
       <p><strong>Importante:</strong> il link scade tra 48 ore.</p>
       <p>L'export contiene tutte le informazioni personali associate al tuo account, come previsto dal GDPR (Art. 15 e Art. 20).</p>
-      <p>Se non hai richiesto questo export, contattaci a <a href="mailto:privacy@dogwalk.app">privacy@dogwalk.app</a>.</p>
+      <p>Se non hai richiesto questo export, contattaci a <a href="mailto:privacy@pawmeet.io">privacy@pawmeet.io</a>.</p>
     `,
   });
 }
@@ -113,11 +113,11 @@ export async function sendGdprExportFailed(email: string, displayName: string): 
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Errore nell'export dati - DogWalk",
+    subject: "Errore nell'export dati - PawMeet",
     html: `
       <h2>Ciao ${displayName},</h2>
       <p>Purtroppo si è verificato un errore durante la generazione del tuo export dati.</p>
-      <p>Puoi riprovare dalla sezione Impostazioni dell'app. Se il problema persiste, contattaci a <a href="mailto:privacy@dogwalk.app">privacy@dogwalk.app</a>.</p>
+      <p>Puoi riprovare dalla sezione Impostazioni dell'app. Se il problema persiste, contattaci a <a href="mailto:privacy@pawmeet.io">privacy@pawmeet.io</a>.</p>
     `,
   });
 }
@@ -132,13 +132,13 @@ export async function sendAccountDeletedConfirmation(
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Il tuo account DogWalk è stato disattivato',
+    subject: 'Il tuo account PawMeet è stato disattivato',
     html: `
       <h2>Ciao ${displayName},</h2>
-      <p>Confermiamo che il tuo account DogWalk è stato disattivato con successo.</p>
+      <p>Confermiamo che il tuo account PawMeet è stato disattivato con successo.</p>
       <p>I tuoi dati personali verranno eliminati definitivamente entro 30 giorni, come previsto dal GDPR (Art. 17).</p>
-      <p>Se cambi idea, puoi contattarci entro 30 giorni all'indirizzo <a href="mailto:privacy@dogwalk.app">privacy@dogwalk.app</a> per richiedere il ripristino.</p>
-      <p>Grazie per aver fatto parte della community DogWalk.</p>
+      <p>Se cambi idea, puoi contattarci entro 30 giorni all'indirizzo <a href="mailto:privacy@pawmeet.io">privacy@pawmeet.io</a> per richiedere il ripristino.</p>
+      <p>Grazie per aver fatto parte della community PawMeet.</p>
     `,
   });
 }

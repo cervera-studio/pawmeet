@@ -1,8 +1,8 @@
-# DogWalk - Project Summary
+# PawMeet - Project Summary
 
 ## Vision
 
-DogWalk è una social app per proprietari di cani che vogliono trovare compagni di passeggiata compatibili. A differenza dei gruppi Facebook o delle app generiche, DogWalk garantisce **compatibilità verificata** tra cani prima del primo incontro, grazie a un algoritmo di matching basato su taglia, energia, comportamento e prossimità geografica.
+PawMeet è una social app per proprietari di cani che vogliono trovare compagni di passeggiata compatibili. A differenza dei gruppi Facebook o delle app generiche, PawMeet garantisce **compatibilità verificata** tra cani prima del primo incontro, grazie a un algoritmo di matching basato su taglia, energia, comportamento e prossimità geografica.
 
 Il mercato italiano conta ~8,8 milioni di cani domestici. L'obiettivo è diventare la piattaforma di riferimento in Italia per la socializzazione tra proprietari, con espansione europea successiva.
 

@@ -1,4 +1,4 @@
-# DogWalk - Project Guide
+# PawMeet - Project Guide
 
 ## What is this?
 

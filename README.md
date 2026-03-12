@@ -1,4 +1,4 @@
-# DogWalk
+# PawMeet
 
 Social app for dog owners to find compatible walking companions through behavioral matching, geolocation, and secure real-time chat.
 

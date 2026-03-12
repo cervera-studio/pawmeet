@@ -1,4 +1,4 @@
-# DogWalk - Dibattito Architetturale: Framework Backoffice / Admin Panel
+# PawMeet - Dibattito Architetturale: Framework Backoffice / Admin Panel
 
 > **Versione:** 1.0
 > **Data:** 9 marzo 2026
@@ -42,7 +42,7 @@ Il doc 08 sceglie **Refine + Ant Design** come framework per il backoffice admin
 Con l'Opzione A il backoffice e una SPA Vite separata su Cloudflare Pages, mentre la web app e un'app Next.js. Due pipeline di build, due configurazioni di deploy, due set di environment variables. Con l'Opzione B, `apps/admin` e `apps/web` sono entrambi Next.js: stessa configurazione Turborepo, stesso `next.config.js` pattern, stesso deploy su Cloudflare Pages con `@cloudflare/next-on-pages`. Un dev che sa deployare la web app sa deployare il backoffice. Zero sorprese.
 
 **2. Il backoffice ha 10-50 utenti: non serve ottimizzazione infrastrutturale.**
-Refine viene pubblicizzato per la sua efficienza nel gestire CRUD massicci. Ma il backoffice DogWalk avra 10-50 utenti concorrenti, tutti interni. Non c'e un problema di performance frontend. Le tabelle piu grandi (utenti, segnalazioni) avranno paginazione server-side in entrambi i casi. Con 50 utenti, anche un'implementazione "naive" in Next.js sara piu che sufficiente.
+Refine viene pubblicizzato per la sua efficienza nel gestire CRUD massicci. Ma il backoffice PawMeet avra 10-50 utenti concorrenti, tutti interni. Non c'e un problema di performance frontend. Le tabelle piu grandi (utenti, segnalazioni) avranno paginazione server-side in entrambi i casi. Con 50 utenti, anche un'implementazione "naive" in Next.js sara piu che sufficiente.
 
 **3. SSR/ISR per le dashboard e un vantaggio concreto.**
 Le dashboard KPI del backoffice (utenti attivi, retention, revenue) possono beneficiare del rendering server-side: i dati vengono pre-calcolati nel server Next.js, riducendo il bundle JS del client e velocizzando il first paint. Con una SPA Vite, tutto il rendering e client-side. Per un backoffice interno non e critico, ma e un vantaggio gratis se usi gia Next.js.
@@ -141,7 +141,7 @@ Come CTO, devo pensare allo scenario peggiore. Se Refine viene abbandonato (e un
 
 **5-0 per l'Opzione B.**
 
-Il panel e unanime. Per un progetto come DogWalk -- team React senior, backoffice con 10-50 utenti interni, gia Next.js + Tailwind + TanStack nello stack -- aggiungere Refine + Ant Design introduce complessita non giustificata dal valore che porta.
+Il panel e unanime. Per un progetto come PawMeet -- team React senior, backoffice con 10-50 utenti interni, gia Next.js + Tailwind + TanStack nello stack -- aggiungere Refine + Ant Design introduce complessita non giustificata dal valore che porta.
 
 ### Motivazione sintetica
 

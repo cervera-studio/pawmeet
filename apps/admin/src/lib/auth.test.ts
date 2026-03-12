@@ -6,7 +6,7 @@ import { AdminRole, canAccessRoute, hasRole, routePermissions } from './auth';
 function buildAdminUser(overrides: Partial<AdminUser> = {}): AdminUser {
   return {
     id: 'usr_001',
-    email: 'admin@dogwalk.test',
+    email: 'admin@pawmeet.test',
     name: 'Test Admin',
     role: AdminRole.Admin,
     ...overrides,
@@ -146,7 +146,7 @@ describe('buildAdminUser', () => {
   it('creates a valid AdminUser with defaults', () => {
     const user = buildAdminUser();
     expect(user.id).toBe('usr_001');
-    expect(user.email).toBe('admin@dogwalk.test');
+    expect(user.email).toBe('admin@pawmeet.test');
     expect(user.role).toBe(AdminRole.Admin);
   });
 
@@ -154,7 +154,7 @@ describe('buildAdminUser', () => {
     const user = buildAdminUser({ role: AdminRole.SuperAdmin, name: 'Super' });
     expect(user.role).toBe(AdminRole.SuperAdmin);
     expect(user.name).toBe('Super');
-    expect(user.email).toBe('admin@dogwalk.test');
+    expect(user.email).toBe('admin@pawmeet.test');
   });
 
   it('supports optional avatarUrl', () => {

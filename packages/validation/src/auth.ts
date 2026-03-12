@@ -21,7 +21,7 @@ export const dateOfBirthSchema = z.coerce
   .date({ error: 'Data di nascita obbligatoria' })
   .refine((d) => d <= new Date(), { message: 'La data di nascita non può essere nel futuro' })
   .refine((d) => calculateAge(d) >= MIN_USER_AGE, {
-    message: `Devi avere almeno ${MIN_USER_AGE} anni per usare DogWalk`,
+    message: `Devi avere almeno ${MIN_USER_AGE} anni per usare PawMeet`,
   });
 
 export const registerSchema = z.object({

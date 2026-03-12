@@ -129,7 +129,7 @@ export interface AnalyticsEventMap {
 
   // Main Events & Brands
   event_main_created: {
-    organizationType: 'dogwalk_team' | 'association' | 'educator' | 'brand';
+    organizationType: 'pawmeet_team' | 'association' | 'educator' | 'brand';
     maxParticipants: number;
     hasSponsor: boolean;
   };

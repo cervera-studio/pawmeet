@@ -126,7 +126,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      expect(messages).toContain('Devi avere almeno 14 anni per usare DogWalk');
+      expect(messages).toContain('Devi avere almeno 14 anni per usare PawMeet');
     }
   });
 

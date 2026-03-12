@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This document consolidates the analysis of 5 specialists on introducing product analytics into DogWalk. The recommendation is a **server-first single data store** (Neon + BullMQ) at EUR 0 additional cost, with a clear 1-day migration path to **PostHog EU** when revenue arrives.
+This document consolidates the analysis of 5 specialists on introducing product analytics into PawMeet. The recommendation is a **server-first single data store** (Neon + BullMQ) at EUR 0 additional cost, with a clear 1-day migration path to **PostHog EU** when revenue arrives.
 
 **P0 blockers resolved:** Consent infrastructure is implemented — `user_consents` table, mobile consent modal + settings toggles, Sentry PII scrubbing (consent-aware), Statsig userId pseudonymization, and proper GDPR legal basis separation.
 

@@ -11,7 +11,7 @@ interface Props {
 
 const {
   title,
-  description = 'DogWalk - Trova il compagno di passeggiata perfetto per il tuo cane. Connetti con altri proprietari di cani nella tua zona.',
+  description = 'PawMeet - Trova il compagno di passeggiata perfetto per il tuo cane. Connetti con altri proprietari di cani nella tua zona.',
   ogImage = '/og-image.png',
 } = Astro.props;
 
@@ -26,19 +26,19 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
 
-    <title>{title} | DogWalk</title>
+    <title>{title} | PawMeet</title>
     <meta name="description" content={description} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={`${title} | DogWalk`} />
+    <meta property="og:title" content={`${title} | PawMeet`} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={`${title} | DogWalk`} />
+    <meta name="twitter:title" content={`${title} | PawMeet`} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 

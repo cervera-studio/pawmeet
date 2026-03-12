@@ -1,4 +1,4 @@
-// Shared UI components for DogWalk mobile app
+// Shared UI components for PawMeet mobile app
 
 export { Avatar } from './components/Avatar';
 export { Badge } from './components/Badge';

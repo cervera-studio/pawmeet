@@ -1,4 +1,4 @@
-# DogWalk -- Specifica MVP
+# PawMeet -- Specifica MVP
 
 **Versione:** 1.0
 **Data:** 2026-03-09
@@ -30,7 +30,7 @@
 
 ## 1. Visione del Prodotto
 
-**DogWalk** e' un'app social progettata per proprietari di cani che desiderano trovare compagni di passeggiata compatibili per i propri amici a quattro zampe. L'app utilizza un algoritmo di matching basato su taglia, energia, comportamento e prossimita' geografica per suggerire abbinamenti sicuri e piacevoli.
+**PawMeet** e' un'app social progettata per proprietari di cani che desiderano trovare compagni di passeggiata compatibili per i propri amici a quattro zampe. L'app utilizza un algoritmo di matching basato su taglia, energia, comportamento e prossimita' geografica per suggerire abbinamenti sicuri e piacevoli.
 
 ### 1.1 Problema
 
@@ -42,7 +42,7 @@ Un sistema di matching intelligente che analizza compatibilita' comportamentale,
 
 ### 1.3 Proposta di Valore Unica
 
-A differenza delle app social generiche o dei gruppi Facebook locali, DogWalk garantisce compatibilita' verificata tra cani prima del primo incontro, riducendo il rischio di interazioni negative e aumentando la qualita' dell'esperienza per cani e proprietari.
+A differenza delle app social generiche o dei gruppi Facebook locali, PawMeet garantisce compatibilita' verificata tra cani prima del primo incontro, riducendo il rischio di interazioni negative e aumentando la qualita' dell'esperienza per cani e proprietari.
 
 ### 1.4 Metriche di Successo MVP
 
@@ -575,7 +575,7 @@ I suggerimenti sono ordinati per:
 | **Diritto di portabilita'** | Dati esportabili in formato JSON strutturato. |
 | **Diritto di rettifica** | Modifica dati possibile in qualsiasi momento dall'app. |
 | **Data retention** | Dati account: fino a cancellazione. Log attivita': 12 mesi. Messaggi chat: 6 mesi dopo eliminazione match. Dati di analytics: 24 mesi, poi anonimizzati. |
-| **DPO** | Nominato un Data Protection Officer raggiungibile via dpo@dogwalk.app. |
+| **DPO** | Nominato un Data Protection Officer raggiungibile via dpo@pawmeet.io. |
 | **Registro trattamenti** | Documentato e aggiornato. |
 
 ### 11.2 Moderazione Contenuti
@@ -726,7 +726,7 @@ Scala impatto: 1 (basso) - 5 (alto). Scala sforzo: 1 (basso) - 5 (alto).
 | GPS non disponibile | Usare ultima posizione nota (se < 7 giorni). Altrimenti, messaggio di richiesta attivazione GPS. |
 | Posizione molto imprecisa (> 500m) | Messaggio: "La tua posizione potrebbe non essere precisa. Le distanze mostrate sono approssimative." |
 | Utente si sposta in un'altra citta' | Aggiornamento automatico della posizione. I match nella citta' precedente restano attivi. |
-| Posizione in area senza utenti (es. mare, montagna isolata) | Messaggio: "Non ci sono utenti DogWalk nella tua zona attuale." Nessun suggerimento proposto. |
+| Posizione in area senza utenti (es. mare, montagna isolata) | Messaggio: "Non ci sono utenti PawMeet nella tua zona attuale." Nessun suggerimento proposto. |
 
 ### 14.4 Chat
 
@@ -836,7 +836,7 @@ Scala impatto: 1 (basso) - 5 (alto). Scala sforzo: 1 (basso) - 5 (alto).
 - Commenti e reazioni
 - Profilo pubblico condivisibile
 - Gamification: punti, livelli, classifiche locali
-- Eventi di gruppo (DogWalk Meetup)
+- Eventi di gruppo (PawMeet Meetup)
 
 ### Fase 4 -- Ecosistema (mesi 10-12)
 

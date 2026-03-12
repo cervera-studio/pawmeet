@@ -1,7 +1,7 @@
-const SITE_NAME = 'DogWalk';
+const SITE_NAME = 'PawMeet';
 
 const DEFAULT_DESCRIPTION =
-  'DogWalk - Trova il compagno di passeggiata perfetto per il tuo cane. Connetti con altri proprietari di cani nella tua zona.';
+  'PawMeet - Trova il compagno di passeggiata perfetto per il tuo cane. Connetti con altri proprietari di cani nella tua zona.';
 
 const DEFAULT_OG_IMAGE = '/og-image.png';
 

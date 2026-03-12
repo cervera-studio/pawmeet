@@ -1,4 +1,4 @@
-# DogWalk API Endpoints
+# PawMeet API Endpoints
 
 Base URL: `/api` (all routes are prefixed via the app router)
 

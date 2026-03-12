@@ -1,4 +1,4 @@
-# DogWalk - Documento Architetturale
+# PawMeet - Documento Architetturale
 
 > **Versione:** 1.0
 > **Data:** 9 marzo 2026
@@ -47,7 +47,7 @@ Ogni decisione di design in questo progetto deve rispettare i seguenti principi,
 ### 2.1 Directory Tree
 
 ```
-dogwalk/
+pawmeet/
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml                    # Lint, type-check, test su ogni PR
@@ -1501,7 +1501,7 @@ Il sistema real-time serve due funzionalita:
 ```
 ┌──────────────┐     WebSocket (wss://)     ┌──────────────────────┐
 │  Mobile App  │◀───────────────────────────▶│  Fly.io Node.js      │
-│              │                             │  (api.dogwalk.app)    │
+│              │                             │  (api.pawmeet.io)    │
 └──────────────┘                             │                      │
                                              │  Hono + ws library   │
                                              │  WebSocket nativo    │
@@ -1681,8 +1681,8 @@ Client                      OAuth Provider           Server
   "email": "utente@example.com",
   "iat": 1709971200,
   "exp": 1709972100,
-  "iss": "dogwalk-api",
-  "aud": "dogwalk-mobile"
+  "iss": "pawmeet-api",
+  "aud": "pawmeet-mobile"
 }
 ```
 
@@ -1781,9 +1781,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: dogwalk_dev
-      POSTGRES_USER: dogwalk
-      POSTGRES_PASSWORD: dogwalk_dev_password
+      POSTGRES_DB: pawmeet_dev
+      POSTGRES_USER: pawmeet
+      POSTGRES_PASSWORD: pawmeet_dev_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -1859,7 +1859,7 @@ Merge su main (con approval)
 ```toml
 # apps/api/fly.toml
 
-app = "dogwalk-api"
+app = "pawmeet-api"
 primary_region = "fra"           # Francoforte (vicino all'Italia)
 
 [build]
@@ -1942,8 +1942,8 @@ NODE_ENV=development
 API_URL=http://localhost:8787
 
 # ──── Database (Neon) ────
-DATABASE_URL=postgresql://dogwalk:dogwalk_dev_password@localhost:5432/dogwalk_dev
-# In produzione: postgres://user:pass@ep-xxx.region.aws.neon.tech/dogwalk
+DATABASE_URL=postgresql://pawmeet:pawmeet_dev_password@localhost:5432/pawmeet_dev
+# In produzione: postgres://user:pass@ep-xxx.region.aws.neon.tech/pawmeet
 
 # ──── JWT ────
 JWT_PRIVATE_KEY=<RS256 private key, PEM format>
@@ -1960,7 +1960,7 @@ APPLE_PRIVATE_KEY=<apple-private-key>
 
 # ──── Email (Resend) ────
 RESEND_API_KEY=<resend-api-key>
-EMAIL_FROM=noreply@dogwalk.app
+EMAIL_FROM=noreply@pawmeet.io
 
 # ──── Push Notifications ────
 EXPO_ACCESS_TOKEN=<expo-push-token>
@@ -1976,7 +1976,7 @@ UPSTASH_REDIS_REST_TOKEN=<upstash-redis-token>
 R2_ACCOUNT_ID=<cloudflare-account-id>
 R2_ACCESS_KEY_ID=<r2-access-key-id>
 R2_SECRET_ACCESS_KEY=<r2-secret-access-key>
-R2_BUCKET_NAME=dogwalk-photos
+R2_BUCKET_NAME=pawmeet-photos
 R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
 ```
 
@@ -1992,9 +1992,9 @@ R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
                     │                                            │
          ┌──────────▼──────────┐                    ┌───────────▼──────────┐
          │  Cloudflare Pages    │                    │  Fly.io (Node.js)    │
-         │                      │                    │  (api.dogwalk.app)    │
-         │  dogwalk.app (web)   │                    │                      │
-         │  admin.dogwalk.app   │                    │  Hono + tRPC         │
+         │                      │                    │  (api.pawmeet.io)    │
+         │  pawmeet.io (web)   │                    │                      │
+         │  admin.pawmeet.io   │                    │  Hono + tRPC         │
          └──────────────────────┘                    │  WebSocket nativo    │
                                                      │  BullMQ workers      │
                                                      └──────────┬───────────┘
@@ -2052,7 +2052,7 @@ Fly.io scala orizzontalmente aggiungendo machine. Il processo puo essere auto-sc
 │                                         ▼                           │
 │                              ┌─────────────────────┐                │
 │                              │                     │                │
-│                              │    DogWalk System   │                │
+│                              │    PawMeet System   │                │
 │                              │                     │                │
 │                              │  App mobile social  │                │
 │                              │  per matching cani   │                │
@@ -2535,7 +2535,7 @@ eas update --branch staging              # OTA update
 
 ---
 
-> **Documento preparato da:** Software Architecture Team - DogWalk
+> **Documento preparato da:** Software Architecture Team - PawMeet
 > **Prossima revisione:** Aprile 2026 (post Sprint 2)
 > **Distribuzione:** Engineering Team, Tech Lead, CTO
 

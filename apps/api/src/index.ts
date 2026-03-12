@@ -76,7 +76,7 @@ experimentService.initialize().then(() => {
 
 console.log(`PawMeet API running on port ${port}`);
 
-const server = serve({ fetch: app.fetch, port });
+const server = serve({ fetch: app.fetch, port, hostname: '0.0.0.0' });
 
 // Attach WebSocket server to the HTTP server
 setupWebSocket(server);

@@ -2,11 +2,12 @@ import type { Result } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { Ratelimit } from '@upstash/ratelimit';
-import { verifyAccessToken } from '../lib/jwt.js';
+import { verifyAccessToken, verifyAdminAccessToken } from '../lib/jwt.js';
 
 export interface Context {
   userId: string | null;
   clientIp: string;
+  adminRole?: string;
   [key: string]: unknown;
 }
 
@@ -22,12 +23,21 @@ export async function createContext(opts: { req: Request }): Promise<Context> {
     return { userId: null, clientIp };
   }
 
+  const token = authHeader.slice(7);
+
+  // Try user access token first
   try {
-    const token = authHeader.slice(7);
     const payload = await verifyAccessToken(token);
     return { userId: payload.sub, clientIp };
-  } catch (e) {
-    logger.warn('tRPC', 'Failed to verify access token in context', e);
+  } catch {
+    // Not a user token — try admin token
+  }
+
+  try {
+    const payload = await verifyAdminAccessToken(token);
+    return { userId: payload.sub, clientIp, adminRole: payload.role };
+  } catch {
+    logger.warn('tRPC', 'Failed to verify access token in context');
     return { userId: null, clientIp };
   }
 }

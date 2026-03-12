@@ -23,28 +23,13 @@ import { protectedProcedure, router } from '../trpc.js';
 // via a simple allowlist or DB flag. For MVP, we check an ADMIN_EMAILS env var
 // and fall back to a DB column if it exists.
 
-function createAdminProcedure(db: NeonHttpDatabase) {
+function createAdminProcedure(_db: NeonHttpDatabase) {
   return protectedProcedure.use(async ({ ctx, next }) => {
-    // Check ADMIN_EMAILS env var first (comma-separated list)
-    const adminEmailsEnv = process.env.ADMIN_EMAILS;
-    if (!adminEmailsEnv) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Admin access not configured',
-      });
-    }
-    const adminEmails = adminEmailsEnv.split(',').map((email: string) => email.trim());
-
-    const [user] = await db.select().from(users).where(eq(users.id, ctx.userId));
-    if (!user) {
-      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User not found' });
-    }
-
-    if (!adminEmails.includes(user.email)) {
+    if (!ctx.adminRole) {
       throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
     }
 
-    return next({ ctx: { ...ctx, userId: ctx.userId, adminEmail: user.email } });
+    return next({ ctx: { ...ctx, userId: ctx.userId, adminRole: ctx.adminRole } });
   });
 }
 

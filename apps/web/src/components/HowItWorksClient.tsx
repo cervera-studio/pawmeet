@@ -40,8 +40,7 @@ export default function HowItWorksClient({ strings }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
             {steps.map((step, i) => {
               const Icon = iconMap[step.iconName];
-              const stepStrings =
-                strings.items[step.id as keyof typeof strings.items];
+              const stepStrings = strings.items[step.id as keyof typeof strings.items];
               return (
                 <motion.div
                   key={step.number}

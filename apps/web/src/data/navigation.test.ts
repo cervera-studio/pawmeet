@@ -1,5 +1,5 @@
 import type { NavLink } from './navigation';
-import { getNavLinks, getSiteLinks, getLegalLinks } from './navigation';
+import { getLegalLinks, getNavLinks, getSiteLinks } from './navigation';
 
 const navLinks = getNavLinks('it');
 const siteLinks = getSiteLinks('it');

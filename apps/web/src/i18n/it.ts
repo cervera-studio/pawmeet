@@ -81,7 +81,7 @@ const it = {
       walkTogether: {
         title: 'Passeggia insieme',
         description:
-          "Incontra nuovi amici a due e quattro zampe, condividi percorsi e rendi ogni uscita un momento speciale.",
+          'Incontra nuovi amici a due e quattro zampe, condividi percorsi e rendi ogni uscita un momento speciale.',
       },
     },
   },
@@ -94,7 +94,7 @@ const it = {
     comingSoon: 'Disponibile a breve su iOS e Android.',
   },
   waitlist: {
-    heading: 'Entra nella lista d\'attesa',
+    heading: "Entra nella lista d'attesa",
     description:
       'Sii tra i primi a provare PawMeet. Lascia la tua email e ti avviseremo al lancio.',
     emailLabel: 'Il tuo indirizzo email',
@@ -105,7 +105,7 @@ const it = {
     successMessage: 'Controlla la tua email per confermare.',
     errorMessage: 'Qualcosa e andato storto. Riprova tra poco.',
     noSpam: 'Niente spam, promesso. Solo aggiornamenti importanti.',
-    pageHeading: 'Unisciti alla lista d\'attesa',
+    pageHeading: "Unisciti alla lista d'attesa",
     pageDescription:
       "PawMeet sta arrivando! Iscriviti per essere tra i primi a scoprire l'app e ricevere accesso anticipato esclusivo.",
     statsSubscribers: 'Iscritti alla waitlist',
@@ -147,11 +147,11 @@ const it = {
     blogDescription: 'Consigli, guide e storie dal mondo PawMeet.',
     contactTitle: 'Contatti',
     contactDescription: 'Contattaci per qualsiasi domanda o suggerimento su PawMeet.',
-    waitlistTitle: 'Lista d\'attesa',
+    waitlistTitle: "Lista d'attesa",
     waitlistDescription:
       "Iscriviti alla lista d'attesa di PawMeet e sii tra i primi a provare l'app.",
     privacyTitle: 'Privacy Policy',
-    termsTitle: 'Termini e Condizioni d\'Uso',
+    termsTitle: "Termini e Condizioni d'Uso",
     cookieTitle: 'Cookie Policy',
   },
   about: {

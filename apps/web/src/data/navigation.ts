@@ -1,5 +1,5 @@
-import type { Locale } from '../i18n/locales';
 import { t } from '../i18n';
+import type { Locale } from '../i18n/locales';
 
 export interface NavLink {
   href: string;

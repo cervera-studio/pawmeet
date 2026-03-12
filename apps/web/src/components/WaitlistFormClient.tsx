@@ -154,9 +154,7 @@ export default function WaitlistFormClient({ strings }: Props) {
         </AnimatePresence>
 
         {state !== 'success' && state !== 'error' && (
-          <p className="mt-4 text-[13px] text-neutral-500">
-            {strings.noSpam}
-          </p>
+          <p className="mt-4 text-[13px] text-neutral-500">{strings.noSpam}</p>
         )}
       </div>
     </section>

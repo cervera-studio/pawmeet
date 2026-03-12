@@ -150,8 +150,7 @@ const en: TranslationDictionary = {
     contactTitle: 'Contact',
     contactDescription: 'Contact us for any questions or suggestions about PawMeet.',
     waitlistTitle: 'Waitlist',
-    waitlistDescription:
-      'Join the PawMeet waitlist and be among the first to try the app.',
+    waitlistDescription: 'Join the PawMeet waitlist and be among the first to try the app.',
     privacyTitle: 'Privacy Policy',
     termsTitle: 'Terms & Conditions of Use',
     cookieTitle: 'Cookie Policy',

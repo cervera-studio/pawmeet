@@ -59,8 +59,7 @@ export default function FeaturesClient({ strings }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => {
             const Icon = iconMap[feature.iconName];
-            const featureStrings =
-              strings.items[feature.id as keyof typeof strings.items];
+            const featureStrings = strings.items[feature.id as keyof typeof strings.items];
             return (
               <motion.div
                 key={feature.id}

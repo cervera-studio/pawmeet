@@ -1,12 +1,12 @@
+import en from './en';
 import type { TranslationDictionary } from './it';
+import it from './it';
 import type { Locale } from './locales';
 import { DEFAULT_LOCALE } from './locales';
-import en from './en';
-import it from './it';
 
-export { DEFAULT_LOCALE, LOCALES } from './locales';
-export type { Locale } from './locales';
 export type { TranslationDictionary } from './it';
+export type { Locale } from './locales';
+export { DEFAULT_LOCALE, LOCALES } from './locales';
 
 const translations: Record<Locale, TranslationDictionary> = { it, en };
 

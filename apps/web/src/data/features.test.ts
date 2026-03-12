@@ -17,9 +17,9 @@ describe('features', () => {
     }
   });
 
-  it('every feature has an icon (non-empty string)', () => {
+  it('every feature has an iconName (non-empty string)', () => {
     for (const feature of features) {
-      expect(feature.icon.length).toBeGreaterThan(0);
+      expect(feature.iconName.length).toBeGreaterThan(0);
     }
   });
 
@@ -28,15 +28,9 @@ describe('features', () => {
     expect(new Set(titles).size).toBe(titles.length);
   });
 
-  it('has no duplicate icons', () => {
-    const icons = features.map((f) => f.icon);
+  it('has no duplicate iconNames', () => {
+    const icons = features.map((f) => f.iconName);
     expect(new Set(icons).size).toBe(icons.length);
-  });
-
-  it('each feature object has exactly 3 keys', () => {
-    for (const feature of features) {
-      expect(Object.keys(feature)).toHaveLength(3);
-    }
   });
 
   it('contains the "Mappa interattiva" feature', () => {
@@ -44,13 +38,15 @@ describe('features', () => {
     expect(mapFeature).toBeDefined();
   });
 
-  it('contains the "Match intelligente" feature', () => {
+  it('contains the "Match intelligente" feature as highlighted', () => {
     const matchFeature = features.find((f) => f.title === 'Match intelligente');
     expect(matchFeature).toBeDefined();
+    expect(matchFeature?.highlighted).toBe(true);
   });
 
-  it('contains the "Tracciamento percorsi" feature', () => {
+  it('contains the "Tracciamento percorsi" feature as comingSoon', () => {
     const trackingFeature = features.find((f) => f.title === 'Tracciamento percorsi');
     expect(trackingFeature).toBeDefined();
+    expect(trackingFeature?.comingSoon).toBe(true);
   });
 });

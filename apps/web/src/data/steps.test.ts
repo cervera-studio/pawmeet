@@ -5,16 +5,10 @@ describe('steps', () => {
     expect(steps).toHaveLength(3);
   });
 
-  it('steps are numbered sequentially starting from 01', () => {
-    expect(steps[0].number).toBe('01');
-    expect(steps[1].number).toBe('02');
-    expect(steps[2].number).toBe('03');
-  });
-
-  it('step numbers are zero-padded two-digit strings', () => {
-    for (const step of steps) {
-      expect(step.number).toMatch(/^\d{2}$/);
-    }
+  it('steps are numbered sequentially starting from 1', () => {
+    expect(steps[0].number).toBe(1);
+    expect(steps[1].number).toBe(2);
+    expect(steps[2].number).toBe(3);
   });
 
   it('every step has a non-empty title', () => {
@@ -29,6 +23,12 @@ describe('steps', () => {
     }
   });
 
+  it('every step has an iconName', () => {
+    for (const step of steps) {
+      expect(step.iconName.length).toBeGreaterThan(0);
+    }
+  });
+
   it('has no duplicate step numbers', () => {
     const numbers = steps.map((s) => s.number);
     expect(new Set(numbers).size).toBe(numbers.length);
@@ -39,9 +39,9 @@ describe('steps', () => {
     expect(new Set(titles).size).toBe(titles.length);
   });
 
-  it('each step object has exactly 3 keys', () => {
+  it('each step object has exactly 4 keys', () => {
     for (const step of steps) {
-      expect(Object.keys(step)).toHaveLength(3);
+      expect(Object.keys(step)).toHaveLength(4);
     }
   });
 

@@ -40,15 +40,15 @@ describe('Avatar', () => {
   it('uses dog placeholder color when type is dog', () => {
     render(<Avatar testID="avatar" type="dog" />);
     const el = screen.getByTestId('avatar');
-    // Dog placeholder uses primary50 (#FFF3ED)
-    expect(el).toHaveStyle({ backgroundColor: '#FFF3ED' });
+    // Dog placeholder uses primary50 (#ECFDF5)
+    expect(el).toHaveStyle({ backgroundColor: '#ECFDF5' });
   });
 
   it('uses user placeholder color when type is user', () => {
     render(<Avatar testID="avatar" type="user" />);
     const el = screen.getByTestId('avatar');
-    // User placeholder uses neutral200 (#E5E5EA)
-    expect(el).toHaveStyle({ backgroundColor: '#E5E5EA' });
+    // User placeholder uses surfaceCard / neutral100 (#F2F2F7)
+    expect(el).toHaveStyle({ backgroundColor: '#F2F2F7' });
   });
 
   it('renders an image when source is provided', () => {

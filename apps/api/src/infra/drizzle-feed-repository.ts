@@ -1,7 +1,5 @@
 import {
   dogProfiles,
-  groupEventParticipants,
-  matches,
   postComments,
   postLikes,
   postMedia,
@@ -558,60 +556,34 @@ export class DrizzleFeedRepository implements FeedRepository {
   }
 
   async getConnectedUserIds(userId: string): Promise<string[]> {
-    // Get user's dog IDs
-    const userDogs = await this.db
-      .select({ id: dogProfiles.id })
-      .from(dogProfiles)
-      .where(and(eq(dogProfiles.ownerId, userId), eq(dogProfiles.isActive, true)));
+    // Single CTE query: get all connected user IDs from matches + group events
+    const result = await this.db.execute(sql`
+      WITH user_dogs AS (
+        SELECT id FROM dog_profiles
+        WHERE owner_id = ${userId} AND is_active = true
+      ),
+      match_partner_owners AS (
+        SELECT DISTINCT dp.owner_id AS connected_user_id
+        FROM matches m
+        JOIN user_dogs ud ON (m.dog_a_id = ud.id OR m.dog_b_id = ud.id)
+        JOIN dog_profiles dp ON dp.id = CASE
+          WHEN m.dog_a_id = ud.id THEN m.dog_b_id
+          ELSE m.dog_a_id
+        END
+        WHERE m.is_active = true
+      ),
+      event_co_participants AS (
+        SELECT DISTINCT gep2.user_id AS connected_user_id
+        FROM group_event_participants gep1
+        JOIN group_event_participants gep2 ON gep2.event_id = gep1.event_id
+        WHERE gep1.user_id = ${userId}
+          AND gep2.user_id != ${userId}
+      )
+      SELECT connected_user_id FROM match_partner_owners
+      UNION
+      SELECT connected_user_id FROM event_co_participants
+    `);
 
-    const dogIds = userDogs.map((d) => d.id);
-    if (dogIds.length === 0) return [];
-
-    // Get match partners: owners of dogs matched with user's dogs
-    const matchPartners = await this.db
-      .select({ dogAId: matches.dogAId, dogBId: matches.dogBId })
-      .from(matches)
-      .where(
-        and(
-          eq(matches.isActive, true),
-          or(inArray(matches.dogAId, dogIds), inArray(matches.dogBId, dogIds)),
-        ),
-      );
-
-    const partnerDogIds = new Set<string>();
-    for (const m of matchPartners) {
-      if (dogIds.includes(m.dogAId)) partnerDogIds.add(m.dogBId);
-      if (dogIds.includes(m.dogBId)) partnerDogIds.add(m.dogAId);
-    }
-
-    const partnerDogArray = [...partnerDogIds];
-    const ownerIds = new Set<string>();
-
-    if (partnerDogArray.length > 0) {
-      const owners = await this.db
-        .select({ ownerId: dogProfiles.ownerId })
-        .from(dogProfiles)
-        .where(inArray(dogProfiles.id, partnerDogArray));
-      for (const o of owners) ownerIds.add(o.ownerId);
-    }
-
-    // Get group event co-participants
-    const userEvents = await this.db
-      .select({ eventId: groupEventParticipants.eventId })
-      .from(groupEventParticipants)
-      .where(eq(groupEventParticipants.userId, userId));
-
-    const eventIds = userEvents.map((e) => e.eventId);
-    if (eventIds.length > 0) {
-      const coParticipants = await this.db
-        .select({ userId: groupEventParticipants.userId })
-        .from(groupEventParticipants)
-        .where(inArray(groupEventParticipants.eventId, eventIds));
-      for (const p of coParticipants) {
-        if (p.userId !== userId) ownerIds.add(p.userId);
-      }
-    }
-
-    return [...ownerIds];
+    return (result.rows as { connected_user_id: string }[]).map((r) => r.connected_user_id);
   }
 }

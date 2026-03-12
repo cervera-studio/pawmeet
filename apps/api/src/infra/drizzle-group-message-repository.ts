@@ -117,22 +117,16 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
       participantCountByEvent.set(row.eventId, row.count);
     }
 
-    // Batch-fetch last messages for all active events
-    const allMessagesRows = await this.db
-      .select()
+    // DISTINCT ON to get only the last message per event (instead of fetching ALL messages)
+    const lastMessagesRows = await this.db
+      .selectDistinctOn([groupMessages.eventId])
       .from(groupMessages)
-      .where(
-        and(inArray(groupMessages.eventId, activeEventIds), eq(groupMessages.isDeleted, false)),
-      )
+      .where(and(inArray(groupMessages.eventId, activeEventIds), eq(groupMessages.isDeleted, false)))
       .orderBy(groupMessages.eventId, desc(groupMessages.createdAt));
 
-    // Pick the first (most recent) message per eventId
     const lastMessageByEvent = new Map<string, GroupChatMessage>();
-    for (const row of allMessagesRows) {
-      const msg = row as unknown as GroupChatMessage;
-      if (!lastMessageByEvent.has(msg.eventId)) {
-        lastMessageByEvent.set(msg.eventId, msg);
-      }
+    for (const row of lastMessagesRows) {
+      lastMessageByEvent.set(row.eventId, row as unknown as GroupChatMessage);
     }
 
     // Batch-fetch read records for all active events for this user

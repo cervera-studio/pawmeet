@@ -30,20 +30,16 @@ export class DrizzleMessageRepository implements MessageRepository {
 
     const matchIds = userMatches.map((m) => m.id);
 
-    // Batch-fetch last messages for all matches using DISTINCT ON
+    // DISTINCT ON to get only the last message per match (instead of fetching ALL messages)
     const lastMessagesRows = await this.db
-      .select()
+      .selectDistinctOn([messages.matchId])
       .from(messages)
       .where(and(inArray(messages.matchId, matchIds), eq(messages.isDeleted, false)))
       .orderBy(messages.matchId, desc(messages.createdAt));
 
-    // Group and pick the first (most recent) message per matchId
     const lastMessageByMatch = new Map<string, ChatMessage>();
     for (const row of lastMessagesRows) {
-      const msg = row as unknown as ChatMessage;
-      if (!lastMessageByMatch.has(msg.matchId)) {
-        lastMessageByMatch.set(msg.matchId, msg);
-      }
+      lastMessageByMatch.set(row.matchId, row as unknown as ChatMessage);
     }
 
     // Batch-fetch unread counts for all matches
@@ -68,44 +64,39 @@ export class DrizzleMessageRepository implements MessageRepository {
       unreadByMatch.set(row.matchId, row.count);
     }
 
-    // Collect all "other" dogIds (the dog that doesn't belong to the current user)
+    // Single query: get other dogs + their owners via JOIN
     const otherDogIds = userMatches.map((m) => (dogIds.includes(m.dogAId) ? m.dogBId : m.dogAId));
     const uniqueOtherDogIds = [...new Set(otherDogIds)];
 
-    // Batch-fetch dog profiles for all other dogs
-    const otherDogs =
+    const dogUserRows =
       uniqueOtherDogIds.length > 0
         ? await this.db
-            .select({ id: dogProfiles.id, ownerId: dogProfiles.ownerId, name: dogProfiles.name })
+            .select({
+              dogId: dogProfiles.id,
+              dogName: dogProfiles.name,
+              ownerId: dogProfiles.ownerId,
+              ownerDisplayName: users.displayName,
+              ownerAvatarUrl: users.avatarUrl,
+            })
             .from(dogProfiles)
+            .innerJoin(users, eq(dogProfiles.ownerId, users.id))
             .where(inArray(dogProfiles.id, uniqueOtherDogIds))
         : [];
 
     const dogById = new Map<string, { ownerId: string; name: string }>();
-    for (const dog of otherDogs) {
-      dogById.set(dog.id, { ownerId: dog.ownerId, name: dog.name });
-    }
-
-    // Batch-fetch user info for all dog owners
-    const ownerIds = [...new Set(otherDogs.map((d) => d.ownerId))];
-    const otherUsers =
-      ownerIds.length > 0
-        ? await this.db
-            .select({
-              id: users.id,
-              displayName: users.displayName,
-              avatarUrl: users.avatarUrl,
-            })
-            .from(users)
-            .where(inArray(users.id, ownerIds))
-        : [];
-
     const userById = new Map<
       string,
       { id: string; displayName: string; avatarUrl: string | null }
     >();
-    for (const user of otherUsers) {
-      userById.set(user.id, user);
+    for (const row of dogUserRows) {
+      dogById.set(row.dogId, { ownerId: row.ownerId, name: row.dogName });
+      if (!userById.has(row.ownerId)) {
+        userById.set(row.ownerId, {
+          id: row.ownerId,
+          displayName: row.ownerDisplayName,
+          avatarUrl: row.ownerAvatarUrl,
+        });
+      }
     }
 
     // Assemble results

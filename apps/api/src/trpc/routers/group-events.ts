@@ -187,8 +187,6 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
 
     listSponsors: protectedProcedure
       .input(listEventSponsorsSchema)
-      .query(async ({ input }) =>
-        unwrapResult(await deps.listEventSponsors(input.eventId)),
-      ),
+      .query(async ({ input }) => unwrapResult(await deps.listEventSponsors(input.eventId))),
   });
 }

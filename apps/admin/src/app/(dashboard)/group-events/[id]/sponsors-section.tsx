@@ -1,9 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
 import { addSponsorToEvent, fetchEventSponsors, removeSponsorFromEvent } from '../actions';
 
 interface EventSponsor {
@@ -17,7 +17,10 @@ interface EventSponsor {
   organizationLogoUrl: string | null;
 }
 
-const tierConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
+const tierConfig: Record<
+  string,
+  { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }
+> = {
   title: { label: 'Title', variant: 'default' },
   gold: { label: 'Gold', variant: 'secondary' },
   silver: { label: 'Silver', variant: 'outline' },
@@ -30,7 +33,13 @@ const placementLabels: Record<string, string> = {
   banner: 'Banner',
 };
 
-export function SponsorsSection({ eventId, initialSponsors }: { eventId: string; initialSponsors: EventSponsor[] }) {
+export function SponsorsSection({
+  eventId,
+  initialSponsors,
+}: {
+  eventId: string;
+  initialSponsors: EventSponsor[];
+}) {
   const [sponsors, setSponsors] = useState<EventSponsor[]>(initialSponsors);
   const [showAddForm, setShowAddForm] = useState(false);
   const [orgId, setOrgId] = useState('');
@@ -117,7 +126,11 @@ export function SponsorsSection({ eventId, initialSponsors }: { eventId: string;
             <div key={s.id} className="flex items-center justify-between rounded-md border p-3">
               <div className="flex items-center gap-3">
                 {s.organizationLogoUrl && (
-                  <img src={s.organizationLogoUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+                  <img
+                    src={s.organizationLogoUrl}
+                    alt=""
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
                 )}
                 <div>
                   <span className="font-medium">{s.organizationName}</span>

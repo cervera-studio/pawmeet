@@ -1,5 +1,5 @@
-import { AppError, fail, succeed } from '@pawmeet/types';
 import type { Result } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import type { EventSponsorRepository } from '../ports/event-sponsor-repository.js';
 
 type Deps = {

@@ -35,9 +35,7 @@ export class DrizzleEventSponsorRepository implements EventSponsorRepository {
 
   async findByEventWithOrg(
     eventId: string,
-  ): Promise<
-    (EventSponsor & { organizationName: string; organizationLogoUrl: string | null })[]
-  > {
+  ): Promise<(EventSponsor & { organizationName: string; organizationLogoUrl: string | null })[]> {
     const rows = await this.db
       .select({
         id: eventSponsors.id,

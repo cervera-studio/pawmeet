@@ -951,27 +951,25 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       }),
 
     // ── Event sponsors management ────────────────────────────────────────────
-    listEventSponsors: adminProcedure
-      .input(listEventSponsorsSchema)
-      .query(async ({ input }) => {
-        const sponsors = await db
-          .select({
-            id: eventSponsors.id,
-            eventId: eventSponsors.eventId,
-            organizationId: eventSponsors.organizationId,
-            tier: eventSponsors.tier,
-            logoPlacement: eventSponsors.logoPlacement,
-            createdAt: eventSponsors.createdAt,
-            organizationName: organizations.name,
-            organizationLogoUrl: organizations.logoUrl,
-          })
-          .from(eventSponsors)
-          .innerJoin(organizations, eq(eventSponsors.organizationId, organizations.id))
-          .where(eq(eventSponsors.eventId, input.eventId))
-          .orderBy(eventSponsors.createdAt);
+    listEventSponsors: adminProcedure.input(listEventSponsorsSchema).query(async ({ input }) => {
+      const sponsors = await db
+        .select({
+          id: eventSponsors.id,
+          eventId: eventSponsors.eventId,
+          organizationId: eventSponsors.organizationId,
+          tier: eventSponsors.tier,
+          logoPlacement: eventSponsors.logoPlacement,
+          createdAt: eventSponsors.createdAt,
+          organizationName: organizations.name,
+          organizationLogoUrl: organizations.logoUrl,
+        })
+        .from(eventSponsors)
+        .innerJoin(organizations, eq(eventSponsors.organizationId, organizations.id))
+        .where(eq(eventSponsors.eventId, input.eventId))
+        .orderBy(eventSponsors.createdAt);
 
-        return { data: sponsors };
-      }),
+      return { data: sponsors };
+    }),
 
     addEventSponsor: adminProcedure.input(addSponsorSchema).mutation(async ({ input }) => {
       // Check event exists
@@ -1002,9 +1000,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         const [countRow] = await db
           .select({ value: count() })
           .from(eventSponsors)
-          .where(
-            and(eq(eventSponsors.eventId, input.eventId), eq(eventSponsors.tier, input.tier)),
-          );
+          .where(and(eq(eventSponsors.eventId, input.eventId), eq(eventSponsors.tier, input.tier)));
         if ((countRow?.value ?? 0) >= limit) {
           throw new TRPCError({
             code: 'BAD_REQUEST',

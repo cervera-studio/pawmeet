@@ -1,5 +1,5 @@
-import { pgTable, timestamp, uniqueIndex, uuid, varchar, check } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
+import { check, pgTable, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
 import { groupEvents } from './group-events';
 import { organizations } from './organizations';
 

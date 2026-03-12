@@ -1,5 +1,5 @@
+import type { Badge, Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
-import type { Result, Badge } from '@pawmeet/types';
 import type { BadgeRepository } from '../ports/badge-repository.js';
 import type { GroupEventRepository } from '../ports/group-event-repository.js';
 
@@ -9,11 +9,7 @@ type Deps = {
 };
 
 export function createAwardMainEventBadge({ badgeRepo, groupEventRepo }: Deps) {
-  return async (
-    userId: string,
-    dogId: string,
-    eventId: string,
-  ): Promise<Result<Badge | null>> => {
+  return async (userId: string, dogId: string, eventId: string): Promise<Result<Badge | null>> => {
     const event = await groupEventRepo.findById(eventId);
     if (!event || !event.isOfficial) {
       return fail(new AppError('NOT_OFFICIAL_EVENT', "L'evento non è un Main Event", 400));

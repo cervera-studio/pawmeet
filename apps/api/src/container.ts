@@ -9,6 +9,7 @@ import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
 import { DrizzleConsentRepository } from './infra/drizzle-consent-repository.js';
 import { DrizzleContentReportRepository } from './infra/drizzle-content-report-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
+import { DrizzleEventSponsorRepository } from './infra/drizzle-event-sponsor-repository.js';
 import { DrizzleFeedRepository } from './infra/drizzle-feed-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
 import { DrizzleFollowRepository } from './infra/drizzle-follow-repository.js';
@@ -19,7 +20,6 @@ import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-rep
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
 import { DrizzleMatchingAiRepository } from './infra/drizzle-matching-ai-repository.js';
 import { DrizzleMessageRepository } from './infra/drizzle-message-repository.js';
-import { DrizzleEventSponsorRepository } from './infra/drizzle-event-sponsor-repository.js';
 import { DrizzleOrganizationRepository } from './infra/drizzle-organization-repository.js';
 import { DrizzleStoryRepository } from './infra/drizzle-story-repository.js';
 import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
@@ -38,6 +38,8 @@ import { WsFeedRealtimeService } from './infra/ws-feed-realtime-service.js';
 import { enqueueGdprExport } from './jobs/queue.js';
 import { db } from './lib/db.js';
 import type { AnalyticsProvider } from './ports/analytics-provider.js';
+// Use cases — users
+import { createAddEventSponsor } from './use-cases/add-event-sponsor.js';
 // Use cases — group events
 import { createAddOrganizationMember } from './use-cases/add-organization-member.js';
 // Use cases — feed
@@ -45,6 +47,7 @@ import { createAddPostTags } from './use-cases/add-post-tags.js';
 // Use cases — fitness
 import { createAddTrackPoints } from './use-cases/add-track-points.js';
 import { createApproveParticipant } from './use-cases/approve-participant.js';
+import { createAwardMainEventBadge } from './use-cases/award-main-event-badge.js';
 // Use cases — gamification
 import { createAwardXp } from './use-cases/award-xp.js';
 // Use cases — follows
@@ -56,9 +59,6 @@ import { createCancelWalk } from './use-cases/cancel-walk.js';
 // Use cases — badges
 import { createCheckAndAwardBadges } from './use-cases/check-and-award-badges.js';
 import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-achievements.js';
-// Use cases — users
-import { createAddEventSponsor } from './use-cases/add-event-sponsor.js';
-import { createAwardMainEventBadge } from './use-cases/award-main-event-badge.js';
 import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
 // Use cases — dogs
 import { createConfirmDogPhoto } from './use-cases/confirm-dog-photo.js';
@@ -122,10 +122,10 @@ import { createLikeDog } from './use-cases/like-dog.js';
 import { createLikePost } from './use-cases/like-post.js';
 import { createListAchievements } from './use-cases/list-achievements.js';
 import { createListActiveChallenges } from './use-cases/list-active-challenges.js';
-import { createListEventSponsors } from './use-cases/list-event-sponsors.js';
 import { createListBadges } from './use-cases/list-badges.js';
 import { createListBlocked } from './use-cases/list-blocked.js';
 import { createListConversations } from './use-cases/list-conversations.js';
+import { createListEventSponsors } from './use-cases/list-event-sponsors.js';
 import { createListFeaturedEvents } from './use-cases/list-featured-events.js';
 import { createListFollowers } from './use-cases/list-followers.js';
 import { createListFollowing } from './use-cases/list-following.js';

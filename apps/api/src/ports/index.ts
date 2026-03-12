@@ -8,6 +8,10 @@ export type { ChatService } from './chat-service.js';
 export type { ContentReportRepository, CreateReportInput } from './content-report-repository.js';
 export type { CreateDogInput, DogRepository } from './dog-repository.js';
 export type { EmailService } from './email-service.js';
+export type {
+  CreateEventSponsorInput,
+  EventSponsorRepository,
+} from './event-sponsor-repository.js';
 export type { ExperimentService } from './experiment-service.js';
 export type { FeedRealtimeService } from './feed-realtime-service.js';
 export type {
@@ -39,10 +43,6 @@ export type {
   ListOrganizationsQuery,
   OrganizationRepository,
 } from './organization-repository.js';
-export type {
-  CreateEventSponsorInput,
-  EventSponsorRepository,
-} from './event-sponsor-repository.js';
 export type { StorageService } from './storage-service.js';
 export type { CreateStoryInput, StoryRepository } from './story-repository.js';
 export type {

@@ -1,0 +1,61 @@
+import { describe, expect, it, vi } from 'vitest';
+import { buildGroupEvent } from '../test-utils/builders.js';
+import { createAwardMainEventBadge } from './award-main-event-badge.js';
+
+function setup(overrides: {
+  badgeRepo?: Record<string, any>;
+  groupEventRepo?: Record<string, any>;
+} = {}) {
+  const badgeRepo = {
+    hasBadge: vi.fn().mockResolvedValue(false),
+    award: vi.fn().mockResolvedValue({
+      id: 'badge-1',
+      dogId: 'dog-1',
+      type: 'main_event',
+      awardedAt: new Date(),
+    }),
+    findByDog: vi.fn().mockResolvedValue([]),
+    ...overrides.badgeRepo,
+  };
+  const groupEventRepo = {
+    findById: vi.fn().mockResolvedValue(buildGroupEvent({ isOfficial: true })),
+    ...overrides.groupEventRepo,
+  };
+
+  const awardMainEventBadge = createAwardMainEventBadge({
+    badgeRepo,
+    groupEventRepo: groupEventRepo as any,
+  });
+  return { awardMainEventBadge, badgeRepo, groupEventRepo };
+}
+
+describe('awardMainEventBadge', () => {
+  it('awards badge for official event', async () => {
+    const { awardMainEventBadge, badgeRepo } = setup();
+    const result = await awardMainEventBadge('user-1', 'dog-1', 'event-1');
+    expect(result.success).toBe(true);
+    expect(badgeRepo.award).toHaveBeenCalledWith('dog-1', 'main_event');
+  });
+
+  it('returns null if badge already awarded', async () => {
+    const { awardMainEventBadge, badgeRepo } = setup({
+      badgeRepo: { hasBadge: vi.fn().mockResolvedValue(true) },
+    });
+    const result = await awardMainEventBadge('user-1', 'dog-1', 'event-1');
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBeNull();
+    }
+    expect(badgeRepo.award).not.toHaveBeenCalled();
+  });
+
+  it('fails if event is not official', async () => {
+    const { awardMainEventBadge } = setup({
+      groupEventRepo: {
+        findById: vi.fn().mockResolvedValue(buildGroupEvent({ isOfficial: false })),
+      },
+    });
+    const result = await awardMainEventBadge('user-1', 'dog-1', 'event-1');
+    expect(result.success).toBe(false);
+  });
+});

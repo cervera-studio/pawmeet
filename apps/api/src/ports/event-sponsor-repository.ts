@@ -13,8 +13,6 @@ export interface EventSponsorRepository {
   findByEvent(eventId: string): Promise<EventSponsor[]>;
   findByEventWithOrg(
     eventId: string,
-  ): Promise<
-    (EventSponsor & { organizationName: string; organizationLogoUrl: string | null })[]
-  >;
+  ): Promise<(EventSponsor & { organizationName: string; organizationLogoUrl: string | null })[]>;
   countByEventAndTier(eventId: string, tier: string): Promise<number>;
 }

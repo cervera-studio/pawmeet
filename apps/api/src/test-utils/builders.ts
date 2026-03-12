@@ -31,6 +31,7 @@ import {
 } from '@pawmeet/types';
 import { vi } from 'vitest';
 import type { ActivityRepository } from '../ports/activity-repository.js';
+import type { EventSponsorRepository } from '../ports/event-sponsor-repository.js';
 import type { ExperimentService } from '../ports/experiment-service.js';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import type { GdprExportRepository } from '../ports/gdpr-export-repository.js';
@@ -61,7 +62,6 @@ import type {
   WalkTrackRepository,
 } from '../ports/index.js';
 import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';
-import type { EventSponsorRepository } from '../ports/event-sponsor-repository.js';
 import type { OrganizationRepository } from '../ports/organization-repository.js';
 
 // ── Entity builders ──────────────────────────────────────────────────────────
@@ -1058,6 +1058,33 @@ export function buildOrganizationRepo(
     findMember: vi.fn().mockResolvedValue(buildOrganizationMember()),
     listMembers: vi.fn().mockResolvedValue([]),
     isMemberOfVerifiedOrg: vi.fn().mockResolvedValue({ isMember: true, organizationId: 'org-1' }),
+    ...overrides,
+  };
+}
+
+// ── Event Sponsor builders ────────────────────────────────────────────────
+
+export function buildEventSponsor(overrides: Partial<EventSponsor> = {}): EventSponsor {
+  return {
+    id: 'sponsor-1',
+    eventId: 'event-1',
+    organizationId: 'org-1',
+    tier: 'partner',
+    logoPlacement: 'footer',
+    createdAt: new Date('2026-01-01'),
+    ...overrides,
+  };
+}
+
+export function buildEventSponsorRepo(
+  overrides: Partial<EventSponsorRepository> = {},
+): EventSponsorRepository {
+  return {
+    add: vi.fn().mockResolvedValue(buildEventSponsor()),
+    remove: vi.fn().mockResolvedValue(undefined),
+    findByEvent: vi.fn().mockResolvedValue([]),
+    findByEventWithOrg: vi.fn().mockResolvedValue([]),
+    countByEventAndTier: vi.fn().mockResolvedValue(0),
     ...overrides,
   };
 }

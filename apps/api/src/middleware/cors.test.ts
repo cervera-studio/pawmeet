@@ -21,10 +21,10 @@ describe('corsMiddleware', () => {
   const blockedOrigins = [
     'http://localhost:8080',
     'https://evil.com',
-    'https://dogwalk.app.evil.com',
-    'https://notdogwalk.app',
-    'https://dogwalk.app',
-    'https://admin.dogwalk.app',
+    'https://pawmeet.io.evil.com',
+    'https://notpawmeet.io',
+    'https://pawmeet.io',
+    'https://den.pawmeet.io',
   ];
 
   it.each(allowedOrigins)('allows requests from %s', async (origin) => {

@@ -1,3 +1,4 @@
+import { zValidator } from '@hono/zod-validator';
 import {
   blockUserSchema,
   followUserSchema,
@@ -7,7 +8,6 @@ import {
   unblockUserSchema,
   unfollowUserSchema,
 } from '@pawmeet/validation';
-import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import type { followDeps as FollowDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';

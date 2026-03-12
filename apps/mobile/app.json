@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "DogWalk",
-    "slug": "dogwalk",
+    "name": "PawMeet",
+    "slug": "pawmeet",
     "version": "0.0.1",
     "orientation": "portrait",
-    "scheme": "dogwalk",
+    "scheme": "pawmeet",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.dogwalk.mobile",
+      "bundleIdentifier": "io.pawmeet.mobile",
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Per mostrarti cani nelle vicinanze",
@@ -21,7 +21,7 @@
       "adaptiveIcon": {
         "backgroundColor": "#065F46"
       },
-      "package": "app.dogwalk.mobile",
+      "package": "io.pawmeet.mobile",
       "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "CAMERA"]
     },
     "plugins": [
@@ -34,8 +34,8 @@
       [
         "@sentry/react-native/expo",
         {
-          "organization": "dogwalk",
-          "project": "dogwalk-mobile"
+          "organization": "cervera-studio",
+          "project": "pawmeet-mobile"
         }
       ],
       "./plugins/with-certificate-pinning"

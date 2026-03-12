@@ -74,7 +74,7 @@ experimentService.initialize().then(() => {
   console.log('Statsig experiment service ready');
 });
 
-console.log(`DogWalk API running on port ${port}`);
+console.log(`PawMeet API running on port ${port}`);
 
 const server = serve({ fetch: app.fetch, port });
 

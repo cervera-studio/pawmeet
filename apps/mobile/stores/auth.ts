@@ -64,7 +64,7 @@ export const useAuthStore = create<AuthState>()(
       clearAgeVerification: () => set({ requiresAgeVerification: false }),
     }),
     {
-      name: 'dogwalk-auth',
+      name: 'pawmeet-auth',
       storage: createJSONStorage(() => mmkvStorage),
       // Only persist user profile data — tokens stay in SecureStore
       partialize: (state) => ({

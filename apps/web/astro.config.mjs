@@ -4,7 +4,7 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://dogwalk.app',
+  site: 'https://pawmeet.io',
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],

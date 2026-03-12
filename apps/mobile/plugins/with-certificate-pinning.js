@@ -13,7 +13,7 @@ const path = require('node:path');
 // We duplicate the config here because config plugins run at build time
 // in a plain Node.js context (no bundler, no TS path aliases).
 const PINNED_DOMAINS = {
-  'api.dogwalk.app': {
+  'api.pawmeet.io': {
     pins: [
       // Primary pin — current leaf certificate SPKI SHA-256
       // TODO(#220): Replace with actual hash after first production deploy

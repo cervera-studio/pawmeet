@@ -19,7 +19,7 @@
  *
  * To extract the SPKI hash from a live server:
  * ```bash
- * openssl s_client -connect api.dogwalk.app:443 -servername api.dogwalk.app 2>/dev/null \
+ * openssl s_client -connect api.pawmeet.io:443 -servername api.pawmeet.io 2>/dev/null \
  *   | openssl x509 -pubkey -noout \
  *   | openssl pkey -pubin -outform DER \
  *   | openssl dgst -sha256 -binary \
@@ -31,7 +31,7 @@
  * refuse all API connections until an update is deployed.
  */
 export const PINNED_DOMAINS = {
-  'api.dogwalk.app': {
+  'api.pawmeet.io': {
     // Pin the public key hash, not the certificate itself,
     // so renewals with the same key pair don't break pinning.
     pins: [
@@ -53,7 +53,7 @@ export type PinnedDomain = keyof typeof PINNED_DOMAINS;
  * Update these dates when rotating certificates.
  */
 export const PIN_METADATA = {
-  'api.dogwalk.app': {
+  'api.pawmeet.io': {
     // TODO(#220): Set actual expiry date after first deploy
     primaryExpiry: new Date('2027-01-01'),
     lastRotated: new Date('2026-03-11'),

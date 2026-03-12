@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for dogwalk-api on 2026-03-10T17:47:08+01:00
+# fly.toml app configuration file generated for pawmeet-api
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'dogwalk-api'
+app = 'pawmeet-api'
 primary_region = 'fra'
 
 [build]

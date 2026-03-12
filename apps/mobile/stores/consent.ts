@@ -35,7 +35,7 @@ export const useConsentStore = create<ConsentStoreState>()(
         }),
     }),
     {
-      name: 'dogwalk-consent',
+      name: 'pawmeet-consent',
       storage: createJSONStorage(() => mmkvStorage),
     },
   ),

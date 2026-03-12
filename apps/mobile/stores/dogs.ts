@@ -66,7 +66,7 @@ export const useDogsStore = create<DogsState>()(
         })),
     }),
     {
-      name: 'dogwalk-dogs',
+      name: 'pawmeet-dogs',
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({
         dogs: state.dogs,

@@ -1,3 +1,4 @@
+import { zValidator } from '@hono/zod-validator';
 import {
   forgotPasswordSchema,
   loginSchema,
@@ -9,7 +10,6 @@ import {
   socialLoginSchema,
   verifyEmailOtpSchema,
 } from '@pawmeet/validation';
-import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import type { authDeps as AuthDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';

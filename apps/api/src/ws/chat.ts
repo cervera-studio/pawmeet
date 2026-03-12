@@ -1,6 +1,6 @@
+import type { ServerType } from '@hono/node-server';
 import { WS_EVENT, type WsEvent, type WsMessage } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import type { ServerType } from '@hono/node-server';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
 import { handleUpgrade } from './auth.js';

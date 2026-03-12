@@ -1,9 +1,9 @@
 import { cors } from 'hono/cors';
 
 const PRODUCTION_ORIGINS = [
-  'https://dogwalk.app',
-  'https://admin.dogwalk.app',
-  'https://dogwalk-admin.vercel.app',
+  'https://pawmeet.io',
+  'https://den.pawmeet.io',
+  'https://pawmeet-admin.vercel.app',
 ];
 
 const DEVELOPMENT_ORIGINS = [

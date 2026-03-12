@@ -19,7 +19,7 @@ async function seed() {
   await db
     .insert(adminUsers)
     .values({
-      email: 'admin@dogwalk.app',
+      email: 'admin@pawmeet.io',
       passwordHash,
       displayName: 'Super Admin',
       role: 'super_admin',
@@ -27,7 +27,7 @@ async function seed() {
     })
     .onConflictDoNothing();
 
-  console.log('Done. Admin user created: admin@dogwalk.app');
+  console.log('Done. Admin user created: admin@pawmeet.io');
 }
 
 seed().catch((err) => {

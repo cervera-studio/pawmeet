@@ -2,9 +2,9 @@ import * as SecureStore from 'expo-secure-store';
 import { createMMKV } from 'react-native-mmkv';
 import type { StateStorage } from 'zustand/middleware';
 
-const TOKEN_KEY = 'dogwalk_auth_token';
-const REFRESH_TOKEN_KEY = 'dogwalk_refresh_token';
-const MMKV_ENCRYPTION_KEY = 'dogwalk_mmkv_enc_key';
+const TOKEN_KEY = 'pawmeet_auth_token';
+const REFRESH_TOKEN_KEY = 'pawmeet_refresh_token';
+const MMKV_ENCRYPTION_KEY = 'pawmeet_mmkv_enc_key';
 
 // ---------------------------------------------------------------------------
 // MMKV — fast synchronous key-value storage for caching & Zustand persistence
@@ -21,7 +21,7 @@ function getOrCreateEncryptionKey(): string {
   return key;
 }
 
-export const mmkv = createMMKV({ id: 'dogwalk', encryptionKey: getOrCreateEncryptionKey() });
+export const mmkv = createMMKV({ id: 'pawmeet', encryptionKey: getOrCreateEncryptionKey() });
 
 /** Type-safe JSON cache helpers built on top of MMKV. */
 export const cache = {

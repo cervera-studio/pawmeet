@@ -198,6 +198,14 @@ export interface UserDataExport {
     status: string;
     createdAt: string;
   }[];
+  analyticsEvents: {
+    eventName: string;
+    properties: Record<string, unknown> | null;
+    clientTimestamp: string;
+    serverTimestamp: string;
+    platform: string;
+    screenName: string | null;
+  }[];
 }
 
 interface Deps {
@@ -220,6 +228,7 @@ const DATA_RECIPIENTS = [
   { name: 'Sentry', purpose: 'Monitoraggio errori' },
   { name: 'Statsig', purpose: 'Feature flags e A/B testing' },
   { name: 'Fly.io', purpose: 'API server hosting' },
+  { name: 'PostHog Cloud EU', purpose: 'Product analytics (dati pseudonimizzati)' },
 ] as const;
 
 /**
@@ -272,6 +281,7 @@ export function createExportUserData(deps: Deps) {
       swipeScoreLogsData,
       contentReportsData,
       userReportsData,
+      analyticsEventsData,
     ] = await Promise.all([
       gdprExportRepo.getPostsWithMedia(userId),
       gdprExportRepo.getSwipes(dogIds),
@@ -297,6 +307,7 @@ export function createExportUserData(deps: Deps) {
       gdprExportRepo.getSwipeScoreLogs(dogIds),
       gdprExportRepo.getContentReports(userId),
       gdprExportRepo.getUserReports(userId),
+      gdprExportRepo.getAnalyticsEvents(userId),
     ]);
 
     return succeed({
@@ -518,6 +529,14 @@ export function createExportUserData(deps: Deps) {
         description: r.description,
         status: r.status,
         createdAt: toIso(r.createdAt),
+      })),
+      analyticsEvents: analyticsEventsData.map((e) => ({
+        eventName: e.eventName,
+        properties: e.properties,
+        clientTimestamp: toIso(e.clientTimestamp),
+        serverTimestamp: toIso(e.serverTimestamp),
+        platform: e.platform,
+        screenName: e.screenName,
       })),
     });
   };

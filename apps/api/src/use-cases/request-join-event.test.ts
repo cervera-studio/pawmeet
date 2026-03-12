@@ -11,23 +11,26 @@ import {
 import { createRequestJoinEvent } from './request-join-event.js';
 
 describe('requestJoinEvent', () => {
-  const defaultEvent = buildGroupEvent({ createdBy: 'host-1' });
+  const _defaultEvent = buildGroupEvent({ createdBy: 'host-1' });
 
-  function setup(overrides: {
-    event?: ReturnType<typeof buildGroupEvent> | null;
-    requiresApproval?: boolean;
-    existingParticipant?: { status: string } | null;
-    count?: number;
-    areFriends?: boolean;
-    visibility?: string;
-  } = {}) {
-    const event = overrides.event !== undefined
-      ? overrides.event
-      : buildGroupEvent({
-          createdBy: 'host-1',
-          requiresApproval: overrides.requiresApproval ?? false,
-          visibility: (overrides.visibility as any) ?? 'public',
-        });
+  function setup(
+    overrides: {
+      event?: ReturnType<typeof buildGroupEvent> | null;
+      requiresApproval?: boolean;
+      existingParticipant?: { status: string } | null;
+      count?: number;
+      areFriends?: boolean;
+      visibility?: string;
+    } = {},
+  ) {
+    const event =
+      overrides.event !== undefined
+        ? overrides.event
+        : buildGroupEvent({
+            createdBy: 'host-1',
+            requiresApproval: overrides.requiresApproval ?? false,
+            visibility: (overrides.visibility as any) ?? 'public',
+          });
 
     const groupEventRepo = buildGroupEventRepo({
       findById: vi.fn().mockResolvedValue(event),

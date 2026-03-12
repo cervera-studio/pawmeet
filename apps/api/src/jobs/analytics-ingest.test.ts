@@ -52,7 +52,9 @@ vi.mock('../lib/pseudonymize.js', () => ({
 
 // ── Builders ────────────────────────────────────────────────────────────────
 
-function buildEvent(overrides: Partial<AnalyticsJobData['events'][0]> = {}): AnalyticsJobData['events'][0] {
+function buildEvent(
+  overrides: Partial<AnalyticsJobData['events'][0]> = {},
+): AnalyticsJobData['events'][0] {
   return {
     clientEventId: `evt_${crypto.randomUUID()}`,
     userId: 'user-123',

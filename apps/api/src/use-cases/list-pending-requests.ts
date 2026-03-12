@@ -1,6 +1,6 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import type { GroupEventRepository } from '../ports/index.js';
 import type { PendingParticipant } from '../ports/group-event-repository.js';
+import type { GroupEventRepository } from '../ports/index.js';
 
 type Deps = {
   groupEventRepo: GroupEventRepository;
@@ -15,11 +15,7 @@ export function createListPendingRequests({ groupEventRepo }: Deps) {
 
     if (event.createdBy !== userId) {
       return fail(
-        new AppError(
-          'NOT_ORGANIZER',
-          'Solo l\'organizzatore può vedere le richieste pendenti',
-          403,
-        ),
+        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può vedere le richieste pendenti", 403),
       );
     }
 

@@ -8,18 +8,18 @@ import {
 import { createDeclineParticipant } from './decline-participant.js';
 
 describe('declineParticipant', () => {
-  function setup(overrides: {
-    participant?: { status: string } | null;
-  } = {}) {
+  function setup(overrides: { participant?: { status: string } | null } = {}) {
     const groupEventRepo = buildGroupEventRepo({
-      findById: vi.fn().mockResolvedValue(
-        buildGroupEvent({ createdBy: 'host-1', requiresApproval: true }),
-      ),
-      findParticipant: vi.fn().mockResolvedValue(
-        overrides.participant !== undefined
-          ? overrides.participant
-          : { status: 'pending', userId: 'user-2', eventId: 'event-1' },
-      ),
+      findById: vi
+        .fn()
+        .mockResolvedValue(buildGroupEvent({ createdBy: 'host-1', requiresApproval: true })),
+      findParticipant: vi
+        .fn()
+        .mockResolvedValue(
+          overrides.participant !== undefined
+            ? overrides.participant
+            : { status: 'pending', userId: 'user-2', eventId: 'event-1' },
+        ),
     });
     const notificationService = buildNotificationService();
 

@@ -2,7 +2,14 @@ import {
   GROUP_EVENT_MAX_RECURRING_TEMPLATES,
   GROUP_EVENT_OCCURRENCES_AHEAD,
 } from '@pawmeet/config';
-import { AppError, GROUP_EVENT_STATUS, fail, type GroupEvent, type Result, succeed } from '@pawmeet/types';
+import {
+  AppError,
+  fail,
+  GROUP_EVENT_STATUS,
+  type GroupEvent,
+  type Result,
+  succeed,
+} from '@pawmeet/types';
 import { RRule } from 'rrule';
 import type { DogRepository, GroupEventRepository } from '../ports/index.js';
 

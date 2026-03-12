@@ -11,10 +11,6 @@ import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createDataCleanupWorker } from './data-cleanup.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
-import {
-  createRecurringEventWorker,
-  scheduleRecurringEventGeneration,
-} from './recurring-event-generate.js';
 import { createGdprExportWorker } from './gdpr-export.js';
 import { createPhotoModerationWorker } from './photo-moderation.js';
 import {
@@ -22,6 +18,10 @@ import {
   scheduleDataCleanup,
   scheduleStoryCleanup,
 } from './queue.js';
+import {
+  createRecurringEventWorker,
+  scheduleRecurringEventGeneration,
+} from './recurring-event-generate.js';
 import { createEmailWorker } from './send-email.js';
 import { createNotificationWorker } from './send-notification.js';
 import { createStoryCleanupWorker } from './story-cleanup.js';

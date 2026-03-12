@@ -54,7 +54,7 @@ export function createRequestJoinEvent({
         return fail(
           new AppError(
             'EVENT_FRIENDS_ONLY',
-            'Questo evento è riservato agli amici dell\'organizzatore',
+            "Questo evento è riservato agli amici dell'organizzatore",
             403,
           ),
         );

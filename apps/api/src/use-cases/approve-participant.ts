@@ -20,7 +20,7 @@ export function createApproveParticipant({ groupEventRepo, notificationService }
 
     if (event.createdBy !== hostUserId) {
       return fail(
-        new AppError('NOT_ORGANIZER', 'Solo l\'organizzatore può approvare le richieste', 403),
+        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può approvare le richieste", 403),
       );
     }
 

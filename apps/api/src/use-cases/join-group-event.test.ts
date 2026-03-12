@@ -24,14 +24,15 @@ function buildParticipant(overrides: Partial<GroupEventParticipant> = {}): Group
   };
 }
 
-function setup(overrides: {
-  event?: ReturnType<typeof buildGroupEvent> | null;
-  count?: number;
-  existingParticipant?: GroupEventParticipant | null;
-  areFriends?: boolean;
-} = {}) {
-  const event =
-    overrides.event !== undefined ? overrides.event : buildGroupEvent();
+function setup(
+  overrides: {
+    event?: ReturnType<typeof buildGroupEvent> | null;
+    count?: number;
+    existingParticipant?: GroupEventParticipant | null;
+    areFriends?: boolean;
+  } = {},
+) {
+  const event = overrides.event !== undefined ? overrides.event : buildGroupEvent();
 
   const groupEventRepo = buildGroupEventRepo({
     findById: vi.fn().mockResolvedValue(event),

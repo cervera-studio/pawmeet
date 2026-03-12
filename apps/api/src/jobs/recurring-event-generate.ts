@@ -53,16 +53,15 @@ async function generateOccurrences({ groupEventRepo }: Deps): Promise<void> {
     const needed = GROUP_EVENT_OCCURRENCES_AHEAD - futureOccurrences.length;
 
     // Determine start date for new occurrences
-    const lastOccurrence = occurrences.length > 0
-      ? occurrences[occurrences.length - 1]!.scheduledAt
-      : now;
+    const lastOccurrence =
+      occurrences.length > 0 ? occurrences[occurrences.length - 1]!.scheduledAt : now;
 
     const afterDate = new Date(Math.max(lastOccurrence.getTime(), now.getTime()));
 
     try {
       const rrule = RRule.fromString(template.recurrenceRule);
-      const endLimit = template.recurrenceEnd
-        ?? new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+      const endLimit =
+        template.recurrenceEnd ?? new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
       const dates = rrule.between(afterDate, endLimit, false);
       const newDates = dates.slice(0, needed);
 
@@ -99,10 +98,7 @@ async function generateOccurrences({ groupEventRepo }: Deps): Promise<void> {
         );
       }
     } catch (err) {
-      console.error(
-        `[recurring-event] Failed to parse RRULE for template ${template.id}:`,
-        err,
-      );
+      console.error(`[recurring-event] Failed to parse RRULE for template ${template.id}:`, err);
     }
   }
 }

@@ -33,8 +33,7 @@ export const GROUP_EVENT_CATEGORY = {
   TRAINING: 'training',
 } as const;
 
-export type GroupEventCategory =
-  (typeof GROUP_EVENT_CATEGORY)[keyof typeof GROUP_EVENT_CATEGORY];
+export type GroupEventCategory = (typeof GROUP_EVENT_CATEGORY)[keyof typeof GROUP_EVENT_CATEGORY];
 
 export interface GroupEvent {
   id: string;

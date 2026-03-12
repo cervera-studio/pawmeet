@@ -68,10 +68,7 @@ export const groupEvents = pgTable(
       'group_events_status_valid',
       sql`${table.status} IN ('scheduled', 'in_progress', 'completed', 'cancelled', 'template')`,
     ),
-    check(
-      'group_events_category_valid',
-      sql`${table.category} IN ('walk', 'meetup', 'training')`,
-    ),
+    check('group_events_category_valid', sql`${table.category} IN ('walk', 'meetup', 'training')`),
   ],
 );
 

@@ -1,5 +1,6 @@
 import {
   achievements,
+  analyticsEvents,
   badges,
   challenges,
   contentReports,
@@ -35,6 +36,7 @@ import {
 import { and, eq, inArray, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
+  GdprAnalyticsEvent,
   GdprContentReport,
   GdprDailyActivity,
   GdprDmMessage,
@@ -568,6 +570,20 @@ export class DrizzleGdprExportRepository implements GdprExportRepository {
       })
       .from(reports)
       .where(eq(reports.reporterId, userId));
+  }
+
+  async getAnalyticsEvents(userId: string): Promise<GdprAnalyticsEvent[]> {
+    return this.db
+      .select({
+        eventName: analyticsEvents.eventName,
+        properties: analyticsEvents.properties,
+        clientTimestamp: analyticsEvents.clientTimestamp,
+        serverTimestamp: analyticsEvents.serverTimestamp,
+        platform: analyticsEvents.platform,
+        screenName: analyticsEvents.screenName,
+      })
+      .from(analyticsEvents)
+      .where(eq(analyticsEvents.userId, userId));
   }
 
   // -- Export status tracking --

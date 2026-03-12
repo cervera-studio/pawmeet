@@ -20,7 +20,7 @@ export function createDeclineParticipant({ groupEventRepo, notificationService }
 
     if (event.createdBy !== hostUserId) {
       return fail(
-        new AppError('NOT_ORGANIZER', 'Solo l\'organizzatore può rifiutare le richieste', 403),
+        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può rifiutare le richieste", 403),
       );
     }
 

@@ -8,21 +8,26 @@ import {
 import { createApproveParticipant } from './approve-participant.js';
 
 describe('approveParticipant', () => {
-  function setup(overrides: {
-    event?: ReturnType<typeof buildGroupEvent> | null;
-    participant?: { status: string } | null;
-  } = {}) {
-    const event = overrides.event !== undefined
-      ? overrides.event
-      : buildGroupEvent({ createdBy: 'host-1', requiresApproval: true });
+  function setup(
+    overrides: {
+      event?: ReturnType<typeof buildGroupEvent> | null;
+      participant?: { status: string } | null;
+    } = {},
+  ) {
+    const event =
+      overrides.event !== undefined
+        ? overrides.event
+        : buildGroupEvent({ createdBy: 'host-1', requiresApproval: true });
 
     const groupEventRepo = buildGroupEventRepo({
       findById: vi.fn().mockResolvedValue(event),
-      findParticipant: vi.fn().mockResolvedValue(
-        overrides.participant !== undefined
-          ? overrides.participant
-          : { status: 'pending', userId: 'user-2', eventId: 'event-1' },
-      ),
+      findParticipant: vi
+        .fn()
+        .mockResolvedValue(
+          overrides.participant !== undefined
+            ? overrides.participant
+            : { status: 'pending', userId: 'user-2', eventId: 'event-1' },
+        ),
     });
     const notificationService = buildNotificationService();
 

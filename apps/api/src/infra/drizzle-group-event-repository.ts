@@ -1,9 +1,7 @@
-import { groupEventParticipants, groupEvents } from '@pawmeet/db';
+import { dogProfiles, groupEventParticipants, groupEvents, users } from '@pawmeet/db';
 import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
-import { and, desc, eq, inArray, isNotNull, lte, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, lte, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
-import { dogProfiles } from '@pawmeet/db';
-import { users } from '@pawmeet/db';
 import type {
   CreateGroupEventInput,
   GroupEventRepository,
@@ -183,12 +181,7 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
     const rows = await this.db
       .select()
       .from(groupEvents)
-      .where(
-        and(
-          isNotNull(groupEvents.recurrenceRule),
-          eq(groupEvents.status, 'template'),
-        ),
-      );
+      .where(and(isNotNull(groupEvents.recurrenceRule), eq(groupEvents.status, 'template')));
     return rowsAs<GroupEvent>(rows);
   }
 

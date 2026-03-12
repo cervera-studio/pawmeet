@@ -1,8 +1,4 @@
-import type {
-  GroupEvent,
-  GroupEventParticipant,
-  GroupEventWithParticipants,
-} from '@pawmeet/types';
+import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
 
 export interface CreateGroupEventInput {
   createdBy: string;

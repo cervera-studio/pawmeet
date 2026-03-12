@@ -14,12 +14,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { formatDate } from '@/lib/formatters';
-import {
-  type AdminReportListItem,
-  type ReportStatus,
-  type ResolveAction,
-  reportRepository,
-} from '@/repositories';
+import type { AdminReportListItem, ReportStatus, ResolveAction } from '@/repositories';
+import { fetchReports as fetchReportsAction, resolveReport } from './actions';
 
 export const STATUS_TABS: { label: string; value: ReportStatus | undefined }[] = [
   { label: 'Tutte', value: undefined },
@@ -81,7 +77,7 @@ function ReportActions({
   async function handleAction(action: ResolveAction) {
     setIsPending(true);
     try {
-      await reportRepository.resolve(reportId, action);
+      await resolveReport(reportId, action);
       toast.success(ACTION_LABELS[action] ?? 'Azione completata');
       onResolved();
     } catch {
@@ -126,7 +122,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
     const status = statusOverride !== undefined ? statusOverride : statusFilter;
     setIsLoading(true);
     try {
-      const result = await reportRepository.list({
+      const result = await fetchReportsAction({
         page: pag.pageIndex + 1,
         pageSize: pag.pageSize,
         status,

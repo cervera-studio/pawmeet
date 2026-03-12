@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import type { AppSettings } from '@/repositories';
-import { settingsRepository } from '@/repositories';
+import { updateSettings } from './actions';
 
 interface SettingsFormProps {
   initialSettings: AppSettings;
@@ -21,29 +21,27 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   async function handleSaveGeneral() {
     setIsSaving(true);
-    try {
-      await settingsRepository.update({ appName, supportEmail });
+    const result = await updateSettings({ appName, supportEmail });
+    if (result.success) {
       toast.success('Impostazioni salvate');
-    } catch {
-      toast.error('Errore durante il salvataggio');
-    } finally {
-      setIsSaving(false);
+    } else {
+      toast.error(result.error ?? 'Errore durante il salvataggio');
     }
+    setIsSaving(false);
   }
 
   async function handleSaveModeration() {
     setIsSaving(true);
-    try {
-      await settingsRepository.update({
-        photoConfidenceThreshold: photoConfidence,
-        maxReportsBeforeSuspension: maxReports,
-      });
+    const result = await updateSettings({
+      photoConfidenceThreshold: photoConfidence,
+      maxReportsBeforeSuspension: maxReports,
+    });
+    if (result.success) {
       toast.success('Impostazioni salvate');
-    } catch {
-      toast.error('Errore durante il salvataggio');
-    } finally {
-      setIsSaving(false);
+    } else {
+      toast.error(result.error ?? 'Errore durante il salvataggio');
     }
+    setIsSaving(false);
   }
 
   function handleClearCache() {

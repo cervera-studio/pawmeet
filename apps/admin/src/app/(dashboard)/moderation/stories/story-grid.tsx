@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formatDateTime } from '@/lib/formatters';
 import type { AdminStory, AdminStoryPage } from '@/repositories';
-import { storyAdminRepository } from '@/repositories';
+import { deleteStory as deleteStoryAction, fetchStories as fetchStoriesAction } from './actions';
 
 function getTimeUntilExpiry(expiresAt: string): string {
   const now = new Date();
@@ -43,7 +43,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
   const fetchStories = useCallback(async (targetPage: number) => {
     setIsLoading(true);
     try {
-      const result = await storyAdminRepository.listStories({ page: targetPage, pageSize: 20 });
+      const result = await fetchStoriesAction({ page: targetPage, pageSize: 20 });
       setStories(result.data);
       setTotalPages(result.totalPages);
       setTotal(result.total);
@@ -58,7 +58,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
   async function handleDelete(storyId: string) {
     setIsDeleting(true);
     try {
-      await storyAdminRepository.deleteStory(storyId);
+      await deleteStoryAction(storyId);
       toast.success('Storia eliminata');
       void fetchStories(page);
     } catch (error) {

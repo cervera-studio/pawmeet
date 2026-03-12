@@ -6,12 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formatDateTime } from '@/lib/formatters';
-import {
-  type ContentReport,
-  type ContentReportPage,
-  contentModerationRepository,
-  type ReviewAction,
-} from '@/repositories';
+import type { ContentReport, ContentReportPage, ReviewAction } from '@/repositories';
+import { fetchPendingContent, reviewContent } from './actions';
 
 const REASON_LABEL: Record<string, string> = {
   inappropriate: 'Contenuto inappropriato',
@@ -40,7 +36,7 @@ export function ContentList({ initialData }: ContentListProps) {
   async function fetchReports(cursor?: string) {
     setIsLoading(true);
     try {
-      const result = await contentModerationRepository.listPending({ cursor, limit: 20 });
+      const result = await fetchPendingContent({ cursor, limit: 20 });
       setReports(result.reports);
       setNextCursor(result.nextCursor);
     } catch (error) {
@@ -53,7 +49,7 @@ export function ContentList({ initialData }: ContentListProps) {
   async function handleReview(reportId: string, action: ReviewAction) {
     setIsReviewing(true);
     try {
-      await contentModerationRepository.review(reportId, action);
+      await reviewContent(reportId, action);
       void fetchReports();
     } catch (error) {
       console.error('[ContentModeration] Failed to review report:', error);

@@ -1,10 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { usePermission } from '@/hooks/use-permission';
-import { userRepository } from '@/repositories';
+import { banUser, reactivateUser, suspendUser } from '../actions';
 
 type UserStatus = 'active' | 'suspended' | 'banned';
 
@@ -15,39 +14,35 @@ interface UserActionsProps {
 
 export function UserActions({ userId, initialStatus }: UserActionsProps) {
   const { isAdmin } = usePermission();
-  const router = useRouter();
 
   if (!isAdmin) {
     return null;
   }
 
   async function handleSuspend() {
-    try {
-      await userRepository.suspend(userId);
+    const result = await suspendUser(userId);
+    if (result.success) {
       toast.success('Utente sospeso');
-      router.refresh();
-    } catch {
-      toast.error('Errore durante la sospensione');
+    } else {
+      toast.error(result.error ?? 'Errore durante la sospensione');
     }
   }
 
   async function handleBan() {
-    try {
-      await userRepository.ban(userId);
+    const result = await banUser(userId);
+    if (result.success) {
       toast.success('Utente bannato');
-      router.refresh();
-    } catch {
-      toast.error('Errore durante il ban');
+    } else {
+      toast.error(result.error ?? 'Errore durante il ban');
     }
   }
 
   async function handleReactivate() {
-    try {
-      await userRepository.reactivate(userId);
+    const result = await reactivateUser(userId);
+    if (result.success) {
       toast.success('Utente riattivato');
-      router.refresh();
-    } catch {
-      toast.error('Errore durante la riattivazione');
+    } else {
+      toast.error(result.error ?? 'Errore durante la riattivazione');
     }
   }
 

@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { formatDate } from '@/lib/formatters';
 import type { AdminDogListItem } from '@/repositories';
-import { dogRepository } from '@/repositories';
+import { fetchDogs } from './actions';
 
 interface DogRow {
   id: string;
@@ -102,10 +102,10 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
     setDebounceTimer(timer);
   }
 
-  const fetchDogs = useCallback(async () => {
+  const loadDogs = useCallback(async () => {
     setIsLoading(true);
     try {
-      const result = await dogRepository.list({
+      const result = await fetchDogs({
         page: pagination.pageIndex + 1,
         pageSize: pagination.pageSize,
         search: debouncedSearch || undefined,
@@ -121,8 +121,8 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
   // Only fetch client-side when user interacts (search or paginate beyond initial)
   useEffect(() => {
     if (isInitialState) return;
-    void fetchDogs();
-  }, [fetchDogs, isInitialState]);
+    void loadDogs();
+  }, [loadDogs, isInitialState]);
 
   return (
     <>

@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatDateTime } from '@/lib/formatters';
-import { type PendingPhoto, photoModerationRepository } from '@/repositories';
+import type { PendingPhoto } from '@/repositories';
+import { approveAllPhotos, approvePhoto, rejectPhoto } from './actions';
 
 interface PhotoListProps {
   initialPhotos: PendingPhoto[];
@@ -17,7 +18,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
 
   async function handleApprove(photoId: string) {
     try {
-      await photoModerationRepository.approve(photoId);
+      await approvePhoto(photoId);
       setPhotos((prev) => prev.filter((p) => p.id !== photoId));
       toast.success('Foto approvata');
     } catch {
@@ -27,7 +28,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
 
   async function handleReject(photoId: string) {
     try {
-      await photoModerationRepository.reject(photoId);
+      await rejectPhoto(photoId);
       setPhotos((prev) => prev.filter((p) => p.id !== photoId));
       toast.success('Foto rifiutata');
     } catch {
@@ -37,7 +38,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
 
   async function handleApproveAll() {
     try {
-      await photoModerationRepository.approveAll();
+      await approveAllPhotos();
       setPhotos([]);
       toast.success('Tutte le foto approvate');
     } catch {

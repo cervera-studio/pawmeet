@@ -1,7 +1,8 @@
 import type { PaginatedResult } from '@dogwalk/types';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { type AdminUserListItem, userRepository } from '@/repositories';
+import type { AdminUserListItem } from '@/repositories';
+import { fetchUsers as fetchUsersAction } from './actions';
 
 export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem>) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -20,7 +21,7 @@ export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem
     setIsLoading(true);
     try {
       const firstSort = sorting[0];
-      const data = await userRepository.list({
+      const data = await fetchUsersAction({
         page: pagination.pageIndex + 1,
         pageSize: pagination.pageSize,
         search: globalFilter || undefined,

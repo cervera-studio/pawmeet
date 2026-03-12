@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { formatDateTime } from '@/lib/formatters';
-import { type FeedPostPage, type FeedStats, feedAdminRepository } from '@/repositories';
+import type { FeedPostPage, FeedStats } from '@/repositories';
+import { fetchFeedPosts, fetchFeedStats, moderatePost } from './actions';
 
 const STATUS_STYLES: Record<
   string,
@@ -53,7 +54,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
     const q = params?.searchOverride !== undefined ? params.searchOverride : search;
     setIsLoading(true);
     try {
-      const result = await feedAdminRepository.listPosts({
+      const result = await fetchFeedPosts({
         page: p,
         pageSize: 20,
         status: s,
@@ -71,7 +72,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
 
   async function fetchStats() {
     try {
-      const result = await feedAdminRepository.getFeedStats();
+      const result = await fetchFeedStats();
       setStats(result);
     } catch (error) {
       console.error('[FeedModeration] Failed to fetch stats:', error);
@@ -81,7 +82,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
   async function handleModeration(postId: string, status: 'approved' | 'rejected') {
     setIsUpdating(true);
     try {
-      await feedAdminRepository.updatePostModeration(postId, status);
+      await moderatePost(postId, status);
       void fetchPosts();
       void fetchStats();
     } catch (error) {

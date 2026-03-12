@@ -39,6 +39,10 @@ export type {
   ListOrganizationsQuery,
   OrganizationRepository,
 } from './organization-repository.js';
+export type {
+  CreateEventSponsorInput,
+  EventSponsorRepository,
+} from './event-sponsor-repository.js';
 export type { StorageService } from './storage-service.js';
 export type { CreateStoryInput, StoryRepository } from './story-repository.js';
 export type {

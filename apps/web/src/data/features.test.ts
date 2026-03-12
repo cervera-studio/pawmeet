@@ -5,15 +5,9 @@ describe('features', () => {
     expect(features).toHaveLength(6);
   });
 
-  it('every feature has a non-empty title', () => {
+  it('every feature has a non-empty id', () => {
     for (const feature of features) {
-      expect(feature.title.length).toBeGreaterThan(0);
-    }
-  });
-
-  it('every feature has a description of at least 20 characters', () => {
-    for (const feature of features) {
-      expect(feature.description.length).toBeGreaterThanOrEqual(20);
+      expect(feature.id.length).toBeGreaterThan(0);
     }
   });
 
@@ -23,9 +17,9 @@ describe('features', () => {
     }
   });
 
-  it('has no duplicate titles', () => {
-    const titles = features.map((f) => f.title);
-    expect(new Set(titles).size).toBe(titles.length);
+  it('has no duplicate ids', () => {
+    const ids = features.map((f) => f.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   it('has no duplicate iconNames', () => {
@@ -33,19 +27,19 @@ describe('features', () => {
     expect(new Set(icons).size).toBe(icons.length);
   });
 
-  it('contains the "Mappa interattiva" feature', () => {
-    const mapFeature = features.find((f) => f.title === 'Mappa interattiva');
+  it('contains the "interactiveMap" feature', () => {
+    const mapFeature = features.find((f) => f.id === 'interactiveMap');
     expect(mapFeature).toBeDefined();
   });
 
-  it('contains the "Match intelligente" feature as highlighted', () => {
-    const matchFeature = features.find((f) => f.title === 'Match intelligente');
+  it('contains the "smartMatch" feature as highlighted', () => {
+    const matchFeature = features.find((f) => f.id === 'smartMatch');
     expect(matchFeature).toBeDefined();
     expect(matchFeature?.highlighted).toBe(true);
   });
 
-  it('contains the "Tracciamento percorsi" feature as comingSoon', () => {
-    const trackingFeature = features.find((f) => f.title === 'Tracciamento percorsi');
+  it('contains the "routeTracking" feature as comingSoon', () => {
+    const trackingFeature = features.find((f) => f.id === 'routeTracking');
     expect(trackingFeature).toBeDefined();
     expect(trackingFeature?.comingSoon).toBe(true);
   });

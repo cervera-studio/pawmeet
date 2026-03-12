@@ -1,8 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactFormClient from '../components/ContactFormClient';
+import { t } from '../i18n';
+
+const strings = t('it');
 ---
 
-<BaseLayout title="Contatti" description="Contattaci per qualsiasi domanda o suggerimento su PawMeet.">
-  <ContactFormClient client:visible />
+<BaseLayout title={strings.meta.contactTitle} description={strings.meta.contactDescription} locale="it">
+  <ContactFormClient client:visible strings={strings.contact} />
 </BaseLayout>

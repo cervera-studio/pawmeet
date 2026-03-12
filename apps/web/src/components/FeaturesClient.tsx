@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { features } from '../data/features';
+import type { TranslationDictionary } from '../i18n';
 
 const iconMap: Record<string, LucideIcon> = {
   Sparkles,
@@ -32,7 +33,11 @@ const cardVariants = {
   }),
 };
 
-export default function FeaturesClient() {
+interface Props {
+  strings: TranslationDictionary['features'];
+}
+
+export default function FeaturesClient({ strings }: Props) {
   return (
     <section className="py-24 sm:py-32 bg-neutral-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,19 +49,21 @@ export default function FeaturesClient() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-[28px] sm:text-[32px] font-bold text-neutral-900">
-            Tutto quello che ti serve
+            {strings.heading}
           </h2>
           <p className="mt-4 text-[17px] text-neutral-700 max-w-2xl mx-auto">
-            Funzionalita pensate per rendere ogni passeggiata un'esperienza migliore.
+            {strings.description}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => {
             const Icon = iconMap[feature.iconName];
+            const featureStrings =
+              strings.items[feature.id as keyof typeof strings.items];
             return (
               <motion.div
-                key={feature.title}
+                key={feature.id}
                 custom={i}
                 variants={cardVariants}
                 initial="hidden"
@@ -71,7 +78,7 @@ export default function FeaturesClient() {
               >
                 {feature.comingSoon && (
                   <span className="absolute top-4 right-4 text-[11px] font-semibold uppercase tracking-wider text-neutral-600 bg-neutral-100 px-2.5 py-1 rounded-full">
-                    Presto
+                    {strings.comingSoonLabel}
                   </span>
                 )}
                 <div
@@ -83,9 +90,11 @@ export default function FeaturesClient() {
                 >
                   {Icon && <Icon size={22} strokeWidth={2} />}
                 </div>
-                <h3 className="text-[17px] font-semibold text-neutral-900 mb-2">{feature.title}</h3>
+                <h3 className="text-[17px] font-semibold text-neutral-900 mb-2">
+                  {featureStrings.title}
+                </h3>
                 <p className="text-[15px] leading-relaxed text-neutral-600">
-                  {feature.description}
+                  {featureStrings.description}
                 </p>
               </motion.div>
             );

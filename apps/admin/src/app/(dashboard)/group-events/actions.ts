@@ -33,3 +33,33 @@ export async function removeParticipant(participantId: string, eventId: string) 
   revalidatePath(`/group-events/${eventId}`);
   return { success: true };
 }
+
+export async function fetchEventSponsors(eventId: string) {
+  const api = await getServerTrpcClient();
+  const result = await api.admin.listEventSponsors.query({ eventId });
+  return result.data;
+}
+
+export async function addSponsorToEvent(
+  eventId: string,
+  organizationId: string,
+  tier: string,
+  logoPlacement: string,
+) {
+  const api = await getServerTrpcClient();
+  await api.admin.addEventSponsor.mutate({
+    eventId,
+    organizationId,
+    tier: tier as 'title' | 'gold' | 'silver' | 'partner',
+    logoPlacement: logoPlacement as 'header' | 'footer' | 'banner',
+  });
+  revalidatePath(`/group-events/${eventId}`);
+  return { success: true };
+}
+
+export async function removeSponsorFromEvent(eventId: string, organizationId: string) {
+  const api = await getServerTrpcClient();
+  await api.admin.removeEventSponsor.mutate({ eventId, organizationId });
+  revalidatePath(`/group-events/${eventId}`);
+  return { success: true };
+}

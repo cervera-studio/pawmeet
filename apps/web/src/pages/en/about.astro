@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t } from '../../i18n';
+
+const strings = t('en');
+---
+
+<BaseLayout title={strings.meta.aboutTitle} description={strings.meta.aboutDescription} locale="en">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+    <div class="text-center mb-16">
+      <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900">{strings.about.heading}</h1>
+      <p class="mt-4 text-lg text-neutral-700 max-w-2xl mx-auto">
+        {strings.about.intro}
+      </p>
+    </div>
+
+    <div class="space-y-12">
+      <div>
+        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">{strings.about.missionHeading}</h2>
+        <p class="text-neutral-700 text-lg">{strings.about.missionText}</p>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">{strings.about.whyHeading}</h2>
+        <p class="text-neutral-700 text-lg">{strings.about.whyText}</p>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">{strings.about.teamHeading}</h2>
+        <p class="text-neutral-700 text-lg">{strings.about.teamText}</p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

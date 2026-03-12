@@ -1,7 +1,12 @@
-import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+import { motion } from 'motion/react';
+import type { TranslationDictionary } from '../i18n';
 
-export default function HeroClient() {
+interface Props {
+  strings: TranslationDictionary['hero'];
+}
+
+export default function HeroClient({ strings }: Props) {
   return (
     <section className="relative overflow-hidden bg-surface">
       {/* Atmospheric gradient — barely there, like morning light */}
@@ -24,11 +29,8 @@ export default function HeroClient() {
             className="mb-8"
           >
             <span className="inline-flex items-center gap-2.5 text-[13px] font-medium tracking-[0.08em] uppercase text-neutral-500">
-              <span
-                className="w-8 h-[1px] bg-secondary"
-                aria-hidden="true"
-              />
-              Lancio 2027
+              <span className="w-8 h-[1px] bg-secondary" aria-hidden="true" />
+              {strings.eyebrow}
             </span>
           </motion.div>
 
@@ -39,11 +41,10 @@ export default function HeroClient() {
             transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="font-display text-[clamp(2.75rem,7vw,5.5rem)] leading-[1.05] tracking-[-0.02em] text-neutral-900"
           >
-            Trova il compagno
-            <br className="hidden sm:block" />
-            {' '}di passeggiata{' '}
+            {strings.headlinePart1}
+            <br className="hidden sm:block" /> {strings.headlinePart2}{' '}
             <em className="relative not-italic text-primary">
-              perfetto
+              {strings.headlineHighlight}
               <motion.span
                 className="absolute -bottom-1 left-0 w-full h-[2px] bg-secondary origin-left"
                 initial={{ scaleX: 0 }}
@@ -61,8 +62,7 @@ export default function HeroClient() {
             transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 text-[18px] sm:text-[20px] leading-[1.65] text-neutral-700 max-w-xl"
           >
-            Connettiti con altri proprietari nella tua zona.
-            Organizza passeggiate e rendi ogni uscita un'avventura.
+            {strings.subtitle}
           </motion.p>
 
           {/* CTA group */}
@@ -74,7 +74,7 @@ export default function HeroClient() {
           >
             {/* Primary CTA — the event */}
             <motion.a
-              href="/waitlist"
+              href={strings.ctaHref}
               className="group relative inline-flex items-center gap-3 px-8 py-4 bg-neutral-900 text-surface rounded-full text-[15px] font-semibold tracking-wide overflow-hidden"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -85,7 +85,7 @@ export default function HeroClient() {
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer-sweep_1.5s_ease-in-out]"
                 aria-hidden="true"
               />
-              <span className="relative">Unisciti alla waitlist</span>
+              <span className="relative">{strings.ctaPrimary}</span>
               <ArrowRight
                 size={16}
                 strokeWidth={2}
@@ -95,11 +95,14 @@ export default function HeroClient() {
 
             {/* Secondary — text link, editorial */}
             <a
-              href="#come-funziona"
+              href={strings.ctaSecondaryHref}
               className="group inline-flex items-center gap-1.5 text-[15px] font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-300"
             >
-              Scopri di più
-              <span className="inline-block w-4 h-[1px] bg-current transition-all duration-300 group-hover:w-6" aria-hidden="true" />
+              {strings.ctaSecondary}
+              <span
+                className="inline-block w-4 h-[1px] bg-current transition-all duration-300 group-hover:w-6"
+                aria-hidden="true"
+              />
             </a>
           </motion.div>
         </div>

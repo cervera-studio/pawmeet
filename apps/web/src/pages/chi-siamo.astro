@@ -1,42 +1,33 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { t } from '../i18n';
+
+const strings = t('it');
 ---
 
-<BaseLayout title="Chi siamo" description="Scopri il team dietro PawMeet e la nostra missione.">
+<BaseLayout title={strings.meta.aboutTitle} description={strings.meta.aboutDescription} locale="it">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
     <div class="text-center mb-16">
-      <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900">Chi siamo</h1>
+      <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900">{strings.about.heading}</h1>
       <p class="mt-4 text-lg text-neutral-700 max-w-2xl mx-auto">
-        Siamo un gruppo di amanti dei cani che crede nel potere delle passeggiate condivise.
+        {strings.about.intro}
       </p>
     </div>
 
     <div class="space-y-12">
       <div>
-        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">La nostra missione</h2>
-        <p class="text-neutral-700 text-lg">
-          PawMeet nasce dall'idea che passeggiare con il proprio cane possa essere molto di piu di una
-          semplice routine quotidiana. Vogliamo creare connessioni reali tra le persone attraverso
-          l'amore condiviso per i nostri amici a quattro zampe.
-        </p>
+        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">{strings.about.missionHeading}</h2>
+        <p class="text-neutral-700 text-lg">{strings.about.missionText}</p>
       </div>
 
       <div>
-        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">Perche PawMeet</h2>
-        <p class="text-neutral-700 text-lg">
-          Ogni giorno milioni di proprietari di cani escono per la passeggiata. Spesso gli stessi
-          percorsi, gli stessi orari, le stesse abitudini. PawMeet trasforma questa routine in
-          un'opportunita per socializzare, esplorare nuovi percorsi e far divertire i nostri cani
-          con nuovi compagni di gioco.
-        </p>
+        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">{strings.about.whyHeading}</h2>
+        <p class="text-neutral-700 text-lg">{strings.about.whyText}</p>
       </div>
 
       <div>
-        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">Il team</h2>
-        <p class="text-neutral-700 text-lg">
-          Siamo un piccolo team di sviluppatori, designer e, soprattutto, proprietari di cani.
-          Ogni funzionalita che creiamo nasce da un bisogno reale che abbiamo sperimentato in prima persona.
-        </p>
+        <h2 class="text-2xl font-semibold text-neutral-900 mb-4">{strings.about.teamHeading}</h2>
+        <p class="text-neutral-700 text-lg">{strings.about.teamText}</p>
       </div>
     </div>
   </div>

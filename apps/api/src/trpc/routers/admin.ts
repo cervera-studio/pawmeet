@@ -3,6 +3,7 @@ import {
   contentReports,
   dogPhotos,
   dogProfiles,
+  eventSponsors,
   groupEventParticipants,
   groupEvents,
   matches,
@@ -97,6 +98,22 @@ const listFeedPostsSchema = z.object({
 const updatePostModerationSchema = z.object({
   postId: z.string().uuid(),
   status: z.enum(['approved', 'rejected']),
+});
+
+const addSponsorSchema = z.object({
+  eventId: z.string().uuid(),
+  organizationId: z.string().uuid(),
+  tier: z.enum(['title', 'gold', 'silver', 'partner']),
+  logoPlacement: z.enum(['header', 'footer', 'banner']).default('footer'),
+});
+
+const removeSponsorSchema = z.object({
+  eventId: z.string().uuid(),
+  organizationId: z.string().uuid(),
+});
+
+const listEventSponsorsSchema = z.object({
+  eventId: z.string().uuid(),
 });
 
 // ── Router ─────────────────────────────────────────────────────────────────────
@@ -932,6 +949,100 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
         return { success: true };
       }),
+
+    // ── Event sponsors management ────────────────────────────────────────────
+    listEventSponsors: adminProcedure
+      .input(listEventSponsorsSchema)
+      .query(async ({ input }) => {
+        const sponsors = await db
+          .select({
+            id: eventSponsors.id,
+            eventId: eventSponsors.eventId,
+            organizationId: eventSponsors.organizationId,
+            tier: eventSponsors.tier,
+            logoPlacement: eventSponsors.logoPlacement,
+            createdAt: eventSponsors.createdAt,
+            organizationName: organizations.name,
+            organizationLogoUrl: organizations.logoUrl,
+          })
+          .from(eventSponsors)
+          .innerJoin(organizations, eq(eventSponsors.organizationId, organizations.id))
+          .where(eq(eventSponsors.eventId, input.eventId))
+          .orderBy(eventSponsors.createdAt);
+
+        return { data: sponsors };
+      }),
+
+    addEventSponsor: adminProcedure.input(addSponsorSchema).mutation(async ({ input }) => {
+      // Check event exists
+      const [event] = await db.select().from(groupEvents).where(eq(groupEvents.id, input.eventId));
+      if (!event) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+
+      // Check org exists and is verified
+      const [org] = await db
+        .select()
+        .from(organizations)
+        .where(eq(organizations.id, input.organizationId));
+      if (!org) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
+      }
+      if (!org.isVerified || !org.isActive) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Organization must be verified and active',
+        });
+      }
+
+      // Check tier limit
+      const tierLimits: Record<string, number> = { title: 1, gold: 2, silver: 5 };
+      const limit = tierLimits[input.tier];
+      if (limit !== undefined) {
+        const [countRow] = await db
+          .select({ value: count() })
+          .from(eventSponsors)
+          .where(
+            and(eq(eventSponsors.eventId, input.eventId), eq(eventSponsors.tier, input.tier)),
+          );
+        if ((countRow?.value ?? 0) >= limit) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Tier limit reached (max ${limit} for ${input.tier})`,
+          });
+        }
+      }
+
+      const [sponsor] = await db.insert(eventSponsors).values(input).returning();
+      return sponsor;
+    }),
+
+    removeEventSponsor: adminProcedure.input(removeSponsorSchema).mutation(async ({ input }) => {
+      const [existing] = await db
+        .select()
+        .from(eventSponsors)
+        .where(
+          and(
+            eq(eventSponsors.eventId, input.eventId),
+            eq(eventSponsors.organizationId, input.organizationId),
+          ),
+        );
+
+      if (!existing) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Sponsor not found for this event' });
+      }
+
+      await db
+        .delete(eventSponsors)
+        .where(
+          and(
+            eq(eventSponsors.eventId, input.eventId),
+            eq(eventSponsors.organizationId, input.organizationId),
+          ),
+        );
+
+      return { success: true };
+    }),
 
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────
     getSettings: adminProcedure.query(async () => {

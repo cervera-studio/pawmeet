@@ -1,23 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PrivacyAccordionClient from '../components/PrivacyAccordionClient';
+import { t } from '../i18n';
+
+const strings = t('it');
 ---
 
-<BaseLayout title="Privacy Policy">
+<BaseLayout title={strings.meta.privacyTitle} locale="it">
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-    <h1 class="text-[32px] sm:text-[40px] font-bold text-neutral-900 mb-2">Informativa sulla Privacy</h1>
-    <p class="text-[13px] text-neutral-500 mb-8">Ultimo aggiornamento: 11 marzo 2026</p>
+    <h1 class="text-[32px] sm:text-[40px] font-bold text-neutral-900 mb-2">{strings.privacy.heading}</h1>
+    <p class="text-[13px] text-neutral-500 mb-8">{strings.privacy.lastUpdated}</p>
 
-    <p class="text-[15px] text-neutral-700 mb-8 leading-relaxed">
-      La presente informativa descrive le modalità di raccolta, trattamento e protezione dei dati
-      personali degli utenti di <strong>PawMeet</strong> (app mobile e sito web pawmeet.io), ai sensi
-      degli artt. 13 e 14 del Regolamento (UE) 2016/679 (GDPR) e del D.Lgs. 196/2003.
-    </p>
+    <p class="text-[15px] text-neutral-700 mb-8 leading-relaxed" set:html={strings.privacy.intro} />
 
     <PrivacyAccordionClient client:visible />
 
     <p class="text-[13px] text-neutral-500 mt-12 border-t border-neutral-200 pt-6">
-      Informativa conforme al GDPR, al D.Lgs. 196/2003 e alle indicazioni del Garante per la protezione dei dati personali.
+      {strings.privacy.footer}
     </p>
   </div>
 </BaseLayout>

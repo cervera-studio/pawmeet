@@ -1,13 +1,22 @@
 ---
+import type { Locale } from '../i18n/locales';
+import { t } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'it' } = Astro.props;
+const strings = t(locale).downloadCta;
 ---
 
 <section class="py-20 sm:py-28 bg-primary-900 text-white">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 class="text-3xl sm:text-4xl font-bold">
-      Pronto a passeggiare?
+      {strings.heading}
     </h2>
     <p class="mt-4 text-lg text-neutral-200 max-w-2xl mx-auto">
-      Scarica l'app e unisciti a migliaia di proprietari di cani che hanno gia trovato i loro compagni di passeggiata.
+      {strings.description}
     </p>
 
     <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -20,7 +29,7 @@
           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
         </svg>
         <div class="text-left">
-          <div class="text-xs text-neutral-300">Scarica su</div>
+          <div class="text-xs text-neutral-300">{strings.appStoreLabel}</div>
           <div class="text-sm font-semibold">App Store</div>
         </div>
       </a>
@@ -34,14 +43,14 @@
           <path d="M3.18 23.67c-.37-.2-.55-.63-.55-1.11V1.44c0-.48.18-.91.55-1.11l11.26 11.67L3.18 23.67zm1.4 1.33l12.2-6.73-2.85-2.95-9.35 9.68zm15.38-10.2c.5.28.82.78.82 1.2s-.32.92-.82 1.2l-2.8 1.55-3.12-3.23 3.12-3.23 2.8 1.55-.01-.04zM4.58 1L13.93 10.68l-2.85 2.95L4.58 1z"/>
         </svg>
         <div class="text-left">
-          <div class="text-xs text-neutral-300">Disponibile su</div>
+          <div class="text-xs text-neutral-300">{strings.googlePlayLabel}</div>
           <div class="text-sm font-semibold">Google Play</div>
         </div>
       </a>
     </div>
 
     <p class="mt-6 text-sm text-neutral-300">
-      Disponibile a breve su iOS e Android.
+      {strings.comingSoon}
     </p>
   </div>
 </section>

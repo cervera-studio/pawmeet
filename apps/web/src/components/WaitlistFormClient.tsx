@@ -1,10 +1,15 @@
 import { Check, Loader2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { type FormEvent, useState } from 'react';
+import type { TranslationDictionary } from '../i18n';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
-export default function WaitlistFormClient() {
+interface Props {
+  strings: TranslationDictionary['waitlist'];
+}
+
+export default function WaitlistFormClient({ strings }: Props) {
   const [email, setEmail] = useState('');
   const [state, setState] = useState<FormState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,13 +29,13 @@ export default function WaitlistFormClient() {
         body: JSON.stringify({ email }),
       });
 
-      if (!res.ok) throw new Error("Errore durante l'iscrizione");
+      if (!res.ok) throw new Error('Submission error');
 
       setState('success');
       setEmail('');
     } catch {
       setState('error');
-      setErrorMessage('Qualcosa e andato storto. Riprova tra poco.');
+      setErrorMessage(strings.errorMessage);
       setTimeout(() => setState('idle'), 4000);
     }
   };
@@ -45,7 +50,7 @@ export default function WaitlistFormClient() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          Entra nella lista d'attesa
+          {strings.heading}
         </motion.h2>
         <motion.p
           className="mt-4 text-[17px] text-neutral-700"
@@ -54,7 +59,7 @@ export default function WaitlistFormClient() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          Sii tra i primi a provare PawMeet. Lascia la tua email e ti avviseremo al lancio.
+          {strings.description}
         </motion.p>
 
         <motion.form
@@ -66,7 +71,7 @@ export default function WaitlistFormClient() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <label htmlFor="waitlist-email-react" className="sr-only">
-            Il tuo indirizzo email
+            {strings.emailLabel}
           </label>
           <input
             type="email"
@@ -74,7 +79,7 @@ export default function WaitlistFormClient() {
             name="email"
             required
             autoComplete="email"
-            placeholder="La tua email"
+            placeholder={strings.emailPlaceholder}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={state === 'loading' || state === 'success'}
@@ -97,7 +102,7 @@ export default function WaitlistFormClient() {
                   className="flex items-center gap-2"
                 >
                   <Loader2 size={18} className="animate-spin" />
-                  Iscrizione...
+                  {strings.loadingButton}
                 </motion.span>
               )}
               {state === 'success' && (
@@ -108,7 +113,7 @@ export default function WaitlistFormClient() {
                   className="flex items-center gap-2"
                 >
                   <Check size={18} />
-                  Iscritto!
+                  {strings.successButton}
                 </motion.span>
               )}
               {(state === 'idle' || state === 'error') && (
@@ -118,7 +123,7 @@ export default function WaitlistFormClient() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  Iscrivimi
+                  {strings.submitButton}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -133,7 +138,7 @@ export default function WaitlistFormClient() {
               exit={{ opacity: 0 }}
               className="mt-4 text-[15px] text-primary font-medium"
             >
-              Controlla la tua email per confermare.
+              {strings.successMessage}
             </motion.p>
           )}
           {state === 'error' && (
@@ -150,7 +155,7 @@ export default function WaitlistFormClient() {
 
         {state !== 'success' && state !== 'error' && (
           <p className="mt-4 text-[13px] text-neutral-500">
-            Niente spam, promesso. Solo aggiornamenti importanti.
+            {strings.noSpam}
           </p>
         )}
       </div>

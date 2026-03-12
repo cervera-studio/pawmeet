@@ -1,7 +1,11 @@
 import type { NavLink } from './navigation';
-import { legalLinks, navLinks, siteLinks } from './navigation';
+import { getNavLinks, getSiteLinks, getLegalLinks } from './navigation';
 
-describe('navLinks', () => {
+const navLinks = getNavLinks('it');
+const siteLinks = getSiteLinks('it');
+const legalLinks = getLegalLinks('it');
+
+describe('getNavLinks (Italian)', () => {
   it('contains the expected number of links', () => {
     expect(navLinks).toHaveLength(4);
   });
@@ -28,7 +32,7 @@ describe('navLinks', () => {
   });
 });
 
-describe('siteLinks', () => {
+describe('getSiteLinks (Italian)', () => {
   it('contains the expected number of links', () => {
     expect(siteLinks).toHaveLength(4);
   });
@@ -56,7 +60,7 @@ describe('siteLinks', () => {
   });
 });
 
-describe('legalLinks', () => {
+describe('getLegalLinks (Italian)', () => {
   it('contains exactly 3 legal pages', () => {
     expect(legalLinks).toHaveLength(3);
   });
@@ -80,6 +84,35 @@ describe('legalLinks', () => {
   });
 });
 
+describe('English navigation', () => {
+  const enNavLinks = getNavLinks('en');
+  const enSiteLinks = getSiteLinks('en');
+  const enLegalLinks = getLegalLinks('en');
+
+  it('nav links use /en prefix', () => {
+    for (const link of enNavLinks) {
+      expect(link.href).toMatch(/^\/en/);
+    }
+  });
+
+  it('site links use /en prefix', () => {
+    for (const link of enSiteLinks) {
+      expect(link.href).toMatch(/^\/en/);
+    }
+  });
+
+  it('legal links use /en prefix', () => {
+    for (const link of enLegalLinks) {
+      expect(link.href).toMatch(/^\/en/);
+    }
+  });
+
+  it('nav links have English labels', () => {
+    expect(enNavLinks[0].label).toBe('Home');
+    expect(enNavLinks[1].label).toBe('About');
+  });
+});
+
 describe('cross-list consistency', () => {
   it('no navLink href overlaps with legalLinks', () => {
     const navHrefs = new Set(navLinks.map((l) => l.href));
@@ -89,7 +122,7 @@ describe('cross-list consistency', () => {
   });
 
   it('all link objects satisfy the NavLink interface shape', () => {
-    const allLinks: readonly NavLink[] = [...navLinks, ...siteLinks, ...legalLinks];
+    const allLinks: NavLink[] = [...navLinks, ...siteLinks, ...legalLinks];
     for (const link of allLinks) {
       expect(typeof link.href).toBe('string');
       expect(typeof link.label).toBe('string');

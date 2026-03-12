@@ -11,15 +11,9 @@ describe('steps', () => {
     expect(steps[2].number).toBe(3);
   });
 
-  it('every step has a non-empty title', () => {
+  it('every step has a non-empty id', () => {
     for (const step of steps) {
-      expect(step.title.length).toBeGreaterThan(0);
-    }
-  });
-
-  it('every step has a description of at least 20 characters', () => {
-    for (const step of steps) {
-      expect(step.description.length).toBeGreaterThanOrEqual(20);
+      expect(step.id.length).toBeGreaterThan(0);
     }
   });
 
@@ -34,22 +28,22 @@ describe('steps', () => {
     expect(new Set(numbers).size).toBe(numbers.length);
   });
 
-  it('has no duplicate titles', () => {
-    const titles = steps.map((s) => s.title);
-    expect(new Set(titles).size).toBe(titles.length);
+  it('has no duplicate ids', () => {
+    const ids = steps.map((s) => s.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('each step object has exactly 4 keys', () => {
+  it('each step object has exactly 3 keys', () => {
     for (const step of steps) {
-      expect(Object.keys(step)).toHaveLength(4);
+      expect(Object.keys(step)).toHaveLength(3);
     }
   });
 
-  it('first step is about creating a dog profile', () => {
-    expect(steps[0].title).toContain('profilo');
+  it('first step is about creating a profile', () => {
+    expect(steps[0].id).toBe('createProfile');
   });
 
   it('last step is about walking together', () => {
-    expect(steps[2].title.toLowerCase()).toContain('passeggia');
+    expect(steps[2].id).toBe('walkTogether');
   });
 });

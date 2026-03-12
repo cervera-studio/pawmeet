@@ -1,6 +1,7 @@
 import { Heart, type LucideIcon, PawPrint, TreePine } from 'lucide-react';
 import { motion } from 'motion/react';
 import { steps } from '../data/steps';
+import type { TranslationDictionary } from '../i18n';
 
 const iconMap: Record<string, LucideIcon> = {
   PawPrint,
@@ -8,9 +9,13 @@ const iconMap: Record<string, LucideIcon> = {
   TreePine,
 };
 
-export default function HowItWorksClient() {
+interface Props {
+  strings: TranslationDictionary['steps'];
+}
+
+export default function HowItWorksClient({ strings }: Props) {
   return (
-    <section id="come-funziona" className="py-24 sm:py-32 bg-white">
+    <section id={strings.sectionId} className="py-24 sm:py-32 bg-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="text-center mb-16"
@@ -19,9 +24,11 @@ export default function HowItWorksClient() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-[28px] sm:text-[32px] font-bold text-neutral-900">Come funziona</h2>
+          <h2 className="text-[28px] sm:text-[32px] font-bold text-neutral-900">
+            {strings.heading}
+          </h2>
           <p className="mt-4 text-[17px] text-neutral-700 max-w-2xl mx-auto">
-            Tre semplici passi per iniziare a passeggiare in compagnia.
+            {strings.description}
           </p>
         </motion.div>
 
@@ -33,6 +40,8 @@ export default function HowItWorksClient() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
             {steps.map((step, i) => {
               const Icon = iconMap[step.iconName];
+              const stepStrings =
+                strings.items[step.id as keyof typeof strings.items];
               return (
                 <motion.div
                   key={step.number}
@@ -55,12 +64,14 @@ export default function HowItWorksClient() {
 
                   {/* Step number */}
                   <div className="text-[13px] font-semibold text-primary uppercase tracking-wider mb-2">
-                    Passo {step.number}
+                    {strings.stepLabel} {step.number}
                   </div>
 
-                  <h3 className="text-[20px] font-semibold text-neutral-900 mb-3">{step.title}</h3>
+                  <h3 className="text-[20px] font-semibold text-neutral-900 mb-3">
+                    {stepStrings.title}
+                  </h3>
                   <p className="text-[15px] leading-relaxed text-neutral-600 max-w-xs mx-auto">
-                    {step.description}
+                    {stepStrings.description}
                   </p>
                 </motion.div>
               );

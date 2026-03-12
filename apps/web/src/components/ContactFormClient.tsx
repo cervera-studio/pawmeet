@@ -1,6 +1,7 @@
 import { Check, Loader2, Send } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { type FormEvent, useState } from 'react';
+import type { TranslationDictionary } from '../i18n';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -13,7 +14,11 @@ const fadeUp = {
 const inputClasses =
   'w-full px-5 py-3.5 rounded-xl border border-neutral-300 text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 text-[15px] bg-white';
 
-export default function ContactFormClient() {
+interface Props {
+  strings: TranslationDictionary['contact'];
+}
+
+export default function ContactFormClient({ strings }: Props) {
   const [state, setState] = useState<FormState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -39,12 +44,12 @@ export default function ContactFormClient() {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error("Errore durante l'invio");
+      if (!res.ok) throw new Error('Submission error');
 
       setState('success');
     } catch {
       setState('error');
-      setErrorMessage('Qualcosa è andato storto. Riprova tra poco.');
+      setErrorMessage(strings.errorMessage);
       setTimeout(() => setState('idle'), 4000);
     }
   };
@@ -52,10 +57,10 @@ export default function ContactFormClient() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
       <motion.div className="text-center mb-12" {...fadeUp} transition={{ duration: 0.5 }}>
-        <h1 className="text-[32px] sm:text-[40px] font-bold text-neutral-900">Contattaci</h1>
-        <p className="mt-4 text-[17px] text-neutral-700">
-          Hai domande, suggerimenti o vuoi collaborare con noi? Scrivici!
-        </p>
+        <h1 className="text-[32px] sm:text-[40px] font-bold text-neutral-900">
+          {strings.heading}
+        </h1>
+        <p className="mt-4 text-[17px] text-neutral-700">{strings.description}</p>
       </motion.div>
 
       <AnimatePresence mode="wait">
@@ -74,10 +79,8 @@ export default function ContactFormClient() {
             >
               <Check size={32} className="text-primary" />
             </motion.div>
-            <h2 className="text-[24px] font-bold text-neutral-900">Messaggio inviato!</h2>
-            <p className="mt-3 text-[17px] text-neutral-700">
-              Grazie per averci scritto. Ti risponderemo al più presto.
-            </p>
+            <h2 className="text-[24px] font-bold text-neutral-900">{strings.successHeading}</h2>
+            <p className="mt-3 text-[17px] text-neutral-700">{strings.successMessage}</p>
           </motion.div>
         ) : (
           <motion.form
@@ -92,7 +95,7 @@ export default function ContactFormClient() {
                 htmlFor="contact-name"
                 className="block text-[13px] font-semibold text-neutral-700 mb-1.5"
               >
-                Nome
+                {strings.nameLabel}
               </label>
               <input
                 type="text"
@@ -100,7 +103,7 @@ export default function ContactFormClient() {
                 name="name"
                 required
                 autoComplete="name"
-                placeholder="Il tuo nome"
+                placeholder={strings.namePlaceholder}
                 disabled={state === 'loading'}
                 className={inputClasses}
               />
@@ -111,7 +114,7 @@ export default function ContactFormClient() {
                 htmlFor="contact-email"
                 className="block text-[13px] font-semibold text-neutral-700 mb-1.5"
               >
-                Email
+                {strings.emailLabel}
               </label>
               <input
                 type="email"
@@ -119,7 +122,7 @@ export default function ContactFormClient() {
                 name="email"
                 required
                 autoComplete="email"
-                placeholder="La tua email"
+                placeholder={strings.emailPlaceholder}
                 disabled={state === 'loading'}
                 className={inputClasses}
               />
@@ -130,14 +133,14 @@ export default function ContactFormClient() {
                 htmlFor="contact-message"
                 className="block text-[13px] font-semibold text-neutral-700 mb-1.5"
               >
-                Messaggio
+                {strings.messageLabel}
               </label>
               <textarea
                 id="contact-message"
                 name="message"
                 rows={5}
                 required
-                placeholder="Scrivi il tuo messaggio..."
+                placeholder={strings.messagePlaceholder}
                 disabled={state === 'loading'}
                 className={`${inputClasses} resize-none`}
               />
@@ -160,7 +163,7 @@ export default function ContactFormClient() {
                     className="flex items-center gap-2"
                   >
                     <Loader2 size={18} className="animate-spin" />
-                    Invio in corso...
+                    {strings.loadingButton}
                   </motion.span>
                 ) : (
                   <motion.span
@@ -171,7 +174,7 @@ export default function ContactFormClient() {
                     className="flex items-center gap-2"
                   >
                     <Send size={18} />
-                    Invia messaggio
+                    {strings.submitButton}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -199,7 +202,7 @@ export default function ContactFormClient() {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <p>
-          Puoi anche scriverci direttamente a{' '}
+          {strings.directEmail}{' '}
           <a href="mailto:info@pawmeet.io" className="text-primary hover:underline font-medium">
             info@pawmeet.io
           </a>

@@ -1,13 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t } from '../../i18n';
+
+const strings = t('it');
 ---
 
-<BaseLayout title="Blog" description="Consigli, guide e storie dal mondo PawMeet.">
+<BaseLayout title={strings.meta.blogTitle} description={strings.meta.blogDescription} locale="it">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
     <div class="text-center">
-      <h1 class="text-[32px] sm:text-[40px] font-bold text-neutral-900">Blog</h1>
+      <h1 class="text-[32px] sm:text-[40px] font-bold text-neutral-900">{strings.blog.heading}</h1>
       <p class="mt-4 text-[17px] text-neutral-700 max-w-lg mx-auto">
-        Consigli, guide e storie per te e il tuo amico a quattro zampe.
+        {strings.blog.description}
       </p>
     </div>
 
@@ -18,17 +21,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         </svg>
       </div>
       <h2 class="text-[20px] font-semibold text-neutral-900 mb-3">
-        Stiamo preparando i primi articoli
+        {strings.blog.emptyHeading}
       </h2>
       <p class="text-[15px] text-neutral-700 leading-relaxed">
-        Presto troverai guide sulla socializzazione canina, i migliori parchi dog-friendly
-        e consigli per passeggiate sicure. Resta sintonizzato!
+        {strings.blog.emptyText}
       </p>
       <a
         href="/waitlist"
         class="inline-block mt-8 px-6 py-3 rounded-full bg-primary text-white font-semibold text-[15px] hover:bg-primary-600 transition-colors"
       >
-        Iscriviti alla waitlist
+        {strings.blog.emptyCta}
       </a>
     </div>
   </div>

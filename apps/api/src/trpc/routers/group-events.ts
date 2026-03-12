@@ -9,6 +9,7 @@ import {
   getGroupEventSchema,
   joinGroupEventSchema,
   leaveGroupEventSchema,
+  listEventSponsorsSchema,
   listFeaturedEventsSchema,
   listNearbyEventsSchema,
   listOccurrencesSchema,
@@ -182,6 +183,12 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
       .input(listFeaturedEventsSchema)
       .query(async ({ input }) =>
         unwrapResult(await deps.listFeaturedEvents(input.page, input.pageSize)),
+      ),
+
+    listSponsors: protectedProcedure
+      .input(listEventSponsorsSchema)
+      .query(async ({ input }) =>
+        unwrapResult(await deps.listEventSponsors(input.eventId)),
       ),
   });
 }

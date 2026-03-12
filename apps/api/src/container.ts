@@ -19,6 +19,7 @@ import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-rep
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
 import { DrizzleMatchingAiRepository } from './infra/drizzle-matching-ai-repository.js';
 import { DrizzleMessageRepository } from './infra/drizzle-message-repository.js';
+import { DrizzleEventSponsorRepository } from './infra/drizzle-event-sponsor-repository.js';
 import { DrizzleOrganizationRepository } from './infra/drizzle-organization-repository.js';
 import { DrizzleStoryRepository } from './infra/drizzle-story-repository.js';
 import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
@@ -56,6 +57,8 @@ import { createCancelWalk } from './use-cases/cancel-walk.js';
 import { createCheckAndAwardBadges } from './use-cases/check-and-award-badges.js';
 import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-achievements.js';
 // Use cases — users
+import { createAddEventSponsor } from './use-cases/add-event-sponsor.js';
+import { createAwardMainEventBadge } from './use-cases/award-main-event-badge.js';
 import { createConfirmAvatar } from './use-cases/confirm-avatar.js';
 // Use cases — dogs
 import { createConfirmDogPhoto } from './use-cases/confirm-dog-photo.js';
@@ -119,6 +122,7 @@ import { createLikeDog } from './use-cases/like-dog.js';
 import { createLikePost } from './use-cases/like-post.js';
 import { createListAchievements } from './use-cases/list-achievements.js';
 import { createListActiveChallenges } from './use-cases/list-active-challenges.js';
+import { createListEventSponsors } from './use-cases/list-event-sponsors.js';
 import { createListBadges } from './use-cases/list-badges.js';
 import { createListBlocked } from './use-cases/list-blocked.js';
 import { createListConversations } from './use-cases/list-conversations.js';
@@ -148,6 +152,7 @@ import { createRecordMatchInteraction } from './use-cases/record-match-interacti
 import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
+import { createRemoveEventSponsor } from './use-cases/remove-event-sponsor.js';
 import { createRemovePostTag } from './use-cases/remove-post-tag.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createReportContent } from './use-cases/report-content.js';
@@ -208,6 +213,7 @@ const walkTrackRepo = new DrizzleWalkTrackRepository(db);
 const activityRepo = new DrizzleActivityRepository(db);
 const matchingAiRepo = new DrizzleMatchingAiRepository(db);
 const organizationRepo = new DrizzleOrganizationRepository(db);
+const eventSponsorRepo = new DrizzleEventSponsorRepository(db);
 const gdprExportRepo = new DrizzleGdprExportRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
@@ -414,6 +420,7 @@ export const groupEventDeps = {
   listOccurrences: createListOccurrences({ groupEventRepo }),
   createOfficialEvent: createCreateOfficialEvent({ organizationRepo, groupEventRepo, dogRepo }),
   listFeaturedEvents: createListFeaturedEvents({ groupEventRepo }),
+  listEventSponsors: createListEventSponsors({ eventSponsorRepo }),
 };
 
 // ── Organization deps ────────────────────────────────────────────────────────
@@ -459,6 +466,14 @@ export const organizationDeps = {
     const members = await organizationRepo.listMembers(organizationId);
     return succeed(members);
   },
+};
+
+// ── Event sponsor deps ────────────────────────────────────────────────────
+export const eventSponsorDeps = {
+  addEventSponsor: createAddEventSponsor({ eventSponsorRepo, groupEventRepo, organizationRepo }),
+  removeEventSponsor: createRemoveEventSponsor({ eventSponsorRepo }),
+  listEventSponsors: createListEventSponsors({ eventSponsorRepo }),
+  awardMainEventBadge: createAwardMainEventBadge({ badgeRepo, groupEventRepo }),
 };
 
 // ── Gamification deps ────────────────────────────────────────────────────────

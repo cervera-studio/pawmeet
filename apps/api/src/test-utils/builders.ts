@@ -1,6 +1,6 @@
 import type { AchievementType } from '@pawmeet/config';
 import { ACHIEVEMENT_TYPE, CHALLENGE_TYPE } from '@pawmeet/config';
-import type { Organization, OrganizationMember } from '@pawmeet/types';
+import type { EventSponsor, Organization, OrganizationMember } from '@pawmeet/types';
 import {
   type Achievement,
   BADGE_TYPE,
@@ -61,6 +61,7 @@ import type {
   WalkTrackRepository,
 } from '../ports/index.js';
 import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';
+import type { EventSponsorRepository } from '../ports/event-sponsor-repository.js';
 import type { OrganizationRepository } from '../ports/organization-repository.js';
 
 // ── Entity builders ──────────────────────────────────────────────────────────

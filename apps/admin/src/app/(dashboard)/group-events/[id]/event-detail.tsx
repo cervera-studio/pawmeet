@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDateTime } from '@/lib/formatters';
 import { cancelGroupEvent, removeParticipant } from '../actions';
+import { SponsorsSection } from './sponsors-section';
 
 const categoryLabels: Record<string, string> = {
   walk: 'Passeggiata',
@@ -346,6 +347,16 @@ export function EventDetail({ event }: EventDetailProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Sponsors */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Sponsor</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SponsorsSection eventId={event.id} initialSponsors={[]} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

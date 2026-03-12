@@ -5,6 +5,7 @@ export * from './badges';
 export * from './breeds';
 export * from './chat';
 export * from './dogs';
+export * from './event-sponsors';
 export * from './feed';
 export * from './feedback';
 export * from './fitness';

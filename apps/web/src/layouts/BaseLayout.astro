@@ -2,30 +2,51 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
+import type { Locale } from '../i18n/locales';
+import { t } from '../i18n';
+import { getAlternatePath } from '../i18n/routes';
+import { getCanonicalPath } from '../i18n/routes';
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  locale?: Locale;
 }
 
 const {
   title,
-  description = 'PawMeet - Trova il compagno di passeggiata perfetto per il tuo cane. Connetti con altri proprietari di cani nella tua zona.',
+  description,
   ogImage = '/og-image.png',
+  locale = 'it',
 } = Astro.props;
 
+const strings = t(locale);
+const defaultDescription = locale === 'it'
+  ? 'PawMeet - Trova il compagno di passeggiata perfetto per il tuo cane. Connetti con altri proprietari di cani nella tua zona.'
+  : 'PawMeet - Find the perfect walking companion for your dog. Connect with other dog owners in your area.';
+
+const resolvedDescription = description ?? defaultDescription;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const itPath = getAlternatePath(currentPath, 'it');
+const enPath = getAlternatePath(currentPath, 'en');
+const itUrl = new URL(itPath, Astro.site);
+const enUrl = new URL(enPath, Astro.site);
 ---
 
 <!doctype html>
-<html lang="it" class="no-transition">
+<html lang={locale} class="no-transition">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#065F46" />
     <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang="it" href={itUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={itUrl} />
 
     {/* FOUC prevention — runs before any paint */}
     <script is:inline>
@@ -47,29 +68,29 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </script>
 
     <title>{title} | PawMeet</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={resolvedDescription} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={`${title} | PawMeet`} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={resolvedDescription} />
     <meta property="og:image" content={ogImage} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={`${title} | PawMeet`} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={resolvedDescription} />
     <meta name="twitter:image" content={ogImage} />
   </head>
   <body class="min-h-screen flex flex-col font-sans text-neutral-900 bg-surface grain">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg">
-      Vai al contenuto principale
+      {strings.nav.skipToContent}
     </a>
-    <Header />
+    <Header locale={locale} />
     <main id="main-content" class="flex-1">
       <slot />
     </main>
-    <Footer />
+    <Footer locale={locale} />
   </body>
 </html>

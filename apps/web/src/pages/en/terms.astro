@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t } from '../../i18n';
+
+const strings = t('en');
+---
+
+<BaseLayout title={strings.meta.termsTitle} locale="en">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+    <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-8">{strings.meta.termsTitle}</h1>
+
+    <div class="prose prose-neutral max-w-none space-y-6 text-neutral-700">
+      <p><strong>Last updated:</strong> March 11, 2026</p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">1. Introduction and definitions</h2>
+      <p>
+        These Terms and Conditions of Use (hereinafter, the "<strong>Terms</strong>") govern access to
+        and use of the PawMeet platform, consisting of the mobile application available for iOS and
+        Android devices and the website <strong>pawmeet.io</strong> (hereinafter, collectively, the
+        "<strong>Service</strong>" or the "<strong>Platform</strong>").
+      </p>
+      <p>
+        The Service is operated by <strong>PawMeet S.r.l.</strong>, with registered office at Via Roma 1,
+        20121 Milan (MI), Italy, VAT IT12345678901, PEC: pawmeet@pec.it (hereinafter,
+        "<strong>PawMeet</strong>", the "<strong>Owner</strong>", "<strong>we</strong>" or
+        "<strong>our</strong>").
+      </p>
+      <p>For the purposes of these Terms:</p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li><strong>User</strong>: any natural person who accesses, registers for, or uses the Service in any way.</li>
+        <li><strong>Account</strong>: the personal profile created by the User upon registration, required to access the Service features.</li>
+        <li><strong>Dog Profile</strong>: the information card for a dog owned or cared for by the User, containing data such as name, breed, size, energy level, behavioral traits, and leash preferences.</li>
+        <li><strong>Matching</strong>: the algorithmic process by which the Platform suggests other Users with potentially compatible dogs, based on predefined criteria.</li>
+        <li><strong>User Content</strong> or <strong>UGC</strong> (User Generated Content): any content uploaded, published, or transmitted by the User through the Service, including text, photographs, videos, comments, messages, and profile information.</li>
+        <li><strong>Group Event</strong>: a walk or activity organized by a User that other Users can join through the Platform.</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">2. Acceptance of terms</h2>
+      <p>
+        Access to and use of the Service are subject to full and unconditional acceptance of these Terms,
+        together with the <a href="/en/privacy" class="text-primary underline">Privacy Policy</a> and the
+        <a href="/en/cookie" class="text-primary underline">Cookie Policy</a>, which form an integral part thereof.
+      </p>
+      <p>
+        By creating an Account or using the Service in any way, the User declares to have read, understood,
+        and accepted these Terms.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">3. Registration and account</h2>
+      <p>
+        To access the Service features, it is necessary to create an Account by providing: a valid email address,
+        a password, a display name, and optionally a profile picture (avatar).
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">4. Age requirements</h2>
+      <p>
+        The Service is intended for Users who are at least 18 years old. Minors who are at least 14 years old
+        may access the Service with verifiable parental consent, pursuant to applicable data protection regulations.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">5. Description of the service</h2>
+      <p>
+        PawMeet is a social platform for dog owners, designed to facilitate meeting people with behaviorally
+        compatible dogs. The Service is currently offered completely free of charge.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">6. User obligations and conduct</h2>
+      <p>
+        The User agrees to use the Service lawfully, correctly, and in compliance with these Terms and applicable regulations.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">7. User Content (UGC)</h2>
+      <p>
+        The User is solely responsible for the Content they publish, upload, or transmit through the Service.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">8. Intellectual property</h2>
+      <p>
+        The Service, including its design, logo, name "PawMeet", source code, algorithms, architecture,
+        user interfaces, original text, graphics, and databases, is the exclusive property of PawMeet S.r.l.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">9. Limitation of liability</h2>
+      <p>
+        The Service is provided "as is" and "as available", without warranties of any kind, express or implied,
+        to the maximum extent permitted by applicable law.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">10. Geolocation and safety</h2>
+      <p>
+        The Service uses the User's geographic location to find nearby Users and calculate compatibility scores.
+        Location sharing is optional and requires explicit consent.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">11. Account suspension and closure</h2>
+      <p>
+        PawMeet reserves the right to temporarily suspend or permanently close a User's Account in case of
+        violation of these Terms.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">12. Account and data deletion</h2>
+      <p>
+        The User may request deletion of their Account at any time through the app settings or by writing to
+        <a href="mailto:info@pawmeet.io" class="text-primary underline">info@pawmeet.io</a>.
+        A 30-day grace period applies before permanent deletion.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">13. Changes to the terms</h2>
+      <p>
+        PawMeet reserves the right to modify these Terms at any time. Substantial changes will be communicated
+        with at least 30 days' notice.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">14. Applicable law and jurisdiction</h2>
+      <p>
+        These Terms are governed by Italian law. The Court of Milan has exclusive jurisdiction, subject to
+        consumer protection regulations.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">15. Contact</h2>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>Email: <a href="mailto:info@pawmeet.io" class="text-primary underline">info@pawmeet.io</a></li>
+        <li>PEC: <a href="mailto:pawmeet@pec.it" class="text-primary underline">pawmeet@pec.it</a></li>
+        <li>Mail: PawMeet S.r.l., Via Roma 1, 20121 Milan (MI), Italy</li>
+      </ul>
+
+      <p class="text-sm text-neutral-500 mt-12 border-t pt-6">
+        These Terms and Conditions of Use are drafted in compliance with applicable Italian legislation,
+        with particular reference to the Civil Code, Consumer Code (Legislative Decree 206/2005),
+        Legislative Decree 70/2003 (e-commerce), Regulation (EU) 2016/679 (GDPR), and Legislative Decree
+        196/2003 as amended by Legislative Decree 101/2018.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

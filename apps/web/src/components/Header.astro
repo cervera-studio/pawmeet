@@ -1,5 +1,21 @@
 ---
-import { navLinks } from '../data/navigation';
+import type { Locale } from '../i18n/locales';
+import { t } from '../i18n';
+import { getNavLinks } from '../data/navigation';
+import { getAlternatePath } from '../i18n/routes';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'it' } = Astro.props;
+const strings = t(locale);
+const navLinks = getNavLinks(locale);
+const waitlistHref = locale === 'it' ? '/waitlist' : '/en/waitlist';
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const altLocale = locale === 'it' ? 'en' : 'it';
+const altPath = getAlternatePath(currentPath, altLocale);
+const altLabel = locale === 'it' ? 'EN' : 'IT';
 ---
 
 <header class="fixed top-0 left-0 right-0 z-50">
@@ -7,7 +23,7 @@ import { navLinks } from '../data/navigation';
   <nav class="mx-auto max-w-7xl px-6 sm:px-8">
     <div class="flex items-center justify-between h-16 border-b border-neutral-200/60">
       {/* Logo — wordmark only, confident */}
-      <a href="/" class="text-[17px] font-semibold tracking-[-0.01em] text-neutral-900 hover:opacity-70 transition-opacity">
+      <a href={locale === 'it' ? '/' : '/en'} class="text-[17px] font-semibold tracking-[-0.01em] text-neutral-900 hover:opacity-70 transition-opacity">
         PawMeet
       </a>
 
@@ -27,14 +43,14 @@ import { navLinks } from '../data/navigation';
 
       {/* Right group — utilities + CTA */}
       <div class="flex items-center gap-3">
-        {/* Language switcher — minimal */}
-        <button
-          id="lang-toggle"
+        {/* Language switcher — links to alternate locale */}
+        <a
+          href={altPath}
           class="hidden sm:flex items-center text-[12px] font-medium text-neutral-500 hover:text-neutral-900 transition-colors tracking-wide uppercase"
-          aria-label="Cambia lingua"
+          aria-label={strings.nav.changeLanguage}
         >
-          IT
-        </button>
+          {altLabel}
+        </a>
 
         {/* Divider */}
         <span class="hidden sm:block w-[1px] h-4 bg-neutral-200" aria-hidden="true"></span>
@@ -43,7 +59,7 @@ import { navLinks } from '../data/navigation';
         <button
           id="theme-toggle"
           class="p-2 text-neutral-500 hover:text-neutral-900 transition-colors rounded-lg"
-          aria-label="Cambia tema"
+          aria-label={strings.nav.changeTheme}
         >
           {/* Sun — shown in dark mode */}
           <svg id="theme-sun" class="w-[18px] h-[18px] hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -58,16 +74,16 @@ import { navLinks } from '../data/navigation';
 
         {/* CTA — ghost, steps back */}
         <a
-          href="/waitlist"
+          href={waitlistHref}
           class="hidden sm:inline-flex items-center px-5 py-1.5 rounded-full text-[13px] font-medium text-neutral-900 border border-neutral-200 hover:bg-neutral-900 hover:text-surface hover:border-neutral-900 transition-all duration-200"
         >
-          Waitlist
+          {strings.nav.waitlist}
         </a>
 
         {/* Mobile menu button */}
         <button
           class="md:hidden p-2 text-neutral-500"
-          aria-label="Apri menu"
+          aria-label={strings.nav.openMenu}
           aria-expanded="false"
           aria-controls="mobile-menu"
           id="mobile-menu-btn"
@@ -93,23 +109,23 @@ import { navLinks } from '../data/navigation';
       ))}
       <div class="pt-4 mt-4 border-t border-neutral-200/60 flex items-center justify-between">
         <a
-          href="/waitlist"
+          href={waitlistHref}
           class="inline-flex items-center px-5 py-2 rounded-full text-[13px] font-medium text-neutral-900 border border-neutral-200 hover:bg-neutral-900 hover:text-surface hover:border-neutral-900 transition-all duration-200"
         >
-          Waitlist
+          {strings.nav.waitlist}
         </a>
         <div class="flex items-center gap-3">
-          <button
-            id="lang-toggle-mobile"
+          <a
+            href={altPath}
             class="text-[12px] font-medium text-neutral-500 tracking-wide uppercase"
-            aria-label="Cambia lingua"
+            aria-label={strings.nav.changeLanguage}
           >
-            IT
-          </button>
+            {altLabel}
+          </a>
           <button
             id="theme-toggle-mobile"
             class="p-2 text-neutral-500 rounded-lg"
-            aria-label="Cambia tema"
+            aria-label={strings.nav.changeTheme}
           >
             <svg class="theme-sun w-[18px] h-[18px] hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="5" />
@@ -138,10 +154,10 @@ import { navLinks } from '../data/navigation';
   // Mobile menu
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
+  const openLabel = btn?.getAttribute('aria-label') ?? 'Open menu';
   btn?.addEventListener('click', () => {
     const isOpen = menu?.classList.toggle('hidden') === false;
     btn.setAttribute('aria-expanded', String(isOpen));
-    btn.setAttribute('aria-label', isOpen ? 'Chiudi menu' : 'Apri menu');
   });
 
   // Theme toggle

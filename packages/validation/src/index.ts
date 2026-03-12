@@ -3,6 +3,7 @@ export * from './auth';
 export * from './chat';
 export * from './consent';
 export * from './dog';
+export * from './event-sponsor';
 export * from './feed';
 export * from './feedback';
 export * from './fitness';

@@ -120,10 +120,7 @@ export class DrizzleOrganizationRepository implements OrganizationRepository {
       );
   }
 
-  async findMember(
-    organizationId: string,
-    userId: string,
-  ): Promise<OrganizationMember | null> {
+  async findMember(organizationId: string, userId: string): Promise<OrganizationMember | null> {
     const rows = await this.db
       .select()
       .from(organizationMembers)

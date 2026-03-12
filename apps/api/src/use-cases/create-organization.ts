@@ -16,7 +16,10 @@ type CreateOrganizationInput = {
 };
 
 export function createCreateOrganization({ organizationRepo }: Deps) {
-  return async (_adminUserId: string, input: CreateOrganizationInput): Promise<Result<Organization>> => {
+  return async (
+    _adminUserId: string,
+    input: CreateOrganizationInput,
+  ): Promise<Result<Organization>> => {
     const existing = await organizationRepo.findBySlug(input.slug);
     if (existing) {
       return fail(new AppError('ORG_SLUG_TAKEN', 'Questo slug è già in uso', 409));

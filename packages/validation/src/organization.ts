@@ -1,11 +1,6 @@
 import { z } from 'zod';
 
-export const organizationTypeEnum = z.enum([
-  'pawmeet_team',
-  'association',
-  'educator',
-  'brand',
-]);
+export const organizationTypeEnum = z.enum(['pawmeet_team', 'association', 'educator', 'brand']);
 
 export const organizationMemberRoleEnum = z.enum(['owner', 'admin', 'member']);
 

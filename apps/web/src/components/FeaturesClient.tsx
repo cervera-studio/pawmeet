@@ -1,18 +1,18 @@
-import { motion } from 'framer-motion';
 import {
-  Sparkles,
-  Map,
-  MessageCircle,
-  Dog,
   CalendarDays,
-  Route,
+  Dog,
   type LucideIcon,
+  MapPin,
+  MessageCircle,
+  Route,
+  Sparkles,
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { features } from '../data/features';
 
 const iconMap: Record<string, LucideIcon> = {
   Sparkles,
-  Map,
+  MapPin,
   MessageCircle,
   Dog,
   CalendarDays,
@@ -70,7 +70,7 @@ export default function FeaturesClient() {
                 }`}
               >
                 {feature.comingSoon && (
-                  <span className="absolute top-4 right-4 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 bg-neutral-100 px-2.5 py-1 rounded-full">
+                  <span className="absolute top-4 right-4 text-[11px] font-semibold uppercase tracking-wider text-neutral-600 bg-neutral-100 px-2.5 py-1 rounded-full">
                     Presto
                   </span>
                 )}
@@ -83,10 +83,8 @@ export default function FeaturesClient() {
                 >
                   {Icon && <Icon size={22} strokeWidth={2} />}
                 </div>
-                <h3 className="text-[17px] font-semibold text-neutral-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-[15px] leading-relaxed text-neutral-500">
+                <h3 className="text-[17px] font-semibold text-neutral-900 mb-2">{feature.title}</h3>
+                <p className="text-[15px] leading-relaxed text-neutral-600">
                   {feature.description}
                 </p>
               </motion.div>

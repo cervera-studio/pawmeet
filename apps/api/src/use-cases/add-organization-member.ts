@@ -44,11 +44,7 @@ export function createAddOrganizationMember({ organizationRepo }: Deps) {
       );
     }
 
-    const member = await organizationRepo.addMember(
-      input.organizationId,
-      input.userId,
-      input.role,
-    );
+    const member = await organizationRepo.addMember(input.organizationId, input.userId, input.role);
     return succeed(member);
   };
 }

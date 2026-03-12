@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { type FormEvent, useState } from 'react';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -24,7 +24,7 @@ export default function WaitlistFormClient() {
         body: JSON.stringify({ email }),
       });
 
-      if (!res.ok) throw new Error('Errore durante l\'iscrizione');
+      if (!res.ok) throw new Error("Errore durante l'iscrizione");
 
       setState('success');
       setEmail('');

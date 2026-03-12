@@ -37,7 +37,9 @@ export function createOrganizationsRouter(deps: typeof organizationDeps) {
 
     revoke: adminProcedure
       .input(verifyOrganizationSchema)
-      .mutation(async ({ input }) => unwrapResult(await deps.revokeOrganization(input.organizationId))),
+      .mutation(async ({ input }) =>
+        unwrapResult(await deps.revokeOrganization(input.organizationId)),
+      ),
 
     get: protectedProcedure
       .input(getOrganizationSchema)

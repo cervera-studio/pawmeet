@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { type ReactNode, useState } from 'react';
 
 interface AccordionItem {
   id: string;
@@ -13,7 +13,15 @@ interface AccordionProps {
   defaultOpen?: string;
 }
 
-function AccordionSection({ item, isOpen, onToggle }: { item: AccordionItem; isOpen: boolean; onToggle: () => void }) {
+function AccordionSection({
+  item,
+  isOpen,
+  onToggle,
+}: {
+  item: AccordionItem;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
   return (
     <div className="border-b border-neutral-200 last:border-b-0">
       <button

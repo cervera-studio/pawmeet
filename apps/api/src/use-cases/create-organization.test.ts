@@ -6,9 +6,7 @@ import { createCreateOrganization } from './create-organization.js';
 describe('createOrganization', () => {
   function setup(overrides: { slugTaken?: boolean } = {}) {
     const organizationRepo = buildOrganizationRepo({
-      findBySlug: vi
-        .fn()
-        .mockResolvedValue(overrides.slugTaken ? buildOrganization() : null),
+      findBySlug: vi.fn().mockResolvedValue(overrides.slugTaken ? buildOrganization() : null),
     });
 
     const createOrg = createCreateOrganization({ organizationRepo });

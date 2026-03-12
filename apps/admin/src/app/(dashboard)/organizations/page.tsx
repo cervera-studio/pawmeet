@@ -23,9 +23,7 @@ export default async function OrganizationsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-neutral-900">Organizzazioni</h1>
-        <p className="text-neutral-500">
-          Gestione organizzazioni verificate e membri
-        </p>
+        <p className="text-neutral-500">Gestione organizzazioni verificate e membri</p>
       </div>
 
       <OrganizationsTable initialData={initialData} pageSize={DEFAULT_PAGE_SIZE} />

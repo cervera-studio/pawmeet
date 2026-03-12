@@ -27,11 +27,6 @@ export type {
 } from './group-event-repository.js';
 export type { GroupMessageRepository } from './group-message-repository.js';
 export type { CandidateDog, MatchRepository } from './match-repository.js';
-export type {
-  CreateOrganizationInput as CreateOrgInput,
-  ListOrganizationsQuery,
-  OrganizationRepository,
-} from './organization-repository.js';
 export type { MatchingAiRepository } from './matching-ai-repository.js';
 export type {
   ConversationSummary,
@@ -39,6 +34,11 @@ export type {
   PaginatedMessages,
 } from './message-repository.js';
 export type { NotificationService } from './notification-service.js';
+export type {
+  CreateOrganizationInput as CreateOrgInput,
+  ListOrganizationsQuery,
+  OrganizationRepository,
+} from './organization-repository.js';
 export type { StorageService } from './storage-service.js';
 export type { CreateStoryInput, StoryRepository } from './story-repository.js';
 export type {

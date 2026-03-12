@@ -1,5 +1,6 @@
 import type { AchievementType } from '@pawmeet/config';
 import { ACHIEVEMENT_TYPE, CHALLENGE_TYPE } from '@pawmeet/config';
+import type { Organization, OrganizationMember } from '@pawmeet/types';
 import {
   type Achievement,
   BADGE_TYPE,
@@ -29,12 +30,10 @@ import {
   type WalkTrackPoint,
 } from '@pawmeet/types';
 import { vi } from 'vitest';
-import type { Organization, OrganizationMember } from '@pawmeet/types';
 import type { ActivityRepository } from '../ports/activity-repository.js';
 import type { ExperimentService } from '../ports/experiment-service.js';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import type { GdprExportRepository } from '../ports/gdpr-export-repository.js';
-import type { OrganizationRepository } from '../ports/organization-repository.js';
 import type {
   AuthService,
   BadgeRepository,
@@ -62,6 +61,7 @@ import type {
   WalkTrackRepository,
 } from '../ports/index.js';
 import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';
+import type { OrganizationRepository } from '../ports/organization-repository.js';
 
 // ── Entity builders ──────────────────────────────────────────────────────────
 
@@ -1056,9 +1056,7 @@ export function buildOrganizationRepo(
     removeMember: vi.fn().mockResolvedValue(undefined),
     findMember: vi.fn().mockResolvedValue(buildOrganizationMember()),
     listMembers: vi.fn().mockResolvedValue([]),
-    isMemberOfVerifiedOrg: vi
-      .fn()
-      .mockResolvedValue({ isMember: true, organizationId: 'org-1' }),
+    isMemberOfVerifiedOrg: vi.fn().mockResolvedValue({ isMember: true, organizationId: 'org-1' }),
     ...overrides,
   };
 }

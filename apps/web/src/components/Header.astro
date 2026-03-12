@@ -2,78 +2,188 @@
 import { navLinks } from '../data/navigation';
 ---
 
-<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200">
-  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-    <a href="/" class="flex items-center gap-2">
-      <img src="/favicon.svg" alt="PawMeet" class="w-8 h-8" />
-      <span class="text-xl font-bold text-primary-600">PawMeet</span>
-    </a>
+<header class="fixed top-0 left-0 right-0 z-50">
+  {/* Glass bar */}
+  <nav class="mx-auto max-w-7xl px-6 sm:px-8">
+    <div class="flex items-center justify-between h-16 border-b border-neutral-200/60">
+      {/* Logo — wordmark only, confident */}
+      <a href="/" class="text-[17px] font-semibold tracking-[-0.01em] text-neutral-900 hover:opacity-70 transition-opacity">
+        PawMeet
+      </a>
 
-    <ul class="hidden md:flex items-center gap-8">
-      {navLinks.map((link) => (
-        <li>
-          <a
-            href={link.href}
-            class="text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors"
-          >
-            {link.label}
-          </a>
-        </li>
-      ))}
-    </ul>
+      {/* Center nav — desktop */}
+      <ul class="hidden md:flex items-center gap-8">
+        {navLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="text-[13px] font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-200"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
 
-    <a
-      href="/waitlist"
-      class="hidden sm:inline-flex items-center px-4 py-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-600 transition-colors"
-    >
-      Iscriviti alla waitlist
-    </a>
+      {/* Right group — utilities + CTA */}
+      <div class="flex items-center gap-3">
+        {/* Language switcher — minimal */}
+        <button
+          id="lang-toggle"
+          class="hidden sm:flex items-center text-[12px] font-medium text-neutral-500 hover:text-neutral-900 transition-colors tracking-wide uppercase"
+          aria-label="Cambia lingua"
+        >
+          IT
+        </button>
 
-    <!-- Mobile menu button -->
-    <button
-      class="md:hidden p-2 text-neutral-700"
-      aria-label="Apri menu"
-      aria-expanded="false"
-      aria-controls="mobile-menu"
-      id="mobile-menu-btn"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-  </nav>
+        {/* Divider */}
+        <span class="hidden sm:block w-[1px] h-4 bg-neutral-200" aria-hidden="true"></span>
 
-  <!-- Mobile menu -->
-  <div id="mobile-menu" class="hidden md:hidden border-t border-neutral-200 bg-white">
-    <ul class="px-4 py-4 space-y-3">
-      {navLinks.map((link) => (
-        <li>
-          <a
-            href={link.href}
-            class="block text-sm font-medium text-neutral-700 hover:text-primary-600"
-          >
-            {link.label}
-          </a>
-        </li>
-      ))}
-      <li>
+        {/* Theme toggle — sun/moon */}
+        <button
+          id="theme-toggle"
+          class="p-2 text-neutral-500 hover:text-neutral-900 transition-colors rounded-lg"
+          aria-label="Cambia tema"
+        >
+          {/* Sun — shown in dark mode */}
+          <svg id="theme-sun" class="w-[18px] h-[18px] hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5" />
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+          </svg>
+          {/* Moon — shown in light mode */}
+          <svg id="theme-moon" class="w-[18px] h-[18px] hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+
+        {/* CTA — ghost, steps back */}
         <a
           href="/waitlist"
-          class="block text-center px-4 py-2 rounded-full bg-primary text-white text-sm font-semibold"
+          class="hidden sm:inline-flex items-center px-5 py-1.5 rounded-full text-[13px] font-medium text-neutral-900 border border-neutral-200 hover:bg-neutral-900 hover:text-surface hover:border-neutral-900 transition-all duration-200"
         >
-          Iscriviti alla waitlist
+          Waitlist
         </a>
-      </li>
-    </ul>
+
+        {/* Mobile menu button */}
+        <button
+          class="md:hidden p-2 text-neutral-500"
+          aria-label="Apri menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          id="mobile-menu-btn"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  {/* Mobile menu */}
+  <div id="mobile-menu" class="hidden md:hidden bg-surface-glass backdrop-blur-xl border-b border-neutral-200/60">
+    <div class="max-w-7xl mx-auto px-6 py-6 space-y-1">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class="block py-2.5 text-[15px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors"
+        >
+          {link.label}
+        </a>
+      ))}
+      <div class="pt-4 mt-4 border-t border-neutral-200/60 flex items-center justify-between">
+        <a
+          href="/waitlist"
+          class="inline-flex items-center px-5 py-2 rounded-full text-[13px] font-medium text-neutral-900 border border-neutral-200 hover:bg-neutral-900 hover:text-surface hover:border-neutral-900 transition-all duration-200"
+        >
+          Waitlist
+        </a>
+        <div class="flex items-center gap-3">
+          <button
+            id="lang-toggle-mobile"
+            class="text-[12px] font-medium text-neutral-500 tracking-wide uppercase"
+            aria-label="Cambia lingua"
+          >
+            IT
+          </button>
+          <button
+            id="theme-toggle-mobile"
+            class="p-2 text-neutral-500 rounded-lg"
+            aria-label="Cambia tema"
+          >
+            <svg class="theme-sun w-[18px] h-[18px] hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5" />
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+            </svg>
+            <svg class="theme-moon w-[18px] h-[18px] hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
+{/* Header background — blurs on scroll */}
+<style>
+  header {
+    background: var(--color-surface-glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+</style>
+
 <script>
+  // Mobile menu
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
   btn?.addEventListener('click', () => {
     const isOpen = menu?.classList.toggle('hidden') === false;
     btn.setAttribute('aria-expanded', String(isOpen));
     btn.setAttribute('aria-label', isOpen ? 'Chiudi menu' : 'Apri menu');
+  });
+
+  // Theme toggle
+  function getEffectiveTheme(): 'light' | 'dark' {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark' || stored === 'light') return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function applyTheme(theme: 'light' | 'dark') {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    updateIcons(theme);
+    // Update theme-color meta
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#111111' : '#065F46');
+  }
+
+  function updateIcons(theme: 'light' | 'dark') {
+    // Desktop icons
+    document.getElementById('theme-sun')?.classList.toggle('hidden', theme !== 'dark');
+    document.getElementById('theme-moon')?.classList.toggle('hidden', theme !== 'light');
+    // Mobile icons
+    document.querySelectorAll('.theme-sun').forEach(el => el.classList.toggle('hidden', theme !== 'dark'));
+    document.querySelectorAll('.theme-moon').forEach(el => el.classList.toggle('hidden', theme !== 'light'));
+  }
+
+  // Initialize
+  updateIcons(getEffectiveTheme());
+
+  // Toggle handlers
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    applyTheme(getEffectiveTheme() === 'dark' ? 'light' : 'dark');
+  });
+  document.getElementById('theme-toggle-mobile')?.addEventListener('click', () => {
+    applyTheme(getEffectiveTheme() === 'dark' ? 'light' : 'dark');
+  });
+
+  // System preference change
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      updateIcons(e.matches ? 'dark' : 'light');
+    }
   });
 </script>

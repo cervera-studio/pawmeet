@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2, Send } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { type FormEvent, useState } from 'react';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -39,7 +39,7 @@ export default function ContactFormClient() {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error('Errore durante l\'invio');
+      if (!res.ok) throw new Error("Errore durante l'invio");
 
       setState('success');
     } catch {
@@ -51,14 +51,8 @@ export default function ContactFormClient() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-      <motion.div
-        className="text-center mb-12"
-        {...fadeUp}
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className="text-[32px] sm:text-[40px] font-bold text-neutral-900">
-          Contattaci
-        </h1>
+      <motion.div className="text-center mb-12" {...fadeUp} transition={{ duration: 0.5 }}>
+        <h1 className="text-[32px] sm:text-[40px] font-bold text-neutral-900">Contattaci</h1>
         <p className="mt-4 text-[17px] text-neutral-700">
           Hai domande, suggerimenti o vuoi collaborare con noi? Scrivici!
         </p>
@@ -94,7 +88,10 @@ export default function ContactFormClient() {
             transition={{ duration: 0.5, delay: 0.15 }}
           >
             <div>
-              <label htmlFor="contact-name" className="block text-[13px] font-semibold text-neutral-700 mb-1.5">
+              <label
+                htmlFor="contact-name"
+                className="block text-[13px] font-semibold text-neutral-700 mb-1.5"
+              >
                 Nome
               </label>
               <input
@@ -110,7 +107,10 @@ export default function ContactFormClient() {
             </div>
 
             <div>
-              <label htmlFor="contact-email" className="block text-[13px] font-semibold text-neutral-700 mb-1.5">
+              <label
+                htmlFor="contact-email"
+                className="block text-[13px] font-semibold text-neutral-700 mb-1.5"
+              >
                 Email
               </label>
               <input
@@ -126,7 +126,10 @@ export default function ContactFormClient() {
             </div>
 
             <div>
-              <label htmlFor="contact-message" className="block text-[13px] font-semibold text-neutral-700 mb-1.5">
+              <label
+                htmlFor="contact-message"
+                className="block text-[13px] font-semibold text-neutral-700 mb-1.5"
+              >
                 Messaggio
               </label>
               <textarea

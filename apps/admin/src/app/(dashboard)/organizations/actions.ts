@@ -3,10 +3,7 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import { revalidatePath } from 'next/cache';
 import { getServerTrpcClient } from '@/lib/server-api';
-import type {
-  AdminOrganizationListItem,
-  ListOrganizationsParams,
-} from '@/repositories/interfaces';
+import type { AdminOrganizationListItem, ListOrganizationsParams } from '@/repositories/interfaces';
 
 export async function fetchOrganizations(
   params: ListOrganizationsParams,

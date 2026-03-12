@@ -1,98 +1,114 @@
-import { motion } from 'framer-motion';
-
-const container = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-  },
-};
+import { motion } from 'motion/react';
+import { ArrowRight } from 'lucide-react';
 
 export default function HeroClient() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
-        <motion.div
-          className="max-w-3xl mx-auto text-center"
-          variants={container}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.h1
-            variants={item}
-            className="text-[32px] sm:text-[40px] lg:text-[48px] font-bold tracking-tight text-neutral-900 leading-[1.15]"
-          >
-            Trova il compagno di passeggiata{' '}
-            <span className="text-secondary-700">perfetto</span>{' '}
-            per il tuo cane
-          </motion.h1>
-
-          <motion.p
-            variants={item}
-            className="mt-6 text-[17px] sm:text-[19px] leading-relaxed text-neutral-700 max-w-2xl mx-auto"
-          >
-            Connettiti con altri proprietari di cani nella tua zona. Organizza passeggiate,
-            trova nuovi amici per il tuo amico a quattro zampe e rendi ogni uscita un'avventura.
-          </motion.p>
-
-          <motion.div
-            variants={item}
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <motion.a
-              href="/waitlist"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-primary text-white font-semibold text-[17px] shadow-lg shadow-primary/20"
-              whileHover={{ scale: 0.98, boxShadow: '0 8px 32px rgba(6, 95, 70, 0.3)' }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            >
-              Iscriviti alla waitlist
-            </motion.a>
-            <a
-              href="#come-funziona"
-              className="text-primary font-semibold text-[17px] hover:underline underline-offset-4 decoration-2"
-            >
-              Scopri come funziona &darr;
-            </a>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      {/* Animated decorative blobs — kept at edges, low opacity, behind text */}
-      <motion.div
-        className="pointer-events-none absolute -top-32 -left-40 w-[500px] h-[500px] bg-primary-100 rounded-full opacity-10 blur-3xl"
+    <section className="relative overflow-hidden bg-surface">
+      {/* Atmospheric gradient — barely there, like morning light */}
+      <div
+        className="pointer-events-none absolute inset-0"
         aria-hidden="true"
-        animate={{
-          scale: [1, 1.05, 1],
-          rotate: [0, 3, 0],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: 'easeInOut',
+        style={{
+          background:
+            'radial-gradient(ellipse 80% 60% at 50% 0%, var(--color-primary-50) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 80% 100%, var(--color-secondary-50) 0%, transparent 60%)',
         }}
       />
-      <motion.div
-        className="pointer-events-none absolute -bottom-32 -right-40 w-[400px] h-[400px] bg-secondary-100 rounded-full opacity-10 blur-3xl"
+
+      <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 pt-32 sm:pt-40 lg:pt-48 pb-24 sm:pb-32 lg:pb-40">
+        <div className="max-w-4xl">
+          {/* Eyebrow — minimal, purposeful */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-8"
+          >
+            <span className="inline-flex items-center gap-2.5 text-[13px] font-medium tracking-[0.08em] uppercase text-neutral-500">
+              <span
+                className="w-8 h-[1px] bg-secondary"
+                aria-hidden="true"
+              />
+              Lancio 2027
+            </span>
+          </motion.div>
+
+          {/* Headline — editorial serif, massive, left-aligned */}
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display text-[clamp(2.75rem,7vw,5.5rem)] leading-[1.05] tracking-[-0.02em] text-neutral-900"
+          >
+            Trova il compagno
+            <br className="hidden sm:block" />
+            {' '}di passeggiata{' '}
+            <em className="relative not-italic text-primary">
+              perfetto
+              <motion.span
+                className="absolute -bottom-1 left-0 w-full h-[2px] bg-secondary origin-left"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                aria-hidden="true"
+              />
+            </em>
+          </motion.h1>
+
+          {/* Subtitle — clean, restrained, generous width */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-8 text-[18px] sm:text-[20px] leading-[1.65] text-neutral-700 max-w-xl"
+          >
+            Connettiti con altri proprietari nella tua zona.
+            Organizza passeggiate e rendi ogni uscita un'avventura.
+          </motion.p>
+
+          {/* CTA group */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-12 flex flex-wrap items-center gap-6"
+          >
+            {/* Primary CTA — the event */}
+            <motion.a
+              href="/waitlist"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-neutral-900 text-surface rounded-full text-[15px] font-semibold tracking-wide overflow-hidden"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            >
+              {/* Shimmer sweep on hover */}
+              <span
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer-sweep_1.5s_ease-in-out]"
+                aria-hidden="true"
+              />
+              <span className="relative">Unisciti alla waitlist</span>
+              <ArrowRight
+                size={16}
+                strokeWidth={2}
+                className="relative transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </motion.a>
+
+            {/* Secondary — text link, editorial */}
+            <a
+              href="#come-funziona"
+              className="group inline-flex items-center gap-1.5 text-[15px] font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-300"
+            >
+              Scopri di più
+              <span className="inline-block w-4 h-[1px] bg-current transition-all duration-300 group-hover:w-6" aria-hidden="true" />
+            </a>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Bottom fade to next section */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-neutral-50 to-transparent pointer-events-none"
         aria-hidden="true"
-        animate={{
-          scale: [1, 1.08, 1],
-          rotate: [0, -3, 0],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
       />
     </section>
   );

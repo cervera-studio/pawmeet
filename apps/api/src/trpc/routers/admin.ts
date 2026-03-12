@@ -787,9 +787,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           page: z.number().int().min(1).default(1),
           pageSize: z.number().int().min(1).max(100).default(20),
           search: z.string().optional(),
-          type: z
-            .enum(['pawmeet_team', 'association', 'educator', 'brand'])
-            .optional(),
+          type: z.enum(['pawmeet_team', 'association', 'educator', 'brand']).optional(),
         }),
       )
       .query(async ({ input }) => {
@@ -799,10 +797,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         const conditions = [];
         if (search) {
           conditions.push(
-            or(
-              ilike(organizations.name, `%${search}%`),
-              ilike(organizations.slug, `%${search}%`),
-            ),
+            or(ilike(organizations.name, `%${search}%`), ilike(organizations.slug, `%${search}%`)),
           );
         }
         if (type) conditions.push(eq(organizations.type, type));
@@ -865,10 +860,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     getOrganization: adminProcedure
       .input(z.object({ id: z.string().uuid() }))
       .query(async ({ input }) => {
-        const [org] = await db
-          .select()
-          .from(organizations)
-          .where(eq(organizations.id, input.id));
+        const [org] = await db.select().from(organizations).where(eq(organizations.id, input.id));
 
         if (!org) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });

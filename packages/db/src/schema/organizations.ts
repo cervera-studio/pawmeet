@@ -53,9 +53,6 @@ export const organizationMembers = pgTable(
   },
   (table) => [
     uniqueIndex('org_members_pair_idx').on(table.organizationId, table.userId),
-    check(
-      'organization_members_role_valid',
-      sql`${table.role} IN ('owner', 'admin', 'member')`,
-    ),
+    check('organization_members_role_valid', sql`${table.role} IN ('owner', 'admin', 'member')`),
   ],
 );

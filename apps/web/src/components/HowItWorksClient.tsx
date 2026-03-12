@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { PawPrint, Heart, TreePine, type LucideIcon } from 'lucide-react';
+import { Heart, type LucideIcon, PawPrint, TreePine } from 'lucide-react';
+import { motion } from 'motion/react';
 import { steps } from '../data/steps';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -19,9 +19,7 @@ export default function HowItWorksClient() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-[28px] sm:text-[32px] font-bold text-neutral-900">
-            Come funziona
-          </h2>
+          <h2 className="text-[28px] sm:text-[32px] font-bold text-neutral-900">Come funziona</h2>
           <p className="mt-4 text-[17px] text-neutral-700 max-w-2xl mx-auto">
             Tre semplici passi per iniziare a passeggiare in compagnia.
           </p>
@@ -60,10 +58,8 @@ export default function HowItWorksClient() {
                     Passo {step.number}
                   </div>
 
-                  <h3 className="text-[20px] font-semibold text-neutral-900 mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="text-[15px] leading-relaxed text-neutral-500 max-w-xs mx-auto">
+                  <h3 className="text-[20px] font-semibold text-neutral-900 mb-3">{step.title}</h3>
+                  <p className="text-[15px] leading-relaxed text-neutral-600 max-w-xs mx-auto">
                     {step.description}
                   </p>
                 </motion.div>

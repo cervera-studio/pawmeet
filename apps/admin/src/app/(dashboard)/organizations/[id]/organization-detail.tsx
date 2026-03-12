@@ -116,9 +116,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
             <CardTitle className="text-sm font-medium text-neutral-500">Tipo</CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant="outline">
-              {typeLabels[organization.type] ?? organization.type}
-            </Badge>
+            <Badge variant="outline">{typeLabels[organization.type] ?? organization.type}</Badge>
           </CardContent>
         </Card>
 
@@ -211,9 +209,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">
-                      {roleLabels[member.role] ?? member.role}
-                    </Badge>
+                    <Badge variant="outline">{roleLabels[member.role] ?? member.role}</Badge>
                     <span className="text-xs text-neutral-400">
                       {formatDateTime(member.createdAt)}
                     </span>

@@ -26,9 +26,15 @@ export interface OrganizationRepository {
   verify(id: string, adminUserId: string): Promise<Organization>;
   revoke(id: string): Promise<Organization>;
 
-  addMember(organizationId: string, userId: string, role: OrganizationMemberRole): Promise<OrganizationMember>;
+  addMember(
+    organizationId: string,
+    userId: string,
+    role: OrganizationMemberRole,
+  ): Promise<OrganizationMember>;
   removeMember(organizationId: string, userId: string): Promise<void>;
   findMember(organizationId: string, userId: string): Promise<OrganizationMember | null>;
   listMembers(organizationId: string): Promise<OrganizationMember[]>;
-  isMemberOfVerifiedOrg(userId: string): Promise<{ isMember: boolean; organizationId: string | null }>;
+  isMemberOfVerifiedOrg(
+    userId: string,
+  ): Promise<{ isMember: boolean; organizationId: string | null }>;
 }

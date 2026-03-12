@@ -26,6 +26,12 @@ export type {
   ListGroupEventsParams,
 } from './group-event-repository';
 export type {
+  AdminOrganizationDetail,
+  AdminOrganizationListItem,
+  AdminOrganizationMember,
+  ListOrganizationsParams,
+} from './organization-repository';
+export type {
   PendingPhoto,
   PhotoModerationRepository,
 } from './photo-moderation-repository';
@@ -48,12 +54,6 @@ export type {
   AdminStoryPage,
   StoryAdminRepository,
 } from './story-admin-repository';
-export type {
-  AdminOrganizationDetail,
-  AdminOrganizationListItem,
-  AdminOrganizationMember,
-  ListOrganizationsParams,
-} from './organization-repository';
 export type {
   AdminUserDetail,
   AdminUserListItem,

@@ -19,7 +19,7 @@ export const features: readonly Feature[] = [
     title: 'Mappa interattiva',
     description:
       'Visualizza i percorsi e i punti di ritrovo nella tua zona. Trova i parchi dog-friendly e i sentieri migliori.',
-    iconName: 'Map',
+    iconName: 'MapPin',
   },
   {
     title: 'Chat sicura',

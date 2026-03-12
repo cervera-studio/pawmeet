@@ -23,21 +23,17 @@ describe('createOfficialEvent', () => {
       findMember: vi
         .fn()
         .mockResolvedValue(
-          overrides.member !== undefined
-            ? overrides.member
-            : buildOrganizationMember(),
+          overrides.member !== undefined ? overrides.member : buildOrganizationMember(),
         ),
       findById: vi
         .fn()
-        .mockResolvedValue(
-          overrides.org !== undefined ? overrides.org : buildOrganization(),
-        ),
+        .mockResolvedValue(overrides.org !== undefined ? overrides.org : buildOrganization()),
     });
 
     const groupEventRepo = buildGroupEventRepo({
-      create: vi.fn().mockResolvedValue(
-        buildGroupEvent({ isOfficial: true, organizationId: 'org-1' }),
-      ),
+      create: vi
+        .fn()
+        .mockResolvedValue(buildGroupEvent({ isOfficial: true, organizationId: 'org-1' })),
     });
 
     const dogRepo = buildDogRepo({

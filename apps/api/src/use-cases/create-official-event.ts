@@ -1,5 +1,9 @@
 import { AppError, fail, type GroupEvent, type Result, succeed } from '@pawmeet/types';
-import type { DogRepository, GroupEventRepository, OrganizationRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  GroupEventRepository,
+  OrganizationRepository,
+} from '../ports/index.js';
 
 type Deps = {
   organizationRepo: OrganizationRepository;
@@ -30,20 +34,14 @@ export function createCreateOfficialEvent({ organizationRepo, groupEventRepo, do
     // Verify user is member of the specified organization
     const member = await organizationRepo.findMember(input.organizationId, userId);
     if (!member) {
-      return fail(
-        new AppError('ORG_NOT_MEMBER', 'Non sei membro di questa organizzazione', 403),
-      );
+      return fail(new AppError('ORG_NOT_MEMBER', 'Non sei membro di questa organizzazione', 403));
     }
 
     // Verify the organization is verified
     const org = await organizationRepo.findById(input.organizationId);
     if (!org || !org.isVerified || !org.isActive) {
       return fail(
-        new AppError(
-          'ORG_NOT_VERIFIED',
-          "L'organizzazione non è verificata o non è attiva",
-          403,
-        ),
+        new AppError('ORG_NOT_VERIFIED', "L'organizzazione non è verificata o non è attiva", 403),
       );
     }
 

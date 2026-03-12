@@ -14,12 +14,12 @@ import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.j
 import { DrizzleFollowRepository } from './infra/drizzle-follow-repository.js';
 import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repository.js';
 import { DrizzleGdprExportRepository } from './infra/drizzle-gdpr-export-repository.js';
-import { DrizzleOrganizationRepository } from './infra/drizzle-organization-repository.js';
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
 import { DrizzleMatchingAiRepository } from './infra/drizzle-matching-ai-repository.js';
 import { DrizzleMessageRepository } from './infra/drizzle-message-repository.js';
+import { DrizzleOrganizationRepository } from './infra/drizzle-organization-repository.js';
 import { DrizzleStoryRepository } from './infra/drizzle-story-repository.js';
 import { DrizzleTokenRepository } from './infra/drizzle-token-repository.js';
 import { DrizzleUserRepository } from './infra/drizzle-user-repository.js';
@@ -37,12 +37,12 @@ import { WsFeedRealtimeService } from './infra/ws-feed-realtime-service.js';
 import { enqueueGdprExport } from './jobs/queue.js';
 import { db } from './lib/db.js';
 import type { AnalyticsProvider } from './ports/analytics-provider.js';
+// Use cases — group events
+import { createAddOrganizationMember } from './use-cases/add-organization-member.js';
 // Use cases — feed
 import { createAddPostTags } from './use-cases/add-post-tags.js';
 // Use cases — fitness
 import { createAddTrackPoints } from './use-cases/add-track-points.js';
-// Use cases — group events
-import { createAddOrganizationMember } from './use-cases/add-organization-member.js';
 import { createApproveParticipant } from './use-cases/approve-participant.js';
 // Use cases — gamification
 import { createAwardXp } from './use-cases/award-xp.js';
@@ -115,7 +115,6 @@ import { createGetXpSummary } from './use-cases/get-xp-summary.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
 import { createLearnUserPreferences } from './use-cases/learn-user-preferences.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
-import { createListFeaturedEvents } from './use-cases/list-featured-events.js';
 import { createLikeDog } from './use-cases/like-dog.js';
 import { createLikePost } from './use-cases/like-post.js';
 import { createListAchievements } from './use-cases/list-achievements.js';
@@ -123,6 +122,7 @@ import { createListActiveChallenges } from './use-cases/list-active-challenges.j
 import { createListBadges } from './use-cases/list-badges.js';
 import { createListBlocked } from './use-cases/list-blocked.js';
 import { createListConversations } from './use-cases/list-conversations.js';
+import { createListFeaturedEvents } from './use-cases/list-featured-events.js';
 import { createListFollowers } from './use-cases/list-followers.js';
 import { createListFollowing } from './use-cases/list-following.js';
 import { createListFriends } from './use-cases/list-friends.js';
@@ -432,7 +432,12 @@ export const organizationDeps = {
     if (!org) return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
     return succeed(org);
   },
-  listOrganizations: async (input: { page: number; pageSize: number; search?: string; type?: string }) => {
+  listOrganizations: async (input: {
+    page: number;
+    pageSize: number;
+    search?: string;
+    type?: string;
+  }) => {
     const result = await organizationRepo.list(input);
     return succeed(result);
   },
@@ -443,7 +448,9 @@ export const organizationDeps = {
   ) => {
     const actorMember = await organizationRepo.findMember(input.organizationId, actorUserId);
     if (!actorMember || (actorMember.role !== 'owner' && actorMember.role !== 'admin')) {
-      return fail(new AppError('ORG_NOT_AUTHORIZED', 'Non hai i permessi per rimuovere membri', 403));
+      return fail(
+        new AppError('ORG_NOT_AUTHORIZED', 'Non hai i permessi per rimuovere membri', 403),
+      );
     }
     await organizationRepo.removeMember(input.organizationId, input.userId);
     return succeed({ success: true as const });

@@ -19,13 +19,32 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="it">
+<html lang="it" class="no-transition">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#065F46" />
     <link rel="canonical" href={canonicalURL} />
+
+    {/* FOUC prevention — runs before any paint */}
+    <script is:inline>
+      (function() {
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || stored === 'light') {
+          document.documentElement.setAttribute('data-theme', stored);
+          if (stored === 'dark') {
+            document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#111111');
+          }
+        }
+        // Remove no-transition class after first paint
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            document.documentElement.classList.remove('no-transition');
+          });
+        });
+      })();
+    </script>
 
     <title>{title} | PawMeet</title>
     <meta name="description" content={description} />
@@ -42,16 +61,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="twitter:title" content={`${title} | PawMeet`} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
-  <body class="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50">
+  <body class="min-h-screen flex flex-col font-sans text-neutral-900 bg-surface grain">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg">
       Vai al contenuto principale
     </a>

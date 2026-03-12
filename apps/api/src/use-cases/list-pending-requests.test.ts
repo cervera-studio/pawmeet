@@ -24,7 +24,7 @@ describe('listPendingRequests', () => {
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
     expect(result.data).toHaveLength(1);
-    expect(result.data[0]!.displayName).toBe('Mario');
+    expect(result.data[0]?.displayName).toBe('Mario');
   });
 
   it('fails if not organizer', async () => {

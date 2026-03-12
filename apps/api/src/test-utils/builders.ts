@@ -960,6 +960,7 @@ export function buildGdprExportRepo(
     getSwipeScoreLogs: vi.fn().mockResolvedValue([]),
     getContentReports: vi.fn().mockResolvedValue([]),
     getUserReports: vi.fn().mockResolvedValue([]),
+    getAnalyticsEvents: vi.fn().mockResolvedValue([]),
     createExport: vi.fn().mockResolvedValue({
       id: 'export-1',
       status: 'pending',

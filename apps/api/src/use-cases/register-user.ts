@@ -1,7 +1,7 @@
-import { TOKEN_TYPE } from '@dogwalk/db';
-import type { Result } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import { TOKEN_TYPE } from '@pawmeet/db';
+import type { Result } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { EMAIL_VERIFICATION_OTP_EXPIRY_MS, generateOtp } from '../lib/email.js';
 import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';

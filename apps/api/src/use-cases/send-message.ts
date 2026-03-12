@@ -1,6 +1,6 @@
-import type { ChatMessage } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { ChatMessage } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type {
   ChatService,

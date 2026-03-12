@@ -1,4 +1,4 @@
-import { type Result, succeed } from '@dogwalk/types';
+import { type Result, succeed } from '@pawmeet/types';
 import type { FollowRepository, SearchResult, UserRepository } from '../ports/index.js';
 
 type Deps = {

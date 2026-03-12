@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/trpc';

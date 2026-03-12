@@ -1,4 +1,4 @@
-import { userConsents } from '@dogwalk/db';
+import { userConsents } from '@pawmeet/db';
 import { and, eq } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 

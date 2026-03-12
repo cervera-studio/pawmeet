@@ -1,4 +1,4 @@
-import type { MatchingInsights, OptimalTimeWindow, Serialized } from '@dogwalk/types';
+import type { MatchingInsights, OptimalTimeWindow, Serialized } from '@pawmeet/types';
 
 export interface SwipeScores {
   sizeScore: number;

@@ -1,5 +1,5 @@
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type {
   FeedRealtimeService,
   FeedRepository,

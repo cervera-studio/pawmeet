@@ -1,5 +1,5 @@
-import type { DogPhoto, DogProfile } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
+import type { DogPhoto, DogProfile } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import { TRPCError } from '@trpc/server';
 import { describe, expect, it, vi } from 'vitest';
 import type { dogDeps } from '../../container.js';

@@ -1,4 +1,4 @@
-import { isSuccess } from '@dogwalk/types';
+import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildWalkTrack, buildWalkTrackRepo } from '../test-utils/builders.js';
 import { createGetUserTracks } from './get-user-tracks.js';

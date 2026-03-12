@@ -1,4 +1,4 @@
-import { registerSchema } from '@dogwalk/validation';
+import { registerSchema } from '@pawmeet/validation';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';

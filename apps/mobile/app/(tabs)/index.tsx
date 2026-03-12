@@ -1,7 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import type { DiscoveryFilters } from '@dogwalk/types';
-import { formatDogAge } from '@dogwalk/utils';
+import type { DiscoveryFilters } from '@pawmeet/types';
+import { formatDogAge } from '@pawmeet/utils';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

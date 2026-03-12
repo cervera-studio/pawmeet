@@ -1,5 +1,5 @@
-import type { AnalyticsEventMap, AnalyticsEventName } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { AnalyticsEventMap, AnalyticsEventName } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { enqueueAnalyticsEvents } from '../jobs/queue.js';
 
 /**

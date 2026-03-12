@@ -1,7 +1,7 @@
-import { TOKEN_TYPE } from '@dogwalk/db';
-import type { Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import { TOKEN_TYPE } from '@pawmeet/db';
+import type { Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { generateOtp, PASSWORD_RESET_OTP_EXPIRY_MS } from '../lib/email.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';

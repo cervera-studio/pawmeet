@@ -1,5 +1,5 @@
-import { TOKEN_TYPE } from '@dogwalk/db';
-import { isSuccess } from '@dogwalk/types';
+import { TOKEN_TYPE } from '@pawmeet/db';
+import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildAuthService,

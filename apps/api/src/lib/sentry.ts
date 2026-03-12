@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import * as Sentry from '@sentry/node';
 
 const dsn = process.env.SENTRY_DSN ?? '';

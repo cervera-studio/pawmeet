@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_DURATION_SECONDS = 15 * 60; // 15 minutes

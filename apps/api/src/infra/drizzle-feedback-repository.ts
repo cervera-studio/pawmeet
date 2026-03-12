@@ -1,5 +1,5 @@
-import { walkFeedback } from '@dogwalk/db';
-import type { WalkFeedback } from '@dogwalk/types';
+import { walkFeedback } from '@pawmeet/db';
+import type { WalkFeedback } from '@pawmeet/types';
 import { and, avg, count, eq } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { FeedbackRepository } from '../ports/feedback-repository.js';

@@ -8,7 +8,7 @@ import {
   SIZE_OPTIONS,
   TERRAIN_OPTIONS,
   WALK_TIME_OPTIONS,
-} from '@dogwalk/config';
+} from '@pawmeet/config';
 import { Stack } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

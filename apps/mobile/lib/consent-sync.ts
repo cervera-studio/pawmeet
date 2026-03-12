@@ -1,4 +1,4 @@
-import type { ConsentState } from '@dogwalk/types';
+import type { ConsentState } from '@pawmeet/types';
 import { api } from './trpc';
 
 const CONSENT_KEY_MAP: Record<keyof ConsentState, string> = {

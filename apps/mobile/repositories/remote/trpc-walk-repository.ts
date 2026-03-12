@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { ProposeWalkInput, WalkRepository } from '../interfaces';
 
 export function createTrpcWalkRepository(api: ApiClient): WalkRepository {

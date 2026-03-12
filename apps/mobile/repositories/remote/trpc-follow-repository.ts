@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { FollowRepository } from '../interfaces/follow-repository';
 
 export function createTrpcFollowRepository(api: ApiClient): FollowRepository {

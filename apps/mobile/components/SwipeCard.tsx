@@ -1,4 +1,4 @@
-import { formatDistance } from '@dogwalk/utils';
+import { formatDistance } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { Dimensions, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';

@@ -1,4 +1,4 @@
-import type { GroupEvent, GroupEventWithParticipants, Serialized } from '@dogwalk/types';
+import type { GroupEvent, GroupEventWithParticipants, Serialized } from '@pawmeet/types';
 
 export interface NearbyEventsParams {
   latitude: number;

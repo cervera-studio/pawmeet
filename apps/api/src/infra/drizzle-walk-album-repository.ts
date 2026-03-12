@@ -1,5 +1,5 @@
-import { walkAlbums } from '@dogwalk/db';
-import type { WalkAlbum } from '@dogwalk/types';
+import { walkAlbums } from '@pawmeet/db';
+import type { WalkAlbum } from '@pawmeet/types';
 import { eq } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { WalkAlbumRepository } from '../ports/walk-album-repository.js';

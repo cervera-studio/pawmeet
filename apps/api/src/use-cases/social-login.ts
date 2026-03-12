@@ -1,6 +1,6 @@
-import type { SafeUser } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import type { SocialLoginInput } from '@dogwalk/validation';
+import type { SafeUser } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import type { SocialLoginInput } from '@pawmeet/validation';
 import { sanitizeUser } from '../lib/sanitize.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';

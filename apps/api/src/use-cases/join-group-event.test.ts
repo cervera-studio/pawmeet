@@ -1,5 +1,5 @@
-import type { GroupEventParticipant } from '@dogwalk/types';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import type { GroupEventParticipant } from '@pawmeet/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildDog,

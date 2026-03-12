@@ -1,4 +1,4 @@
-import { MAX_SEARCH_RADIUS_KM, MIN_SEARCH_RADIUS_KM } from '@dogwalk/config';
+import { MAX_SEARCH_RADIUS_KM, MIN_SEARCH_RADIUS_KM } from '@pawmeet/config';
 import { z } from 'zod';
 import { dateOfBirthSchema } from './auth';
 

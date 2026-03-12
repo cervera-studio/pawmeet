@@ -1,5 +1,5 @@
-import type { AchievementType, ChallengeType, LeaderboardType, XpAction } from '@dogwalk/config';
-import { computeLevelFromXp, LEADERBOARD_TYPE } from '@dogwalk/config';
+import type { AchievementType, ChallengeType, LeaderboardType, XpAction } from '@pawmeet/config';
+import { computeLevelFromXp, LEADERBOARD_TYPE } from '@pawmeet/config';
 import {
   achievements,
   challenges,
@@ -10,14 +10,14 @@ import {
   users,
   walks,
   xpTransactions,
-} from '@dogwalk/db';
+} from '@pawmeet/db';
 import type {
   Achievement,
   Challenge,
   LeaderboardEntry,
   UserChallenge,
   XpTransaction,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 import { and, desc, eq, gte, inArray, lte, or, sql, sum } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GamificationRepository } from '../ports/gamification-repository.js';

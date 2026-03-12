@@ -1,4 +1,4 @@
-import type { PaginatedResult } from '@dogwalk/types';
+import type { PaginatedResult } from '@pawmeet/types';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AdminUserListItem } from '@/repositories';

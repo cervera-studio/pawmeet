@@ -1,4 +1,4 @@
-import { updateConsentSchema } from '@dogwalk/validation';
+import { updateConsentSchema } from '@pawmeet/validation';
 import type { consentDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

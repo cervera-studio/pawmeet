@@ -1,4 +1,4 @@
-import { fail, succeed } from '@dogwalk/types';
+import { fail, succeed } from '@pawmeet/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { EmailService } from '../ports/email-service.js';
 import type { GdprExportRepository } from '../ports/gdpr-export-repository.js';
@@ -37,7 +37,7 @@ vi.mock('../lib/security-log.js', () => ({
   },
 }));
 
-vi.mock('@dogwalk/utils', () => ({
+vi.mock('@pawmeet/utils', () => ({
   logger: {
     info: vi.fn(),
     error: vi.fn(),

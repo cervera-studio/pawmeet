@@ -1,6 +1,6 @@
-import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
-import type { Swipe } from '@dogwalk/types';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { SWIPE_DAILY_LIMIT } from '@pawmeet/config';
+import type { Swipe } from '@pawmeet/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildDog,

@@ -1,5 +1,5 @@
-import type { ChatMessage } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
+import type { ChatMessage } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import { TRPCError } from '@trpc/server';
 import { describe, expect, it, vi } from 'vitest';
 import type { chatDeps } from '../../container.js';

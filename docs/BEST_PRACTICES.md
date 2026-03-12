@@ -358,9 +358,9 @@ login: (user, token, refreshToken) => set({ user, token, refreshToken, isAuthent
 Hooks/view-models **never** call tRPC or REST directly. All data access goes through repository interfaces provided via React Context.
 
 ```typescript
-// repositories/interfaces/dog-repository.ts — depends ONLY on @dogwalk/types
-import type { DogProfile } from '@dogwalk/types';
-import type { Serialized } from '@dogwalk/types';
+// repositories/interfaces/dog-repository.ts — depends ONLY on @pawmeet/types
+import type { DogProfile } from '@pawmeet/types';
+import type { Serialized } from '@pawmeet/types';
 
 export interface DogRepository {
   listByOwner(userId: string): Promise<Serialized<DogProfile>[]>;
@@ -415,7 +415,7 @@ export function useAuth(authRepo: AuthRepository) {
 }
 ```
 
-### 6.5 Types — use shared types from `@dogwalk/types`
+### 6.5 Types — use shared types from `@pawmeet/types`
 
 Don't redefine interfaces locally when they exist in the shared package. Use `Serialized<T>` for types that go through API serialization (Date → string).
 
@@ -424,11 +424,11 @@ Don't redefine interfaces locally when they exist in the shared package. Use `Se
 export interface MatchSuggestion { id: string; ... }
 
 // AVOID: depending on RouterOutput in hooks/view-models
-import type { RouterOutput } from '@dogwalk/api-client';
+import type { RouterOutput } from '@pawmeet/api-client';
 
 // PREFER: import from shared package + Serialized utility
-import type { MatchSuggestion } from '@dogwalk/types';
-import type { Serialized } from '@dogwalk/types';
+import type { MatchSuggestion } from '@pawmeet/types';
+import type { Serialized } from '@pawmeet/types';
 type SerializedMatch = Serialized<MatchSuggestion>;
 ```
 
@@ -558,7 +558,7 @@ Refactor incrementally. Each step is independently shippable.
 ### Phase 4 — Mobile layer separation
 1. Create `hooks/api/` directory for pure data-fetching hooks
 2. Refactor orchestration hooks to use API hooks
-3. Deduplicate types with `@dogwalk/types`
+3. Deduplicate types with `@pawmeet/types`
 
 ---
 

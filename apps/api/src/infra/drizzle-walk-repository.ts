@@ -1,5 +1,5 @@
-import { dogProfiles, matches, walkFeedback, walks } from '@dogwalk/db';
-import type { Walk, WalkStatus } from '@dogwalk/types';
+import { dogProfiles, matches, walkFeedback, walks } from '@pawmeet/db';
+import type { Walk, WalkStatus } from '@pawmeet/types';
 import { and, avg, count, eq, gt, inArray, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { WalkRepository } from '../ports/walk-repository.js';

@@ -1,4 +1,4 @@
-import { type GroupEvent, type Result, succeed } from '@dogwalk/types';
+import { type GroupEvent, type Result, succeed } from '@pawmeet/types';
 import type { GroupEventRepository } from '../ports/index.js';
 
 type Deps = {

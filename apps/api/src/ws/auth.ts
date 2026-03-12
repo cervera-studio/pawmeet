@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'node:http';
 import type { Duplex } from 'node:stream';
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import type { WebSocketServer } from 'ws';
 import { verifyAccessToken } from '../lib/jwt.js';
 

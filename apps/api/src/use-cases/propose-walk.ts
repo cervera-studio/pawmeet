@@ -1,4 +1,4 @@
-import { AppError, fail, type Result, succeed, WALK_STATUS } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
 import type {
   DogRepository,
   MatchRepository,

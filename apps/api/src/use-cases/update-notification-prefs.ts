@@ -1,5 +1,5 @@
-import type { NotificationPrefs, Result } from '@dogwalk/types';
-import { AppError, DEFAULT_NOTIFICATION_PREFS, fail, succeed } from '@dogwalk/types';
+import type { NotificationPrefs, Result } from '@pawmeet/types';
+import { AppError, DEFAULT_NOTIFICATION_PREFS, fail, succeed } from '@pawmeet/types';
 import type { UserRepository } from '../ports/index.js';
 
 type Deps = {

@@ -1,6 +1,6 @@
-import { LEADERBOARD_TYPE, USER_LEVEL } from '@dogwalk/config';
-import type { LeaderboardEntry } from '@dogwalk/types';
-import { isSuccess } from '@dogwalk/types';
+import { LEADERBOARD_TYPE, USER_LEVEL } from '@pawmeet/config';
+import type { LeaderboardEntry } from '@pawmeet/types';
+import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildGamificationRepo } from '../test-utils/builders.js';
 import { createGetLeaderboard } from './get-leaderboard.js';

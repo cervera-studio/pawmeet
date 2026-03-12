@@ -1,6 +1,6 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import { WALK_STATUS } from '@dogwalk/types';
+import { WALK_STATUS } from '@pawmeet/types';
 import { useRouter } from 'expo-router';
 import { memo } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';

@@ -1,4 +1,4 @@
-import { MAX_PHOTOS_PER_DOG } from '@dogwalk/config';
+import { MAX_PHOTOS_PER_DOG } from '@pawmeet/config';
 import { z } from 'zod';
 
 export const dogSizeEnum = z.enum(['toy', 'piccola', 'media', 'grande', 'gigante']);

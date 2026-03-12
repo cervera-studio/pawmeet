@@ -1,4 +1,4 @@
-import type { PaginatedResult } from '@dogwalk/types';
+import type { PaginatedResult } from '@pawmeet/types';
 import { serverFetch } from '@/lib/server-api';
 import type { AdminUserListItem } from '@/repositories';
 import { UsersTable } from './users-table';

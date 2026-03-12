@@ -1,4 +1,4 @@
-import type { SafeUser, Serialized } from '@dogwalk/types';
+import type { SafeUser, Serialized } from '@pawmeet/types';
 
 export interface AuthResult {
   accessToken: string;

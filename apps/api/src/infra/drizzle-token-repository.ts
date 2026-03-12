@@ -1,4 +1,4 @@
-import { refreshTokens, type TokenType, verificationTokens } from '@dogwalk/db';
+import { refreshTokens, type TokenType, verificationTokens } from '@pawmeet/db';
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {

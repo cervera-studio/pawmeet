@@ -1,4 +1,4 @@
-import type { AnalyticsService } from '@dogwalk/types';
+import type { AnalyticsService } from '@pawmeet/types';
 import type { InjectionToken } from 'tsyringe';
 import type {
   ActivityRepository,

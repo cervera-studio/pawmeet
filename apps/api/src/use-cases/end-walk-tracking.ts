@@ -1,7 +1,7 @@
-import type { XpAction } from '@dogwalk/config';
-import type { Result, WalkTrack, XpSummary } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
-import { calculateDistance } from '@dogwalk/utils';
+import type { XpAction } from '@pawmeet/config';
+import type { Result, WalkTrack, XpSummary } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
+import { calculateDistance } from '@pawmeet/utils';
 import type { WalkTrackRepository } from '../ports/walk-track-repository.js';
 
 type AwardXpFn = (

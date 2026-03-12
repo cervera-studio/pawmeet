@@ -53,13 +53,13 @@
 | **Styling** | Tailwind CSS 4 | Utility-first, consistente con mobile (NativeWind), tree-shaking aggressivo |
 | **State Management** | Zustand | Leggero (1 KB), API semplice, nessun boilerplate, ottimo per condivisione con mobile |
 | **Server State** | TanStack Query v5 | Caching, deduplication, optimistic updates. Condiviso con mobile. |
-| **API Client** | `@dogwalk/api-client` (shared) | Client tRPC type-safe, condiviso con mobile e backoffice |
-| **Forms** | React Hook Form + `@dogwalk/validation` | Validazione Zod condivisa con backend e mobile |
+| **API Client** | `@pawmeet/api-client` (shared) | Client tRPC type-safe, condiviso con mobile e backoffice |
+| **Forms** | React Hook Form + `@pawmeet/validation` | Validazione Zod condivisa con backend e mobile |
 | **Analytics** | Cloudflare Web Analytics + Plausible | Privacy-first, no cookie banner necessario, GDPR compliant |
 | **Content** | Astro Content Collections (Markdown/MDX) | Blog e pagine legali come file nel repo, type-safe, git-versioned |
 | **Mappe** | Mapbox GL JS (o MapLibre GL) | Leggero, performante, condivisibile la logica con mobile |
 | **Real-time** | WebSocket nativo su Fly.io | Chat nella web app, consistente con il backend mobile |
-| **Auth** | Cookie-based sessions (web) tramite `@dogwalk/api-client` | Piu' sicuro di JWT in localStorage per web; il backend gestisce gia' JWT per mobile |
+| **Auth** | Cookie-based sessions (web) tramite `@pawmeet/api-client` | Piu' sicuro di JWT in localStorage per web; il backend gestisce gia' JWT per mobile |
 | **Testing** | Vitest + Playwright | Unit/integration con Vitest, E2E con Playwright |
 
 ### 1.3 Diagramma di alto livello
@@ -113,13 +113,13 @@ dogwalk-app/
 │   ├── backoffice/          → Admin dashboard
 │   └── api/                 → Hono su Fly.io (Node.js)
 ├── packages/
-│   ├── types/               → @dogwalk/types
-│   ├── validation/          → @dogwalk/validation (Zod)
-│   ├── api-client/          → @dogwalk/api-client
-│   ├── utils/               → @dogwalk/utils
-│   ├── ui/                  → @dogwalk/ui (componenti React condivisi)
-│   ├── db/                  → @dogwalk/db (Drizzle schema + migrations)
-│   └── config/              → @dogwalk/config (eslint, tsconfig, tailwind)
+│   ├── types/               → @pawmeet/types
+│   ├── validation/          → @pawmeet/validation (Zod)
+│   ├── api-client/          → @pawmeet/api-client
+│   ├── utils/               → @pawmeet/utils
+│   ├── ui/                  → @pawmeet/ui (componenti React condivisi)
+│   ├── db/                  → @pawmeet/db (Drizzle schema + migrations)
+│   └── config/              → @pawmeet/config (eslint, tsconfig, tailwind)
 ├── turbo.json
 ├── pnpm-workspace.yaml
 └── package.json
@@ -130,8 +130,8 @@ dogwalk-app/
 ```
 apps/web/
 ├── astro.config.ts                  # Configurazione Astro + adapter Cloudflare
-├── tailwind.config.ts               # Estende @dogwalk/config/tailwind
-├── tsconfig.json                    # Estende @dogwalk/config/tsconfig
+├── tailwind.config.ts               # Estende @pawmeet/config/tailwind
+├── tsconfig.json                    # Estende @pawmeet/config/tsconfig
 ├── package.json
 ├── public/
 │   ├── favicon.svg
@@ -303,7 +303,7 @@ export default defineConfig({
   },
   vite: {
     optimizeDeps: {
-      include: ['@dogwalk/ui', '@dogwalk/validation'],
+      include: ['@pawmeet/ui', '@pawmeet/validation'],
     },
   },
 });
@@ -419,12 +419,12 @@ Tutte le route sotto `/app/*` sono gestite da una singola pagina Astro (`pages/a
 
 ### 4.2 API calls via Fly.io
 
-Le API vivono in `apps/api/` come servizio Node.js su Fly.io, esposto su `api.dogwalk.app`. Il web lo chiama tramite `@dogwalk/api-client`:
+Le API vivono in `apps/api/` come servizio Node.js su Fly.io, esposto su `api.dogwalk.app`. Il web lo chiama tramite `@pawmeet/api-client`:
 
 ```typescript
 // packages/api-client/src/index.ts
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from '@dogwalk/api'; // tipi del router tRPC
+import type { AppRouter } from '@pawmeet/api'; // tipi del router tRPC
 
 export const createApiClient = (baseUrl: string) => {
   return createTRPCClient<AppRouter>({
@@ -448,7 +448,7 @@ La web app usa il client cosi':
 
 ```typescript
 // apps/web/src/spa/hooks/useApi.ts
-import { createApiClient } from '@dogwalk/api-client';
+import { createApiClient } from '@pawmeet/api-client';
 
 export const api = createApiClient('https://api.dogwalk.app');
 
@@ -793,7 +793,7 @@ Le pagine sotto `/app/` sono escluse dall'indicizzazione perche' richiedono aute
 
 ```
                     ┌──────────────┐
-                    │ @dogwalk/    │
+                    │ @pawmeet/    │
                     │ config       │
                     │ (eslint, ts, │
                     │  tailwind)   │
@@ -821,7 +821,7 @@ Le pagine sotto `/app/` sono escluse dall'indicizzazione perche' richiedono aute
 └───────┘   └─────────┘    └──────────┘  └──────────┘
 ```
 
-### 6.2 `@dogwalk/types`
+### 6.2 `@pawmeet/types`
 
 Tipi TypeScript condivisi tra tutti i progetti. Nessuna dipendenza runtime.
 
@@ -861,10 +861,10 @@ export type EnergyLevel = 'bassa' | 'media' | 'alta' | 'molto_alta';
 
 **Uso nel web:**
 ```typescript
-import type { DogProfile, DogSize } from '@dogwalk/types';
+import type { DogProfile, DogSize } from '@pawmeet/types';
 ```
 
-### 6.3 `@dogwalk/validation`
+### 6.3 `@pawmeet/validation`
 
 Schemi Zod usati per validazione form (client) e API (server). Single source of truth.
 
@@ -901,21 +901,21 @@ export type WaitlistInput = z.infer<typeof waitlistSchema>;
 **Uso nel web con React Hook Form:**
 ```typescript
 import { zodResolver } from '@hookform/resolvers/zod';
-import { waitlistSchema } from '@dogwalk/validation';
+import { waitlistSchema } from '@pawmeet/validation';
 
 const { register, handleSubmit } = useForm({
   resolver: zodResolver(waitlistSchema),
 });
 ```
 
-### 6.4 `@dogwalk/api-client`
+### 6.4 `@pawmeet/api-client`
 
 Client tRPC type-safe generato dai tipi del router. Funziona sia su web (fetch con cookies) che su mobile (fetch con Bearer token).
 
 ```typescript
 // packages/api-client/src/index.ts
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from '@dogwalk/api';
+import type { AppRouter } from '@pawmeet/api';
 
 export type ApiClient = ReturnType<typeof createApiClient>;
 
@@ -952,14 +952,14 @@ export const createApiClient = (
 };
 ```
 
-### 6.5 `@dogwalk/ui`
+### 6.5 `@pawmeet/ui`
 
 Componenti React condivisi tra web e backoffice. **Non** condivisi con mobile (React Native ha componenti diversi), ma la logica e l'API dei componenti sono allineate.
 
 ```typescript
 // packages/ui/src/components/Button.tsx
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@dogwalk/utils';
+import { cn } from '@pawmeet/utils';
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
@@ -982,7 +982,7 @@ const buttonVariants = cva(
 );
 ```
 
-### 6.6 `@dogwalk/utils`
+### 6.6 `@pawmeet/utils`
 
 Utility function pure, senza dipendenze da framework:
 
@@ -1149,7 +1149,7 @@ Le pagine marketing partono in light mode (piu' adatto al branding caldo/amber).
 |-----------|------|---------------|------|
 | `HeroSection` | Astro (zero JS) | Homepage | Illustrazione + CTA, nessuna interattivita' |
 | `WaitlistForm` | React island | Homepage, /waitlist | `client:visible` per lazy load, Turnstile |
-| `DogProfileCard` | React (shared) | /dog/[id], web app | Condiviso con backoffice via @dogwalk/ui |
+| `DogProfileCard` | React (shared) | /dog/[id], web app | Condiviso con backoffice via @pawmeet/ui |
 | `AppStoreButtons` | Astro (zero JS) | Homepage, footer | Link statici App Store / Google Play |
 | `TestimonialCarousel` | React island | Homepage | `client:visible`, swiper-lite |
 | `BlogPostCard` | Astro (zero JS) | /blog | Card con immagine, titolo, excerpt |

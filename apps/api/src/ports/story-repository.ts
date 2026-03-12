@@ -1,4 +1,4 @@
-import type { Story, StoryGroup, StoryView } from '@dogwalk/types';
+import type { Story, StoryGroup, StoryView } from '@pawmeet/types';
 
 export interface CreateStoryInput {
   authorId: string;

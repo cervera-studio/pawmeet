@@ -1,7 +1,7 @@
-import type { XpAction } from '@dogwalk/config';
-import { STORY_DURATION_HOURS } from '@dogwalk/config';
-import type { Result, Story, XpSummary } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
+import type { XpAction } from '@pawmeet/config';
+import { STORY_DURATION_HOURS } from '@pawmeet/config';
+import type { Result, Story, XpSummary } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import type { StorageService, StoryRepository } from '../ports/index.js';
 
 type AwardXpFn = (

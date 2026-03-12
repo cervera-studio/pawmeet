@@ -1,4 +1,4 @@
-import { createApiClient } from '@dogwalk/api-client';
+import { createApiClient } from '@pawmeet/api-client';
 import { useAuthStore } from '@/stores/auth';
 import { createMobileAuthRefreshLink } from './auth-link';
 

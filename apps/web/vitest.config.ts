@@ -1,1 +1,1 @@
-export { default } from '@dogwalk/vitest-config/node';
+export { default } from '@pawmeet/vitest-config/node';

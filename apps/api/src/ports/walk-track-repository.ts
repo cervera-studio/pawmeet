@@ -1,4 +1,4 @@
-import type { WalkTrack, WalkTrackPoint } from '@dogwalk/types';
+import type { WalkTrack, WalkTrackPoint } from '@pawmeet/types';
 
 export interface WalkTrackRepository {
   startTrack(userId: string, walkId: string | null): Promise<WalkTrack>;

@@ -1,11 +1,11 @@
-import type { AchievementType, ChallengeType, LeaderboardType, XpAction } from '@dogwalk/config';
+import type { AchievementType, ChallengeType, LeaderboardType, XpAction } from '@pawmeet/config';
 import type {
   Achievement,
   Challenge,
   LeaderboardEntry,
   UserChallenge,
   XpTransaction,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 
 export interface GamificationRepository {
   // XP

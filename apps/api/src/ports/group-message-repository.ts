@@ -2,7 +2,7 @@ import type {
   GroupChatMessage,
   GroupConversationSummary,
   PaginatedGroupMessages,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 
 export interface GroupMessageRepository {
   create(input: {

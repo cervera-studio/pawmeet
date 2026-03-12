@@ -1,5 +1,5 @@
-import { MAX_IMAGE_SIZE, MAX_MEDIA_PER_POST, MAX_VIDEO_SIZE } from '@dogwalk/config';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { MAX_IMAGE_SIZE, MAX_MEDIA_PER_POST, MAX_VIDEO_SIZE } from '@pawmeet/config';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { FeedRepository, StorageService } from '../ports/index.js';
 
 type Deps = {

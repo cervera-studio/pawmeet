@@ -5,8 +5,8 @@ import {
   stories,
   storyViews,
   users,
-} from '@dogwalk/db';
-import type { Story, StoryGroup, StoryView } from '@dogwalk/types';
+} from '@pawmeet/db';
+import type { Story, StoryGroup, StoryView } from '@pawmeet/types';
 import { and, desc, eq, gt, inArray, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CreateStoryInput, StoryRepository } from '../ports/story-repository.js';

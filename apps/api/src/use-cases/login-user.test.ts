@@ -1,4 +1,4 @@
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';

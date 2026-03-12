@@ -1,4 +1,4 @@
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildContentReport, buildContentReportRepo } from '../test-utils/builders.js';
 import { createReportContent } from './report-content.js';

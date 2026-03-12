@@ -1,6 +1,6 @@
-import type { RouterOutput } from '@dogwalk/api-client';
-import { GROUP_EVENT_STATUS } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { RouterOutput } from '@pawmeet/api-client';
+import { GROUP_EVENT_STATUS } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

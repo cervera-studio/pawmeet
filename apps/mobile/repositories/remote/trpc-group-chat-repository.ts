@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { GroupChatRepository } from '../interfaces';
 
 export function createTrpcGroupChatRepository(api: ApiClient): GroupChatRepository {

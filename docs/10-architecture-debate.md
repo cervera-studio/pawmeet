@@ -347,7 +347,7 @@ Il documento `09-consolidated-architecture.md` va aggiornato nei seguenti punti:
 - Cloudflare Pages per web + admin
 - Zod per validazione condivisa
 - Struttura monorepo e tutti i package condivisi
-- Il client tRPC (`@dogwalk/api-client`) resta identico -- il cambio e trasparente
+- Il client tRPC (`@pawmeet/api-client`) resta identico -- il cambio e trasparente
 
 ---
 

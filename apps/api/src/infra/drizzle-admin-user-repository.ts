@@ -1,4 +1,4 @@
-import { adminUsers } from '@dogwalk/db';
+import { adminUsers } from '@pawmeet/db';
 import { eq } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { AdminUser, AdminUserRepository } from '../ports/admin-user-repository.js';

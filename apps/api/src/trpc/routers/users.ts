@@ -7,7 +7,7 @@ import {
   updateLocationSchema,
   updateNotificationPrefsSchema,
   updatePreferencesSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import { z } from 'zod';
 import type { userDeps } from '../../container.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';

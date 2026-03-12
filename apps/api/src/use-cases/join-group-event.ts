@@ -5,7 +5,7 @@ import {
   type GroupEventParticipant,
   type Result,
   succeed,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 import type { DogRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 

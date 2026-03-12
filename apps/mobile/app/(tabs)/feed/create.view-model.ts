@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';

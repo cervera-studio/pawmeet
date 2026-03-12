@@ -1,4 +1,4 @@
-import { submitFeedbackSchema } from '@dogwalk/validation';
+import { submitFeedbackSchema } from '@pawmeet/validation';
 import { z } from 'zod';
 import type { feedbackDeps } from '../../container.js';
 import { trackEvent } from '../../lib/track-event.js';

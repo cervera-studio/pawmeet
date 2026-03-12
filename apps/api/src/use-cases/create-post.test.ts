@@ -1,5 +1,5 @@
-import { MAX_POST_CAPTION } from '@dogwalk/config';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { MAX_POST_CAPTION } from '@pawmeet/config';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildFeedRepo, buildPost } from '../test-utils/builders.js';
 import { createCreatePost } from './create-post.js';

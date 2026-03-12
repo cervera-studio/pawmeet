@@ -1,5 +1,5 @@
-import { MIN_USER_AGE } from '@dogwalk/config';
-import { calculateAge } from '@dogwalk/utils';
+import { MIN_USER_AGE } from '@pawmeet/config';
+import { calculateAge } from '@pawmeet/utils';
 import { z } from 'zod';
 
 export const AUTH_PROVIDER = {

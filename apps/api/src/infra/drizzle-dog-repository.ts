@@ -1,5 +1,5 @@
-import { dogPhotos, dogProfiles } from '@dogwalk/db';
-import type { DogPhoto, DogProfile } from '@dogwalk/types';
+import { dogPhotos, dogProfiles } from '@pawmeet/db';
+import type { DogPhoto, DogProfile } from '@pawmeet/types';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CreateDogInput, DogRepository } from '../ports/dog-repository.js';

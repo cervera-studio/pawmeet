@@ -1,5 +1,5 @@
-import type { WsMessage } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { WsMessage } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { useAuthStore } from '@/stores/auth';

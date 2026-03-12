@@ -1,5 +1,5 @@
-import { walkTrackPoints, walkTracks } from '@dogwalk/db';
-import type { WalkTrack, WalkTrackPoint } from '@dogwalk/types';
+import { walkTrackPoints, walkTracks } from '@pawmeet/db';
+import type { WalkTrack, WalkTrackPoint } from '@pawmeet/types';
 import { and, asc, desc, eq, lt, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { WalkTrackRepository } from '../ports/walk-track-repository.js';

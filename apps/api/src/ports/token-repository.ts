@@ -1,4 +1,4 @@
-import type { TokenType } from '@dogwalk/db';
+import type { TokenType } from '@pawmeet/db';
 
 export interface RefreshTokenRecord {
   id: string;

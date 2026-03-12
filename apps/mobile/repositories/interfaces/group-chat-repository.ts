@@ -1,4 +1,4 @@
-import type { GroupChatMessage, Serialized } from '@dogwalk/types';
+import type { GroupChatMessage, Serialized } from '@pawmeet/types';
 
 export interface GroupConversation {
   [key: string]: unknown;

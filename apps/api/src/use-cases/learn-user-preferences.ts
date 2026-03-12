@@ -1,6 +1,6 @@
-import type { UserMatchingPreferences } from '@dogwalk/types';
-import { type Result, succeed } from '@dogwalk/types';
-import { computeSuccessRate, learnWeightsFromSwipes } from '@dogwalk/utils';
+import type { UserMatchingPreferences } from '@pawmeet/types';
+import { type Result, succeed } from '@pawmeet/types';
+import { computeSuccessRate, learnWeightsFromSwipes } from '@pawmeet/utils';
 import type { DogRepository, MatchingAiRepository, MatchRepository } from '../ports/index.js';
 
 type Deps = {

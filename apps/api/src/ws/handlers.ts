@@ -1,5 +1,5 @@
-import { WS_EVENT, type WsMessage } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import { WS_EVENT, type WsMessage } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { WebSocket } from 'ws';
 import { getRooms, sendToRoom } from './registry.js';

@@ -1,4 +1,4 @@
-import { getLeaderboardSchema, listAchievementsSchema } from '@dogwalk/validation';
+import { getLeaderboardSchema, listAchievementsSchema } from '@pawmeet/validation';
 import type { gamificationDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

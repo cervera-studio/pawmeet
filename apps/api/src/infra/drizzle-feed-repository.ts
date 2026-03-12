@@ -8,7 +8,7 @@ import {
   posts,
   postTags,
   users,
-} from '@dogwalk/db';
+} from '@pawmeet/db';
 import type {
   FeedItem,
   Post,
@@ -17,7 +17,7 @@ import type {
   PostMedia,
   PostTag,
   ResolvedPostTag,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {

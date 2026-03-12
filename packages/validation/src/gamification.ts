@@ -1,4 +1,4 @@
-import { DEFAULT_LEADERBOARD_LIMIT, MAX_LEADERBOARD_LIMIT } from '@dogwalk/config';
+import { DEFAULT_LEADERBOARD_LIMIT, MAX_LEADERBOARD_LIMIT } from '@pawmeet/config';
 import { z } from 'zod';
 
 export const awardXpSchema = z.object({

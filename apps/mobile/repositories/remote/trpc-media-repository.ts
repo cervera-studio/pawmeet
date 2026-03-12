@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { MediaContentType, MediaRepository } from '../interfaces';
 
 export function createTrpcMediaRepository(api: ApiClient): MediaRepository {

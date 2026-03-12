@@ -1,4 +1,4 @@
-import type { DiscoveryFilters } from '@dogwalk/types';
+import type { DiscoveryFilters } from '@pawmeet/types';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

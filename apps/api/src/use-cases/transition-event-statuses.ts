@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import type { GroupEventRepository, NotificationService } from '../ports/index.js';
 
 type Deps = {

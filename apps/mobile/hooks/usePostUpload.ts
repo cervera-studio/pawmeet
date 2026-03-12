@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
 import { api } from '@/lib/trpc';
 

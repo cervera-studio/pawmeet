@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { AppSettings, SettingsRepository, UpdateSettingsInput } from '../interfaces';
 
 export function createTrpcSettingsRepository(api: ApiClient): SettingsRepository {

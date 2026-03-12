@@ -1,4 +1,4 @@
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
 import type { ChatService } from '../ports/index.js';
 import { WS_EVENT } from '../ws/chat.js';

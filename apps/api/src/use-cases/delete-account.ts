@@ -1,7 +1,7 @@
-import { analyticsEvents } from '@dogwalk/db';
-import type { Result } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import { analyticsEvents } from '@pawmeet/db';
+import type { Result } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { eq } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';

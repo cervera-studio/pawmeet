@@ -1,5 +1,5 @@
-import { MAX_COMMENT_LENGTH } from '@dogwalk/config';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { MAX_COMMENT_LENGTH } from '@pawmeet/config';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildComment,

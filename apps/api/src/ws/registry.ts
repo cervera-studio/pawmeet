@@ -1,4 +1,4 @@
-import type { WsMessage } from '@dogwalk/types';
+import type { WsMessage } from '@pawmeet/types';
 import type { WebSocket } from 'ws';
 
 /** Maps userId → Set of their WebSocket connections (supports multiple devices) */

@@ -1,5 +1,5 @@
-import type { GroupConversationSummary } from '@dogwalk/types';
-import { type Result, succeed } from '@dogwalk/types';
+import type { GroupConversationSummary } from '@pawmeet/types';
+import { type Result, succeed } from '@pawmeet/types';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
 import type { ChatService } from '../ports/index.js';
 

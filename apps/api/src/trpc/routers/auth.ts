@@ -8,7 +8,7 @@ import {
   resetPasswordOtpSchema,
   socialLoginSchema,
   verifyEmailOtpSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import type { authDeps } from '../../container.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { publicProcedure, rateLimitedPublicProcedure, router, unwrapResult } from '../trpc.js';

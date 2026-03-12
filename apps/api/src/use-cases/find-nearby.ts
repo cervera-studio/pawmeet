@@ -1,5 +1,5 @@
-import { DEFAULT_SEARCH_RADIUS_KM } from '@dogwalk/config';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/config';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { FollowRepository, NearbyUser, UserRepository } from '../ports/index.js';
 
 type Deps = {

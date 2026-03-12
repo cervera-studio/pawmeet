@@ -1,5 +1,5 @@
-import { analyticsDailyMetrics, analyticsEvents } from '@dogwalk/db';
-import { logger } from '@dogwalk/utils';
+import { analyticsDailyMetrics, analyticsEvents } from '@pawmeet/db';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { count, sql } from 'drizzle-orm';
 import { db } from '../lib/db.js';

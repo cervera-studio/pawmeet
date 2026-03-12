@@ -1,4 +1,4 @@
-import { MIN_USER_AGE } from '@dogwalk/config';
+import { MIN_USER_AGE } from '@pawmeet/config';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';

@@ -1,6 +1,6 @@
-import type { RouterOutput } from '@dogwalk/api-client';
-import type { DiscoveryFilters } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { RouterOutput } from '@pawmeet/api-client';
+import type { DiscoveryFilters } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { cache } from '@/lib/storage';
 import { api } from '@/lib/trpc';

@@ -1,4 +1,4 @@
-import type { ChatMessage, Serialized } from '@dogwalk/types';
+import type { ChatMessage, Serialized } from '@pawmeet/types';
 
 export interface Conversation {
   [key: string]: unknown;

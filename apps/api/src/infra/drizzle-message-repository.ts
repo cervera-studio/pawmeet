@@ -1,5 +1,5 @@
-import { dogProfiles, matches, messages, users } from '@dogwalk/db';
-import type { ChatMessage } from '@dogwalk/types';
+import { dogProfiles, matches, messages, users } from '@pawmeet/db';
+import type { ChatMessage } from '@pawmeet/types';
 import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {

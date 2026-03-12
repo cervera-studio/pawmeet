@@ -1,6 +1,6 @@
-import type { ContentReportReason } from '@dogwalk/types';
-import { CONTENT_REPORT_REASON } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { ContentReportReason } from '@pawmeet/types';
+import { CONTENT_REPORT_REASON } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';

@@ -1,6 +1,6 @@
-import { FEED_PAGE_SIZE } from '@dogwalk/config';
-import type { Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import { FEED_PAGE_SIZE } from '@pawmeet/config';
+import type { Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { ContentReportRepository } from '../ports/index.js';
 
 type Deps = {
@@ -12,7 +12,7 @@ export function createGetPendingReports({ contentReportRepo }: Deps) {
     cursor: string | null,
     limit: number = FEED_PAGE_SIZE,
   ): Promise<
-    Result<{ reports: import('@dogwalk/types').ContentReport[]; nextCursor: string | null }>
+    Result<{ reports: import('@pawmeet/types').ContentReport[]; nextCursor: string | null }>
   > => {
     const result = await contentReportRepo.findPendingReports(cursor, limit);
     return succeed(result);

@@ -13,7 +13,7 @@ import {
   reportContentSchema,
   userPostsQuerySchema,
   viewStorySchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import { z } from 'zod';
 import type { feedDeps } from '../../container.js';
 import { trackEvent } from '../../lib/track-event.js';

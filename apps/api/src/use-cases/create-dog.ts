@@ -1,6 +1,6 @@
-import { MAX_DOGS_PER_USER } from '@dogwalk/config';
-import type { DogProfile } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { MAX_DOGS_PER_USER } from '@pawmeet/config';
+import type { DogProfile } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { CreateDogInput, DogRepository } from '../ports/index.js';
 
 type Deps = {

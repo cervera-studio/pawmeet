@@ -1,5 +1,5 @@
-import type { ChatMessage } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import type { ChatMessage } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { ChatService, MessageRepository } from '../ports/index.js';
 
 type Deps = {

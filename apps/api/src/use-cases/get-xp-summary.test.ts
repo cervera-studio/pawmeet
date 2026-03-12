@@ -1,5 +1,5 @@
-import { USER_LEVEL } from '@dogwalk/config';
-import { isSuccess } from '@dogwalk/types';
+import { USER_LEVEL } from '@pawmeet/config';
+import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildGamificationRepo } from '../test-utils/builders.js';
 import { createGetXpSummary } from './get-xp-summary.js';

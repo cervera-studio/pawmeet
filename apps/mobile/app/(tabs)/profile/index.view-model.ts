@@ -1,4 +1,4 @@
-import { formatDogAge, logger } from '@dogwalk/utils';
+import { formatDogAge, logger } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';

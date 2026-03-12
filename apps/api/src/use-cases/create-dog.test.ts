@@ -1,5 +1,5 @@
-import { MAX_DOGS_PER_USER } from '@dogwalk/config';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { MAX_DOGS_PER_USER } from '@pawmeet/config';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildDog, buildDogInput, buildDogRepo } from '../test-utils/builders.js';
 import { createCreateDog } from './create-dog.js';

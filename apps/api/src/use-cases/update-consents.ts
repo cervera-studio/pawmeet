@@ -1,5 +1,5 @@
-import type { Result } from '@dogwalk/types';
-import type { UpdateConsentInput } from '@dogwalk/validation';
+import type { Result } from '@pawmeet/types';
+import type { UpdateConsentInput } from '@pawmeet/validation';
 import type { ConsentRepository } from '../infra/drizzle-consent-repository.js';
 
 interface Deps {

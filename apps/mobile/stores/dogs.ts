@@ -1,4 +1,4 @@
-import type { RouterOutput } from '@dogwalk/api-client';
+import type { RouterOutput } from '@pawmeet/api-client';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from '@/lib/storage';

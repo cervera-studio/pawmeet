@@ -1,5 +1,5 @@
-import { CHALLENGE_TYPE, XP_ACTION } from '@dogwalk/config';
-import { isSuccess } from '@dogwalk/types';
+import { CHALLENGE_TYPE, XP_ACTION } from '@pawmeet/config';
+import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildChallenge,

@@ -6,7 +6,7 @@ import type {
   PostMedia,
   PostTag,
   ResolvedPostTag,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 
 export interface CreatePostInput {
   authorId: string;

@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { ContentModerationRepository, ContentReportPage, ReviewAction } from '../interfaces';
 
 export function createTrpcContentModerationRepository(api: ApiClient): ContentModerationRepository {

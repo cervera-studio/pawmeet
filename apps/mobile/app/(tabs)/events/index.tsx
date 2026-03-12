@@ -1,6 +1,6 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import { GROUP_EVENT_STATUS } from '@dogwalk/types';
+import { GROUP_EVENT_STATUS } from '@pawmeet/types';
 import { memo } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

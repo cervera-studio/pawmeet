@@ -1,4 +1,4 @@
-import { loginSchema } from '@dogwalk/validation';
+import { loginSchema } from '@pawmeet/validation';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';

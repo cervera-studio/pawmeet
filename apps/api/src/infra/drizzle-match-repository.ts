@@ -1,5 +1,5 @@
-import { dogProfiles, matches, swipes, users } from '@dogwalk/db';
-import type { DogProfile, Match, Swipe } from '@dogwalk/types';
+import { dogProfiles, matches, swipes, users } from '@pawmeet/db';
+import type { DogProfile, Match, Swipe } from '@pawmeet/types';
 import { and, eq, gte, ne, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CandidateDog, MatchRepository } from '../ports/match-repository.js';

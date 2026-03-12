@@ -1,4 +1,4 @@
-import type { PaginatedResult } from '@dogwalk/types';
+import type { PaginatedResult } from '@pawmeet/types';
 import type { api as ApiClientInstance } from '@/lib/api';
 import type {
   AdminUserDetail,

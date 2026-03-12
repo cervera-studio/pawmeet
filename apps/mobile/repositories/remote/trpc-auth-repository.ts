@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { AuthRepository, AuthResult } from '../interfaces';
 
 export function createTrpcAuthRepository(api: ApiClient): AuthRepository {

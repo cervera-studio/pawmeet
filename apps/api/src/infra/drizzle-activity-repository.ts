@@ -1,5 +1,5 @@
-import { dailyActivity } from '@dogwalk/db';
-import type { ActivitySummary, DailyActivity } from '@dogwalk/types';
+import { dailyActivity } from '@pawmeet/db';
+import type { ActivitySummary, DailyActivity } from '@pawmeet/types';
 import { and, asc, eq, gte, lte, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { ActivityRepository } from '../ports/activity-repository.js';

@@ -6,7 +6,7 @@ import {
   searchUsersSchema,
   unblockUserSchema,
   unfollowUserSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import type { followDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

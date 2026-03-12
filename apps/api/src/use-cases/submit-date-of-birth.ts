@@ -1,7 +1,7 @@
-import { MIN_USER_AGE } from '@dogwalk/config';
-import type { Result } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
-import { calculateAge } from '@dogwalk/utils';
+import { MIN_USER_AGE } from '@pawmeet/config';
+import type { Result } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
+import { calculateAge } from '@pawmeet/utils';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { UserRepository } from '../ports/user-repository.js';
 

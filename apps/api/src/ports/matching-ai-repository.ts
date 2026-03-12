@@ -1,10 +1,10 @@
-import type { MatchInteractionType } from '@dogwalk/config';
+import type { MatchInteractionType } from '@pawmeet/config';
 import type {
   MatchInteraction,
   SwipeScoreLog,
   UserActivityWindow,
   UserMatchingPreferences,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 
 export interface MatchingAiRepository {
   // Swipe score logs

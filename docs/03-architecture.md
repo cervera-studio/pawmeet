@@ -270,7 +270,7 @@ dogwalk/
 │       └── package.json
 │
 ├── packages/
-│   ├── types/                            # @dogwalk/types
+│   ├── types/                            # @pawmeet/types
 │   │   ├── src/
 │   │   │   ├── user.ts
 │   │   │   ├── dog.ts
@@ -283,7 +283,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── validation/                       # @dogwalk/validation (Zod schemas)
+│   ├── validation/                       # @pawmeet/validation (Zod schemas)
 │   │   ├── src/
 │   │   │   ├── user.ts
 │   │   │   ├── dog.ts
@@ -294,7 +294,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── utils/                            # @dogwalk/utils
+│   ├── utils/                            # @pawmeet/utils
 │   │   ├── src/
 │   │   │   ├── formatting.ts
 │   │   │   ├── geo.ts                    # Haversine, formattazione distanze
@@ -304,7 +304,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── ui/                               # @dogwalk/ui (componenti condivisi mobile)
+│   ├── ui/                               # @pawmeet/ui (componenti condivisi mobile)
 │   │   ├── src/
 │   │   │   ├── primitives/               # Button, Text, Input, Avatar, Badge, Card...
 │   │   │   ├── composites/               # DogCard, MatchListItem, PhotoGallery...
@@ -313,7 +313,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── api-client/                       # @dogwalk/api-client (tRPC client)
+│   ├── api-client/                       # @pawmeet/api-client (tRPC client)
 │   │   ├── src/
 │   │   │   ├── index.ts                  # createApiClient() con tRPC
 │   │   │   ├── react.ts                  # React hooks (useQuery wrappers)
@@ -321,7 +321,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── db/                               # @dogwalk/db (Drizzle schema + migrations)
+│   ├── db/                               # @pawmeet/db (Drizzle schema + migrations)
 │   │   ├── src/
 │   │   │   ├── schema/
 │   │   │   │   ├── users.ts
@@ -346,7 +346,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   └── config/                           # @dogwalk/config
+│   └── config/                           # @pawmeet/config
 │       ├── src/
 │       │   ├── constants.ts              # Costanti condivise (limiti, rate limits)
 │       │   ├── enums.ts                  # Enum condivisi (size, energy, behavior)
@@ -817,12 +817,12 @@ Component → ViewModel/Hook → Repository (interface) → Implementation
                                                         └── composite/ (offline-first)
 ```
 
-**Repository interface** — dipende solo da `@dogwalk/types`, zero accoppiamento col transport:
+**Repository interface** — dipende solo da `@pawmeet/types`, zero accoppiamento col transport:
 
 ```typescript
 // apps/mobile/repositories/interfaces/walk-repository.ts
-import type { Walk } from '@dogwalk/types';
-import type { Serialized } from '@dogwalk/types';
+import type { Walk } from '@pawmeet/types';
+import type { Serialized } from '@pawmeet/types';
 
 export interface WalkRepository {
   listUpcoming(): Promise<Serialized<Walk>[]>;
@@ -830,7 +830,7 @@ export interface WalkRepository {
 }
 ```
 
-**Type safety senza RouterOutput** — il tipo utility `Serialized<T>` (in `@dogwalk/types`) converte ricorsivamente `Date → string`, replicando la serializzazione tRPC senza dipendere da esso:
+**Type safety senza RouterOutput** — il tipo utility `Serialized<T>` (in `@pawmeet/types`) converte ricorsivamente `Date → string`, replicando la serializzazione tRPC senza dipendere da esso:
 
 ```typescript
 // packages/types/src/serialized.ts
@@ -916,7 +916,7 @@ Tabella `sync_queue` in SQLite:
 
 ## 6. Shared Packages
 
-### 6.1 `@dogwalk/types`
+### 6.1 `@pawmeet/types`
 
 Tipi TypeScript condivisi tra frontend e backend. Nessuna dipendenza runtime.
 
@@ -980,7 +980,7 @@ export interface MatchResult {
 }
 ```
 
-### 6.2 `@dogwalk/validation`
+### 6.2 `@pawmeet/validation`
 
 Schemi Zod usati sia dal backend (validazione input API) sia dal frontend (validazione form).
 
@@ -1045,7 +1045,7 @@ function isWeightConsistentWithSize(weight: number, size: string): boolean {
 }
 ```
 
-### 6.3 `@dogwalk/config`
+### 6.3 `@pawmeet/config`
 
 ```typescript
 // packages/config/src/matching.ts
@@ -1087,7 +1087,7 @@ export const MATCHING_WEIGHTS = {
 export const DISTANCE_DECAY_FACTOR = 0.15;
 ```
 
-### 6.4 `@dogwalk/utils`
+### 6.4 `@pawmeet/utils`
 
 ```typescript
 // packages/utils/src/geo.ts
@@ -1123,23 +1123,23 @@ export function formatDistance(km: number): string {
 ### 6.5 Package Dependency Graph
 
 ```
-@dogwalk/config ────────────────────────┐
+@pawmeet/config ────────────────────────┐
                                         │
-@dogwalk/types ─────────┬──────────────┤
+@pawmeet/types ─────────┬──────────────┤
                         │              │
-@dogwalk/validation ────┤  (dipende da ├──▶ apps/api
+@pawmeet/validation ────┤  (dipende da ├──▶ apps/api
   (dipende da zod,      │   entrambi)  │
    types)               │              ├──▶ apps/mobile
                         │              │
-@dogwalk/utils ─────────┘              ├──▶ apps/web
+@pawmeet/utils ─────────┘              ├──▶ apps/web
                                        │
-@dogwalk/db ───────────────────────────┤
+@pawmeet/db ───────────────────────────┤
   (dipende da types, drizzle)          │
                                        ├──▶ apps/admin
-@dogwalk/api-client ───────────────────┤
+@pawmeet/api-client ───────────────────┤
   (dipende da types, tRPC client)      │
                                        │
-@dogwalk/ui ───────────────────────────┘
+@pawmeet/ui ───────────────────────────┘
   (dipende da types, react-native)
 ```
 
@@ -1920,7 +1920,7 @@ FROM base AS build
 WORKDIR /app
 COPY . .
 RUN pnpm install --frozen-lockfile
-RUN pnpm turbo build --filter=@dogwalk/api
+RUN pnpm turbo build --filter=@pawmeet/api
 
 FROM base AS runner
 WORKDIR /app
@@ -2315,7 +2315,7 @@ Zustand per client state, Repository pattern + SQLite per server state. TanStack
 - Nessun DevTools avanzato come Redux DevTools (Zustand ha un middleware devtools basico)
 - L'offline-first e gestito dal repository layer (SQLite + sync queue), non piu da MMKV + coda in Zustand
 - I view-model/hook dipendono solo dalle interfacce repository, mai da tRPC direttamente
-- `Serialized<T>` utility type in `@dogwalk/types` per type safety senza dipendenza su RouterOutput
+- `Serialized<T>` utility type in `@pawmeet/types` per type safety senza dipendenza su RouterOutput
 
 ---
 
@@ -2507,16 +2507,16 @@ docker compose -f docker/docker-compose.yml up -d
 pnpm turbo dev
 
 # Solo backend
-pnpm --filter @dogwalk/api dev
+pnpm --filter @pawmeet/api dev
 
 # Solo mobile
-pnpm --filter @dogwalk/mobile dev
+pnpm --filter @pawmeet/mobile dev
 
 # Database
-pnpm --filter @dogwalk/db db:push       # Push schema a DB (dev)
-pnpm --filter @dogwalk/db db:migrate    # Run migrations (staging/prod)
-pnpm --filter @dogwalk/db db:seed       # Seed data di sviluppo
-pnpm --filter @dogwalk/db db:studio     # Drizzle Studio (DB browser)
+pnpm --filter @pawmeet/db db:push       # Push schema a DB (dev)
+pnpm --filter @pawmeet/db db:migrate    # Run migrations (staging/prod)
+pnpm --filter @pawmeet/db db:seed       # Seed data di sviluppo
+pnpm --filter @pawmeet/db db:studio     # Drizzle Studio (DB browser)
 
 # Quality
 pnpm turbo lint                          # ESLint su tutto
@@ -2525,7 +2525,7 @@ pnpm turbo test                          # Test su tutto
 
 # Build
 pnpm turbo build                         # Build tutti i packages
-pnpm --filter @dogwalk/api build         # Build solo backend
+pnpm --filter @pawmeet/api build         # Build solo backend
 
 # Mobile builds
 eas build --platform ios --profile preview

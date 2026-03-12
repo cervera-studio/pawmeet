@@ -1,4 +1,4 @@
-import type { AppRouter } from '@dogwalk/api/trpc';
+import type { AppRouter } from '@pawmeet/api/trpc';
 import type { TRPCLink } from '@trpc/client';
 import { TRPCClientError } from '@trpc/client';
 import { observable } from '@trpc/server/observable';

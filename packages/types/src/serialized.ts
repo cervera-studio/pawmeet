@@ -8,8 +8,8 @@
  *
  * @example
  * ```ts
- * import type { Walk } from '@dogwalk/types';
- * import type { Serialized } from '@dogwalk/types';
+ * import type { Walk } from '@pawmeet/types';
+ * import type { Serialized } from '@pawmeet/types';
  *
  * interface WalkRepository {
  *   listUpcoming(): Promise<Serialized<Walk>[]>;

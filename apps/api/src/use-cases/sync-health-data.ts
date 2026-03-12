@@ -1,5 +1,5 @@
-import type { DailyActivity, Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import type { DailyActivity, Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { ActivityRepository } from '../ports/activity-repository.js';
 
 type Deps = {

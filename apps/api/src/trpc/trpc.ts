@@ -1,5 +1,5 @@
-import type { Result } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { Result } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { Ratelimit } from '@upstash/ratelimit';
 import { verifyAccessToken } from '../lib/jwt.js';

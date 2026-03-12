@@ -1,5 +1,5 @@
 {
-  "name": "@dogwalk/utils",
+  "name": "@pawmeet/utils",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,10 +11,10 @@
     "lint": "biome check src/"
   },
   "dependencies": {
-    "@dogwalk/types": "workspace:*"
+    "@pawmeet/types": "workspace:*"
   },
   "devDependencies": {
-    "@dogwalk/typescript-config": "workspace:*",
+    "@pawmeet/typescript-config": "workspace:*",
     "typescript": "^5.9.0"
   }
 }

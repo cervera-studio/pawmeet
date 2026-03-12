@@ -7,9 +7,9 @@ import { migrate } from 'drizzle-orm/neon-http/migrator';
  *
  * Usage:
  *   - Programmatically: import and call `runMigrations(databaseUrl)`
- *   - CLI: `pnpm --filter @dogwalk/db db:migrate`
+ *   - CLI: `pnpm --filter @pawmeet/db db:migrate`
  *
- * Migrations are generated with `pnpm --filter @dogwalk/db db:generate`
+ * Migrations are generated with `pnpm --filter @pawmeet/db db:generate`
  * and stored in `packages/db/drizzle/`.
  */
 export async function runMigrations(databaseUrl: string) {

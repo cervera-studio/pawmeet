@@ -1,5 +1,5 @@
-import type { RouterOutput } from '@dogwalk/api-client';
-import { logger } from '@dogwalk/utils';
+import type { RouterOutput } from '@pawmeet/api-client';
+import { logger } from '@pawmeet/utils';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';

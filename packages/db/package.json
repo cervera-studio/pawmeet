@@ -1,5 +1,5 @@
 {
-  "name": "@dogwalk/db",
+  "name": "@pawmeet/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -23,8 +23,8 @@
     "drizzle-orm": "^0.45.0"
   },
   "devDependencies": {
-    "@dogwalk/typescript-config": "workspace:*",
-    "@dogwalk/vitest-config": "workspace:*",
+    "@pawmeet/typescript-config": "workspace:*",
+    "@pawmeet/vitest-config": "workspace:*",
     "@types/bcryptjs": "^3.0.0",
     "drizzle-kit": "^0.31.0",
     "typescript": "^5.9.0"

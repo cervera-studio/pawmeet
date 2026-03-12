@@ -1,4 +1,4 @@
-import { markReadSchema, sendMessageSchema } from '@dogwalk/validation';
+import { markReadSchema, sendMessageSchema } from '@pawmeet/validation';
 import { z } from 'zod';
 import type { chatDeps } from '../../container.js';
 import { trackEvent } from '../../lib/track-event.js';

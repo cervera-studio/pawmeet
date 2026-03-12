@@ -1,5 +1,5 @@
-import { dogProfiles, users } from '@dogwalk/db';
-import type { User } from '@dogwalk/types';
+import { dogProfiles, users } from '@pawmeet/db';
+import type { User } from '@pawmeet/types';
 import { and, eq, inArray, isNotNull, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {

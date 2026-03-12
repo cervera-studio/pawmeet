@@ -1,5 +1,5 @@
-import { badges } from '@dogwalk/db';
-import type { Badge, BadgeType } from '@dogwalk/types';
+import { badges } from '@pawmeet/db';
+import type { Badge, BadgeType } from '@pawmeet/types';
 import { and, eq } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { BadgeRepository } from '../ports/badge-repository.js';

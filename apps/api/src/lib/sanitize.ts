@@ -1,4 +1,4 @@
-import type { User } from '@dogwalk/types';
+import type { User } from '@pawmeet/types';
 
 export type SafeUser = Omit<User, 'passwordHash' | 'pushToken'>;
 

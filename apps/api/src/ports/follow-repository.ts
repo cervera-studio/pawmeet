@@ -1,4 +1,4 @@
-import type { FollowSummary, FriendSummary, UserBlock, UserFollow } from '@dogwalk/types';
+import type { FollowSummary, FriendSummary, UserBlock, UserFollow } from '@pawmeet/types';
 
 export interface PaginatedQuery {
   limit: number;

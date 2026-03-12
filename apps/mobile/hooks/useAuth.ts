@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import { useCallback } from 'react';
 import { container } from 'tsyringe';
 import { storage } from '@/lib/storage';

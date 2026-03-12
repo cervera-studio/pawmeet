@@ -1,5 +1,5 @@
-import type { FollowSummary } from '@dogwalk/types';
-import { type Result, succeed } from '@dogwalk/types';
+import type { FollowSummary } from '@pawmeet/types';
+import { type Result, succeed } from '@pawmeet/types';
 import type { FollowRepository } from '../ports/index.js';
 
 type Deps = {

@@ -3,7 +3,7 @@ import {
   listByMatchSchema,
   proposeWalkSchema,
   respondWalkSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import type { walkDeps } from '../../container.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';

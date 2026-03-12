@@ -1,4 +1,4 @@
-import { isSuccess } from '@dogwalk/types';
+import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildActivityRepo, buildDailyActivity } from '../test-utils/builders.js';
 import { createSyncHealthData } from './sync-health-data.js';

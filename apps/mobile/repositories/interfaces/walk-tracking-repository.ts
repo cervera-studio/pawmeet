@@ -1,4 +1,4 @@
-import type { Serialized, WalkTrack } from '@dogwalk/types';
+import type { Serialized, WalkTrack } from '@pawmeet/types';
 
 export interface TrackPointInput {
   latitude: number;

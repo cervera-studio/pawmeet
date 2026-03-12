@@ -1,5 +1,5 @@
-import { MAX_DOGS_PER_USER } from '@dogwalk/config';
-import { createDogSchema } from '@dogwalk/validation';
+import { MAX_DOGS_PER_USER } from '@pawmeet/config';
+import { createDogSchema } from '@pawmeet/validation';
 import { useRouter } from 'expo-router';
 import { useCallback, useReducer, useState } from 'react';
 import { api } from '@/lib/trpc';

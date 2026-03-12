@@ -1,4 +1,4 @@
-import { createTRPCClientConfig, trpc } from '@dogwalk/api-client';
+import { createTRPCClientConfig, trpc } from '@pawmeet/api-client';
 import { getAccessToken } from './auth-store';
 
 export { trpc };

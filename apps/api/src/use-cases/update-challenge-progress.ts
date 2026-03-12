@@ -1,7 +1,7 @@
-import type { ChallengeType, XpAction } from '@dogwalk/config';
-import { XP_ACTION } from '@dogwalk/config';
-import type { Result, UserChallenge } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import type { ChallengeType, XpAction } from '@pawmeet/config';
+import { XP_ACTION } from '@pawmeet/config';
+import type { Result, UserChallenge } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 
 type Deps = {

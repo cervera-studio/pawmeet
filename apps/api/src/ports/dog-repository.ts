@@ -1,4 +1,4 @@
-import type { DogPhoto, DogProfile } from '@dogwalk/types';
+import type { DogPhoto, DogProfile } from '@pawmeet/types';
 
 export interface CreateDogInput {
   ownerId: string;

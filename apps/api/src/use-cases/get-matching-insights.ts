@@ -1,6 +1,6 @@
-import { STATSIG_GATE } from '@dogwalk/config';
-import type { MatchingInsights, OptimalTimeWindow } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { STATSIG_GATE } from '@pawmeet/config';
+import type { MatchingInsights, OptimalTimeWindow } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type {
   DogRepository,
   ExperimentService,

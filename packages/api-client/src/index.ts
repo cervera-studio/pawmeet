@@ -1,4 +1,4 @@
-import type { AppRouter } from '@dogwalk/api/trpc';
+import type { AppRouter } from '@pawmeet/api/trpc';
 import { createTRPCClient, httpBatchLink, type TRPCLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
@@ -52,7 +52,7 @@ export type ApiClient = ReturnType<typeof createApiClient>;
  * @example
  * ```tsx
  * // In providers.tsx
- * import { trpc, createTRPCClientConfig } from '@dogwalk/api-client';
+ * import { trpc, createTRPCClientConfig } from '@pawmeet/api-client';
  * const trpcClient = trpc.createClient(createTRPCClientConfig('http://localhost:3000', getToken));
  *
  * // In components

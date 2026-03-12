@@ -1,6 +1,6 @@
-import type { LeaderboardType } from '@dogwalk/config';
-import type { LeaderboardEntry, Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import type { LeaderboardType } from '@pawmeet/config';
+import type { LeaderboardEntry, Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 
 type Deps = {

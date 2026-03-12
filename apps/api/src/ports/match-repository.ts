@@ -1,4 +1,4 @@
-import type { DogProfile, Match, Swipe } from '@dogwalk/types';
+import type { DogProfile, Match, Swipe } from '@pawmeet/types';
 
 export interface CandidateDog {
   dog: DogProfile;

@@ -1,4 +1,4 @@
-import type { MessageStatus } from '@dogwalk/types';
+import type { MessageStatus } from '@pawmeet/types';
 import { memo } from 'react';
 import { Image, Linking, Pressable, Text, View } from 'react-native';
 

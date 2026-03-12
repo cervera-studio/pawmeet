@@ -1,4 +1,4 @@
-import type { WalkFeedback } from '@dogwalk/types';
+import type { WalkFeedback } from '@pawmeet/types';
 
 export interface FeedbackRepository {
   create(feedback: Omit<WalkFeedback, 'id' | 'createdAt'>): Promise<WalkFeedback>;

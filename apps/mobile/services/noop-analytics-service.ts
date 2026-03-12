@@ -1,4 +1,4 @@
-import type { AnalyticsEventMap, AnalyticsEventName, AnalyticsService } from '@dogwalk/types';
+import type { AnalyticsEventMap, AnalyticsEventName, AnalyticsService } from '@pawmeet/types';
 
 /** Silent analytics service for development — logs to console in __DEV__ */
 export function createNoOpAnalyticsService(): AnalyticsService {

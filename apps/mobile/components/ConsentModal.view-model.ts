@@ -1,6 +1,6 @@
-import type { ConsentState } from '@dogwalk/types';
-import { DEFAULT_CONSENT_STATE } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { ConsentState } from '@pawmeet/types';
+import { DEFAULT_CONSENT_STATE } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
 import { syncConsentsToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';

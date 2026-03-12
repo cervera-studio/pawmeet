@@ -1,5 +1,5 @@
-import type { AchievementType } from '@dogwalk/config';
-import { ACHIEVEMENT_TYPE, CHALLENGE_TYPE } from '@dogwalk/config';
+import type { AchievementType } from '@pawmeet/config';
+import { ACHIEVEMENT_TYPE, CHALLENGE_TYPE } from '@pawmeet/config';
 import {
   type Achievement,
   BADGE_TYPE,
@@ -27,7 +27,7 @@ import {
   type WalkFeedback,
   type WalkTrack,
   type WalkTrackPoint,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 import { vi } from 'vitest';
 import type { ActivityRepository } from '../ports/activity-repository.js';
 import type { ExperimentService } from '../ports/experiment-service.js';

@@ -43,7 +43,7 @@ COPY packages/api-client/ ./packages/api-client/
 COPY tooling/typescript/ ./tooling/typescript/
 
 # Build the API and its dependencies via Turborepo
-RUN pnpm turbo build --filter=@dogwalk/api...
+RUN pnpm turbo build --filter=@pawmeet/api...
 
 # ── Stage 4: Runner ──────────────────────────────────────────
 FROM node:22-alpine AS runner

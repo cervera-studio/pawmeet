@@ -66,7 +66,7 @@ pnpm format:check     # Check formatting (Biome)
 - Shared config in `tooling/vitest/` — extend with `node` (backend/packages) or `react` (web/admin)
 - Test files: colocated as `*.test.ts` / `*.test.tsx` next to source
 - **Builder pattern** for test data: use builder functions to construct test objects instead of raw literals. Keeps tests readable, avoids duplication, and makes defaults explicit.
-- Run: `pnpm test` (all), `pnpm --filter @dogwalk/api test` (single package)
+- Run: `pnpm test` (all), `pnpm --filter @pawmeet/api test` (single package)
 
 ## Conventions
 

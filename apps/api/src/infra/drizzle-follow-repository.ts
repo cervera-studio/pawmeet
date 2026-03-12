@@ -1,5 +1,5 @@
-import { userBlocks, userFollows, users } from '@dogwalk/db';
-import type { FollowSummary, FriendSummary, UserBlock, UserFollow } from '@dogwalk/types';
+import { userBlocks, userFollows, users } from '@pawmeet/db';
+import type { FollowSummary, FriendSummary, UserBlock, UserFollow } from '@pawmeet/types';
 import { and, eq, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { FollowRepository, PaginatedQuery } from '../ports/follow-repository.js';

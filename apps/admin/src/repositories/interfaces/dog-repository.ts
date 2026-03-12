@@ -1,4 +1,4 @@
-import type { PaginatedResult } from '@dogwalk/types';
+import type { PaginatedResult } from '@pawmeet/types';
 
 export interface AdminDogListItem {
   id: string;

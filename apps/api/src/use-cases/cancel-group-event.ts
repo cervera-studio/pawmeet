@@ -1,4 +1,4 @@
-import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@dogwalk/types';
+import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@pawmeet/types';
 import type { GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 

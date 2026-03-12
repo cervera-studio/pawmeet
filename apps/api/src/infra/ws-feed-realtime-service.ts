@@ -1,4 +1,4 @@
-import { WS_EVENT } from '@dogwalk/types';
+import { WS_EVENT } from '@pawmeet/types';
 import type { FeedRealtimeService } from '../ports/feed-realtime-service.js';
 import { sendToUser } from '../ws/chat.js';
 

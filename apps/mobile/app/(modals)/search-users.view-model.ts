@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { container } from 'tsyringe';

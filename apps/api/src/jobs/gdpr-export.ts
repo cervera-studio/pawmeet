@@ -1,5 +1,5 @@
-import { isFailure } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import { isFailure } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { EmailService } from '../ports/email-service.js';
@@ -15,7 +15,7 @@ const DOWNLOAD_URL_EXPIRY_SECONDS = 48 * 60 * 60;
 const FILE_RETENTION_DAYS = 7;
 
 interface GdprExportWorkerDeps {
-  exportUserData: (userId: string) => Promise<import('@dogwalk/types').Result<unknown>>;
+  exportUserData: (userId: string) => Promise<import('@pawmeet/types').Result<unknown>>;
   gdprExportRepo: GdprExportRepository;
   storage: StorageService;
   emailService: EmailService;

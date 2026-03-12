@@ -1,4 +1,4 @@
-import { WALK_DURATION_MAX, WALK_DURATION_MIN } from '@dogwalk/config';
+import { WALK_DURATION_MAX, WALK_DURATION_MIN } from '@pawmeet/config';
 import { z } from 'zod';
 
 export const proposeWalkSchema = z.object({

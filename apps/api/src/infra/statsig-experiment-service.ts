@@ -1,5 +1,5 @@
 import { createHmac } from 'node:crypto';
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import { Statsig, StatsigUser } from '@statsig/statsig-node-core';
 import type { ExperimentService } from '../ports/experiment-service.js';
 

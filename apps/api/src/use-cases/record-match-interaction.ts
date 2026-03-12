@@ -1,6 +1,6 @@
-import type { MatchInteractionType } from '@dogwalk/config';
-import type { MatchInteraction } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import type { MatchInteractionType } from '@pawmeet/config';
+import type { MatchInteraction } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { MatchingAiRepository, MatchRepository } from '../ports/index.js';
 
 type Deps = {

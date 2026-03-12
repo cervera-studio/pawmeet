@@ -1,5 +1,5 @@
 {
-  "name": "dogwalk",
+  "name": "pawmeet",
   "private": true,
   "scripts": {
     "dev": "turbo dev",
@@ -15,8 +15,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.0",
-    "@dogwalk/typescript-config": "workspace:*",
-    "@dogwalk/vitest-config": "workspace:*",
+    "@pawmeet/typescript-config": "workspace:*",
+    "@pawmeet/vitest-config": "workspace:*",
     "@opentelemetry/api": "^1.9.0",
     "lefthook": "^2.1.0",
     "turbo": "^2.8.0",

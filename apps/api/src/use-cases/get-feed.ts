@@ -1,6 +1,6 @@
-import { FEED_PAGE_SIZE } from '@dogwalk/config';
-import type { Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import { FEED_PAGE_SIZE } from '@pawmeet/config';
+import type { Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { FeedPage, FeedRepository } from '../ports/index.js';
 
 type Deps = {

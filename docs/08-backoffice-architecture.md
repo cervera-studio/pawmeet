@@ -48,7 +48,7 @@ A seguito del dibattito architetturale documentato nel doc 11, il panel ha votat
 | **Styling** | Tailwind CSS | 4.x | Stesso del resto del progetto, design system unificato |
 | **Data Fetching** | Server Components + Server Actions + Repository pattern | - | Data fetching server-side via repository interfaces, mutations via Server Actions. Nessuna dipendenza client-side per data fetching. |
 | **Tabelle** | TanStack Table | 8.x | Headless, composable, type-safe, sorting/filtri/paginazione server-side |
-| **Form** | React Hook Form + Zod | - | Gia usato ovunque nel monorepo, end-to-end type safety con `@dogwalk/validation` |
+| **Form** | React Hook Form + Zod | - | Gia usato ovunque nel monorepo, end-to-end type safety con `@pawmeet/validation` |
 | **Form Resolver** | @hookform/resolvers | - | Bridge React Hook Form + Zod |
 | **Charting** | Recharts | 2.x | Leggero, composable, ben tipizzato, ottima integrazione React |
 | **Mappe** | Mapbox GL JS | 3.x | Heat map utenti, piu flessibile di Google Maps per visualizzazioni custom |
@@ -59,7 +59,7 @@ A seguito del dibattito architetturale documentato nel doc 11, il panel ha votat
 | **Real-time** | WebSocket nativo su Fly.io | - | Alert dashboard, coda moderazione live |
 | **Testing** | Vitest + Testing Library | - | Unit e integration test |
 | **Linting** | ESLint + Prettier | - | Condiviso dal monorepo |
-| **TypeScript** | TypeScript | 5.x | Strict mode, shared types dal package `@dogwalk/types` |
+| **TypeScript** | TypeScript | 5.x | Strict mode, shared types dal package `@pawmeet/types` |
 | **Deploy** | Cloudflare Pages | - | `@opennextjs/cloudflare` per Next.js su Cloudflare |
 
 ### 1.3 Pattern CRUD Riutilizzabili
@@ -95,8 +95,8 @@ I view-model non chiamano tRPC o REST direttamente. Ogni dominio ha un'interfacc
 
 ```typescript
 // src/repositories/interfaces/user-repository.ts
-import type { User, UserDetail } from '@dogwalk/types';
-import type { Serialized, PaginatedResult } from '@dogwalk/types';
+import type { User, UserDetail } from '@pawmeet/types';
+import type { Serialized, PaginatedResult } from '@pawmeet/types';
 
 export interface UserRepository {
   list(params: { page: number; pageSize: number; search?: string }): Promise<PaginatedResult<Serialized<User>>>;
@@ -183,13 +183,13 @@ dogwalk-app/
 │   ├── admin/                 → Backoffice (questo documento, Next.js)
 │   └── api/                   → Backend Hono su Fly.io
 ├── packages/
-│   ├── types/                 → @dogwalk/types - tipi condivisi
-│   ├── validation/            → @dogwalk/validation - Zod schemas condivisi
-│   ├── utils/                 → @dogwalk/utils - utility condivise
-│   ├── api-client/            → @dogwalk/api-client - client tRPC condiviso
-│   ├── db/                    → @dogwalk/db - Drizzle schema + migrations
-│   ├── config/                → @dogwalk/config - costanti, enum, config
-│   └── ui/                    → @dogwalk/ui - componenti condivisi (se necessario)
+│   ├── types/                 → @pawmeet/types - tipi condivisi
+│   ├── validation/            → @pawmeet/validation - Zod schemas condivisi
+│   ├── utils/                 → @pawmeet/utils - utility condivise
+│   ├── api-client/            → @pawmeet/api-client - client tRPC condiviso
+│   ├── db/                    → @pawmeet/db - Drizzle schema + migrations
+│   ├── config/                → @pawmeet/config - costanti, enum, config
+│   └── ui/                    → @pawmeet/ui - componenti condivisi (se necessario)
 ├── turbo.json
 ├── pnpm-workspace.yaml
 └── package.json
@@ -349,14 +349,14 @@ apps/admin/
 │   │   └── use-cohort-data.ts             → Fetch dati coorte
 │   │
 │   ├── lib/
-│   │   ├── api.ts                         → Client tRPC configurato (`@dogwalk/api-client`)
+│   │   ├── api.ts                         → Client tRPC configurato (`@pawmeet/api-client`)
 │   │   ├── auth.ts                        → Utility autenticazione (JWT, session, cookies)
 │   │   ├── permissions.ts                 → Definizione permessi per ruolo, utility RBAC
 │   │   ├── utils.ts                       → Utility generiche (cn, formatters)
 │   │   └── keyboard-shortcuts.ts          → Registry shortcuts globali
 │   │
 │   └── types/
-│       └── admin.ts                       → Tipi admin-specific (estendono @dogwalk/types)
+│       └── admin.ts                       → Tipi admin-specific (estendono @pawmeet/types)
 │
 ├── next.config.ts                          → Configurazione Next.js
 ├── tailwind.config.ts                      → Configurazione Tailwind CSS
@@ -372,17 +372,17 @@ Il backoffice importa dai packages condivisi:
 
 ```typescript
 // Tipi condivisi con mobile, web e API
-import type { User, DogProfile, Match, ModerationStatus } from '@dogwalk/types';
+import type { User, DogProfile, Match, ModerationStatus } from '@pawmeet/types';
 
 // Validatori Zod condivisi (es. per form editing profilo cane)
 // Usati direttamente con React Hook Form via @hookform/resolvers/zod
-import { dogProfileSchema, userSchema } from '@dogwalk/validation';
+import { dogProfileSchema, userSchema } from '@pawmeet/validation';
 
 // Costanti condivise (enum razze, taglie, livelli energia)
-import { DOG_SIZES, ENERGY_LEVELS, BEHAVIOR_LEVELS } from '@dogwalk/config';
+import { DOG_SIZES, ENERGY_LEVELS, BEHAVIOR_LEVELS } from '@pawmeet/config';
 
 // Client API condiviso (stesso usato dal mobile)
-import { adminApi } from '@dogwalk/api-client';
+import { adminApi } from '@pawmeet/api-client';
 ```
 
 Questo garantisce che i tipi usati nel backoffice siano sempre allineati con quelli dell'API e dell'app mobile. I form usano gli stessi schema Zod del mobile e del backend (end-to-end type safety).
@@ -412,11 +412,11 @@ Questo garantisce che i tipi usati nel backoffice siano sempre allineati con que
     "clsx": "^2.0.0",
     "tailwind-merge": "^2.0.0",
     "lucide-react": "^0.400.0",
-    "@dogwalk/types": "workspace:*",
-    "@dogwalk/validation": "workspace:*",
-    "@dogwalk/config": "workspace:*",
-    "@dogwalk/api-client": "workspace:*",
-    "@dogwalk/utils": "workspace:*"
+    "@pawmeet/types": "workspace:*",
+    "@pawmeet/validation": "workspace:*",
+    "@pawmeet/config": "workspace:*",
+    "@pawmeet/api-client": "workspace:*",
+    "@pawmeet/utils": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

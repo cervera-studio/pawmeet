@@ -1,5 +1,5 @@
-import type { RouterOutput } from '@dogwalk/api-client';
-import { formatDogAge } from '@dogwalk/utils';
+import type { RouterOutput } from '@pawmeet/api-client';
+import { formatDogAge } from '@pawmeet/utils';
 import { Stack } from 'expo-router';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

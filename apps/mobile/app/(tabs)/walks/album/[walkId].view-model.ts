@@ -1,4 +1,4 @@
-import type { RouterOutput } from '@dogwalk/api-client';
+import type { RouterOutput } from '@pawmeet/api-client';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/trpc';

@@ -140,16 +140,16 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 
 | Package | Doc 03 | Doc 07 | Doc 08 | Decisione definitiva |
 |---------|--------|--------|--------|---------------------|
-| Tipi condivisi | `@dogwalk/shared-types` | `@dogwalk/types` | `@dogwalk/types` | **`@dogwalk/types`** |
-| Validazione | `@dogwalk/validation` | `@dogwalk/validation` | `@dogwalk/validators` | **`@dogwalk/validation`** |
-| Costanti | `@dogwalk/constants` | (merge in config) | `@dogwalk/config` | **`@dogwalk/config`** (include costanti, enum, config condivise) |
-| UI | `@dogwalk/ui` | `@dogwalk/ui` | `@dogwalk/ui` | **`@dogwalk/ui`** |
-| Utils | `@dogwalk/utils` | `@dogwalk/utils` | (non menzionato) | **`@dogwalk/utils`** |
-| API Client | (non presente) | `@dogwalk/api-client` | (non presente) | **`@dogwalk/api-client`** |
-| DB | (dentro apps/api) | (non presente) | (non presente) | **`@dogwalk/db`** (estratto come package condiviso) |
-| ESLint config | `@dogwalk/eslint-config` | (in config) | (non presente) | Merge in **`tooling/`** directory |
+| Tipi condivisi | `@pawmeet/shared-types` | `@pawmeet/types` | `@pawmeet/types` | **`@pawmeet/types`** |
+| Validazione | `@pawmeet/validation` | `@pawmeet/validation` | `@pawmeet/validators` | **`@pawmeet/validation`** |
+| Costanti | `@pawmeet/constants` | (merge in config) | `@pawmeet/config` | **`@pawmeet/config`** (include costanti, enum, config condivise) |
+| UI | `@pawmeet/ui` | `@pawmeet/ui` | `@pawmeet/ui` | **`@pawmeet/ui`** |
+| Utils | `@pawmeet/utils` | `@pawmeet/utils` | (non menzionato) | **`@pawmeet/utils`** |
+| API Client | (non presente) | `@pawmeet/api-client` | (non presente) | **`@pawmeet/api-client`** |
+| DB | (dentro apps/api) | (non presente) | (non presente) | **`@pawmeet/db`** (estratto come package condiviso) |
+| ESLint config | `@pawmeet/eslint-config` | (in config) | (non presente) | Merge in **`tooling/`** directory |
 
-**Motivazione:** Uniformare i nomi in tutto il monorepo. Il doc 08 usava `@dogwalk/validators` (plurale), standardizzato a `@dogwalk/validation` (singolare, coerente con doc 03 e 07). Il doc 03 usava `@dogwalk/shared-types`, semplificato a `@dogwalk/types`. Il package `@dogwalk/constants` viene fuso in `@dogwalk/config` per ridurre la frammentazione.
+**Motivazione:** Uniformare i nomi in tutto il monorepo. Il doc 08 usava `@pawmeet/validators` (plurale), standardizzato a `@pawmeet/validation` (singolare, coerente con doc 03 e 07). Il doc 03 usava `@pawmeet/shared-types`, semplificato a `@pawmeet/types`. Il package `@pawmeet/constants` viene fuso in `@pawmeet/config` per ridurre la frammentazione.
 
 ---
 
@@ -160,7 +160,7 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 | **Doc 03** (Architecture) | tRPC 11.x come API layer, con adapter Fastify | **tRPC** su Hono (adapter `@trpc/server/adapters/fetch`) |
 | **Doc 07** (Web Architecture) | Hono RPC client (`hono/client`) per type-safety | tRPC per API mobile e web app, con Hono come HTTP framework sottostante |
 
-**Motivazione:** tRPC e Hono RPC risolvono lo stesso problema (type-safe API) ma tRPC e piu maturo per le subscription WebSocket e ha un ecosistema piu ricco di middleware. Hono serve come HTTP framework (routing, middleware, CORS) e tRPC come API layer type-safe sopra Hono. L'adapter `@trpc/server/adapters/fetch` funziona su Node.js/Fly.io. Il `@dogwalk/api-client` usa il client tRPC, non `hono/client`.
+**Motivazione:** tRPC e Hono RPC risolvono lo stesso problema (type-safe API) ma tRPC e piu maturo per le subscription WebSocket e ha un ecosistema piu ricco di middleware. Hono serve come HTTP framework (routing, middleware, CORS) e tRPC come API layer type-safe sopra Hono. L'adapter `@trpc/server/adapters/fetch` funziona su Node.js/Fly.io. Il `@pawmeet/api-client` usa il client tRPC, non `hono/client`.
 
 ---
 
@@ -168,7 +168,7 @@ Dall'analisi incrociata dei documenti 01-08, sono stati identificati i seguenti 
 
 | Aspetto | Documento originale | Decisione definitiva |
 |---------|-------------------|---------------------|
-| **Doc 03** (Architecture) | Schema Drizzle, migrations e seed dentro `apps/api/src/db/` | **`packages/db/`** come package `@dogwalk/db` separato |
+| **Doc 03** (Architecture) | Schema Drizzle, migrations e seed dentro `apps/api/src/db/` | **`packages/db/`** come package `@pawmeet/db` separato |
 
 **Motivazione:** Lo schema del database e le migrations devono essere accessibili sia dall'API che dal backoffice (per query dirette e per i tipi delle tabelle). Estrarre in un package condiviso evita duplicazione e garantisce un'unica fonte di verita per lo schema.
 
@@ -419,7 +419,7 @@ dogwalk/
 │       └── package.json
 │
 ├── packages/
-│   ├── types/                            # @dogwalk/types
+│   ├── types/                            # @pawmeet/types
 │   │   ├── src/
 │   │   │   ├── user.ts
 │   │   │   ├── dog.ts
@@ -432,7 +432,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── validation/                       # @dogwalk/validation (Zod schemas)
+│   ├── validation/                       # @pawmeet/validation (Zod schemas)
 │   │   ├── src/
 │   │   │   ├── user.ts
 │   │   │   ├── dog.ts
@@ -443,7 +443,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── utils/                            # @dogwalk/utils
+│   ├── utils/                            # @pawmeet/utils
 │   │   ├── src/
 │   │   │   ├── formatting.ts
 │   │   │   ├── geo.ts                    # Haversine, formattazione distanze
@@ -453,7 +453,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── ui/                               # @dogwalk/ui (componenti condivisi mobile)
+│   ├── ui/                               # @pawmeet/ui (componenti condivisi mobile)
 │   │   ├── src/
 │   │   │   ├── primitives/               # Button, Text, Input, Avatar, Badge, Card...
 │   │   │   ├── composites/               # DogCard, MatchListItem, PhotoGallery...
@@ -462,7 +462,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── api-client/                       # @dogwalk/api-client (tRPC client)
+│   ├── api-client/                       # @pawmeet/api-client (tRPC client)
 │   │   ├── src/
 │   │   │   ├── index.ts                  # createApiClient() con tRPC
 │   │   │   ├── react.ts                  # React hooks (useQuery wrappers)
@@ -470,7 +470,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── db/                               # @dogwalk/db (Drizzle schema + migrations)
+│   ├── db/                               # @pawmeet/db (Drizzle schema + migrations)
 │   │   ├── src/
 │   │   │   ├── schema/
 │   │   │   │   ├── users.ts
@@ -495,7 +495,7 @@ dogwalk/
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   └── config/                           # @dogwalk/config
+│   └── config/                           # @pawmeet/config
 │       ├── src/
 │       │   ├── constants.ts              # Costanti condivise (limiti, rate limits)
 │       │   ├── enums.ts                  # Enum condivisi (size, energy, behavior)

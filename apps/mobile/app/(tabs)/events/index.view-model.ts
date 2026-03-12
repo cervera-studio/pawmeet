@@ -1,4 +1,4 @@
-import type { RouterOutput } from '@dogwalk/api-client';
+import type { RouterOutput } from '@pawmeet/api-client';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect } from 'react';
 import { useGroupEvents } from '@/hooks/useGroupEvents';

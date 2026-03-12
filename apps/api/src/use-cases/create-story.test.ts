@@ -1,5 +1,5 @@
-import { MAX_IMAGE_SIZE, MAX_STORIES_PER_DAY } from '@dogwalk/config';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { MAX_IMAGE_SIZE, MAX_STORIES_PER_DAY } from '@pawmeet/config';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildStorageService, buildStoryRepo } from '../test-utils/builders.js';
 import { createCreateStory } from './create-story.js';

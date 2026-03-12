@@ -1,5 +1,5 @@
-import { WS_EVENT, type WsEvent, type WsMessage } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import { WS_EVENT, type WsEvent, type WsMessage } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type { ServerType } from '@hono/node-server';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';

@@ -1,6 +1,6 @@
-import { TOKEN_TYPE } from '@dogwalk/db';
-import type { Result } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
+import { TOKEN_TYPE } from '@pawmeet/db';
+import type { Result } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';

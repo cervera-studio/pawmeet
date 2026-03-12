@@ -7,7 +7,7 @@ import {
   MIN_SEARCH_RADIUS_KM,
   WALK_DURATION_MAX,
   WALK_DURATION_MIN,
-} from '@dogwalk/config';
+} from '@pawmeet/config';
 import { z } from 'zod';
 
 export const createGroupEventSchema = z.object({

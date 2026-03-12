@@ -1,5 +1,5 @@
-import type { UserActivityWindow } from '@dogwalk/types';
-import { type Result, succeed } from '@dogwalk/types';
+import type { UserActivityWindow } from '@pawmeet/types';
+import { type Result, succeed } from '@pawmeet/types';
 import type { MatchingAiRepository } from '../ports/index.js';
 
 type Deps = {

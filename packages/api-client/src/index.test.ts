@@ -27,7 +27,7 @@ describe('api-client package', () => {
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
 
     it('should have the correct package name', () => {
-      expect(pkg.name).toBe('@dogwalk/api-client');
+      expect(pkg.name).toBe('@pawmeet/api-client');
     });
 
     it('should be marked as private', () => {
@@ -50,8 +50,8 @@ describe('api-client package', () => {
       expect(pkg.dependencies).toHaveProperty('@trpc/react-query');
     });
 
-    it('should declare @dogwalk/api as a dependency', () => {
-      expect(pkg.dependencies).toHaveProperty('@dogwalk/api');
+    it('should declare @pawmeet/api as a dependency', () => {
+      expect(pkg.dependencies).toHaveProperty('@pawmeet/api');
     });
   });
 });

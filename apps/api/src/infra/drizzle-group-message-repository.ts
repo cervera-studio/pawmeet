@@ -1,9 +1,9 @@
-import { groupEventParticipants, groupEvents, groupMessageReads, groupMessages } from '@dogwalk/db';
+import { groupEventParticipants, groupEvents, groupMessageReads, groupMessages } from '@pawmeet/db';
 import type {
   GroupChatMessage,
   GroupConversationSummary,
   PaginatedGroupMessages,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';

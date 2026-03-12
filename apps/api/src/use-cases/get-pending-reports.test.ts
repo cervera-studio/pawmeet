@@ -1,4 +1,4 @@
-import { isSuccess } from '@dogwalk/types';
+import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildContentReport, buildContentReportRepo } from '../test-utils/builders.js';
 import { createGetPendingReports } from './get-pending-reports.js';

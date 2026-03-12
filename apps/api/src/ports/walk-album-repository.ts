@@ -1,4 +1,4 @@
-import type { WalkAlbum } from '@dogwalk/types';
+import type { WalkAlbum } from '@pawmeet/types';
 
 export interface WalkAlbumRepository {
   createAlbum(walkId: string, title: string): Promise<WalkAlbum>;

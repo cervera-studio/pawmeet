@@ -8,7 +8,7 @@ import {
   resetPasswordOtpSchema,
   socialLoginSchema,
   verifyEmailOtpSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import type { authDeps as AuthDeps } from '../container.js';

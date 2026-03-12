@@ -1,6 +1,6 @@
 'use client';
 
-import type { PaginatedResult } from '@dogwalk/types';
+import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';

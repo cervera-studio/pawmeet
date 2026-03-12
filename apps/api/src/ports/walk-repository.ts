@@ -1,4 +1,4 @@
-import type { Walk, WalkStatus } from '@dogwalk/types';
+import type { Walk, WalkStatus } from '@pawmeet/types';
 
 export interface WalkRepository {
   create(walk: Omit<Walk, 'id' | 'createdAt' | 'updatedAt'>): Promise<Walk>;

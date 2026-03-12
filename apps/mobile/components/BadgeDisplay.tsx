@@ -1,5 +1,5 @@
-import type { RouterOutput } from '@dogwalk/api-client';
-import { BADGE_TYPE } from '@dogwalk/types';
+import type { RouterOutput } from '@pawmeet/api-client';
+import { BADGE_TYPE } from '@pawmeet/types';
 import { memo } from 'react';
 import { Text, View } from 'react-native';
 

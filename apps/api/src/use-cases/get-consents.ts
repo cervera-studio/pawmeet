@@ -1,4 +1,4 @@
-import type { Result } from '@dogwalk/types';
+import type { Result } from '@pawmeet/types';
 import type { ConsentRecord, ConsentRepository } from '../infra/drizzle-consent-repository.js';
 
 interface Deps {

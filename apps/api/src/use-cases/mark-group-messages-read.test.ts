@@ -1,4 +1,4 @@
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildChatService, buildGroupMessageRepo } from '../test-utils/builders.js';
 import { createMarkGroupMessagesRead } from './mark-group-messages-read.js';

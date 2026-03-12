@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { ActivityRepository, StatsPeriod } from '../interfaces';
 
 export function createTrpcActivityRepository(api: ApiClient): ActivityRepository {

@@ -1,6 +1,6 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import { formatDistance } from '@dogwalk/utils';
+import { formatDistance } from '@pawmeet/utils';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import MapView, { Circle, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';

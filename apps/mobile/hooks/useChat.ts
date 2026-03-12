@@ -1,5 +1,5 @@
-import type { RouterOutput } from '@dogwalk/api-client';
-import { logger } from '@dogwalk/utils';
+import type { RouterOutput } from '@pawmeet/api-client';
+import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { getSharedWs, useWebSocketListener } from '@/hooks/useWebSocket';
 import { cache } from '@/lib/storage';

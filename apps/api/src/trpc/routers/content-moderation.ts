@@ -1,4 +1,4 @@
-import { feedQuerySchema, reviewReportSchema } from '@dogwalk/validation';
+import { feedQuerySchema, reviewReportSchema } from '@pawmeet/validation';
 import type { contentModerationDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

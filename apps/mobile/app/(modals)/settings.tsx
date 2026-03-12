@@ -1,5 +1,5 @@
-import type { ConsentState } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { ConsentState } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
 import { Linking, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { ConsentModal } from '@/components/ConsentModal';

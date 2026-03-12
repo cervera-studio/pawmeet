@@ -1,5 +1,5 @@
-import type { Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import type { Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type {
   ChatService,
   ConversationSummary,

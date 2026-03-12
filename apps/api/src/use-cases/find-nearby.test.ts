@@ -1,5 +1,5 @@
-import { DEFAULT_SEARCH_RADIUS_KM } from '@dogwalk/config';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/config';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import type { NearbyUser } from '../ports/index.js';
 import { buildFollowRepo, buildUser, buildUserRepo } from '../test-utils/builders.js';

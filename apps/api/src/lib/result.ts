@@ -1,4 +1,4 @@
-import { isSuccess, type Result } from '@dogwalk/types';
+import { isSuccess, type Result } from '@pawmeet/types';
 import type { Context } from 'hono';
 import { match } from 'ts-pattern';
 

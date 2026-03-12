@@ -1,5 +1,5 @@
 // Compatibility matrices from MVP spec (doc 02)
-import type { BehaviorWithDogs, DogSize, EnergyLevel } from '@dogwalk/types';
+import type { BehaviorWithDogs, DogSize, EnergyLevel } from '@pawmeet/types';
 
 const SIZE_MATRIX: Record<DogSize, Record<DogSize, number>> = {
   toy: { toy: 1.0, piccola: 0.7, media: 0.3, grande: 0.1, gigante: 0.0 },

@@ -1,6 +1,6 @@
-import type { UserFollow } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { UserFollow } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type { FollowRepository, NotificationService, UserRepository } from '../ports/index.js';
 
 type Deps = {

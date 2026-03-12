@@ -1,7 +1,7 @@
-import { MAX_COMMENT_LENGTH } from '@dogwalk/config';
-import type { PostComment } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import { MAX_COMMENT_LENGTH } from '@pawmeet/config';
+import type { PostComment } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type {
   FeedRealtimeService,
   FeedRepository,

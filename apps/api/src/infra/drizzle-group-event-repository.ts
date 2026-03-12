@@ -1,5 +1,5 @@
-import { groupEventParticipants, groupEvents } from '@dogwalk/db';
-import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@dogwalk/types';
+import { groupEventParticipants, groupEvents } from '@pawmeet/db';
+import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
 import { and, desc, eq, lte, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {

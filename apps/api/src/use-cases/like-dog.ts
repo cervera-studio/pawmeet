@@ -1,6 +1,6 @@
-import type { Match } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
-import { logger } from '@dogwalk/utils';
+import type { Match } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { checkDailySwipeLimit } from '../lib/swipe-limit.js';
 import type {
   DogRepository,

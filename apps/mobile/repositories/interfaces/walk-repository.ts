@@ -1,4 +1,4 @@
-import type { Serialized, Walk } from '@dogwalk/types';
+import type { Serialized, Walk } from '@pawmeet/types';
 
 export interface ProposeWalkInput {
   matchId: string;

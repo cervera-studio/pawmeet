@@ -1,4 +1,4 @@
-import { breeds } from '@dogwalk/db';
+import { breeds } from '@pawmeet/db';
 import { asc, ilike, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { Breed, BreedRepository } from '../ports/breed-repository.js';

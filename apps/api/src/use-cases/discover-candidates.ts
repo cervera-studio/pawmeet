@@ -1,13 +1,13 @@
-import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@dogwalk/config';
-import type { DiscoveryFilters, DogProfile } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/config';
+import type { DiscoveryFilters, DogProfile } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import {
   calculateBehaviorScore,
   calculateDistance,
   calculateDistanceScore,
   calculateEnergyScore,
   calculateSizeScore,
-} from '@dogwalk/utils';
+} from '@pawmeet/utils';
 import type {
   DogRepository,
   FollowRepository,

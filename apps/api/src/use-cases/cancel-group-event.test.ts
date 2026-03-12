@@ -1,5 +1,5 @@
-import type { GroupEventWithParticipants } from '@dogwalk/types';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import type { GroupEventWithParticipants } from '@pawmeet/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildGroupEventRepo, buildNotificationService } from '../test-utils/builders.js';
 import { createCancelGroupEvent } from './cancel-group-event.js';

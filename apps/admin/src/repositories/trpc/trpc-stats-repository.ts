@@ -1,4 +1,4 @@
-import type { ApiClient } from '@dogwalk/api-client';
+import type { ApiClient } from '@pawmeet/api-client';
 import type { AnalyticsKpis, DashboardStats, StatsRepository } from '../interfaces';
 
 export function createTrpcStatsRepository(api: ApiClient): StatsRepository {

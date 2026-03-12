@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import * as Location from 'expo-location';
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';

@@ -11,15 +11,15 @@ importers:
       '@biomejs/biome':
         specifier: ^2.4.0
         version: 2.4.6
-      '@dogwalk/typescript-config':
-        specifier: workspace:*
-        version: link:tooling/typescript
-      '@dogwalk/vitest-config':
-        specifier: workspace:*
-        version: link:tooling/vitest
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
+      '@pawmeet/typescript-config':
+        specifier: workspace:*
+        version: link:tooling/typescript
+      '@pawmeet/vitest-config':
+        specifier: workspace:*
+        version: link:tooling/vitest
       lefthook:
         specifier: ^2.1.0
         version: 2.1.3
@@ -32,18 +32,18 @@ importers:
 
   apps/admin:
     dependencies:
-      '@dogwalk/api-client':
-        specifier: workspace:*
-        version: link:../../packages/api-client
-      '@dogwalk/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      '@dogwalk/validation':
-        specifier: workspace:*
-        version: link:../../packages/validation
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.71.2(react@19.2.4))
+      '@pawmeet/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@pawmeet/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@pawmeet/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
       '@tanstack/react-query':
         specifier: ^5.90.0
         version: 5.90.21(react@19.2.4)
@@ -93,7 +93,7 @@ importers:
         specifier: ^4.3.0
         version: 4.3.6
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@tailwindcss/postcss':
@@ -123,21 +123,6 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.1000.0
         version: 3.1004.0
-      '@dogwalk/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@dogwalk/db':
-        specifier: workspace:*
-        version: link:../../packages/db
-      '@dogwalk/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      '@dogwalk/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
-      '@dogwalk/validation':
-        specifier: workspace:*
-        version: link:../../packages/validation
       '@hono/node-server':
         specifier: ^1.19.0
         version: 1.19.11(hono@4.12.7)
@@ -150,6 +135,21 @@ importers:
       '@neondatabase/serverless':
         specifier: ^1.0.0
         version: 1.0.2
+      '@pawmeet/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@pawmeet/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@pawmeet/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@pawmeet/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      '@pawmeet/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
       '@sentry/node':
         specifier: ^10.43.0
         version: 10.43.0
@@ -196,7 +196,7 @@ importers:
         specifier: ^4.3.0
         version: 4.3.6
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@types/bcryptjs':
@@ -220,19 +220,19 @@ importers:
 
   apps/mobile:
     dependencies:
-      '@dogwalk/api-client':
+      '@pawmeet/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@dogwalk/config':
+      '@pawmeet/config':
         specifier: workspace:^
         version: link:../../packages/config
-      '@dogwalk/types':
+      '@pawmeet/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@dogwalk/utils':
+      '@pawmeet/utils':
         specifier: workspace:*
         version: link:../../packages/utils
-      '@dogwalk/validation':
+      '@pawmeet/validation':
         specifier: workspace:*
         version: link:../../packages/validation
       '@react-native-community/datetimepicker':
@@ -332,7 +332,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.11(@types/react@19.2.14)(immer@11.1.4)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@types/react':
@@ -353,7 +353,7 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.0.0
         version: 3.7.0
-      '@dogwalk/types':
+      '@pawmeet/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@tailwindcss/vite':
@@ -372,7 +372,7 @@ importers:
         specifier: ^4.2.0
         version: 4.2.1
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       typescript:
@@ -381,7 +381,7 @@ importers:
 
   packages/api-client:
     dependencies:
-      '@dogwalk/api':
+      '@pawmeet/api':
         specifier: workspace:*
         version: link:../../apps/api
       '@tanstack/react-query':
@@ -394,7 +394,7 @@ importers:
         specifier: ^11.12.0
         version: 11.12.0(@tanstack/react-query@5.90.21(react@19.2.4))(@trpc/client@11.12.0(@trpc/server@11.12.0(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.12.0(typescript@5.9.3))(react@19.2.4)(typescript@5.9.3)
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@trpc/server':
@@ -406,7 +406,7 @@ importers:
 
   packages/config:
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       typescript:
@@ -425,10 +425,10 @@ importers:
         specifier: ^0.45.0
         version: 0.45.1(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.0)(@types/pg@8.18.0)(@upstash/redis@1.36.4)
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@dogwalk/vitest-config':
+      '@pawmeet/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest
       '@types/bcryptjs':
@@ -443,10 +443,10 @@ importers:
 
   packages/types:
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@dogwalk/vitest-config':
+      '@pawmeet/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest
       typescript:
@@ -471,7 +471,7 @@ importers:
         specifier: ^3.4.0
         version: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@testing-library/jest-dom':
@@ -495,11 +495,11 @@ importers:
 
   packages/utils:
     dependencies:
-      '@dogwalk/types':
+      '@pawmeet/types':
         specifier: workspace:*
         version: link:../types
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       typescript:
@@ -508,17 +508,17 @@ importers:
 
   packages/validation:
     dependencies:
-      '@dogwalk/config':
+      '@pawmeet/config':
         specifier: workspace:*
         version: link:../config
-      '@dogwalk/utils':
+      '@pawmeet/utils':
         specifier: workspace:^
         version: link:../utils
       zod:
         specifier: ^4.3.0
         version: 4.3.6
     devDependencies:
-      '@dogwalk/typescript-config':
+      '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       typescript:

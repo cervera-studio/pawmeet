@@ -1,4 +1,4 @@
-import type { DiscoveryFilters } from '@dogwalk/types';
+import type { DiscoveryFilters } from '@pawmeet/types';
 
 export interface MatchSuggestion {
   [key: string]: unknown;

@@ -1,5 +1,5 @@
-import type { UserBlock } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import type { UserBlock } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { FollowRepository, UserRepository } from '../ports/index.js';
 
 type Deps = {

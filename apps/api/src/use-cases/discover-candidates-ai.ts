@@ -1,6 +1,6 @@
-import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM, STATSIG_GATE } from '@dogwalk/config';
-import type { DiscoveryFilters, DogProfile } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM, STATSIG_GATE } from '@pawmeet/config';
+import type { DiscoveryFilters, DogProfile } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import {
   blendWeights,
   calculateBehaviorScore,
@@ -10,7 +10,7 @@ import {
   calculateSizeScore,
   calculateWeightedScore,
   type MatchingWeights,
-} from '@dogwalk/utils';
+} from '@pawmeet/utils';
 import type {
   DogRepository,
   ExperimentService,

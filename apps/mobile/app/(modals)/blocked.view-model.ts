@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { container } from 'tsyringe';

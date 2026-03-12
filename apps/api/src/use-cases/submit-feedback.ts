@@ -1,5 +1,5 @@
-import type { WalkFeedback } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed, WALK_STATUS } from '@dogwalk/types';
+import type { WalkFeedback } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
 import type {
   DogRepository,
   FeedbackRepository,

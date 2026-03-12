@@ -1,5 +1,5 @@
-import { ANALYTICS_BATCH_MAX_EVENTS, ANALYTICS_FLUSH_INTERVAL_MS } from '@dogwalk/config';
-import type { AnalyticsEventMap, AnalyticsEventName, AnalyticsService } from '@dogwalk/types';
+import { ANALYTICS_BATCH_MAX_EVENTS, ANALYTICS_FLUSH_INTERVAL_MS } from '@pawmeet/config';
+import type { AnalyticsEventMap, AnalyticsEventName, AnalyticsService } from '@pawmeet/types';
 import * as Crypto from 'expo-crypto';
 import { AppState } from 'react-native';
 import { useAuthStore } from '@/stores/auth';

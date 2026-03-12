@@ -1,5 +1,5 @@
-import type { PostTag } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import type { PostTag } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { FeedRepository } from '../ports/index.js';
 
 type Deps = {

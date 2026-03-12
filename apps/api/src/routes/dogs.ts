@@ -3,7 +3,7 @@ import {
   createDogSchema,
   photoReorderSchema,
   updateDogSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';

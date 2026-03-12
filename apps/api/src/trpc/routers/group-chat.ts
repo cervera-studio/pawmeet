@@ -2,7 +2,7 @@ import {
   getGroupMessagesSchema,
   markGroupMessagesReadSchema,
   sendGroupMessageSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import type { groupChatDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

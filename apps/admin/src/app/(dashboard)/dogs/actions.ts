@@ -1,6 +1,6 @@
 'use server';
 
-import type { PaginatedResult } from '@dogwalk/types';
+import type { PaginatedResult } from '@pawmeet/types';
 import { getServerTrpcClient } from '@/lib/server-api';
 import type { AdminDogListItem, ListDogsParams } from '@/repositories/interfaces';
 

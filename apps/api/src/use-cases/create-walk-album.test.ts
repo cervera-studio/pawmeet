@@ -1,4 +1,4 @@
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildWalkAlbum, buildWalkAlbumRepo } from '../test-utils/builders.js';
 import { createCreateWalkAlbum } from './create-walk-album.js';

@@ -1,4 +1,4 @@
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { StoryRepository } from '../ports/index.js';
 
 type Deps = {

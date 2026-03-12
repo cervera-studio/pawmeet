@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@dogwalk/types', '@dogwalk/validation'],
+  transpilePackages: ['@pawmeet/types', '@pawmeet/validation'],
 };
 
 export default nextConfig;

@@ -1,5 +1,5 @@
-import { logger } from '@dogwalk/utils';
-import { dateOfBirthSchema } from '@dogwalk/validation';
+import { logger } from '@pawmeet/utils';
+import { dateOfBirthSchema } from '@pawmeet/validation';
 import { useCallback, useState } from 'react';
 import { container } from 'tsyringe';
 import { USER_REPOSITORY } from '@/repositories/tokens';

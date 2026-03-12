@@ -1,6 +1,6 @@
-import { ANALYTICS_MAX_EVENT_AGE_DAYS, ANALYTICS_WORKER_CONCURRENCY } from '@dogwalk/config';
-import { analyticsEvents } from '@dogwalk/db';
-import { logger } from '@dogwalk/utils';
+import { ANALYTICS_MAX_EVENT_AGE_DAYS, ANALYTICS_WORKER_CONCURRENCY } from '@pawmeet/config';
+import { analyticsEvents } from '@pawmeet/db';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { db } from '../lib/db.js';
 import type { AnalyticsJobData } from './queue.js';

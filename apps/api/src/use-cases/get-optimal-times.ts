@@ -1,6 +1,6 @@
-import { MAX_OPTIMAL_TIME_WINDOWS, MIN_ACTIVITY_COUNT_FOR_WINDOW } from '@dogwalk/config';
-import type { OptimalTimeWindow } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { MAX_OPTIMAL_TIME_WINDOWS, MIN_ACTIVITY_COUNT_FOR_WINDOW } from '@pawmeet/config';
+import type { OptimalTimeWindow } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { DogRepository, MatchingAiRepository } from '../ports/index.js';
 
 type Deps = {

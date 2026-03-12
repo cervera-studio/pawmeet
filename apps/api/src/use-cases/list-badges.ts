@@ -1,5 +1,5 @@
-import type { Badge, Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import type { Badge, Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { BadgeRepository } from '../ports/badge-repository.js';
 
 type Deps = {

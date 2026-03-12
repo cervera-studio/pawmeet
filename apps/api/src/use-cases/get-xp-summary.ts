@@ -1,6 +1,6 @@
-import { computeLevelFromXp } from '@dogwalk/config';
-import type { Result, XpSummary } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import { computeLevelFromXp } from '@pawmeet/config';
+import type { Result, XpSummary } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 
 type Deps = {

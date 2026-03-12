@@ -1,4 +1,4 @@
-import type { ScoreBreakdown, UserMatchingPreferences } from '@dogwalk/types';
+import type { ScoreBreakdown, UserMatchingPreferences } from '@pawmeet/types';
 
 export interface MatchingWeights {
   size: number;

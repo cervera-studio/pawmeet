@@ -1,6 +1,6 @@
-import { SWIPE_DAILY_LIMIT } from '@dogwalk/config';
-import type { Result } from '@dogwalk/types';
-import { AppError, fail } from '@dogwalk/types';
+import { SWIPE_DAILY_LIMIT } from '@pawmeet/config';
+import type { Result } from '@pawmeet/types';
+import { AppError, fail } from '@pawmeet/types';
 import type { MatchRepository } from '../ports/index.js';
 
 /** Check the daily swipe limit for a dog. Returns a fail Result if the limit is reached, or null if OK. */

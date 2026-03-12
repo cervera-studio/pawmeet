@@ -58,13 +58,13 @@ Le dashboard KPI del backoffice (utenti attivi, retention, revenue) possono bene
 ### Argomenti
 
 **1. Il data provider custom di Refine e un layer di astrazione che non serve.**
-Il doc 08 dice: "Scriveremo un provider custom per le API Hono del backend". Questo significa: mappare ogni endpoint Hono a un'interfaccia `dataProvider` di Refine (`getList`, `getOne`, `create`, `update`, `delete`), gestire errori, filtri, sorting, paginazione nel formato che Refine si aspetta. E un adattatore che va scritto, testato e mantenuto. Con l'Opzione B, TanStack Query chiama direttamente il client API (gia scritto per il mobile in `@dogwalk/api-client`). Zero layer aggiuntivi, zero mapping, e lo stesso codice che il mobile usa per parlare col backend.
+Il doc 08 dice: "Scriveremo un provider custom per le API Hono del backend". Questo significa: mappare ogni endpoint Hono a un'interfaccia `dataProvider` di Refine (`getList`, `getOne`, `create`, `update`, `delete`), gestire errori, filtri, sorting, paginazione nel formato che Refine si aspetta. E un adattatore che va scritto, testato e mantenuto. Con l'Opzione B, TanStack Query chiama direttamente il client API (gia scritto per il mobile in `@pawmeet/api-client`). Zero layer aggiuntivi, zero mapping, e lo stesso codice che il mobile usa per parlare col backend.
 
 **2. I workflow custom (moderazione) romperanno il paradigma Refine.**
 La moderazione foto e il cuore del backoffice: griglia foto, preview fullscreen, keyboard shortcuts, bulk approve/reject, queue con priorita, annotazioni, escalation. Questo NON e un CRUD. In Refine, le pagine custom escono dal pattern del framework e diventano "React puro con hook Refine occasionali". A quel punto stai pagando la complessita di Refine senza beneficiarne. Con l'Opzione B, la moderazione e semplicemente una pagina Next.js con componenti React -- lo stesso paradigma di tutto il resto dell'app.
 
 **3. Condivisione tipi e validazione e nativa con l'Opzione B.**
-Il monorepo ha gia `@dogwalk/types`, `@dogwalk/validation` (Zod schemas), e `@dogwalk/api-client`. Con Next.js + React Hook Form + Zod, i form del backoffice possono usare gli stessi schema Zod del mobile e del backend (end-to-end type safety). Con Refine + Ant Design Form, devi adattare la validazione Zod al sistema di validazione di Ant Design, che usa il proprio pattern (`rules` array). E un'altra traduzione non necessaria.
+Il monorepo ha gia `@pawmeet/types`, `@pawmeet/validation` (Zod schemas), e `@pawmeet/api-client`. Con Next.js + React Hook Form + Zod, i form del backoffice possono usare gli stessi schema Zod del mobile e del backend (end-to-end type safety). Con Refine + Ant Design Form, devi adattare la validazione Zod al sistema di validazione di Ant Design, che usa il proprio pattern (`rules` array). E un'altra traduzione non necessaria.
 
 ---
 

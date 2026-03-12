@@ -1,4 +1,4 @@
-import { BADGE_TYPE, isSuccess } from '@dogwalk/types';
+import { BADGE_TYPE, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildBadgeRepo, buildWalkRepo } from '../test-utils/builders.js';
 import { createCheckAndAwardBadges } from './check-and-award-badges.js';

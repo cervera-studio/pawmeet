@@ -4,7 +4,7 @@ import {
   type GroupEventWithParticipants,
   type Result,
   succeed,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 import type { GroupEventRepository } from '../ports/index.js';
 
 type Deps = {

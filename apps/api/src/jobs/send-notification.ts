@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { DrizzleUserRepository } from '../infra/drizzle-user-repository.js';
 import { db } from '../lib/db.js';

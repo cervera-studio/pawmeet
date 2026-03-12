@@ -1,16 +1,16 @@
-import type { MatchInteractionType } from '@dogwalk/config';
+import type { MatchInteractionType } from '@pawmeet/config';
 import {
   matchInteractions,
   swipeScoreLogs,
   userActivityWindows,
   userMatchingPreferences,
-} from '@dogwalk/db';
+} from '@pawmeet/db';
 import type {
   MatchInteraction,
   SwipeScoreLog,
   UserActivityWindow,
   UserMatchingPreferences,
-} from '@dogwalk/types';
+} from '@pawmeet/types';
 import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';

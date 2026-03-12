@@ -7,7 +7,7 @@ import {
   getUserTracksSchema,
   startTrackingSchema,
   syncHealthDataSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import type { fitnessDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

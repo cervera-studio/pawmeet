@@ -9,7 +9,7 @@ import {
   reports,
   stories,
   users,
-} from '@dogwalk/db';
+} from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
 import { and, count, desc, eq, gte, ilike, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';

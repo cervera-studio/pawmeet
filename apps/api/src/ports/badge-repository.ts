@@ -1,4 +1,4 @@
-import type { Badge, BadgeType } from '@dogwalk/types';
+import type { Badge, BadgeType } from '@pawmeet/types';
 
 export interface BadgeRepository {
   findByDog(dogId: string): Promise<Badge[]>;

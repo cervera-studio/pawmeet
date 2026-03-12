@@ -1,5 +1,5 @@
-import { contentReports } from '@dogwalk/db';
-import type { ContentReport } from '@dogwalk/types';
+import { contentReports } from '@pawmeet/db';
+import type { ContentReport } from '@pawmeet/types';
 import type { SQL } from 'drizzle-orm';
 import { and, desc, eq, lt, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';

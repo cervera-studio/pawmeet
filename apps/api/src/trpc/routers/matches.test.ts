@@ -1,5 +1,5 @@
-import type { DogProfile, Match } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
+import type { DogProfile, Match } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import { TRPCError } from '@trpc/server';
 import { describe, expect, it, vi } from 'vitest';
 import type { matchDeps } from '../../container.js';

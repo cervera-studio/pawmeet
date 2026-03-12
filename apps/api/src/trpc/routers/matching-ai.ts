@@ -5,7 +5,7 @@ import {
   logSwipeScoreSchema,
   recordActivityWindowSchema,
   recordMatchInteractionSchema,
-} from '@dogwalk/validation';
+} from '@pawmeet/validation';
 import type { matchingAiDeps } from '../../container.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

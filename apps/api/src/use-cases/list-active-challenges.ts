@@ -1,5 +1,5 @@
-import type { ChallengeWithProgress, Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import type { ChallengeWithProgress, Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 
 type Deps = {

@@ -1,5 +1,5 @@
-import type { Result, WalkTrack } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import type { Result, WalkTrack } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { WalkTrackRepository } from '../ports/walk-track-repository.js';
 
 type Deps = {

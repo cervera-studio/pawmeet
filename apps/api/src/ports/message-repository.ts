@@ -1,4 +1,4 @@
-import type { ChatMessage } from '@dogwalk/types';
+import type { ChatMessage } from '@pawmeet/types';
 
 export interface ConversationSummary {
   matchId: string;

@@ -1,4 +1,4 @@
-import { createAuthRefreshLink } from '@dogwalk/api-client';
+import { createAuthRefreshLink } from '@pawmeet/api-client';
 import { useAuthStore } from '@/stores/auth';
 import { storage } from './storage';
 

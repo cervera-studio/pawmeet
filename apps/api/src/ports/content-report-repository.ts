@@ -1,4 +1,4 @@
-import type { ContentReport } from '@dogwalk/types';
+import type { ContentReport } from '@pawmeet/types';
 
 export interface CreateReportInput {
   reporterId: string;

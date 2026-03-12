@@ -1,6 +1,6 @@
 'use server';
 
-import type { PaginatedResult } from '@dogwalk/types';
+import type { PaginatedResult } from '@pawmeet/types';
 import { revalidatePath } from 'next/cache';
 import { serverFetch } from '@/lib/server-api';
 import type { AdminUserListItem, ListUsersParams } from '@/repositories/interfaces';

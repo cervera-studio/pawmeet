@@ -1,5 +1,5 @@
-import { ACHIEVEMENT_TYPE } from '@dogwalk/config';
-import { isSuccess } from '@dogwalk/types';
+import { ACHIEVEMENT_TYPE } from '@pawmeet/config';
+import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildGamificationRepo } from '../test-utils/builders.js';
 import { createCheckAndUnlockAchievements } from './check-and-unlock-achievements.js';

@@ -1,5 +1,5 @@
-import type { RouterOutput } from '@dogwalk/api-client';
-import { calculateDistance, logger } from '@dogwalk/utils';
+import type { RouterOutput } from '@pawmeet/api-client';
+import { calculateDistance, logger } from '@pawmeet/utils';
 import * as Location from 'expo-location';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';

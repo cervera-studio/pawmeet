@@ -1,5 +1,5 @@
-import type { AnalyticsService, ConsentState } from '@dogwalk/types';
-import { DEFAULT_CONSENT_STATE } from '@dogwalk/types';
+import type { AnalyticsService, ConsentState } from '@pawmeet/types';
+import { DEFAULT_CONSENT_STATE } from '@pawmeet/types';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from '@/lib/storage';

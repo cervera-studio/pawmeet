@@ -1,4 +1,4 @@
-import type { FeedbackRating } from '@dogwalk/types';
+import type { FeedbackRating } from '@pawmeet/types';
 
 export interface DogRating {
   average: number | null;

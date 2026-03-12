@@ -1,4 +1,4 @@
-import { WS_EVENT } from '@dogwalk/types';
+import { WS_EVENT } from '@pawmeet/types';
 import { useRef } from 'react';
 import { useWebSocketListener } from '@/hooks/useWebSocket';
 

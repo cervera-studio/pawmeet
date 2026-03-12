@@ -1,6 +1,6 @@
-import { COMPATIBILITY_THRESHOLD } from '@dogwalk/config';
-import type { DiscoveryFilters } from '@dogwalk/types';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { COMPATIBILITY_THRESHOLD } from '@pawmeet/config';
+import type { DiscoveryFilters } from '@pawmeet/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildCandidate,

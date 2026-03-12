@@ -1,6 +1,6 @@
-import { ACHIEVEMENT_TYPE, type AchievementType } from '@dogwalk/config';
-import type { Achievement, Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import { ACHIEVEMENT_TYPE, type AchievementType } from '@pawmeet/config';
+import type { Achievement, Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 
 type Deps = {

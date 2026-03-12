@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 
 const SECURITY_EVENT = {
   LoginSuccess: 'auth.login.success',

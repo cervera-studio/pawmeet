@@ -31,7 +31,7 @@ import {
   walkTrackPoints,
   walkTracks,
   xpTransactions,
-} from '@dogwalk/db';
+} from '@pawmeet/db';
 import { and, eq, inArray, or } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {

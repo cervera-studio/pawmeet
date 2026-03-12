@@ -1,4 +1,4 @@
-import type { ActivitySummary, DailyActivity } from '@dogwalk/types';
+import type { ActivitySummary, DailyActivity } from '@pawmeet/types';
 
 export interface ActivityRepository {
   upsertDaily(

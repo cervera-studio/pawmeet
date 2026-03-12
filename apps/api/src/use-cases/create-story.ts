@@ -1,5 +1,5 @@
-import { MAX_IMAGE_SIZE, MAX_STORIES_PER_DAY, MAX_VIDEO_SIZE } from '@dogwalk/config';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import { MAX_IMAGE_SIZE, MAX_STORIES_PER_DAY, MAX_VIDEO_SIZE } from '@pawmeet/config';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { StorageService, StoryRepository } from '../ports/index.js';
 
 type Deps = {

@@ -1,5 +1,5 @@
-import type { ApiClient } from '@dogwalk/api-client';
-import type { FeedbackRating } from '@dogwalk/types';
+import type { ApiClient } from '@pawmeet/api-client';
+import type { FeedbackRating } from '@pawmeet/types';
 import type { DogRating, FeedbackRepository } from '../interfaces';
 
 export function createTrpcFeedbackRepository(api: ApiClient): FeedbackRepository {

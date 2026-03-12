@@ -1,4 +1,4 @@
-import { logger } from '@dogwalk/utils';
+import { logger } from '@pawmeet/utils';
 import type { ErrorBoundaryProps } from 'expo-router';
 import { Component, type ComponentType, type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';

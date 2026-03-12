@@ -1,5 +1,5 @@
-import type { Result } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
+import type { Result } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import type { GdprExportRepository } from '../ports/gdpr-export-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
 

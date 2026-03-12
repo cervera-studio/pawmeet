@@ -1,5 +1,5 @@
-import type { Result } from '@dogwalk/types';
-import { succeed } from '@dogwalk/types';
+import type { Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';

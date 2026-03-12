@@ -1,4 +1,4 @@
-import type { ContentReportReason } from '@dogwalk/types';
+import type { ContentReportReason } from '@pawmeet/types';
 
 export interface FeedItem {
   [key: string]: unknown;

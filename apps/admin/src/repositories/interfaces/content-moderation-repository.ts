@@ -1,4 +1,4 @@
-import type { ContentReport as DomainContentReport, Serialized } from '@dogwalk/types';
+import type { ContentReport as DomainContentReport, Serialized } from '@pawmeet/types';
 
 export type ReviewAction = 'reviewed' | 'dismissed';
 

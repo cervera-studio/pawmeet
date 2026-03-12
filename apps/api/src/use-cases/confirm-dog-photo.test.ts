@@ -1,6 +1,6 @@
-import { MAX_PHOTOS_PER_DOG } from '@dogwalk/config';
-import type { DogPhoto } from '@dogwalk/types';
-import { isFailure, isSuccess } from '@dogwalk/types';
+import { MAX_PHOTOS_PER_DOG } from '@pawmeet/config';
+import type { DogPhoto } from '@pawmeet/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildDog, buildDogRepo, buildStorageService } from '../test-utils/builders.js';
 import { createConfirmDogPhoto } from './confirm-dog-photo.js';

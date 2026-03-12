@@ -1,5 +1,5 @@
-import { gdprExports, users } from '@dogwalk/db';
-import { logger } from '@dogwalk/utils';
+import { gdprExports, users } from '@pawmeet/db';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { and, eq, isNotNull, lt, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';

@@ -1,7 +1,7 @@
-import type { DogSizeCategory } from '@dogwalk/config';
-import { BREED_ACTIVITY_GOALS } from '@dogwalk/config';
-import type { HealthGoal, Result } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
+import type { DogSizeCategory } from '@pawmeet/config';
+import { BREED_ACTIVITY_GOALS } from '@pawmeet/config';
+import type { HealthGoal, Result } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import type { ActivityRepository } from '../ports/activity-repository.js';
 import type { DogRepository } from '../ports/index.js';
 

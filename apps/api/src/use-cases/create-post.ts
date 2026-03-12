@@ -1,7 +1,7 @@
-import type { XpAction } from '@dogwalk/config';
-import { MAX_POST_CAPTION } from '@dogwalk/config';
-import type { Post, Result, XpSummary } from '@dogwalk/types';
-import { AppError, fail, succeed } from '@dogwalk/types';
+import type { XpAction } from '@pawmeet/config';
+import { MAX_POST_CAPTION } from '@pawmeet/config';
+import type { Post, Result, XpSummary } from '@pawmeet/types';
+import { AppError, fail, succeed } from '@pawmeet/types';
 import type { FeedRealtimeService, FeedRepository } from '../ports/index.js';
 
 type AwardXpFn = (

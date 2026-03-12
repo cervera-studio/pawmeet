@@ -1,5 +1,5 @@
-import type { ContentReport } from '@dogwalk/types';
-import { AppError, fail, type Result, succeed } from '@dogwalk/types';
+import type { ContentReport } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { ContentReportRepository } from '../ports/index.js';
 
 type Deps = {

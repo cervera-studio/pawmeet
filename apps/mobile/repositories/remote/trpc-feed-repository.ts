@@ -1,5 +1,5 @@
-import type { ApiClient } from '@dogwalk/api-client';
-import type { ContentReportReason } from '@dogwalk/types';
+import type { ApiClient } from '@pawmeet/api-client';
+import type { ContentReportReason } from '@pawmeet/types';
 import type { FeedRepository } from '../interfaces';
 
 export function createTrpcFeedRepository(api: ApiClient): FeedRepository {

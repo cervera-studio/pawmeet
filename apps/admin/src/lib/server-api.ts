@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { type ApiClient, createApiClient } from '@dogwalk/api-client';
+import { type ApiClient, createApiClient } from '@pawmeet/api-client';
 import { cookies } from 'next/headers';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';

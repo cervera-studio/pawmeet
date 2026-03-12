@@ -1,4 +1,4 @@
-import { createApiClient } from '@dogwalk/api-client';
+import { createApiClient } from '@pawmeet/api-client';
 import { api } from '@/lib/api';
 import { getAccessToken } from '@/lib/auth-store';
 import { createRestAuthRepository } from './rest/rest-auth-repository';

@@ -12,9 +12,20 @@ import type { AnalyticsProvider, AnalyticsProviderEvent } from '../ports/analyti
 export class PostHogAnalyticsProvider implements AnalyticsProvider {
   readonly name = 'posthog';
   private client: PostHog;
+  private host: string;
+  private personalApiKey: string | undefined;
+  private projectId: string | undefined;
 
-  constructor(apiKey: string, host = 'https://eu.i.posthog.com') {
+  constructor(
+    apiKey: string,
+    host = 'https://eu.i.posthog.com',
+    personalApiKey?: string,
+    projectId?: string,
+  ) {
     this.client = new PostHog(apiKey, { host, flushAt: 50, flushInterval: 5000 });
+    this.host = host;
+    this.personalApiKey = personalApiKey;
+    this.projectId = projectId;
   }
 
   async capture(events: ReadonlyArray<AnalyticsProviderEvent>): Promise<void> {
@@ -29,6 +40,53 @@ export class PostHogAnalyticsProvider implements AnalyticsProvider {
     }
 
     await this.client.flush();
+  }
+
+  async deletePerson(userId: string): Promise<void> {
+    if (!this.personalApiKey || !this.projectId) {
+      logger.warn(
+        'PostHogAnalyticsProvider',
+        'Cannot delete person: POSTHOG_PERSONAL_API_KEY or POSTHOG_PROJECT_ID not configured',
+      );
+      return;
+    }
+
+    const distinctId = pseudonymizeUserId(userId);
+
+    try {
+      const res = await fetch(
+        `${this.host}/api/projects/${this.projectId}/persons/?distinct_id=${encodeURIComponent(distinctId)}`,
+        { headers: { Authorization: `Bearer ${this.personalApiKey}` } },
+      );
+
+      if (!res.ok) {
+        logger.warn('PostHogAnalyticsProvider', `Person lookup failed: ${res.status}`);
+        return;
+      }
+
+      const body = (await res.json()) as { results?: Array<{ id: number }> };
+      const personId = body.results?.[0]?.id;
+      if (!personId) {
+        logger.debug('PostHogAnalyticsProvider', `No person found for distinctId ${distinctId}`);
+        return;
+      }
+
+      const deleteRes = await fetch(
+        `${this.host}/api/projects/${this.projectId}/persons/${personId}/delete/`,
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${this.personalApiKey}` },
+        },
+      );
+
+      if (deleteRes.ok) {
+        logger.info('PostHogAnalyticsProvider', `Deleted person ${personId} for user ${userId}`);
+      } else {
+        logger.warn('PostHogAnalyticsProvider', `Person delete failed: ${deleteRes.status}`);
+      }
+    } catch (err) {
+      logger.warn('PostHogAnalyticsProvider', 'Failed to delete PostHog person', err);
+    }
   }
 
   async shutdown(): Promise<void> {

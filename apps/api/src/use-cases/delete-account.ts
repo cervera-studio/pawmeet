@@ -10,6 +10,7 @@ import type { DogRepository } from '../ports/dog-repository.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { FeedRepository } from '../ports/feed-repository.js';
 import type { MatchRepository } from '../ports/match-repository.js';
+import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 import type { StorageService } from '../ports/storage-service.js';
 import type { StoryRepository } from '../ports/story-repository.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -33,6 +34,7 @@ interface Deps {
   feedRepo: FeedRepository;
   storyRepo: StoryRepository;
   emailService: EmailService;
+  analyticsProviders: AnalyticsProvider[];
 }
 
 /**
@@ -149,6 +151,10 @@ export function createDeleteAccount(deps: Deps) {
     } catch (err) {
       logger.warn('DeleteAccount', 'Failed to anonymize analytics events', err);
     }
+
+    // Fire-and-forget: delete person records from external analytics providers
+    Promise.allSettled(deps.analyticsProviders.map((p) => p.deletePerson(userId))).catch(() => {});
+
 
     // --- Phase 3: Deactivate account ---
     await userRepo.update(userId, {

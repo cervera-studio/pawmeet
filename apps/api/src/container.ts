@@ -39,12 +39,12 @@ import type { AnalyticsProvider } from './ports/analytics-provider.js';
 import { createAddPostTags } from './use-cases/add-post-tags.js';
 // Use cases — fitness
 import { createAddTrackPoints } from './use-cases/add-track-points.js';
+// Use cases — group events
+import { createApproveParticipant } from './use-cases/approve-participant.js';
 // Use cases — gamification
 import { createAwardXp } from './use-cases/award-xp.js';
 // Use cases — follows
 import { createBlockUser } from './use-cases/block-user.js';
-// Use cases — group events
-import { createApproveParticipant } from './use-cases/approve-participant.js';
 import { createCancelGroupEvent } from './use-cases/cancel-group-event.js';
 import { createCancelRequest } from './use-cases/cancel-request.js';
 // Use cases — walks
@@ -61,10 +61,11 @@ import { createConfirmStory } from './use-cases/confirm-story.js';
 import { createCreateComment } from './use-cases/create-comment.js';
 import { createCreateDog } from './use-cases/create-dog.js';
 import { createCreateGroupEvent } from './use-cases/create-group-event.js';
-import { createCreateRecurringEvent } from './use-cases/create-recurring-event.js';
 import { createCreatePost } from './use-cases/create-post.js';
+import { createCreateRecurringEvent } from './use-cases/create-recurring-event.js';
 import { createCreateStory } from './use-cases/create-story.js';
 import { createCreateWalkAlbum } from './use-cases/create-walk-album.js';
+import { createDeclineParticipant } from './use-cases/decline-participant.js';
 import { createDeleteAccount } from './use-cases/delete-account.js';
 import { createDeleteAvatar } from './use-cases/delete-avatar.js';
 import { createDeleteComment } from './use-cases/delete-comment.js';
@@ -106,7 +107,6 @@ import { createGetUserTracks } from './use-cases/get-user-tracks.js';
 import { createGetWalkAlbum } from './use-cases/get-walk-album.js';
 import { createGetWalkTrack } from './use-cases/get-walk-track.js';
 import { createGetXpSummary } from './use-cases/get-xp-summary.js';
-import { createDeclineParticipant } from './use-cases/decline-participant.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
 import { createLearnUserPreferences } from './use-cases/learn-user-preferences.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
@@ -128,7 +128,6 @@ import { createListPendingRequests } from './use-cases/list-pending-requests.js'
 import { createListUpcomingWalks } from './use-cases/list-upcoming-walks.js';
 import { createListUserDogs } from './use-cases/list-user-dogs.js';
 import { createListUserEvents } from './use-cases/list-user-events.js';
-import { createRequestJoinEvent } from './use-cases/request-join-event.js';
 import { createListWalkFeedback } from './use-cases/list-walk-feedback.js';
 import { createListWalksByMatch } from './use-cases/list-walks-by-match.js';
 import { createLogSwipeScores } from './use-cases/log-swipe-scores.js';
@@ -147,6 +146,7 @@ import { createRemovePostTag } from './use-cases/remove-post-tag.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createReportContent } from './use-cases/report-content.js';
 import { createRequestDataExport } from './use-cases/request-data-export.js';
+import { createRequestJoinEvent } from './use-cases/request-join-event.js';
 import { createResendVerification } from './use-cases/resend-verification.js';
 import { createResetPassword } from './use-cases/reset-password.js';
 import { createRespondToWalk } from './use-cases/respond-to-walk.js';
@@ -245,6 +245,19 @@ export const dogDeps = {
   reorderDogPhotos: createReorderDogPhotos({ dogRepo }),
 };
 
+// ── Analytics providers (dual-write: Neon + external) ───────────────────────
+
+export const analyticsProviders: AnalyticsProvider[] = process.env.POSTHOG_API_KEY
+  ? [
+      new PostHogAnalyticsProvider(
+        process.env.POSTHOG_API_KEY,
+        process.env.POSTHOG_HOST ?? 'https://eu.i.posthog.com',
+        process.env.POSTHOG_PERSONAL_API_KEY,
+        process.env.POSTHOG_PROJECT_ID,
+      ),
+    ]
+  : [];
+
 // ── User deps ───────────────────────────────────────────────────────────────────
 
 export const userDeps = {
@@ -268,6 +281,7 @@ export const userDeps = {
     feedRepo,
     storyRepo,
     emailService,
+    analyticsProviders,
   }),
   exportUserData: createExportUserData({ gdprExportRepo }),
   requestDataExport: createRequestDataExport({
@@ -534,14 +548,3 @@ export const storyCleanupWorkerDeps = {
   storyRepo,
   storage,
 };
-
-// ── Analytics providers (dual-write: Neon + external) ───────────────────────
-
-export const analyticsProviders: AnalyticsProvider[] = process.env.POSTHOG_API_KEY
-  ? [
-      new PostHogAnalyticsProvider(
-        process.env.POSTHOG_API_KEY,
-        process.env.POSTHOG_HOST ?? 'https://eu.i.posthog.com',
-      ),
-    ]
-  : [];

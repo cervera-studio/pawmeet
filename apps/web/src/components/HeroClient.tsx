@@ -20,7 +20,7 @@ const item = {
 export default function HeroClient() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
         <motion.div
           className="max-w-3xl mx-auto text-center"
           variants={container}
@@ -67,9 +67,10 @@ export default function HeroClient() {
         </motion.div>
       </div>
 
-      {/* Animated decorative blobs */}
+      {/* Animated decorative blobs — kept at edges, low opacity, behind text */}
       <motion.div
-        className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary-100 rounded-full opacity-20 blur-3xl"
+        className="pointer-events-none absolute -top-32 -left-40 w-[500px] h-[500px] bg-primary-100 rounded-full opacity-10 blur-3xl"
+        aria-hidden="true"
         animate={{
           scale: [1, 1.05, 1],
           rotate: [0, 3, 0],
@@ -81,7 +82,8 @@ export default function HeroClient() {
         }}
       />
       <motion.div
-        className="absolute bottom-0 right-0 translate-x-1/3 translate-y-1/3 w-[400px] h-[400px] bg-secondary-100 rounded-full opacity-20 blur-3xl"
+        className="pointer-events-none absolute -bottom-32 -right-40 w-[400px] h-[400px] bg-secondary-100 rounded-full opacity-10 blur-3xl"
+        aria-hidden="true"
         animate={{
           scale: [1, 1.08, 1],
           rotate: [0, -3, 0],

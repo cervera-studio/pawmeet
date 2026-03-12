@@ -83,38 +83,45 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
       ),
 
     // Approval flow
-    requestJoin: protectedProcedure
-      .input(joinGroupEventSchema)
-      .mutation(async ({ ctx, input }) => {
-        const result = unwrapResult(await deps.requestJoinEvent(ctx.userId, input));
-        trackEvent('group_event_request_sent', ctx.userId, {
-          eventCategory: 'walk',
-          isHostFriend: false,
-        });
-        return result.participant;
-      }),
+    requestJoin: protectedProcedure.input(joinGroupEventSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.requestJoinEvent(ctx.userId, input));
+      trackEvent('group_event_request_sent', ctx.userId, {
+        eventCategory: 'walk',
+        isHostFriend: false,
+      });
+      return result.participant;
+    }),
 
     approveParticipant: protectedProcedure
       .input(approveParticipantSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
           await deps.approveParticipant(ctx.userId, input.eventId, input.userId),
-        ),
-      ),
+        );
+        trackEvent('group_event_request_approved', ctx.userId, {
+          requestAgeHours: 0,
+          participantNumber: 0,
+        });
+        return result;
+      }),
 
     declineParticipant: protectedProcedure
       .input(declineParticipantSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
           await deps.declineParticipant(ctx.userId, input.eventId, input.userId),
-        ),
-      ),
+        );
+        trackEvent('group_event_request_declined', ctx.userId, { requestAgeHours: 0 });
+        return result;
+      }),
 
     cancelRequest: protectedProcedure
       .input(cancelRequestSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.cancelRequest(ctx.userId, input.eventId)),
-      ),
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(await deps.cancelRequest(ctx.userId, input.eventId));
+        trackEvent('group_event_request_cancelled', ctx.userId, { requestAgeHours: 0 });
+        return result;
+      }),
 
     listPendingRequests: protectedProcedure
       .input(listPendingRequestsSchema)
@@ -146,8 +153,6 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
 
     listOccurrences: protectedProcedure
       .input(listOccurrencesSchema)
-      .query(async ({ input }) =>
-        unwrapResult(await deps.listOccurrences(input.eventId)),
-      ),
+      .query(async ({ input }) => unwrapResult(await deps.listOccurrences(input.eventId))),
   });
 }

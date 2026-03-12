@@ -9,6 +9,7 @@ import {
   syncHealthDataSchema,
 } from '@pawmeet/validation';
 import type { fitnessDeps } from '../../container.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createFitnessRouter(deps: typeof fitnessDeps) {
@@ -32,9 +33,17 @@ export function createFitnessRouter(deps: typeof fitnessDeps) {
 
     endTracking: protectedProcedure
       .input(endTrackingSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.endWalkTracking(ctx.userId, { trackId: input.trackId })),
-      ),
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
+          await deps.endWalkTracking(ctx.userId, { trackId: input.trackId }),
+        );
+        trackEvent('walk_completed', ctx.userId, {
+          durationMinutes: result.track.durationMinutes ?? 0,
+          distanceKm: result.track.distanceKm ?? 0,
+          participantCount: 1,
+        });
+        return result;
+      }),
 
     getTrack: protectedProcedure
       .input(getTrackSchema)

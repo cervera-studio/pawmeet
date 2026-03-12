@@ -2,20 +2,13 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import { revalidatePath } from 'next/cache';
-import { serverFetch } from '@/lib/server-api';
+import { getServerTrpcClient } from '@/lib/server-api';
 import type { AdminUserListItem, ListUsersParams } from '@/repositories/interfaces';
-
-interface RestPaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
 
 export async function suspendUser(userId: string): Promise<{ success: boolean; error?: string }> {
   try {
-    await serverFetch(`/admin/users/${userId}/suspend`, { method: 'POST' });
+    const api = await getServerTrpcClient();
+    await api.admin.suspendUser.mutate({ userId });
     revalidatePath(`/users/${userId}`);
     revalidatePath('/users');
     return { success: true };
@@ -26,7 +19,8 @@ export async function suspendUser(userId: string): Promise<{ success: boolean; e
 
 export async function banUser(userId: string): Promise<{ success: boolean; error?: string }> {
   try {
-    await serverFetch(`/admin/users/${userId}/ban`, { method: 'POST' });
+    const api = await getServerTrpcClient();
+    await api.admin.banUser.mutate({ userId });
     revalidatePath(`/users/${userId}`);
     revalidatePath('/users');
     return { success: true };
@@ -39,7 +33,8 @@ export async function reactivateUser(
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await serverFetch(`/admin/users/${userId}/reactivate`, { method: 'POST' });
+    const api = await getServerTrpcClient();
+    await api.admin.reactivateUser.mutate({ userId });
     revalidatePath(`/users/${userId}`);
     revalidatePath('/users');
     return { success: true };
@@ -51,24 +46,17 @@ export async function reactivateUser(
 export async function fetchUsers(
   params: ListUsersParams,
 ): Promise<PaginatedResult<AdminUserListItem>> {
-  const url = new URL('/admin/users', 'http://placeholder');
-  url.searchParams.set('page', String(params.page));
-  url.searchParams.set('pageSize', String(params.pageSize));
-  if (params.search) {
-    url.searchParams.set('search', params.search);
-  }
-  if (params.sortBy) {
-    url.searchParams.set('sortBy', params.sortBy);
-  }
-  if (params.sortOrder) {
-    url.searchParams.set('sortOrder', params.sortOrder);
-  }
-
-  const pathWithQuery = `${url.pathname}${url.search}`;
-  const result = await serverFetch<RestPaginatedResponse<AdminUserListItem>>(pathWithQuery);
+  const api = await getServerTrpcClient();
+  const result = await api.admin.listUsers.query({
+    page: params.page,
+    pageSize: params.pageSize,
+    search: params.search,
+    sortBy: params.sortBy,
+    sortOrder: params.sortOrder,
+  });
 
   return {
-    data: result.data,
+    data: result.data as AdminUserListItem[],
     total: result.total,
     page: result.page,
     pageSize: result.pageSize,

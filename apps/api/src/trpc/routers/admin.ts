@@ -1040,6 +1040,186 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       return { success: true };
     }),
 
+    // ── Users management ────────────────────────────────────────────────────
+    listUsers: adminProcedure
+      .input(
+        z.object({
+          page: z.number().int().min(1).default(1),
+          pageSize: z.number().int().min(1).max(100).default(20),
+          search: z.string().optional(),
+          sortBy: z.string().optional(),
+          sortOrder: z.enum(['asc', 'desc']).optional(),
+        }),
+      )
+      .query(async ({ input }) => {
+        const { page, pageSize, search, sortBy, sortOrder } = input;
+        const offset = (page - 1) * pageSize;
+
+        const searchCondition = search
+          ? or(ilike(users.displayName, `%${search}%`), ilike(users.email, `%${search}%`))
+          : undefined;
+
+        // Determine sort column
+        const sortColumn =
+          sortBy === 'name'
+            ? users.displayName
+            : sortBy === 'email'
+              ? users.email
+              : users.createdAt;
+        const orderFn = sortOrder === 'asc' ? sql`${sortColumn} asc` : desc(sortColumn);
+
+        const [items, [totalRow]] = await Promise.all([
+          db
+            .select({
+              id: users.id,
+              name: users.displayName,
+              email: users.email,
+              isActive: users.isActive,
+              followersCount: users.followersCount,
+              followingCount: users.followingCount,
+              createdAt: users.createdAt,
+            })
+            .from(users)
+            .where(searchCondition)
+            .orderBy(orderFn)
+            .limit(pageSize)
+            .offset(offset),
+          db.select({ value: count() }).from(users).where(searchCondition),
+        ]);
+
+        // Get dog counts per user
+        const userIds = items.map((u) => u.id);
+        const dogCounts =
+          userIds.length > 0
+            ? await db
+                .select({
+                  ownerId: dogProfiles.ownerId,
+                  count: count(),
+                })
+                .from(dogProfiles)
+                .where(or(...userIds.map((uid) => eq(dogProfiles.ownerId, uid))))
+                .groupBy(dogProfiles.ownerId)
+            : [];
+
+        const dogCountMap = new Map(dogCounts.map((d) => [d.ownerId, d.count]));
+        const total = totalRow?.value ?? 0;
+
+        return {
+          data: items.map((u) => ({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            status: u.isActive ? 'active' : 'suspended',
+            dogsCount: dogCountMap.get(u.id) ?? 0,
+            followersCount: u.followersCount,
+            followingCount: u.followingCount,
+            createdAt: u.createdAt,
+          })),
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        };
+      }),
+
+    getUser: adminProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ input }) => {
+      const [user] = await db
+        .select({
+          id: users.id,
+          displayName: users.displayName,
+          email: users.email,
+          avatarUrl: users.avatarUrl,
+          isActive: users.isActive,
+          authProvider: users.authProvider,
+          createdAt: users.createdAt,
+          lastLoginAt: users.lastLoginAt,
+          followersCount: users.followersCount,
+          followingCount: users.followingCount,
+        })
+        .from(users)
+        .where(eq(users.id, input.id));
+
+      if (!user) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+      }
+
+      const dogs = await db
+        .select({
+          id: dogProfiles.id,
+          name: dogProfiles.name,
+          breed: dogProfiles.breed,
+          isActive: dogProfiles.isActive,
+        })
+        .from(dogProfiles)
+        .where(eq(dogProfiles.ownerId, input.id));
+
+      const [reportsRow] = await db
+        .select({ value: count() })
+        .from(reports)
+        .where(eq(reports.reportedUserId, input.id));
+
+      // Count matches through the user's dogs
+      const dogIds = dogs.map((d) => d.id);
+      const [matchesRow] =
+        dogIds.length > 0
+          ? await db
+              .select({ value: count() })
+              .from(matches)
+              .where(
+                or(...dogIds.flatMap((did) => [eq(matches.dogAId, did), eq(matches.dogBId, did)])),
+              )
+          : [{ value: 0 }];
+
+      return {
+        id: user.id,
+        displayName: user.displayName,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
+        status: user.isActive ? ('active' as const) : ('suspended' as const),
+        authProvider: user.authProvider,
+        createdAt: user.createdAt,
+        lastLoginAt: user.lastLoginAt,
+        dogs,
+        followersCount: user.followersCount,
+        followingCount: user.followingCount,
+        reportsReceived: reportsRow?.value ?? 0,
+        matchesCount: matchesRow?.value ?? 0,
+      };
+    }),
+
+    suspendUser: adminProcedure
+      .input(z.object({ userId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const [user] = await db.select().from(users).where(eq(users.id, input.userId));
+        if (!user) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+        }
+        await db.update(users).set({ isActive: false }).where(eq(users.id, input.userId));
+        return { success: true };
+      }),
+
+    banUser: adminProcedure
+      .input(z.object({ userId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const [user] = await db.select().from(users).where(eq(users.id, input.userId));
+        if (!user) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+        }
+        await db.update(users).set({ isActive: false }).where(eq(users.id, input.userId));
+        return { success: true };
+      }),
+
+    reactivateUser: adminProcedure
+      .input(z.object({ userId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const [user] = await db.select().from(users).where(eq(users.id, input.userId));
+        if (!user) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+        }
+        await db.update(users).set({ isActive: true }).where(eq(users.id, input.userId));
+        return { success: true };
+      }),
+
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────
     getSettings: adminProcedure.query(async () => {
       // MVP: return defaults. Real persistence via key-value table or Redis later.

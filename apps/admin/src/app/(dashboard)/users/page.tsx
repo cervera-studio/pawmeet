@@ -1,12 +1,23 @@
-import type { PaginatedResult } from '@pawmeet/types';
-import { serverFetch } from '@/lib/server-api';
+import { getServerTrpcClient } from '@/lib/server-api';
 import type { AdminUserListItem } from '@/repositories';
 import { UsersTable } from './users-table';
 
+const DEFAULT_PAGE_SIZE = 20;
+
 export default async function UsersPage() {
-  const initialData = await serverFetch<PaginatedResult<AdminUserListItem>>(
-    '/admin/users?page=1&pageSize=20&sortBy=createdAt&sortOrder=desc',
-  );
+  const api = await getServerTrpcClient();
+  const result = await api.admin.listUsers.query({
+    page: 1,
+    pageSize: DEFAULT_PAGE_SIZE,
+  });
+
+  const initialData = {
+    data: result.data as AdminUserListItem[],
+    total: result.total,
+    page: result.page,
+    pageSize: result.pageSize,
+    hasMore: result.page < result.totalPages,
+  };
 
   return (
     <div className="space-y-6">

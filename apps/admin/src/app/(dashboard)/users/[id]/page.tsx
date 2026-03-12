@@ -1,9 +1,9 @@
+import { notFound } from 'next/navigation';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate, formatDateTime, formatNumber } from '@/lib/formatters';
-import { serverFetch } from '@/lib/server-api';
-import type { AdminUserDetail } from '@/repositories';
+import { getServerTrpcClient } from '@/lib/server-api';
 import { UserActions } from './user-actions';
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -21,7 +21,9 @@ interface UserDetailPageProps {
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id } = await params;
-  const user = await serverFetch<AdminUserDetail>(`/admin/users/${id}`);
+
+  const api = await getServerTrpcClient();
+  const user = await api.admin.getUser.query({ id }).catch(() => notFound());
 
   return (
     <div className="space-y-6">

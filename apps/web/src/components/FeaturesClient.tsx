@@ -72,7 +72,7 @@ export default function FeaturesClient({ strings }: Props) {
                 className={`relative rounded-2xl p-7 transition-shadow ${
                   feature.highlighted
                     ? 'bg-primary-50 border-2 border-primary shadow-md'
-                    : 'bg-white shadow-sm hover:shadow-md'
+                    : 'bg-surface-elevated shadow-sm hover:shadow-md'
                 }`}
               >
                 {feature.comingSoon && (

@@ -15,7 +15,7 @@ interface Props {
 
 export default function HowItWorksClient({ strings }: Props) {
   return (
-    <section id={strings.sectionId} className="py-24 sm:py-32 bg-white">
+    <section id={strings.sectionId} className="py-24 sm:py-32 bg-surface-elevated">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="text-center mb-16"

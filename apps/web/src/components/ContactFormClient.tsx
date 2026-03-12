@@ -12,7 +12,7 @@ const fadeUp = {
 };
 
 const inputClasses =
-  'w-full px-5 py-3.5 rounded-xl border border-neutral-300 text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 text-[15px] bg-white';
+  'w-full px-5 py-3.5 rounded-xl border border-neutral-300 text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 text-[15px] bg-surface-elevated';
 
 interface Props {
   strings: TranslationDictionary['contact'];

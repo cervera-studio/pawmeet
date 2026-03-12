@@ -7,11 +7,6 @@ export interface PrivacySection {
   children: ReactNode;
 }
 
-const cookiePolicyHref: Record<Locale, string> = {
-  it: '/cookie',
-  en: '/en/cookie',
-};
-
 export function getPrivacySections(locale: Locale): PrivacySection[] {
   if (locale === 'en') return getEnglishSections();
   return getItalianSections();

@@ -54,8 +54,8 @@ export function DashboardCharts({
                   type="monotone"
                   dataKey="count"
                   name="Registrazioni"
-                  stroke="#6366f1"
-                  fill="#6366f1"
+                  stroke="#065F46"
+                  fill="#059669"
                   fillOpacity={0.15}
                 />
               </AreaChart>
@@ -80,7 +80,7 @@ export function DashboardCharts({
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
                 <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
-                <Bar dataKey="count" name="Match" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" name="Match" fill="#C9A84C" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -109,7 +109,7 @@ export function DashboardCharts({
                   type="monotone"
                   dataKey="count"
                   name="DAU"
-                  stroke="#f59e0b"
+                  stroke="#10B981"
                   strokeWidth={2}
                   dot={false}
                 />

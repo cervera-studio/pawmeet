@@ -27,8 +27,11 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50">
-      <div className="w-full max-w-sm space-y-6 rounded-lg border border-neutral-200 bg-white p-8 shadow-sm">
+      <div className="w-full max-w-sm space-y-6 rounded-lg border border-neutral-200 bg-white p-8 shadow-md">
         <div className="text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-800 text-white font-bold text-lg">
+            PM
+          </div>
           <h1 className="text-2xl font-bold text-neutral-900">PawMeet Admin</h1>
           <p className="mt-1 text-sm text-neutral-500">Accedi al pannello di amministrazione</p>
         </div>

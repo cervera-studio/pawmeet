@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@pawmeet/api-client": "workspace:*",
+    "@pawmeet/design-tokens": "workspace:*",
     "@pawmeet/types": "workspace:*",
     "@pawmeet/validation": "workspace:*",
     "@hookform/resolvers": "^3.9.0",

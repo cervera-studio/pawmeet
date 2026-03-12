@@ -1220,6 +1220,78 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         return { success: true };
       }),
 
+    // ── Photo moderation ─────────────────────────────────────────────────────
+    listPendingPhotos: adminProcedure.query(async () => {
+      const rows = await db
+        .select({
+          id: dogPhotos.id,
+          dogId: dogPhotos.dogId,
+          imageUrl: dogPhotos.url,
+          uploadedAt: dogPhotos.uploadedAt,
+          dogName: dogProfiles.name,
+          userId: dogProfiles.ownerId,
+          userName: users.displayName,
+        })
+        .from(dogPhotos)
+        .innerJoin(dogProfiles, eq(dogPhotos.dogId, dogProfiles.id))
+        .innerJoin(users, eq(dogProfiles.ownerId, users.id))
+        .where(eq(dogPhotos.moderationStatus, 'pending'))
+        .orderBy(dogPhotos.uploadedAt);
+
+      return rows.map((r) => ({
+        id: r.id,
+        userId: r.userId,
+        userName: r.userName,
+        dogId: r.dogId,
+        dogName: r.dogName,
+        imageUrl: r.imageUrl,
+        type: 'dog' as const,
+        uploadedAt: r.uploadedAt.toISOString(),
+      }));
+    }),
+
+    approvePhoto: adminProcedure
+      .input(z.object({ photoId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const [photo] = await db
+          .select()
+          .from(dogPhotos)
+          .where(eq(dogPhotos.id, input.photoId));
+        if (!photo) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
+        }
+        await db
+          .update(dogPhotos)
+          .set({ moderationStatus: 'approved' })
+          .where(eq(dogPhotos.id, input.photoId));
+        return { success: true };
+      }),
+
+    rejectPhoto: adminProcedure
+      .input(z.object({ photoId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const [photo] = await db
+          .select()
+          .from(dogPhotos)
+          .where(eq(dogPhotos.id, input.photoId));
+        if (!photo) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
+        }
+        await db
+          .update(dogPhotos)
+          .set({ moderationStatus: 'rejected' })
+          .where(eq(dogPhotos.id, input.photoId));
+        return { success: true };
+      }),
+
+    approveAllPhotos: adminProcedure.mutation(async () => {
+      await db
+        .update(dogPhotos)
+        .set({ moderationStatus: 'approved' })
+        .where(eq(dogPhotos.moderationStatus, 'pending'));
+      return { success: true };
+    }),
+
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────
     getSettings: adminProcedure.query(async () => {
       // MVP: return defaults. Real persistence via key-value table or Redis later.

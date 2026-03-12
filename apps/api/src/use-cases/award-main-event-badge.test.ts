@@ -2,10 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { buildGroupEvent } from '../test-utils/builders.js';
 import { createAwardMainEventBadge } from './award-main-event-badge.js';
 
-function setup(overrides: {
-  badgeRepo?: Record<string, any>;
-  groupEventRepo?: Record<string, any>;
-} = {}) {
+function setup(
+  overrides: { badgeRepo?: Record<string, any>; groupEventRepo?: Record<string, any> } = {},
+) {
   const badgeRepo = {
     hasBadge: vi.fn().mockResolvedValue(false),
     award: vi.fn().mockResolvedValue({

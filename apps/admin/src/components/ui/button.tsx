@@ -3,16 +3,16 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-800 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        default: 'bg-primary-500 text-white shadow hover:bg-primary-600',
+        default: 'bg-primary-800 text-white shadow hover:bg-primary-900',
         destructive: 'bg-red-500 text-white shadow-sm hover:bg-red-600',
         outline: 'border border-neutral-200 bg-white shadow-sm hover:bg-neutral-100',
         secondary: 'bg-secondary-500 text-white shadow-sm hover:bg-secondary-600',
         ghost: 'hover:bg-neutral-100',
-        link: 'text-primary-500 underline-offset-4 hover:underline',
+        link: 'text-primary-700 underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-9 px-4 py-2',

@@ -11,10 +11,10 @@ export function Sidebar() {
     <aside className="flex h-full w-64 flex-col border-r border-neutral-200 bg-white">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-neutral-200 px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500 text-white font-bold text-sm">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-800 text-white font-bold text-sm">
           PM
         </div>
-        <span className="text-lg font-semibold text-neutral-900">PawMeet Admin</span>
+        <span className="text-lg font-semibold text-neutral-900">PawMeet</span>
       </div>
 
       {/* Navigation */}

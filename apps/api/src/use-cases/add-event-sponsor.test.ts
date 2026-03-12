@@ -8,11 +8,13 @@ import {
 } from '../test-utils/builders.js';
 import { createAddEventSponsor } from './add-event-sponsor.js';
 
-function setup(overrides: {
-  eventSponsorRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['eventSponsorRepo']>;
-  groupEventRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['groupEventRepo']>;
-  organizationRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['organizationRepo']>;
-} = {}) {
+function setup(
+  overrides: {
+    eventSponsorRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['eventSponsorRepo']>;
+    groupEventRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['groupEventRepo']>;
+    organizationRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['organizationRepo']>;
+  } = {},
+) {
   const eventSponsorRepo = buildEventSponsorRepo(overrides.eventSponsorRepo);
   const groupEventRepo = {
     findById: vi.fn().mockResolvedValue(buildGroupEvent({ isOfficial: true })),

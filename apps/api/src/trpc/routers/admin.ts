@@ -1253,10 +1253,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     approvePhoto: adminProcedure
       .input(z.object({ photoId: z.string().uuid() }))
       .mutation(async ({ input }) => {
-        const [photo] = await db
-          .select()
-          .from(dogPhotos)
-          .where(eq(dogPhotos.id, input.photoId));
+        const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, input.photoId));
         if (!photo) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
         }
@@ -1270,10 +1267,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     rejectPhoto: adminProcedure
       .input(z.object({ photoId: z.string().uuid() }))
       .mutation(async ({ input }) => {
-        const [photo] = await db
-          .select()
-          .from(dogPhotos)
-          .where(eq(dogPhotos.id, input.photoId));
+        const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, input.photoId));
         if (!photo) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
         }

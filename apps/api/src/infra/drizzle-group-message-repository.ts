@@ -121,7 +121,9 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
     const lastMessagesRows = await this.db
       .selectDistinctOn([groupMessages.eventId])
       .from(groupMessages)
-      .where(and(inArray(groupMessages.eventId, activeEventIds), eq(groupMessages.isDeleted, false)))
+      .where(
+        and(inArray(groupMessages.eventId, activeEventIds), eq(groupMessages.isDeleted, false)),
+      )
       .orderBy(groupMessages.eventId, desc(groupMessages.createdAt));
 
     const lastMessageByEvent = new Map<string, GroupChatMessage>();

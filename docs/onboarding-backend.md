@@ -497,6 +497,20 @@ Il progetto usa agenti AI specializzati che simulano un team reale. Ogni agente 
 │   ├── backend.md              ← Luca Bianchi — Backend Architect
 │   ├── frontend.md             ← Davide Russo — Frontend Architect
 │   └── mobile.md               ← Sara Conti — Mobile Architect
+├── management/
+│   ├── pm.md                   ← Alessia Marchetti — Project Manager
+│   ├── po.md                   ← Federico Galli — Product Owner
+│   └── finance.md              ← Roberto Ferrara — Finance Advisor
+├── creative/
+│   ├── copywriter-app.md       ← Chiara Lombardi — UX Copy (in-app, italiano)
+│   ├── copywriter-marketing.md ← Valentina Rizzo — Marketing Copy (landing, email, ASO)
+│   └── copywriter-brand.md     ← Alessandro Ferretti — Brand Voice & Naming
+├── design/
+│   ├── product-designer.md     ← Martina Colombo — Product Designer (scuola Jony Ive)
+│   ├── ui-engineer.md          ← Liam Chen — UI Engineer (scuola Evil Rabbit)
+│   └── systems-designer.md     ← Giulia Neri — Design Systems Lead (scuola Dieter Rams)
+├── marketing/
+│   └── seo-specialist.md       ← Lorenzo Vitale — SEO & ASO
 ├── audit/
 │   ├── data-engineer.md        ← Elena Ricci — Data Engineer
 │   ├── data-privacy.md         ← Giulia Fontana — GDPR Specialist
@@ -594,28 +608,209 @@ Per audit completi, lanciamo gruppi di agenti in parallelo. Il principale è:
 
 I prompt completi degli agent group sono salvati in `.claude/projects/.../memory/agent-groups.md`.
 
-### Esempio pratico: nuova feature con agenti
+### Esempi pratici
 
-Supponi di dover implementare "Notifica quando un amico inizia una passeggiata":
+Ecco scenari reali che affronterai. Puoi copiare e incollare i prompt.
+
+---
+
+#### Scenario 1: "Non conosco questa parte del codice"
+
+Sei davanti a un file e non capisci perché è stato scritto così.
 
 ```
-# 1. Chiedi al backend architect di disegnare la soluzione
-claude --agent architect-backend
-> "Devo implementare una notifica push quando un amico inizia una passeggiata.
->  Ho: WebSocket, BullMQ, Expo Push. Quale pattern usi?"
-
-# 2. Implementa seguendo il piano
 claude
-> "Crea il use case notify-friend-walk-started seguendo il pattern di follow-user.ts"
 
-# 3. Fai review dal security specialist
-claude --agent audit-data-security
-> "Review di src/use-cases/notify-friend-walk-started.ts — controlla
->  che non esponga dati sensibili (GPS esatto, ecc.)"
+> Spiegami il flusso completo dell'autenticazione: dal login alla
+> generazione del JWT, al refresh token, fino al middleware che protegge
+> le route. Dimmi anche dove sono i file coinvolti.
+```
 
-# 4. Commit
+```
+claude
+
+> Come funziona il matching tra cani? Parti dall'algoritmo in
+> packages/utils/ e mostrami come viene chiamato dal use case
+> fino alla route tRPC.
+```
+
+```
+claude
+
+> Spiegami il pattern Result<T> che usiamo negli use case.
+> Vengo da .NET dove usavo throw + try/catch. Qual è la differenza
+> e perché lo preferiamo?
+```
+
+---
+
+#### Scenario 2: Implementare una nuova feature (end-to-end)
+
+Ti viene assegnata la US: _"Come utente, voglio segnalare un profilo inappropriato"_.
+
+**Step 1 — Chiedi al backend architect di progettare la soluzione:**
+```
+claude --agent architects/backend
+
+> Devo implementare "Segnala profilo". L'utente può segnalare un altro
+> utente con un motivo (spam, comportamento, foto inappropriata).
+>
+> Progettami la soluzione completa:
+> - Schema DB (nuova tabella? quali campi?)
+> - Port/Interface del repository
+> - Use case con le regole business (es. non segnalare se stessi,
+>   max 1 segnalazione per coppia, ecc.)
+> - Route tRPC
+> - Serve un job BullMQ per notificare gli admin?
+>
+> Segui i pattern esistenti (vedi follow-user.ts come riferimento).
+```
+
+**Step 2 — Implementa con Claude:**
+```
+claude
+
+> Implementa la feature "Segnala profilo" secondo il piano del backend
+> architect. Crea in ordine:
+> 1. Schema Drizzle in packages/db/src/schema/
+> 2. Zod schema in packages/validation/
+> 3. Port in src/ports/report-repository.ts
+> 4. Infra in src/infra/drizzle-report-repository.ts
+> 5. Use case in src/use-cases/report-user.ts
+> 6. Router tRPC in src/trpc/routers/reports.ts
+> 7. Registra tutto in container.ts
+> 8. Aggiungi i test
+```
+
+**Step 3 — Security review:**
+```
+claude --agent audit/data-security
+
+> Review completa di src/use-cases/report-user.ts e
+> src/trpc/routers/reports.ts.
+> Controlla: rate limiting sulle segnalazioni, che il segnalante
+> non possa vedere lo stato della segnalazione di altri utenti,
+> che non ci siano data leak nella response.
+```
+
+**Step 4 — GDPR check (se tocchi dati personali):**
+```
+claude --agent audit/data-privacy
+
+> Ho aggiunto una tabella user_reports con userId, reportedUserId,
+> reason (testo libero), e timestamp. Il campo reason potrebbe
+> contenere PII. Controlla compliance GDPR: retention, right to
+> deletion, data minimization.
+```
+
+**Step 5 — Commit e PR:**
+```
 /commit
 ```
+
+---
+
+#### Scenario 3: Ottimizzare una query lenta
+
+```
+claude --agent audit/data-engineer
+
+> La query listNearbyDogs in src/infra/drizzle-dog-repository.ts
+> è lenta con molti utenti. Usa PostGIS ST_DWithin.
+> Analizza: mancano indici GiST? La query è ottimale?
+> Proponi miglioramenti con EXPLAIN ANALYZE in mente.
+```
+
+---
+
+#### Scenario 4: Aggiungere un job asincrono
+
+```
+claude
+
+> Devo creare un job BullMQ che ogni notte alle 02:00 cancella
+> le segnalazioni risolte più vecchie di 90 giorni.
+> Segui il pattern di src/jobs/send-notification.ts.
+> Crea: queue, worker, scheduler cron, e registralo in workers.ts.
+```
+
+---
+
+#### Scenario 5: Capire un errore
+
+```
+claude
+
+> Questo test fallisce con "ALREADY_FOLLOWING" ma nel test non sto
+> seguendo nessuno. Ecco l'errore:
+> [incolla l'output del test]
+> Aiutami a debuggare.
+```
+
+---
+
+#### Scenario 6: Review del tuo codice prima della PR
+
+```
+claude --agent architects/backend
+
+> Ho finito di implementare la feature report-user. Fai una review
+> completa di questi file:
+> - src/use-cases/report-user.ts
+> - src/infra/drizzle-report-repository.ts
+> - src/trpc/routers/reports.ts
+>
+> Controlla: pattern consistency, error handling, edge case,
+> naming, e se ho dimenticato qualcosa.
+```
+
+---
+
+#### Scenario 7: Lanciare un audit completo
+
+Quando vuoi un'analisi profonda di tutto il data layer (come un pentest interno):
+
+```
+claude
+
+> Lancia l'audit-data: fai partire in parallelo data-engineer,
+> data-security e data-privacy su tutto il codebase dell'API.
+> Salva il report in docs/audits/.
+```
+
+---
+
+#### Scenario 8: Chiedere a più agenti la stessa cosa (team review)
+
+Quando una decisione architetturale è importante, chiedi a più figure:
+
+```
+claude
+
+> Devo decidere se usare WebSocket o Server-Sent Events per le
+> notifiche real-time (non la chat, solo notifiche).
+>
+> Chiedi in parallelo al backend architect, al mobile architect,
+> e al CTO. Ognuno dia la sua prospettiva basata sul suo ruolo.
+> Poi sintetizza le risposte e dimmi la raccomandazione finale.
+```
+
+---
+
+#### Scenario 9: Non sai da dove iniziare
+
+Il prompt più potente quando sei persa:
+
+```
+claude
+
+> Sono nuova sul progetto, vengo da .NET.
+> Mi è stata assegnata questa issue: [incolla titolo + descrizione].
+> Guidami step by step: quali file devo leggere per capire il
+> contesto, quali pattern seguire, e in che ordine implementare.
+```
+
+---
 
 ### Regola d'oro
 

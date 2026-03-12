@@ -1,18 +1,22 @@
 # 13 — Analytics Strategy
 
-**Date:** 2026-03-11
+**Date:** 2026-03-12 (rev. 2 — PostHog NOW, OpenPanel future)
 **Authors:** Sara Conti (Analytics Engineer), Elena Ricci (Data Engineer), Davide Moretti (Data Security), Giulia Fontana (GDPR/Privacy), Luca Bianchi (Software Architect)
-**Status:** Approved — P0 blockers resolved, Sprint N ready
+**Status:** Approved — PostHog Cloud EU free tier active, dual-write architecture
 
 ---
 
 ## Executive Summary
 
-This document consolidates the analysis of 5 specialists on introducing product analytics into PawMeet. The recommendation is a **server-first single data store** (Neon + BullMQ) at EUR 0 additional cost, with a clear 1-day migration path to **PostHog EU** when revenue arrives.
+This document consolidates the analysis of 5 specialists on product analytics for PawMeet. The architecture is a **dual-write pipeline**: events flow through the server-side BullMQ pipeline into both **Neon** (authoritative source of truth, audit log) and **PostHog Cloud EU** (free tier, visualization and product analytics).
+
+**PostHog is active NOW** — not deferred to a future revenue milestone. PostHog Cloud free tier (up to 1M events/month) with **EU data residency** provides funnels, cohorts, retention, and session replay at EUR 0 additional cost.
+
+**Future migration to OpenPanel** is planned. The `AnalyticsProvider` port in the analytics worker abstracts the external provider — swapping PostHog → OpenPanel is a single-file implementation change with zero impact on tracking code, the Neon pipeline, or the mobile client.
 
 **P0 blockers resolved:** Consent infrastructure is implemented — `user_consents` table, mobile consent modal + settings toggles, Sentry PII scrubbing (consent-aware), Statsig userId pseudonymization, and proper GDPR legal basis separation.
 
-**Architecture principle:** All analytics events (both client-originated and server-originated) flow through a single server-side pipeline into `analytics_events` in Neon. This gives us authoritative server-side validation, a single source of truth, and transport-agnostic `AnalyticsService` interface that can swap implementations in ~1 day.
+**Architecture principle:** All analytics events (both client-originated and server-originated) flow through a single server-side pipeline into `analytics_events` in Neon, then are forwarded to PostHog via the `AnalyticsProvider` abstraction. Neon is the source of truth. PostHog is the visualization layer. The `AnalyticsService` interface on mobile remains transport-agnostic.
 
 ---
 
@@ -34,35 +38,43 @@ This document consolidates the analysis of 5 specialists on introducing product 
 
 ### Comparison Matrix
 
-| Criterion | Server-First (Neon + BullMQ) | PostHog Cloud (free) | PostHog EU (Teams) | PostHog Self-Hosted |
-|---|---|---|---|---|
-| **Cost** | EUR 0 (existing infra) | EUR 0 (up to 1M events/mo) | EUR 37.50/mo | EUR 15-30/mo (Fly.io VM) |
-| **GDPR EU hosting** | Full control, Neon eu-central-1 | US only | EU (Frankfurt) | Full control, Frankfurt |
-| **Mobile SDK** | Custom `BufferedAnalyticsService` | `posthog-react-native` | Same | Same |
-| **Funnels/Cohorts** | Build later or defer to PostHog | Built-in | Built-in | Built-in |
-| **Session replay** | No | Yes (5K sessions/mo free) | Yes | Yes |
-| **Data ownership** | Full ownership | PostHog retains | PostHog retains | Full ownership |
+| Criterion | Neon + BullMQ (audit log) | PostHog Cloud EU (free) | OpenPanel (future) |
+|---|---|---|---|
+| **Cost** | EUR 0 (existing infra) | EUR 0 (up to 1M events/mo) | EUR 0 (self-hosted on Fly.io) |
+| **GDPR EU hosting** | Full control, Neon eu-central-1 | EU data residency (free tier) | Full control, self-hosted |
+| **Funnels/Cohorts** | Custom queries only | Built-in | Built-in |
+| **Session replay** | No | Yes (5K sessions/mo free) | No |
+| **Data ownership** | Full ownership | PostHog retains copy | Full ownership |
+| **Open source** | N/A | Partially | Fully |
 
-### Decision: Server-First NOW, PostHog When Revenue Arrives
+### Decision: Dual-Write — Neon + PostHog NOW, OpenPanel FUTURE
 
-1. **NOW (EUR 0):** Server-first pipeline using existing Neon + BullMQ infrastructure. All events (client + server) flow to a single `analytics_events` table. Admin gets KPI cards only.
+1. **NOW (EUR 0):** Dual-write pipeline. All events flow through BullMQ into both Neon (`analytics_events` table, source of truth) and PostHog Cloud EU (free tier, visualization). Admin keeps KPI cards from Neon; PostHog provides funnels, cohorts, retention, session replay.
 2. **Cloudflare Web Analytics** (already deployed) for the landing page — no analytics SDK on marketing site.
-3. **When revenue arrives (~1 day effort):** Add PostHog EU Teams plan (~EUR 37.50/mo) as the visualization layer. Funnels, cohorts, session replay, and dashboards handled by PostHog. Admin retains KPI cards; funnel/cohort/matching pages are NOT built — PostHog provides them.
+3. **FUTURE:** Swap PostHog → **OpenPanel** (open-source, self-hosted on Fly.io) when deeper customization or cost optimization is needed. The `AnalyticsProvider` port makes the swap a single-file change in the analytics worker.
 
-### Why Not PostHog at MVP?
+### Why PostHog NOW?
 
-- **EUR 0 vs EUR 0 cost is the same**, but PostHog free tier is US-hosted (GDPR risk with Garante)
-- PostHog EU requires Teams plan (EUR 450/yr) — unjustifiable before revenue
-- Our server already processes every user action — duplicating events to a third party adds complexity without value at MVP scale
-- The `AnalyticsService` interface is transport-agnostic: swapping `BufferedAnalyticsService` → `PostHogAnalyticsService` is a 1-day effort (change DI registration + add SDK)
+- PostHog Cloud free tier **supports EU data residency** — GDPR-compliant at EUR 0
+- Funnels, cohorts, retention grids, and session replay from day 1 — no custom Recharts development (~6d saved)
+- Server-side dual-write via BullMQ worker keeps PostHog off the hot path (async, best-effort)
+- Neon stays the authoritative source of truth — PostHog is additive, not a replacement
+- The `AnalyticsProvider` abstraction ensures no vendor lock-in
+
+### Why OpenPanel FUTURE?
+
+- Fully open-source, self-hostable on existing Fly.io infrastructure (EUR 0 platform cost)
+- No data leaves our infrastructure — full GDPR sovereignty
+- Similar API to PostHog — migration via `AnalyticsProvider` swap is ~1 day
+- Better long-term cost profile at scale (no per-event metered pricing)
 
 ### Cost Projection
 
 | Phase | Monthly Cost | Notes |
 |---|---|---|
-| MVP (0-5K users) | EUR 0 | Server-first, existing Neon + BullMQ |
-| Revenue phase | ~EUR 37.50 | Add PostHog EU Teams for dashboards |
-| Scale (20K+) | EUR 37.50-69 | PostHog EU + Neon Scale tier |
+| MVP (0-5K users) | EUR 0 | Neon + PostHog Cloud EU free tier |
+| Growth (5K-20K) | EUR 0 | Still within PostHog free 1M events/mo |
+| Scale (20K+) | EUR 0-15 | Evaluate OpenPanel self-hosted on Fly.io |
 
 ---
 
@@ -252,13 +264,13 @@ The following MUST NEVER appear in any analytics event:
 
 ## 4. Data Pipeline Architecture
 
-### Event Flow (Single-Path, Server-First)
+### Event Flow (Dual-Write, Server-First)
 
 ```
 Mobile Client                           Server (Hono API)
     │                                       │
     ├─ Client-exclusive events ─────────────┤
-    │  (SQLite buffer → POST /api/events/batch)
+    │  (in-memory buffer → POST /api/events/batch)
     │                                       │
     │                                       ├─ Server-authoritative events
     │                                       │  (tracked at tRPC router level
@@ -272,22 +284,24 @@ Mobile Client                           Server (Hono API)
     │                                       │
     │                     ┌─────────────────┼─────────────────┐
     │                     ▼                 ▼                 ▼
-    │              analytics_events   Redis counters    (future: PostHog)
-    │              (Neon PostgreSQL)   (real-time KPIs)
+    │              analytics_events   Redis counters    AnalyticsProvider[]
+    │              (Neon PostgreSQL)   (real-time KPIs)  ├─ PostHog (NOW)
+    │              [source of truth]                     └─ OpenPanel (FUTURE)
     │
-    └─ Offline? SQLite buffer holds events, flushes on:
+    └─ Offline? In-memory buffer holds events, flushes on:
        • App foreground
        • 60-second timer
        • Connectivity restored
 ```
 
-### Why Server-First?
+### Why Dual-Write?
 
-1. **Authoritative data**: Server confirms actions actually happened (match created, message delivered)
-2. **Single source of truth**: One `analytics_events` table, not dual client/server paths
-3. **No third-party dependency**: Zero additional cost, full EU data residency
-4. **Transport-agnostic**: `AnalyticsService` interface can be swapped without changing any tracking code
-5. **Offline-resilient**: SQLite buffer on mobile handles connectivity gaps
+1. **Authoritative data**: Neon confirms actions actually happened — PostHog is best-effort visualization
+2. **Provider independence**: `AnalyticsProvider` port abstracts PostHog/OpenPanel — swap with zero tracking code changes
+3. **Failure isolation**: PostHog failure does NOT lose events — Neon has them, backfill possible
+4. **EU data residency**: Neon eu-central-1 + PostHog EU region — both GDPR-compliant
+5. **Transport-agnostic**: `AnalyticsService` interface on mobile unchanged
+6. **Offline-resilient**: In-memory buffer on mobile handles connectivity gaps
 
 ### Raw Events Table (Drizzle ORM) — IMPLEMENTED
 
@@ -446,25 +460,56 @@ const analyticsService = __DEV__
 container.register(ANALYTICS_SERVICE, { useValue: analyticsService });
 ```
 
-### Future: PostHog Swap (~1 Day Effort)
+### Server-Side AnalyticsProvider Port (Dual-Write)
 
-When revenue arrives, swap the DI registration:
+The analytics worker uses an `AnalyticsProvider` port to forward events to external providers after the Neon write:
 
 ```typescript
-// Change from:
-const analyticsService = createBufferedAnalyticsService();
-// To:
-const analyticsService = createPostHogAnalyticsService(
-  process.env.EXPO_PUBLIC_POSTHOG_API_KEY ?? '',
-  'https://eu.i.posthog.com',
-);
+// apps/api/src/ports/analytics-provider.ts
+export interface AnalyticsProvider {
+  readonly name: string;
+  capture(events: ReadonlyArray<AnalyticsProviderEvent>): Promise<void>;
+  shutdown(): Promise<void>;
+}
+
+export interface AnalyticsProviderEvent {
+  distinctId: string;           // pseudonymized userId (HMAC-SHA256)
+  event: string;
+  properties: Record<string, unknown>;
+  timestamp: string;
+}
 ```
 
-No tracking code changes needed — same `AnalyticsService` interface.
+**NOW:** `PostHogAnalyticsProvider` wraps `posthog-node`, sends to `https://eu.i.posthog.com`.
+**FUTURE:** `OpenPanelAnalyticsProvider` wraps OpenPanel SDK — same interface, single-file swap.
+
+The worker receives `providers: AnalyticsProvider[]` at construction. After each Neon `INSERT`, it iterates providers. PostHog failures are caught and logged as warnings — they never fail the BullMQ job or lose events from Neon.
+
+**Identity rule:** Raw UUIDs from `analytics_events.userId` are pseudonymized via `pseudonymizeUserId()` (HMAC-SHA256 + `ANALYTICS_HASH_SALT`) before being sent as PostHog `distinct_id`. Same function used for Statsig, extracted to `apps/api/src/lib/pseudonymize.ts`.
+
+### Mobile: No PostHog SDK (Server-Side Only)
+
+No PostHog mobile SDK is installed. All events (client and server) reach PostHog through the server-side dual-write in the analytics worker. This keeps the mobile app simple, avoids a second data path, and ensures all events pass through server-side Zod validation.
+
+The mobile `BufferedAnalyticsService` (posting to `POST /api/events/batch`) and the `AnalyticsService` DI registration are unchanged.
+
+### Future: OpenPanel Swap (~1 Day Effort)
+
+When moving to OpenPanel, change only the analytics worker:
+
+```typescript
+// apps/api/src/container.ts — swap provider registration
+const analyticsProviders: AnalyticsProvider[] = [
+  // new OpenPanelAnalyticsProvider(process.env.OPENPANEL_API_KEY ?? ''),
+  // ↑ replaces PostHogAnalyticsProvider
+];
+```
+
+No changes to `trackEvent()`, the batch endpoint, `AnalyticsService` interface, mobile code, or admin dashboard queries.
 
 ### Admin (Named Module Exports)
 
-No client-side analytics SDK in admin. Events tracked server-side via domain events at router level. Admin reads analytics data via `AnalyticsDataRepository`.
+No client-side analytics SDK in admin. Events tracked server-side via domain events at router level. Admin reads operational KPIs from Neon via `AnalyticsDataRepository`. Product analytics (funnels, cohorts, retention) accessed directly in PostHog UI.
 
 ### Server-Side Domain Events
 
@@ -474,26 +519,31 @@ Server events tracked at tRPC router level after `unwrapResult()` — keeps doma
 
 ## 6. Admin Dashboards
 
-### NOW: KPI Cards Only
+### Admin: Operational KPIs from Neon
 
-The admin dashboard (`/(dashboard)/page.tsx`) displays real-time KPI cards powered by Redis counters and hourly/daily aggregation tables:
+The admin dashboard (`/(dashboard)/page.tsx`) displays real-time KPI cards powered by Redis counters and Neon aggregation tables:
 
 - **KPI Cards (real-time):** DAU, new registrations, active matches, moderation queue
 - **Charts (hourly refresh):** DAU/MAU trend (30d), registrations vs completions (7d)
 - **Alerts:** SLA violations, spike detection, retention drops
 
-### Deferred to PostHog (When Revenue Arrives)
+Admin reads from Neon, NOT from PostHog API — no external HTTP dependency for operational dashboards.
 
-The following pages are **NOT built** in the admin — PostHog provides them out-of-the-box with superior UX:
+### PostHog: Product Analytics (Available NOW)
 
-| Page | PostHog Feature | Why Defer |
+The following are handled by PostHog — NOT built as custom admin pages:
+
+| Capability | PostHog Feature | Access |
 |---|---|---|
-| `analytics/funnel/page.tsx` | Funnels | PostHog's funnel builder is drag-and-drop, highly customizable |
-| `analytics/cohorts/page.tsx` | Retention | PostHog's retention grid with breakdown by properties |
-| `analytics/matching/page.tsx` | Insights + Dashboards | PostHog's query builder handles histograms, heatmaps, conversions |
-| Session replay | Recordings | Not possible with custom solution |
+| Funnel analysis | Funnels (drag-and-drop builder) | PostHog UI |
+| Retention cohorts | Retention grid with breakdowns | PostHog UI |
+| Matching quality | Insights + custom dashboards | PostHog UI |
+| Session replay | Recordings (5K sessions/mo free) | PostHog UI |
+| A/B test analysis | Experiments (if needed) | PostHog UI |
 
 **Effort saved:** ~6d of custom Recharts development, replaced by PostHog's built-in dashboards.
+
+**Optional:** PostHog shared dashboard links can be embedded in admin via `<iframe>` — zero backend work.
 
 ---
 
@@ -651,13 +701,14 @@ Batch endpoint limits: max 100 events per batch, max 50KB body size.
 
 | Processor | DPA Status | Action Needed |
 |---|---|---|
+| **PostHog** (EU region) | **Not signed** | Sign DPA before first event, userId pseudonymized via HMAC-SHA256 |
 | Statsig | **Not signed** | Sign DPA, userId pseudonymized (DONE) |
 | Sentry | **Not signed** | Sign DPA, PII scrubbing implemented (DONE) |
 | Expo Push | **Not signed** | Sign DPA |
 | Resend | **Not signed** | Sign DPA |
 | Neon | **Needs verification** | Verify DPA coverage |
 
-> **Note:** PostHog is NOT a current processor. Will need DPA when added.
+> **Note:** PostHog receives only pseudonymized `distinct_id` (HMAC-SHA256 hash), never raw UUIDs or PII. EU data residency selected on the free tier.
 
 ---
 
@@ -674,50 +725,55 @@ Batch endpoint limits: max 100 events per batch, max 50KB body size.
 | 5 | Sentry `beforeSend` PII scrubber (consent-aware) | **DONE** — server + mobile |
 | 6 | `AnalyticsEventMap` + `AnalyticsService` interface | **DONE** — `packages/types/src/analytics.ts` |
 
-### Sprint N — Server-First Pipeline
+### Sprint N — PostHog Integration + Pipeline Completion
 
 | # | Item | Effort |
 |---|---|---|
-| 7 | Consent API endpoint (tRPC mutation `consent.update`) | 1d |
-| 8 | DB push: `drizzle-kit push` for new tables on Neon | 0.5d |
-| 9 | `BufferedAnalyticsService` (SQLite buffer + batch POST) | 2d |
-| 10 | `NoOpAnalyticsService` (dev mode) | 0.5d |
-| 11 | DI token `ANALYTICS_SERVICE` + container registration | 0.5d |
-| 12 | `POST /api/events/batch` Hono route (Zod validation + BullMQ) | 1d |
-| 13 | Analytics rate limiter (`rl:analytics`, 500/min) | 0.5d |
-| 14 | Analytics BullMQ worker (batch INSERT + ON CONFLICT DO NOTHING) | 1d |
-| 15 | Privacy policy update with analytics section | 1d |
+| 7 | Create PostHog Cloud EU project, configure EU data residency, IP anonymization ON | 0.25d |
+| 8 | Sign PostHog DPA (free tier) | 0.25d |
+| 9 | Create `AnalyticsProvider` port (`apps/api/src/ports/analytics-provider.ts`) | 0.5d |
+| 10 | Create `PostHogAnalyticsProvider` (`apps/api/src/infra/posthog-analytics-provider.ts`) + install `posthog-node` | 0.5d |
+| 11 | Extract `pseudonymizeUserId()` to `apps/api/src/lib/pseudonymize.ts` (shared by Statsig + PostHog) | 0.25d |
+| 12 | Add dual-write to analytics worker: forward to `AnalyticsProvider[]` after Neon INSERT, PostHog errors caught silently | 1d |
+| 13 | Add `posthog.shutdown()` to graceful shutdown in `workers.ts` | 0.25d |
+| 14 | Add `POSTHOG_API_KEY` + `POSTHOG_HOST` env vars (Fly.io secrets + `.env.example`) | 0.25d |
+| 15 | Consent API endpoint (tRPC mutation `consent.update`) | 1d |
+| 16 | Fix: add `consentGiven: true` to mobile batch POST body in `buffered-analytics-service.ts` | 0.25d |
+| 17 | Fix: bulk upsert in `analytics-aggregation.ts` (replace serial N+1 loop) | 0.5d |
+| 18 | Unit tests: PostHog capture called per event, errors don't fail job, dedup UUID passed | 0.5d |
 
 ### Sprint N+1 — Instrumentation + Admin KPIs
 
 | # | Item | Effort |
 |---|---|---|
-| 16 | Server-side domain event tracking (router-level pattern) | 1d |
-| 17 | Instrument auth + onboarding flows (hybrid events) | 1d |
-| 18 | Instrument matching + chat + walk events (server-authoritative) | 2d |
-| 19 | Redis real-time counters (Hono middleware) | 1d |
-| 20 | BullMQ cron jobs (hourly, daily, cohort aggregation) | 2d |
-| 21 | Admin dashboard KPI cards | 2d |
+| 19 | Instrument remaining routers: dogs, feed, walks, feedback, users, group-events, social | 2d |
+| 20 | Instrument client-exclusive events on mobile: onboarding, match feed, app lifecycle, permissions | 1d |
+| 21 | Redis real-time counters (Hono middleware) | 1d |
+| 22 | BullMQ cron jobs (hourly, daily aggregation) | 1d |
+| 23 | Admin dashboard KPI cards | 2d |
+| 24 | Configure PostHog dashboards: onboarding funnel, registration funnel, match→chat→walk funnel | 0.5d |
+| 25 | Configure PostHog retention cohorts (D1/D7/D30) and alerts | 0.5d |
 
 ### Sprint N+2 — Compliance + Data Rights
 
 | # | Item | Effort |
 |---|---|---|
-| 22 | `deleteAccount` with analytics anonymization (SET NULL) | 1d |
-| 23 | `exportMyData` including analytics data + consent records | 1d |
-| 24 | DPIA documentation | 1d |
-| 25 | Sign DPAs with all processors | 1d |
-| 26 | Consent re-request mechanism (6-month Garante cycle) | 1d |
+| 26 | `deleteAccount` with analytics anonymization (SET NULL) + PostHog person delete API call | 1d |
+| 27 | `exportMyData` including analytics data + consent records | 1d |
+| 28 | Privacy policy update with analytics section (list PostHog EU as processor) | 1d |
+| 29 | Update consent modal Italian text to reference PostHog EU per Garante transparency | 0.25d |
+| 30 | DPIA documentation (include PostHog EU as processor) | 1d |
+| 31 | Sign DPAs with all processors | 1d |
+| 32 | Consent re-request mechanism (6-month Garante cycle) | 1d |
 
-### Future — PostHog Migration (When Revenue Arrives, ~1 Day)
+### Future — OpenPanel Migration (~1 Day)
 
 | # | Item | Effort |
 |---|---|---|
-| 27 | Add `posthog-react-native` SDK | 0.25d |
-| 28 | Create `PostHogAnalyticsService` implementing `AnalyticsService` | 0.25d |
-| 29 | Swap DI registration in `container.ts` | 0.1d |
-| 30 | Sign PostHog DPA (EU Teams plan) | 0.1d |
-| 31 | Configure PostHog dashboards (funnels, cohorts, retention) | 0.25d |
+| 33 | Create `OpenPanelAnalyticsProvider` implementing `AnalyticsProvider` | 0.5d |
+| 34 | Swap provider registration in `container.ts` | 0.1d |
+| 35 | Backfill historical events from Neon to OpenPanel (one-time script) | 0.25d |
+| 36 | Re-create funnel/cohort definitions in OpenPanel UI | 0.25d |
 | **Total** | | **~1d** |
 
 ---

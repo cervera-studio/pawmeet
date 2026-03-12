@@ -67,7 +67,7 @@ export function createBufferedAnalyticsService(apiUrl: string): AnalyticsService
       const res = await fetch(`${apiUrl}/api/events/batch`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ events: batch }),
+        body: JSON.stringify({ events: batch, consentGiven: true }),
       });
 
       if (!res.ok) {

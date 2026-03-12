@@ -778,19 +778,20 @@ Batch endpoint limits: max 100 events per batch, max 50KB body size.
 
 ---
 
-## Cross-Team Consensus
+## Cross-Team Consensus (rev. 2 — 2026-03-12)
 
 | Topic | Sara (Analytics) | Elena (Data Eng) | Davide (Security) | Giulia (GDPR) | Luca (Architect) |
 |---|---|---|---|---|---|
-| **Architecture** | Server-first | Single data store | Server validates | EU-only pipeline | Clean Architecture: track at router, not use-case |
-| **Tool** | Neon now, PostHog later | Same DB, BullMQ pipeline | Server-authoritative | No third-party at MVP | Transport-agnostic interface |
-| **User IDs** | Opaque userId | UUID with dedup | HMAC-hashed for third-party | Pseudonymized | Raw UUID only in own DB |
-| **Consent** | Gate client analytics | N/A (server-side) | Gate all tracking | P0 blocker, mandatory | Consent-aware Sentry |
-| **Data retention** | 90d raw + aggregates | 90d raw + aggregates | 90d + encryption | 90d raw, 24mo aggregated | Monthly partitions |
-| **Admin dashboards** | KPI cards now | Cron aggregation | Access control | Audit log required | PostHog for complex viz |
+| **Architecture** | Dual-write: Neon + PostHog | Neon source of truth, PostHog best-effort | Server validates, PostHog errors isolated | EU data residency on both stores | `AnalyticsProvider` port for provider swap |
+| **Tool** | PostHog Cloud EU now, OpenPanel future | Same BullMQ pipeline, add provider forward | Server-authoritative, pseudonymized IDs | PostHog DPA required before go-live | Transport-agnostic interface preserved |
+| **User IDs** | Opaque userId | UUID with dedup in Neon | HMAC-hashed for PostHog `distinct_id` | Pseudonymized, no raw UUID to PostHog | Raw UUID only in own DB |
+| **Consent** | Gate client analytics | N/A (server-side) | Gate PostHog forward on consent | P0 blocker, mandatory | Consent-aware Sentry + PostHog |
+| **Data retention** | 90d Neon + PostHog default | 90d raw Neon + aggregates | 90d + person delete on account removal | 90d Neon, PostHog retains per their policy | Monthly partitions (future) |
+| **Admin dashboards** | KPI cards from Neon | Cron aggregation for Neon | Access control | Audit log required | PostHog UI for funnels/cohorts |
 
-**Agreed architecture**: Server-first single data store (unanimous).
-**Agreed retention**: 90 days raw events, 24 months aggregated, unlimited anonymized.
-**Agreed ID strategy**: HMAC-SHA256 hash for all third-party destinations, raw UUID only in own Neon DB.
-**Agreed PostHog timing**: Add when revenue arrives (~1 day effort, EUR 37.50/mo EU Teams).
-**Agreed admin scope**: KPI cards only — no funnel/cohort/matching pages (PostHog provides them later).
+**Agreed architecture**: Dual-write — Neon (source of truth) + PostHog Cloud EU (visualization) via `AnalyticsProvider` port (unanimous).
+**Agreed retention**: 90 days raw events in Neon, 24 months aggregated, unlimited anonymized. PostHog retains per their default policy.
+**Agreed ID strategy**: HMAC-SHA256 hash for PostHog `distinct_id` and all third-party destinations, raw UUID only in own Neon DB.
+**Agreed provider strategy**: PostHog Cloud EU free tier NOW, OpenPanel self-hosted FUTURE (~1 day swap via `AnalyticsProvider`).
+**Agreed admin scope**: KPI cards from Neon, product analytics (funnels, cohorts, retention) via PostHog UI.
+**Agreed mobile**: No PostHog SDK — all events flow through server-side dual-write.

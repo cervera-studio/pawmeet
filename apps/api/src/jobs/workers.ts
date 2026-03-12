@@ -1,4 +1,5 @@
 import {
+  analyticsProviders,
   dataCleanupDeps,
   eventStatusDeps,
   gdprExportWorkerDeps,
@@ -26,7 +27,7 @@ export async function startWorkers() {
   const notifWorker = createNotificationWorker();
   const emailWorker = createEmailWorker();
   const eventStatusWorker = createEventStatusWorker(eventStatusDeps);
-  const analyticsWorker = createAnalyticsWorker();
+  const analyticsWorker = createAnalyticsWorker(analyticsProviders);
   const aggregationWorker = createAnalyticsAggregationWorker();
   const dataCleanupWorker = createDataCleanupWorker(dataCleanupDeps);
   const gdprExportWorker = createGdprExportWorker(gdprExportWorkerDeps);
@@ -41,6 +42,7 @@ export async function startWorkers() {
   // Handle graceful shutdown
   const shutdown = async () => {
     console.log('[workers] Shutting down...');
+    // Close workers first, then flush analytics providers
     await Promise.all([
       photoWorker.close(),
       notifWorker.close(),
@@ -52,6 +54,8 @@ export async function startWorkers() {
       gdprExportWorker.close(),
       storyCleanupWorker.close(),
     ]);
+    // Flush analytics providers after workers stop to prevent event loss on deploys
+    await Promise.allSettled(analyticsProviders.map((p) => p.shutdown()));
     console.log('[workers] All workers stopped');
   };
 

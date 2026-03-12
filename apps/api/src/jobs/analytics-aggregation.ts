@@ -67,10 +67,10 @@ export function createAnalyticsAggregationWorker() {
         })),
       ];
 
-      for (const metric of metrics) {
+      if (metrics.length > 0) {
         await db
           .insert(analyticsDailyMetrics)
-          .values({ ...metric, updatedAt: new Date() })
+          .values(metrics.map((m) => ({ ...m, updatedAt: new Date() })))
           .onConflictDoUpdate({
             target: [analyticsDailyMetrics.date, analyticsDailyMetrics.metricName],
             set: {

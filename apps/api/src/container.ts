@@ -26,6 +26,7 @@ import { DrizzleWalkRepository } from './infra/drizzle-walk-repository.js';
 import { DrizzleWalkTrackRepository } from './infra/drizzle-walk-track-repository.js';
 import { JwksSocialAuthVerifier } from './infra/jwks-social-auth-verifier.js';
 import { JwtAuthService } from './infra/jwt-auth-service.js';
+import { PostHogAnalyticsProvider } from './infra/posthog-analytics-provider.js';
 import { R2StorageService } from './infra/r2-storage-service.js';
 import { ResendEmailService } from './infra/resend-email-service.js';
 import { StatsigExperimentService } from './infra/statsig-experiment-service.js';
@@ -33,6 +34,7 @@ import { WsChatService } from './infra/ws-chat-service.js';
 import { WsFeedRealtimeService } from './infra/ws-feed-realtime-service.js';
 import { enqueueGdprExport } from './jobs/queue.js';
 import { db } from './lib/db.js';
+import type { AnalyticsProvider } from './ports/analytics-provider.js';
 // Use cases — feed
 import { createAddPostTags } from './use-cases/add-post-tags.js';
 // Use cases — fitness
@@ -502,3 +504,14 @@ export const storyCleanupWorkerDeps = {
   storyRepo,
   storage,
 };
+
+// ── Analytics providers (dual-write: Neon + external) ───────────────────────
+
+export const analyticsProviders: AnalyticsProvider[] = process.env.POSTHOG_API_KEY
+  ? [
+      new PostHogAnalyticsProvider(
+        process.env.POSTHOG_API_KEY,
+        process.env.POSTHOG_HOST ?? 'https://eu.i.posthog.com',
+      ),
+    ]
+  : [];

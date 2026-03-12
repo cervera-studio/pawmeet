@@ -2,11 +2,13 @@ import { ANALYTICS_MAX_EVENT_AGE_DAYS, ANALYTICS_WORKER_CONCURRENCY } from '@paw
 import { analyticsEvents } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
+import { PostHogAnalyticsProvider } from '../infra/posthog-analytics-provider.js';
 import { db } from '../lib/db.js';
+import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 import type { AnalyticsJobData } from './queue.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
 
-export function createAnalyticsWorker() {
+export function createAnalyticsWorker(providers: AnalyticsProvider[] = []) {
   const maxAgeMs = ANALYTICS_MAX_EVENT_AGE_DAYS * 24 * 60 * 60 * 1000;
 
   const worker = new Worker<AnalyticsJobData>(
@@ -23,7 +25,7 @@ export function createAnalyticsWorker() {
 
       if (valid.length === 0) return;
 
-      // Batch insert with ON CONFLICT DO NOTHING for deduplication
+      // Batch insert into Neon (source of truth) with deduplication
       const values = valid.map((e) => ({
         clientEventId: e.clientEventId,
         userId: e.userId,
@@ -40,6 +42,25 @@ export function createAnalyticsWorker() {
       await db.insert(analyticsEvents).values(values).onConflictDoNothing({
         target: analyticsEvents.clientEventId,
       });
+
+      // Forward to external providers (PostHog, future OpenPanel) — best-effort
+      if (providers.length > 0) {
+        const providerEvents = PostHogAnalyticsProvider.toProviderEvents(valid);
+        if (providerEvents.length > 0) {
+          await Promise.allSettled(
+            providers.map(async (provider) => {
+              try {
+                await provider.capture(providerEvents);
+              } catch (err) {
+                logger.warn(
+                  'analytics',
+                  `Provider ${provider.name} forward failed: ${err instanceof Error ? err.message : err}`,
+                );
+              }
+            }),
+          );
+        }
+      }
 
       logger.debug('analytics', `Ingested ${valid.length}/${events.length} events`);
     },

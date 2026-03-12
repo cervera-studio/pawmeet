@@ -3,6 +3,8 @@ import {
   contentReports,
   dogPhotos,
   dogProfiles,
+  groupEventParticipants,
+  groupEvents,
   matches,
   postMedia,
   posts,
@@ -54,6 +56,26 @@ const listReportsSchema = z.object({
 const resolveReportSchema = z.object({
   id: z.string().uuid(),
   action: z.enum(['dismiss', 'warn', 'suspend', 'ban']),
+});
+
+const listGroupEventsSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(20),
+  search: z.string().optional(),
+  status: z.enum(['scheduled', 'in_progress', 'completed', 'cancelled', 'template']).optional(),
+  category: z.enum(['walk', 'meetup', 'training']).optional(),
+});
+
+const getGroupEventSchema = z.object({
+  id: z.string().uuid(),
+});
+
+const cancelGroupEventSchema = z.object({
+  eventId: z.string().uuid(),
+});
+
+const removeParticipantSchema = z.object({
+  participantId: z.string().uuid(),
 });
 
 const updateSettingsSchema = z.object({
@@ -561,6 +583,200 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         pendingReports: pendingReports?.value ?? 0,
       };
     }),
+
+    // ── Group events management ───────────────────────────────────────────────
+    listGroupEvents: adminProcedure.input(listGroupEventsSchema).query(async ({ input }) => {
+      const { page, pageSize, search, status, category } = input;
+      const offset = (page - 1) * pageSize;
+
+      const conditions = [];
+      if (search) conditions.push(ilike(groupEvents.title, `%${search}%`));
+      if (status) conditions.push(eq(groupEvents.status, status));
+      if (category) conditions.push(eq(groupEvents.category, category));
+
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const [items, [totalRow]] = await Promise.all([
+        db
+          .select({
+            id: groupEvents.id,
+            title: groupEvents.title,
+            category: groupEvents.category,
+            visibility: groupEvents.visibility,
+            status: groupEvents.status,
+            scheduledAt: groupEvents.scheduledAt,
+            location: groupEvents.location,
+            maxParticipants: groupEvents.maxParticipants,
+            requiresApproval: groupEvents.requiresApproval,
+            createdAt: groupEvents.createdAt,
+            creatorId: groupEvents.createdBy,
+            creatorName: users.displayName,
+            recurrenceRule: groupEvents.recurrenceRule,
+            parentEventId: groupEvents.parentEventId,
+          })
+          .from(groupEvents)
+          .leftJoin(users, eq(groupEvents.createdBy, users.id))
+          .where(whereClause)
+          .orderBy(desc(groupEvents.scheduledAt))
+          .limit(pageSize)
+          .offset(offset),
+        db.select({ value: count() }).from(groupEvents).where(whereClause),
+      ]);
+
+      // Get participant + pending counts per event
+      const eventIds = items.map((e) => e.id);
+      const participantCounts =
+        eventIds.length > 0
+          ? await db
+              .select({
+                eventId: groupEventParticipants.eventId,
+                status: groupEventParticipants.status,
+                count: count(),
+              })
+              .from(groupEventParticipants)
+              .where(or(...eventIds.map((eid) => eq(groupEventParticipants.eventId, eid))))
+              .groupBy(groupEventParticipants.eventId, groupEventParticipants.status)
+          : [];
+
+      const countMap = new Map<string, { participants: number; pending: number }>();
+      for (const row of participantCounts) {
+        const entry = countMap.get(row.eventId) ?? { participants: 0, pending: 0 };
+        if (row.status === 'accepted') entry.participants = row.count;
+        if (row.status === 'pending') entry.pending = row.count;
+        countMap.set(row.eventId, entry);
+      }
+
+      const total = totalRow?.value ?? 0;
+
+      return {
+        data: items.map((e) => ({
+          id: e.id,
+          title: e.title,
+          category: e.category,
+          visibility: e.visibility,
+          status: e.status,
+          scheduledAt: e.scheduledAt,
+          location: e.location,
+          maxParticipants: e.maxParticipants,
+          requiresApproval: e.requiresApproval,
+          createdAt: e.createdAt,
+          creatorId: e.creatorId,
+          creatorName: e.creatorName,
+          participantCount: countMap.get(e.id)?.participants ?? 0,
+          pendingCount: countMap.get(e.id)?.pending ?? 0,
+          isRecurring: e.recurrenceRule != null || e.parentEventId != null,
+        })),
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      };
+    }),
+
+    getGroupEvent: adminProcedure.input(getGroupEventSchema).query(async ({ input }) => {
+      const [event] = await db
+        .select({
+          id: groupEvents.id,
+          title: groupEvents.title,
+          description: groupEvents.description,
+          category: groupEvents.category,
+          visibility: groupEvents.visibility,
+          status: groupEvents.status,
+          scheduledAt: groupEvents.scheduledAt,
+          durationMin: groupEvents.durationMin,
+          location: groupEvents.location,
+          latitude: groupEvents.latitude,
+          longitude: groupEvents.longitude,
+          maxParticipants: groupEvents.maxParticipants,
+          requiresApproval: groupEvents.requiresApproval,
+          recurrenceRule: groupEvents.recurrenceRule,
+          recurrenceEnd: groupEvents.recurrenceEnd,
+          parentEventId: groupEvents.parentEventId,
+          coverImageUrl: groupEvents.coverImageUrl,
+          createdAt: groupEvents.createdAt,
+          updatedAt: groupEvents.updatedAt,
+          creatorId: groupEvents.createdBy,
+          creatorName: users.displayName,
+        })
+        .from(groupEvents)
+        .leftJoin(users, eq(groupEvents.createdBy, users.id))
+        .where(eq(groupEvents.id, input.id));
+
+      if (!event) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+
+      // Get participants with user + dog info
+      const participants = await db
+        .select({
+          id: groupEventParticipants.id,
+          userId: groupEventParticipants.userId,
+          userName: users.displayName,
+          dogId: groupEventParticipants.dogId,
+          dogName: dogProfiles.name,
+          status: groupEventParticipants.status,
+          isOrganizer: groupEventParticipants.isOrganizer,
+          joinedAt: groupEventParticipants.joinedAt,
+        })
+        .from(groupEventParticipants)
+        .leftJoin(users, eq(groupEventParticipants.userId, users.id))
+        .leftJoin(dogProfiles, eq(groupEventParticipants.dogId, dogProfiles.id))
+        .where(eq(groupEventParticipants.eventId, input.id))
+        .orderBy(groupEventParticipants.joinedAt);
+
+      const acceptedCount = participants.filter((p) => p.status === 'accepted').length;
+      const pendingCount = participants.filter((p) => p.status === 'pending').length;
+
+      return {
+        ...event,
+        participantCount: acceptedCount,
+        pendingCount,
+        isRecurring: event.recurrenceRule != null || event.parentEventId != null,
+        participants,
+      };
+    }),
+
+    cancelGroupEvent: adminProcedure.input(cancelGroupEventSchema).mutation(async ({ input }) => {
+      const [event] = await db.select().from(groupEvents).where(eq(groupEvents.id, input.eventId));
+
+      if (!event) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+
+      if (event.status === 'cancelled' || event.status === 'completed') {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Event already cancelled or completed',
+        });
+      }
+
+      await db
+        .update(groupEvents)
+        .set({ status: 'cancelled', updatedAt: new Date() })
+        .where(eq(groupEvents.id, input.eventId));
+
+      return { success: true };
+    }),
+
+    removeEventParticipant: adminProcedure
+      .input(removeParticipantSchema)
+      .mutation(async ({ input }) => {
+        const [participant] = await db
+          .select()
+          .from(groupEventParticipants)
+          .where(eq(groupEventParticipants.id, input.participantId));
+
+        if (!participant) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Participant not found' });
+        }
+
+        await db
+          .update(groupEventParticipants)
+          .set({ status: 'removed' })
+          .where(eq(groupEventParticipants.id, input.participantId));
+
+        return { success: true };
+      }),
 
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────
     getSettings: adminProcedure.query(async () => {

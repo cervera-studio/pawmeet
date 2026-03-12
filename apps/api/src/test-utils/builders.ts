@@ -29,10 +29,12 @@ import {
   type WalkTrackPoint,
 } from '@pawmeet/types';
 import { vi } from 'vitest';
+import type { Organization, OrganizationMember } from '@pawmeet/types';
 import type { ActivityRepository } from '../ports/activity-repository.js';
 import type { ExperimentService } from '../ports/experiment-service.js';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import type { GdprExportRepository } from '../ports/gdpr-export-repository.js';
+import type { OrganizationRepository } from '../ports/organization-repository.js';
 import type {
   AuthService,
   BadgeRepository,
@@ -199,6 +201,8 @@ export function buildGroupEvent(overrides: Partial<GroupEvent> = {}): GroupEvent
     category: 'walk',
     requiresApproval: false,
     coverImageUrl: null,
+    organizationId: null,
+    isOfficial: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
@@ -482,6 +486,7 @@ export function buildGroupEventRepo(
     findTemplates: vi.fn().mockResolvedValue([]),
     findOccurrences: vi.fn().mockResolvedValue([]),
     countActiveTemplates: vi.fn().mockResolvedValue(0),
+    findFeatured: vi.fn().mockResolvedValue([]),
     ...overrides,
   };
 }
@@ -997,6 +1002,63 @@ export function buildActivityRepo(overrides: Partial<ActivityRepository> = {}): 
       days: [],
     }),
     getDailyHistory: vi.fn().mockResolvedValue([]),
+    ...overrides,
+  };
+}
+
+// ── Organization builders ─────────────────────────────────────────────────
+
+export function buildOrganization(overrides: Partial<Organization> = {}): Organization {
+  return {
+    id: 'org-1',
+    name: 'PawMeet Team',
+    slug: 'pawmeet-team',
+    type: 'pawmeet_team',
+    description: null,
+    logoUrl: null,
+    websiteUrl: null,
+    contactEmail: null,
+    isVerified: true,
+    verifiedAt: new Date(),
+    verifiedBy: 'admin-1',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+export function buildOrganizationMember(
+  overrides: Partial<OrganizationMember> = {},
+): OrganizationMember {
+  return {
+    id: 'member-1',
+    organizationId: 'org-1',
+    userId: 'user-1',
+    role: 'owner',
+    createdAt: new Date(),
+    ...overrides,
+  };
+}
+
+export function buildOrganizationRepo(
+  overrides: Partial<OrganizationRepository> = {},
+): OrganizationRepository {
+  return {
+    create: vi.fn().mockResolvedValue(buildOrganization()),
+    findById: vi.fn().mockResolvedValue(buildOrganization()),
+    findBySlug: vi.fn().mockResolvedValue(null),
+    list: vi.fn().mockResolvedValue({ data: [], total: 0 }),
+    update: vi.fn().mockResolvedValue(buildOrganization()),
+    verify: vi.fn().mockResolvedValue(buildOrganization({ isVerified: true })),
+    revoke: vi.fn().mockResolvedValue(buildOrganization({ isVerified: false })),
+    addMember: vi.fn().mockResolvedValue(buildOrganizationMember()),
+    removeMember: vi.fn().mockResolvedValue(undefined),
+    findMember: vi.fn().mockResolvedValue(buildOrganizationMember()),
+    listMembers: vi.fn().mockResolvedValue([]),
+    isMemberOfVerifiedOrg: vi
+      .fn()
+      .mockResolvedValue({ isMember: true, organizationId: 'org-1' }),
     ...overrides,
   };
 }

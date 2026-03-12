@@ -122,7 +122,28 @@ export const listOccurrencesSchema = z.object({
   eventId: z.string().uuid(),
 });
 
+export const createOfficialEventSchema = z.object({
+  title: z.string().min(1).max(GROUP_EVENT_TITLE_MAX_LENGTH),
+  description: z.string().max(GROUP_EVENT_DESCRIPTION_MAX_LENGTH).optional(),
+  scheduledAt: z.string().datetime(),
+  durationMin: z.number().int().min(WALK_DURATION_MIN).max(WALK_DURATION_MAX).default(60),
+  location: z.string().min(1).max(200),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  maxParticipants: z.number().int().min(GROUP_EVENT_MIN_PARTICIPANTS).max(500).default(50),
+  coverImageUrl: z.string().url().max(500).optional(),
+  dogId: z.string().uuid(),
+  organizationId: z.string().uuid(),
+});
+
+export const listFeaturedEventsSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(50).default(10),
+});
+
 export type CreateGroupEventInput = z.infer<typeof createGroupEventSchema>;
+export type CreateOfficialEventInput = z.infer<typeof createOfficialEventSchema>;
+export type ListFeaturedEventsInput = z.infer<typeof listFeaturedEventsSchema>;
 export type CreateRecurringEventInput = z.infer<typeof createRecurringEventSchema>;
 export type JoinGroupEventInput = z.infer<typeof joinGroupEventSchema>;
 export type UpdateGroupEventInput = z.infer<typeof updateGroupEventSchema>;

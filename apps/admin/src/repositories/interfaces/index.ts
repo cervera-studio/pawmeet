@@ -49,6 +49,12 @@ export type {
   StoryAdminRepository,
 } from './story-admin-repository';
 export type {
+  AdminOrganizationDetail,
+  AdminOrganizationListItem,
+  AdminOrganizationMember,
+  ListOrganizationsParams,
+} from './organization-repository';
+export type {
   AdminUserDetail,
   AdminUserListItem,
   AdminUserRepository,

@@ -1,6 +1,7 @@
 import { usePathname } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import {
+  BuildingIcon,
   CalendarIcon,
   LayoutDashboardIcon,
   PawPrintIcon,
@@ -27,6 +28,7 @@ export const navigation = [
   },
   { name: 'Cani', href: '/dogs', icon: PawPrintIcon },
   { name: 'Eventi', href: '/group-events', icon: CalendarIcon },
+  { name: 'Organizzazioni', href: '/organizations', icon: BuildingIcon },
   { name: 'Impostazioni', href: '/settings', icon: SettingsIcon },
 ];
 

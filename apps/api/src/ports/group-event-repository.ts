@@ -17,6 +17,8 @@ export interface CreateGroupEventInput {
   recurrenceEnd?: Date | null;
   parentEventId?: string | null;
   coverImageUrl?: string | null;
+  organizationId?: string | null;
+  isOfficial?: boolean;
   status?: string;
 }
 
@@ -47,6 +49,7 @@ export interface GroupEventRepository {
   updateStatus(id: string, status: string): Promise<void>;
   findScheduledPastStart(): Promise<GroupEvent[]>;
   findInProgressPastEnd(): Promise<GroupEvent[]>;
+  findFeatured(limit: number, offset: number): Promise<GroupEvent[]>;
 
   // Recurrence
   findTemplates(): Promise<GroupEvent[]>;

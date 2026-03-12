@@ -100,6 +100,8 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
         category: groupEvents.category,
         requiresApproval: groupEvents.requiresApproval,
         coverImageUrl: groupEvents.coverImageUrl,
+        organizationId: groupEvents.organizationId,
+        isOfficial: groupEvents.isOfficial,
         createdAt: groupEvents.createdAt,
         updatedAt: groupEvents.updatedAt,
         distanceKm: distanceExpr,
@@ -158,6 +160,23 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       .select()
       .from(groupEvents)
       .where(and(eq(groupEvents.status, 'scheduled'), lte(groupEvents.scheduledAt, now)));
+    return rowsAs<GroupEvent>(rows);
+  }
+
+  async findFeatured(limit: number, offset: number): Promise<GroupEvent[]> {
+    const rows = await this.db
+      .select()
+      .from(groupEvents)
+      .where(
+        and(
+          eq(groupEvents.isOfficial, true),
+          eq(groupEvents.status, 'scheduled'),
+          sql`${groupEvents.scheduledAt} > now()`,
+        ),
+      )
+      .orderBy(groupEvents.scheduledAt)
+      .limit(limit)
+      .offset(offset);
     return rowsAs<GroupEvent>(rows);
   }
 

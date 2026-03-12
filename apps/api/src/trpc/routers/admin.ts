@@ -6,6 +6,8 @@ import {
   groupEventParticipants,
   groupEvents,
   matches,
+  organizationMembers,
+  organizations,
   postMedia,
   posts,
   reports,
@@ -774,6 +776,167 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           .update(groupEventParticipants)
           .set({ status: 'removed' })
           .where(eq(groupEventParticipants.id, input.participantId));
+
+        return { success: true };
+      }),
+
+    // ── Organizations management ────────────────────────────────────────────
+    listOrganizations: adminProcedure
+      .input(
+        z.object({
+          page: z.number().int().min(1).default(1),
+          pageSize: z.number().int().min(1).max(100).default(20),
+          search: z.string().optional(),
+          type: z
+            .enum(['pawmeet_team', 'association', 'educator', 'brand'])
+            .optional(),
+        }),
+      )
+      .query(async ({ input }) => {
+        const { page, pageSize, search, type } = input;
+        const offset = (page - 1) * pageSize;
+
+        const conditions = [];
+        if (search) {
+          conditions.push(
+            or(
+              ilike(organizations.name, `%${search}%`),
+              ilike(organizations.slug, `%${search}%`),
+            ),
+          );
+        }
+        if (type) conditions.push(eq(organizations.type, type));
+
+        const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+        const [items, [totalRow]] = await Promise.all([
+          db
+            .select({
+              id: organizations.id,
+              name: organizations.name,
+              slug: organizations.slug,
+              type: organizations.type,
+              description: organizations.description,
+              logoUrl: organizations.logoUrl,
+              websiteUrl: organizations.websiteUrl,
+              contactEmail: organizations.contactEmail,
+              isVerified: organizations.isVerified,
+              verifiedAt: organizations.verifiedAt,
+              isActive: organizations.isActive,
+              createdAt: organizations.createdAt,
+            })
+            .from(organizations)
+            .where(whereClause)
+            .orderBy(desc(organizations.createdAt))
+            .limit(pageSize)
+            .offset(offset),
+          db.select({ value: count() }).from(organizations).where(whereClause),
+        ]);
+
+        // Get member counts per org
+        const orgIds = items.map((o) => o.id);
+        const memberCounts =
+          orgIds.length > 0
+            ? await db
+                .select({
+                  organizationId: organizationMembers.organizationId,
+                  count: count(),
+                })
+                .from(organizationMembers)
+                .where(or(...orgIds.map((oid) => eq(organizationMembers.organizationId, oid))))
+                .groupBy(organizationMembers.organizationId)
+            : [];
+
+        const memberCountMap = new Map(memberCounts.map((m) => [m.organizationId, m.count]));
+        const total = totalRow?.value ?? 0;
+
+        return {
+          data: items.map((o) => ({
+            ...o,
+            memberCount: memberCountMap.get(o.id) ?? 0,
+          })),
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        };
+      }),
+
+    getOrganization: adminProcedure
+      .input(z.object({ id: z.string().uuid() }))
+      .query(async ({ input }) => {
+        const [org] = await db
+          .select()
+          .from(organizations)
+          .where(eq(organizations.id, input.id));
+
+        if (!org) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
+        }
+
+        const members = await db
+          .select({
+            id: organizationMembers.id,
+            userId: organizationMembers.userId,
+            userName: users.displayName,
+            userEmail: users.email,
+            role: organizationMembers.role,
+            createdAt: organizationMembers.createdAt,
+          })
+          .from(organizationMembers)
+          .leftJoin(users, eq(organizationMembers.userId, users.id))
+          .where(eq(organizationMembers.organizationId, input.id))
+          .orderBy(organizationMembers.createdAt);
+
+        return { ...org, members };
+      }),
+
+    verifyOrganization: adminProcedure
+      .input(z.object({ organizationId: z.string().uuid() }))
+      .mutation(async ({ ctx, input }) => {
+        const [org] = await db
+          .select()
+          .from(organizations)
+          .where(eq(organizations.id, input.organizationId));
+
+        if (!org) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
+        }
+
+        await db
+          .update(organizations)
+          .set({
+            isVerified: true,
+            verifiedAt: new Date(),
+            verifiedBy: ctx.userId,
+            updatedAt: new Date(),
+          })
+          .where(eq(organizations.id, input.organizationId));
+
+        return { success: true };
+      }),
+
+    revokeOrganization: adminProcedure
+      .input(z.object({ organizationId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const [org] = await db
+          .select()
+          .from(organizations)
+          .where(eq(organizations.id, input.organizationId));
+
+        if (!org) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
+        }
+
+        await db
+          .update(organizations)
+          .set({
+            isVerified: false,
+            verifiedAt: null,
+            verifiedBy: null,
+            updatedAt: new Date(),
+          })
+          .where(eq(organizations.id, input.organizationId));
 
         return { success: true };
       }),

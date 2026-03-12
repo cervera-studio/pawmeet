@@ -13,6 +13,7 @@ export * from './gdpr-exports';
 export * from './group-events';
 export * from './group-messages';
 export * from './matches';
+export * from './organizations';
 export * from './matching-ai';
 export * from './refresh-tokens';
 export * from './reports';

@@ -1,3 +1,4 @@
+import { AppError, fail, succeed } from '@pawmeet/types';
 // Infra implementations
 
 import { BullMQNotificationService } from './infra/bullmq-notification-service.js';
@@ -13,6 +14,7 @@ import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.j
 import { DrizzleFollowRepository } from './infra/drizzle-follow-repository.js';
 import { DrizzleGamificationRepository } from './infra/drizzle-gamification-repository.js';
 import { DrizzleGdprExportRepository } from './infra/drizzle-gdpr-export-repository.js';
+import { DrizzleOrganizationRepository } from './infra/drizzle-organization-repository.js';
 import { DrizzleGroupEventRepository } from './infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from './infra/drizzle-group-message-repository.js';
 import { DrizzleMatchRepository } from './infra/drizzle-match-repository.js';
@@ -40,6 +42,7 @@ import { createAddPostTags } from './use-cases/add-post-tags.js';
 // Use cases — fitness
 import { createAddTrackPoints } from './use-cases/add-track-points.js';
 // Use cases — group events
+import { createAddOrganizationMember } from './use-cases/add-organization-member.js';
 import { createApproveParticipant } from './use-cases/approve-participant.js';
 // Use cases — gamification
 import { createAwardXp } from './use-cases/award-xp.js';
@@ -61,6 +64,8 @@ import { createConfirmStory } from './use-cases/confirm-story.js';
 import { createCreateComment } from './use-cases/create-comment.js';
 import { createCreateDog } from './use-cases/create-dog.js';
 import { createCreateGroupEvent } from './use-cases/create-group-event.js';
+import { createCreateOfficialEvent } from './use-cases/create-official-event.js';
+import { createCreateOrganization } from './use-cases/create-organization.js';
 import { createCreatePost } from './use-cases/create-post.js';
 import { createCreateRecurringEvent } from './use-cases/create-recurring-event.js';
 import { createCreateStory } from './use-cases/create-story.js';
@@ -110,6 +115,7 @@ import { createGetXpSummary } from './use-cases/get-xp-summary.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
 import { createLearnUserPreferences } from './use-cases/learn-user-preferences.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
+import { createListFeaturedEvents } from './use-cases/list-featured-events.js';
 import { createLikeDog } from './use-cases/like-dog.js';
 import { createLikePost } from './use-cases/like-post.js';
 import { createListAchievements } from './use-cases/list-achievements.js';
@@ -174,6 +180,7 @@ import { createUploadAvatarUrl } from './use-cases/upload-avatar-url.js';
 import { createUploadDogPhotoUrl } from './use-cases/upload-dog-photo-url.js';
 import { createUploadPostMediaUrl } from './use-cases/upload-post-media-url.js';
 import { createVerifyEmailOtp } from './use-cases/verify-email-otp.js';
+import { createVerifyOrganization } from './use-cases/verify-organization.js';
 import { createViewStory } from './use-cases/view-story.js';
 
 // ── Repositories ────────────────────────────────────────────────────────────────
@@ -200,6 +207,7 @@ const walkAlbumRepo = new DrizzleWalkAlbumRepository(db);
 const walkTrackRepo = new DrizzleWalkTrackRepository(db);
 const activityRepo = new DrizzleActivityRepository(db);
 const matchingAiRepo = new DrizzleMatchingAiRepository(db);
+const organizationRepo = new DrizzleOrganizationRepository(db);
 const gdprExportRepo = new DrizzleGdprExportRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
@@ -404,6 +412,46 @@ export const groupEventDeps = {
   listPendingRequests: createListPendingRequests({ groupEventRepo }),
   createRecurringEvent: createCreateRecurringEvent({ groupEventRepo, dogRepo }),
   listOccurrences: createListOccurrences({ groupEventRepo }),
+  createOfficialEvent: createCreateOfficialEvent({ organizationRepo, groupEventRepo, dogRepo }),
+  listFeaturedEvents: createListFeaturedEvents({ groupEventRepo }),
+};
+
+// ── Organization deps ────────────────────────────────────────────────────────
+
+export const organizationDeps = {
+  createOrganization: createCreateOrganization({ organizationRepo }),
+  verifyOrganization: createVerifyOrganization({ organizationRepo }),
+  revokeOrganization: async (organizationId: string) => {
+    const org = await organizationRepo.findById(organizationId);
+    if (!org) return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
+    const revoked = await organizationRepo.revoke(organizationId);
+    return succeed(revoked);
+  },
+  getOrganization: async (id: string) => {
+    const org = await organizationRepo.findById(id);
+    if (!org) return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
+    return succeed(org);
+  },
+  listOrganizations: async (input: { page: number; pageSize: number; search?: string; type?: string }) => {
+    const result = await organizationRepo.list(input);
+    return succeed(result);
+  },
+  addOrganizationMember: createAddOrganizationMember({ organizationRepo }),
+  removeOrganizationMember: async (
+    actorUserId: string,
+    input: { organizationId: string; userId: string },
+  ) => {
+    const actorMember = await organizationRepo.findMember(input.organizationId, actorUserId);
+    if (!actorMember || (actorMember.role !== 'owner' && actorMember.role !== 'admin')) {
+      return fail(new AppError('ORG_NOT_AUTHORIZED', 'Non hai i permessi per rimuovere membri', 403));
+    }
+    await organizationRepo.removeMember(input.organizationId, input.userId);
+    return succeed({ success: true as const });
+  },
+  listOrganizationMembers: async (organizationId: string) => {
+    const members = await organizationRepo.listMembers(organizationId);
+    return succeed(members);
+  },
 };
 
 // ── Gamification deps ────────────────────────────────────────────────────────

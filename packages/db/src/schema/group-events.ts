@@ -12,6 +12,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 import { dogProfiles } from './dogs';
+import { organizations } from './organizations';
 import { users } from './users';
 
 export const groupEvents = pgTable(
@@ -39,6 +40,10 @@ export const groupEvents = pgTable(
     category: varchar('category', { length: 20 }).notNull().default('walk'),
     requiresApproval: boolean('requires_approval').notNull().default(false),
     coverImageUrl: varchar('cover_image_url', { length: 500 }),
+    organizationId: uuid('organization_id').references(() => organizations.id, {
+      onDelete: 'set null',
+    }),
+    isOfficial: boolean('is_official').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -69,6 +74,7 @@ export const groupEvents = pgTable(
       sql`${table.status} IN ('scheduled', 'in_progress', 'completed', 'cancelled', 'template')`,
     ),
     check('group_events_category_valid', sql`${table.category} IN ('walk', 'meetup', 'training')`),
+    index('group_events_organization_idx').on(table.organizationId),
   ],
 );
 

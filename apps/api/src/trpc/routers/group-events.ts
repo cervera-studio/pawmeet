@@ -3,11 +3,13 @@ import {
   cancelGroupEventSchema,
   cancelRequestSchema,
   createGroupEventSchema,
+  createOfficialEventSchema,
   createRecurringEventSchema,
   declineParticipantSchema,
   getGroupEventSchema,
   joinGroupEventSchema,
   leaveGroupEventSchema,
+  listFeaturedEventsSchema,
   listNearbyEventsSchema,
   listOccurrencesSchema,
   listPendingRequestsSchema,
@@ -154,5 +156,32 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
     listOccurrences: protectedProcedure
       .input(listOccurrencesSchema)
       .query(async ({ input }) => unwrapResult(await deps.listOccurrences(input.eventId))),
+
+    // Official events
+    createOfficial: protectedProcedure
+      .input(createOfficialEventSchema)
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
+          await deps.createOfficialEvent(ctx.userId, {
+            ...input,
+            scheduledAt: new Date(input.scheduledAt),
+          }),
+        );
+        trackEvent('group_event_created', ctx.userId, {
+          maxParticipants: input.maxParticipants,
+          distanceFromCreatorKm: 0,
+          category: 'meetup',
+          visibility: 'public',
+          requiresApproval: false,
+          isRecurring: false,
+        });
+        return result;
+      }),
+
+    listFeatured: protectedProcedure
+      .input(listFeaturedEventsSchema)
+      .query(async ({ input }) =>
+        unwrapResult(await deps.listFeaturedEvents(input.page, input.pageSize)),
+      ),
   });
 }

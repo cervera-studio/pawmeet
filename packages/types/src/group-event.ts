@@ -54,6 +54,8 @@ export interface GroupEvent {
   category: GroupEventCategory;
   requiresApproval: boolean;
   coverImageUrl: string | null;
+  organizationId: string | null;
+  isOfficial: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

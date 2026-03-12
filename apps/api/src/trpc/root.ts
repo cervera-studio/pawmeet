@@ -14,6 +14,7 @@ import {
   groupEventDeps,
   matchDeps,
   matchingAiDeps,
+  organizationDeps,
   userDeps,
   walkDeps,
 } from '../container.js';
@@ -33,6 +34,7 @@ import { createGamificationRouter } from './routers/gamification.js';
 import { createGroupChatRouter } from './routers/group-chat.js';
 import { createGroupEventsRouter } from './routers/group-events.js';
 import { createMatchesRouter } from './routers/matches.js';
+import { createOrganizationsRouter } from './routers/organizations.js';
 import { createMatchingAiRouter } from './routers/matching-ai.js';
 import { createUsersRouter } from './routers/users.js';
 import { createWalksRouter } from './routers/walks.js';
@@ -57,6 +59,7 @@ export const appRouter = router({
   gamification: createGamificationRouter(gamificationDeps),
   groupChat: createGroupChatRouter(groupChatDeps),
   groupEvents: createGroupEventsRouter(groupEventDeps),
+  organizations: createOrganizationsRouter(organizationDeps),
 });
 
 export type AppRouter = typeof appRouter;

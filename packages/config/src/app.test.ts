@@ -23,6 +23,8 @@ describe('app constants', () => {
       'GROUP_EVENT_MAX_PARTICIPANTS',
       'GROUP_EVENT_TITLE_MAX_LENGTH',
       'GROUP_EVENT_DESCRIPTION_MAX_LENGTH',
+      'GROUP_EVENT_MAX_RECURRING_TEMPLATES',
+      'GROUP_EVENT_OCCURRENCES_AHEAD',
     ] as const;
 
     it.each(requiredKeys)('exports %s', (key) => {

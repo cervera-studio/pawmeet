@@ -8,21 +8,27 @@ import {
   unfollowUserSchema,
 } from '@pawmeet/validation';
 import type { followDeps } from '../../container.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createFollowsRouter(deps: typeof followDeps) {
   return router({
-    follow: protectedProcedure
-      .input(followUserSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.followUser(ctx.userId, input.targetUserId)),
-      ),
+    follow: protectedProcedure.input(followUserSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.followUser(ctx.userId, input.targetUserId));
+      trackEvent('social_follow_created', ctx.userId, {
+        isReciprocal: false,
+      });
+      return result;
+    }),
 
-    unfollow: protectedProcedure
-      .input(unfollowUserSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.unfollowUser(ctx.userId, input.targetUserId)),
-      ),
+    unfollow: protectedProcedure.input(unfollowUserSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.unfollowUser(ctx.userId, input.targetUserId));
+      trackEvent('social_follow_removed', ctx.userId, {
+        wasMutual: false,
+        followAgeDays: 0,
+      });
+      return result;
+    }),
 
     listFollowers: protectedProcedure
       .input(listFollowsSchema)
@@ -58,17 +64,19 @@ export function createFollowsRouter(deps: typeof followDeps) {
         unwrapResult(await deps.searchUsers(ctx.userId, input.query, input.limit, input.offset)),
       ),
 
-    block: protectedProcedure
-      .input(blockUserSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.blockUser(ctx.userId, input.targetUserId)),
-      ),
+    block: protectedProcedure.input(blockUserSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.blockUser(ctx.userId, input.targetUserId));
+      trackEvent('social_user_blocked', ctx.userId, {
+        hadPriorFollow: false,
+      });
+      return result;
+    }),
 
-    unblock: protectedProcedure
-      .input(unblockUserSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.unblockUser(ctx.userId, input.targetUserId)),
-      ),
+    unblock: protectedProcedure.input(unblockUserSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.unblockUser(ctx.userId, input.targetUserId));
+      trackEvent('social_user_unblocked', ctx.userId, {});
+      return result;
+    }),
 
     listBlocked: protectedProcedure
       .input(listFollowsSchema)

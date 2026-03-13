@@ -1,5 +1,6 @@
 import {
   discoverSchema,
+  getMatchExplanationSchema,
   getMatchingInsightsSchema,
   getOptimalTimesSchema,
   logSwipeScoreSchema,
@@ -69,6 +70,12 @@ export function createMatchingAiRouter(deps: typeof matchingAiDeps) {
         unwrapResult(
           await deps.discoverCandidatesAi(ctx.userId, input.dogId, input.limit, input.filters),
         ),
+      ),
+
+    matchExplanation: protectedProcedure
+      .input(getMatchExplanationSchema)
+      .query(async ({ ctx, input }) =>
+        unwrapResult(await deps.getMatchExplanation(ctx.userId, input.matchId)),
       ),
   });
 }

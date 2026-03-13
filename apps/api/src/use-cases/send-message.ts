@@ -1,6 +1,7 @@
 import type { ChatMessage } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { enqueueMessageToxicityCheck } from '../jobs/queue.js';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type {
   ChatService,
@@ -84,6 +85,14 @@ export function createSendMessage({
           );
       }
     }
+
+    // Async toxicity check (non-blocking — message is already delivered)
+    enqueueMessageToxicityCheck({
+      messageId: message.id,
+      matchId,
+      senderId: userId,
+      content: sanitizedContent,
+    }).catch((err) => logger.error('sendMessage', 'Failed to enqueue toxicity check', err));
 
     // Compute analytics metadata
     const match = await matchRepo.findById(matchId);

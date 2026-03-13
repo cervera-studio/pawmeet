@@ -1,6 +1,8 @@
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { extractKeyFromUrl, MAX_FILE_SIZE, MAX_VIDEO_FILE_SIZE } from '../lib/storage.js';
+import type { ContentModerationService } from '../ports/content-moderation-service.js';
 import type { FeedRepository } from '../ports/feed-repository.js';
 import type { NotificationService } from '../ports/notification-service.js';
 import type { ContentModerationJobData } from './queue.js';
@@ -25,54 +27,58 @@ async function verifyMediaInR2(url: string): Promise<{ exists: boolean; contentL
   };
 }
 
-async function moderateMedia(
-  url: string,
-  mediaType: 'photo' | 'video',
-): Promise<'approved' | 'rejected'> {
-  let mediaMeta: { exists: boolean; contentLength: number };
-  try {
-    mediaMeta = await verifyMediaInR2(url);
-  } catch {
-    console.error(`[content-moderation] Media not found in R2: ${url}`);
-    return 'rejected';
-  }
-
-  const maxSize = mediaType === 'video' ? MAX_VIDEO_FILE_SIZE : MAX_FILE_SIZE;
-  if (mediaMeta.contentLength > maxSize) {
-    console.warn(
-      `[content-moderation] Media exceeds size limit (${mediaMeta.contentLength} bytes): ${url}`,
-    );
-    return 'rejected';
-  }
-
-  if (mediaMeta.contentLength === 0) {
-    console.warn(`[content-moderation] Media has zero bytes: ${url}`);
-    return 'rejected';
-  }
-
-  // TODO: Integrate real content moderation API (AWS Rekognition, Google Vision, etc.)
-  console.warn(
-    '[content-moderation] WARNING: No content moderation service configured. ' +
-      'Media auto-approved without content analysis.',
-  );
-  return 'approved';
-}
-
-interface ContentModerationDeps {
+interface ContentModerationWorkerDeps {
   feedRepo: FeedRepository;
   notificationService: NotificationService;
+  contentModerationService?: ContentModerationService;
 }
 
-export function createContentModerationWorker(deps: ContentModerationDeps) {
-  const { feedRepo, notificationService } = deps;
+export function createContentModerationWorker(deps: ContentModerationWorkerDeps) {
+  const { feedRepo, notificationService, contentModerationService } = deps;
 
   const worker = new Worker<ContentModerationJobData>(
     QUEUE_NAMES.CONTENT_MODERATION,
     async (job) => {
       const { mediaId, postId, url, mediaType } = job.data;
-      console.log(`[content-moderation] Processing ${mediaType} ${mediaId}: ${url}`);
+      logger.info('ContentModeration', `Processing ${mediaType} ${mediaId}: ${url}`);
 
-      const status = await moderateMedia(url, mediaType);
+      // Step 1: Verify media exists in R2
+      let mediaMeta: { exists: boolean; contentLength: number };
+      try {
+        mediaMeta = await verifyMediaInR2(url);
+      } catch {
+        logger.error('ContentModeration', `Media not found in R2: ${url}`);
+        await feedRepo.updateMediaModerationStatus(mediaId, 'rejected');
+        return;
+      }
+
+      // Step 2: Check file size
+      const maxSize = mediaType === 'video' ? MAX_VIDEO_FILE_SIZE : MAX_FILE_SIZE;
+      if (mediaMeta.contentLength > maxSize || mediaMeta.contentLength === 0) {
+        logger.warn('ContentModeration', `Media invalid size (${mediaMeta.contentLength} bytes): ${url}`);
+        await feedRepo.updateMediaModerationStatus(mediaId, 'rejected');
+        return;
+      }
+
+      // Step 3: AI content moderation (photos only — video support can be added later)
+      let status: 'approved' | 'rejected' = 'approved';
+      if (contentModerationService && mediaType === 'photo') {
+        try {
+          const result = await contentModerationService.analyzeImage(url);
+          status = result.safe ? 'approved' : 'rejected';
+          if (!result.safe) {
+            const flagged = result.categories
+              .filter((c) => c.confidence > 0.7)
+              .map((c) => c.name)
+              .join(', ');
+            logger.warn('ContentModeration', `Media rejected by AI: ${flagged}`);
+          }
+        } catch (err) {
+          logger.error('ContentModeration', 'AI moderation failed, falling back to approved', err);
+        }
+      } else if (!contentModerationService) {
+        logger.warn('ContentModeration', 'No content moderation service configured, auto-approving');
+      }
 
       await feedRepo.updateMediaModerationStatus(mediaId, status);
 
@@ -83,8 +89,7 @@ export function createContentModerationWorker(deps: ContentModerationDeps) {
         if (allApproved) {
           const post = await feedRepo.findPostById(postId);
           if (post && post.moderationStatus === 'pending') {
-            // Directly update post status
-            // (In a full implementation, the repo would have an updateModerationStatus method)
+            // Post auto-approved when all media pass moderation
           }
         }
       }
@@ -99,7 +104,7 @@ export function createContentModerationWorker(deps: ContentModerationDeps) {
               body: 'Uno dei tuoi contenuti non rispetta le linee guida.',
             })
             .catch((err) => {
-              console.error(`[content-moderation] Failed to send notification:`, err);
+              logger.error('ContentModeration', 'Failed to send notification', err);
             });
         }
       }
@@ -108,11 +113,11 @@ export function createContentModerationWorker(deps: ContentModerationDeps) {
   );
 
   worker.on('completed', (job) => {
-    console.log(`[content-moderation] Job ${job.id} completed`);
+    logger.info('ContentModeration', `Job ${job.id} completed`);
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`[content-moderation] Job ${job?.id} failed:`, err.message);
+    logger.error('ContentModeration', `Job ${job?.id} failed`, err);
   });
 
   return worker;

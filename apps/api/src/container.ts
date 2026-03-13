@@ -83,6 +83,7 @@ import { createDeletePost } from './use-cases/delete-post.js';
 // Use cases — matches
 import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
 import { createDiscoverCandidatesAi } from './use-cases/discover-candidates-ai.js';
+import { createGetMatchExplanation } from './use-cases/get-match-explanation.js';
 import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
 import { createExportUserData } from './use-cases/export-user-data.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
@@ -337,6 +338,7 @@ export const matchingAiDeps = {
     matchingAiRepo,
     experimentService,
   }),
+  getMatchExplanation: createGetMatchExplanation({ matchRepo, dogRepo, userRepo }),
 };
 
 // Export for server startup/shutdown
@@ -598,11 +600,38 @@ export const recurringEventDeps = {
   groupEventRepo,
 };
 
+// ── AI services (optional — degrade gracefully if env vars missing) ──────────
+
+function tryCreateContentModerationService() {
+  if (!process.env.ANTHROPIC_API_KEY) return undefined;
+  // Lazy import to avoid loading SDK when not configured
+  const { ClaudeContentModerationService } = require('./infra/claude-content-moderation-service.js');
+  return new ClaudeContentModerationService();
+}
+
+function tryCreateBreedDetectionService() {
+  if (!process.env.GOOGLE_VISION_API_KEY) return undefined;
+  const { GoogleBreedDetectionService } = require('./infra/google-breed-detection-service.js');
+  return new GoogleBreedDetectionService();
+}
+
+function tryCreateToxicityService() {
+  if (!process.env.PERSPECTIVE_API_KEY) return undefined;
+  const { PerspectiveToxicityService } = require('./infra/perspective-toxicity-service.js');
+  return new PerspectiveToxicityService();
+}
+
+const contentModerationService = tryCreateContentModerationService();
+const breedDetectionService = tryCreateBreedDetectionService();
+const toxicityService = tryCreateToxicityService();
+
 // ── Photo moderation deps ─────────────────────────────────────────────────────
 
 export const photoModerationDeps = {
   dogRepo,
   notificationService,
+  contentModerationService,
+  breedDetectionService,
 };
 
 // ── Content moderation worker deps ──────────────────────────────────────────
@@ -610,7 +639,14 @@ export const photoModerationDeps = {
 export const contentModerationWorkerDeps = {
   feedRepo,
   notificationService,
+  contentModerationService,
 };
+
+// ── Message toxicity deps ──────────────────────────────────────────────────
+
+export const messageToxicityDeps = toxicityService
+  ? { toxicityService, notificationService }
+  : undefined;
 
 // ── Story cleanup worker deps ───────────────────────────────────────────────
 

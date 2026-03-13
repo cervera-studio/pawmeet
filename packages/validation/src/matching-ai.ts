@@ -43,6 +43,10 @@ export const getMatchingInsightsSchema = z.object({
   dogId: z.string().uuid(),
 });
 
+export const getMatchExplanationSchema = z.object({
+  matchId: z.string().uuid(),
+});
+
 export type LogSwipeScoreInput = z.infer<typeof logSwipeScoreSchema>;
 export type RecordMatchInteractionInput = z.infer<typeof recordMatchInteractionSchema>;
 export type RecordActivityWindowInput = z.infer<typeof recordActivityWindowSchema>;

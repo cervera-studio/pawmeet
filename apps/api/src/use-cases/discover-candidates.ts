@@ -83,26 +83,45 @@ function calculateWalkScore(
   return (timeScore + durationScore + terrainScore) / 3;
 }
 
-function calculateCompatibilityScore(
+export interface ScoreBreakdown {
+  sizeScore: number;
+  energyScore: number;
+  behaviorScore: number;
+  walkScore: number;
+  distanceScore: number;
+  leashScore: number;
+  overallScore: number;
+}
+
+function calculateCompatibilityScoreWithBreakdown(
   dogA: DogProfile,
   dogB: DogProfile,
   distanceKm: number,
-): number {
+): ScoreBreakdown {
   const sizeScore = calculateSizeScore(dogA.size, dogB.size);
   const energyScore = calculateEnergyScore(dogA.energyLevel, dogB.energyLevel);
   const behaviorScore = calculateBehaviorScore(dogA.behaviorWithDogs, dogB.behaviorWithDogs);
   const walkScore = calculateWalkScore(dogA, dogB);
-  const distScore = calculateDistanceScore(distanceKm);
+  const distanceScore = calculateDistanceScore(distanceKm);
   const leashScore = calculateLeashScore(dogA.leashBehavior, dogB.leashBehavior);
 
-  return (
+  const overallScore =
     WEIGHT_SIZE * sizeScore +
     WEIGHT_ENERGY * energyScore +
     WEIGHT_BEHAVIOR * behaviorScore +
     WEIGHT_WALK * walkScore +
-    WEIGHT_DISTANCE * distScore +
-    WEIGHT_LEASH * leashScore
-  );
+    WEIGHT_DISTANCE * distanceScore +
+    WEIGHT_LEASH * leashScore;
+
+  return {
+    sizeScore: Math.round(sizeScore * 100) / 100,
+    energyScore: Math.round(energyScore * 100) / 100,
+    behaviorScore: Math.round(behaviorScore * 100) / 100,
+    walkScore: Math.round(walkScore * 100) / 100,
+    distanceScore: Math.round(distanceScore * 100) / 100,
+    leashScore: Math.round(leashScore * 100) / 100,
+    overallScore: Math.round(overallScore * 100) / 100,
+  };
 }
 
 // ── Use case ───────────────────────────────────────────────────────────────────
@@ -111,6 +130,7 @@ type Suggestion = {
   dog: DogProfile;
   distanceKm: number;
   compatibilityScore: number;
+  scoreBreakdown: ScoreBreakdown;
 };
 
 // ── Filter helpers ──────────────────────────────────────────────────────────
@@ -191,15 +211,16 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
         const distanceKm = calculateDistance(userLat, userLon, c.ownerLat, c.ownerLon);
         if (distanceKm > radiusKm) return [];
 
-        const score = calculateCompatibilityScore(myDog, c.dog, distanceKm);
-        if (score < COMPATIBILITY_THRESHOLD) return [];
+        const breakdown = calculateCompatibilityScoreWithBreakdown(myDog, c.dog, distanceKm);
+        if (breakdown.overallScore < COMPATIBILITY_THRESHOLD) return [];
 
         return [
           {
             dog: c.dog,
             ownerId: c.dog.ownerId,
             distanceKm: Math.round(distanceKm * 10) / 10,
-            compatibilityScore: Math.round(score * 100) / 100,
+            compatibilityScore: breakdown.overallScore,
+            scoreBreakdown: breakdown,
           },
         ];
       })
@@ -215,6 +236,7 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
           dog: s.dog,
           distanceKm: s.distanceKm,
           compatibilityScore: s.compatibilityScore,
+          scoreBreakdown: s.scoreBreakdown,
         });
       }
     }

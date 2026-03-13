@@ -4,6 +4,7 @@ import {
   eventStatusDeps,
   gdprExportWorkerDeps,
   gpsRetentionDeps,
+  messageToxicityDeps,
   photoModerationDeps,
   recurringEventDeps,
   storyCleanupWorkerDeps,
@@ -14,6 +15,7 @@ import { createDataCleanupWorker } from './data-cleanup.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
 import { createGdprExportWorker } from './gdpr-export.js';
 import { createGpsRetentionWorker } from './gps-retention.js';
+import { createMessageToxicityWorker } from './message-toxicity.js';
 import { createPhotoModerationWorker } from './photo-moderation.js';
 import {
   scheduleAnalyticsAggregation,
@@ -42,6 +44,9 @@ export async function startWorkers() {
   const storyCleanupWorker = createStoryCleanupWorker(storyCleanupWorkerDeps);
   const recurringEventWorker = createRecurringEventWorker(recurringEventDeps);
   const gpsRetentionWorker = createGpsRetentionWorker(gpsRetentionDeps);
+  const messageToxicityWorker = messageToxicityDeps
+    ? createMessageToxicityWorker(messageToxicityDeps)
+    : null;
 
   // Schedule repeatable jobs
   await scheduleEventStatusCheck();
@@ -67,6 +72,7 @@ export async function startWorkers() {
       storyCleanupWorker.close(),
       recurringEventWorker.close(),
       gpsRetentionWorker.close(),
+      ...(messageToxicityWorker ? [messageToxicityWorker.close()] : []),
     ]);
     // Flush analytics providers after workers stop to prevent event loss on deploys
     await Promise.allSettled(analyticsProviders.map((p) => p.shutdown()));

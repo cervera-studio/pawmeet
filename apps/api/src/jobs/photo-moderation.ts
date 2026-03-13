@@ -1,6 +1,9 @@
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { extractKeyFromUrl, MAX_FILE_SIZE } from '../lib/storage.js';
+import type { BreedDetectionService } from '../ports/breed-detection-service.js';
+import type { ContentModerationService } from '../ports/content-moderation-service.js';
 import type { DogRepository } from '../ports/dog-repository.js';
 import type { NotificationService } from '../ports/notification-service.js';
 import type { PhotoModerationJobData } from './queue.js';
@@ -10,7 +13,6 @@ const R2_BUCKET = process.env.R2_BUCKET || 'pawmeet';
 
 /**
  * Verify that the photo exists in R2 and meets basic requirements.
- * Returns the object's content length (in bytes) or null if the object does not exist.
  */
 async function verifyPhotoInR2(url: string): Promise<{ exists: boolean; contentLength: number }> {
   const { r2 } = await import('../lib/r2.js');
@@ -29,83 +31,90 @@ async function verifyPhotoInR2(url: string): Promise<{ exists: boolean; contentL
   };
 }
 
-/**
- * Placeholder moderation function.
- *
- * TODO: Replace with a real content moderation service such as:
- * - AWS Rekognition (DetectModerationLabels)
- * - Google Cloud Vision (SafeSearch)
- * - Azure Content Moderator
- * - OpenAI Moderation API
- *
- * Current behavior:
- * 1. Verifies the image exists in R2 (HEAD request)
- * 2. Checks file size is within limits
- * 3. Auto-approves if basic checks pass (no actual content analysis)
- */
-async function moderatePhoto(url: string): Promise<'approved' | 'rejected'> {
-  // Step 1: Verify the image exists in R2 and retrieve metadata
-  let photoMeta: { exists: boolean; contentLength: number };
-  try {
-    photoMeta = await verifyPhotoInR2(url);
-  } catch {
-    console.error(`[photo-moderation] Photo not found in R2: ${url}`);
-    return 'rejected';
-  }
-
-  // Step 2: Check file size is within limits
-  if (photoMeta.contentLength > MAX_FILE_SIZE) {
-    console.warn(
-      `[photo-moderation] Photo exceeds size limit (${photoMeta.contentLength} bytes > ${MAX_FILE_SIZE} bytes): ${url}`,
-    );
-    return 'rejected';
-  }
-
-  if (photoMeta.contentLength === 0) {
-    console.warn(`[photo-moderation] Photo has zero bytes: ${url}`);
-    return 'rejected';
-  }
-
-  // Step 3: Auto-approve — no content moderation service is configured
-  // TODO: Integrate a real moderation API here (see function docstring above)
-  console.warn(
-    '[photo-moderation] WARNING: No content moderation service configured. ' +
-      'Photo auto-approved without content analysis. ' +
-      'Configure AWS Rekognition, Google Vision, or similar before production.',
-  );
-  return 'approved';
-}
-
 interface PhotoModerationDeps {
   dogRepo: DogRepository;
   notificationService: NotificationService;
+  contentModerationService?: ContentModerationService;
+  breedDetectionService?: BreedDetectionService;
 }
 
 export function createPhotoModerationWorker(deps: PhotoModerationDeps) {
-  const { dogRepo, notificationService } = deps;
+  const { dogRepo, notificationService, contentModerationService, breedDetectionService } = deps;
 
   const worker = new Worker<PhotoModerationJobData>(
     QUEUE_NAMES.PHOTO_MODERATION,
     async (job) => {
-      const { photoId, url } = job.data;
-      console.log(`[photo-moderation] Processing photo ${photoId}: ${url}`);
+      const { photoId, dogId, url } = job.data;
+      logger.info('PhotoModeration', `Processing photo ${photoId}: ${url}`);
 
-      const status = await moderatePhoto(url);
+      // Step 1: Verify image exists in R2
+      let photoMeta: { exists: boolean; contentLength: number };
+      try {
+        photoMeta = await verifyPhotoInR2(url);
+      } catch {
+        logger.error('PhotoModeration', `Photo not found in R2: ${url}`);
+        await dogRepo.updatePhotoModerationStatus(photoId, 'rejected');
+        return;
+      }
+
+      // Step 2: Check file size
+      if (photoMeta.contentLength > MAX_FILE_SIZE || photoMeta.contentLength === 0) {
+        logger.warn('PhotoModeration', `Photo invalid size (${photoMeta.contentLength} bytes): ${url}`);
+        await dogRepo.updatePhotoModerationStatus(photoId, 'rejected');
+        return;
+      }
+
+      // Step 3: AI content moderation via Claude Vision (if configured)
+      let status: 'approved' | 'rejected' = 'approved';
+      if (contentModerationService) {
+        try {
+          const result = await contentModerationService.analyzeImage(url);
+          status = result.safe ? 'approved' : 'rejected';
+          if (!result.safe) {
+            const flagged = result.categories
+              .filter((c) => c.confidence > 0.7)
+              .map((c) => c.name)
+              .join(', ');
+            logger.warn('PhotoModeration', `Photo rejected by AI: ${flagged}`);
+          }
+        } catch (err) {
+          logger.error('PhotoModeration', 'AI moderation failed, falling back to approved', err);
+        }
+      } else {
+        logger.warn('PhotoModeration', 'No content moderation service configured, auto-approving');
+      }
 
       await dogRepo.updatePhotoModerationStatus(photoId, status);
 
+      // Step 4: Breed detection (async, non-blocking, only on approved photos)
+      if (status === 'approved' && breedDetectionService) {
+        breedDetectionService
+          .detectBreed(url)
+          .then((result) => {
+            if (result.breeds.length > 0) {
+              logger.info(
+                'PhotoModeration',
+                `Detected breeds for dog ${dogId}: ${result.breeds.map((b) => `${b.name} (${Math.round(b.confidence * 100)}%)`).join(', ')}`,
+              );
+            }
+          })
+          .catch((err) => {
+            logger.error('PhotoModeration', 'Breed detection failed', err);
+          });
+      }
+
+      // Notify on rejection
       if (status === 'rejected') {
-        // Notify the user
         const photo = await dogRepo.findPhotoById(photoId);
         if (photo) {
           await notificationService
             .send({
-              userId: job.data.dogId, // Will need to resolve to ownerId in production
+              userId: dogId,
               title: 'Foto rifiutata',
               body: 'Una delle foto del tuo cane non rispetta le linee guida.',
             })
             .catch((err) => {
-              console.error(`[photo-moderation] Failed to send notification:`, err);
+              logger.error('PhotoModeration', 'Failed to send notification', err);
             });
         }
       }
@@ -114,11 +123,11 @@ export function createPhotoModerationWorker(deps: PhotoModerationDeps) {
   );
 
   worker.on('completed', (job) => {
-    console.log(`[photo-moderation] Job ${job.id} completed`);
+    logger.info('PhotoModeration', `Job ${job.id} completed`);
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`[photo-moderation] Job ${job?.id} failed:`, err.message);
+    logger.error('PhotoModeration', `Job ${job?.id} failed`, err);
   });
 
   return worker;

@@ -4,7 +4,12 @@ export type { AnalyticsProvider, AnalyticsProviderEvent } from './analytics-prov
 export type { AuthService, TokenPair } from './auth-service.js';
 export type { BadgeRepository } from './badge-repository.js';
 export type { Breed, BreedRepository } from './breed-repository.js';
+export type { BreedDetectionResult, BreedDetectionService } from './breed-detection-service.js';
 export type { ChatService } from './chat-service.js';
+export type {
+  ContentModerationResult,
+  ContentModerationService,
+} from './content-moderation-service.js';
 export type { ContentReportRepository, CreateReportInput } from './content-report-repository.js';
 export type { CreateDogInput, DogRepository } from './dog-repository.js';
 export type { EmailService } from './email-service.js';
@@ -44,6 +49,7 @@ export type {
   OrganizationRepository,
 } from './organization-repository.js';
 export type { StorageService } from './storage-service.js';
+export type { ToxicityDetectionService, ToxicityResult } from './toxicity-detection-service.js';
 export type { CreateStoryInput, StoryRepository } from './story-repository.js';
 export type {
   RefreshTokenRecord,

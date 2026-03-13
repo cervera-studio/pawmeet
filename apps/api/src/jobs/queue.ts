@@ -26,6 +26,7 @@ export const QUEUE_NAMES = {
   ANALYTICS_DLQ: 'analytics-dlq',
   GDPR_EXPORT: 'gdpr-export',
   RECURRING_EVENT: 'recurring-event',
+  MESSAGE_TOXICITY: 'message-toxicity',
 } as const;
 
 // --- Lazy queue instances ---
@@ -125,6 +126,36 @@ export function getEventStatusQueue(): Queue {
     });
   }
   return _eventStatusQueue;
+}
+
+// ── Message toxicity detection ────────────────────────────────────────────────
+
+let _messageToxicityQueue: Queue | null = null;
+
+export function getMessageToxicityQueue(): Queue {
+  if (!_messageToxicityQueue) {
+    _messageToxicityQueue = new Queue(QUEUE_NAMES.MESSAGE_TOXICITY, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 2,
+        backoff: { type: 'exponential', delay: 2000 },
+        removeOnComplete: 200,
+        removeOnFail: 500,
+      },
+    });
+  }
+  return _messageToxicityQueue;
+}
+
+export interface MessageToxicityJobData {
+  messageId: string;
+  matchId: string;
+  senderId: string;
+  content: string;
+}
+
+export async function enqueueMessageToxicityCheck(data: MessageToxicityJobData) {
+  return getMessageToxicityQueue().add('check', data);
 }
 
 // --- Job type definitions ---

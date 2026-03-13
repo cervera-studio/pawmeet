@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-export const CONSENT_TYPES = ['analytics', 'ab_testing', 'error_tracking', 'marketing'] as const;
+export const CONSENT_TYPES = [
+  'analytics',
+  'ab_testing',
+  'error_tracking',
+  'marketing',
+  'ai_training',
+] as const;
 
 export const updateConsentSchema = z.object({
   consents: z

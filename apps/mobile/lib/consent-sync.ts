@@ -6,6 +6,7 @@ const CONSENT_KEY_MAP: Record<keyof ConsentState, string> = {
   abTesting: 'ab_testing',
   errorTracking: 'error_tracking',
   marketing: 'marketing',
+  aiTraining: 'ai_training',
 };
 
 /** Sync all consent values to the server-side `user_consents` table. */
@@ -15,7 +16,8 @@ export async function syncConsentsToApi(consents: ConsentState): Promise<void> {
       | 'analytics'
       | 'ab_testing'
       | 'error_tracking'
-      | 'marketing',
+      | 'marketing'
+      | 'ai_training',
     granted,
   }));
 
@@ -30,7 +32,12 @@ export async function syncSingleConsentToApi(
   await api.consent.update.mutate({
     consents: [
       {
-        type: CONSENT_KEY_MAP[key] as 'analytics' | 'ab_testing' | 'error_tracking' | 'marketing',
+        type: CONSENT_KEY_MAP[key] as
+          | 'analytics'
+          | 'ab_testing'
+          | 'error_tracking'
+          | 'marketing'
+          | 'ai_training',
         granted,
       },
     ],

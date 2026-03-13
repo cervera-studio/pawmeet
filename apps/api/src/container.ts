@@ -618,3 +618,9 @@ export const storyCleanupWorkerDeps = {
   storyRepo,
   storage,
 };
+
+// ── GPS retention worker deps ───────────────────────────────────────────────
+
+export const gpsRetentionDeps = {
+  db,
+};

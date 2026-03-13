@@ -16,6 +16,7 @@ export const CONSENT_TYPE = {
   AbTesting: 'ab_testing',
   ErrorTracking: 'error_tracking',
   Marketing: 'marketing',
+  AiTraining: 'ai_training',
 } as const;
 
 export type ConsentType = (typeof CONSENT_TYPE)[keyof typeof CONSENT_TYPE];
@@ -50,7 +51,7 @@ export const userConsents = pgTable(
     unique('user_consents_user_type_uniq').on(t.userId, t.consentType),
     check(
       'user_consents_type_valid',
-      sql`${t.consentType} IN ('analytics', 'ab_testing', 'error_tracking', 'marketing')`,
+      sql`${t.consentType} IN ('analytics', 'ab_testing', 'error_tracking', 'marketing', 'ai_training')`,
     ),
     check(
       'user_consents_source_valid',

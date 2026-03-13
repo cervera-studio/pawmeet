@@ -243,6 +243,16 @@ export async function enqueueGpsRetention() {
   return getGpsRetentionQueue().add('retention', {}, { repeat: { every: 24 * 60 * 60 * 1000 } });
 }
 
+/** Schedule daily GPS data retention purge at 04:00 UTC (after data cleanup at 03:00). */
+export async function scheduleGpsRetention() {
+  const queue = getGpsRetentionQueue();
+  await queue.upsertJobScheduler(
+    'daily-gps-retention',
+    { pattern: '0 4 * * *' },
+    { name: 'retention' },
+  );
+}
+
 // ── Analytics (async event ingestion) ────────────────────────────────────────
 
 export interface AnalyticsJobData {

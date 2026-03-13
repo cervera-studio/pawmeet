@@ -180,6 +180,7 @@ export interface AnalyticsEventMap {
     abTesting: boolean;
     errorTracking: boolean;
     marketing: boolean;
+    aiTraining: boolean;
   };
 }
 
@@ -214,6 +215,7 @@ export const CONSENT_TYPES = {
   AbTesting: 'ab_testing',
   ErrorTracking: 'error_tracking',
   Marketing: 'marketing',
+  AiTraining: 'ai_training',
 } as const;
 
 export type ConsentType = (typeof CONSENT_TYPES)[keyof typeof CONSENT_TYPES];
@@ -223,6 +225,7 @@ export interface ConsentState {
   abTesting: boolean;
   errorTracking: boolean;
   marketing: boolean;
+  aiTraining: boolean;
 }
 
 export const DEFAULT_CONSENT_STATE: ConsentState = {
@@ -230,4 +233,5 @@ export const DEFAULT_CONSENT_STATE: ConsentState = {
   abTesting: false,
   errorTracking: false,
   marketing: false,
+  aiTraining: false,
 };

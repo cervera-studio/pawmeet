@@ -28,7 +28,14 @@ describe('proposeWalk', () => {
     const messageRepo = buildMessageRepo();
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo, userRepo, notificationService });
+    const proposeWalk = createProposeWalk({
+      walkRepo,
+      matchRepo,
+      messageRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await proposeWalk('user-1', {
       matchId: 'match-1',
@@ -55,7 +62,14 @@ describe('proposeWalk', () => {
     const messageRepo = buildMessageRepo();
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo, userRepo, notificationService });
+    const proposeWalk = createProposeWalk({
+      walkRepo,
+      matchRepo,
+      messageRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await proposeWalk('user-1', {
       matchId: 'match-1',
@@ -78,7 +92,14 @@ describe('proposeWalk', () => {
     const messageRepo = buildMessageRepo();
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo, userRepo, notificationService });
+    const proposeWalk = createProposeWalk({
+      walkRepo,
+      matchRepo,
+      messageRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await proposeWalk('user-1', {
       matchId: 'match-1',
@@ -100,7 +121,14 @@ describe('proposeWalk', () => {
     const messageRepo = buildMessageRepo();
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const proposeWalk = createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo, userRepo, notificationService });
+    const proposeWalk = createProposeWalk({
+      walkRepo,
+      matchRepo,
+      messageRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await proposeWalk('user-1', {
       matchId: 'match-1',

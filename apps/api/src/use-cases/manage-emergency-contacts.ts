@@ -1,4 +1,4 @@
-import { AppError, fail, type Result, succeed, type EmergencyContact } from '@pawmeet/types';
+import { AppError, type EmergencyContact, fail, type Result, succeed } from '@pawmeet/types';
 import type { EmergencyContactRepository } from '../ports/index.js';
 
 type Deps = {

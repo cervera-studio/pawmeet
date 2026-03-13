@@ -25,14 +25,16 @@ export function createSafetyRouter(deps: typeof emergencyContactDeps) {
         unwrapResult(await deps.deleteEmergencyContact(ctx.userId, input.contactId)),
       ),
 
-    sos: protectedProcedure.input(walkSosSchema).mutation(async ({ ctx, input }) =>
-      unwrapResult(
-        await deps.walkSos(ctx.userId, input.walkId, input.latitude, input.longitude),
+    sos: protectedProcedure
+      .input(walkSosSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.walkSos(ctx.userId, input.walkId, input.latitude, input.longitude)),
       ),
-    ),
 
-    checkin: protectedProcedure.input(walkCheckinSchema).mutation(async ({ ctx, input }) =>
-      unwrapResult(await deps.walkCheckin(ctx.userId, input.walkId)),
-    ),
+    checkin: protectedProcedure
+      .input(walkCheckinSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.walkCheckin(ctx.userId, input.walkId)),
+      ),
   });
 }

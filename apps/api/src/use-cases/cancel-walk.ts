@@ -15,7 +15,13 @@ type Deps = {
   notificationService: NotificationService;
 };
 
-export function createCancelWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService }: Deps) {
+export function createCancelWalk({
+  walkRepo,
+  matchRepo,
+  dogRepo,
+  userRepo,
+  notificationService,
+}: Deps) {
   return async (userId: string, walkId: string): Promise<Result<{ message: string }>> => {
     const walk = await walkRepo.findById(walkId);
     if (!walk) {

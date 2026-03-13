@@ -17,6 +17,7 @@ import { createEventStatusWorker, scheduleEventStatusCheck } from './event-statu
 import { createGdprExportWorker } from './gdpr-export.js';
 import { createGpsRetentionWorker } from './gps-retention.js';
 import { createMessageToxicityWorker } from './message-toxicity.js';
+import { createNearbySuggestionWorker, scheduleNearbySuggestions } from './nearby-suggestion.js';
 import { createPhotoModerationWorker } from './photo-moderation.js';
 import {
   scheduleAnalyticsAggregation,
@@ -31,12 +32,8 @@ import {
 import { createEmailWorker } from './send-email.js';
 import { createNotificationWorker } from './send-notification.js';
 import { createStoryCleanupWorker } from './story-cleanup.js';
-import { createNearbySuggestionWorker, scheduleNearbySuggestions } from './nearby-suggestion.js';
 import { createWalkReminderWorker, scheduleWalkReminders } from './walk-reminder.js';
-import {
-  createWalkSafetyAlertWorker,
-  scheduleWalkSafetyAlerts,
-} from './walk-safety-alert.js';
+import { createWalkSafetyAlertWorker, scheduleWalkSafetyAlerts } from './walk-safety-alert.js';
 
 /** Start all BullMQ workers. Call this once on server startup. */
 export async function startWorkers() {

@@ -57,13 +57,6 @@ import { createCancelGroupEvent } from './use-cases/cancel-group-event.js';
 import { createCancelRequest } from './use-cases/cancel-request.js';
 // Use cases — walks
 import { createCancelWalk } from './use-cases/cancel-walk.js';
-// Use cases — emergency contacts & walk safety
-import {
-  createAddEmergencyContact,
-  createDeleteEmergencyContact,
-  createListEmergencyContacts,
-} from './use-cases/manage-emergency-contacts.js';
-import { createWalkCheckin, createWalkSos } from './use-cases/walk-sos.js';
 // Use cases — badges
 import { createCheckAndAwardBadges } from './use-cases/check-and-award-badges.js';
 import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-achievements.js';
@@ -91,7 +84,6 @@ import { createDeletePost } from './use-cases/delete-post.js';
 // Use cases — matches
 import { createDiscoverCandidates } from './use-cases/discover-candidates.js';
 import { createDiscoverCandidatesAi } from './use-cases/discover-candidates-ai.js';
-import { createGetMatchExplanation } from './use-cases/get-match-explanation.js';
 import { createEndWalkTracking } from './use-cases/end-walk-tracking.js';
 import { createExportUserData } from './use-cases/export-user-data.js';
 import { createFindNearby } from './use-cases/find-nearby.js';
@@ -111,6 +103,7 @@ import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
 import { createGetGroupMessages } from './use-cases/get-group-messages.js';
 import { createGetLeaderboard } from './use-cases/get-leaderboard.js';
+import { createGetMatchExplanation } from './use-cases/get-match-explanation.js';
 import { createGetMatchingInsights } from './use-cases/get-matching-insights.js';
 import { createGetMessages } from './use-cases/get-messages.js';
 import { createGetOptimalTimes } from './use-cases/get-optimal-times.js';
@@ -152,13 +145,19 @@ import { createListWalksByMatch } from './use-cases/list-walks-by-match.js';
 import { createLogSwipeScores } from './use-cases/log-swipe-scores.js';
 import { createLoginUser } from './use-cases/login-user.js';
 import { createLogoutUser } from './use-cases/logout-user.js';
+// Use cases — emergency contacts & walk safety
+import {
+  createAddEmergencyContact,
+  createDeleteEmergencyContact,
+  createListEmergencyContacts,
+} from './use-cases/manage-emergency-contacts.js';
 import { createMarkGroupMessagesRead } from './use-cases/mark-group-messages-read.js';
 import { createMarkMessagesRead } from './use-cases/mark-messages-read.js';
 import { createPassDog } from './use-cases/pass-dog.js';
 import { createProposeWalk } from './use-cases/propose-walk.js';
+import { createReactivateAccount } from './use-cases/reactivate-account.js';
 import { createRecordActivityWindow } from './use-cases/record-activity-window.js';
 import { createRecordMatchInteraction } from './use-cases/record-match-interaction.js';
-import { createReactivateAccount } from './use-cases/reactivate-account.js';
 import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
@@ -197,6 +196,7 @@ import { createUploadPostMediaUrl } from './use-cases/upload-post-media-url.js';
 import { createVerifyEmailOtp } from './use-cases/verify-email-otp.js';
 import { createVerifyOrganization } from './use-cases/verify-organization.js';
 import { createViewStory } from './use-cases/view-story.js';
+import { createWalkCheckin, createWalkSos } from './use-cases/walk-sos.js';
 
 // ── Repositories ────────────────────────────────────────────────────────────────
 
@@ -368,8 +368,21 @@ export { experimentService };
 // ── Walk deps ───────────────────────────────────────────────────────────────────
 
 export const walkDeps = {
-  proposeWalk: createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo, userRepo, notificationService }),
-  respondToWalk: createRespondToWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService }),
+  proposeWalk: createProposeWalk({
+    walkRepo,
+    matchRepo,
+    messageRepo,
+    dogRepo,
+    userRepo,
+    notificationService,
+  }),
+  respondToWalk: createRespondToWalk({
+    walkRepo,
+    matchRepo,
+    dogRepo,
+    userRepo,
+    notificationService,
+  }),
   cancelWalk: createCancelWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService }),
   listUpcomingWalks: createListUpcomingWalks({ walkRepo }),
   listWalksByMatch: createListWalksByMatch({ walkRepo, matchRepo, dogRepo }),
@@ -637,7 +650,9 @@ export const recurringEventDeps = {
 function tryCreateContentModerationService() {
   if (!process.env.ANTHROPIC_API_KEY) return undefined;
   // Lazy import to avoid loading SDK when not configured
-  const { ClaudeContentModerationService } = require('./infra/claude-content-moderation-service.js');
+  const {
+    ClaudeContentModerationService,
+  } = require('./infra/claude-content-moderation-service.js');
   return new ClaudeContentModerationService();
 }
 

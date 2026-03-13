@@ -30,7 +30,13 @@ export const users = pgTable(
     isActive: boolean('is_active').notNull().default(true),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     notificationPrefs: jsonb('notification_prefs')
-      .$type<{ matches: boolean; messages: boolean; reminders: boolean; feed: boolean; nearby: boolean }>()
+      .$type<{
+        matches: boolean;
+        messages: boolean;
+        reminders: boolean;
+        feed: boolean;
+        nearby: boolean;
+      }>()
       .default({
         matches: true,
         messages: true,

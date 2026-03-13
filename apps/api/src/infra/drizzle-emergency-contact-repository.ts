@@ -14,7 +14,12 @@ export class DrizzleEmergencyContactRepository implements EmergencyContactReposi
   ): Promise<EmergencyContact> {
     const rows = await this.db
       .insert(emergencyContacts)
-      .values({ userId, name: data.name, phone: data.phone, relationship: data.relationship ?? null })
+      .values({
+        userId,
+        name: data.name,
+        phone: data.phone,
+        relationship: data.relationship ?? null,
+      })
       .returning();
     return firstRow<EmergencyContact>(rows);
   }

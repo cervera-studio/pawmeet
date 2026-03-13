@@ -14,6 +14,9 @@ import {
   reports,
   stories,
   users,
+  walkSafetyCheckins,
+  walks,
+  emergencyContacts,
 } from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
 import { and, count, desc, eq, gte, ilike, isNotNull, or, sql } from 'drizzle-orm';
@@ -30,6 +33,13 @@ function maskEmail(email: string | null | undefined): string {
   const [local, domain] = email.split('@');
   if (!local || !domain) return '***';
   return `${local[0]}***@${domain}`;
+}
+
+/** Mask a phone number: `+39 333 1234567` -> `+39 ***4567` */
+function maskPhone(phone: string | null | undefined): string {
+  if (!phone) return '';
+  if (phone.length <= 4) return '***';
+  return `***${phone.slice(-4)}`;
 }
 
 // ── Admin middleware ────────────────────────────────────────────────────────────
@@ -1372,6 +1382,113 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           .where(eq(users.id, input.userId));
 
         return { success: true };
+      }),
+
+    // ── Safety management ──────────────────────────────────────────────────────
+
+    listSosAlerts: adminProcedure
+      .input(
+        z.object({
+          page: z.number().int().min(1).default(1),
+          pageSize: z.number().int().min(1).max(100).default(20),
+          type: z.enum(['sos', 'auto_alert', 'checkin']).optional(),
+        }),
+      )
+      .query(async ({ input }) => {
+        const { page, pageSize, type } = input;
+        const offset = (page - 1) * pageSize;
+
+        const conditions = type ? eq(walkSafetyCheckins.type, type) : undefined;
+
+        const [items, [totalRow]] = await Promise.all([
+          db
+            .select({
+              id: walkSafetyCheckins.id,
+              walkId: walkSafetyCheckins.walkId,
+              userId: walkSafetyCheckins.userId,
+              userName: users.displayName,
+              type: walkSafetyCheckins.type,
+              latitude: walkSafetyCheckins.latitude,
+              longitude: walkSafetyCheckins.longitude,
+              createdAt: walkSafetyCheckins.createdAt,
+              walkTitle: walks.title,
+              walkStatus: walks.status,
+              walkScheduledAt: walks.scheduledAt,
+            })
+            .from(walkSafetyCheckins)
+            .leftJoin(users, eq(walkSafetyCheckins.userId, users.id))
+            .leftJoin(walks, eq(walkSafetyCheckins.walkId, walks.id))
+            .where(conditions)
+            .orderBy(desc(walkSafetyCheckins.createdAt))
+            .limit(pageSize)
+            .offset(offset),
+          db.select({ value: count() }).from(walkSafetyCheckins).where(conditions),
+        ]);
+
+        const total = totalRow?.value ?? 0;
+        return {
+          data: items,
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        };
+      }),
+
+    listEmergencyContacts: adminProcedure
+      .input(
+        z.object({
+          page: z.number().int().min(1).default(1),
+          pageSize: z.number().int().min(1).max(100).default(20),
+          search: z.string().optional(),
+        }),
+      )
+      .query(async ({ input }) => {
+        const { page, pageSize, search } = input;
+        const offset = (page - 1) * pageSize;
+
+        const searchCondition = search
+          ? or(
+              ilike(emergencyContacts.name, `%${search}%`),
+              ilike(users.displayName, `%${search}%`),
+            )
+          : undefined;
+
+        const [items, [totalRow]] = await Promise.all([
+          db
+            .select({
+              id: emergencyContacts.id,
+              userId: emergencyContacts.userId,
+              userName: users.displayName,
+              contactName: emergencyContacts.name,
+              phone: emergencyContacts.phone,
+              relationship: emergencyContacts.relationship,
+              createdAt: emergencyContacts.createdAt,
+            })
+            .from(emergencyContacts)
+            .leftJoin(users, eq(emergencyContacts.userId, users.id))
+            .where(searchCondition)
+            .orderBy(desc(emergencyContacts.createdAt))
+            .limit(pageSize)
+            .offset(offset),
+          db
+            .select({ value: count() })
+            .from(emergencyContacts)
+            .leftJoin(users, eq(emergencyContacts.userId, users.id))
+            .where(searchCondition),
+        ]);
+
+        const total = totalRow?.value ?? 0;
+        return {
+          data: items.map((item) => ({
+            ...item,
+            phone: maskPhone(item.phone),
+          })),
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        };
       }),
 
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────

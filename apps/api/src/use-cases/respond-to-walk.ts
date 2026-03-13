@@ -15,7 +15,13 @@ type Deps = {
   notificationService: NotificationService;
 };
 
-export function createRespondToWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService }: Deps) {
+export function createRespondToWalk({
+  walkRepo,
+  matchRepo,
+  dogRepo,
+  userRepo,
+  notificationService,
+}: Deps) {
   return async (
     userId: string,
     walkId: string,

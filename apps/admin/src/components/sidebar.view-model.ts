@@ -1,6 +1,7 @@
 import { usePathname } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import {
+  AlertTriangleIcon,
   BuildingIcon,
   CalendarIcon,
   LayoutDashboardIcon,
@@ -30,6 +31,15 @@ export const navigation = [
   { name: 'Cani', href: '/dogs', icon: PawPrintIcon },
   { name: 'Eventi', href: '/group-events', icon: CalendarIcon },
   { name: 'Organizzazioni', href: '/organizations', icon: BuildingIcon },
+  {
+    name: 'Sicurezza',
+    href: '/safety',
+    icon: AlertTriangleIcon,
+    children: [
+      { name: 'Allarmi SOS', href: '/safety/sos' },
+      { name: 'Contatti emergenza', href: '/safety/contacts' },
+    ],
+  },
   { name: 'Eliminazioni', href: '/account-deletions', icon: UserXIcon },
   { name: 'Impostazioni', href: '/settings', icon: SettingsIcon },
 ];

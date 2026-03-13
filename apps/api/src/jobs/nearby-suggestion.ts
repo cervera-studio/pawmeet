@@ -47,7 +47,10 @@ export function createNearbySuggestionWorker() {
 
       if (activeUsers.length === 0) return;
 
-      logger.info('nearby-suggestion', `Checking ${activeUsers.length} active users for nearby matches`);
+      logger.info(
+        'nearby-suggestion',
+        `Checking ${activeUsers.length} active users for nearby matches`,
+      );
 
       for (const user of activeUsers) {
         if (!user.latitude || !user.longitude) continue;
@@ -61,7 +64,10 @@ export function createNearbySuggestionWorker() {
         const nearbyCount = await db
           .select({ count: sql<number>`COUNT(DISTINCT ${users.id})` })
           .from(users)
-          .innerJoin(dogProfiles, and(eq(dogProfiles.ownerId, users.id), eq(dogProfiles.isActive, true)))
+          .innerJoin(
+            dogProfiles,
+            and(eq(dogProfiles.ownerId, users.id), eq(dogProfiles.isActive, true)),
+          )
           .where(
             and(
               eq(users.isActive, true),
@@ -82,9 +88,10 @@ export function createNearbySuggestionWorker() {
         await enqueueNotification({
           userId: user.id,
           title: '📍 Cani nelle vicinanze!',
-          body: count === 1
-            ? 'C\'è 1 cane compatibile nella tua zona — scoprilo!'
-            : `Ci sono ${count} cani compatibili nella tua zona — scoprili!`,
+          body:
+            count === 1
+              ? "C'è 1 cane compatibile nella tua zona — scoprilo!"
+              : `Ci sono ${count} cani compatibili nella tua zona — scoprili!`,
           data: { type: 'nearby_suggestion' },
         });
 

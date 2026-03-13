@@ -28,7 +28,14 @@ type ProposeWalkInput = {
   notes?: string | null;
 };
 
-export function createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo, userRepo, notificationService }: Deps) {
+export function createProposeWalk({
+  walkRepo,
+  matchRepo,
+  messageRepo,
+  dogRepo,
+  userRepo,
+  notificationService,
+}: Deps) {
   return async (
     userId: string,
     input: ProposeWalkInput,

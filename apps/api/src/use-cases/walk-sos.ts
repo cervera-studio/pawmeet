@@ -17,7 +17,12 @@ type Deps = {
  * Triggers an SOS alert during a walk.
  * Records a safety checkin, notifies the walk partner and all emergency contacts.
  */
-export function createWalkSos({ walkRepo, userRepo, emergencyContactRepo, notificationService }: Deps) {
+export function createWalkSos({
+  walkRepo,
+  userRepo,
+  emergencyContactRepo,
+  notificationService,
+}: Deps) {
   return async (
     userId: string,
     walkId: string,
@@ -47,9 +52,8 @@ export function createWalkSos({ walkRepo, userRepo, emergencyContactRepo, notifi
       longitude: longitude?.toString() ?? null,
     });
 
-    const locationText = latitude && longitude
-      ? ` — Posizione: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
-      : '';
+    const locationText =
+      latitude && longitude ? ` — Posizione: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}` : '';
 
     // Notify emergency contacts via push (they must be app users to receive push)
     const contacts = await emergencyContactRepo.findByUserId(userId);
@@ -76,11 +80,11 @@ export function createWalkSos({ walkRepo, userRepo, emergencyContactRepo, notifi
 /**
  * Records a safety check-in during a walk ("I'm safe").
  */
-export function createWalkCheckin({ emergencyContactRepo, walkRepo }: Pick<Deps, 'emergencyContactRepo' | 'walkRepo'>) {
-  return async (
-    userId: string,
-    walkId: string,
-  ): Promise<Result<{ message: string }>> => {
+export function createWalkCheckin({
+  emergencyContactRepo,
+  walkRepo,
+}: Pick<Deps, 'emergencyContactRepo' | 'walkRepo'>) {
+  return async (userId: string, walkId: string): Promise<Result<{ message: string }>> => {
     const walk = await walkRepo.findById(walkId);
     if (!walk) {
       return fail(new AppError('WALK_NOT_FOUND', 'Passeggiata non trovata', 404));

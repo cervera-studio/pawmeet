@@ -27,7 +27,13 @@ describe('respondToWalk', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const respondToWalk = createRespondToWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService });
+    const respondToWalk = createRespondToWalk({
+      walkRepo,
+      matchRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await respondToWalk('user-2', 'walk-1', true);
 
@@ -50,7 +56,13 @@ describe('respondToWalk', () => {
     });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const respondToWalk = createRespondToWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService });
+    const respondToWalk = createRespondToWalk({
+      walkRepo,
+      matchRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await respondToWalk('user-2', 'walk-1', false);
 
@@ -66,7 +78,13 @@ describe('respondToWalk', () => {
     const dogRepo = buildDogRepo();
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const respondToWalk = createRespondToWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService });
+    const respondToWalk = createRespondToWalk({
+      walkRepo,
+      matchRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await respondToWalk('user-2', 'walk-1', true);
 
@@ -82,7 +100,13 @@ describe('respondToWalk', () => {
     const dogRepo = buildDogRepo();
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const respondToWalk = createRespondToWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService });
+    const respondToWalk = createRespondToWalk({
+      walkRepo,
+      matchRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await respondToWalk('user-2', 'walk-1', true);
 
@@ -98,7 +122,13 @@ describe('respondToWalk', () => {
     const dogRepo = buildDogRepo();
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(buildUser()) });
     const notificationService = buildNotificationService();
-    const respondToWalk = createRespondToWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService });
+    const respondToWalk = createRespondToWalk({
+      walkRepo,
+      matchRepo,
+      dogRepo,
+      userRepo,
+      notificationService,
+    });
 
     const result = await respondToWalk('user-1', 'walk-1', true);
 

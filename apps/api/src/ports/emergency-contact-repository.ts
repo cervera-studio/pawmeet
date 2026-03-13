@@ -1,7 +1,10 @@
-import type { EmergencyContact, WalkSafetyCheckin, SafetyCheckinType } from '@pawmeet/types';
+import type { EmergencyContact, SafetyCheckinType, WalkSafetyCheckin } from '@pawmeet/types';
 
 export interface EmergencyContactRepository {
-  create(userId: string, data: { name: string; phone: string; relationship?: string | null }): Promise<EmergencyContact>;
+  create(
+    userId: string,
+    data: { name: string; phone: string; relationship?: string | null },
+  ): Promise<EmergencyContact>;
   findByUserId(userId: string): Promise<EmergencyContact[]>;
   delete(id: string, userId: string): Promise<void>;
   createCheckin(data: {

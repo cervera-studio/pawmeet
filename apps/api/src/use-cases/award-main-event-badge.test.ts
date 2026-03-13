@@ -1,9 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
+import type { BadgeRepository } from '../ports/badge-repository.js';
+import type { GroupEventRepository } from '../ports/group-event-repository.js';
 import { buildGroupEvent } from '../test-utils/builders.js';
 import { createAwardMainEventBadge } from './award-main-event-badge.js';
 
 function setup(
-  overrides: { badgeRepo?: Record<string, any>; groupEventRepo?: Record<string, any> } = {},
+  overrides: {
+    badgeRepo?: Partial<BadgeRepository>;
+    groupEventRepo?: Partial<GroupEventRepository>;
+  } = {},
 ) {
   const badgeRepo = {
     hasBadge: vi.fn().mockResolvedValue(false),
@@ -15,15 +20,15 @@ function setup(
     }),
     findByDog: vi.fn().mockResolvedValue([]),
     ...overrides.badgeRepo,
-  };
+  } as unknown as BadgeRepository;
   const groupEventRepo = {
     findById: vi.fn().mockResolvedValue(buildGroupEvent({ isOfficial: true })),
     ...overrides.groupEventRepo,
-  };
+  } as unknown as GroupEventRepository;
 
   const awardMainEventBadge = createAwardMainEventBadge({
     badgeRepo,
-    groupEventRepo: groupEventRepo as any,
+    groupEventRepo,
   });
   return { awardMainEventBadge, badgeRepo, groupEventRepo };
 }

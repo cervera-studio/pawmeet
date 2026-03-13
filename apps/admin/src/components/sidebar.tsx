@@ -8,7 +8,7 @@ export function Sidebar() {
   const vm = useSidebarViewModel();
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-neutral-200 bg-white">
+    <aside className="flex h-full w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-300 dark:bg-neutral-100">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-neutral-200 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-800 text-white font-bold text-sm">

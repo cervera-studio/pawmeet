@@ -8,6 +8,7 @@ import {
   SettingsIcon,
   ShieldIcon,
   UsersIcon,
+  UserXIcon,
 } from '@/components/icons';
 import { useAuthContext } from '@/lib/auth-store';
 
@@ -29,6 +30,7 @@ export const navigation = [
   { name: 'Cani', href: '/dogs', icon: PawPrintIcon },
   { name: 'Eventi', href: '/group-events', icon: CalendarIcon },
   { name: 'Organizzazioni', href: '/organizations', icon: BuildingIcon },
+  { name: 'Eliminazioni', href: '/account-deletions', icon: UserXIcon },
   { name: 'Impostazioni', href: '/settings', icon: SettingsIcon },
 ];
 

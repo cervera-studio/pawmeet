@@ -49,19 +49,19 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
   async findNearby(query: NearbyEventsQuery): Promise<(GroupEvent & { distanceKm: number })[]> {
     const { latitude, longitude, radiusKm, limit = 20, excludeUserId, friendUserIds } = query;
 
-    const distanceExpr = sql<number>`
-      6371 * acos(
-        cos(radians(${latitude})) * cos(radians(${groupEvents.latitude}))
-        * cos(radians(${groupEvents.longitude}) - radians(${longitude}))
-        + sin(radians(${latitude})) * sin(radians(${groupEvents.latitude}))
-      )
-    `;
+    const radiusMeters = radiusKm * 1000;
+
+    const userPoint = sql`ST_Point(${longitude}, ${latitude})::geography`;
+    const eventPoint = sql`ST_Point(${groupEvents.longitude}, ${groupEvents.latitude})::geography`;
+
+    // PostGIS distance in meters, convert to km for output
+    const distanceExpr = sql<number>`ST_Distance(${eventPoint}, ${userPoint}) / 1000`;
 
     const conditions = [
       eq(groupEvents.status, 'scheduled'),
       ne(groupEvents.status, 'template'),
       sql`${groupEvents.scheduledAt} > now()`,
-      sql`${distanceExpr} <= ${radiusKm}`,
+      sql`ST_DWithin(${eventPoint}, ${userPoint}, ${radiusMeters})`,
     ];
 
     // Visibility filter: public OR (friends_only AND creator is a friend)

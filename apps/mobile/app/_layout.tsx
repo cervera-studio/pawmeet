@@ -12,7 +12,8 @@ import { ConsentModal } from '@/components/ConsentModal';
 import { useAuth } from '@/hooks/useAuth';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useWebSocketManager } from '@/hooks/useWebSocket';
-import { getExpiringPins } from '@/lib/certificate-pinning';
+import { getExpiringPins, validatePinsInitialized } from '@/lib/certificate-pinning';
+import { checkDeviceIntegrity } from '@/lib/device-security';
 import { container } from '@/repositories/container';
 import { ANALYTICS_SERVICE } from '@/repositories/tokens';
 import { useAuthStore } from '@/stores/auth';
@@ -93,9 +94,13 @@ async function hashUserId(userId: string): Promise<string> {
   return `anon_${hash.substring(0, 16)}`;
 }
 
-/** Checks certificate pin expiry on startup and warns via Sentry. */
+/** Validates certificate pins are initialized and checks expiry on startup. */
 function CertificatePinMonitor() {
   useEffect(() => {
+    // Throws in production if placeholder hashes are still present.
+    // In __DEV__ mode it only logs a warning.
+    validatePinsInitialized();
+
     const expiring = getExpiringPins();
     if (expiring.length > 0) {
       Sentry.captureMessage(
@@ -103,6 +108,21 @@ function CertificatePinMonitor() {
         'warning',
       );
     }
+  }, []);
+
+  return null;
+}
+
+/** Checks for root/jailbreak indicators on startup and logs a warning. */
+function DeviceIntegrityMonitor() {
+  useEffect(() => {
+    checkDeviceIntegrity().then((result) => {
+      if (result.isCompromised) {
+        const message = `Device integrity check failed: ${result.reasons.join(', ')}`;
+        console.warn('[DeviceIntegrity]', message);
+        Sentry.captureMessage(message, 'warning');
+      }
+    });
   }, []);
 
   return null;
@@ -149,6 +169,7 @@ function RootLayout() {
       <SafeAreaProvider>
         <StatsigProviderExpo sdkKey={STATSIG_CLIENT_KEY} user={statsigUser}>
           <CertificatePinMonitor />
+          <DeviceIntegrityMonitor />
           <AuthHydrator />
           {isAuthenticated && <PushNotificationRegistration />}
           {isAuthenticated && <WebSocketManager />}

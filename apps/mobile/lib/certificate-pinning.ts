@@ -71,6 +71,56 @@ interface PinRotationInfo {
 // Runtime helpers
 // ---------------------------------------------------------------------------
 
+/** Placeholder pattern used before real hashes are extracted. */
+const PLACEHOLDER_PATTERN = /^sha256\/[A-B]{43}=$/;
+
+/**
+ * Validate that certificate pins have been replaced with real SPKI hashes.
+ * Call this at app startup. In production builds it throws immediately so the
+ * app cannot silently run without pinning. In __DEV__ it logs a warning.
+ *
+ * To extract the real hashes once the domain is live, run:
+ * ```bash
+ * # Leaf certificate (primary pin):
+ * echo | openssl s_client -connect api.pawmeet.io:443 \
+ *   -servername api.pawmeet.io 2>/dev/null \
+ *   | openssl x509 -pubkey -noout \
+ *   | openssl pkey -pubin -outform DER \
+ *   | openssl dgst -sha256 -binary \
+ *   | openssl enc -base64
+ *
+ * # Intermediate CA (backup pin) — use -showcerts and pick cert index 1:
+ * echo | openssl s_client -connect api.pawmeet.io:443 \
+ *   -servername api.pawmeet.io -showcerts 2>/dev/null \
+ *   | awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/{ if(n==1) print } /END CERTIFICATE/{n++}' \
+ *   | openssl x509 -pubkey -noout \
+ *   | openssl pkey -pubin -outform DER \
+ *   | openssl dgst -sha256 -binary \
+ *   | openssl enc -base64
+ * ```
+ *
+ * Or run: `scripts/extract-cert-pins.sh`
+ *
+ * @throws {Error} In production when placeholder hashes are still present.
+ */
+export function validatePinsInitialized(): void {
+  for (const [domain, config] of Object.entries(PINNED_DOMAINS)) {
+    const placeholders = config.pins.filter((pin) => PLACEHOLDER_PATTERN.test(pin));
+    if (placeholders.length > 0) {
+      const message =
+        `[CertificatePinning] Domain "${domain}" still has ${placeholders.length} placeholder ` +
+        'pin(s). Replace them with real SPKI SHA-256 hashes before shipping to production. ' +
+        'Run scripts/extract-cert-pins.sh to extract hashes.';
+
+      if (__DEV__) {
+        console.warn(message);
+      } else {
+        throw new Error(message);
+      }
+    }
+  }
+}
+
 /**
  * Check if any pinned certificate is approaching expiry.
  * Call this on app startup and report to Sentry if a pin is about to expire.

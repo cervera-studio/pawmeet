@@ -112,16 +112,13 @@ export class DrizzleUserRepository implements UserRepository {
   async findNearby(query: NearbyQuery): Promise<NearbyUser[]> {
     const { userId, latitude, longitude, radiusKm, limit, offset } = query;
 
-    // Haversine distance formula in SQL (returns km)
-    const distanceExpr = sql<number>`(
-      6371 * acos(
-        cos(radians(${latitude}))
-        * cos(radians(${users.latitude}))
-        * cos(radians(${users.longitude}) - radians(${longitude}))
-        + sin(radians(${latitude}))
-        * sin(radians(${users.latitude}))
-      )
-    )`;
+    const radiusMeters = radiusKm * 1000;
+
+    const userPoint = sql`ST_Point(${longitude}, ${latitude})::geography`;
+    const rowPoint = sql`ST_Point(${users.longitude}, ${users.latitude})::geography`;
+
+    // PostGIS distance in meters, convert to km for output
+    const distanceExpr = sql<number>`ST_Distance(${rowPoint}, ${userPoint}) / 1000`;
 
     const rows = await this.db
       .select({
@@ -139,7 +136,7 @@ export class DrizzleUserRepository implements UserRepository {
           eq(users.isActive, true),
           isNotNull(users.latitude),
           isNotNull(users.longitude),
-          sql`${distanceExpr} <= ${radiusKm}`,
+          sql`ST_DWithin(${rowPoint}, ${userPoint}, ${radiusMeters})`,
         ),
       )
       .orderBy(distanceExpr)

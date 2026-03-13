@@ -38,7 +38,8 @@
           "project": "pawmeet-mobile"
         }
       ],
-      "./plugins/with-certificate-pinning"
+      "./plugins/with-certificate-pinning",
+      "./plugins/with-screen-security"
     ]
   }
 }

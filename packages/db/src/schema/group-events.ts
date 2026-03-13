@@ -49,7 +49,8 @@ export const groupEvents = pgTable(
   },
   (table) => [
     index('group_events_created_by_idx').on(table.createdBy),
-    index('group_events_location_idx').on(table.latitude, table.longitude),
+    // GiST spatial index managed via SQL migration (0005_add_postgis.sql)
+    // index('group_events_location_gist_idx') — ST_Point(longitude, latitude)::geography
     index('group_events_parent_idx').on(table.parentEventId),
     index('group_events_category_idx').on(table.category),
     check(

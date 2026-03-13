@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChatBubble } from '@/components/ChatBubble';
 import { ProposeWalkModal } from '@/components/ProposeWalkModal';
+import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { useChatConversationViewModel } from './[matchId].view-model';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
@@ -45,6 +46,7 @@ const ESTIMATED_MESSAGE_HEIGHT = 60;
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function ChatConversationScreen() {
+  usePreventScreenCapture();
   const vm = useChatConversationViewModel();
 
   return (
@@ -186,7 +188,7 @@ export default function ChatConversationScreen() {
 
       <ProposeWalkModal
         visible={vm.showWalkModal}
-        matchId={vm.matchId}
+        matchId={vm.matchId ?? ''}
         onClose={vm.closeWalkModal}
         onPropose={vm.handleProposeWalk}
       />

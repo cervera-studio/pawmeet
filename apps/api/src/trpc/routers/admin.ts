@@ -16,7 +16,7 @@ import {
   users,
 } from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq, gte, ilike, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, ilike, isNotNull, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
@@ -1296,6 +1296,83 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         .where(eq(dogPhotos.moderationStatus, 'pending'));
       return { success: true };
     }),
+
+    // ── Account deletions monitoring ──────────────────────────────────────────
+    listPendingDeletions: adminProcedure
+      .input(
+        z.object({
+          page: z.number().int().min(1).default(1),
+          pageSize: z.number().int().min(1).max(100).default(20),
+        }),
+      )
+      .query(async ({ input }) => {
+        const { page, pageSize } = input;
+        const offset = (page - 1) * pageSize;
+
+        const condition = and(eq(users.isActive, false), isNotNull(users.deletionScheduledAt));
+
+        const [items, [totalRow]] = await Promise.all([
+          db
+            .select({
+              id: users.id,
+              displayName: users.displayName,
+              email: users.email,
+              createdAt: users.createdAt,
+              deletionScheduledAt: users.deletionScheduledAt,
+            })
+            .from(users)
+            .where(condition)
+            .orderBy(users.deletionScheduledAt)
+            .limit(pageSize)
+            .offset(offset),
+          db.select({ value: count() }).from(users).where(condition),
+        ]);
+
+        const total = totalRow?.value ?? 0;
+
+        return {
+          data: items.map((u) => ({
+            id: u.id,
+            displayName: u.displayName,
+            email: maskEmail(u.email),
+            createdAt: u.createdAt,
+            deletionScheduledAt: u.deletionScheduledAt,
+            daysRemaining: u.deletionScheduledAt
+              ? Math.max(
+                  0,
+                  Math.ceil(
+                    (new Date(u.deletionScheduledAt).getTime() - Date.now()) /
+                      (1000 * 60 * 60 * 24),
+                  ),
+                )
+              : 0,
+          })),
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        };
+      }),
+
+    cancelDeletion: adminProcedure
+      .input(z.object({ userId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const [user] = await db
+          .select({ id: users.id, isActive: users.isActive })
+          .from(users)
+          .where(eq(users.id, input.userId));
+
+        if (!user) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+        }
+
+        await db
+          .update(users)
+          .set({ isActive: true, deletionScheduledAt: null })
+          .where(eq(users.id, input.userId));
+
+        return { success: true };
+      }),
 
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────
     getSettings: adminProcedure.query(async () => {

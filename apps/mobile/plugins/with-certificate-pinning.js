@@ -12,6 +12,17 @@ const path = require('node:path');
 // Pinned domains — keep in sync with lib/certificate-pinning.ts
 // We duplicate the config here because config plugins run at build time
 // in a plain Node.js context (no bundler, no TS path aliases).
+//
+// To extract real hashes once the domain is live, run:
+//   scripts/extract-cert-pins.sh
+//
+// Or manually:
+//   echo | openssl s_client -connect api.pawmeet.io:443 \
+//     -servername api.pawmeet.io 2>/dev/null \
+//     | openssl x509 -pubkey -noout \
+//     | openssl pkey -pubin -outform DER \
+//     | openssl dgst -sha256 -binary \
+//     | openssl enc -base64
 const PINNED_DOMAINS = {
   'api.pawmeet.io': {
     pins: [
@@ -25,6 +36,26 @@ const PINNED_DOMAINS = {
     includeSubdomains: true,
   },
 };
+
+const PLACEHOLDER_PATTERN = /^[A-B]{43}=$/;
+
+/**
+ * Validate that certificate pins have been replaced with real hashes.
+ * Throws during EAS Build if placeholders are still present (prevents
+ * shipping a production build without proper pinning).
+ */
+function validatePinsForBuild() {
+  for (const [domain, config] of Object.entries(PINNED_DOMAINS)) {
+    const placeholders = config.pins.filter((pin) => PLACEHOLDER_PATTERN.test(pin));
+    if (placeholders.length > 0) {
+      console.warn(
+        `[with-certificate-pinning] WARNING: Domain "${domain}" has ${placeholders.length} ` +
+          'placeholder pin(s). Replace with real SPKI SHA-256 hashes before production release. ' +
+          'Run: scripts/extract-cert-pins.sh',
+      );
+    }
+  }
+}
 
 // ---------------------------------------------------------------------------
 // iOS — NSAppTransportSecurity > NSPinnedDomains (iOS 14+)
@@ -126,6 +157,7 @@ function withAndroidCertificatePinning(config) {
 
 /** @type {import('expo/config-plugins').ConfigPlugin} */
 const withCertificatePinning = (config) => {
+  validatePinsForBuild();
   config = withIOSCertificatePinning(config);
   config = withAndroidCertificatePinning(config);
   return config;

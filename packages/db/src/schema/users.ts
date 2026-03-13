@@ -4,7 +4,6 @@ import {
   check,
   date,
   doublePrecision,
-  index,
   integer,
   jsonb,
   pgTable,
@@ -45,7 +44,8 @@ export const users = pgTable(
     followingCount: integer('following_count').notNull().default(0),
   },
   (table) => [
-    index('users_location_idx').on(table.latitude, table.longitude),
+    // GiST spatial index managed via SQL migration (0005_add_postgis.sql)
+    // index('users_location_gist_idx') — ST_Point(longitude, latitude)::geography
     check('users_latitude_range', sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`),
     check('users_longitude_range', sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`),
     check(

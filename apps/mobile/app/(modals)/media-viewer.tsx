@@ -2,8 +2,10 @@ import { ResizeMode, Video } from 'expo-av';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 
 export default function MediaViewerScreen() {
+  usePreventScreenCapture();
   const { url, mediaType } = useLocalSearchParams<{ url: string; mediaType: string }>();
   const router = useRouter();
 

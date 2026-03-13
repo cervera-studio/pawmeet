@@ -7,6 +7,7 @@ import { initSentry, Sentry } from './lib/sentry.js';
 import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { corsMiddleware } from './middleware/cors.js';
 import { rateLimitMiddleware } from './middleware/rate-limit.js';
+import { cacheControlMiddleware } from './middleware/cache-control.js';
 import { securityHeadersMiddleware } from './middleware/security-headers.js';
 
 // Initialize Sentry before anything else
@@ -26,6 +27,7 @@ app.use('*', securityHeadersMiddleware);
 app.use('*', corsMiddleware);
 app.use('/api/*', rateLimitMiddleware);
 app.use('/trpc/*', rateLimitMiddleware);
+app.use('/trpc/*', cacheControlMiddleware);
 app.use('/trpc/*', analyticsCountersMiddleware);
 
 /** Scrub PostgreSQL connection strings from error messages */

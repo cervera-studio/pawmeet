@@ -187,5 +187,12 @@ const it = {
   cookie: {},
 } as const;
 
-export type TranslationDictionary = typeof it;
+/** Recursively widen literal string types to `string` so other locales can provide their own values */
+type Widen<T> = T extends string
+  ? string
+  : T extends Record<string, unknown>
+    ? { [K in keyof T]: Widen<T[K]> }
+    : T;
+
+export type TranslationDictionary = Widen<typeof it>;
 export default it;

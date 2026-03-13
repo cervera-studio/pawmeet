@@ -3,6 +3,7 @@ import {
   boolean,
   check,
   doublePrecision,
+  index,
   pgTable,
   timestamp,
   uuid,
@@ -25,6 +26,8 @@ export const matches = pgTable(
     isActive: boolean('is_active').notNull().default(true),
   },
   (table) => [
+    index('idx_matches_dog_a_id').on(table.dogAId),
+    index('idx_matches_dog_b_id').on(table.dogBId),
     check(
       'matches_compatibility_score_range',
       sql`${table.compatibilityScore} >= 0 AND ${table.compatibilityScore} <= 1`,

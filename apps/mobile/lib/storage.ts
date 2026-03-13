@@ -14,7 +14,7 @@ function getOrCreateEncryptionKey(): string {
   const existing = SecureStore.getItem(MMKV_ENCRYPTION_KEY);
   if (existing) return existing;
 
-  const key = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+  const key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
   SecureStore.setItem(MMKV_ENCRYPTION_KEY, key);

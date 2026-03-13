@@ -62,7 +62,7 @@ export function createGetMatchingInsights({
     }));
 
     // Get A/B variant via Statsig
-    const useAi = experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
+    const useAi = await experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
     const experimentVariant = useAi ? 'ai_enhanced' : 'rule_based';
 
     return succeed({

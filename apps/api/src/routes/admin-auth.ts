@@ -1,8 +1,9 @@
 import { zValidator } from '@hono/zod-validator';
-import { compare } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 import { Hono } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
 import { z } from 'zod';
+import { generateOtp, hashToken, PASSWORD_RESET_OTP_EXPIRY_MS } from '../lib/email.js';
 import {
   generateAdminAccessToken,
   generateAdminRefreshToken,
@@ -10,8 +11,13 @@ import {
   verifyAdminAccessToken,
   verifyAdminRefreshToken,
 } from '../lib/jwt.js';
-import { authRateLimitMiddleware } from '../middleware/rate-limit.js';
+import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
+import {
+  authRateLimitMiddleware,
+  passwordResetRateLimitMiddleware,
+} from '../middleware/rate-limit.js';
 import type { AdminUserRepository } from '../ports/admin-user-repository.js';
+import type { EmailService } from '../ports/email-service.js';
 
 const adminLoginSchema = z.object({
   email: z
@@ -21,25 +27,117 @@ const adminLoginSchema = z.object({
   password: z.string().min(1),
 });
 
+const adminForgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .email()
+    .transform((e) => e.toLowerCase().trim()),
+});
+
+const adminResetPasswordSchema = z.object({
+  email: z
+    .string()
+    .email()
+    .transform((e) => e.toLowerCase().trim()),
+  code: z.string().min(1),
+  password: z.string().min(8),
+});
+
 const REFRESH_COOKIE_NAME = 'admin_refresh_token';
 const REFRESH_COOKIE_MAX_AGE = 8 * 60 * 60; // 8 hours in seconds
 
-export function createAdminAuthRoutes(adminUserRepo: AdminUserRepository) {
+/** Account lockout: 5 failed attempts -> locked for 30 minutes */
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION_SECONDS = 30 * 60; // 30 minutes
+const FAILED_ATTEMPTS_PREFIX = 'admin:login:failed:';
+const LOCKOUT_PREFIX = 'admin:login:locked:';
+const RESET_OTP_PREFIX = 'admin:reset-otp:';
+const RESET_OTP_TTL_SECONDS = Math.ceil(PASSWORD_RESET_OTP_EXPIRY_MS / 1000);
+
+interface AdminAuthDeps {
+  adminUserRepo: AdminUserRepository;
+  emailService: EmailService;
+}
+
+/** Lazy-initialized Redis — avoids import-time crash in tests */
+let _redis: InstanceType<typeof import('@upstash/redis').Redis> | null = null;
+async function getRedis() {
+  if (!_redis) {
+    const { redis } = await import('../lib/redis.js');
+    _redis = redis;
+  }
+  return _redis;
+}
+
+/**
+ * Increment failed login attempts for the given email.
+ * When MAX_FAILED_ATTEMPTS is reached, set a lockout key in Redis.
+ * Returns the new attempt count.
+ */
+async function incrementFailedAttempts(
+  redis: InstanceType<typeof import('@upstash/redis').Redis>,
+  email: string,
+): Promise<number> {
+  const key = `${FAILED_ATTEMPTS_PREFIX}${email}`;
+  const attempts = await redis.incr(key);
+
+  // Set TTL on first attempt (auto-expires after lockout window)
+  if (attempts === 1) {
+    await redis.expire(key, LOCKOUT_DURATION_SECONDS);
+  }
+
+  if (attempts >= MAX_FAILED_ATTEMPTS) {
+    await redis.set(`${LOCKOUT_PREFIX}${email}`, '1', { ex: LOCKOUT_DURATION_SECONDS });
+  }
+
+  return attempts;
+}
+
+export function createAdminAuthRoutes(deps: AdminAuthDeps) {
+  const { adminUserRepo, emailService } = deps;
+
   return new Hono()
     .use('/login', authRateLimitMiddleware)
+    .use('/forgot-password', passwordResetRateLimitMiddleware)
+    .use('/reset-password', passwordResetRateLimitMiddleware)
     .post('/login', zValidator('json', adminLoginSchema), async (c) => {
       const body = c.req.valid('json');
+      const redis = await getRedis();
+
+      // Check if account is locked
+      const lockKey = `${LOCKOUT_PREFIX}${body.email}`;
+      const isLocked = await redis.get(lockKey);
+      if (isLocked) {
+        logSecurityEvent({
+          event: SECURITY_EVENT.AccountLocked,
+          email: body.email,
+          metadata: { source: 'admin_login' },
+        });
+        return c.json({ error: 'Account temporaneamente bloccato. Riprova tra 30 minuti' }, 423);
+      }
 
       const admin = await adminUserRepo.findByEmail(body.email);
 
       if (!admin || !admin.isActive) {
+        await incrementFailedAttempts(redis, body.email);
         return c.json({ error: 'Credenziali non valide' }, 401);
       }
 
       const passwordValid = await compare(body.password, admin.passwordHash);
       if (!passwordValid) {
+        const attempts = await incrementFailedAttempts(redis, body.email);
+        if (attempts >= MAX_FAILED_ATTEMPTS) {
+          logSecurityEvent({
+            event: SECURITY_EVENT.AccountLocked,
+            email: body.email,
+            metadata: { source: 'admin_login', attempts },
+          });
+        }
         return c.json({ error: 'Credenziali non valide' }, 401);
       }
+
+      // Successful login — clear failed attempts
+      await redis.del(`${FAILED_ATTEMPTS_PREFIX}${body.email}`);
 
       // Update last login
       await adminUserRepo.updateLastLogin(admin.id);
@@ -145,5 +243,82 @@ export function createAdminAuthRoutes(adminUserRepo: AdminUserRepository) {
       });
 
       return c.json({ success: true });
+    })
+    .post('/forgot-password', zValidator('json', adminForgotPasswordSchema), async (c) => {
+      const { email } = c.req.valid('json');
+
+      // Always return success to prevent email enumeration
+      const admin = await adminUserRepo.findByEmail(email);
+
+      if (admin && admin.isActive) {
+        const otp = generateOtp();
+        const otpHash = await hashToken(otp);
+        const redis = await getRedis();
+
+        // Store OTP hash in Redis with TTL
+        await redis.set(`${RESET_OTP_PREFIX}${email}`, otpHash, {
+          ex: RESET_OTP_TTL_SECONDS,
+        });
+
+        // Fire-and-forget
+        emailService.sendPasswordResetOtp(email, otp).catch(() => {
+          /* swallow — user already sees generic message */
+        });
+      }
+
+      logSecurityEvent({
+        event: SECURITY_EVENT.PasswordResetRequested,
+        email,
+        metadata: { source: 'admin' },
+      });
+
+      return c.json({ message: "Se l'email esiste, riceverai un codice per il reset" });
+    })
+    .post('/reset-password', zValidator('json', adminResetPasswordSchema), async (c) => {
+      const { email, code, password } = c.req.valid('json');
+      const redis = await getRedis();
+
+      const storedHash = await redis.get<string>(`${RESET_OTP_PREFIX}${email}`);
+      if (!storedHash) {
+        logSecurityEvent({
+          event: SECURITY_EVENT.PasswordResetFailed,
+          email,
+          metadata: { reason: 'no_otp_found', source: 'admin' },
+        });
+        return c.json({ error: 'Codice non valido o scaduto' }, 400);
+      }
+
+      const codeHash = await hashToken(code);
+      if (codeHash !== storedHash) {
+        logSecurityEvent({
+          event: SECURITY_EVENT.PasswordResetFailed,
+          email,
+          metadata: { reason: 'invalid_code', source: 'admin' },
+        });
+        return c.json({ error: 'Codice non valido o scaduto' }, 400);
+      }
+
+      const admin = await adminUserRepo.findByEmail(email);
+      if (!admin || !admin.isActive) {
+        return c.json({ error: 'Codice non valido o scaduto' }, 400);
+      }
+
+      // Update password
+      const passwordHash = await hash(password, 12);
+      await adminUserRepo.updatePasswordHash(admin.id, passwordHash);
+
+      // Consume OTP and clear lockout
+      await redis.del(`${RESET_OTP_PREFIX}${email}`);
+      await redis.del(`${FAILED_ATTEMPTS_PREFIX}${email}`);
+      await redis.del(`${LOCKOUT_PREFIX}${email}`);
+
+      logSecurityEvent({
+        event: SECURITY_EVENT.PasswordResetSuccess,
+        userId: admin.id,
+        email,
+        metadata: { source: 'admin' },
+      });
+
+      return c.json({ message: 'Password reimpostata con successo' });
     });
 }

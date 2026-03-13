@@ -141,17 +141,48 @@ export async function uploadObject(key: string, body: string, contentType: strin
   await r2.send(command);
 }
 
+/** MIME types allowed for presigned download URLs (prevents SVG XSS) */
+const ALLOWED_DOWNLOAD_TYPES = new Set<string>([
+  ...ALLOWED_IMAGE_TYPES,
+  ...ALLOWED_VIDEO_TYPES,
+]);
+
+/**
+ * Infer content type from object key extension.
+ */
+function inferContentType(key: string): string | null {
+  const ext = key.split('.').pop()?.toLowerCase();
+  const extMap: Record<string, string> = {
+    jpeg: 'image/jpeg',
+    jpg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+    mp4: 'video/mp4',
+    mov: 'video/quicktime',
+  };
+  return ext ? (extMap[ext] ?? null) : null;
+}
+
 /**
  * Generate a presigned GET URL with configurable expiry.
+ * Validates MIME type to prevent SVG XSS and forces inline content disposition.
  */
 export async function generatePresignedDownloadUrl(
   key: string,
   expiresInSeconds = 900,
 ): Promise<string> {
+  const contentType = inferContentType(key);
+  if (!contentType || !ALLOWED_DOWNLOAD_TYPES.has(contentType)) {
+    throw new Error(`Unsupported file type for download: ${key}`);
+  }
+
   const r2 = await getR2();
+  const filename = key.split('/').pop() ?? 'file';
   const command = new GetObjectCommand({
     Bucket: R2_BUCKET,
     Key: key,
+    ResponseContentDisposition: `inline; filename="${filename}"`,
+    ResponseContentType: contentType,
   });
   return getSignedUrl(r2, command, { expiresIn: expiresInSeconds });
 }

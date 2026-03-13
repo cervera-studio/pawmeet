@@ -156,8 +156,10 @@ export function createDeleteAccount(deps: Deps) {
     Promise.allSettled(deps.analyticsProviders.map((p) => p.deletePerson(userId))).catch(() => {});
 
     // --- Phase 3: Deactivate account ---
+    const deletionDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await userRepo.update(userId, {
       isActive: false,
+      deletionScheduledAt: deletionDate,
       avatarUrl: null,
       // Scrub location data immediately
       latitude: null,

@@ -16,7 +16,30 @@ const PII_FIELDS = new Set([
   'longitude',
   'ip_address',
   'ipAddress',
+  'phone',
+  'phoneNumber',
+  'phone_number',
+  'message',
+  'messageContent',
+  'content',
+  'dogName',
+  'dog_name',
+  'name',
+  'description',
+  'bio',
+  'about',
+  'avatar',
+  'avatarUrl',
+  'avatar_url',
+  'photo',
+  'photoUrl',
+  'photo_url',
+  'imageUrl',
+  'image_url',
 ]);
+
+/** Regex to match PostgreSQL connection strings */
+const PG_CONNECTION_STRING_RE = /postgresql:\/\/[^\s]+@[^\s]+/gi;
 
 /** Recursively strip PII fields from an object */
 function scrubPii(obj: Record<string, unknown>): Record<string, unknown> {
@@ -24,6 +47,10 @@ function scrubPii(obj: Record<string, unknown>): Record<string, unknown> {
   for (const [key, value] of Object.entries(obj)) {
     if (PII_FIELDS.has(key)) {
       result[key] = '[Redacted]';
+    } else if (typeof value === 'string' && PG_CONNECTION_STRING_RE.test(value)) {
+      // Reset lastIndex since the regex is global
+      PG_CONNECTION_STRING_RE.lastIndex = 0;
+      result[key] = value.replace(PG_CONNECTION_STRING_RE, '[Redacted PG Connection]');
     } else if (value && typeof value === 'object' && !Array.isArray(value)) {
       result[key] = scrubPii(value as Record<string, unknown>);
     } else {

@@ -58,6 +58,7 @@ export class DrizzleUserRepository implements UserRepository {
         | 'emailVerified'
         | 'lastLoginAt'
         | 'isActive'
+        | 'deletionScheduledAt'
         | 'notificationPrefs'
       >
     >,

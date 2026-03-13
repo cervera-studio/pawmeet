@@ -127,17 +127,47 @@ export function useChat(matchId?: string) {
           name: 'chat-image.jpg',
         } as unknown as Blob);
 
-        const uploadResponse = await fetch(`${API_URL}/api/chat/${matchId}/upload`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
-        });
+        // Retry with exponential backoff (max 3 attempts)
+        const MAX_RETRIES = 3;
+        let uploadResponse: Response | null = null;
 
-        if (!uploadResponse.ok) {
-          throw new Error(`Upload failed: ${uploadResponse.status}`);
+        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+          try {
+            uploadResponse = await fetch(`${API_URL}/api/chat/${matchId}/upload`, {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${token}` },
+              body: formData,
+            });
+
+            if (uploadResponse.ok) break;
+
+            // Don't retry on client errors (4xx) except 429 (rate limit)
+            if (uploadResponse.status >= 400 && uploadResponse.status < 500 && uploadResponse.status !== 429) {
+              throw new Error(`Upload failed: ${uploadResponse.status}`);
+            }
+          } catch (e) {
+            // Network error — retry unless it's the last attempt
+            if (attempt === MAX_RETRIES - 1) throw e;
+          }
+
+          // Exponential backoff: 1s, 2s, 4s
+          const backoff = 1_000 * 2 ** attempt;
+          await new Promise((resolve) => setTimeout(resolve, backoff));
+          logger.debug('useChat', `Retrying upload (attempt ${attempt + 2}/${MAX_RETRIES})`);
         }
 
-        const { mediaUrl } = await uploadResponse.json();
+        if (!uploadResponse?.ok) {
+          throw new Error(`Upload failed after ${MAX_RETRIES} attempts: ${uploadResponse?.status}`);
+        }
+
+        const body: unknown = await uploadResponse.json();
+
+        // Validate response shape
+        if (!body || typeof body !== 'object' || !('mediaUrl' in body) || typeof (body as Record<string, unknown>).mediaUrl !== 'string') {
+          throw new Error('Upload response missing mediaUrl');
+        }
+
+        const { mediaUrl } = body as { mediaUrl: string };
 
         // Send message with media URL via tRPC
         const { message: msg } = await api.chat.sendMessage.mutate({
@@ -159,7 +189,9 @@ export function useChat(matchId?: string) {
     async (latitude: number, longitude: number, label?: string) => {
       if (!matchId) return;
       try {
-        const content = JSON.stringify({ type: 'location', latitude, longitude, label });
+        const roundedLat = Math.round(latitude * 200) / 200;
+        const roundedLng = Math.round(longitude * 200) / 200;
+        const content = JSON.stringify({ type: 'location', latitude: roundedLat, longitude: roundedLng, label });
         const { message: msg } = await api.chat.sendMessage.mutate({ matchId, content });
         setMessages((prev) => [...prev, msg]);
         getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));

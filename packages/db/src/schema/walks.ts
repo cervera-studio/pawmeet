@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   check,
   doublePrecision,
+  index,
   integer,
   pgTable,
   text,
@@ -33,6 +34,8 @@ export const walks = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    index('idx_walks_match_id').on(table.matchId),
+    index('idx_walks_created_by').on(table.createdBy),
     check('walks_duration_range', sql`${table.durationMin} >= 15 AND ${table.durationMin} <= 180`),
     check('walks_latitude_range', sql`${table.latitude} >= -90 AND ${table.latitude} <= 90`),
     check('walks_longitude_range', sql`${table.longitude} >= -180 AND ${table.longitude} <= 180`),

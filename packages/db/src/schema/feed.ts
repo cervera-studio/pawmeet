@@ -150,6 +150,7 @@ export const stories = pgTable(
   },
   (table) => [
     index('stories_author_idx').on(table.authorId),
+    index('idx_stories_expires_at').on(table.expiresAt),
     check('stories_media_type_valid', sql`${table.mediaType} IN ('photo', 'video')`),
     check('stories_view_count_non_negative', sql`${table.viewCount} >= 0`),
   ],

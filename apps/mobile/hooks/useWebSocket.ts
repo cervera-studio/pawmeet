@@ -36,10 +36,12 @@ function connect(token: string) {
   }
 
   sharedToken = token;
-  const ws = new WebSocket(WS_URL, [`access_token.${token}`]);
+  const ws = new WebSocket(WS_URL);
   sharedWs = ws;
 
   ws.onopen = () => {
+    // Send auth token as first message instead of exposing it in the subprotocol/URL
+    ws.send(JSON.stringify({ type: 'auth', payload: { token } }));
     reconnectAttempt = 0;
     logger.debug('useWebSocket', 'Connected');
   };

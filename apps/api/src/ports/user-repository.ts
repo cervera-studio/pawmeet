@@ -59,6 +59,7 @@ export interface UserRepository {
         | 'emailVerified'
         | 'lastLoginAt'
         | 'isActive'
+        | 'deletionScheduledAt'
         | 'notificationPrefs'
         | 'dateOfBirth'
       >

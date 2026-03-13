@@ -22,6 +22,16 @@ import { z } from 'zod';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import { protectedProcedure, router } from '../trpc.js';
 
+// ── Helpers ─────────────────────────────────────────────────────────────────────
+
+/** Mask an email address: `user@example.com` -> `u***@example.com` */
+function maskEmail(email: string | null | undefined): string {
+  if (!email) return '';
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return '***';
+  return `${local[0]}***@${domain}`;
+}
+
 // ── Admin middleware ────────────────────────────────────────────────────────────
 // Checks that the authenticated user has admin privileges.
 // Uses the same JWT-based auth as protectedProcedure, then verifies admin status
@@ -368,9 +378,9 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         data: items.map((r) => ({
           ...r,
           reporterName: userMap.get(r.reporterId)?.displayName ?? 'Utente sconosciuto',
-          reporterEmail: userMap.get(r.reporterId)?.email ?? '',
+          reporterEmail: maskEmail(userMap.get(r.reporterId)?.email),
           reportedName: userMap.get(r.reportedUserId)?.displayName ?? 'Utente sconosciuto',
-          reportedEmail: userMap.get(r.reportedUserId)?.email ?? '',
+          reportedEmail: maskEmail(userMap.get(r.reportedUserId)?.email),
         })),
         total,
         page,
@@ -495,6 +505,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       return {
         data: items.map((p) => ({
           ...p,
+          authorEmail: maskEmail(p.authorEmail),
           media: mediaByPost.get(p.id) ?? [],
           reportCount: reportCountMap.get(p.id) ?? 0,
         })),

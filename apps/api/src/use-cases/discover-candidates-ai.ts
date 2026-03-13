@@ -169,7 +169,7 @@ export function createDiscoverCandidatesAi({
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
     // Check Statsig feature gate for AI matching
-    const useAi = experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
+    const useAi = await experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
     const variant = useAi ? 'ai_enhanced' : 'rule_based';
 
     // Determine weights based on variant

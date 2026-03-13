@@ -23,6 +23,6 @@ export const routes = new Hono()
   .route('/chat', createChatRoutes(chatDeps))
   .route('/users', createUserRoutes(userDeps))
   .route('/follows', createFollowRoutes(followDeps))
-  .route('/admin/auth', createAdminAuthRoutes(adminDeps.adminUserRepo));
+  .route('/admin/auth', createAdminAuthRoutes(adminDeps));
 
 export type AppType = typeof routes;

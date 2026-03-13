@@ -63,9 +63,36 @@ app.route('/api', routes);
 app.route('/api/events', analytics);
 
 // Admin auth routes — mounted at root level for the admin backoffice
-app.route('/admin/auth', createAdminAuthRoutes(adminDeps.adminUserRepo));
+app.route('/admin/auth', createAdminAuthRoutes(adminDeps));
 
-app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
+app.get('/health', async (c) => {
+  const checks: Record<string, 'ok' | 'fail'> = {};
+
+  // Database connectivity check
+  try {
+    const { db } = await import('./lib/db.js');
+    const { sql } = await import('drizzle-orm');
+    await db.execute(sql`SELECT 1`);
+    checks.database = 'ok';
+  } catch {
+    checks.database = 'fail';
+  }
+
+  // Redis connectivity check
+  try {
+    const { redis } = await import('./lib/redis.js');
+    await redis.ping();
+    checks.redis = 'ok';
+  } catch {
+    checks.redis = 'fail';
+  }
+
+  const allHealthy = Object.values(checks).every((v) => v === 'ok');
+  const status = allHealthy ? 'ok' : 'degraded';
+  const statusCode = allHealthy ? 200 : 503;
+
+  return c.json({ status, timestamp: new Date().toISOString(), checks }, statusCode);
+});
 
 const port = Number(process.env.PORT) || 3000;
 

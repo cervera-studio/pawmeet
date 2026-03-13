@@ -65,6 +65,22 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
           </Text>
         </View>
 
+        {/* AI Training */}
+        <View className="mb-4 rounded-xl bg-gray-50 p-4">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-base font-semibold text-gray-800">Addestramento AI</Text>
+            <Switch
+              value={vm.aiTraining}
+              onValueChange={(v) => vm.setConsent('aiTraining', v)}
+              trackColor={{ true: '#065F46' }}
+            />
+          </View>
+          <Text className="mt-1 text-sm text-gray-500">
+            Aiuta a migliorare il matching addestrando modelli AI sul profilo anonimizzato del tuo
+            cane
+          </Text>
+        </View>
+
         {/* Marketing */}
         <View className="mb-6 rounded-xl bg-gray-50 p-4">
           <View className="flex-row items-center justify-between">

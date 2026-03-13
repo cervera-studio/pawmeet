@@ -27,6 +27,7 @@ export interface User {
   pushToken: string | null;
   notificationPrefs: NotificationPrefs;
   isActive: boolean;
+  deletionScheduledAt: Date | null;
   dateOfBirth: Date | null;
   createdAt: Date;
   lastLoginAt: Date | null;

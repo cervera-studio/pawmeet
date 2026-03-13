@@ -6,6 +6,7 @@ import { Alert } from 'react-native';
 import { useBadges } from '@/hooks/useBadges';
 import { useFeedback } from '@/hooks/useFeedback';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
 
@@ -57,7 +58,18 @@ export function label(value: string): string {
 export function useDogDetailViewModel() {
   const params = useLocalSearchParams<{ dogId: string }>();
   const router = useRouter();
-  const storeDog = useDogsStore((s) => s.dogs.find((d) => d.id === params.dogId));
+  const [paramError, setParamError] = useState<string | null>(null);
+
+  // Validate deep link param
+  useEffect(() => {
+    if (params.dogId && !isValidUUID(params.dogId)) {
+      setParamError('ID cane non valido');
+    }
+  }, [params.dogId]);
+
+  const validDogId = params.dogId && isValidUUID(params.dogId) ? params.dogId : undefined;
+
+  const storeDog = useDogsStore((s) => s.dogs.find((d) => d.id === validDogId));
   const updateDogInStore = useDogsStore((s) => s.updateDog);
   const removeDogFromStore = useDogsStore((s) => s.removeDog);
   const [dog, setDog] = useState<Dog | null>(storeDog ?? null);
@@ -70,9 +82,9 @@ export function useDogDetailViewModel() {
   const { dogRating, fetchDogRating } = useFeedback();
 
   useEffect(() => {
-    if (params.dogId) {
+    if (validDogId) {
       api.dogs.get
-        .query({ id: params.dogId })
+        .query({ id: validDogId })
         .then(({ dog: d, photos: p }) => {
           setDog(d);
           setPhotos(p);
@@ -82,10 +94,10 @@ export function useDogDetailViewModel() {
           logger.warn('DogDetail', 'Failed to fetch dog', e);
           setLoading(false);
         });
-      fetchBadges(params.dogId);
-      fetchDogRating(params.dogId);
+      fetchBadges(validDogId);
+      fetchDogRating(validDogId);
     }
-  }, [params.dogId, fetchBadges, fetchDogRating]);
+  }, [validDogId, fetchBadges, fetchDogRating]);
 
   const handleUploadPhoto = useCallback(async () => {
     if (!dog) return;
@@ -153,6 +165,7 @@ export function useDogDetailViewModel() {
 
   return {
     dog,
+    paramError,
     photos,
     loading,
     deleting,

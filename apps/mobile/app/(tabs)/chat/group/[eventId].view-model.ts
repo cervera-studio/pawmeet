@@ -3,13 +3,25 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FlatList } from 'react-native';
 import { useGroupChat } from '@/hooks/useGroupChat';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { useAuthStore } from '@/stores/auth';
 
 export function useGroupChatConversationViewModel() {
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
+  const [paramError, setParamError] = useState<string | null>(null);
   const userId = useAuthStore((s) => s.user?.id);
+
+  // Validate deep link param
+  useEffect(() => {
+    if (eventId && !isValidUUID(eventId)) {
+      setParamError('ID evento non valido');
+    }
+  }, [eventId]);
+
+  const validEventId = eventId && isValidUUID(eventId) ? eventId : undefined;
+
   const { messages, loadingMessages, hasMore, fetchMessages, sendMessage, markAsRead, loadMore } =
-    useGroupChat(eventId);
+    useGroupChat(validEventId);
 
   const [text, setText] = useState('');
   const flatListRef = useRef<FlatList>(null);
@@ -57,7 +69,8 @@ export function useGroupChatConversationViewModel() {
   const hasText = text.trim().length > 0;
 
   return {
-    eventId,
+    eventId: validEventId,
+    paramError,
     userId,
     messages,
     loadingMessages,

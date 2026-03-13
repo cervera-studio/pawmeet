@@ -20,4 +20,11 @@ export class DrizzleAdminUserRepository implements AdminUserRepository {
   async updateLastLogin(id: string): Promise<void> {
     await this.db.update(adminUsers).set({ lastLoginAt: new Date() }).where(eq(adminUsers.id, id));
   }
+
+  async updatePasswordHash(id: string, passwordHash: string): Promise<void> {
+    await this.db
+      .update(adminUsers)
+      .set({ passwordHash, updatedAt: new Date() })
+      .where(eq(adminUsers.id, id));
+  }
 }

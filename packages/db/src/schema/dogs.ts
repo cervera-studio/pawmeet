@@ -3,6 +3,7 @@ import {
   boolean,
   check,
   doublePrecision,
+  index,
   integer,
   jsonb,
   pgTable,
@@ -43,6 +44,7 @@ export const dogProfiles = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    index('idx_dog_profiles_owner_id').on(table.ownerId),
     check(
       'dog_profiles_size_valid',
       sql`${table.size} IN ('toy', 'piccola', 'media', 'grande', 'gigante')`,

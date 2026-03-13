@@ -150,6 +150,7 @@ import { createPassDog } from './use-cases/pass-dog.js';
 import { createProposeWalk } from './use-cases/propose-walk.js';
 import { createRecordActivityWindow } from './use-cases/record-activity-window.js';
 import { createRecordMatchInteraction } from './use-cases/record-match-interaction.js';
+import { createReactivateAccount } from './use-cases/reactivate-account.js';
 import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
@@ -229,7 +230,10 @@ const storage = new R2StorageService();
 const chat = new WsChatService();
 const notificationService = new BullMQNotificationService();
 const feedRealtime = new WsFeedRealtimeService();
-const experimentService = new StatsigExperimentService(process.env.STATSIG_SERVER_SECRET ?? '');
+const experimentService = new StatsigExperimentService(
+  process.env.STATSIG_SERVER_SECRET ?? '',
+  consentRepo,
+);
 
 // ── Auth deps ───────────────────────────────────────────────────────────────────
 
@@ -304,6 +308,7 @@ export const userDeps = {
     gdprExportRepo,
     enqueueExport: enqueueGdprExport,
   }),
+  reactivateAccount: createReactivateAccount({ userRepo, authService }),
   submitDateOfBirth: createSubmitDateOfBirth({ userRepo }),
 };
 
@@ -569,6 +574,7 @@ export const followDeps = {
 
 export const adminDeps = {
   adminUserRepo,
+  emailService,
 };
 
 // ── Data cleanup worker deps ─────────────────────────────────────────────────

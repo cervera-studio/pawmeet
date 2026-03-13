@@ -29,12 +29,7 @@ function getRefreshSecret(): Uint8Array {
 
 function getAdminJwtSecret(): Uint8Array {
   if (!_adminJwtSecret) {
-    // Falls back to JWT_SECRET for backwards compatibility during migration
-    const value = process.env.JWT_ADMIN_SECRET ?? process.env.JWT_SECRET;
-    if (!value) {
-      throw new Error('JWT_ADMIN_SECRET (or JWT_SECRET) environment variable is required');
-    }
-    _adminJwtSecret = new TextEncoder().encode(value);
+    _adminJwtSecret = requireEnv('JWT_ADMIN_SECRET');
   }
   return _adminJwtSecret;
 }

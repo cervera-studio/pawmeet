@@ -1,5 +1,6 @@
 import '../global.css';
 
+import * as Crypto from 'expo-crypto';
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';
 import { SplashScreen, Stack } from 'expo-router';
@@ -87,15 +88,9 @@ function AuthHydrator() {
 const STATSIG_CLIENT_KEY = process.env.EXPO_PUBLIC_STATSIG_CLIENT_KEY ?? '';
 
 /** Pseudonymize userId for third-party services (GDPR compliance) */
-function hashUserId(userId: string): string {
-  // Simple hash for client-side — server uses HMAC-SHA256 with salt
-  let hash = 0;
-  for (let i = 0; i < userId.length; i++) {
-    const char = userId.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return `anon_${Math.abs(hash).toString(36)}`;
+async function hashUserId(userId: string): Promise<string> {
+  const hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, userId);
+  return `anon_${hash.substring(0, 16)}`;
 }
 
 /** Checks certificate pin expiry on startup and warns via Sentry. */
@@ -134,9 +129,19 @@ function RootLayout() {
    * userId is pseudonymized (hashed) to avoid sending raw UUIDs to third parties.
    * Event logging for A/B experiments is consent-gated separately at the service layer.
    */
+  const [hashedUserId, setHashedUserId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (!userId) {
+      setHashedUserId(undefined);
+      return;
+    }
+    hashUserId(userId).then(setHashedUserId);
+  }, [userId]);
+
   const statsigUser = useMemo(
-    () => ({ userID: userId ? hashUserId(userId) : undefined }),
-    [userId],
+    () => ({ userID: hashedUserId }),
+    [hashedUserId],
   );
 
   return (

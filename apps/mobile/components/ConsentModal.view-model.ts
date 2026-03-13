@@ -36,6 +36,7 @@ export function useConsentModalViewModel(onDismiss: () => void) {
     abTesting: local.abTesting,
     errorTracking: local.errorTracking,
     marketing: local.marketing,
+    aiTraining: local.aiTraining,
     setConsent,
     acceptSelected,
     rejectAll,

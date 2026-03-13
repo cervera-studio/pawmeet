@@ -1,7 +1,7 @@
-import { gdprExports, users } from '@pawmeet/db';
+import { gdprExports, messages, users } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { and, eq, isNotNull, lt, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNotNull, lt, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { StorageService } from '../ports/storage-service.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
@@ -26,13 +26,19 @@ export function createDataCleanupWorker(deps: DataCleanupDeps) {
     async () => {
       logger.info('DataCleanup', 'Running account purge for deactivated accounts...');
 
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const now = new Date();
 
-      // Find and hard-delete users deactivated > 30 days ago
+      // Find and hard-delete users whose deletion grace period has expired
       // ON DELETE CASCADE handles all FK relationships
       const deleted = await db
         .delete(users)
-        .where(and(eq(users.isActive, false), lt(users.lastLoginAt, thirtyDaysAgo)))
+        .where(
+          and(
+            eq(users.isActive, false),
+            isNotNull(users.deletionScheduledAt),
+            lt(users.deletionScheduledAt, now),
+          ),
+        )
         .returning({ id: users.id, email: users.email });
 
       if (deleted.length > 0) {
@@ -49,13 +55,34 @@ export function createDataCleanupWorker(deps: DataCleanupDeps) {
         count: tokenCleanup.rowCount,
       });
 
-      // Clean up expired verification tokens (used or expired)
+      // Clean up expired verification tokens (used or expired > 7 days ago)
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
       const verificationCleanup = await db.execute(
-        sql`DELETE FROM verification_tokens WHERE used = true OR expires_at < NOW()`,
+        sql`DELETE FROM verification_tokens WHERE used_at IS NOT NULL OR expires_at < ${sevenDaysAgo}`,
       );
       logger.info('DataCleanup', 'Cleaned expired verification tokens', {
         count: verificationCleanup.rowCount,
       });
+
+      // Hard-delete soft-deleted messages from inactive matches (6+ months old)
+      const sixMonthsAgo = new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000);
+      const staleMatchIds = await db.execute<{ id: string }>(
+        sql`SELECT id FROM matches WHERE is_active = false AND created_at < ${sixMonthsAgo}`,
+      );
+
+      if (staleMatchIds.rows.length > 0) {
+        const matchIds = staleMatchIds.rows.map((r) => r.id);
+        const msgCleanup = await db
+          .delete(messages)
+          .where(and(eq(messages.isDeleted, true), inArray(messages.matchId, matchIds)));
+
+        logger.info('DataCleanup', 'Hard-deleted soft-deleted messages from stale matches', {
+          matchCount: matchIds.length,
+          deletedRows: msgCleanup.rowCount,
+        });
+      } else {
+        logger.info('DataCleanup', 'No stale matches with soft-deleted messages to purge');
+      }
 
       // Clean up expired GDPR export files from R2 and DB
       const expiredExports = await db

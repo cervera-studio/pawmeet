@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { check, pgTable, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { check, index, pgTable, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const userBlocks = pgTable(
@@ -16,6 +16,8 @@ export const userBlocks = pgTable(
   },
   (table) => [
     uniqueIndex('user_blocks_pair_idx').on(table.blockerId, table.blockedId),
+    index('idx_user_blocks_blocker_id').on(table.blockerId),
+    index('idx_user_blocks_blocked_id').on(table.blockedId),
     check('user_blocks_no_self_block', sql`${table.blockerId} != ${table.blockedId}`),
   ],
 );

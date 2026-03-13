@@ -2,6 +2,7 @@ import {
   confirmUploadSchema,
   deleteAccountSchema,
   nearbySchema,
+  reactivateAccountSchema,
   registerPushTokenSchema,
   submitDateOfBirthSchema,
   updateLocationSchema,
@@ -84,6 +85,15 @@ export function createUsersRouter(deps: typeof userDeps) {
           dogCount: result.dogCount,
           matchCount: result.matchCount,
         });
+        return { message: result.message };
+      }),
+
+    reactivateAccount: protectedProcedure
+      .input(reactivateAccountSchema)
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
+          await deps.reactivateAccount(ctx.userId, input.password),
+        );
         return { message: result.message };
       }),
 

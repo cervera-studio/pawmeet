@@ -1,5 +1,14 @@
 import { sql } from 'drizzle-orm';
-import { boolean, check, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  check,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { matches } from './matches';
 import { users } from './users';
 
@@ -20,6 +29,8 @@ export const messages = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    index('idx_messages_match_id').on(table.matchId),
+    index('idx_messages_sender_id').on(table.senderId),
     check('messages_status_valid', sql`${table.status} IN ('sent', 'delivered', 'read')`),
   ],
 );

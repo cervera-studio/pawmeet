@@ -25,9 +25,9 @@ async function isWsRateLimited(userId: string): Promise<boolean> {
     const { success } = await limiter.limit(userId);
     return !success;
   } catch (err) {
-    // If Redis is unavailable, allow the message through (fail-open)
-    logger.warn('WebSocket', 'Rate limit check failed, allowing message', err);
-    return false;
+    // If Redis is unavailable, reject the message (fail-closed)
+    logger.error('WebSocket', 'Rate limit check failed, blocking message', err);
+    return true;
   }
 }
 

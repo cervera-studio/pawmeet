@@ -14,4 +14,5 @@ export interface AdminUserRepository {
   findByEmail(email: string): Promise<AdminUser | null>;
   findById(id: string): Promise<AdminUser | null>;
   updateLastLogin(id: string): Promise<void>;
+  updatePasswordHash(id: string, passwordHash: string): Promise<void>;
 }

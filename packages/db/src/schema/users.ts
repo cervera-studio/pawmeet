@@ -40,6 +40,7 @@ export const users = pgTable(
     dateOfBirth: date('date_of_birth', { mode: 'date' }),
     pushToken: text('push_token'),
     lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
+    deletionScheduledAt: timestamp('deletion_scheduled_at', { withTimezone: true }),
     followersCount: integer('followers_count').notNull().default(0),
     followingCount: integer('following_count').notNull().default(0),
   },

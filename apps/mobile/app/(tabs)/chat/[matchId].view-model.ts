@@ -6,11 +6,23 @@ import type { FlatList } from 'react-native';
 import { useChat } from '@/hooks/useChat';
 import { useLocation } from '@/hooks/useLocation';
 import { useWalks } from '@/hooks/useWalks';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { useAuthStore } from '@/stores/auth';
 
 export function useChatConversationViewModel() {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
+  const [paramError, setParamError] = useState<string | null>(null);
   const userId = useAuthStore((s) => s.user?.id);
+
+  // Validate deep link param
+  useEffect(() => {
+    if (matchId && !isValidUUID(matchId)) {
+      setParamError('ID conversazione non valido');
+    }
+  }, [matchId]);
+
+  const validMatchId = matchId && isValidUUID(matchId) ? matchId : undefined;
+
   const {
     messages,
     isTyping,
@@ -22,7 +34,7 @@ export function useChatConversationViewModel() {
     sendLocation,
     sendTyping,
     markAsRead,
-  } = useChat(matchId);
+  } = useChat(validMatchId);
   const { coordinates, getCurrentLocation } = useLocation();
   const { proposeWalk } = useWalks();
   const [text, setText] = useState('');
@@ -120,7 +132,8 @@ export function useChatConversationViewModel() {
   const hasText = text.trim().length > 0;
 
   return {
-    matchId,
+    matchId: validMatchId,
+    paramError,
     userId,
     messages,
     isTyping,

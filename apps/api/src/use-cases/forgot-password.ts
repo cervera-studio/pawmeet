@@ -20,9 +20,12 @@ interface Deps {
   emailService: EmailService;
 }
 
+const MINIMUM_RESPONSE_MS = 500;
+
 export function createForgotPassword(deps: Deps) {
   return async (email: string): Promise<Result<ForgotPasswordOutput>> => {
     const { userRepo, tokenRepo, authService, emailService } = deps;
+    const startTime = Date.now();
 
     // Always return success to prevent email enumeration
     const user = await userRepo.findByEmail(email);
@@ -48,6 +51,12 @@ export function createForgotPassword(deps: Deps) {
     }
 
     logSecurityEvent({ event: SECURITY_EVENT.PasswordResetRequested, email });
+
+    // Constant-time delay to prevent email enumeration via response timing
+    const elapsed = Date.now() - startTime;
+    if (elapsed < MINIMUM_RESPONSE_MS) {
+      await new Promise((resolve) => setTimeout(resolve, MINIMUM_RESPONSE_MS - elapsed));
+    }
 
     return succeed({ message: "Se l'email esiste, riceverai un codice per il reset" });
   };

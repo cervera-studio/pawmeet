@@ -83,6 +83,7 @@ export function buildUser(overrides: Partial<User> = {}): User {
     notificationPrefs: { matches: true, messages: true, reminders: true, feed: true },
     dateOfBirth: new Date('1995-06-15'),
     isActive: true,
+    deletionScheduledAt: null,
     createdAt: new Date('2026-01-01'),
     lastLoginAt: null,
     followersCount: 0,

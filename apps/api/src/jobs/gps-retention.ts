@@ -28,7 +28,7 @@ export function createGpsRetentionWorker(deps: GpsRetentionDeps) {
 
       const result = await db.execute(
         sql`DELETE FROM walk_track_points
-            WHERE recorded_at < NOW() - INTERVAL '${sql.raw(String(GPS_RETENTION_DAYS))} days'`,
+            WHERE timestamp < NOW() - INTERVAL '${sql.raw(String(GPS_RETENTION_DAYS))} days'`,
       );
 
       logger.info('GpsRetention', `Purged ${result.rowCount ?? 0} GPS track points`);

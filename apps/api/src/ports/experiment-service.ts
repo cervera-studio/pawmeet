@@ -6,23 +6,30 @@ export interface ExperimentService {
   /** Shut down the service. Call on app shutdown. */
   shutdown(): Promise<void>;
 
-  /** Check a feature gate for a user. */
-  checkGate(userId: string, gateName: string): boolean;
+  /** Check a feature gate for a user. Returns false if user has not consented. */
+  checkGate(userId: string, gateName: string): boolean | Promise<boolean>;
 
-  /** Get experiment variant value for a user. */
+  /** Get experiment variant value for a user. Returns defaults if user has not consented. */
   getExperiment(
     userId: string,
     experimentName: string,
-  ): { value: boolean; groupName: string | null };
+  ):
+    | { value: boolean; groupName: string | null }
+    | Promise<{ value: boolean; groupName: string | null }>;
 
-  /** Get a dynamic config parameter for a user. */
-  getConfigValue<T>(userId: string, configName: string, paramName: string, fallback: T): T;
+  /** Get a dynamic config parameter for a user. Returns fallback if user has not consented. */
+  getConfigValue<T>(
+    userId: string,
+    configName: string,
+    paramName: string,
+    fallback: T,
+  ): T | Promise<T>;
 
-  /** Log a custom event for metrics/analytics. */
+  /** Log a custom event for metrics/analytics. No-op if user has not consented. */
   logEvent(
     userId: string,
     eventName: string,
     value?: string | number,
     metadata?: Record<string, string>,
-  ): void;
+  ): void | Promise<void>;
 }

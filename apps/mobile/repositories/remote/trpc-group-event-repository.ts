@@ -8,16 +8,13 @@ import type {
 export function createTrpcGroupEventRepository(api: ApiClient): GroupEventRepository {
   return {
     async listNearby(params: NearbyEventsParams) {
-      const result = await api.groupEvents.listNearby.query(params);
-      return result as Awaited<ReturnType<GroupEventRepository['listNearby']>>;
+      return api.groupEvents.listNearby.query(params);
     },
     async getById(eventId) {
-      const result = await api.groupEvents.get.query({ eventId });
-      return result as Awaited<ReturnType<GroupEventRepository['getById']>>;
+      return api.groupEvents.get.query({ eventId });
     },
     async create(input: CreateGroupEventInput) {
-      const result = await api.groupEvents.create.mutate(input);
-      return result as Awaited<ReturnType<GroupEventRepository['create']>>;
+      return api.groupEvents.create.mutate(input);
     },
     async join(eventId, dogId) {
       await api.groupEvents.join.mutate({ eventId, dogId });

@@ -4,12 +4,10 @@ import type { ActivityRepository, StatsPeriod } from '../interfaces';
 export function createTrpcActivityRepository(api: ApiClient): ActivityRepository {
   return {
     async getStats(period: StatsPeriod) {
-      const result = await api.fitness.getStats.query({ period });
-      return result as Awaited<ReturnType<ActivityRepository['getStats']>>;
+      return api.fitness.getStats.query({ period });
     },
     async getDogGoal(dogId) {
-      const result = await api.fitness.getDogGoal.query({ dogId });
-      return result as Awaited<ReturnType<ActivityRepository['getDogGoal']>>;
+      return api.fitness.getDogGoal.query({ dogId });
     },
   };
 }

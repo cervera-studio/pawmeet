@@ -14,7 +14,7 @@ export function createTrpcUserRepository(api: ApiClient): UserRepository {
     },
     async submitDateOfBirth(dateOfBirth) {
       const result = await api.users.submitDateOfBirth.mutate({ dateOfBirth });
-      return result as { message: string };
+      return { message: result.message };
     },
   };
 }

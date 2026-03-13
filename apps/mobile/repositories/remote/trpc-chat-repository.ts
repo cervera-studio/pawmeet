@@ -9,8 +9,7 @@ export function createTrpcChatRepository(
 ): ChatRepository {
   return {
     async listConversations() {
-      const result = await api.chat.listConversations.query();
-      return result as Awaited<ReturnType<ChatRepository['listConversations']>>;
+      return api.chat.listConversations.query();
     },
     async getMessages(matchId) {
       return api.chat.getMessages.query({ matchId });
@@ -24,6 +23,7 @@ export function createTrpcChatRepository(
     async uploadImage(matchId, imageUri) {
       const token = getToken();
       const formData = new FormData();
+      // RN FormData accepts { uri, type, name } objects but TS types expect Blob
       formData.append('image', {
         uri: imageUri,
         type: 'image/jpeg',
@@ -35,7 +35,8 @@ export function createTrpcChatRepository(
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-      return response.json() as Promise<{ mediaUrl: string }>;
+      const json: { mediaUrl: string } = await response.json();
+      return json;
     },
   };
 }

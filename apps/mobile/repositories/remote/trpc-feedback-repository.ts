@@ -1,6 +1,6 @@
 import type { ApiClient } from '@pawmeet/api-client';
 import type { FeedbackRating } from '@pawmeet/types';
-import type { DogRating, FeedbackRepository } from '../interfaces';
+import type { FeedbackRepository } from '../interfaces';
 
 export function createTrpcFeedbackRepository(api: ApiClient): FeedbackRepository {
   return {
@@ -9,7 +9,7 @@ export function createTrpcFeedbackRepository(api: ApiClient): FeedbackRepository
     },
     async getDogRating(dogId) {
       const result = await api.feedback.getDogRating.query({ dogId });
-      return result as DogRating;
+      return { average: result.average, count: result.count };
     },
   };
 }

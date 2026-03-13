@@ -29,6 +29,13 @@ vi.mock('../lib/db.js', () => ({
 
 vi.mock('@pawmeet/db', () => ({
   analyticsEvents: { clientEventId: 'client_event_id' },
+  CONSENT_TYPE: {
+    Analytics: 'analytics',
+    AbTesting: 'ab_testing',
+    ErrorTracking: 'error_tracking',
+    Marketing: 'marketing',
+    AiTraining: 'ai_training',
+  },
 }));
 
 vi.mock('./queue.js', () => ({

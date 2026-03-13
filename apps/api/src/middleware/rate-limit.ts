@@ -94,8 +94,45 @@ async function getPasswordResetLimiter(): Promise<Ratelimit> {
   return _passwordResetLimiter;
 }
 
-/** Strict rate limit for password reset: 3 attempts per hour */
+/** Strict rate limit for password reset: 3 attempts per hour (per IP) */
 export const passwordResetRateLimitMiddleware = createRateLimitMiddleware(getPasswordResetLimiter);
+
+let _passwordResetEmailLimiter: Ratelimit | null = null;
+
+async function getPasswordResetEmailLimiter(): Promise<Ratelimit> {
+  if (!_passwordResetEmailLimiter) {
+    _passwordResetEmailLimiter = new Ratelimit({
+      redis: await getRedis(),
+      limiter: Ratelimit.slidingWindow(3, '24h'),
+      prefix: 'rl:pwd-reset-email',
+    });
+  }
+  return _passwordResetEmailLimiter;
+}
+
+/**
+ * Per-email rate limit for password reset: 3 requests per email per 24 hours.
+ * Must be applied AFTER body validation so `email` is available in the request.
+ */
+export const passwordResetEmailRateLimitMiddleware: MiddlewareHandler = async (c, next) => {
+  const body = await c.req.raw.clone().json().catch(() => null);
+  const email = (body as { email?: string } | null)?.email;
+
+  if (email) {
+    const limiter = await getPasswordResetEmailLimiter();
+    // Normalize email to lowercase to prevent bypass via casing
+    const { success, remaining, reset } = await limiter.limit(email.toLowerCase());
+
+    c.header('X-RateLimit-Remaining', String(remaining));
+    c.header('X-RateLimit-Reset', String(reset));
+
+    if (!success) {
+      return c.json({ error: 'Troppe richieste per questo indirizzo email, riprova più tardi' }, 429);
+    }
+  }
+
+  await next();
+};
 
 let _analyticsLimiter: Ratelimit | null = null;
 

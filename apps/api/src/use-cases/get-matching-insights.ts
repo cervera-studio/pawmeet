@@ -28,7 +28,7 @@ export function createGetMatchingInsights({
     }
 
     // Get swipe history stats
-    const swipeLogs = await matchingAiRepo.findSwipeScoreLogsByDog(dogId, 500);
+    const { logs: swipeLogs } = await matchingAiRepo.findSwipeScoreLogsByDog(dogId, { limit: 500 });
     const totalSwipes = swipeLogs.length;
     const totalLikes = swipeLogs.filter((s) => s.direction === 'like').length;
 

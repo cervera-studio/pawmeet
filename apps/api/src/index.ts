@@ -28,10 +28,17 @@ app.use('/api/*', rateLimitMiddleware);
 app.use('/trpc/*', rateLimitMiddleware);
 app.use('/trpc/*', analyticsCountersMiddleware);
 
+/** Scrub PostgreSQL connection strings from error messages */
+const PG_CONN_RE = /postgresql:\/\/[^\s]+@[^\s/]+\/[^\s]*/gi;
+function redactConnectionStrings(message: string): string {
+  return message.replace(PG_CONN_RE, 'postgresql://***@***/***');
+}
+
 // Global error handler — consistent JSON error responses
 app.onError((err, c) => {
   const errorId = crypto.randomUUID().slice(0, 8);
-  console.error(`[ERROR:${errorId}] ${c.req.method} ${c.req.url}:`, err.message);
+  const safeMessage = redactConnectionStrings(err.message);
+  console.error(`[ERROR:${errorId}] ${c.req.method} ${c.req.url}:`, safeMessage);
 
   Sentry.withScope((scope) => {
     scope.setTag('errorId', errorId);

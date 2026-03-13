@@ -1,5 +1,6 @@
 import {
   analyticsProviders,
+  analyticsWorkerDeps,
   dataCleanupDeps,
   eventStatusDeps,
   gdprExportWorkerDeps,
@@ -37,7 +38,7 @@ export async function startWorkers() {
   const notifWorker = createNotificationWorker();
   const emailWorker = createEmailWorker();
   const eventStatusWorker = createEventStatusWorker(eventStatusDeps);
-  const analyticsWorker = createAnalyticsWorker(analyticsProviders);
+  const analyticsWorker = createAnalyticsWorker(analyticsWorkerDeps);
   const aggregationWorker = createAnalyticsAggregationWorker();
   const dataCleanupWorker = createDataCleanupWorker(dataCleanupDeps);
   const gdprExportWorker = createGdprExportWorker(gdprExportWorkerDeps);

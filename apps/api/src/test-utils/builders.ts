@@ -906,7 +906,7 @@ export function buildMatchingAiRepo(
       overallScore: 0.72,
       createdAt: new Date(),
     }),
-    findSwipeScoreLogsByDog: vi.fn().mockResolvedValue([]),
+    findSwipeScoreLogsByDog: vi.fn().mockResolvedValue({ logs: [], nextCursor: null }),
     findUserPreferences: vi.fn().mockResolvedValue(null),
     upsertUserPreferences: vi
       .fn()

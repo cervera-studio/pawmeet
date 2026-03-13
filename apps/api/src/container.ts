@@ -277,6 +277,13 @@ export const analyticsProviders: AnalyticsProvider[] = process.env.POSTHOG_API_K
     ]
   : [];
 
+// ── Analytics worker deps ─────────────────────────────────────────────────────
+
+export const analyticsWorkerDeps = {
+  providers: analyticsProviders,
+  consentRepo,
+};
+
 // ── User deps ───────────────────────────────────────────────────────────────────
 
 export const userDeps = {

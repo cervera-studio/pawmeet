@@ -15,6 +15,7 @@ import type { authDeps as AuthDeps } from '../container.js';
 import { handleResult } from '../lib/result.js';
 import {
   authRateLimitMiddleware,
+  passwordResetEmailRateLimitMiddleware,
   passwordResetRateLimitMiddleware,
 } from '../middleware/rate-limit.js';
 
@@ -23,6 +24,7 @@ export function createAuthRoutes(deps: typeof AuthDeps) {
     .use('/login', authRateLimitMiddleware)
     .use('/register', authRateLimitMiddleware)
     .use('/forgot-password', passwordResetRateLimitMiddleware)
+    .use('/forgot-password', passwordResetEmailRateLimitMiddleware)
     .use('/reset-password', passwordResetRateLimitMiddleware)
     .use('/social-login', authRateLimitMiddleware)
     .use('/verify-email-otp', authRateLimitMiddleware)

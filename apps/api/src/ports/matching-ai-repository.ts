@@ -21,7 +21,10 @@ export interface MatchingAiRepository {
     overallScore: number;
   }): Promise<SwipeScoreLog>;
 
-  findSwipeScoreLogsByDog(dogId: string, limit?: number): Promise<SwipeScoreLog[]>;
+  findSwipeScoreLogsByDog(
+    dogId: string,
+    options?: { limit?: number; cursor?: string | null },
+  ): Promise<{ logs: SwipeScoreLog[]; nextCursor: string | null }>;
 
   // User matching preferences
   findUserPreferences(userId: string): Promise<UserMatchingPreferences | null>;

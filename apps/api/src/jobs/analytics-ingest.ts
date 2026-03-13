@@ -1,14 +1,31 @@
 import { ANALYTICS_MAX_EVENT_AGE_DAYS, ANALYTICS_WORKER_CONCURRENCY } from '@pawmeet/config';
-import { analyticsEvents } from '@pawmeet/db';
+import { analyticsEvents, CONSENT_TYPE } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
+import type { ConsentRepository } from '../infra/drizzle-consent-repository.js';
 import { PostHogAnalyticsProvider } from '../infra/posthog-analytics-provider.js';
 import { db } from '../lib/db.js';
 import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 import type { AnalyticsJobData } from './queue.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
 
-export function createAnalyticsWorker(providers: AnalyticsProvider[] = []) {
+interface AnalyticsWorkerDeps {
+  providers?: AnalyticsProvider[];
+  consentRepo: ConsentRepository;
+}
+
+export function createAnalyticsWorker(deps: AnalyticsWorkerDeps): Worker<AnalyticsJobData>;
+/**
+ * @deprecated Pass `{ providers, consentRepo }` object instead.
+ */
+export function createAnalyticsWorker(providers: AnalyticsProvider[]): Worker<AnalyticsJobData>;
+export function createAnalyticsWorker(
+  depsOrProviders: AnalyticsWorkerDeps | AnalyticsProvider[] = [],
+) {
+  const providers = Array.isArray(depsOrProviders)
+    ? depsOrProviders
+    : (depsOrProviders.providers ?? []);
+  const consentRepo = Array.isArray(depsOrProviders) ? null : depsOrProviders.consentRepo;
   const maxAgeMs = ANALYTICS_MAX_EVENT_AGE_DAYS * 24 * 60 * 60 * 1000;
 
   const worker = new Worker<AnalyticsJobData>(
@@ -44,8 +61,40 @@ export function createAnalyticsWorker(providers: AnalyticsProvider[] = []) {
       });
 
       // Forward to external providers (PostHog, future OpenPanel) — best-effort
+      // Only forward events from users who have granted analytics consent
       if (providers.length > 0) {
-        const providerEvents = PostHogAnalyticsProvider.toProviderEvents(valid);
+        let consentedEvents = valid;
+
+        if (consentRepo) {
+          // Collect unique user IDs and batch-check analytics consent
+          const userIds = [...new Set(valid.map((e) => e.userId).filter(Boolean))] as string[];
+          const consentedUserIds = new Set<string>();
+
+          await Promise.all(
+            userIds.map(async (uid) => {
+              try {
+                const consents = await consentRepo.findByUser(uid);
+                const analyticsConsent = consents.find(
+                  (c) => c.consentType === CONSENT_TYPE.Analytics,
+                );
+                if (analyticsConsent?.granted) {
+                  consentedUserIds.add(uid);
+                }
+              } catch (err) {
+                logger.warn(
+                  'analytics',
+                  `Consent check failed for ${uid}, skipping provider forward: ${err instanceof Error ? err.message : err}`,
+                );
+              }
+            }),
+          );
+
+          consentedEvents = valid.filter(
+            (e) => e.userId != null && consentedUserIds.has(e.userId),
+          );
+        }
+
+        const providerEvents = PostHogAnalyticsProvider.toProviderEvents(consentedEvents);
         if (providerEvents.length > 0) {
           await Promise.allSettled(
             providers.map(async (provider) => {

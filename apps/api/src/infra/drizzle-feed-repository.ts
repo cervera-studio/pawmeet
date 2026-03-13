@@ -35,7 +35,9 @@ function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
     const decoded = Buffer.from(cursor, 'base64').toString('utf-8');
     const [iso, id] = decoded.split('|');
     if (!iso || !id) return null;
-    return { createdAt: new Date(iso), id };
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return null;
+    return { createdAt: date, id };
   } catch {
     return null;
   }

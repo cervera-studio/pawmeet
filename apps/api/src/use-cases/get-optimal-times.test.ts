@@ -6,7 +6,7 @@ import { createGetOptimalTimes } from './get-optimal-times.js';
 function buildMatchingAiRepo(overrides: Partial<MatchingAiRepository> = {}): MatchingAiRepository {
   return {
     createSwipeScoreLog: vi.fn(),
-    findSwipeScoreLogsByDog: vi.fn().mockResolvedValue([]),
+    findSwipeScoreLogsByDog: vi.fn().mockResolvedValue({ logs: [], nextCursor: null }),
     findUserPreferences: vi.fn().mockResolvedValue(null),
     upsertUserPreferences: vi.fn(),
     createMatchInteraction: vi.fn(),

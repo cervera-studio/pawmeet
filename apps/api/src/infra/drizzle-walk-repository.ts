@@ -1,6 +1,6 @@
-import { dogProfiles, matches, walkFeedback, walks } from '@pawmeet/db';
+import { matches, walkFeedback, walks } from '@pawmeet/db';
 import type { Walk, WalkStatus } from '@pawmeet/types';
-import { and, avg, count, eq, gt, inArray, or } from 'drizzle-orm';
+import { and, avg, count, eq, inArray, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { WalkRepository } from '../ports/walk-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
@@ -24,50 +24,27 @@ export class DrizzleWalkRepository implements WalkRepository {
   }
 
   async findUpcoming(userId: string): Promise<Walk[]> {
-    // Find all dogs owned by this user
-    const userDogs = await this.db
-      .select({ id: dogProfiles.id })
-      .from(dogProfiles)
-      .where(eq(dogProfiles.ownerId, userId));
+    // Single CTE query: user dogs → active matches → upcoming walks
+    const result = await this.db.execute(sql`
+      WITH user_dogs AS (
+        SELECT id FROM dog_profiles
+        WHERE owner_id = ${userId}
+      ),
+      user_matches AS (
+        SELECT m.id
+        FROM matches m
+        JOIN user_dogs ud ON (m.dog_a_id = ud.id OR m.dog_b_id = ud.id)
+        WHERE m.is_active = true
+      )
+      SELECT w.*
+      FROM walks w
+      JOIN user_matches um ON w.match_id = um.id
+      WHERE w.scheduled_at > NOW()
+        AND w.status IN ('pending', 'accepted')
+      ORDER BY w.scheduled_at ASC
+    `);
 
-    if (userDogs.length === 0) return [];
-
-    const dogIds = userDogs.map((d) => d.id);
-
-    // Find all active matches where user's dogs participate
-    const userMatches = await this.db
-      .select({ id: matches.id })
-      .from(matches)
-      .where(
-        and(
-          eq(matches.isActive, true),
-          or(
-            ...dogIds.map((id) => eq(matches.dogAId, id)),
-            ...dogIds.map((id) => eq(matches.dogBId, id)),
-          ),
-        ),
-      );
-
-    if (userMatches.length === 0) return [];
-
-    const matchIds = userMatches.map((m) => m.id);
-
-    // Find upcoming walks for those matches
-    const rows = await this.db
-      .select()
-      .from(walks)
-      .where(
-        and(
-          inArray(walks.matchId, matchIds),
-          gt(walks.scheduledAt, new Date()),
-          inArray(walks.status, ['pending', 'accepted']),
-        ),
-      );
-
-    // Sort by scheduledAt ascending
-    return rowsAs<Walk>(rows).sort(
-      (a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime(),
-    );
+    return rowsAs<Walk>(result.rows as Record<string, unknown>[]);
   }
 
   async updateStatus(id: string, status: WalkStatus): Promise<Walk> {

@@ -6,7 +6,7 @@ import { createLearnUserPreferences } from './learn-user-preferences.js';
 function buildMatchingAiRepo(overrides: Partial<MatchingAiRepository> = {}): MatchingAiRepository {
   return {
     createSwipeScoreLog: vi.fn(),
-    findSwipeScoreLogsByDog: vi.fn().mockResolvedValue([]),
+    findSwipeScoreLogsByDog: vi.fn().mockResolvedValue({ logs: [], nextCursor: null }),
     findUserPreferences: vi.fn().mockResolvedValue(null),
     upsertUserPreferences: vi
       .fn()
@@ -68,7 +68,7 @@ describe('learnUserPreferences', () => {
     ];
 
     const matchingAiRepo = buildMatchingAiRepo({
-      findSwipeScoreLogsByDog: vi.fn().mockResolvedValue(swipeLogs),
+      findSwipeScoreLogsByDog: vi.fn().mockResolvedValue({ logs: swipeLogs, nextCursor: null }),
       findInteractionsByMatches: vi
         .fn()
         .mockResolvedValue([{ matchId: 'match-1', interactionType: 'walk_completed' }]),

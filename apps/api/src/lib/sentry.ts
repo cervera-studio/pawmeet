@@ -84,10 +84,10 @@ export function initSentry() {
         event.extra = scrubPii(event.extra as Record<string, unknown>);
       }
 
-      // Remove user PII — keep only anonymized id
-      if (event.user) {
-        event.user = { id: event.user.id };
-      }
+      // Strip user context entirely for full GDPR anonymity.
+      // Even a pseudonymized id could theoretically be correlated;
+      // removing event.user makes all error reports fully anonymous.
+      delete event.user;
 
       // Strip IP address
       if (event.request) {

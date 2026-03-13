@@ -32,7 +32,7 @@ export function createLearnUserPreferences({ matchingAiRepo, matchRepo, dogRepo 
     // Collect swipe score logs across all user's dogs
     const allLogs = [];
     for (const dog of dogs) {
-      const logs = await matchingAiRepo.findSwipeScoreLogsByDog(dog.id, 200);
+      const { logs } = await matchingAiRepo.findSwipeScoreLogsByDog(dog.id, { limit: 200 });
       allLogs.push(...logs);
     }
 

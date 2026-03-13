@@ -11,10 +11,27 @@ import type {
   UserActivityWindow,
   UserMatchingPreferences,
 } from '@pawmeet/types';
-import { and, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
+
+function encodeCursor(createdAt: Date, id: string): string {
+  return Buffer.from(`${createdAt.toISOString()}|${id}`).toString('base64');
+}
+
+function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
+  try {
+    const decoded = Buffer.from(cursor, 'base64').toString('utf-8');
+    const [iso, id] = decoded.split('|');
+    if (!iso || !id) return null;
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return null;
+    return { createdAt: date, id };
+  } catch {
+    return null;
+  }
+}
 
 export class DrizzleMatchingAiRepository implements MatchingAiRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -37,14 +54,44 @@ export class DrizzleMatchingAiRepository implements MatchingAiRepository {
     return firstRow<SwipeScoreLog>(rows);
   }
 
-  async findSwipeScoreLogsByDog(dogId: string, limit = 200): Promise<SwipeScoreLog[]> {
+  async findSwipeScoreLogsByDog(
+    dogId: string,
+    options: { limit?: number; cursor?: string | null } = {},
+  ): Promise<{ logs: SwipeScoreLog[]; nextCursor: string | null }> {
+    const limit = options.limit ?? 50;
+    const baseWhere = eq(swipeScoreLogs.swiperDogId, dogId);
+
+    let whereClause = baseWhere;
+    if (options.cursor) {
+      const parsed = decodeCursor(options.cursor);
+      if (parsed) {
+        whereClause = and(
+          baseWhere,
+          or(
+            lt(swipeScoreLogs.createdAt, parsed.createdAt),
+            and(eq(swipeScoreLogs.createdAt, parsed.createdAt), lt(swipeScoreLogs.id, parsed.id)),
+          ),
+        )!;
+      }
+    }
+
     const rows = await this.db
       .select()
       .from(swipeScoreLogs)
-      .where(eq(swipeScoreLogs.swiperDogId, dogId))
-      .orderBy(desc(swipeScoreLogs.createdAt))
-      .limit(limit);
-    return rowsAs<SwipeScoreLog>(rows);
+      .where(whereClause)
+      .orderBy(desc(swipeScoreLogs.createdAt), desc(swipeScoreLogs.id))
+      .limit(limit + 1);
+
+    const hasMore = rows.length > limit;
+    const pageRows = hasMore ? rows.slice(0, limit) : rows;
+
+    const lastRow = pageRows[pageRows.length - 1];
+    const nextCursor =
+      hasMore && lastRow
+        ? encodeCursor(lastRow.createdAt as Date, lastRow.id)
+        : null;
+
+    return { logs: rowsAs<SwipeScoreLog>(pageRows), nextCursor };
   }
 
   // ── User Matching Preferences ────────────────────────────────────────────

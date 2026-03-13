@@ -49,7 +49,7 @@ describe('createGetMatchingInsights', () => {
       },
     ];
     const matchingAiRepo = buildMatchingAiRepo({
-      findSwipeScoreLogsByDog: vi.fn().mockResolvedValue(swipeLogs),
+      findSwipeScoreLogsByDog: vi.fn().mockResolvedValue({ logs: swipeLogs, nextCursor: null }),
       findUserPreferences: vi.fn().mockResolvedValue(prefs),
       findActivityWindowsByUser: vi.fn().mockResolvedValue(activityWindows),
     });
@@ -86,7 +86,7 @@ describe('createGetMatchingInsights', () => {
       findActiveByDogIds: vi.fn().mockResolvedValue([]),
     });
     const matchingAiRepo = buildMatchingAiRepo({
-      findSwipeScoreLogsByDog: vi.fn().mockResolvedValue([]),
+      findSwipeScoreLogsByDog: vi.fn().mockResolvedValue({ logs: [], nextCursor: null }),
       findUserPreferences: vi.fn().mockResolvedValue(null),
       findActivityWindowsByUser: vi.fn().mockResolvedValue([]),
     });

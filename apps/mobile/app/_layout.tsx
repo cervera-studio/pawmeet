@@ -1,8 +1,8 @@
 import '../global.css';
 
-import * as Crypto from 'expo-crypto';
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';
+import * as Crypto from 'expo-crypto';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useState } from 'react';
@@ -159,10 +159,7 @@ function RootLayout() {
     hashUserId(userId).then(setHashedUserId);
   }, [userId]);
 
-  const statsigUser = useMemo(
-    () => ({ userID: hashedUserId }),
-    [hashedUserId],
-  );
+  const statsigUser = useMemo(() => ({ userID: hashedUserId }), [hashedUserId]);
 
   return (
     <GestureHandlerRootView className="flex-1">

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,8 @@ interface SettingsFormProps {
 }
 
 export function SettingsForm({ initialSettings }: SettingsFormProps) {
+  const t = useTranslations('settings');
+  const tc = useTranslations('common');
   const [isSaving, setIsSaving] = useState(false);
   const [appName, setAppName] = useState(initialSettings.appName);
   const [supportEmail, setSupportEmail] = useState(initialSettings.supportEmail);
@@ -23,9 +26,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     setIsSaving(true);
     const result = await updateSettings({ appName, supportEmail });
     if (result.success) {
-      toast.success('Impostazioni salvate');
+      toast.success(t('saved'));
     } else {
-      toast.error(result.error ?? 'Errore durante il salvataggio');
+      toast.error(result.error ?? t('saveError'));
     }
     setIsSaving(false);
   }
@@ -37,15 +40,15 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       maxReportsBeforeSuspension: maxReports,
     });
     if (result.success) {
-      toast.success('Impostazioni salvate');
+      toast.success(t('saved'));
     } else {
-      toast.error(result.error ?? 'Errore durante il salvataggio');
+      toast.error(result.error ?? t('saveError'));
     }
     setIsSaving(false);
   }
 
   function handleClearCache() {
-    toast.info('Funzionalita non ancora implementata');
+    toast.info(t('notImplemented'));
   }
 
   return (
@@ -53,19 +56,19 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       {/* General Settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Impostazioni Generali</CardTitle>
-          <CardDescription>Configura le impostazioni di base della piattaforma</CardDescription>
+          <CardTitle className="text-base">{t('general.title')}</CardTitle>
+          <CardDescription>{t('general.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="app-name" className="text-sm font-medium text-neutral-700">
-              Nome App
+              {t('general.appName')}
             </label>
             <Input id="app-name" value={appName} onChange={(e) => setAppName(e.target.value)} />
           </div>
           <div className="space-y-2">
             <label htmlFor="support-email" className="text-sm font-medium text-neutral-700">
-              Email Supporto
+              {t('general.supportEmail')}
             </label>
             <Input
               id="support-email"
@@ -74,7 +77,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <Button size="sm" onClick={handleSaveGeneral} disabled={isSaving}>
-            {isSaving ? 'Salvataggio...' : 'Salva modifiche'}
+            {isSaving ? tc('saving') : tc('saveChanges')}
           </Button>
         </CardContent>
       </Card>
@@ -82,13 +85,13 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       {/* Moderation Settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Moderazione</CardTitle>
-          <CardDescription>Configura le regole di moderazione automatica</CardDescription>
+          <CardTitle className="text-base">{t('moderation.title')}</CardTitle>
+          <CardDescription>{t('moderation.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="photo-confidence" className="text-sm font-medium text-neutral-700">
-              Soglia auto-approvazione foto (confidence %)
+              {t('moderation.photoThreshold')}
             </label>
             <Input
               id="photo-confidence"
@@ -101,7 +104,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
           <div className="space-y-2">
             <label htmlFor="max-reports" className="text-sm font-medium text-neutral-700">
-              Max segnalazioni prima di sospensione
+              {t('moderation.maxReports')}
             </label>
             <Input
               id="max-reports"
@@ -112,7 +115,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <Button size="sm" onClick={handleSaveModeration} disabled={isSaving}>
-            {isSaving ? 'Salvataggio...' : 'Salva modifiche'}
+            {isSaving ? tc('saving') : tc('saveChanges')}
           </Button>
         </CardContent>
       </Card>
@@ -120,17 +123,17 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       {/* Danger Zone */}
       <Card className="border-red-200">
         <CardHeader>
-          <CardTitle className="text-base text-red-600">Zona Pericolosa</CardTitle>
-          <CardDescription>Azioni irreversibili</CardDescription>
+          <CardTitle className="text-base text-red-600">{t('dangerZone.title')}</CardTitle>
+          <CardDescription>{t('dangerZone.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-neutral-900">Svuota cache</p>
-              <p className="text-xs text-neutral-500">Invalida tutta la cache del sistema</p>
+              <p className="text-sm font-medium text-neutral-900">{t('dangerZone.clearCache')}</p>
+              <p className="text-xs text-neutral-500">{t('dangerZone.clearCacheDesc')}</p>
             </div>
             <Button variant="destructive" size="sm" onClick={handleClearCache}>
-              Svuota
+              {t('dangerZone.clearButton')}
             </Button>
           </div>
         </CardContent>

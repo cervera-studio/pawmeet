@@ -1,24 +1,34 @@
 import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { Toaster } from 'sonner';
 import { Providers } from './providers';
 import './globals.css';
 
-export const metadata: Metadata = {
-  title: 'PawMeet Admin',
-  description: 'Pannello di amministrazione PawMeet',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('metadata');
+  return {
+    title: 'PawMeet Admin',
+    description: t('description'),
+  };
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="it" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <script src="/theme-init.js" />
       </head>
       <body>
-        <Providers>
-          {children}
-          <Toaster position="top-right" richColors />
-        </Providers>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>
+            {children}
+            <Toaster position="top-right" richColors />
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

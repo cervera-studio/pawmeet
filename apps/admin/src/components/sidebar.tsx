@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { useSidebarViewModel } from './sidebar.view-model';
 
 export function Sidebar() {
   const vm = useSidebarViewModel();
+  const t = useTranslations('auth');
 
   return (
     <aside className="flex h-full w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-300 dark:bg-neutral-100">
@@ -93,7 +95,7 @@ export function Sidebar() {
             type="button"
             className="text-xs text-neutral-400 hover:text-red-500 transition-colors"
           >
-            Esci
+            {t('logout')}
           </button>
         </div>
       </div>

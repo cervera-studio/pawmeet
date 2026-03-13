@@ -1,0 +1,423 @@
+{
+  "common": {
+    "loading": "Caricamento...",
+    "noResults": "Nessun risultato trovato.",
+    "noData": "Nessun dato disponibile",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "details": "Dettagli",
+    "search": "Cerca...",
+    "unknown": "Sconosciuto",
+    "saving": "Salvataggio...",
+    "saveChanges": "Salva modifiche",
+    "yes": "Sì",
+    "no": "No",
+    "delete": "Elimina",
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "never": "Mai"
+  },
+  "metadata": {
+    "description": "Pannello di amministrazione PawMeet"
+  },
+  "auth": {
+    "title": "PawMeet Admin",
+    "subtitle": "Accedi al pannello di amministrazione",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "loginButton": "Accedi",
+    "loggingIn": "Accesso in corso...",
+    "logout": "Esci",
+    "errors": {
+      "invalidCredentials": "Email o password non validi",
+      "accountDisabled": "Account disattivato. Contatta un amministratore.",
+      "serverError": "Errore del server. Riprova più tardi.",
+      "generic": "Errore durante il login"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "users": "Utenti",
+    "moderation": "Moderazione",
+    "moderationFeed": "Feed",
+    "moderationStories": "Storie",
+    "moderationPhotos": "Foto",
+    "moderationContent": "Contenuti",
+    "moderationReports": "Segnalazioni",
+    "dogs": "Cani",
+    "events": "Eventi",
+    "organizations": "Organizzazioni",
+    "safety": "Sicurezza",
+    "safetySos": "Allarmi SOS",
+    "safetyContacts": "Contatti emergenza",
+    "accountDeletions": "Eliminazioni",
+    "settings": "Impostazioni"
+  },
+  "header": {
+    "searchPlaceholder": "Cerca utenti, cani, segnalazioni...",
+    "lightTheme": "Tema chiaro",
+    "darkTheme": "Tema scuro",
+    "notifications": "Notifiche"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Panoramica delle metriche principali",
+    "totalUsers": "Utenti Totali",
+    "registeredDogs": "Cani Registrati",
+    "activeMatches": "Match Attivi",
+    "pendingPhotos": "Foto in Attesa",
+    "pendingReports": "Segnalazioni Pendenti",
+    "totalMatches": "Match Totali",
+    "dauToday": "DAU (Oggi)",
+    "registrationsToday": "Registrazioni Oggi",
+    "matchesToday": "Match Oggi",
+    "eventsLast24h": "Eventi Ultimi 24h",
+    "totalEvents": "Eventi Totali",
+    "analyticsRealtime": "Analytics (Real-time)",
+    "chartRegistrations": "Registrazioni Utenti (ultimi 30 giorni)",
+    "chartDailyMatches": "Match Giornalieri (ultimi 30 giorni)",
+    "chartDau": "DAU — Utenti Attivi Giornalieri (ultimi 30 giorni)",
+    "registrationsLabel": "Registrazioni",
+    "matchLabel": "Match",
+    "dauLabel": "DAU"
+  },
+  "table": {
+    "totalResults": "{total} risultati totali",
+    "noResults": "Nessun risultato",
+    "previous": "Precedente",
+    "next": "Successiva",
+    "pageOf": "Pagina {current} di {total}"
+  },
+  "status": {
+    "user": {
+      "active": "Attivo",
+      "suspended": "Sospeso",
+      "banned": "Bannato"
+    },
+    "report": {
+      "pending": "In attesa",
+      "resolved": "Risolto",
+      "dismissed": "Archiviato"
+    }
+  },
+  "users": {
+    "title": "Utenti",
+    "subtitle": "Gestisci gli utenti della piattaforma",
+    "searchPlaceholder": "Cerca utenti...",
+    "columns": {
+      "name": "Nome",
+      "email": "Email",
+      "status": "Stato",
+      "dogs": "Cani",
+      "followers": "Follower",
+      "following": "Seguiti",
+      "registeredAt": "Registrato il"
+    },
+    "detail": {
+      "provider": "Provider",
+      "lastLogin": "Ultimo accesso",
+      "reportsReceived": "Segnalazioni ricevute",
+      "totalMatches": "Match totali",
+      "dogsCount": "Cani ({count})",
+      "noDogs": "Nessun cane registrato",
+      "breed": "Razza",
+      "quickActions": "Azioni rapide",
+      "information": "Informazioni",
+      "name": "Nome",
+      "email": "Email",
+      "registeredAt": "Registrato il",
+      "followers": "Follower",
+      "following": "Seguiti",
+      "viewReports": "Vedi segnalazioni",
+      "viewPhotos": "Vedi foto"
+    }
+  },
+  "dogs": {
+    "title": "Cani",
+    "subtitle": "Tutti i cani registrati sulla piattaforma",
+    "searchPlaceholder": "Cerca per nome, razza o proprietario...",
+    "columns": {
+      "name": "Nome",
+      "breed": "Razza",
+      "owner": "Proprietario",
+      "size": "Taglia",
+      "status": "Stato",
+      "addedAt": "Aggiunto il"
+    },
+    "sizes": {
+      "small": "Piccolo",
+      "medium": "Medio",
+      "large": "Grande"
+    }
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Configura il pannello di amministrazione",
+    "saved": "Impostazioni salvate",
+    "saveError": "Errore durante il salvataggio",
+    "notImplemented": "Funzionalità non ancora implementata",
+    "general": {
+      "title": "Impostazioni Generali",
+      "subtitle": "Configura le impostazioni di base della piattaforma",
+      "appName": "Nome App",
+      "supportEmail": "Email Supporto"
+    },
+    "moderation": {
+      "title": "Moderazione",
+      "subtitle": "Configura le regole di moderazione automatica",
+      "photoThreshold": "Soglia auto-approvazione foto (confidence %)",
+      "maxReports": "Max segnalazioni prima di sospensione"
+    },
+    "dangerZone": {
+      "title": "Zona Pericolosa",
+      "subtitle": "Azioni irreversibili",
+      "clearCache": "Svuota cache",
+      "clearCacheDesc": "Invalida tutta la cache del sistema",
+      "clearButton": "Svuota"
+    }
+  },
+  "reports": {
+    "title": "Segnalazioni",
+    "subtitle": "Gestisci le segnalazioni degli utenti",
+    "tabs": {
+      "all": "Tutte",
+      "pending": "In attesa",
+      "resolved": "Risolte",
+      "dismissed": "Archiviate"
+    },
+    "reasons": {
+      "inappropriate_behavior": "Comportamento inappropriato",
+      "fake_profile": "Profilo falso",
+      "harassment": "Molestie",
+      "spam": "Spam",
+      "other": "Altro"
+    },
+    "actions": {
+      "manage": "Gestisci",
+      "processing": "Attendere...",
+      "dismiss": "Archivia",
+      "warn": "Avverti utente",
+      "suspend": "Sospendi utente",
+      "ban": "Banna utente",
+      "completed": "Azione completata",
+      "error": "Errore durante l'azione"
+    },
+    "columns": {
+      "reporter": "Segnalante",
+      "reported": "Segnalato",
+      "reason": "Motivo",
+      "status": "Stato",
+      "action": "Azione",
+      "date": "Data"
+    }
+  },
+  "content": {
+    "title": "Moderazione contenuti",
+    "subtitle": "Gestisci le segnalazioni sui contenuti del feed",
+    "noPending": "Nessuna segnalazione in attesa",
+    "reasons": {
+      "inappropriate": "Contenuto inappropriato",
+      "spam": "Spam",
+      "harassment": "Molestie",
+      "violence": "Violenza",
+      "other": "Altro"
+    },
+    "types": {
+      "post": "Post",
+      "comment": "Commento",
+      "story": "Storia"
+    },
+    "contentId": "Contenuto ID",
+    "reporter": "Segnalante",
+    "dismiss": "Archivia",
+    "review": "Revisiona",
+    "dismissed": "Segnalazione archiviata",
+    "reviewed": "Segnalazione revisionata",
+    "loadMore": "Carica altri"
+  },
+  "photos": {
+    "title": "Moderazione Foto",
+    "subtitle": "{count} foto in attesa di revisione",
+    "approveAll": "Approva tutte",
+    "noPending": "Nessuna foto in attesa di moderazione",
+    "photoOf": "Foto di {name}",
+    "photo": "Foto",
+    "types": {
+      "profile": "Profilo",
+      "dog": "Cane"
+    },
+    "actions": {
+      "approve": "Approva",
+      "reject": "Rifiuta"
+    },
+    "toast": {
+      "approved": "Foto approvata",
+      "approveError": "Errore durante l'approvazione",
+      "rejected": "Foto rifiutata",
+      "rejectError": "Errore durante il rifiuto",
+      "allApproved": "Tutte le foto approvate",
+      "allApproveError": "Errore durante l'approvazione"
+    }
+  },
+  "stories": {
+    "title": "Gestione storie",
+    "subtitle": "Visualizza e modera le storie degli utenti",
+    "expired": "Scaduta",
+    "types": {
+      "image": "Immagine",
+      "video": "Video"
+    },
+    "noStories": "Nessuna storia trovata",
+    "unknownUser": "Utente sconosciuto",
+    "deleteAction": "Elimina",
+    "toast": {
+      "deleted": "Storia eliminata",
+      "deleteError": "Errore durante l'eliminazione"
+    },
+    "count": "{count, plural, one {# storia} other {# storie}}",
+    "views": "visualizzazioni"
+  },
+  "feed": {
+    "title": "Gestione feed",
+    "subtitle": "Modera i post del feed e monitora le statistiche",
+    "statuses": {
+      "pending": "In attesa",
+      "approved": "Approvato",
+      "rejected": "Rifiutato"
+    },
+    "tabs": {
+      "all": "Tutti",
+      "pending": "In attesa",
+      "approved": "Approvati",
+      "rejected": "Rifiutati"
+    },
+    "stats": {
+      "totalPosts": "Post totali",
+      "pending": "In attesa",
+      "rejected": "Rifiutati",
+      "stories": "Storie",
+      "reports": "Segnalazioni"
+    },
+    "searchPlaceholder": "Cerca per autore...",
+    "resultCount": "{count, plural, one {# risultato} other {# risultati}}",
+    "noPostsFound": "Nessun post trovato",
+    "noCaption": "Senza didascalia",
+    "unknownUser": "Utente sconosciuto",
+    "deleted": "Eliminato",
+    "approve": "Approva",
+    "reject": "Rifiuta",
+    "postApproved": "Post approvato",
+    "postRejected": "Post rifiutato",
+    "reportCount": "{count, plural, one {# segnalazione} other {# segnalazioni}}"
+  },
+  "organizations": {
+    "title": "Organizzazioni",
+    "subtitle": "Gestione organizzazioni verificate e membri",
+    "searchPlaceholder": "Cerca per nome o slug...",
+    "allTypes": "Tutti i tipi",
+    "types": {
+      "pawmeet_team": "PawMeet Team",
+      "association": "Associazione",
+      "educator": "Educatore",
+      "brand": "Brand"
+    },
+    "columns": {
+      "name": "Nome",
+      "slug": "Slug",
+      "type": "Tipo",
+      "status": "Stato",
+      "members": "Membri",
+      "createdAt": "Creata il"
+    },
+    "verified": "Verificata",
+    "notVerified": "Non verificata"
+  },
+  "events": {
+    "title": "Eventi",
+    "subtitle": "Gestione eventi di gruppo sulla piattaforma",
+    "searchPlaceholder": "Cerca per titolo...",
+    "allStatuses": "Tutti gli stati",
+    "allCategories": "Tutte le categorie",
+    "categories": {
+      "walk": "Passeggiata",
+      "meetup": "Incontro",
+      "training": "Addestramento"
+    },
+    "statuses": {
+      "scheduled": "Programmato",
+      "in_progress": "In corso",
+      "completed": "Completato",
+      "cancelled": "Annullato",
+      "template": "Template"
+    },
+    "visibility": {
+      "public": "Pubblico",
+      "friends_only": "Solo amici",
+      "invite_only": "Su invito"
+    },
+    "columns": {
+      "title": "Titolo",
+      "category": "Categoria",
+      "status": "Stato",
+      "visibility": "Visibilità",
+      "date": "Data",
+      "creator": "Creatore",
+      "participants": "Partecipanti",
+      "pending": "in attesa",
+      "recurring": "Ricorrente",
+      "approval": "Approvazione"
+    }
+  },
+  "safety": {
+    "sos": {
+      "title": "Allarmi SOS e Check-in",
+      "subtitle": "Log degli allarmi SOS, alert automatici e check-in sicurezza",
+      "autoAlert": "Alert automatico",
+      "allTypes": "Tutti i tipi",
+      "types": {
+        "sos": "SOS",
+        "auto_alert": "Alert automatici",
+        "check_in": "Check-in"
+      },
+      "columns": {
+        "type": "Tipo",
+        "user": "Utente",
+        "walk": "Passeggiata",
+        "walkStatus": "Stato passeggiata",
+        "location": "Posizione",
+        "date": "Data"
+      },
+      "walkStatuses": {
+        "pending": "In attesa",
+        "accepted": "Accettata",
+        "rejected": "Rifiutata",
+        "cancelled": "Annullata",
+        "completed": "Completata"
+      }
+    },
+    "contacts": {
+      "title": "Contatti di emergenza",
+      "subtitle": "Contatti di emergenza registrati dagli utenti",
+      "searchPlaceholder": "Cerca per nome contatto o utente...",
+      "columns": {
+        "owner": "Proprietario",
+        "contactName": "Nome contatto",
+        "phone": "Telefono",
+        "relationship": "Relazione",
+        "addedAt": "Aggiunto il"
+      }
+    }
+  },
+  "accountDeletions": {
+    "title": "Eliminazioni account",
+    "subtitle": "Account in fase di eliminazione (grace period 30 giorni)",
+    "daysRemaining": "{days}g rimanenti",
+    "columns": {
+      "user": "Utente",
+      "registeredAt": "Registrato il",
+      "scheduledDeletion": "Eliminazione prevista",
+      "timeRemaining": "Tempo rimanente",
+      "cancelDeletion": "Annulla eliminazione"
+    }
+  }
+}

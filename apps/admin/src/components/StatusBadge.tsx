@@ -1,30 +1,33 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * Status configuration maps for reuse across admin pages.
- * Each entry maps a status key to its display label (Italian) and badge variant.
+ * Status variant configuration maps for reuse across admin pages.
+ * Labels come from translations; these only define badge variants.
  */
 
-const USER_STATUS_CONFIG: Record<string, { label: string; variant: BadgeVariant }> = {
-  active: { label: 'Attivo', variant: 'success' },
-  suspended: { label: 'Sospeso', variant: 'warning' },
-  banned: { label: 'Bannato', variant: 'destructive' },
+type BadgeVariant = 'success' | 'warning' | 'destructive' | 'outline' | 'default' | 'secondary';
+
+const USER_STATUS_VARIANTS: Record<string, BadgeVariant> = {
+  active: 'success',
+  suspended: 'warning',
+  banned: 'destructive',
 };
 
-const REPORT_STATUS_CONFIG: Record<string, { label: string; variant: BadgeVariant }> = {
-  pending: { label: 'In attesa', variant: 'warning' },
-  resolved: { label: 'Risolto', variant: 'success' },
-  dismissed: { label: 'Archiviato', variant: 'outline' },
+const REPORT_STATUS_VARIANTS: Record<string, BadgeVariant> = {
+  pending: 'warning',
+  resolved: 'success',
+  dismissed: 'outline',
 };
 
-const STATUS_CONFIGS = {
-  user: USER_STATUS_CONFIG,
-  report: REPORT_STATUS_CONFIG,
+const STATUS_VARIANT_CONFIGS = {
+  user: USER_STATUS_VARIANTS,
+  report: REPORT_STATUS_VARIANTS,
 } as const;
 
-type StatusType = keyof typeof STATUS_CONFIGS;
-
-type BadgeVariant = 'success' | 'warning' | 'destructive' | 'outline' | 'default' | 'secondary';
+type StatusType = keyof typeof STATUS_VARIANT_CONFIGS;
 
 interface StatusBadgeProps {
   /** The raw status string (e.g. "active", "pending") */
@@ -37,17 +40,18 @@ interface StatusBadgeProps {
 
 /**
  * Shared status badge component that maps status strings to colored badges.
- * Centralizes the status-to-label and status-to-variant mappings used across
+ * Centralizes the status-to-variant mappings used across
  * the users list, user detail, and moderation reports pages.
+ * Labels are resolved via next-intl translations.
  */
 export function StatusBadge({ status, type, fallbackVariant = 'outline' }: StatusBadgeProps) {
-  const config = STATUS_CONFIGS[type];
-  const entry = config[status];
-  const variant = entry?.variant ?? fallbackVariant;
-  const label = entry?.label ?? status;
+  const t = useTranslations('status');
+  const variantConfig = STATUS_VARIANT_CONFIGS[type];
+  const variant = variantConfig[status] ?? fallbackVariant;
+  const label = t(`${type}.${status}` as Parameters<typeof t>[0]);
 
   return <Badge variant={variant}>{label}</Badge>;
 }
 
-/** Re-export configs for use in view-models that need status info without rendering */
-export { USER_STATUS_CONFIG, REPORT_STATUS_CONFIG };
+/** Re-export variant configs for use in view-models that need status info without rendering */
+export { USER_STATUS_VARIANTS, REPORT_STATUS_VARIANTS };

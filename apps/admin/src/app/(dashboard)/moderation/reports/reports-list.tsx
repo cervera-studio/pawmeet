@@ -2,10 +2,11 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
-import { REPORT_STATUS_CONFIG, StatusBadge } from '@/components/StatusBadge';
+import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,13 +17,6 @@ import {
 import { formatDate } from '@/lib/formatters';
 import type { AdminReportListItem, ReportStatus, ResolveAction } from '@/repositories';
 import { fetchReports as fetchReportsAction, resolveReport } from './actions';
-
-export const STATUS_TABS: { label: string; value: ReportStatus | undefined }[] = [
-  { label: 'Tutte', value: undefined },
-  { label: 'In attesa', value: 'pending' },
-  { label: 'Risolte', value: 'resolved' },
-  { label: 'Archiviate', value: 'dismissed' },
-];
 
 interface ReportRow {
   id: string;
@@ -40,21 +34,6 @@ interface ReportRow {
   createdAt: string;
 }
 
-const REASON_LABEL: Record<string, string> = {
-  inappropriate: 'Comportamento inappropriato',
-  fake: 'Profilo falso',
-  harassment: 'Molestie',
-  spam: 'Spam',
-  other: 'Altro',
-};
-
-const ACTION_LABELS: Record<string, string> = {
-  dismiss: 'Segnalazione archiviata',
-  warn: 'Avvertimento inviato',
-  suspend: 'Utente sospeso',
-  ban: 'Utente bannato',
-};
-
 function ReportActions({
   reportId,
   status,
@@ -65,11 +44,13 @@ function ReportActions({
   onResolved: () => void;
 }) {
   const [isPending, setIsPending] = useState(false);
+  const t = useTranslations('reports');
+  const tStatus = useTranslations('status');
 
   if (status !== 'pending') {
     return (
       <span className="text-xs text-neutral-400">
-        {REPORT_STATUS_CONFIG[status]?.label ?? status}
+        {tStatus(`report.${status}` as Parameters<typeof tStatus>[0])}
       </span>
     );
   }
@@ -78,10 +59,10 @@ function ReportActions({
     setIsPending(true);
     try {
       await resolveReport(reportId, action);
-      toast.success(ACTION_LABELS[action] ?? 'Azione completata');
+      toast.success(t('actions.completed'));
       onResolved();
     } catch {
-      toast.error("Errore durante l'azione");
+      toast.error(t('actions.error'));
     } finally {
       setIsPending(false);
     }
@@ -89,15 +70,21 @@ function ReportActions({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>{isPending ? 'Attendere...' : 'Gestisci'}</DropdownMenuTrigger>
+      <DropdownMenuTrigger>
+        {isPending ? t('actions.processing') : t('actions.manage')}
+      </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onClick={() => handleAction('dismiss')}>Archivia</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleAction('warn')}>Avverti utente</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleAction('dismiss')}>
+          {t('actions.dismiss')}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleAction('warn')}>
+          {t('actions.warn')}
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleAction('suspend')} className="text-orange-600">
-          Sospendi utente
+          {t('actions.suspend')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleAction('ban')} className="text-red-600">
-          Banna utente
+          {t('actions.ban')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -109,10 +96,18 @@ interface ReportsListProps {
 }
 
 export function ReportsList({ initialData }: ReportsListProps) {
+  const t = useTranslations('reports');
   const [statusFilter, setStatusFilter] = useState<ReportStatus | undefined>(undefined);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
   const [data, setData] = useState<PaginatedResult<AdminReportListItem>>(initialData);
   const [isLoading, setIsLoading] = useState(false);
+
+  const STATUS_TABS: { label: string; value: ReportStatus | undefined }[] = [
+    { label: t('tabs.all'), value: undefined },
+    { label: t('tabs.pending'), value: 'pending' },
+    { label: t('tabs.resolved'), value: 'resolved' },
+    { label: t('tabs.dismissed'), value: 'dismissed' },
+  ];
 
   async function fetchReports(
     paginationOverride?: { pageIndex: number; pageSize: number },
@@ -152,7 +147,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
   const columns: ColumnDef<ReportRow>[] = [
     {
       accessorKey: 'reporterName',
-      header: 'Segnalante',
+      header: t('columns.reporter'),
       cell: ({ row }) => (
         <a
           href={`/users/${row.original.reporterId}`}
@@ -164,7 +159,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
     },
     {
       accessorKey: 'reportedName',
-      header: 'Segnalato',
+      header: t('columns.reported'),
       cell: ({ row }) => (
         <a
           href={`/users/${row.original.reportedUserId}`}
@@ -176,15 +171,15 @@ export function ReportsList({ initialData }: ReportsListProps) {
     },
     {
       accessorKey: 'reason',
-      header: 'Motivo',
+      header: t('columns.reason'),
       cell: ({ row }) => {
         const reason = row.getValue('reason') as string;
-        return REASON_LABEL[reason] ?? reason;
+        return t.has(`reasons.${reason}`) ? t(`reasons.${reason}` as 'reasons.spam') : reason;
       },
     },
     {
       accessorKey: 'status',
-      header: 'Stato',
+      header: t('columns.status'),
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
         return <StatusBadge status={status} type="report" />;
@@ -192,16 +187,20 @@ export function ReportsList({ initialData }: ReportsListProps) {
     },
     {
       accessorKey: 'resolvedAction',
-      header: 'Azione',
+      header: t('columns.action'),
       cell: ({ row }) => {
         const action = row.getValue('resolvedAction') as string | null;
         if (!action) return <span className="text-neutral-400">-</span>;
-        return <span className="text-sm">{ACTION_LABELS[action] ?? action}</span>;
+        return (
+          <span className="text-sm">
+            {t.has(`actions.${action}`) ? t(`actions.${action}` as 'actions.dismiss') : action}
+          </span>
+        );
       },
     },
     {
       accessorKey: 'createdAt',
-      header: 'Data',
+      header: t('columns.date'),
       cell: ({ row }) => formatDate(row.getValue('createdAt')),
     },
     {
@@ -220,8 +219,8 @@ export function ReportsList({ initialData }: ReportsListProps) {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Segnalazioni</h1>
-        <p className="text-neutral-500">Gestisci le segnalazioni degli utenti</p>
+        <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+        <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
       {/* Status filter tabs */}

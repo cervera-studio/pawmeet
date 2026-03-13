@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { Header } from '@/components/header';
 import { Sidebar } from '@/components/sidebar';
@@ -9,6 +10,7 @@ import { useAuthContext } from '@/lib/auth-store';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
+  const t = useTranslations('common');
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -19,7 +21,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="text-neutral-500">Caricamento...</div>
+        <div className="text-neutral-500">{t('loading')}</div>
       </div>
     );
   }

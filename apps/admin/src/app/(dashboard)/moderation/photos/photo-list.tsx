@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -14,15 +15,16 @@ interface PhotoListProps {
 }
 
 export function PhotoList({ initialPhotos }: PhotoListProps) {
+  const t = useTranslations('photos');
   const [photos, setPhotos] = useState<PendingPhoto[]>(initialPhotos);
 
   async function handleApprove(photoId: string) {
     try {
       await approvePhoto(photoId);
       setPhotos((prev) => prev.filter((p) => p.id !== photoId));
-      toast.success('Foto approvata');
+      toast.success(t('toast.approved'));
     } catch {
-      toast.error("Errore durante l'approvazione");
+      toast.error(t('toast.approveError'));
     }
   }
 
@@ -30,9 +32,9 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
     try {
       await rejectPhoto(photoId);
       setPhotos((prev) => prev.filter((p) => p.id !== photoId));
-      toast.success('Foto rifiutata');
+      toast.success(t('toast.rejected'));
     } catch {
-      toast.error('Errore durante il rifiuto');
+      toast.error(t('toast.rejectError'));
     }
   }
 
@@ -40,9 +42,9 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
     try {
       await approveAllPhotos();
       setPhotos([]);
-      toast.success('Tutte le foto approvate');
+      toast.success(t('toast.allApproved'));
     } catch {
-      toast.error("Errore durante l'approvazione");
+      toast.error(t('toast.allApproveError'));
     }
   }
 
@@ -50,13 +52,13 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
     <>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Moderazione Foto</h1>
-          <p className="text-neutral-500">{photos.length} foto in attesa di revisione</p>
+          <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+          <p className="text-neutral-500">{t('subtitle', { count: photos.length })}</p>
         </div>
         <div className="flex items-center gap-2">
           {photos.length > 0 && (
             <Button variant="outline" size="sm" onClick={() => handleApproveAll()}>
-              Approva tutte
+              {t('approveAll')}
             </Button>
           )}
         </div>
@@ -65,7 +67,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
       {photos.length === 0 ? (
         <Card>
           <CardContent className="flex h-64 items-center justify-center">
-            <p className="text-neutral-400">Nessuna foto in attesa di moderazione</p>
+            <p className="text-neutral-400">{t('noPending')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -76,12 +78,12 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
                 // biome-ignore lint/performance/noImgElement: external user-uploaded URLs
                 <img
                   src={photo.imageUrl}
-                  alt={`Foto di ${photo.userName}`}
+                  alt={t('photoOf', { name: photo.userName })}
                   className="aspect-square w-full object-cover"
                 />
               ) : (
                 <div className="aspect-square bg-neutral-100 flex items-center justify-center">
-                  <span className="text-neutral-300 text-sm">Foto</span>
+                  <span className="text-neutral-300 text-sm">{t('photo')}</span>
                 </div>
               )}
               <CardContent className="p-4 space-y-3">
@@ -93,10 +95,14 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
                     {photo.userName}
                   </a>
                   <Badge variant={photo.type === 'profile' ? 'default' : 'secondary'}>
-                    {photo.type === 'profile' ? 'Profilo' : 'Cane'}
+                    {photo.type === 'profile' ? t('types.profile') : t('types.dog')}
                   </Badge>
                 </div>
-                {photo.dogName && <p className="text-xs text-neutral-500">Cane: {photo.dogName}</p>}
+                {photo.dogName && (
+                  <p className="text-xs text-neutral-500">
+                    {t('types.dog')}: {photo.dogName}
+                  </p>
+                )}
                 <p className="text-xs text-neutral-500">{formatDateTime(photo.uploadedAt)}</p>
                 <div className="flex gap-2">
                   <Button
@@ -105,7 +111,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
                     className="flex-1"
                     onClick={() => handleApprove(photo.id)}
                   >
-                    Approva
+                    {t('actions.approve')}
                   </Button>
                   <Button
                     variant="destructive"
@@ -113,7 +119,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
                     className="flex-1"
                     onClick={() => handleReject(photo.id)}
                   >
-                    Rifiuta
+                    {t('actions.reject')}
                   </Button>
                 </div>
               </CardContent>

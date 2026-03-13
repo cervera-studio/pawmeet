@@ -2,7 +2,8 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -30,112 +31,16 @@ function isEventCategory(v: string): v is EventCategory {
   return (EVENT_CATEGORIES as string[]).includes(v);
 }
 
-const categoryLabels: Record<string, string> = {
-  walk: 'Passeggiata',
-  meetup: 'Incontro',
-  training: 'Addestramento',
-};
-
-const visibilityLabels: Record<string, string> = {
-  public: 'Pubblico',
-  friends_only: 'Solo amici',
-  invite_only: 'Su invito',
-};
-
-const statusConfig: Record<
+const statusVariants: Record<
   string,
-  { label: string; variant: 'success' | 'warning' | 'destructive' | 'outline' | 'secondary' }
+  'success' | 'warning' | 'destructive' | 'outline' | 'secondary'
 > = {
-  scheduled: { label: 'Programmato', variant: 'success' },
-  in_progress: { label: 'In corso', variant: 'warning' },
-  completed: { label: 'Completato', variant: 'outline' },
-  cancelled: { label: 'Annullato', variant: 'destructive' },
-  template: { label: 'Template', variant: 'secondary' },
+  scheduled: 'success',
+  in_progress: 'warning',
+  completed: 'outline',
+  cancelled: 'destructive',
+  template: 'secondary',
 };
-
-const columns: ColumnDef<AdminGroupEventListItem>[] = [
-  {
-    accessorKey: 'title',
-    header: 'Titolo',
-    cell: ({ row }) => (
-      <a
-        href={`/group-events/${row.original.id}`}
-        className="font-medium text-primary-600 hover:underline"
-      >
-        {row.original.title}
-      </a>
-    ),
-  },
-  {
-    accessorKey: 'category',
-    header: 'Categoria',
-    cell: ({ row }) => (
-      <Badge variant="outline">
-        {categoryLabels[row.original.category] ?? row.original.category}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: 'Stato',
-    cell: ({ row }) => {
-      const config = statusConfig[row.original.status] ?? {
-        label: row.original.status,
-        variant: 'outline' as const,
-      };
-      return <Badge variant={config.variant}>{config.label}</Badge>;
-    },
-  },
-  {
-    accessorKey: 'visibility',
-    header: 'Visibilità',
-    cell: ({ row }) => visibilityLabels[row.original.visibility] ?? row.original.visibility,
-  },
-  {
-    accessorKey: 'scheduledAt',
-    header: 'Data',
-    cell: ({ row }) => formatDateTime(row.original.scheduledAt),
-  },
-  {
-    accessorKey: 'creatorName',
-    header: 'Creatore',
-    cell: ({ row }) => {
-      const name = row.original.creatorName ?? 'Sconosciuto';
-      return (
-        <a href={`/users/${row.original.creatorId}`} className="text-primary-600 hover:underline">
-          {name}
-        </a>
-      );
-    },
-  },
-  {
-    id: 'participants',
-    header: 'Partecipanti',
-    cell: ({ row }) => {
-      const { participantCount, maxParticipants, pendingCount } = row.original;
-      return (
-        <span>
-          {participantCount}/{maxParticipants}
-          {pendingCount > 0 && (
-            <Badge variant="warning" className="ml-2">
-              {pendingCount} in attesa
-            </Badge>
-          )}
-        </span>
-      );
-    },
-  },
-  {
-    id: 'flags',
-    header: '',
-    cell: ({ row }) => (
-      <span className="flex gap-1">
-        {row.original.isRecurring && <Badge variant="secondary">Ricorrente</Badge>}
-        {row.original.requiresApproval && <Badge variant="outline">Approvazione</Badge>}
-      </span>
-    ),
-  },
-];
 
 interface GroupEventsTableProps {
   initialData: PaginatedResult<AdminGroupEventListItem>;
@@ -143,6 +48,8 @@ interface GroupEventsTableProps {
 }
 
 export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProps) {
+  const t = useTranslations('events');
+  const tc = useTranslations('common');
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<EventStatus | undefined>(undefined);
@@ -167,6 +74,117 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
     }, 300);
     setDebounceTimer(timer);
   }
+
+  const columns: ColumnDef<AdminGroupEventListItem>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'title',
+        header: t('columns.title'),
+        cell: ({ row }) => (
+          <a
+            href={`/group-events/${row.original.id}`}
+            className="font-medium text-primary-600 hover:underline"
+          >
+            {row.original.title}
+          </a>
+        ),
+      },
+      {
+        accessorKey: 'category',
+        header: t('columns.category'),
+        cell: ({ row }) => (
+          <Badge variant="outline">
+            {t(
+              `categories.${row.original.category}` as
+                | 'categories.walk'
+                | 'categories.meetup'
+                | 'categories.training',
+            ) ?? row.original.category}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: 'status',
+        header: t('columns.status'),
+        cell: ({ row }) => {
+          const variant = statusVariants[row.original.status] ?? ('outline' as const);
+          const label =
+            t(
+              `statuses.${row.original.status}` as
+                | 'statuses.scheduled'
+                | 'statuses.in_progress'
+                | 'statuses.completed'
+                | 'statuses.cancelled'
+                | 'statuses.template',
+            ) ?? row.original.status;
+          return <Badge variant={variant}>{label}</Badge>;
+        },
+      },
+      {
+        accessorKey: 'visibility',
+        header: t('columns.visibility'),
+        cell: ({ row }) =>
+          t(
+            `visibility.${row.original.visibility}` as
+              | 'visibility.public'
+              | 'visibility.friends_only'
+              | 'visibility.invite_only',
+          ) ?? row.original.visibility,
+      },
+      {
+        accessorKey: 'scheduledAt',
+        header: t('columns.date'),
+        cell: ({ row }) => formatDateTime(row.original.scheduledAt),
+      },
+      {
+        accessorKey: 'creatorName',
+        header: t('columns.creator'),
+        cell: ({ row }) => {
+          const name = row.original.creatorName ?? tc('unknown');
+          return (
+            <a
+              href={`/users/${row.original.creatorId}`}
+              className="text-primary-600 hover:underline"
+            >
+              {name}
+            </a>
+          );
+        },
+      },
+      {
+        id: 'participants',
+        header: t('columns.participants'),
+        cell: ({ row }) => {
+          const { participantCount, maxParticipants, pendingCount } = row.original;
+          return (
+            <span>
+              {participantCount}/{maxParticipants}
+              {pendingCount > 0 && (
+                <Badge variant="warning" className="ml-2">
+                  {pendingCount} {t('columns.pending')}
+                </Badge>
+              )}
+            </span>
+          );
+        },
+      },
+      {
+        id: 'flags',
+        header: '',
+        cell: ({ row }) => (
+          <span className="flex gap-1">
+            {row.original.isRecurring && (
+              <Badge variant="secondary">{t('columns.recurring')}</Badge>
+            )}
+            {row.original.requiresApproval && (
+              <Badge variant="outline">{t('columns.approval')}</Badge>
+            )}
+          </span>
+        ),
+      },
+    ],
+    [t, tc],
+  );
 
   const loadEvents = useCallback(async () => {
     setIsLoading(true);
@@ -195,7 +213,7 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
     <>
       <div className="flex items-center gap-4">
         <Input
-          placeholder="Cerca per titolo..."
+          placeholder={t('searchPlaceholder')}
           className="max-w-sm"
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
@@ -209,12 +227,12 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
             setPagination((prev) => ({ ...prev, pageIndex: 0 }));
           }}
         >
-          <option value="">Tutti gli stati</option>
-          <option value="scheduled">Programmato</option>
-          <option value="in_progress">In corso</option>
-          <option value="completed">Completato</option>
-          <option value="cancelled">Annullato</option>
-          <option value="template">Template</option>
+          <option value="">{t('allStatuses')}</option>
+          <option value="scheduled">{t('statuses.scheduled')}</option>
+          <option value="in_progress">{t('statuses.in_progress')}</option>
+          <option value="completed">{t('statuses.completed')}</option>
+          <option value="cancelled">{t('statuses.cancelled')}</option>
+          <option value="template">{t('statuses.template')}</option>
         </select>
         <select
           className="rounded-md border border-neutral-200 px-3 py-2 text-sm"
@@ -225,10 +243,10 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
             setPagination((prev) => ({ ...prev, pageIndex: 0 }));
           }}
         >
-          <option value="">Tutte le categorie</option>
-          <option value="walk">Passeggiata</option>
-          <option value="meetup">Incontro</option>
-          <option value="training">Addestramento</option>
+          <option value="">{t('allCategories')}</option>
+          <option value="walk">{t('categories.walk')}</option>
+          <option value="meetup">{t('categories.meetup')}</option>
+          <option value="training">{t('categories.training')}</option>
         </select>
       </div>
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -9,12 +10,12 @@ import { formatDateTime } from '@/lib/formatters';
 import type { AdminStory, AdminStoryPage } from '@/repositories';
 import { deleteStory as deleteStoryAction, fetchStories as fetchStoriesAction } from './actions';
 
-function getTimeUntilExpiry(expiresAt: string): string {
+function getTimeUntilExpiry(expiresAt: string, expiredLabel: string): string {
   const now = new Date();
   const expiry = new Date(expiresAt);
   const diffMs = expiry.getTime() - now.getTime();
 
-  if (diffMs <= 0) return 'Scaduta';
+  if (diffMs <= 0) return expiredLabel;
 
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
@@ -23,16 +24,13 @@ function getTimeUntilExpiry(expiresAt: string): string {
   return `${String(minutes)}m`;
 }
 
-const MEDIA_TYPE_LABEL: Record<string, string> = {
-  image: 'Immagine',
-  video: 'Video',
-};
-
 interface StoryGridProps {
   initialData: AdminStoryPage;
 }
 
 export function StoryGrid({ initialData }: StoryGridProps) {
+  const t = useTranslations('stories');
+  const tTable = useTranslations('table');
   const [stories, setStories] = useState<AdminStory[]>(initialData.data);
   const [page, setPage] = useState(initialData.page);
   const [totalPages, setTotalPages] = useState(initialData.totalPages);
@@ -59,11 +57,11 @@ export function StoryGrid({ initialData }: StoryGridProps) {
     setIsDeleting(true);
     try {
       await deleteStoryAction(storyId);
-      toast.success('Storia eliminata');
+      toast.success(t('toast.deleted'));
       void fetchStories(page);
     } catch (error) {
       console.error('[StoryModeration] Failed to delete story:', error);
-      toast.error("Errore durante l'eliminazione");
+      toast.error(t('toast.deleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -77,9 +75,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
     <>
       {/* Summary */}
       <div className="flex items-center gap-3">
-        <span className="text-sm text-neutral-500">
-          {total} {total === 1 ? 'storia' : 'storie'} totali
-        </span>
+        <span className="text-sm text-neutral-500">{t('count', { count: total })}</span>
       </div>
 
       {/* Stories grid */}
@@ -95,7 +91,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
         </div>
       ) : stories.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-lg text-neutral-500">Nessuna storia trovata</p>
+          <p className="text-lg text-neutral-500">{t('noStories')}</p>
         </Card>
       ) : (
         <>
@@ -119,7 +115,9 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                     )}
                     <div className="absolute left-2 top-2">
                       <Badge variant={isExpired ? 'secondary' : 'default'}>
-                        {isExpired ? 'Scaduta' : getTimeUntilExpiry(story.expiresAt)}
+                        {isExpired
+                          ? t('expired')
+                          : getTimeUntilExpiry(story.expiresAt, t('expired'))}
                       </Badge>
                     </div>
                   </div>
@@ -128,15 +126,19 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                   <div className="space-y-2 p-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-neutral-900">
-                        {story.authorName ?? 'Utente sconosciuto'}
+                        {story.authorName ?? t('unknownUser')}
                       </span>
                       <Badge variant="outline">
-                        {MEDIA_TYPE_LABEL[story.mediaType] ?? story.mediaType}
+                        {t.has(`types.${story.mediaType}`)
+                          ? t(`types.${story.mediaType}` as 'types.image')
+                          : story.mediaType}
                       </Badge>
                     </div>
 
                     <div className="flex items-center gap-3 text-xs text-neutral-500">
-                      <span>{story.viewCount} visualizzazioni</span>
+                      <span>
+                        {story.viewCount} {t('views')}
+                      </span>
                       <span>{formatDateTime(story.createdAt)}</span>
                     </div>
 
@@ -147,7 +149,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                       disabled={isDeleting}
                       onClick={() => handleDelete(story.id)}
                     >
-                      Elimina
+                      {t('deleteAction')}
                     </Button>
                   </div>
                 </Card>
@@ -164,10 +166,10 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                 disabled={page <= 1}
                 onClick={() => handlePageChange(page - 1)}
               >
-                Precedente
+                {tTable('previous')}
               </Button>
               <span className="text-sm text-neutral-500">
-                Pagina {page} di {totalPages}
+                {tTable('pageOf', { current: page, total: totalPages })}
               </span>
               <Button
                 variant="outline"
@@ -175,7 +177,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                 disabled={page >= totalPages}
                 onClick={() => handlePageChange(page + 1)}
               >
-                Successiva
+                {tTable('next')}
               </Button>
             </div>
           ) : null}

@@ -2,7 +2,8 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Input } from '@/components/ui/input';
 import { formatDateTime } from '@/lib/formatters';
@@ -18,49 +19,13 @@ interface EmergencyContactItem {
   createdAt: string | Date;
 }
 
-const columns: ColumnDef<EmergencyContactItem>[] = [
-  {
-    accessorKey: 'userName',
-    header: 'Proprietario',
-    cell: ({ row }) => (
-      <a
-        href={`/users/${row.original.userId}`}
-        className="font-medium text-primary-600 hover:underline"
-      >
-        {row.original.userName ?? 'Sconosciuto'}
-      </a>
-    ),
-  },
-  {
-    accessorKey: 'contactName',
-    header: 'Nome contatto',
-    cell: ({ row }) => row.original.contactName,
-  },
-  {
-    accessorKey: 'phone',
-    header: 'Telefono',
-    cell: ({ row }) => (
-      <span className="font-mono text-sm text-neutral-500">{row.original.phone}</span>
-    ),
-  },
-  {
-    accessorKey: 'relationship',
-    header: 'Relazione',
-    cell: ({ row }) => row.original.relationship ?? '-',
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Aggiunto il',
-    cell: ({ row }) => formatDateTime(row.original.createdAt),
-  },
-];
-
 interface ContactsTableProps {
   initialData: PaginatedResult<EmergencyContactItem>;
   pageSize: number;
 }
 
 export function ContactsTable({ initialData, pageSize }: ContactsTableProps) {
+  const t = useTranslations('safety.contacts');
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [pagination, setPagination] = useState<PaginationState>({
@@ -82,6 +47,46 @@ export function ContactsTable({ initialData, pageSize }: ContactsTableProps) {
     }, 300);
     setDebounceTimer(timer);
   }
+
+  const columns: ColumnDef<EmergencyContactItem>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'userName',
+        header: t('columns.owner'),
+        cell: ({ row }) => (
+          <a
+            href={`/users/${row.original.userId}`}
+            className="font-medium text-primary-600 hover:underline"
+          >
+            {row.original.userName ?? '-'}
+          </a>
+        ),
+      },
+      {
+        accessorKey: 'contactName',
+        header: t('columns.contactName'),
+        cell: ({ row }) => row.original.contactName,
+      },
+      {
+        accessorKey: 'phone',
+        header: t('columns.phone'),
+        cell: ({ row }) => (
+          <span className="font-mono text-sm text-neutral-500">{row.original.phone}</span>
+        ),
+      },
+      {
+        accessorKey: 'relationship',
+        header: t('columns.relationship'),
+        cell: ({ row }) => row.original.relationship ?? '-',
+      },
+      {
+        accessorKey: 'createdAt',
+        header: t('columns.addedAt'),
+        cell: ({ row }) => formatDateTime(row.original.createdAt),
+      },
+    ],
+    [t],
+  );
 
   const loadContacts = useCallback(async () => {
     setIsLoading(true);
@@ -108,7 +113,7 @@ export function ContactsTable({ initialData, pageSize }: ContactsTableProps) {
     <>
       <div className="flex items-center gap-4">
         <Input
-          placeholder="Cerca per nome contatto o utente..."
+          placeholder={t('searchPlaceholder')}
           className="max-w-sm"
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}

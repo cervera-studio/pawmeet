@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatNumber } from '@/lib/formatters';
 import { getServerTrpcClient } from '@/lib/server-api';
@@ -8,6 +9,7 @@ const DashboardCharts = dynamic(() => import('./dashboard-charts').then((m) => m
 });
 
 export default async function DashboardPage() {
+  const t = await getTranslations('dashboard');
   const api = await getServerTrpcClient();
 
   const [stats, analyticsKpis] = await Promise.all([
@@ -16,27 +18,27 @@ export default async function DashboardPage() {
   ]);
 
   const kpiCards = [
-    { title: 'Utenti Totali', value: stats.totalUsers },
-    { title: 'Cani Registrati', value: stats.totalDogs },
-    { title: 'Match Attivi', value: stats.activeMatches },
-    { title: 'Foto in Attesa', value: stats.pendingPhotos },
-    { title: 'Segnalazioni Pendenti', value: stats.pendingReports },
-    { title: 'Match Totali', value: stats.totalMatches },
+    { title: t('totalUsers'), value: stats.totalUsers },
+    { title: t('registeredDogs'), value: stats.totalDogs },
+    { title: t('activeMatches'), value: stats.activeMatches },
+    { title: t('pendingPhotos'), value: stats.pendingPhotos },
+    { title: t('pendingReports'), value: stats.pendingReports },
+    { title: t('totalMatches'), value: stats.totalMatches },
   ];
 
   const analyticsCards = [
-    { title: 'DAU (Oggi)', value: analyticsKpis.dauToday },
-    { title: 'Registrazioni Oggi', value: analyticsKpis.registrationsToday },
-    { title: 'Match Oggi', value: analyticsKpis.matchesToday },
-    { title: 'Eventi Ultimi 24h', value: analyticsKpis.eventsLast24h },
-    { title: 'Eventi Totali', value: analyticsKpis.totalEvents },
+    { title: t('dauToday'), value: analyticsKpis.dauToday },
+    { title: t('registrationsToday'), value: analyticsKpis.registrationsToday },
+    { title: t('matchesToday'), value: analyticsKpis.matchesToday },
+    { title: t('eventsLast24h'), value: analyticsKpis.eventsLast24h },
+    { title: t('totalEvents'), value: analyticsKpis.totalEvents },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Dashboard</h1>
-        <p className="text-neutral-500">Panoramica delle metriche principali</p>
+        <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+        <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
       {/* KPI Cards */}
@@ -55,7 +57,7 @@ export default async function DashboardPage() {
 
       {/* Analytics KPI Cards */}
       <div>
-        <h2 className="mb-3 text-lg font-semibold text-neutral-800">Analytics (Real-time)</h2>
+        <h2 className="mb-3 text-lg font-semibold text-neutral-800">{t('analyticsRealtime')}</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {analyticsCards.map((kpi) => (
             <Card key={kpi.title}>

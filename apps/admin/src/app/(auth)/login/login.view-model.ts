@@ -23,14 +23,14 @@ export function useLoginViewModel() {
         await login(email, password);
         router.push('/');
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Errore durante il login';
-        // Provide user-friendly messages
+        const message = err instanceof Error ? err.message : 'generic';
+        // Set error keys for translation
         if (message.includes('401') || message.includes('Credenziali')) {
-          setError('Email o password non validi');
+          setError('invalidCredentials');
         } else if (message.includes('403') || message.includes('disattivato')) {
-          setError('Account disattivato. Contatta un amministratore.');
+          setError('accountDisabled');
         } else {
-          setError('Errore del server. Riprova più tardi.');
+          setError('serverError');
         }
       } finally {
         setIsSubmitting(false);

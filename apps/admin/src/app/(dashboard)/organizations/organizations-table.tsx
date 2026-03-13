@@ -2,7 +2,8 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -18,68 +19,13 @@ function isOrgType(v: string): v is OrgType {
   return (ORG_TYPES as string[]).includes(v);
 }
 
-const typeLabels: Record<string, string> = {
-  pawmeet_team: 'PawMeet Team',
-  association: 'Associazione',
-  educator: 'Educatore',
-  brand: 'Brand',
-};
-
-const columns: ColumnDef<AdminOrganizationListItem>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Nome',
-    cell: ({ row }) => (
-      <a
-        href={`/organizations/${row.original.id}`}
-        className="font-medium text-primary-600 hover:underline"
-      >
-        {row.original.name}
-      </a>
-    ),
-  },
-  {
-    accessorKey: 'slug',
-    header: 'Slug',
-    cell: ({ row }) => (
-      <span className="font-mono text-sm text-neutral-500">{row.original.slug}</span>
-    ),
-  },
-  {
-    accessorKey: 'type',
-    header: 'Tipo',
-    cell: ({ row }) => (
-      <Badge variant="outline">{typeLabels[row.original.type] ?? row.original.type}</Badge>
-    ),
-  },
-  {
-    accessorKey: 'isVerified',
-    header: 'Stato',
-    cell: ({ row }) =>
-      row.original.isVerified ? (
-        <Badge variant="success">Verificata</Badge>
-      ) : (
-        <Badge variant="secondary">Non verificata</Badge>
-      ),
-  },
-  {
-    accessorKey: 'memberCount',
-    header: 'Membri',
-    cell: ({ row }) => row.original.memberCount,
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Creata il',
-    cell: ({ row }) => formatDateTime(row.original.createdAt),
-  },
-];
-
 interface OrganizationsTableProps {
   initialData: PaginatedResult<AdminOrganizationListItem>;
   pageSize: number;
 }
 
 export function OrganizationsTable({ initialData, pageSize }: OrganizationsTableProps) {
+  const t = useTranslations('organizations');
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<OrgType | undefined>(undefined);
@@ -102,6 +48,66 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
     }, 300);
     setDebounceTimer(timer);
   }
+
+  const columns: ColumnDef<AdminOrganizationListItem>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: t('columns.name'),
+        cell: ({ row }) => (
+          <a
+            href={`/organizations/${row.original.id}`}
+            className="font-medium text-primary-600 hover:underline"
+          >
+            {row.original.name}
+          </a>
+        ),
+      },
+      {
+        accessorKey: 'slug',
+        header: t('columns.slug'),
+        cell: ({ row }) => (
+          <span className="font-mono text-sm text-neutral-500">{row.original.slug}</span>
+        ),
+      },
+      {
+        accessorKey: 'type',
+        header: t('columns.type'),
+        cell: ({ row }) => (
+          <Badge variant="outline">
+            {t(
+              `types.${row.original.type}` as
+                | 'types.association'
+                | 'types.educator'
+                | 'types.brand'
+                | 'types.pawmeet_team',
+            ) ?? row.original.type}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: 'isVerified',
+        header: t('columns.status'),
+        cell: ({ row }) =>
+          row.original.isVerified ? (
+            <Badge variant="success">{t('verified')}</Badge>
+          ) : (
+            <Badge variant="secondary">{t('notVerified')}</Badge>
+          ),
+      },
+      {
+        accessorKey: 'memberCount',
+        header: t('columns.members'),
+        cell: ({ row }) => row.original.memberCount,
+      },
+      {
+        accessorKey: 'createdAt',
+        header: t('columns.createdAt'),
+        cell: ({ row }) => formatDateTime(row.original.createdAt),
+      },
+    ],
+    [t],
+  );
 
   const loadOrganizations = useCallback(async () => {
     setIsLoading(true);
@@ -129,7 +135,7 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
     <>
       <div className="flex items-center gap-4">
         <Input
-          placeholder="Cerca per nome o slug..."
+          placeholder={t('searchPlaceholder')}
           className="max-w-sm"
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
@@ -143,11 +149,11 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
             setPagination((prev) => ({ ...prev, pageIndex: 0 }));
           }}
         >
-          <option value="">Tutti i tipi</option>
-          <option value="pawmeet_team">PawMeet Team</option>
-          <option value="association">Associazione</option>
-          <option value="educator">Educatore</option>
-          <option value="brand">Brand</option>
+          <option value="">{t('allTypes')}</option>
+          <option value="pawmeet_team">{t('types.pawmeet_team')}</option>
+          <option value="association">{t('types.association')}</option>
+          <option value="educator">{t('types.educator')}</option>
+          <option value="brand">{t('types.brand')}</option>
         </select>
       </div>
 

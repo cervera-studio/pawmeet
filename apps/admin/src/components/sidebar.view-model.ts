@@ -1,4 +1,5 @@
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import {
   AlertTriangleIcon,
@@ -13,40 +14,44 @@ import {
 } from '@/components/icons';
 import { useAuthContext } from '@/lib/auth-store';
 
-export const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboardIcon },
-  { name: 'Utenti', href: '/users', icon: UsersIcon },
-  {
-    name: 'Moderazione',
-    href: '/moderation',
-    icon: ShieldIcon,
-    children: [
-      { name: 'Feed', href: '/moderation/feed' },
-      { name: 'Storie', href: '/moderation/stories' },
-      { name: 'Foto', href: '/moderation/photos' },
-      { name: 'Contenuti', href: '/moderation/content' },
-      { name: 'Segnalazioni', href: '/moderation/reports' },
-    ],
-  },
-  { name: 'Cani', href: '/dogs', icon: PawPrintIcon },
-  { name: 'Eventi', href: '/group-events', icon: CalendarIcon },
-  { name: 'Organizzazioni', href: '/organizations', icon: BuildingIcon },
-  {
-    name: 'Sicurezza',
-    href: '/safety',
-    icon: AlertTriangleIcon,
-    children: [
-      { name: 'Allarmi SOS', href: '/safety/sos' },
-      { name: 'Contatti emergenza', href: '/safety/contacts' },
-    ],
-  },
-  { name: 'Eliminazioni', href: '/account-deletions', icon: UserXIcon },
-  { name: 'Impostazioni', href: '/settings', icon: SettingsIcon },
-];
+function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
+  return [
+    { name: t('dashboard'), href: '/', icon: LayoutDashboardIcon },
+    { name: t('users'), href: '/users', icon: UsersIcon },
+    {
+      name: t('moderation'),
+      href: '/moderation',
+      icon: ShieldIcon,
+      children: [
+        { name: t('moderationFeed'), href: '/moderation/feed' },
+        { name: t('moderationStories'), href: '/moderation/stories' },
+        { name: t('moderationPhotos'), href: '/moderation/photos' },
+        { name: t('moderationContent'), href: '/moderation/content' },
+        { name: t('moderationReports'), href: '/moderation/reports' },
+      ],
+    },
+    { name: t('dogs'), href: '/dogs', icon: PawPrintIcon },
+    { name: t('events'), href: '/group-events', icon: CalendarIcon },
+    { name: t('organizations'), href: '/organizations', icon: BuildingIcon },
+    {
+      name: t('safety'),
+      href: '/safety',
+      icon: AlertTriangleIcon,
+      children: [
+        { name: t('safetySos'), href: '/safety/sos' },
+        { name: t('safetyContacts'), href: '/safety/contacts' },
+      ],
+    },
+    { name: t('accountDeletions'), href: '/account-deletions', icon: UserXIcon },
+    { name: t('settings'), href: '/settings', icon: SettingsIcon },
+  ];
+}
 
 export function useSidebarViewModel() {
   const pathname = usePathname();
   const { user, logout } = useAuthContext();
+  const t = useTranslations('nav');
+  const navigation = getNavigation(t);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   function isNavActive(href: string) {

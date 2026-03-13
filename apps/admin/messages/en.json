@@ -1,0 +1,423 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "noResults": "No results found.",
+    "noData": "No data available",
+    "save": "Save",
+    "cancel": "Cancel",
+    "details": "Details",
+    "search": "Search...",
+    "unknown": "Unknown",
+    "saving": "Saving...",
+    "saveChanges": "Save changes",
+    "yes": "Yes",
+    "no": "No",
+    "delete": "Delete",
+    "active": "Active",
+    "inactive": "Inactive",
+    "never": "Never"
+  },
+  "metadata": {
+    "description": "PawMeet Administration Panel"
+  },
+  "auth": {
+    "title": "PawMeet Admin",
+    "subtitle": "Sign in to the administration panel",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "loginButton": "Sign in",
+    "loggingIn": "Signing in...",
+    "logout": "Sign out",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "accountDisabled": "Account disabled. Contact an administrator.",
+      "serverError": "Server error. Please try again later.",
+      "generic": "Login error"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "moderation": "Moderation",
+    "moderationFeed": "Feed",
+    "moderationStories": "Stories",
+    "moderationPhotos": "Photos",
+    "moderationContent": "Content",
+    "moderationReports": "Reports",
+    "dogs": "Dogs",
+    "events": "Events",
+    "organizations": "Organizations",
+    "safety": "Safety",
+    "safetySos": "SOS Alerts",
+    "safetyContacts": "Emergency contacts",
+    "accountDeletions": "Deletions",
+    "settings": "Settings"
+  },
+  "header": {
+    "searchPlaceholder": "Search users, dogs, reports...",
+    "lightTheme": "Light theme",
+    "darkTheme": "Dark theme",
+    "notifications": "Notifications"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of key metrics",
+    "totalUsers": "Total Users",
+    "registeredDogs": "Registered Dogs",
+    "activeMatches": "Active Matches",
+    "pendingPhotos": "Pending Photos",
+    "pendingReports": "Pending Reports",
+    "totalMatches": "Total Matches",
+    "dauToday": "DAU (Today)",
+    "registrationsToday": "Registrations Today",
+    "matchesToday": "Matches Today",
+    "eventsLast24h": "Events Last 24h",
+    "totalEvents": "Total Events",
+    "analyticsRealtime": "Analytics (Real-time)",
+    "chartRegistrations": "User Registrations (last 30 days)",
+    "chartDailyMatches": "Daily Matches (last 30 days)",
+    "chartDau": "DAU — Daily Active Users (last 30 days)",
+    "registrationsLabel": "Registrations",
+    "matchLabel": "Matches",
+    "dauLabel": "DAU"
+  },
+  "table": {
+    "totalResults": "{total} total results",
+    "noResults": "No results",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {current} of {total}"
+  },
+  "status": {
+    "user": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "banned": "Banned"
+    },
+    "report": {
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage platform users",
+    "searchPlaceholder": "Search users...",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "dogs": "Dogs",
+      "followers": "Followers",
+      "following": "Following",
+      "registeredAt": "Registered on"
+    },
+    "detail": {
+      "provider": "Provider",
+      "lastLogin": "Last login",
+      "reportsReceived": "Reports received",
+      "totalMatches": "Total matches",
+      "dogsCount": "Dogs ({count})",
+      "noDogs": "No dogs registered",
+      "breed": "Breed",
+      "quickActions": "Quick actions",
+      "information": "Information",
+      "name": "Name",
+      "email": "Email",
+      "registeredAt": "Registered on",
+      "followers": "Followers",
+      "following": "Following",
+      "viewReports": "View reports",
+      "viewPhotos": "View photos"
+    }
+  },
+  "dogs": {
+    "title": "Dogs",
+    "subtitle": "All dogs registered on the platform",
+    "searchPlaceholder": "Search by name, breed or owner...",
+    "columns": {
+      "name": "Name",
+      "breed": "Breed",
+      "owner": "Owner",
+      "size": "Size",
+      "status": "Status",
+      "addedAt": "Added on"
+    },
+    "sizes": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure the administration panel",
+    "saved": "Settings saved",
+    "saveError": "Error saving settings",
+    "notImplemented": "Feature not yet implemented",
+    "general": {
+      "title": "General Settings",
+      "subtitle": "Configure basic platform settings",
+      "appName": "App Name",
+      "supportEmail": "Support Email"
+    },
+    "moderation": {
+      "title": "Moderation",
+      "subtitle": "Configure automatic moderation rules",
+      "photoThreshold": "Photo auto-approval threshold (confidence %)",
+      "maxReports": "Max reports before suspension"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "subtitle": "Irreversible actions",
+      "clearCache": "Clear cache",
+      "clearCacheDesc": "Invalidate all system cache",
+      "clearButton": "Clear"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Manage user reports",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed"
+    },
+    "reasons": {
+      "inappropriate_behavior": "Inappropriate behavior",
+      "fake_profile": "Fake profile",
+      "harassment": "Harassment",
+      "spam": "Spam",
+      "other": "Other"
+    },
+    "actions": {
+      "manage": "Manage",
+      "processing": "Processing...",
+      "dismiss": "Dismiss",
+      "warn": "Warn user",
+      "suspend": "Suspend user",
+      "ban": "Ban user",
+      "completed": "Action completed",
+      "error": "Error performing action"
+    },
+    "columns": {
+      "reporter": "Reporter",
+      "reported": "Reported",
+      "reason": "Reason",
+      "status": "Status",
+      "action": "Action",
+      "date": "Date"
+    }
+  },
+  "content": {
+    "title": "Content Moderation",
+    "subtitle": "Manage feed content reports",
+    "noPending": "No pending reports",
+    "reasons": {
+      "inappropriate": "Inappropriate content",
+      "spam": "Spam",
+      "harassment": "Harassment",
+      "violence": "Violence",
+      "other": "Other"
+    },
+    "types": {
+      "post": "Post",
+      "comment": "Comment",
+      "story": "Story"
+    },
+    "contentId": "Content ID",
+    "reporter": "Reporter",
+    "dismiss": "Dismiss",
+    "review": "Review",
+    "dismissed": "Report dismissed",
+    "reviewed": "Report reviewed",
+    "loadMore": "Load more"
+  },
+  "photos": {
+    "title": "Photo Moderation",
+    "subtitle": "{count} photos pending review",
+    "approveAll": "Approve all",
+    "noPending": "No photos pending moderation",
+    "photoOf": "Photo of {name}",
+    "photo": "Photo",
+    "types": {
+      "profile": "Profile",
+      "dog": "Dog"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "toast": {
+      "approved": "Photo approved",
+      "approveError": "Error approving photo",
+      "rejected": "Photo rejected",
+      "rejectError": "Error rejecting photo",
+      "allApproved": "All photos approved",
+      "allApproveError": "Error approving photos"
+    }
+  },
+  "stories": {
+    "title": "Story Management",
+    "subtitle": "View and moderate user stories",
+    "expired": "Expired",
+    "types": {
+      "image": "Image",
+      "video": "Video"
+    },
+    "noStories": "No stories found",
+    "unknownUser": "Unknown user",
+    "deleteAction": "Delete",
+    "toast": {
+      "deleted": "Story deleted",
+      "deleteError": "Error deleting story"
+    },
+    "count": "{count, plural, one {# story} other {# stories}}",
+    "views": "views"
+  },
+  "feed": {
+    "title": "Feed Management",
+    "subtitle": "Moderate feed posts and monitor statistics",
+    "statuses": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "stats": {
+      "totalPosts": "Total posts",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "stories": "Stories",
+      "reports": "Reports"
+    },
+    "searchPlaceholder": "Search by author...",
+    "resultCount": "{count, plural, one {# result} other {# results}}",
+    "noPostsFound": "No posts found",
+    "noCaption": "No caption",
+    "unknownUser": "Unknown user",
+    "deleted": "Deleted",
+    "approve": "Approve",
+    "reject": "Reject",
+    "postApproved": "Post approved",
+    "postRejected": "Post rejected",
+    "reportCount": "{count, plural, one {# report} other {# reports}}"
+  },
+  "organizations": {
+    "title": "Organizations",
+    "subtitle": "Manage verified organizations and members",
+    "searchPlaceholder": "Search by name or slug...",
+    "allTypes": "All types",
+    "types": {
+      "pawmeet_team": "PawMeet Team",
+      "association": "Association",
+      "educator": "Educator",
+      "brand": "Brand"
+    },
+    "columns": {
+      "name": "Name",
+      "slug": "Slug",
+      "type": "Type",
+      "status": "Status",
+      "members": "Members",
+      "createdAt": "Created on"
+    },
+    "verified": "Verified",
+    "notVerified": "Not verified"
+  },
+  "events": {
+    "title": "Events",
+    "subtitle": "Manage group events on the platform",
+    "searchPlaceholder": "Search by title...",
+    "allStatuses": "All statuses",
+    "allCategories": "All categories",
+    "categories": {
+      "walk": "Walk",
+      "meetup": "Meetup",
+      "training": "Training"
+    },
+    "statuses": {
+      "scheduled": "Scheduled",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "template": "Template"
+    },
+    "visibility": {
+      "public": "Public",
+      "friends_only": "Friends only",
+      "invite_only": "Invite only"
+    },
+    "columns": {
+      "title": "Title",
+      "category": "Category",
+      "status": "Status",
+      "visibility": "Visibility",
+      "date": "Date",
+      "creator": "Creator",
+      "participants": "Participants",
+      "pending": "pending",
+      "recurring": "Recurring",
+      "approval": "Approval"
+    }
+  },
+  "safety": {
+    "sos": {
+      "title": "SOS Alerts & Check-ins",
+      "subtitle": "SOS alarm logs, automatic alerts, and safety check-ins",
+      "autoAlert": "Automatic alert",
+      "allTypes": "All types",
+      "types": {
+        "sos": "SOS",
+        "auto_alert": "Automatic alerts",
+        "check_in": "Check-in"
+      },
+      "columns": {
+        "type": "Type",
+        "user": "User",
+        "walk": "Walk",
+        "walkStatus": "Walk status",
+        "location": "Location",
+        "date": "Date"
+      },
+      "walkStatuses": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled",
+        "completed": "Completed"
+      }
+    },
+    "contacts": {
+      "title": "Emergency Contacts",
+      "subtitle": "Emergency contacts registered by users",
+      "searchPlaceholder": "Search by contact name or user...",
+      "columns": {
+        "owner": "Owner",
+        "contactName": "Contact name",
+        "phone": "Phone",
+        "relationship": "Relationship",
+        "addedAt": "Added on"
+      }
+    }
+  },
+  "accountDeletions": {
+    "title": "Account Deletions",
+    "subtitle": "Accounts pending deletion (30-day grace period)",
+    "daysRemaining": "{days}d remaining",
+    "columns": {
+      "user": "User",
+      "registeredAt": "Registered on",
+      "scheduledDeletion": "Scheduled deletion",
+      "timeRemaining": "Time remaining",
+      "cancelDeletion": "Cancel deletion"
+    }
+  }
+}

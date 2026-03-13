@@ -2,7 +2,8 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,78 +19,25 @@ interface PendingDeletion {
   daysRemaining: number;
 }
 
-function DaysRemainingBadge({ days }: { days: number }) {
-  if (days <= 3) return <Badge variant="destructive">{days}g rimanenti</Badge>;
-  if (days <= 10) return <Badge variant="warning">{days}g rimanenti</Badge>;
-  return <Badge variant="secondary">{days}g rimanenti</Badge>;
-}
-
 interface DeletionsTableProps {
   initialData: PaginatedResult<PendingDeletion>;
   pageSize: number;
 }
 
+function DaysRemainingBadge({ days, label }: { days: number; label: string }) {
+  if (days <= 3) return <Badge variant="destructive">{label}</Badge>;
+  if (days <= 10) return <Badge variant="warning">{label}</Badge>;
+  return <Badge variant="secondary">{label}</Badge>;
+}
+
 export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
+  const t = useTranslations('accountDeletions');
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize,
   });
   const [data, setData] = useState<PaginatedResult<PendingDeletion>>(initialData);
   const [isLoading, setIsLoading] = useState(false);
-
-  const columns: ColumnDef<PendingDeletion>[] = [
-    {
-      accessorKey: 'displayName',
-      header: 'Utente',
-      cell: ({ row }) => (
-        <a
-          href={`/users/${row.original.id}`}
-          className="font-medium text-primary-600 hover:underline"
-        >
-          {row.original.displayName}
-        </a>
-      ),
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
-      cell: ({ row }) => <span className="text-sm text-neutral-500">{row.original.email}</span>,
-    },
-    {
-      accessorKey: 'createdAt',
-      header: 'Registrato il',
-      cell: ({ row }) => formatDateTime(row.original.createdAt),
-    },
-    {
-      accessorKey: 'deletionScheduledAt',
-      header: 'Eliminazione prevista',
-      cell: ({ row }) =>
-        row.original.deletionScheduledAt ? formatDateTime(row.original.deletionScheduledAt) : '-',
-    },
-    {
-      accessorKey: 'daysRemaining',
-      header: 'Tempo rimanente',
-      cell: ({ row }) => <DaysRemainingBadge days={row.original.daysRemaining} />,
-    },
-    {
-      id: 'actions',
-      header: '',
-      cell: ({ row }) => (
-        <Button variant="outline" size="sm" onClick={() => handleCancel(row.original.id)}>
-          Annulla eliminazione
-        </Button>
-      ),
-    },
-  ];
-
-  async function handleCancel(userId: string) {
-    try {
-      await cancelDeletion(userId);
-      await loadDeletions();
-    } catch (error) {
-      console.error('[AccountDeletions] Failed to cancel:', error);
-    }
-  }
 
   const loadDeletions = useCallback(async () => {
     setIsLoading(true);
@@ -105,6 +53,71 @@ export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
       setIsLoading(false);
     }
   }, [pagination.pageIndex, pagination.pageSize]);
+
+  const handleCancel = useCallback(
+    async (userId: string) => {
+      try {
+        await cancelDeletion(userId);
+        await loadDeletions();
+      } catch (error) {
+        console.error('[AccountDeletions] Failed to cancel:', error);
+      }
+    },
+    [loadDeletions],
+  );
+
+  const columns: ColumnDef<PendingDeletion>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'displayName',
+        header: t('columns.user'),
+        cell: ({ row }) => (
+          <a
+            href={`/users/${row.original.id}`}
+            className="font-medium text-primary-600 hover:underline"
+          >
+            {row.original.displayName}
+          </a>
+        ),
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+        cell: ({ row }) => <span className="text-sm text-neutral-500">{row.original.email}</span>,
+      },
+      {
+        accessorKey: 'createdAt',
+        header: t('columns.registeredAt'),
+        cell: ({ row }) => formatDateTime(row.original.createdAt),
+      },
+      {
+        accessorKey: 'deletionScheduledAt',
+        header: t('columns.scheduledDeletion'),
+        cell: ({ row }) =>
+          row.original.deletionScheduledAt ? formatDateTime(row.original.deletionScheduledAt) : '-',
+      },
+      {
+        accessorKey: 'daysRemaining',
+        header: t('columns.timeRemaining'),
+        cell: ({ row }) => (
+          <DaysRemainingBadge
+            days={row.original.daysRemaining}
+            label={t('daysRemaining', { days: row.original.daysRemaining })}
+          />
+        ),
+      },
+      {
+        id: 'actions',
+        header: '',
+        cell: ({ row }) => (
+          <Button variant="outline" size="sm" onClick={() => handleCancel(row.original.id)}>
+            {t('columns.cancelDeletion')}
+          </Button>
+        ),
+      },
+    ],
+    [t, handleCancel],
+  );
 
   useEffect(() => {
     if (pagination.pageIndex === 0) return;

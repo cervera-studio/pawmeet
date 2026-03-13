@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -10,28 +11,14 @@ import { formatDateTime } from '@/lib/formatters';
 import type { FeedPostPage, FeedStats } from '@/repositories';
 import { fetchFeedPosts, fetchFeedStats, moderatePost } from './actions';
 
-const STATUS_STYLES: Record<
-  string,
-  { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
-> = {
-  pending: { label: 'In attesa', variant: 'outline' },
-  approved: { label: 'Approvato', variant: 'default' },
-  rejected: { label: 'Rifiutato', variant: 'destructive' },
-};
-
-const STATUS_OPTIONS = [
-  { value: undefined, label: 'Tutti' },
-  { value: 'pending' as const, label: 'In attesa' },
-  { value: 'approved' as const, label: 'Approvati' },
-  { value: 'rejected' as const, label: 'Rifiutati' },
-];
-
 interface FeedListProps {
   initialPosts: FeedPostPage;
   initialStats: FeedStats;
 }
 
 export function FeedList({ initialPosts, initialStats }: FeedListProps) {
+  const t = useTranslations('feed');
+  const tTable = useTranslations('table');
   const [posts, setPosts] = useState(initialPosts.data);
   const [total, setTotal] = useState(initialPosts.total);
   const [totalPages, setTotalPages] = useState(initialPosts.totalPages);
@@ -43,6 +30,22 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const STATUS_STYLES: Record<
+    string,
+    { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
+  > = {
+    pending: { label: t('statuses.pending'), variant: 'outline' },
+    approved: { label: t('statuses.approved'), variant: 'default' },
+    rejected: { label: t('statuses.rejected'), variant: 'destructive' },
+  };
+
+  const STATUS_OPTIONS = [
+    { value: undefined, label: t('tabs.all') },
+    { value: 'pending' as const, label: t('tabs.pending') },
+    { value: 'approved' as const, label: t('tabs.approved') },
+    { value: 'rejected' as const, label: t('tabs.rejected') },
+  ];
 
   async function fetchPosts(params?: {
     pageOverride?: number;
@@ -112,31 +115,31 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Gestione feed</h1>
-        <p className="text-neutral-500">Modera i post del feed e monitora le statistiche</p>
+        <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+        <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         <Card className="p-4 text-center">
           <p className="text-2xl font-bold text-neutral-900">{stats.totalPosts}</p>
-          <p className="text-sm text-neutral-500">Post totali</p>
+          <p className="text-sm text-neutral-500">{t('stats.totalPosts')}</p>
         </Card>
         <Card className="p-4 text-center">
           <p className="text-2xl font-bold text-amber-600">{stats.pendingPosts}</p>
-          <p className="text-sm text-neutral-500">In attesa</p>
+          <p className="text-sm text-neutral-500">{t('stats.pending')}</p>
         </Card>
         <Card className="p-4 text-center">
           <p className="text-2xl font-bold text-red-600">{stats.rejectedPosts}</p>
-          <p className="text-sm text-neutral-500">Rifiutati</p>
+          <p className="text-sm text-neutral-500">{t('stats.rejected')}</p>
         </Card>
         <Card className="p-4 text-center">
           <p className="text-2xl font-bold text-neutral-900">{stats.totalStories}</p>
-          <p className="text-sm text-neutral-500">Storie</p>
+          <p className="text-sm text-neutral-500">{t('stats.stories')}</p>
         </Card>
         <Card className="p-4 text-center">
           <p className="text-2xl font-bold text-red-600">{stats.pendingReports}</p>
-          <p className="text-sm text-neutral-500">Segnalazioni</p>
+          <p className="text-sm text-neutral-500">{t('stats.reports')}</p>
         </Card>
       </div>
 
@@ -155,14 +158,12 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
           ))}
         </div>
         <Input
-          placeholder="Cerca per autore..."
+          placeholder={t('searchPlaceholder')}
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
           className="w-64"
         />
-        <span className="text-sm text-neutral-500">
-          {total} {total === 1 ? 'risultato' : 'risultati'}
-        </span>
+        <span className="text-sm text-neutral-500">{t('resultCount', { count: total })}</span>
       </div>
 
       {/* Posts list */}
@@ -177,13 +178,13 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
         </div>
       ) : posts.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-lg text-neutral-500">Nessun post trovato</p>
+          <p className="text-lg text-neutral-500">{t('noPostsFound')}</p>
         </Card>
       ) : (
         <div className="space-y-4">
           {posts.map((post) => {
             const statusInfo = STATUS_STYLES[post.moderationStatus] ?? {
-              label: 'Sconosciuto',
+              label: post.moderationStatus,
               variant: 'outline' as const,
             };
             return (
@@ -212,10 +213,10 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                       <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
                       {post.reportCount > 0 ? (
                         <Badge variant="destructive">
-                          {post.reportCount} segnalazion{post.reportCount === 1 ? 'e' : 'i'}
+                          {t('reportCount', { count: post.reportCount })}
                         </Badge>
                       ) : null}
-                      {post.isDeleted ? <Badge variant="secondary">Eliminato</Badge> : null}
+                      {post.isDeleted ? <Badge variant="secondary">{t('deleted')}</Badge> : null}
                     </div>
 
                     <p className="text-sm text-neutral-700">
@@ -223,11 +224,11 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                         ? post.caption.length > 120
                           ? `${post.caption.slice(0, 120)}...`
                           : post.caption
-                        : 'Senza didascalia'}
+                        : t('noCaption')}
                     </p>
 
                     <div className="flex items-center gap-4 text-xs text-neutral-500">
-                      <span>{post.authorName ?? 'Utente sconosciuto'}</span>
+                      <span>{post.authorName ?? t('unknownUser')}</span>
                       <span>{post.likesCount} like</span>
                       <span>{post.commentsCount} commenti</span>
                       <span>{formatDateTime(post.createdAt)}</span>
@@ -243,10 +244,10 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                         disabled={isUpdating}
                         onClick={() => {
                           handleModeration(post.id, 'approved');
-                          toast.success('Post approvato');
+                          toast.success(t('postApproved'));
                         }}
                       >
-                        Approva
+                        {t('approve')}
                       </Button>
                       <Button
                         size="sm"
@@ -254,10 +255,10 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                         disabled={isUpdating}
                         onClick={() => {
                           handleModeration(post.id, 'rejected');
-                          toast.success('Post rifiutato');
+                          toast.success(t('postRejected'));
                         }}
                       >
-                        Rifiuta
+                        {t('reject')}
                       </Button>
                     </div>
                   ) : post.moderationStatus === 'approved' ? (
@@ -268,10 +269,10 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                         disabled={isUpdating}
                         onClick={() => {
                           handleModeration(post.id, 'rejected');
-                          toast.success('Post rifiutato');
+                          toast.success(t('postRejected'));
                         }}
                       >
-                        Rifiuta
+                        {t('reject')}
                       </Button>
                     </div>
                   ) : null}
@@ -289,10 +290,10 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
               >
-                Precedente
+                {tTable('previous')}
               </Button>
               <span className="text-sm text-neutral-500">
-                Pagina {page} di {totalPages}
+                {tTable('pageOf', { current: page, total: totalPages })}
               </span>
               <Button
                 variant="outline"
@@ -300,7 +301,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                 disabled={page >= totalPages}
                 onClick={() => setPage(page + 1)}
               >
-                Successiva
+                {tTable('next')}
               </Button>
             </div>
           ) : null}

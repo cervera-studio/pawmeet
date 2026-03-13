@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -9,25 +10,12 @@ import { formatDateTime } from '@/lib/formatters';
 import type { ContentReport, ContentReportPage, ReviewAction } from '@/repositories';
 import { fetchPendingContent, reviewContent } from './actions';
 
-const REASON_LABEL: Record<string, string> = {
-  inappropriate: 'Contenuto inappropriato',
-  spam: 'Spam',
-  harassment: 'Molestie',
-  violence: 'Violenza',
-  other: 'Altro',
-};
-
-const TYPE_LABEL: Record<string, string> = {
-  post: 'Post',
-  comment: 'Commento',
-  story: 'Storia',
-};
-
 interface ContentListProps {
   initialData: ContentReportPage;
 }
 
 export function ContentList({ initialData }: ContentListProps) {
+  const t = useTranslations('content');
   const [reports, setReports] = useState<ContentReport[]>(initialData.reports);
   const [nextCursor, setNextCursor] = useState<string | null>(initialData.nextCursor);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,8 +55,8 @@ export function ContentList({ initialData }: ContentListProps) {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Moderazione contenuti</h1>
-        <p className="text-neutral-500">Gestisci le segnalazioni sui contenuti del feed</p>
+        <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+        <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
       {isLoading ? (
@@ -82,7 +70,7 @@ export function ContentList({ initialData }: ContentListProps) {
         </div>
       ) : reports.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-lg text-neutral-500">Nessuna segnalazione in attesa</p>
+          <p className="text-lg text-neutral-500">{t('noPending')}</p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -92,17 +80,21 @@ export function ContentList({ initialData }: ContentListProps) {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                      {TYPE_LABEL[report.contentType] ?? report.contentType}
+                      {t.has(`types.${report.contentType}`)
+                        ? t(`types.${report.contentType}` as 'types.post')
+                        : report.contentType}
                     </Badge>
                     <Badge variant="secondary">
-                      {REASON_LABEL[report.reason] ?? report.reason}
+                      {t.has(`reasons.${report.reason}`)
+                        ? t(`reasons.${report.reason}` as 'reasons.spam')
+                        : report.reason}
                     </Badge>
                   </div>
                   <p className="text-sm text-neutral-600">
-                    Contenuto ID: <span className="font-mono text-xs">{report.contentId}</span>
+                    {t('contentId')}: <span className="font-mono text-xs">{report.contentId}</span>
                   </p>
                   <p className="text-sm text-neutral-600">
-                    Segnalante: <span className="font-mono text-xs">{report.reporterId}</span>
+                    {t('reporter')}: <span className="font-mono text-xs">{report.reporterId}</span>
                   </p>
                   {report.description ? (
                     <p className="text-sm text-neutral-500 italic">
@@ -119,10 +111,10 @@ export function ContentList({ initialData }: ContentListProps) {
                     disabled={isReviewing}
                     onClick={() => {
                       handleReview(report.id, 'dismissed');
-                      toast.success('Segnalazione archiviata');
+                      toast.success(t('dismissed'));
                     }}
                   >
-                    Archivia
+                    {t('dismiss')}
                   </Button>
                   <Button
                     size="sm"
@@ -130,10 +122,10 @@ export function ContentList({ initialData }: ContentListProps) {
                     disabled={isReviewing}
                     onClick={() => {
                       handleReview(report.id, 'reviewed');
-                      toast.success('Segnalazione revisionata');
+                      toast.success(t('reviewed'));
                     }}
                   >
-                    Revisiona
+                    {t('review')}
                   </Button>
                 </div>
               </div>
@@ -143,7 +135,7 @@ export function ContentList({ initialData }: ContentListProps) {
           {nextCursor ? (
             <div className="flex justify-center">
               <Button variant="outline" onClick={loadMore} disabled={isLoading}>
-                Carica altri
+                {t('loadMore')}
               </Button>
             </div>
           ) : null}

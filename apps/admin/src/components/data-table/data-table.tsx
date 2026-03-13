@@ -9,6 +9,7 @@ import {
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -48,6 +49,8 @@ export function DataTable<TData, TValue>({
   total = 0,
   isLoading = false,
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations('table');
+  const tc = useTranslations('common');
   const defaultPagination: PaginationState = { pageIndex: 0, pageSize: 20 };
   const currentPagination = pagination ?? defaultPagination;
 
@@ -111,7 +114,7 @@ export function DataTable<TData, TValue>({
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex items-center justify-center">
                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-700 border-t-transparent" />
-                    <span className="ml-2 text-neutral-500">Caricamento...</span>
+                    <span className="ml-2 text-neutral-500">{tc('loading')}</span>
                   </div>
                 </TableCell>
               </TableRow>
@@ -128,7 +131,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center text-neutral-500">
-                  Nessun risultato trovato.
+                  {tc('noResults')}
                 </TableCell>
               </TableRow>
             )}
@@ -139,7 +142,7 @@ export function DataTable<TData, TValue>({
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-neutral-500">
-          {total > 0 ? `${total} risultati totali` : 'Nessun risultato'}
+          {total > 0 ? t('totalResults', { total }) : t('noResults')}
         </p>
         <div className="flex items-center gap-2">
           <Button
@@ -148,10 +151,10 @@ export function DataTable<TData, TValue>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Precedente
+            {t('previous')}
           </Button>
           <span className="text-sm text-neutral-600">
-            Pagina {(pagination?.pageIndex ?? 0) + 1} di {totalPages}
+            {t('pageOf', { current: (pagination?.pageIndex ?? 0) + 1, total: totalPages })}
           </span>
           <Button
             variant="outline"
@@ -159,7 +162,7 @@ export function DataTable<TData, TValue>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Successiva
+            {t('next')}
           </Button>
         </div>
       </div>

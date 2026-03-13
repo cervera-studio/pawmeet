@@ -2,7 +2,8 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -21,64 +22,74 @@ interface DogRow {
   createdAt: string;
 }
 
-const columns: ColumnDef<DogRow>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Nome',
-  },
-  {
-    accessorKey: 'breed',
-    header: 'Razza',
-  },
-  {
-    accessorKey: 'ownerName',
-    header: 'Proprietario',
-    cell: ({ row }) => {
-      const ownerId = row.original.ownerId;
-      const name = row.original.ownerName ?? 'Sconosciuto';
-      return ownerId ? (
-        <a href={`/users/${ownerId}`} className="text-primary-600 hover:underline">
-          {name}
-        </a>
-      ) : (
-        name
-      );
-    },
-  },
-  {
-    accessorKey: 'size',
-    header: 'Taglia',
-    cell: ({ row }) => {
-      const size = row.getValue('size') as string;
-      const label =
-        ({ small: 'Piccolo', medium: 'Medio', large: 'Grande' } as Record<string, string>)[size] ??
-        size;
-      return <Badge variant="outline">{label}</Badge>;
-    },
-  },
-  {
-    accessorKey: 'isActive',
-    header: 'Stato',
-    cell: ({ row }) =>
-      row.getValue('isActive') ? (
-        <Badge variant="success">Attivo</Badge>
-      ) : (
-        <Badge variant="outline">Inattivo</Badge>
-      ),
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Aggiunto il',
-    cell: ({ row }) => formatDate(row.getValue('createdAt')),
-  },
-];
-
 interface DogsTableProps {
   initialData: PaginatedResult<AdminDogListItem>;
   pageSize: number;
 }
 
 export function DogsTable({ initialData, pageSize }: DogsTableProps) {
+  const t = useTranslations('dogs');
+  const tc = useTranslations('common');
+
+  const columns: ColumnDef<DogRow>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: t('columns.name'),
+      },
+      {
+        accessorKey: 'breed',
+        header: t('columns.breed'),
+      },
+      {
+        accessorKey: 'ownerName',
+        header: t('columns.owner'),
+        cell: ({ row }) => {
+          const ownerId = row.original.ownerId;
+          const name = row.original.ownerName ?? tc('unknown');
+          return ownerId ? (
+            <a href={`/users/${ownerId}`} className="text-primary-600 hover:underline">
+              {name}
+            </a>
+          ) : (
+            name
+          );
+        },
+      },
+      {
+        accessorKey: 'size',
+        header: t('columns.size'),
+        cell: ({ row }) => {
+          const size = row.getValue('size') as string;
+          const label =
+            (
+              {
+                small: t('sizes.small'),
+                medium: t('sizes.medium'),
+                large: t('sizes.large'),
+              } as Record<string, string>
+            )[size] ?? size;
+          return <Badge variant="outline">{label}</Badge>;
+        },
+      },
+      {
+        accessorKey: 'isActive',
+        header: t('columns.status'),
+        cell: ({ row }) =>
+          row.getValue('isActive') ? (
+            <Badge variant="success">{tc('active')}</Badge>
+          ) : (
+            <Badge variant="outline">{tc('inactive')}</Badge>
+          ),
+      },
+      {
+        accessorKey: 'createdAt',
+        header: t('columns.addedAt'),
+        cell: ({ row }) => formatDate(row.getValue('createdAt')),
+      },
+    ],
+    [t, tc],
+  );
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [pagination, setPagination] = useState<PaginationState>({
@@ -129,7 +140,7 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
       {/* Search */}
       <div className="flex items-center gap-4">
         <Input
-          placeholder="Cerca per nome, razza o proprietario..."
+          placeholder={t('searchPlaceholder')}
           className="max-w-sm"
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}

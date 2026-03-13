@@ -1,9 +1,11 @@
+import { getTranslations } from 'next-intl/server';
 import { getServerTrpcClient } from '@/lib/server-api';
 import { DogsTable } from './dogs-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default async function DogsPage() {
+  const t = await getTranslations('dogs');
   const api = await getServerTrpcClient();
 
   const result = await api.admin.listDogs.query({
@@ -22,8 +24,8 @@ export default async function DogsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Cani</h1>
-        <p className="text-neutral-500">Tutti i cani registrati sulla piattaforma</p>
+        <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+        <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
       <DogsTable initialData={initialData} pageSize={DEFAULT_PAGE_SIZE} />

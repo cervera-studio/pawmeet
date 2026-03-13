@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   Area,
   AreaChart,
@@ -32,16 +33,19 @@ export function DashboardCharts({
   dailyMatches,
   dauTimeSeries,
 }: DashboardChartsProps) {
+  const t = useTranslations('dashboard');
+  const tc = useTranslations('common');
+
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Registrazioni Utenti (ultimi 30 giorni)</CardTitle>
+          <CardTitle className="text-base">{t('chartRegistrations')}</CardTitle>
         </CardHeader>
         <CardContent>
           {userRegistrations.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-neutral-400">
-              Nessun dato disponibile
+              {tc('noData')}
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={256}>
@@ -53,7 +57,7 @@ export function DashboardCharts({
                 <Area
                   type="monotone"
                   dataKey="count"
-                  name="Registrazioni"
+                  name={t('registrationsLabel')}
                   stroke="#065F46"
                   fill="#059669"
                   fillOpacity={0.15}
@@ -66,12 +70,12 @@ export function DashboardCharts({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Match Giornalieri (ultimi 30 giorni)</CardTitle>
+          <CardTitle className="text-base">{t('chartDailyMatches')}</CardTitle>
         </CardHeader>
         <CardContent>
           {dailyMatches.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-neutral-400">
-              Nessun dato disponibile
+              {tc('noData')}
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={256}>
@@ -80,7 +84,7 @@ export function DashboardCharts({
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
                 <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
-                <Bar dataKey="count" name="Match" fill="#C9A84C" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" name={t('matchLabel')} fill="#C9A84C" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -89,14 +93,12 @@ export function DashboardCharts({
 
       <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle className="text-base">
-            DAU — Utenti Attivi Giornalieri (ultimi 30 giorni)
-          </CardTitle>
+          <CardTitle className="text-base">{t('chartDau')}</CardTitle>
         </CardHeader>
         <CardContent>
           {dauTimeSeries.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-neutral-400">
-              Nessun dato disponibile
+              {tc('noData')}
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={256}>
@@ -108,7 +110,7 @@ export function DashboardCharts({
                 <Line
                   type="monotone"
                   dataKey="count"
-                  name="DAU"
+                  name={t('dauLabel')}
                   stroke="#10B981"
                   strokeWidth={2}
                   dot={false}

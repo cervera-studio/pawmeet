@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +22,8 @@ interface UserDetailPageProps {
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id } = await params;
+  const t = await getTranslations('users');
+  const tc = await getTranslations('common');
 
   const api = await getServerTrpcClient();
   const user = await api.admin.getUser.query({ id }).catch(() => notFound());
@@ -48,31 +51,36 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Informazioni</CardTitle>
+            <CardTitle className="text-base">{t('detail.information')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <InfoRow label="Nome" value={user.displayName} />
-            <InfoRow label="Email" value={user.email} />
-            <InfoRow label="Provider" value={user.authProvider} />
-            <InfoRow label="Registrato il" value={formatDate(user.createdAt)} />
+            <InfoRow label={t('detail.name')} value={user.displayName} />
+            <InfoRow label={t('detail.email')} value={user.email} />
+            <InfoRow label={t('detail.provider')} value={user.authProvider} />
+            <InfoRow label={t('detail.registeredAt')} value={formatDate(user.createdAt)} />
             <InfoRow
-              label="Ultimo accesso"
-              value={user.lastLoginAt ? formatDateTime(user.lastLoginAt) : 'Mai'}
+              label={t('detail.lastLogin')}
+              value={user.lastLoginAt ? formatDateTime(user.lastLoginAt) : tc('never')}
             />
-            <InfoRow label="Follower" value={formatNumber(user.followersCount)} />
-            <InfoRow label="Seguiti" value={formatNumber(user.followingCount)} />
-            <InfoRow label="Segnalazioni ricevute" value={formatNumber(user.reportsReceived)} />
-            <InfoRow label="Match totali" value={formatNumber(user.matchesCount)} />
+            <InfoRow label={t('detail.followers')} value={formatNumber(user.followersCount)} />
+            <InfoRow label={t('detail.following')} value={formatNumber(user.followingCount)} />
+            <InfoRow
+              label={t('detail.reportsReceived')}
+              value={formatNumber(user.reportsReceived)}
+            />
+            <InfoRow label={t('detail.totalMatches')} value={formatNumber(user.matchesCount)} />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Cani ({user.dogs.length})</CardTitle>
+            <CardTitle className="text-base">
+              {t('detail.dogsCount', { count: user.dogs.length })}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {user.dogs.length === 0 ? (
-              <p className="text-sm text-neutral-400">Nessun cane registrato</p>
+              <p className="text-sm text-neutral-400">{t('detail.noDogs')}</p>
             ) : (
               <div className="space-y-3">
                 {user.dogs.map((dog) => (
@@ -82,7 +90,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
                       <p className="text-xs text-neutral-500">{dog.breed}</p>
                     </div>
                     <Badge variant={dog.isActive ? 'success' : 'outline'}>
-                      {dog.isActive ? 'Attivo' : 'Inattivo'}
+                      {dog.isActive ? tc('active') : tc('inactive')}
                     </Badge>
                   </div>
                 ))}
@@ -93,20 +101,20 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Azioni rapide</CardTitle>
+            <CardTitle className="text-base">{t('detail.quickActions')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <a
               href={`/moderation/reports?user=${id}`}
               className="inline-flex w-full items-center justify-start h-9 rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium hover:bg-neutral-100 transition-colors"
             >
-              Vedi segnalazioni
+              {t('detail.viewReports')}
             </a>
             <a
               href={`/moderation/photos?user=${id}`}
               className="inline-flex w-full items-center justify-start h-9 rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium hover:bg-neutral-100 transition-colors"
             >
-              Vedi foto
+              {t('detail.viewPhotos')}
             </a>
           </CardContent>
         </Card>

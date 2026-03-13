@@ -2,7 +2,8 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { formatDateTime } from '@/lib/formatters';
@@ -24,73 +25,11 @@ interface SosAlertItem {
   walkScheduledAt: string | Date | null;
 }
 
-const typeBadge: Record<string, { label: string; variant: 'destructive' | 'warning' | 'secondary' }> = {
-  sos: { label: 'SOS', variant: 'destructive' },
-  auto_alert: { label: 'Alert automatico', variant: 'warning' },
-  checkin: { label: 'Check-in', variant: 'secondary' },
+const typeVariants: Record<string, 'destructive' | 'warning' | 'secondary'> = {
+  sos: 'destructive',
+  auto_alert: 'warning',
+  checkin: 'secondary',
 };
-
-const columns: ColumnDef<SosAlertItem>[] = [
-  {
-    accessorKey: 'type',
-    header: 'Tipo',
-    cell: ({ row }) => {
-      const badge = typeBadge[row.original.type] ?? { label: row.original.type, variant: 'secondary' as const };
-      return <Badge variant={badge.variant}>{badge.label}</Badge>;
-    },
-  },
-  {
-    accessorKey: 'userName',
-    header: 'Utente',
-    cell: ({ row }) => (
-      <a
-        href={`/users/${row.original.userId}`}
-        className="font-medium text-primary-600 hover:underline"
-      >
-        {row.original.userName ?? 'Sconosciuto'}
-      </a>
-    ),
-  },
-  {
-    accessorKey: 'walkTitle',
-    header: 'Passeggiata',
-    cell: ({ row }) => row.original.walkTitle ?? '-',
-  },
-  {
-    accessorKey: 'walkStatus',
-    header: 'Stato passeggiata',
-    cell: ({ row }) => {
-      const status = row.original.walkStatus;
-      if (!status) return '-';
-      const statusLabels: Record<string, string> = {
-        pending: 'In attesa',
-        accepted: 'Accettata',
-        declined: 'Rifiutata',
-        cancelled: 'Annullata',
-        completed: 'Completata',
-      };
-      return <Badge variant="outline">{statusLabels[status] ?? status}</Badge>;
-    },
-  },
-  {
-    accessorKey: 'location',
-    header: 'Posizione',
-    cell: ({ row }) => {
-      const { latitude, longitude } = row.original;
-      if (!latitude || !longitude) return '-';
-      return (
-        <span className="font-mono text-sm text-neutral-500">
-          {latitude}, {longitude}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Data',
-    cell: ({ row }) => formatDateTime(row.original.createdAt),
-  },
-];
 
 interface SosTableProps {
   initialData: PaginatedResult<SosAlertItem>;
@@ -98,6 +37,8 @@ interface SosTableProps {
 }
 
 export function SosTable({ initialData, pageSize }: SosTableProps) {
+  const t = useTranslations('safety.sos');
+  const tc = useTranslations('common');
   const [typeFilter, setTypeFilter] = useState<AlertType | undefined>(undefined);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -107,6 +48,81 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const isInitialState = pagination.pageIndex === 0 && !typeFilter;
+
+  const columns: ColumnDef<SosAlertItem>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'type',
+        header: t('columns.type'),
+        cell: ({ row }) => {
+          const type = row.original.type;
+          const variant = typeVariants[type] ?? ('secondary' as const);
+          const typeKey = type as 'sos' | 'auto_alert' | 'check_in';
+          const label =
+            type === 'auto_alert'
+              ? t('autoAlert')
+              : type === 'checkin'
+                ? t('types.check_in')
+                : (t(`types.${typeKey}`) ?? type);
+          return <Badge variant={variant}>{label}</Badge>;
+        },
+      },
+      {
+        accessorKey: 'userName',
+        header: t('columns.user'),
+        cell: ({ row }) => (
+          <a
+            href={`/users/${row.original.userId}`}
+            className="font-medium text-primary-600 hover:underline"
+          >
+            {row.original.userName ?? tc('unknown')}
+          </a>
+        ),
+      },
+      {
+        accessorKey: 'walkTitle',
+        header: t('columns.walk'),
+        cell: ({ row }) => row.original.walkTitle ?? '-',
+      },
+      {
+        accessorKey: 'walkStatus',
+        header: t('columns.walkStatus'),
+        cell: ({ row }) => {
+          const status = row.original.walkStatus;
+          if (!status) return '-';
+          const label =
+            t(
+              `walkStatuses.${status}` as
+                | 'walkStatuses.pending'
+                | 'walkStatuses.accepted'
+                | 'walkStatuses.rejected'
+                | 'walkStatuses.cancelled'
+                | 'walkStatuses.completed',
+            ) ?? status;
+          return <Badge variant="outline">{label}</Badge>;
+        },
+      },
+      {
+        accessorKey: 'location',
+        header: t('columns.location'),
+        cell: ({ row }) => {
+          const { latitude, longitude } = row.original;
+          if (!latitude || !longitude) return '-';
+          return (
+            <span className="font-mono text-sm text-neutral-500">
+              {latitude}, {longitude}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'createdAt',
+        header: t('columns.date'),
+        cell: ({ row }) => formatDateTime(row.original.createdAt),
+      },
+    ],
+    [t, tc],
+  );
 
   const loadAlerts = useCallback(async () => {
     setIsLoading(true);
@@ -141,10 +157,10 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
             setPagination((prev) => ({ ...prev, pageIndex: 0 }));
           }}
         >
-          <option value="">Tutti i tipi</option>
-          <option value="sos">SOS</option>
-          <option value="auto_alert">Alert automatici</option>
-          <option value="checkin">Check-in</option>
+          <option value="">{t('allTypes')}</option>
+          <option value="sos">{t('types.sos')}</option>
+          <option value="auto_alert">{t('types.auto_alert')}</option>
+          <option value="checkin">{t('types.check_in')}</option>
         </select>
       </div>
 

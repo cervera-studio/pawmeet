@@ -3,6 +3,7 @@ export interface NotificationPrefs {
   messages: boolean; // New message notifications
   reminders: boolean; // Walk reminders
   feed: boolean; // Likes and comments on your posts
+  nearby: boolean; // Nearby compatible user suggestions
 }
 
 export const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
@@ -10,6 +11,7 @@ export const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
   messages: true,
   reminders: true,
   feed: true,
+  nearby: true,
 };
 
 export interface User {

@@ -3,6 +3,8 @@ import type {
   DogRepository,
   MatchRepository,
   MessageRepository,
+  NotificationService,
+  UserRepository,
   WalkRepository,
 } from '../ports/index.js';
 
@@ -11,6 +13,8 @@ type Deps = {
   matchRepo: MatchRepository;
   messageRepo: MessageRepository;
   dogRepo: DogRepository;
+  userRepo: UserRepository;
+  notificationService: NotificationService;
 };
 
 type ProposeWalkInput = {
@@ -24,7 +28,7 @@ type ProposeWalkInput = {
   notes?: string | null;
 };
 
-export function createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo }: Deps) {
+export function createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo, userRepo, notificationService }: Deps) {
   return async (
     userId: string,
     input: ProposeWalkInput,
@@ -68,7 +72,22 @@ export function createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo }:
     );
     const messageCountBeforeProposal = await messageRepo.countByMatch(input.matchId);
 
-    // TODO: enqueue push notification to the other user
+    // Notify the other user about the walk proposal
+    const otherDogId = dogIds.has(match.dogAId) ? match.dogBId : match.dogAId;
+    const otherDogs = await dogRepo.findByIds([otherDogId]);
+    const otherDog = otherDogs?.[0];
+    if (otherDog) {
+      const otherUser = await userRepo.findById(otherDog.ownerId);
+      if (otherUser?.notificationPrefs?.reminders !== false) {
+        const user = await userRepo.findById(userId);
+        await notificationService.send({
+          userId: otherDog.ownerId,
+          title: '🐾 Nuova proposta di passeggiata',
+          body: `${user?.displayName ?? 'Qualcuno'} ti ha proposto una passeggiata${input.title ? `: ${input.title}` : ''}`,
+          data: { type: 'walk_proposal', walkId: walk.id },
+        });
+      }
+    }
 
     return succeed({ walkId: walk.id, matchAgeHours, messageCountBeforeProposal });
   };

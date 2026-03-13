@@ -80,7 +80,7 @@ export function buildUser(overrides: Partial<User> = {}): User {
     searchRadiusKm: 50,
     emailVerified: true,
     pushToken: null,
-    notificationPrefs: { matches: true, messages: true, reminders: true, feed: true },
+    notificationPrefs: { matches: true, messages: true, reminders: true, feed: true, nearby: true },
     dateOfBirth: new Date('1995-06-15'),
     isActive: true,
     deletionScheduledAt: null,

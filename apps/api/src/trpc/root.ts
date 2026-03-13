@@ -5,6 +5,7 @@ import {
   consentDeps,
   contentModerationDeps,
   dogDeps,
+  emergencyContactDeps,
   feedbackDeps,
   feedDeps,
   fitnessDeps,
@@ -36,6 +37,7 @@ import { createGroupEventsRouter } from './routers/group-events.js';
 import { createMatchesRouter } from './routers/matches.js';
 import { createMatchingAiRouter } from './routers/matching-ai.js';
 import { createOrganizationsRouter } from './routers/organizations.js';
+import { createSafetyRouter } from './routers/safety.js';
 import { createUsersRouter } from './routers/users.js';
 import { createWalksRouter } from './routers/walks.js';
 import { router } from './trpc.js';
@@ -60,6 +62,7 @@ export const appRouter = router({
   groupChat: createGroupChatRouter(groupChatDeps),
   groupEvents: createGroupEventsRouter(groupEventDeps),
   organizations: createOrganizationsRouter(organizationDeps),
+  safety: createSafetyRouter(emergencyContactDeps),
 });
 
 export type AppRouter = typeof appRouter;

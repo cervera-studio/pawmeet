@@ -12,6 +12,7 @@ export type {
 } from './content-moderation-service.js';
 export type { ContentReportRepository, CreateReportInput } from './content-report-repository.js';
 export type { CreateDogInput, DogRepository } from './dog-repository.js';
+export type { EmergencyContactRepository } from './emergency-contact-repository.js';
 export type { EmailService } from './email-service.js';
 export type {
   CreateEventSponsorInput,

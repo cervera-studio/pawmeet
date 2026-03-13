@@ -9,6 +9,7 @@ import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
 import { DrizzleConsentRepository } from './infra/drizzle-consent-repository.js';
 import { DrizzleContentReportRepository } from './infra/drizzle-content-report-repository.js';
 import { DrizzleDogRepository } from './infra/drizzle-dog-repository.js';
+import { DrizzleEmergencyContactRepository } from './infra/drizzle-emergency-contact-repository.js';
 import { DrizzleEventSponsorRepository } from './infra/drizzle-event-sponsor-repository.js';
 import { DrizzleFeedRepository } from './infra/drizzle-feed-repository.js';
 import { DrizzleFeedbackRepository } from './infra/drizzle-feedback-repository.js';
@@ -56,6 +57,13 @@ import { createCancelGroupEvent } from './use-cases/cancel-group-event.js';
 import { createCancelRequest } from './use-cases/cancel-request.js';
 // Use cases — walks
 import { createCancelWalk } from './use-cases/cancel-walk.js';
+// Use cases — emergency contacts & walk safety
+import {
+  createAddEmergencyContact,
+  createDeleteEmergencyContact,
+  createListEmergencyContacts,
+} from './use-cases/manage-emergency-contacts.js';
+import { createWalkCheckin, createWalkSos } from './use-cases/walk-sos.js';
 // Use cases — badges
 import { createCheckAndAwardBadges } from './use-cases/check-and-award-badges.js';
 import { createCheckAndUnlockAchievements } from './use-cases/check-and-unlock-achievements.js';
@@ -217,6 +225,7 @@ const matchingAiRepo = new DrizzleMatchingAiRepository(db);
 const organizationRepo = new DrizzleOrganizationRepository(db);
 const eventSponsorRepo = new DrizzleEventSponsorRepository(db);
 const gdprExportRepo = new DrizzleGdprExportRepository(db);
+const emergencyContactRepo = new DrizzleEmergencyContactRepository(db);
 
 // ── Services ────────────────────────────────────────────────────────────────────
 
@@ -359,11 +368,21 @@ export { experimentService };
 // ── Walk deps ───────────────────────────────────────────────────────────────────
 
 export const walkDeps = {
-  proposeWalk: createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo }),
-  respondToWalk: createRespondToWalk({ walkRepo, matchRepo, dogRepo }),
-  cancelWalk: createCancelWalk({ walkRepo, matchRepo, dogRepo }),
+  proposeWalk: createProposeWalk({ walkRepo, matchRepo, messageRepo, dogRepo, userRepo, notificationService }),
+  respondToWalk: createRespondToWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService }),
+  cancelWalk: createCancelWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService }),
   listUpcomingWalks: createListUpcomingWalks({ walkRepo }),
   listWalksByMatch: createListWalksByMatch({ walkRepo, matchRepo, dogRepo }),
+};
+
+// ── Emergency contact & walk safety deps ─────────────────────────────────────
+
+export const emergencyContactDeps = {
+  addEmergencyContact: createAddEmergencyContact({ emergencyContactRepo }),
+  listEmergencyContacts: createListEmergencyContacts({ emergencyContactRepo }),
+  deleteEmergencyContact: createDeleteEmergencyContact({ emergencyContactRepo }),
+  walkSos: createWalkSos({ walkRepo, userRepo, emergencyContactRepo, notificationService }),
+  walkCheckin: createWalkCheckin({ emergencyContactRepo, walkRepo }),
 };
 
 // ── Feedback deps ──────────────────────────────────────────────────────────────

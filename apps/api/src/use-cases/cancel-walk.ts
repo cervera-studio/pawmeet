@@ -1,13 +1,21 @@
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
-import type { DogRepository, MatchRepository, WalkRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  MatchRepository,
+  NotificationService,
+  UserRepository,
+  WalkRepository,
+} from '../ports/index.js';
 
 type Deps = {
   walkRepo: WalkRepository;
   matchRepo: MatchRepository;
   dogRepo: DogRepository;
+  userRepo: UserRepository;
+  notificationService: NotificationService;
 };
 
-export function createCancelWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
+export function createCancelWalk({ walkRepo, matchRepo, dogRepo, userRepo, notificationService }: Deps) {
   return async (userId: string, walkId: string): Promise<Result<{ message: string }>> => {
     const walk = await walkRepo.findById(walkId);
     if (!walk) {
@@ -34,7 +42,22 @@ export function createCancelWalk({ walkRepo, matchRepo, dogRepo }: Deps) {
 
     await walkRepo.updateStatus(walkId, WALK_STATUS.CANCELLED);
 
-    // TODO: enqueue push notification to other user
+    // Notify the other user about the cancellation
+    const otherDogId = dogIds.has(match.dogAId) ? match.dogBId : match.dogAId;
+    const otherDogs = await dogRepo.findByIds([otherDogId]);
+    const otherDog = otherDogs?.[0];
+    if (otherDog) {
+      const otherUser = await userRepo.findById(otherDog.ownerId);
+      if (otherUser?.notificationPrefs?.reminders !== false) {
+        const user = await userRepo.findById(userId);
+        await notificationService.send({
+          userId: otherDog.ownerId,
+          title: '❌ Passeggiata annullata',
+          body: `${user?.displayName ?? 'Qualcuno'} ha annullato la passeggiata`,
+          data: { type: 'walk_cancelled', walkId },
+        });
+      }
+    }
 
     return succeed({ message: 'Passeggiata annullata' });
   };

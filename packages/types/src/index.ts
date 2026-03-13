@@ -2,6 +2,7 @@ export * from './analytics';
 export * from './badge';
 export * from './chat';
 export * from './dog';
+export * from './emergency-contact';
 export * from './event-sponsor';
 export * from './feed';
 export * from './feedback';

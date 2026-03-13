@@ -3,10 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatNumber } from '@/lib/formatters';
 import { getServerTrpcClient } from '@/lib/server-api';
 
-const DashboardCharts = dynamic(() =>
-  import('./dashboard-charts').then((m) => m.DashboardCharts),
-  { ssr: false },
-);
+const DashboardCharts = dynamic(() => import('./dashboard-charts').then((m) => m.DashboardCharts), {
+  ssr: false,
+});
 
 export default async function DashboardPage() {
   const api = await getServerTrpcClient();

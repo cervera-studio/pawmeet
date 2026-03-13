@@ -5,9 +5,9 @@ import { logger } from 'hono/logger';
 import { adminDeps, experimentService } from './container.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
+import { cacheControlMiddleware } from './middleware/cache-control.js';
 import { corsMiddleware } from './middleware/cors.js';
 import { rateLimitMiddleware } from './middleware/rate-limit.js';
-import { cacheControlMiddleware } from './middleware/cache-control.js';
 import { securityHeadersMiddleware } from './middleware/security-headers.js';
 
 // Initialize Sentry before anything else

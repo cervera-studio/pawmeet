@@ -52,6 +52,8 @@
     "safetyContacts": "Contatti emergenza",
     "accountDeletions": "Eliminazioni",
     "settings": "Impostazioni",
+    "settingsGeneral": "Generali",
+    "settingsAdmins": "Utenti Admin",
     "auditLog": "Audit Log"
   },
   "header": {
@@ -450,6 +452,62 @@
       "sponsor": "Sponsor",
       "settings": "Impostazioni",
       "deletion": "Eliminazione"
+    }
+  },
+  "adminUsers": {
+    "title": "Utenti Admin",
+    "subtitle": "Gestisci gli account amministratore e i permessi",
+    "searchPlaceholder": "Cerca per nome o email...",
+    "allRoles": "Tutti i ruoli",
+    "createButton": "Crea Admin",
+    "columns": {
+      "displayName": "Nome",
+      "email": "Email",
+      "role": "Ruolo",
+      "status": "Stato",
+      "lastLoginAt": "Ultimo accesso",
+      "createdAt": "Creato il",
+      "actions": "Azioni"
+    },
+    "roles": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "moderator": "Moderatore",
+      "viewer": "Visualizzatore"
+    },
+    "statuses": {
+      "active": "Attivo",
+      "inactive": "Inattivo"
+    },
+    "actions": {
+      "editRole": "Modifica Ruolo",
+      "activate": "Attiva",
+      "deactivate": "Disattiva",
+      "resetPassword": "Reset Password"
+    },
+    "createDialog": {
+      "title": "Crea Utente Admin",
+      "description": "Aggiungi un nuovo amministratore alla piattaforma. Una password temporanea verrà inviata via email.",
+      "nameLabel": "Nome visualizzato",
+      "namePlaceholder": "Inserisci il nome",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Inserisci l'indirizzo email",
+      "passwordLabel": "Password temporanea",
+      "passwordPlaceholder": "Inserisci la password temporanea",
+      "roleLabel": "Ruolo",
+      "submit": "Crea"
+    },
+    "editRoleDialog": {
+      "title": "Modifica Ruolo",
+      "description": "Cambia il ruolo per {name}",
+      "roleLabel": "Nuovo Ruolo"
+    },
+    "resetPasswordDialog": {
+      "title": "Reset Password",
+      "description": "Imposta una nuova password per {name}.",
+      "passwordLabel": "Nuova Password",
+      "passwordPlaceholder": "Inserisci la nuova password",
+      "confirm": "Reset Password"
     }
   }
 }

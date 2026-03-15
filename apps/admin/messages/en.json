@@ -52,6 +52,8 @@
     "safetyContacts": "Emergency contacts",
     "accountDeletions": "Deletions",
     "settings": "Settings",
+    "settingsGeneral": "General",
+    "settingsAdmins": "Admin Users",
     "auditLog": "Audit Log"
   },
   "header": {
@@ -450,6 +452,62 @@
       "sponsor": "Sponsor",
       "settings": "Settings",
       "deletion": "Deletion"
+    }
+  },
+  "adminUsers": {
+    "title": "Admin Users",
+    "subtitle": "Manage administrator accounts and permissions",
+    "searchPlaceholder": "Search by name or email...",
+    "allRoles": "All roles",
+    "createButton": "Create Admin",
+    "columns": {
+      "displayName": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "lastLoginAt": "Last login",
+      "createdAt": "Created on",
+      "actions": "Actions"
+    },
+    "roles": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "moderator": "Moderator",
+      "viewer": "Viewer"
+    },
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "editRole": "Edit Role",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "resetPassword": "Reset Password"
+    },
+    "createDialog": {
+      "title": "Create Admin User",
+      "description": "Add a new administrator to the platform. A temporary password will be sent via email.",
+      "nameLabel": "Display Name",
+      "namePlaceholder": "Enter display name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter email address",
+      "passwordLabel": "Temporary Password",
+      "passwordPlaceholder": "Enter temporary password",
+      "roleLabel": "Role",
+      "submit": "Create"
+    },
+    "editRoleDialog": {
+      "title": "Edit Role",
+      "description": "Change the role for {name}",
+      "roleLabel": "New Role"
+    },
+    "resetPasswordDialog": {
+      "title": "Reset Password",
+      "description": "Set a new password for {name}.",
+      "passwordLabel": "New Password",
+      "passwordPlaceholder": "Enter new password",
+      "confirm": "Reset Password"
     }
   }
 }

@@ -21,11 +21,17 @@ import {
   walks,
 } from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
+import { hash } from 'bcryptjs';
 import { and, count, desc, eq, gte, ilike, isNotNull, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
-import { AdminRole, requireRole } from '../../lib/admin-permissions.js';
+import {
+  AdminRole,
+  type AdminRoleValue,
+  hasMinRole,
+  requireRole,
+} from '../../lib/admin-permissions.js';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import { protectedProcedure, router } from '../trpc.js';
 
@@ -149,6 +155,39 @@ const listAuditLogSchema = z.object({
   from: z.string().datetime().optional(),
   to: z.string().datetime().optional(),
   search: z.string().optional(),
+});
+
+const adminRoleEnum = z.enum(['viewer', 'moderator', 'admin', 'super_admin']);
+
+const listAdminUsersSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(20),
+  search: z.string().optional(),
+  role: adminRoleEnum.optional(),
+});
+
+const createAdminUserSchema = z.object({
+  email: z
+    .string()
+    .email()
+    .transform((e) => e.toLowerCase().trim()),
+  displayName: z.string().min(1).max(100),
+  role: adminRoleEnum,
+  temporaryPassword: z.string().min(8),
+});
+
+const updateAdminRoleSchema = z.object({
+  adminId: z.string().uuid(),
+  newRole: adminRoleEnum,
+});
+
+const toggleAdminActiveSchema = z.object({
+  adminId: z.string().uuid(),
+});
+
+const resetAdminPasswordSchema = z.object({
+  adminId: z.string().uuid(),
+  newPassword: z.string().min(8),
 });
 
 // ── Router ─────────────────────────────────────────────────────────────────────
@@ -1746,5 +1785,310 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         maxReportsBeforeSuspension: input.maxReportsBeforeSuspension ?? 5,
       };
     }),
+
+    // ── Admin user management ─────────────────────────────────────────────────
+
+    listAdminUsers: adminProcedure.input(listAdminUsersSchema).query(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Admin);
+
+      const { page, pageSize, search, role } = input;
+      const offset = (page - 1) * pageSize;
+
+      const conditions = [];
+      if (search) {
+        conditions.push(
+          or(ilike(adminUsers.email, `%${search}%`), ilike(adminUsers.displayName, `%${search}%`)),
+        );
+      }
+      if (role) {
+        conditions.push(eq(adminUsers.role, role));
+      }
+
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const [items, [totalRow]] = await Promise.all([
+        db
+          .select({
+            id: adminUsers.id,
+            email: adminUsers.email,
+            displayName: adminUsers.displayName,
+            role: adminUsers.role,
+            isActive: adminUsers.isActive,
+            lastLoginAt: adminUsers.lastLoginAt,
+            createdAt: adminUsers.createdAt,
+          })
+          .from(adminUsers)
+          .where(whereClause)
+          .orderBy(desc(adminUsers.createdAt))
+          .limit(pageSize)
+          .offset(offset),
+        db.select({ value: count() }).from(adminUsers).where(whereClause),
+      ]);
+
+      const total = totalRow?.value ?? 0;
+
+      return {
+        data: items,
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      };
+    }),
+
+    createAdminUser: adminProcedure
+      .input(createAdminUserSchema)
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.SuperAdmin);
+
+        // Cannot set role higher than own role
+        if (!hasMinRole(ctx.adminRole, input.role)) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot create a user with a role higher than your own',
+          });
+        }
+
+        // Check if email already exists
+        const [existing] = await db
+          .select({ id: adminUsers.id })
+          .from(adminUsers)
+          .where(eq(adminUsers.email, input.email))
+          .limit(1);
+
+        if (existing) {
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: 'An admin user with this email already exists',
+          });
+        }
+
+        const passwordHash = await hash(input.temporaryPassword, 10);
+
+        const [created] = await db
+          .insert(adminUsers)
+          .values({
+            email: input.email,
+            displayName: input.displayName,
+            role: input.role,
+            passwordHash,
+          })
+          .returning({
+            id: adminUsers.id,
+            email: adminUsers.email,
+            displayName: adminUsers.displayName,
+            role: adminUsers.role,
+            isActive: adminUsers.isActive,
+            createdAt: adminUsers.createdAt,
+          });
+
+        if (!created) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create admin' });
+        }
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'create_admin',
+          resourceType: RESOURCE_TYPE.admin,
+          resourceId: created.id,
+          changes: {
+            after: {
+              email: input.email,
+              displayName: input.displayName,
+              role: input.role,
+            },
+          },
+        });
+
+        return created;
+      }),
+
+    updateAdminRole: adminProcedure
+      .input(updateAdminRoleSchema)
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.SuperAdmin);
+
+        if (input.adminId === ctx.userId) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Cannot change your own role',
+          });
+        }
+
+        // Cannot set role higher than caller's role
+        if (!hasMinRole(ctx.adminRole, input.newRole)) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot set a role higher than your own',
+          });
+        }
+
+        const [target] = await db
+          .select({
+            id: adminUsers.id,
+            role: adminUsers.role,
+            displayName: adminUsers.displayName,
+          })
+          .from(adminUsers)
+          .where(eq(adminUsers.id, input.adminId))
+          .limit(1);
+
+        if (!target) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
+        }
+
+        // Cannot modify a user with equal or higher role
+        if (hasMinRole(target.role, ctx.adminRole as AdminRoleValue)) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot modify a user with equal or higher role',
+          });
+        }
+
+        const [updated] = await db
+          .update(adminUsers)
+          .set({ role: input.newRole, updatedAt: new Date() })
+          .where(eq(adminUsers.id, input.adminId))
+          .returning({
+            id: adminUsers.id,
+            email: adminUsers.email,
+            displayName: adminUsers.displayName,
+            role: adminUsers.role,
+          });
+
+        if (!updated) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
+        }
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'update_admin_role',
+          resourceType: RESOURCE_TYPE.admin,
+          resourceId: input.adminId,
+          changes: {
+            before: { role: target.role },
+            after: { role: input.newRole },
+          },
+        });
+
+        return updated;
+      }),
+
+    toggleAdminActive: adminProcedure
+      .input(toggleAdminActiveSchema)
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.SuperAdmin);
+
+        if (input.adminId === ctx.userId) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Cannot deactivate yourself',
+          });
+        }
+
+        const [target] = await db
+          .select({
+            id: adminUsers.id,
+            role: adminUsers.role,
+            isActive: adminUsers.isActive,
+            displayName: adminUsers.displayName,
+          })
+          .from(adminUsers)
+          .where(eq(adminUsers.id, input.adminId))
+          .limit(1);
+
+        if (!target) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
+        }
+
+        if (target.role === AdminRole.SuperAdmin) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot deactivate a super admin',
+          });
+        }
+
+        const newStatus = !target.isActive;
+
+        const [updated] = await db
+          .update(adminUsers)
+          .set({ isActive: newStatus, updatedAt: new Date() })
+          .where(eq(adminUsers.id, input.adminId))
+          .returning({
+            id: adminUsers.id,
+            email: adminUsers.email,
+            displayName: adminUsers.displayName,
+            role: adminUsers.role,
+            isActive: adminUsers.isActive,
+          });
+
+        if (!updated) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
+        }
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: newStatus ? 'activate_admin' : 'deactivate_admin',
+          resourceType: RESOURCE_TYPE.admin,
+          resourceId: input.adminId,
+          changes: {
+            before: { isActive: target.isActive },
+            after: { isActive: newStatus },
+          },
+        });
+
+        return updated;
+      }),
+
+    resetAdminPassword: adminProcedure
+      .input(resetAdminPasswordSchema)
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.SuperAdmin);
+
+        if (input.adminId === ctx.userId) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Cannot reset your own password here, use profile settings',
+          });
+        }
+
+        const [target] = await db
+          .select({
+            id: adminUsers.id,
+            role: adminUsers.role,
+            displayName: adminUsers.displayName,
+          })
+          .from(adminUsers)
+          .where(eq(adminUsers.id, input.adminId))
+          .limit(1);
+
+        if (!target) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
+        }
+
+        // Cannot reset password for a user with equal or higher role
+        if (hasMinRole(target.role, ctx.adminRole as AdminRoleValue)) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot reset password for a user with equal or higher role',
+          });
+        }
+
+        const passwordHash = await hash(input.newPassword, 10);
+
+        await db
+          .update(adminUsers)
+          .set({ passwordHash, updatedAt: new Date() })
+          .where(eq(adminUsers.id, input.adminId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'reset_admin_password',
+          resourceType: RESOURCE_TYPE.admin,
+          resourceId: input.adminId,
+        });
+
+        return { success: true };
+      }),
   });
 }

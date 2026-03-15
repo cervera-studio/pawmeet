@@ -45,7 +45,15 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
       ],
     },
     { name: t('accountDeletions'), href: '/account-deletions', icon: UserXIcon },
-    { name: t('settings'), href: '/settings', icon: SettingsIcon },
+    {
+      name: t('settings'),
+      href: '/settings',
+      icon: SettingsIcon,
+      children: [
+        { name: t('settingsGeneral'), href: '/settings' },
+        { name: t('settingsAdmins'), href: '/settings/admins' },
+      ],
+    },
     { name: t('auditLog'), href: '/audit-log', icon: ScrollTextIcon },
   ];
 }

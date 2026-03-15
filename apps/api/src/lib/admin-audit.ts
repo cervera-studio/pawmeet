@@ -14,6 +14,7 @@ const RESOURCE_TYPE = {
   sponsor: 'sponsor',
   settings: 'settings',
   deletion: 'deletion',
+  admin: 'admin',
 } as const;
 
 type ResourceType = (typeof RESOURCE_TYPE)[keyof typeof RESOURCE_TYPE];

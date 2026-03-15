@@ -164,6 +164,6 @@ export class DrizzleOrganizationRepository implements OrganizationRepository {
       return { isMember: false, organizationId: null };
     }
 
-    return { isMember: true, organizationId: rows[0]!.organizationId };
+    return { isMember: true, organizationId: rows[0]?.organizationId ?? null };
   }
 }

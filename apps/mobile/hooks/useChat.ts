@@ -142,7 +142,11 @@ export function useChat(matchId?: string) {
             if (uploadResponse.ok) break;
 
             // Don't retry on client errors (4xx) except 429 (rate limit)
-            if (uploadResponse.status >= 400 && uploadResponse.status < 500 && uploadResponse.status !== 429) {
+            if (
+              uploadResponse.status >= 400 &&
+              uploadResponse.status < 500 &&
+              uploadResponse.status !== 429
+            ) {
               throw new Error(`Upload failed: ${uploadResponse.status}`);
             }
           } catch (e) {
@@ -163,7 +167,12 @@ export function useChat(matchId?: string) {
         const body: unknown = await uploadResponse.json();
 
         // Validate response shape
-        if (!body || typeof body !== 'object' || !('mediaUrl' in body) || typeof (body as Record<string, unknown>).mediaUrl !== 'string') {
+        if (
+          !body ||
+          typeof body !== 'object' ||
+          !('mediaUrl' in body) ||
+          typeof (body as Record<string, unknown>).mediaUrl !== 'string'
+        ) {
           throw new Error('Upload response missing mediaUrl');
         }
 
@@ -191,7 +200,12 @@ export function useChat(matchId?: string) {
       try {
         const roundedLat = Math.round(latitude * 200) / 200;
         const roundedLng = Math.round(longitude * 200) / 200;
-        const content = JSON.stringify({ type: 'location', latitude: roundedLat, longitude: roundedLng, label });
+        const content = JSON.stringify({
+          type: 'location',
+          latitude: roundedLat,
+          longitude: roundedLng,
+          label,
+        });
         const { message: msg } = await api.chat.sendMessage.mutate({ matchId, content });
         setMessages((prev) => [...prev, msg]);
         getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));

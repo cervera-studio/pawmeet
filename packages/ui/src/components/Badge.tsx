@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
 import { lightColors, radius, spacing, typography } from '@pawmeet/design-tokens';
+import { StyleSheet, Text, View } from 'react-native';
 
 type BadgeVariant =
   | 'compatibilityHigh'

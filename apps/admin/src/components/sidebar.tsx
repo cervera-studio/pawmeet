@@ -10,17 +10,17 @@ export function Sidebar() {
   const t = useTranslations('auth');
 
   return (
-    <aside className="flex h-full min-h-0 w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-300 dark:bg-neutral-100">
+    <aside className="flex h-full min-h-0 w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-950">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-neutral-200 px-6">
+      <div className="flex h-16 items-center gap-2 border-b border-neutral-200 dark:border-neutral-700 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-800 text-white font-bold text-sm">
           PM
         </div>
-        <span className="text-lg font-semibold text-neutral-900">PawMeet</span>
+        <span className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">PawMeet</span>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
+      <nav className="min-h-0 flex-1 overflow-y-auto space-y-1 px-3 py-4">
         {vm.navigation.map((item) => {
           const isActive = vm.isNavActive(item.href);
           const hasChildren = !!item.children;
@@ -34,8 +34,8 @@ export function Sidebar() {
                   className={cn(
                     'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-primary-50 text-primary-700'
-                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+                      ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
+                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-50',
                   )}
                 >
                   <item.icon className="h-5 w-5" />
@@ -47,8 +47,8 @@ export function Sidebar() {
                   className={cn(
                     'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-primary-50 text-primary-700'
-                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+                      ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
+                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-50',
                   )}
                 >
                   <item.icon className="h-5 w-5" />
@@ -66,8 +66,8 @@ export function Sidebar() {
                       className={cn(
                         'block rounded-lg px-3 py-1.5 text-sm transition-colors',
                         vm.isChildActive(child.href)
-                          ? 'text-primary-700 font-medium'
-                          : 'text-neutral-500 hover:text-neutral-900',
+                          ? 'text-primary-700 font-medium dark:text-primary-300'
+                          : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-50',
                       )}
                     >
                       {child.name}
@@ -81,14 +81,18 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-neutral-200 p-4">
+      <div className="border-t border-neutral-200 dark:border-neutral-700 p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900 dark:text-primary-200">
             {vm.userInitial}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-neutral-900 truncate">{vm.userName}</p>
-            <p className="text-xs text-neutral-500 truncate">{vm.userEmail}</p>
+            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-50 truncate">
+              {vm.userName}
+            </p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+              {vm.userEmail}
+            </p>
           </div>
           <button
             onClick={vm.logout}

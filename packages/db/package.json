@@ -15,7 +15,8 @@
     "db:studio": "drizzle-kit studio",
     "seed:admin": "tsx src/seeds/seed-admin.ts",
     "seed:breeds": "tsx src/seeds/seed-breeds.ts",
-    "seed:group-events": "tsx src/seeds/seed-group-events.ts"
+    "seed:group-events": "tsx src/seeds/seed-group-events.ts",
+    "seed:backfill-breed-scores": "tsx src/seeds/backfill-breed-scores.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",

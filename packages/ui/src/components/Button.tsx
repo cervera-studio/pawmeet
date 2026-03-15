@@ -1,3 +1,4 @@
+import { lightColors, radius, spacing, typography } from '@pawmeet/design-tokens';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -5,7 +6,6 @@ import {
   TouchableOpacity,
   type ViewStyle,
 } from 'react-native';
-import { lightColors, radius, spacing, typography } from '@pawmeet/design-tokens';
 
 const VARIANT_STYLES = {
   primary: {
@@ -32,8 +32,8 @@ const TEXT_COLORS: Record<ButtonVariant, string> = {
 };
 
 const HEIGHTS: Record<ButtonSize, number> = {
-  compact: spacing['3xl'],   // 40
-  standard: spacing['4xl'],  // 48
+  compact: spacing['3xl'], // 40
+  standard: spacing['4xl'], // 48
   large: 56,
 };
 

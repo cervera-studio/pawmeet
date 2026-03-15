@@ -480,7 +480,21 @@
       "group": "Group",
       "sizeCategory": "Size Category",
       "avgWeightKg": "Avg Weight (kg)",
+      "energy": "Energy",
+      "playfulness": "Playfulness",
+      "trainability": "Trainability",
+      "barking": "Barking",
+      "goodWithOtherDogs": "Good w/ Dogs",
+      "goodWithChildren": "Good w/ Children",
+      "goodWithStrangers": "Good w/ Strangers",
+      "protectiveness": "Protectiveness",
+      "shedding": "Shedding",
+      "grooming": "Grooming",
       "actions": "Actions"
+    },
+    "scores": {
+      "title": "Behavioral Scores",
+      "noData": "No data"
     },
     "sizes": {
       "toy": "Toy",

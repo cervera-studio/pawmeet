@@ -24,12 +24,14 @@ export function createTrpcDogRepository(api: ApiClient): AdminDogRepository {
       return {
         ...result,
         createdAt: String(result.createdAt),
-        photos: result.photos.map((p) => ({
-          id: p.id,
-          url: p.url,
-          position: p.position,
-          moderationStatus: p.moderationStatus,
-        })),
+        photos: result.photos.map(
+          (p: { id: string; url: string; position: number; moderationStatus: string }) => ({
+            id: p.id,
+            url: p.url,
+            position: p.position,
+            moderationStatus: p.moderationStatus,
+          }),
+        ),
       };
     },
   };

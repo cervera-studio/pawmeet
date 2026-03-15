@@ -25,7 +25,7 @@ function decodeJwtPayload(token: string): Record<string, unknown> {
   const parts = token.split('.');
   if (parts.length !== 3) throw new Error('Invalid JWT format');
 
-  const payload = parts[1]!;
+  const payload = parts[1] ?? '';
   // Base64url -> Base64
   const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
   const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
@@ -52,10 +52,7 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
     (s, b) => s + b.toString(16).padStart(2, '0'),
     '',
   );
-  const hashedNonce = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    rawNonce,
-  );
+  const hashedNonce = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, rawNonce);
 
   const credential = await AppleAuthentication.signInAsync({
     requestedScopes: [
@@ -91,10 +88,7 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
 export function useGoogleAuth() {
   const redirectUri = AuthSession.makeRedirectUri();
 
-  const nonce = Crypto.getRandomBytes(16).reduce(
-    (s, b) => s + b.toString(16).padStart(2, '0'),
-    '',
-  );
+  const nonce = Crypto.getRandomBytes(16).reduce((s, b) => s + b.toString(16).padStart(2, '0'), '');
 
   // Persist nonce so it survives component lifecycle across auth redirect
   persistNonce(nonce);

@@ -142,10 +142,7 @@ export async function uploadObject(key: string, body: string, contentType: strin
 }
 
 /** MIME types allowed for presigned download URLs (prevents SVG XSS) */
-const ALLOWED_DOWNLOAD_TYPES = new Set<string>([
-  ...ALLOWED_IMAGE_TYPES,
-  ...ALLOWED_VIDEO_TYPES,
-]);
+const ALLOWED_DOWNLOAD_TYPES = new Set<string>([...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES]);
 
 /**
  * Infer content type from object key extension.

@@ -60,7 +60,7 @@ export const deleteAccountSchema = z.object({
 export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>;
 
 export const reactivateAccountSchema = z.object({
-  password: z.string().min(1, 'Password richiesta per riattivare l\'account'),
+  password: z.string().min(1, "Password richiesta per riattivare l'account"),
 });
 
 export type ReactivateAccountInput = z.infer<typeof reactivateAccountSchema>;

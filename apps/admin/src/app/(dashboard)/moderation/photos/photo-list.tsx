@@ -78,7 +78,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
                 // biome-ignore lint/performance/noImgElement: external user-uploaded URLs
                 <img
                   src={photo.imageUrl}
-                  alt={t('photoOf', { name: photo.userName })}
+                  alt={t('photoOf', { name: photo.userName ?? '' })}
                   className="aspect-square w-full object-cover"
                 />
               ) : (

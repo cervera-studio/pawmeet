@@ -111,7 +111,7 @@ export class PostHogAnalyticsProvider implements AnalyticsProvider {
     return events
       .filter((e) => e.userId != null)
       .map((e) => ({
-        distinctId: pseudonymizeUserId(e.userId!),
+        distinctId: pseudonymizeUserId(e.userId ?? ''),
         event: e.eventName,
         properties: {
           ...(e.properties ?? {}),

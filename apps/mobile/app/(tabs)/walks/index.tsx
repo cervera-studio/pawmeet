@@ -197,12 +197,20 @@ export default function WalksScreen() {
     <SafeAreaView className="flex-1 bg-gray-50">
       <View className="flex-row items-center justify-between border-b border-gray-100 bg-white px-4 py-4">
         <Text className="text-2xl font-bold text-gray-900">Passeggiate</Text>
-        <Pressable
-          onPress={() => router.push('/(tabs)/walks/tracking')}
-          className="rounded-full bg-emerald-700 px-4 py-2"
-        >
-          <Text className="text-sm font-semibold text-white">Traccia</Text>
-        </Pressable>
+        <View className="flex-row gap-2">
+          <Pressable
+            onPress={() => router.push('/(tabs)/walks/calendar')}
+            className="rounded-full bg-gray-100 px-4 py-2"
+          >
+            <Text className="text-sm font-semibold text-gray-700">Calendario</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/(tabs)/walks/tracking')}
+            className="rounded-full bg-emerald-700 px-4 py-2"
+          >
+            <Text className="text-sm font-semibold text-white">Traccia</Text>
+          </Pressable>
+        </View>
       </View>
 
       {vm.isInitialLoad ? (

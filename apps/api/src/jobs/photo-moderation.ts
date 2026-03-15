@@ -59,7 +59,10 @@ export function createPhotoModerationWorker(deps: PhotoModerationDeps) {
 
       // Step 2: Check file size
       if (photoMeta.contentLength > MAX_FILE_SIZE || photoMeta.contentLength === 0) {
-        logger.warn('PhotoModeration', `Photo invalid size (${photoMeta.contentLength} bytes): ${url}`);
+        logger.warn(
+          'PhotoModeration',
+          `Photo invalid size (${photoMeta.contentLength} bytes): ${url}`,
+        );
         await dogRepo.updatePhotoModerationStatus(photoId, 'rejected');
         return;
       }

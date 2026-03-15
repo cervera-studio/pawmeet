@@ -55,7 +55,10 @@ export function createContentModerationWorker(deps: ContentModerationWorkerDeps)
       // Step 2: Check file size
       const maxSize = mediaType === 'video' ? MAX_VIDEO_FILE_SIZE : MAX_FILE_SIZE;
       if (mediaMeta.contentLength > maxSize || mediaMeta.contentLength === 0) {
-        logger.warn('ContentModeration', `Media invalid size (${mediaMeta.contentLength} bytes): ${url}`);
+        logger.warn(
+          'ContentModeration',
+          `Media invalid size (${mediaMeta.contentLength} bytes): ${url}`,
+        );
         await feedRepo.updateMediaModerationStatus(mediaId, 'rejected');
         return;
       }
@@ -77,7 +80,10 @@ export function createContentModerationWorker(deps: ContentModerationWorkerDeps)
           logger.error('ContentModeration', 'AI moderation failed, falling back to approved', err);
         }
       } else if (!contentModerationService) {
-        logger.warn('ContentModeration', 'No content moderation service configured, auto-approving');
+        logger.warn(
+          'ContentModeration',
+          'No content moderation service configured, auto-approving',
+        );
       }
 
       await feedRepo.updateMediaModerationStatus(mediaId, status);

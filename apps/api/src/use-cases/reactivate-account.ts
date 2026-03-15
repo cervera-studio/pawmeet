@@ -33,16 +33,12 @@ export function createReactivateAccount(deps: Deps) {
     }
 
     if (!user.deletionScheduledAt) {
-      return fail(
-        new AppError('CANNOT_REACTIVATE', 'Account non può essere riattivato', 400),
-      );
+      return fail(new AppError('CANNOT_REACTIVATE', 'Account non può essere riattivato', 400));
     }
 
     // Check if grace period has expired
     if (new Date() >= user.deletionScheduledAt) {
-      return fail(
-        new AppError('GRACE_PERIOD_EXPIRED', 'Il periodo di grazia è scaduto', 410),
-      );
+      return fail(new AppError('GRACE_PERIOD_EXPIRED', 'Il periodo di grazia è scaduto', 410));
     }
 
     // Re-auth gate

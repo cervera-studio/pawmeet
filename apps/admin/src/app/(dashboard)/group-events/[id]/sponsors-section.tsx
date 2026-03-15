@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -126,9 +127,11 @@ export function SponsorsSection({
             <div key={s.id} className="flex items-center justify-between rounded-md border p-3">
               <div className="flex items-center gap-3">
                 {s.organizationLogoUrl && (
-                  <img
+                  <Image
                     src={s.organizationLogoUrl}
                     alt=""
+                    width={32}
+                    height={32}
                     className="h-8 w-8 rounded-full object-cover"
                   />
                 )}

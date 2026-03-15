@@ -250,7 +250,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
       // Always return success to prevent email enumeration
       const admin = await adminUserRepo.findByEmail(email);
 
-      if (admin && admin.isActive) {
+      if (admin?.isActive) {
         const otp = generateOtp();
         const otpHash = await hashToken(otp);
         const redis = await getRedis();

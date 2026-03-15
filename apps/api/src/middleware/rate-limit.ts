@@ -115,7 +115,10 @@ async function getPasswordResetEmailLimiter(): Promise<Ratelimit> {
  * Must be applied AFTER body validation so `email` is available in the request.
  */
 export const passwordResetEmailRateLimitMiddleware: MiddlewareHandler = async (c, next) => {
-  const body = await c.req.raw.clone().json().catch(() => null);
+  const body = await c.req.raw
+    .clone()
+    .json()
+    .catch(() => null);
   const email = (body as { email?: string } | null)?.email;
 
   if (email) {
@@ -127,7 +130,10 @@ export const passwordResetEmailRateLimitMiddleware: MiddlewareHandler = async (c
     c.header('X-RateLimit-Reset', String(reset));
 
     if (!success) {
-      return c.json({ error: 'Troppe richieste per questo indirizzo email, riprova più tardi' }, 429);
+      return c.json(
+        { error: 'Troppe richieste per questo indirizzo email, riprova più tardi' },
+        429,
+      );
     }
   }
 

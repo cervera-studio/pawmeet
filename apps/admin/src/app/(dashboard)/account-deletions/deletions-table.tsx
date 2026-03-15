@@ -1,28 +1,14 @@
 'use client';
 
-import type { PaginatedResult } from '@pawmeet/types';
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateTime } from '@/lib/formatters';
-import { cancelDeletion, fetchPendingDeletions } from './actions';
-
-interface PendingDeletion {
-  id: string;
-  displayName: string;
-  email: string;
-  createdAt: string;
-  deletionScheduledAt: string | null;
-  daysRemaining: number;
-}
-
-interface DeletionsTableProps {
-  initialData: PaginatedResult<PendingDeletion>;
-  pageSize: number;
-}
+import { cancelDeletion } from './actions';
+import { type DeletionsData, type PendingDeletion, useDeletionsViewModel } from './page.view-model';
 
 function DaysRemainingBadge({ days, label }: { days: number; label: string }) {
   if (days <= 3) return <Badge variant="destructive">{label}</Badge>;
@@ -30,40 +16,25 @@ function DaysRemainingBadge({ days, label }: { days: number; label: string }) {
   return <Badge variant="secondary">{label}</Badge>;
 }
 
+interface DeletionsTableProps {
+  initialData: DeletionsData;
+  pageSize: number;
+}
+
 export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
   const t = useTranslations('accountDeletions');
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-  const [data, setData] = useState<PaginatedResult<PendingDeletion>>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const loadDeletions = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchPendingDeletions({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
-      });
-      setData(result);
-    } catch (error) {
-      console.error('[AccountDeletions] Failed to fetch:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [pagination.pageIndex, pagination.pageSize]);
+  const vm = useDeletionsViewModel(initialData, pageSize);
 
   const handleCancel = useCallback(
     async (userId: string) => {
       try {
         await cancelDeletion(userId);
-        await loadDeletions();
+        void vm.refetch();
       } catch (error) {
         console.error('[AccountDeletions] Failed to cancel:', error);
       }
     },
-    [loadDeletions],
+    [vm],
   );
 
   const columns: ColumnDef<PendingDeletion>[] = useMemo(
@@ -83,7 +54,11 @@ export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
       {
         accessorKey: 'email',
         header: 'Email',
-        cell: ({ row }) => <span className="text-sm text-neutral-500">{row.original.email}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            {row.original.email}
+          </span>
+        ),
       },
       {
         accessorKey: 'createdAt',
@@ -119,20 +94,15 @@ export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
     [t, handleCancel],
   );
 
-  useEffect(() => {
-    if (pagination.pageIndex === 0) return;
-    void loadDeletions();
-  }, [loadDeletions, pagination.pageIndex]);
-
   return (
     <DataTable
       columns={columns}
-      data={data.data ?? []}
-      total={data.total}
-      totalPages={Math.ceil(data.total / pagination.pageSize)}
-      isLoading={isLoading}
-      pagination={pagination}
-      onPaginationChange={setPagination}
+      data={vm.data ?? []}
+      total={vm.total}
+      totalPages={vm.totalPages}
+      isLoading={vm.isLoading}
+      pagination={vm.pagination}
+      onPaginationChange={vm.setPagination}
     />
   );
 }

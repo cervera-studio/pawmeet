@@ -27,6 +27,16 @@ async function seed() {
           group: b.group,
           sizeCategory: b.sizeCategory,
           avgWeightKg: b.avgWeightKg,
+          energy: b.energy,
+          playfulness: b.playfulness,
+          trainability: b.trainability,
+          barking: b.barking,
+          goodWithOtherDogs: b.goodWithOtherDogs,
+          goodWithChildren: b.goodWithChildren,
+          goodWithStrangers: b.goodWithStrangers,
+          protectiveness: b.protectiveness,
+          shedding: b.shedding,
+          grooming: b.grooming,
         })),
       )
       .onConflictDoNothing();

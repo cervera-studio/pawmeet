@@ -480,7 +480,21 @@
       "group": "Gruppo",
       "sizeCategory": "Categoria taglia",
       "avgWeightKg": "Peso medio (kg)",
+      "energy": "Energia",
+      "playfulness": "Giocosità",
+      "trainability": "Addestrabilità",
+      "barking": "Abbaio",
+      "goodWithOtherDogs": "Con altri cani",
+      "goodWithChildren": "Con bambini",
+      "goodWithStrangers": "Con estranei",
+      "protectiveness": "Protettività",
+      "shedding": "Perdita pelo",
+      "grooming": "Toelettatura",
       "actions": "Azioni"
+    },
+    "scores": {
+      "title": "Punteggi comportamentali",
+      "noData": "Nessun dato"
     },
     "sizes": {
       "toy": "Toy",

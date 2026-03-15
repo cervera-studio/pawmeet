@@ -41,30 +41,30 @@ export const primitiveColors = {
 } as const;
 
 export const lightColors = {
-  primary: primitiveColors.emerald[800],       // #065F46
-  primaryDark: primitiveColors.emerald[900],    // #064E3B
-  primaryLight: primitiveColors.emerald[600],   // #059669
-  primary50: primitiveColors.emerald[50],       // #ECFDF5
+  primary: primitiveColors.emerald[800], // #065F46
+  primaryDark: primitiveColors.emerald[900], // #064E3B
+  primaryLight: primitiveColors.emerald[600], // #059669
+  primary50: primitiveColors.emerald[50], // #ECFDF5
 
-  accent: primitiveColors.emerald[500],         // #10B981 — only on dark bg or as background
+  accent: primitiveColors.emerald[500], // #10B981 — only on dark bg or as background
 
-  secondary: primitiveColors.gold[500],         // #C9A84C — decorative/bg only on light
-  secondaryText: primitiveColors.gold[700],     // #8B6914 — text gold on light (AA 4.86:1)
-  secondaryDark: primitiveColors.gold[600],     // #A6872E — borders, icons
-  secondary50: primitiveColors.gold[50],        // #FDF8EF
+  secondary: primitiveColors.gold[500], // #C9A84C — decorative/bg only on light
+  secondaryText: primitiveColors.gold[700], // #8B6914 — text gold on light (AA 4.86:1)
+  secondaryDark: primitiveColors.gold[600], // #A6872E — borders, icons
+  secondary50: primitiveColors.gold[50], // #FDF8EF
 
-  textPrimary: primitiveColors.neutral[900],    // #1A1A2E
-  textSecondary: primitiveColors.neutral[700],  // #4A4A5A
-  textPlaceholder: primitiveColors.neutral[500],// #8E8E93
-  textInverse: primitiveColors.white,           // #FFFFFF
+  textPrimary: primitiveColors.neutral[900], // #1A1A2E
+  textSecondary: primitiveColors.neutral[700], // #4A4A5A
+  textPlaceholder: primitiveColors.neutral[500], // #8E8E93
+  textInverse: primitiveColors.white, // #FFFFFF
 
-  surfacePrimary: primitiveColors.white,        // #FFFFFF
-  surfaceSecondary: primitiveColors.neutral[50],// #FAFAFA
-  surfaceCard: primitiveColors.neutral[100],    // #F2F2F7
+  surfacePrimary: primitiveColors.white, // #FFFFFF
+  surfaceSecondary: primitiveColors.neutral[50], // #FAFAFA
+  surfaceCard: primitiveColors.neutral[100], // #F2F2F7
 
-  border: primitiveColors.neutral[300],         // #C7C7CC
-  borderLight: primitiveColors.neutral[200],    // #E5E5EA
-  divider: primitiveColors.neutral[200],        // #E5E5EA
+  border: primitiveColors.neutral[300], // #C7C7CC
+  borderLight: primitiveColors.neutral[200], // #E5E5EA
+  divider: primitiveColors.neutral[200], // #E5E5EA
 
   success: '#34C759',
   error: '#FF3B30',
@@ -74,22 +74,22 @@ export const lightColors = {
 } as const;
 
 export const darkColors = {
-  primary: primitiveColors.emerald[800],        // #065F46 — stays the same
-  primaryDark: primitiveColors.emerald[900],    // #064E3B
-  primaryLight: primitiveColors.emerald[600],   // #059669
-  primary50: '#0D2F23',                         // dark tinted green
+  primary: primitiveColors.emerald[800], // #065F46 — stays the same
+  primaryDark: primitiveColors.emerald[900], // #064E3B
+  primaryLight: primitiveColors.emerald[600], // #059669
+  primary50: '#0D2F23', // dark tinted green
 
-  accent: primitiveColors.emerald[500],         // #10B981 — AA 6.71:1 on dark
+  accent: primitiveColors.emerald[500], // #10B981 — AA 6.71:1 on dark
 
-  secondary: primitiveColors.gold[500],         // #C9A84C — AAA 7.45:1 on dark
-  secondaryText: primitiveColors.gold[500],     // same as secondary in dark mode
-  secondaryDark: primitiveColors.gold[600],     // #A6872E
-  secondary50: '#2A2418',                       // dark tinted gold
+  secondary: primitiveColors.gold[500], // #C9A84C — AAA 7.45:1 on dark
+  secondaryText: primitiveColors.gold[500], // same as secondary in dark mode
+  secondaryDark: primitiveColors.gold[600], // #A6872E
+  secondary50: '#2A2418', // dark tinted gold
 
   textPrimary: '#F5F5F7',
   textSecondary: '#D1D1D6',
-  textPlaceholder: primitiveColors.neutral[500],// #8E8E93
-  textInverse: primitiveColors.neutral[900],    // #1A1A2E
+  textPlaceholder: primitiveColors.neutral[500], // #8E8E93
+  textInverse: primitiveColors.neutral[900], // #1A1A2E
 
   surfacePrimary: '#1C1C1E',
   surfaceSecondary: '#2C2C2E',

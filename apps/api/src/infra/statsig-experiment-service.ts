@@ -1,9 +1,9 @@
 import { CONSENT_TYPE } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Statsig, StatsigUser } from '@statsig/statsig-node-core';
-import type { ConsentRepository } from './drizzle-consent-repository.js';
 import { pseudonymizeUserId } from '../lib/pseudonymize.js';
 import type { ExperimentService } from '../ports/experiment-service.js';
+import type { ConsentRepository } from './drizzle-consent-repository.js';
 
 export class StatsigExperimentService implements ExperimentService {
   private client: Statsig;

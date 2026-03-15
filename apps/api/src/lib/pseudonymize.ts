@@ -7,10 +7,7 @@ export function pseudonymizeUserId(userId: string): string {
     if (process.env.NODE_ENV === 'production') {
       throw new Error('ANALYTICS_HASH_SALT environment variable is required in production');
     }
-    return createHmac('sha256', 'pawmeet-default-salt')
-      .update(userId)
-      .digest('hex')
-      .slice(0, 32);
+    return createHmac('sha256', 'pawmeet-default-salt').update(userId).digest('hex').slice(0, 32);
   }
   return createHmac('sha256', salt).update(userId).digest('hex').slice(0, 32);
 }

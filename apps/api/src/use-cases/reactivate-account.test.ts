@@ -14,7 +14,10 @@ describe('createReactivateAccount', () => {
       deletionScheduledAt: futureDate,
       passwordHash: 'hashed',
     });
-    const userRepo = buildUserRepo({ findById: async () => user, update: async () => ({ ...user, isActive: true, deletionScheduledAt: null }) });
+    const userRepo = buildUserRepo({
+      findById: async () => user,
+      update: async () => ({ ...user, isActive: true, deletionScheduledAt: null }),
+    });
     const authService = buildAuthService({ verifyPassword: async () => true });
 
     const reactivate = createReactivateAccount({ userRepo, authService });

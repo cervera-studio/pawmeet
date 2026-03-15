@@ -32,6 +32,37 @@ describe('Breeds seed data', () => {
     }
   });
 
+  it('behavioral scores are 1-5 or null', () => {
+    const scoreFields = [
+      'energy',
+      'playfulness',
+      'trainability',
+      'barking',
+      'goodWithOtherDogs',
+      'goodWithChildren',
+      'goodWithStrangers',
+      'protectiveness',
+      'shedding',
+      'grooming',
+    ] as const;
+
+    for (const breed of breedsData) {
+      for (const field of scoreFields) {
+        const val = breed[field];
+        if (val !== null) {
+          expect(val, `${breed.name}.${field} = ${val}`).toBeGreaterThanOrEqual(1);
+          expect(val, `${breed.name}.${field} = ${val}`).toBeLessThanOrEqual(5);
+        }
+      }
+    }
+  });
+
+  it('most breeds have behavioral scores', () => {
+    const withScores = breedsData.filter((b) => b.energy !== null);
+    // At least 75% should have scores
+    expect(withScores.length).toBeGreaterThan(breedsData.length * 0.75);
+  });
+
   it('covers all major FCI groups', () => {
     const groups = new Set(breedsData.map((b) => b.group).filter(Boolean));
     expect(groups.has('Sheepdogs')).toBe(true);

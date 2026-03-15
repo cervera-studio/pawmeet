@@ -78,7 +78,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-1.5">
-              <label htmlFor="official-title" className="text-sm font-medium">Titolo *</label>
+              <label htmlFor="official-title" className="text-sm font-medium">
+                Titolo *
+              </label>
               <Input
                 id="official-title"
                 value={title}
@@ -89,7 +91,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="official-org" className="text-sm font-medium">Organizzazione *</label>
+              <label htmlFor="official-org" className="text-sm font-medium">
+                Organizzazione *
+              </label>
               <select
                 id="official-org"
                 className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
@@ -107,7 +111,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="official-date" className="text-sm font-medium">Data e ora *</label>
+              <label htmlFor="official-date" className="text-sm font-medium">
+                Data e ora *
+              </label>
               <Input
                 id="official-date"
                 type="datetime-local"
@@ -118,7 +124,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="official-duration" className="text-sm font-medium">Durata (minuti)</label>
+              <label htmlFor="official-duration" className="text-sm font-medium">
+                Durata (minuti)
+              </label>
               <Input
                 id="official-duration"
                 type="number"
@@ -130,7 +138,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="official-location" className="text-sm font-medium">Luogo *</label>
+              <label htmlFor="official-location" className="text-sm font-medium">
+                Luogo *
+              </label>
               <Input
                 id="official-location"
                 value={location}
@@ -141,7 +151,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="official-category" className="text-sm font-medium">Categoria</label>
+              <label htmlFor="official-category" className="text-sm font-medium">
+                Categoria
+              </label>
               <select
                 id="official-category"
                 className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
@@ -155,7 +167,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="official-lat" className="text-sm font-medium">Latitudine *</label>
+              <label htmlFor="official-lat" className="text-sm font-medium">
+                Latitudine *
+              </label>
               <Input
                 id="official-lat"
                 type="number"
@@ -168,7 +182,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="official-lng" className="text-sm font-medium">Longitudine *</label>
+              <label htmlFor="official-lng" className="text-sm font-medium">
+                Longitudine *
+              </label>
               <Input
                 id="official-lng"
                 type="number"
@@ -181,7 +197,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="official-max" className="text-sm font-medium">Max partecipanti</label>
+              <label htmlFor="official-max" className="text-sm font-medium">
+                Max partecipanti
+              </label>
               <Input
                 id="official-max"
                 type="number"
@@ -194,7 +212,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="official-desc" className="text-sm font-medium">Descrizione</label>
+            <label htmlFor="official-desc" className="text-sm font-medium">
+              Descrizione
+            </label>
             <textarea
               id="official-desc"
               className="flex min-h-[80px] w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"

@@ -1,30 +1,7 @@
 import { DEFAULT_WEIGHTS } from '@pawmeet/config';
-import {
-  adminAuditLog,
-  adminUsers,
-  analyticsEvents,
-  breeds,
-  contentReports,
-  dogPhotos,
-  dogProfiles,
-  emergencyContacts,
-  eventSponsors,
-  groupEventParticipants,
-  groupEvents,
-  matches,
-  organizationMembers,
-  organizations,
-  postMedia,
-  posts,
-  reports,
-  stories,
-  users,
-  walkSafetyCheckins,
-  walks,
-} from '@pawmeet/db';
+import { groupEvents } from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
 import { hash } from 'bcryptjs';
-import { and, asc, count, desc, eq, gte, ilike, inArray, isNotNull, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
 import { enqueueNotification } from '../../jobs/queue.js';
@@ -36,6 +13,7 @@ import {
   requireRole,
 } from '../../lib/admin-permissions.js';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
+import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 import { protectedProcedure, router } from '../trpc.js';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
@@ -56,10 +34,6 @@ function maskPhone(phone: string | null | undefined): string {
 }
 
 // ── Admin middleware ────────────────────────────────────────────────────────────
-// Checks that the authenticated user has admin privileges.
-// Uses the same JWT-based auth as protectedProcedure, then verifies admin status
-// via a simple allowlist or DB flag. For MVP, we check an ADMIN_EMAILS env var
-// and fall back to a DB column if it exists.
 
 function createAdminProcedure(_db: NeonHttpDatabase) {
   return protectedProcedure.use(async ({ ctx, next }) => {
@@ -175,41 +149,22 @@ const listBreedsSchema = z.object({
   group: z.string().optional(),
 });
 
-const scoreField = z.number().int().min(1).max(5).nullable().optional();
-
-const breedScoresSchema = z.object({
-  energy: scoreField,
-  playfulness: scoreField,
-  trainability: scoreField,
-  barking: scoreField,
-  goodWithOtherDogs: scoreField,
-  goodWithChildren: scoreField,
-  goodWithStrangers: scoreField,
-  protectiveness: scoreField,
-  shedding: scoreField,
-  grooming: scoreField,
+const createBreedSchema = z.object({
+  name: z.string().min(1).max(100),
+  nameIt: z.string().min(1).max(100),
+  group: z.string().max(50).optional(),
+  sizeCategory: sizeCategoryEnum,
+  avgWeightKg: z.number().int().positive().optional(),
 });
 
-const createBreedSchema = z
-  .object({
-    name: z.string().min(1).max(100),
-    nameIt: z.string().min(1).max(100),
-    group: z.string().max(50).optional(),
-    sizeCategory: sizeCategoryEnum,
-    avgWeightKg: z.number().int().positive().optional(),
-  })
-  .merge(breedScoresSchema);
-
-const updateBreedSchema = z
-  .object({
-    id: z.number().int().positive(),
-    name: z.string().min(1).max(100).optional(),
-    nameIt: z.string().min(1).max(100).optional(),
-    group: z.string().max(50).optional(),
-    sizeCategory: sizeCategoryEnum.optional(),
-    avgWeightKg: z.number().int().positive().optional(),
-  })
-  .merge(breedScoresSchema);
+const updateBreedSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1).max(100).optional(),
+  nameIt: z.string().min(1).max(100).optional(),
+  group: z.string().max(50).optional(),
+  sizeCategory: sizeCategoryEnum.optional(),
+  avgWeightKg: z.number().int().positive().optional(),
+});
 
 const deleteBreedSchema = z.object({
   id: z.number().int().positive(),
@@ -248,303 +203,83 @@ const resetAdminPasswordSchema = z.object({
   newPassword: z.string().min(8),
 });
 
+// ── Deps type ──────────────────────────────────────────────────────────────────
+
+interface AdminRouterDeps {
+  adminDataRepo: AdminDataRepository;
+}
+
 // ── Router ─────────────────────────────────────────────────────────────────────
 
-export function createAdminRouter(db: NeonHttpDatabase) {
+export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
   const adminProcedure = createAdminProcedure(db);
+  const { adminDataRepo } = deps;
 
   return router({
     // ── Dashboard stats ──────────────────────────────────────────────────────
     getStats: adminProcedure.query(async () => {
-      const now = new Date();
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-      // Run all counts in parallel
-      const [
-        [usersCount],
-        [dogsCount],
-        [matchesCount],
-        [activeMatchesCount],
-        [pendingPhotosCount],
-        [reportsCount],
-        [pendingPostsCount],
-        registrations,
-        dailyMatches,
-      ] = await Promise.all([
-        db.select({ value: count() }).from(users),
-        db.select({ value: count() }).from(dogProfiles),
-        db.select({ value: count() }).from(matches),
-        db.select({ value: count() }).from(matches).where(eq(matches.isActive, true)),
-        db
-          .select({ value: count() })
-          .from(dogPhotos)
-          .where(eq(dogPhotos.moderationStatus, 'pending')),
-        db.select({ value: count() }).from(reports).where(eq(reports.status, 'pending')),
-        db
-          .select({ value: count() })
-          .from(posts)
-          .where(and(eq(posts.moderationStatus, 'pending'), eq(posts.isDeleted, false))),
-        // User registrations per day (last 30 days)
-        db
-          .select({
-            date: sql<string>`to_char(${users.createdAt}, 'YYYY-MM-DD')`,
-            count: count(),
-          })
-          .from(users)
-          .where(gte(users.createdAt, thirtyDaysAgo))
-          .groupBy(sql`to_char(${users.createdAt}, 'YYYY-MM-DD')`)
-          .orderBy(sql`to_char(${users.createdAt}, 'YYYY-MM-DD')`),
-        // Daily matches (last 30 days)
-        db
-          .select({
-            date: sql<string>`to_char(${matches.createdAt}, 'YYYY-MM-DD')`,
-            count: count(),
-          })
-          .from(matches)
-          .where(gte(matches.createdAt, thirtyDaysAgo))
-          .groupBy(sql`to_char(${matches.createdAt}, 'YYYY-MM-DD')`)
-          .orderBy(sql`to_char(${matches.createdAt}, 'YYYY-MM-DD')`),
-      ]);
-
-      return {
-        totalUsers: usersCount?.value ?? 0,
-        totalDogs: dogsCount?.value ?? 0,
-        totalMatches: matchesCount?.value ?? 0,
-        activeMatches: activeMatchesCount?.value ?? 0,
-        pendingPhotos: pendingPhotosCount?.value ?? 0,
-        pendingReports: reportsCount?.value ?? 0,
-        pendingFeedPosts: pendingPostsCount?.value ?? 0,
-        userRegistrations: registrations,
-        dailyMatches,
-      };
+      return adminDataRepo.getStats();
     }),
 
     // ── Analytics KPIs ──────────────────────────────────────────────────────
-    // Reads from: Redis HyperLogLog (DAU only) + Postgres (everything else).
-    // Postgres is the single source of truth for event counts.
     getAnalyticsKpis: adminProcedure.query(async () => {
-      const today = new Date().toISOString().slice(0, 10);
-      const todayStart = new Date(`${today}T00:00:00.000Z`);
+      const [dauToday, dauTimeSeries, dbMetrics] = await Promise.all([
+        getDauCount(new Date().toISOString().slice(0, 10)),
+        getDauTimeSeries(30),
+        adminDataRepo.getAnalyticsDbMetrics(),
+      ]);
 
-      const [dauToday, dauTimeSeries, todayMetrics, [totalEventsRow], [eventsLast24hRow]] =
-        await Promise.all([
-          // Redis HLL — real-time DAU
-          getDauCount(today),
-          getDauTimeSeries(30),
-          // Postgres — today's registrations & matches from analytics_events directly
-          // (pre-aggregated table only has yesterday's data until 02:00 cron runs)
-          db
-            .select({
-              eventName: analyticsEvents.eventName,
-              value: count(),
-            })
-            .from(analyticsEvents)
-            .where(
-              sql`${analyticsEvents.serverTimestamp} >= ${todayStart} AND ${analyticsEvents.eventName} IN ('auth_registration_completed', 'match_created')`,
-            )
-            .groupBy(analyticsEvents.eventName),
-          // Postgres — total event count
-          db.select({ value: count() }).from(analyticsEvents),
-          // Postgres — events in last 24h
-          db
-            .select({ value: count() })
-            .from(analyticsEvents)
-            .where(
-              gte(analyticsEvents.serverTimestamp, new Date(Date.now() - 24 * 60 * 60 * 1000)),
-            ),
-        ]);
-
-      const todayMap = new Map(todayMetrics.map((m) => [m.eventName, m.value]));
+      const todayMap = new Map(dbMetrics.todayMetrics.map((m) => [m.eventName, m.value]));
 
       return {
         dauToday,
         registrationsToday: todayMap.get('auth_registration_completed') ?? 0,
         matchesToday: todayMap.get('match_created') ?? 0,
-        totalEvents: totalEventsRow?.value ?? 0,
-        eventsLast24h: eventsLast24hRow?.value ?? 0,
+        totalEvents: dbMetrics.totalEvents,
+        eventsLast24h: dbMetrics.eventsLast24h,
         dauTimeSeries,
       };
     }),
 
     // ── Audit log ──────────────────────────────────────────────────────────
     listAuditLog: adminProcedure.input(listAuditLogSchema).query(async ({ input }) => {
-      const { page, pageSize, adminId, resourceType, action, from, to, search } = input;
-      const offset = (page - 1) * pageSize;
-
-      const conditions = [];
-      if (adminId) conditions.push(eq(adminAuditLog.adminId, adminId));
-      if (resourceType) conditions.push(eq(adminAuditLog.resourceType, resourceType));
-      if (action) conditions.push(ilike(adminAuditLog.action, `%${action}%`));
-      if (from) conditions.push(gte(adminAuditLog.createdAt, new Date(from)));
-      if (to) conditions.push(sql`${adminAuditLog.createdAt} <= ${new Date(to)}`);
-      if (search) conditions.push(ilike(adminAuditLog.action, `%${search}%`));
-
-      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-      const [items, [totalRow]] = await Promise.all([
-        db
-          .select({
-            id: adminAuditLog.id,
-            adminId: adminAuditLog.adminId,
-            adminName: adminUsers.displayName,
-            adminEmail: adminUsers.email,
-            action: adminAuditLog.action,
-            resourceType: adminAuditLog.resourceType,
-            resourceId: adminAuditLog.resourceId,
-            changes: adminAuditLog.changes,
-            reason: adminAuditLog.reason,
-            ipAddress: adminAuditLog.ipAddress,
-            createdAt: adminAuditLog.createdAt,
-          })
-          .from(adminAuditLog)
-          .leftJoin(adminUsers, eq(adminAuditLog.adminId, adminUsers.id))
-          .where(whereClause)
-          .orderBy(desc(adminAuditLog.createdAt))
-          .limit(pageSize)
-          .offset(offset),
-        db.select({ value: count() }).from(adminAuditLog).where(whereClause),
-      ]);
-
-      const total = totalRow?.value ?? 0;
-
+      const result = await adminDataRepo.listAuditLog(input);
       return {
-        data: items,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
+        data: result.data,
+        total: result.total,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(result.total / input.pageSize),
       };
     }),
 
     // ── Dogs management ──────────────────────────────────────────────────────
     listDogs: adminProcedure.input(listDogsSchema).query(async ({ input }) => {
-      const { page, pageSize, search } = input;
-      const offset = (page - 1) * pageSize;
-
-      const searchCondition = search
-        ? or(
-            ilike(dogProfiles.name, `%${search}%`),
-            ilike(dogProfiles.breed, `%${search}%`),
-            ilike(users.displayName, `%${search}%`),
-          )
-        : undefined;
-
-      const [items, [totalRow]] = await Promise.all([
-        db
-          .select({
-            id: dogProfiles.id,
-            name: dogProfiles.name,
-            breed: dogProfiles.breed,
-            size: dogProfiles.size,
-            isActive: dogProfiles.isActive,
-            createdAt: dogProfiles.createdAt,
-            ownerName: users.displayName,
-            ownerId: users.id,
-          })
-          .from(dogProfiles)
-          .leftJoin(users, eq(dogProfiles.ownerId, users.id))
-          .where(searchCondition)
-          .orderBy(desc(dogProfiles.createdAt))
-          .limit(pageSize)
-          .offset(offset),
-        db
-          .select({ value: count() })
-          .from(dogProfiles)
-          .leftJoin(users, eq(dogProfiles.ownerId, users.id))
-          .where(searchCondition),
-      ]);
-
-      const total = totalRow?.value ?? 0;
-
+      const result = await adminDataRepo.listDogs(input);
       return {
-        data: items,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
+        data: result.data,
+        total: result.total,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(result.total / input.pageSize),
       };
     }),
 
     getDog: adminProcedure.input(getDogSchema).query(async ({ input }) => {
-      const [dog] = await db
-        .select({
-          id: dogProfiles.id,
-          name: dogProfiles.name,
-          breed: dogProfiles.breed,
-          breedSecondary: dogProfiles.breedSecondary,
-          size: dogProfiles.size,
-          weightKg: dogProfiles.weightKg,
-          gender: dogProfiles.gender,
-          isNeutered: dogProfiles.isNeutered,
-          energyLevel: dogProfiles.energyLevel,
-          behaviorWithDogs: dogProfiles.behaviorWithDogs,
-          behaviorWithPeople: dogProfiles.behaviorWithPeople,
-          leashBehavior: dogProfiles.leashBehavior,
-          bio: dogProfiles.bio,
-          isActive: dogProfiles.isActive,
-          createdAt: dogProfiles.createdAt,
-          ownerName: users.displayName,
-          ownerId: users.id,
-        })
-        .from(dogProfiles)
-        .leftJoin(users, eq(dogProfiles.ownerId, users.id))
-        .where(eq(dogProfiles.id, input.id));
-
+      const dog = await adminDataRepo.getDog(input.id);
       if (!dog) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Dog not found' });
       }
-
-      // Get photos
-      const photos = await db
-        .select()
-        .from(dogPhotos)
-        .where(eq(dogPhotos.dogId, input.id))
-        .orderBy(dogPhotos.position);
-
-      return { ...dog, photos };
+      return dog;
     }),
 
     // ── Reports management ───────────────────────────────────────────────────
     listReports: adminProcedure.input(listReportsSchema).query(async ({ input }) => {
-      const { page, pageSize, status } = input;
-      const offset = (page - 1) * pageSize;
+      const { items, total } = await adminDataRepo.listReports(input);
 
-      const statusCondition = status ? eq(reports.status, status) : undefined;
-
-      const [items, [totalRow]] = await Promise.all([
-        db
-          .select({
-            id: reports.id,
-            reason: reports.reason,
-            description: reports.description,
-            status: reports.status,
-            resolvedAction: reports.resolvedAction,
-            resolvedAt: reports.resolvedAt,
-            createdAt: reports.createdAt,
-            reporterId: reports.reporterId,
-            reportedUserId: reports.reportedUserId,
-          })
-          .from(reports)
-          .where(statusCondition)
-          .orderBy(desc(reports.createdAt))
-          .limit(pageSize)
-          .offset(offset),
-        db.select({ value: count() }).from(reports).where(statusCondition),
-      ]);
-
-      // Collect unique user IDs to fetch names
       const userIds = [...new Set(items.flatMap((r) => [r.reporterId, r.reportedUserId]))];
-      const userRows =
-        userIds.length > 0
-          ? await db
-              .select({ id: users.id, displayName: users.displayName, email: users.email })
-              .from(users)
-              .where(or(...userIds.map((uid) => eq(users.id, uid))))
-          : [];
-
+      const userRows = await adminDataRepo.getReportUserInfos(userIds);
       const userMap = new Map(userRows.map((u) => [u.id, u]));
-
-      const total = totalRow?.value ?? 0;
 
       return {
         data: items.map((r) => ({
@@ -555,15 +290,16 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           reportedEmail: maskEmail(userMap.get(r.reportedUserId)?.email),
         })),
         total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(total / input.pageSize),
       };
     }),
 
     resolveReport: adminProcedure.input(resolveReportSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.Moderator);
-      const [report] = await db.select().from(reports).where(eq(reports.id, input.id));
+
+      const report = await adminDataRepo.findReportById(input.id);
       if (!report) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Report not found' });
       }
@@ -573,20 +309,10 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       }
 
       const newStatus = input.action === 'dismiss' ? 'dismissed' : 'resolved';
+      await adminDataRepo.resolveReport(input.id, newStatus, ctx.userId, input.action);
 
-      await db
-        .update(reports)
-        .set({
-          status: newStatus,
-          resolvedBy: ctx.userId,
-          resolvedAction: input.action,
-          resolvedAt: new Date(),
-        })
-        .where(eq(reports.id, input.id));
-
-      // Apply action to reported user if needed
       if (input.action === 'suspend' || input.action === 'ban') {
-        await db.update(users).set({ isActive: false }).where(eq(users.id, report.reportedUserId));
+        await adminDataRepo.deactivateUser(report.reportedUserId);
       }
 
       void logAdminAction(db, {
@@ -602,98 +328,28 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     // ── Feed management ──────────────────────────────────────────────────────
     listFeedPosts: adminProcedure.input(listFeedPostsSchema).query(async ({ input }) => {
-      const { page, pageSize, status, search } = input;
-      const offset = (page - 1) * pageSize;
+      const result = await adminDataRepo.listFeedPosts(input);
 
-      const conditions = [];
-      if (status) conditions.push(eq(posts.moderationStatus, status));
-      if (search) conditions.push(ilike(users.displayName, `%${search}%`));
-
-      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-      const [items, [totalRow]] = await Promise.all([
-        db
-          .select({
-            id: posts.id,
-            caption: posts.caption,
-            moderationStatus: posts.moderationStatus,
-            likesCount: posts.likesCount,
-            commentsCount: posts.commentsCount,
-            isDeleted: posts.isDeleted,
-            createdAt: posts.createdAt,
-            authorId: posts.authorId,
-            authorName: users.displayName,
-            authorEmail: users.email,
-          })
-          .from(posts)
-          .leftJoin(users, eq(posts.authorId, users.id))
-          .where(whereClause)
-          .orderBy(desc(posts.createdAt))
-          .limit(pageSize)
-          .offset(offset),
-        db
-          .select({ value: count() })
-          .from(posts)
-          .leftJoin(users, eq(posts.authorId, users.id))
-          .where(whereClause),
-      ]);
-
-      // Fetch media for each post
-      const postIds = items.map((p) => p.id);
-      const media =
-        postIds.length > 0
-          ? await db
-              .select({
-                id: postMedia.id,
-                postId: postMedia.postId,
-                url: postMedia.url,
-                mediaType: postMedia.mediaType,
-                thumbnailUrl: postMedia.thumbnailUrl,
-              })
-              .from(postMedia)
-              .where(or(...postIds.map((pid) => eq(postMedia.postId, pid))))
-          : [];
-
-      const mediaByPost = new Map<string, typeof media>();
-      for (const m of media) {
+      const mediaByPost = new Map<string, typeof result.media>();
+      for (const m of result.media) {
         const list = mediaByPost.get(m.postId) ?? [];
         list.push(m);
         mediaByPost.set(m.postId, list);
       }
 
-      // Fetch report counts per post
-      const reportCounts =
-        postIds.length > 0
-          ? await db
-              .select({
-                contentId: contentReports.contentId,
-                count: count(),
-              })
-              .from(contentReports)
-              .where(
-                and(
-                  eq(contentReports.contentType, 'post'),
-                  or(...postIds.map((pid) => eq(contentReports.contentId, pid))),
-                ),
-              )
-              .groupBy(contentReports.contentId)
-          : [];
-
-      const reportCountMap = new Map(reportCounts.map((r) => [r.contentId, r.count]));
-
-      const total = totalRow?.value ?? 0;
+      const reportCountMap = new Map(result.reportCounts.map((r) => [r.contentId, r.count]));
 
       return {
-        data: items.map((p) => ({
+        data: result.posts.map((p) => ({
           ...p,
           authorEmail: maskEmail(p.authorEmail),
           media: mediaByPost.get(p.id) ?? [],
           reportCount: reportCountMap.get(p.id) ?? 0,
         })),
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
+        total: result.total,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(result.total / input.pageSize),
       };
     }),
 
@@ -701,19 +357,16 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(updatePostModerationSchema)
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Moderator);
-        const [post] = await db.select().from(posts).where(eq(posts.id, input.postId));
+
+        const post = await adminDataRepo.findPostById(input.postId);
         if (!post) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Post not found' });
         }
 
-        await db
-          .update(posts)
-          .set({ moderationStatus: input.status, updatedAt: new Date() })
-          .where(eq(posts.id, input.postId));
+        await adminDataRepo.updatePostModeration(input.postId, input.status);
 
-        // If rejected, soft-delete the post
         if (input.status === 'rejected') {
-          await db.update(posts).set({ isDeleted: true }).where(eq(posts.id, input.postId));
+          await adminDataRepo.softDeletePost(input.postId);
         }
 
         void logAdminAction(db, {
@@ -738,36 +391,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         }),
       )
       .query(async ({ input }) => {
-        const { page, pageSize } = input;
-        const offset = (page - 1) * pageSize;
-
-        const [items, [totalRow]] = await Promise.all([
-          db
-            .select({
-              id: stories.id,
-              mediaUrl: stories.mediaUrl,
-              mediaType: stories.mediaType,
-              viewCount: stories.viewCount,
-              createdAt: stories.createdAt,
-              expiresAt: stories.expiresAt,
-              authorId: stories.authorId,
-              authorName: users.displayName,
-            })
-            .from(stories)
-            .leftJoin(users, eq(stories.authorId, users.id))
-            .orderBy(desc(stories.createdAt))
-            .limit(pageSize)
-            .offset(offset),
-          db.select({ value: count() }).from(stories),
-        ]);
-
-        const total = totalRow?.value ?? 0;
+        const result = await adminDataRepo.listStories(input);
         return {
-          data: items,
-          total,
-          page,
-          pageSize,
-          totalPages: Math.ceil(total / pageSize),
+          data: result.data,
+          total: result.total,
+          page: input.page,
+          pageSize: input.pageSize,
+          totalPages: Math.ceil(result.total / input.pageSize),
         };
       }),
 
@@ -775,11 +405,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(z.object({ storyId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Moderator);
-        const [story] = await db.select().from(stories).where(eq(stories.id, input.storyId));
+
+        const story = await adminDataRepo.findStoryById(input.storyId);
         if (!story) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Story not found' });
         }
-        await db.delete(stories).where(eq(stories.id, input.storyId));
+
+        await adminDataRepo.deleteStory(input.storyId);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -792,83 +424,12 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       }),
 
     getFeedStats: adminProcedure.query(async () => {
-      const [[totalPosts], [pendingPosts], [rejectedPosts], [totalStories], [pendingReports]] =
-        await Promise.all([
-          db.select({ value: count() }).from(posts).where(eq(posts.isDeleted, false)),
-          db
-            .select({ value: count() })
-            .from(posts)
-            .where(and(eq(posts.moderationStatus, 'pending'), eq(posts.isDeleted, false))),
-          db.select({ value: count() }).from(posts).where(eq(posts.moderationStatus, 'rejected')),
-          db.select({ value: count() }).from(stories),
-          db
-            .select({ value: count() })
-            .from(contentReports)
-            .where(eq(contentReports.status, 'pending')),
-        ]);
-
-      return {
-        totalPosts: totalPosts?.value ?? 0,
-        pendingPosts: pendingPosts?.value ?? 0,
-        rejectedPosts: rejectedPosts?.value ?? 0,
-        totalStories: totalStories?.value ?? 0,
-        pendingReports: pendingReports?.value ?? 0,
-      };
+      return adminDataRepo.getFeedStats();
     }),
 
     // ── Group events management ───────────────────────────────────────────────
     listGroupEvents: adminProcedure.input(listGroupEventsSchema).query(async ({ input }) => {
-      const { page, pageSize, search, status, category } = input;
-      const offset = (page - 1) * pageSize;
-
-      const conditions = [];
-      if (search) conditions.push(ilike(groupEvents.title, `%${search}%`));
-      if (status) conditions.push(eq(groupEvents.status, status));
-      if (category) conditions.push(eq(groupEvents.category, category));
-
-      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-      const [items, [totalRow]] = await Promise.all([
-        db
-          .select({
-            id: groupEvents.id,
-            title: groupEvents.title,
-            category: groupEvents.category,
-            visibility: groupEvents.visibility,
-            status: groupEvents.status,
-            scheduledAt: groupEvents.scheduledAt,
-            location: groupEvents.location,
-            maxParticipants: groupEvents.maxParticipants,
-            requiresApproval: groupEvents.requiresApproval,
-            createdAt: groupEvents.createdAt,
-            creatorId: groupEvents.createdBy,
-            creatorName: users.displayName,
-            recurrenceRule: groupEvents.recurrenceRule,
-            parentEventId: groupEvents.parentEventId,
-          })
-          .from(groupEvents)
-          .leftJoin(users, eq(groupEvents.createdBy, users.id))
-          .where(whereClause)
-          .orderBy(desc(groupEvents.scheduledAt))
-          .limit(pageSize)
-          .offset(offset),
-        db.select({ value: count() }).from(groupEvents).where(whereClause),
-      ]);
-
-      // Get participant + pending counts per event
-      const eventIds = items.map((e) => e.id);
-      const participantCounts =
-        eventIds.length > 0
-          ? await db
-              .select({
-                eventId: groupEventParticipants.eventId,
-                status: groupEventParticipants.status,
-                count: count(),
-              })
-              .from(groupEventParticipants)
-              .where(or(...eventIds.map((eid) => eq(groupEventParticipants.eventId, eid))))
-              .groupBy(groupEventParticipants.eventId, groupEventParticipants.status)
-          : [];
+      const { items, total, participantCounts } = await adminDataRepo.listGroupEvents(input);
 
       const countMap = new Map<string, { participants: number; pending: number }>();
       for (const row of participantCounts) {
@@ -877,8 +438,6 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         if (row.status === 'pending') entry.pending = row.count;
         countMap.set(row.eventId, entry);
       }
-
-      const total = totalRow?.value ?? 0;
 
       return {
         data: items.map((e) => ({
@@ -899,63 +458,19 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           isRecurring: e.recurrenceRule != null || e.parentEventId != null,
         })),
         total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(total / input.pageSize),
       };
     }),
 
     getGroupEvent: adminProcedure.input(getGroupEventSchema).query(async ({ input }) => {
-      const [event] = await db
-        .select({
-          id: groupEvents.id,
-          title: groupEvents.title,
-          description: groupEvents.description,
-          category: groupEvents.category,
-          visibility: groupEvents.visibility,
-          status: groupEvents.status,
-          scheduledAt: groupEvents.scheduledAt,
-          durationMin: groupEvents.durationMin,
-          location: groupEvents.location,
-          latitude: groupEvents.latitude,
-          longitude: groupEvents.longitude,
-          maxParticipants: groupEvents.maxParticipants,
-          requiresApproval: groupEvents.requiresApproval,
-          recurrenceRule: groupEvents.recurrenceRule,
-          recurrenceEnd: groupEvents.recurrenceEnd,
-          parentEventId: groupEvents.parentEventId,
-          coverImageUrl: groupEvents.coverImageUrl,
-          createdAt: groupEvents.createdAt,
-          updatedAt: groupEvents.updatedAt,
-          creatorId: groupEvents.createdBy,
-          creatorName: users.displayName,
-        })
-        .from(groupEvents)
-        .leftJoin(users, eq(groupEvents.createdBy, users.id))
-        .where(eq(groupEvents.id, input.id));
-
-      if (!event) {
+      const result = await adminDataRepo.getGroupEvent(input.id);
+      if (!result) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
       }
 
-      // Get participants with user + dog info
-      const participants = await db
-        .select({
-          id: groupEventParticipants.id,
-          userId: groupEventParticipants.userId,
-          userName: users.displayName,
-          dogId: groupEventParticipants.dogId,
-          dogName: dogProfiles.name,
-          status: groupEventParticipants.status,
-          isOrganizer: groupEventParticipants.isOrganizer,
-          joinedAt: groupEventParticipants.joinedAt,
-        })
-        .from(groupEventParticipants)
-        .leftJoin(users, eq(groupEventParticipants.userId, users.id))
-        .leftJoin(dogProfiles, eq(groupEventParticipants.dogId, dogProfiles.id))
-        .where(eq(groupEventParticipants.eventId, input.id))
-        .orderBy(groupEventParticipants.joinedAt);
-
+      const { event, participants } = result;
       const acceptedCount = participants.filter((p) => p.status === 'accepted').length;
       const pendingCount = participants.filter((p) => p.status === 'pending').length;
 
@@ -972,11 +487,8 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(cancelGroupEventSchema)
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [event] = await db
-          .select()
-          .from(groupEvents)
-          .where(eq(groupEvents.id, input.eventId));
 
+        const event = await adminDataRepo.findGroupEventById(input.eventId);
         if (!event) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
         }
@@ -988,10 +500,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           });
         }
 
-        await db
-          .update(groupEvents)
-          .set({ status: 'cancelled', updatedAt: new Date() })
-          .where(eq(groupEvents.id, input.eventId));
+        await adminDataRepo.cancelGroupEvent(input.eventId);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1007,19 +516,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(removeParticipantSchema)
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [participant] = await db
-          .select()
-          .from(groupEventParticipants)
-          .where(eq(groupEventParticipants.id, input.participantId));
 
+        const participant = await adminDataRepo.findParticipantById(input.participantId);
         if (!participant) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Participant not found' });
         }
 
-        await db
-          .update(groupEventParticipants)
-          .set({ status: 'removed' })
-          .where(eq(groupEventParticipants.id, input.participantId));
+        await adminDataRepo.removeParticipant(input.participantId);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1042,59 +545,9 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         }),
       )
       .query(async ({ input }) => {
-        const { page, pageSize, search, type } = input;
-        const offset = (page - 1) * pageSize;
-
-        const conditions = [];
-        if (search) {
-          conditions.push(
-            or(ilike(organizations.name, `%${search}%`), ilike(organizations.slug, `%${search}%`)),
-          );
-        }
-        if (type) conditions.push(eq(organizations.type, type));
-
-        const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-        const [items, [totalRow]] = await Promise.all([
-          db
-            .select({
-              id: organizations.id,
-              name: organizations.name,
-              slug: organizations.slug,
-              type: organizations.type,
-              description: organizations.description,
-              logoUrl: organizations.logoUrl,
-              websiteUrl: organizations.websiteUrl,
-              contactEmail: organizations.contactEmail,
-              isVerified: organizations.isVerified,
-              verifiedAt: organizations.verifiedAt,
-              isActive: organizations.isActive,
-              createdAt: organizations.createdAt,
-            })
-            .from(organizations)
-            .where(whereClause)
-            .orderBy(desc(organizations.createdAt))
-            .limit(pageSize)
-            .offset(offset),
-          db.select({ value: count() }).from(organizations).where(whereClause),
-        ]);
-
-        // Get member counts per org
-        const orgIds = items.map((o) => o.id);
-        const memberCounts =
-          orgIds.length > 0
-            ? await db
-                .select({
-                  organizationId: organizationMembers.organizationId,
-                  count: count(),
-                })
-                .from(organizationMembers)
-                .where(or(...orgIds.map((oid) => eq(organizationMembers.organizationId, oid))))
-                .groupBy(organizationMembers.organizationId)
-            : [];
+        const { items, total, memberCounts } = await adminDataRepo.listOrganizations(input);
 
         const memberCountMap = new Map(memberCounts.map((m) => [m.organizationId, m.count]));
-        const total = totalRow?.value ?? 0;
 
         return {
           data: items.map((o) => ({
@@ -1102,60 +555,33 @@ export function createAdminRouter(db: NeonHttpDatabase) {
             memberCount: memberCountMap.get(o.id) ?? 0,
           })),
           total,
-          page,
-          pageSize,
-          totalPages: Math.ceil(total / pageSize),
+          page: input.page,
+          pageSize: input.pageSize,
+          totalPages: Math.ceil(total / input.pageSize),
         };
       }),
 
     getOrganization: adminProcedure
       .input(z.object({ id: z.string().uuid() }))
       .query(async ({ input }) => {
-        const [org] = await db.select().from(organizations).where(eq(organizations.id, input.id));
-
-        if (!org) {
+        const result = await adminDataRepo.getOrganization(input.id);
+        if (!result) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
         }
-
-        const members = await db
-          .select({
-            id: organizationMembers.id,
-            userId: organizationMembers.userId,
-            userName: users.displayName,
-            userEmail: users.email,
-            role: organizationMembers.role,
-            createdAt: organizationMembers.createdAt,
-          })
-          .from(organizationMembers)
-          .leftJoin(users, eq(organizationMembers.userId, users.id))
-          .where(eq(organizationMembers.organizationId, input.id))
-          .orderBy(organizationMembers.createdAt);
-
-        return { ...org, members };
+        return { ...result.organization, members: result.members };
       }),
 
     verifyOrganization: adminProcedure
       .input(z.object({ organizationId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [org] = await db
-          .select()
-          .from(organizations)
-          .where(eq(organizations.id, input.organizationId));
 
+        const org = await adminDataRepo.findOrganizationById(input.organizationId);
         if (!org) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
         }
 
-        await db
-          .update(organizations)
-          .set({
-            isVerified: true,
-            verifiedAt: new Date(),
-            verifiedBy: ctx.userId,
-            updatedAt: new Date(),
-          })
-          .where(eq(organizations.id, input.organizationId));
+        await adminDataRepo.verifyOrganization(input.organizationId, ctx.userId);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1171,24 +597,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(z.object({ organizationId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [org] = await db
-          .select()
-          .from(organizations)
-          .where(eq(organizations.id, input.organizationId));
 
+        const org = await adminDataRepo.findOrganizationById(input.organizationId);
         if (!org) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
         }
 
-        await db
-          .update(organizations)
-          .set({
-            isVerified: false,
-            verifiedAt: null,
-            verifiedBy: null,
-            updatedAt: new Date(),
-          })
-          .where(eq(organizations.id, input.organizationId));
+        await adminDataRepo.revokeOrganization(input.organizationId);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1200,7 +615,6 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         return { success: true };
       }),
 
-    // ── Create official event from admin ────────────────────────────────────
     createOfficialEvent: adminProcedure
       .input(
         z.object({
@@ -1220,12 +634,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
-        // Verify organization exists and is verified
-        const [org] = await db
-          .select()
-          .from(organizations)
-          .where(eq(organizations.id, input.organizationId));
-
+        const org = await adminDataRepo.findOrganizationById(input.organizationId);
         if (!org) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
         }
@@ -1277,38 +686,19 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     // ── Event sponsors management ────────────────────────────────────────────
     listEventSponsors: adminProcedure.input(listEventSponsorsSchema).query(async ({ input }) => {
-      const sponsors = await db
-        .select({
-          id: eventSponsors.id,
-          eventId: eventSponsors.eventId,
-          organizationId: eventSponsors.organizationId,
-          tier: eventSponsors.tier,
-          logoPlacement: eventSponsors.logoPlacement,
-          createdAt: eventSponsors.createdAt,
-          organizationName: organizations.name,
-          organizationLogoUrl: organizations.logoUrl,
-        })
-        .from(eventSponsors)
-        .innerJoin(organizations, eq(eventSponsors.organizationId, organizations.id))
-        .where(eq(eventSponsors.eventId, input.eventId))
-        .orderBy(eventSponsors.createdAt);
-
+      const sponsors = await adminDataRepo.listEventSponsors(input.eventId);
       return { data: sponsors };
     }),
 
     addEventSponsor: adminProcedure.input(addSponsorSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.Admin);
-      // Check event exists
-      const [event] = await db.select().from(groupEvents).where(eq(groupEvents.id, input.eventId));
+
+      const event = await adminDataRepo.findGroupEventById(input.eventId);
       if (!event) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
       }
 
-      // Check org exists and is verified
-      const [org] = await db
-        .select()
-        .from(organizations)
-        .where(eq(organizations.id, input.organizationId));
+      const org = await adminDataRepo.findOrganizationById(input.organizationId);
       if (!org) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
       }
@@ -1319,15 +709,14 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         });
       }
 
-      // Check tier limit
       const tierLimits: Record<string, number> = { title: 1, gold: 2, silver: 5 };
       const limit = tierLimits[input.tier];
       if (limit !== undefined) {
-        const [countRow] = await db
-          .select({ value: count() })
-          .from(eventSponsors)
-          .where(and(eq(eventSponsors.eventId, input.eventId), eq(eventSponsors.tier, input.tier)));
-        if ((countRow?.value ?? 0) >= limit) {
+        const currentCount = await adminDataRepo.countEventSponsorsByTier(
+          input.eventId,
+          input.tier,
+        );
+        if (currentCount >= limit) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
             message: `Tier limit reached (max ${limit} for ${input.tier})`,
@@ -1335,7 +724,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         }
       }
 
-      const [sponsor] = await db.insert(eventSponsors).values(input).returning();
+      const sponsor = await adminDataRepo.addEventSponsor(input);
 
       void logAdminAction(db, {
         adminId: ctx.userId,
@@ -1352,28 +741,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(removeSponsorSchema)
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [existing] = await db
-          .select()
-          .from(eventSponsors)
-          .where(
-            and(
-              eq(eventSponsors.eventId, input.eventId),
-              eq(eventSponsors.organizationId, input.organizationId),
-            ),
-          );
 
+        const existing = await adminDataRepo.findEventSponsor(input.eventId, input.organizationId);
         if (!existing) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Sponsor not found for this event' });
         }
 
-        await db
-          .delete(eventSponsors)
-          .where(
-            and(
-              eq(eventSponsors.eventId, input.eventId),
-              eq(eventSponsors.organizationId, input.organizationId),
-            ),
-          );
+        await adminDataRepo.removeEventSponsor(input.eventId, input.organizationId);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1398,57 +772,9 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         }),
       )
       .query(async ({ input }) => {
-        const { page, pageSize, search, sortBy, sortOrder } = input;
-        const offset = (page - 1) * pageSize;
-
-        const searchCondition = search
-          ? or(ilike(users.displayName, `%${search}%`), ilike(users.email, `%${search}%`))
-          : undefined;
-
-        // Determine sort column
-        const sortColumn =
-          sortBy === 'name'
-            ? users.displayName
-            : sortBy === 'email'
-              ? users.email
-              : users.createdAt;
-        const orderFn = sortOrder === 'asc' ? sql`${sortColumn} asc` : desc(sortColumn);
-
-        const [items, [totalRow]] = await Promise.all([
-          db
-            .select({
-              id: users.id,
-              name: users.displayName,
-              email: users.email,
-              isActive: users.isActive,
-              followersCount: users.followersCount,
-              followingCount: users.followingCount,
-              createdAt: users.createdAt,
-            })
-            .from(users)
-            .where(searchCondition)
-            .orderBy(orderFn)
-            .limit(pageSize)
-            .offset(offset),
-          db.select({ value: count() }).from(users).where(searchCondition),
-        ]);
-
-        // Get dog counts per user
-        const userIds = items.map((u) => u.id);
-        const dogCounts =
-          userIds.length > 0
-            ? await db
-                .select({
-                  ownerId: dogProfiles.ownerId,
-                  count: count(),
-                })
-                .from(dogProfiles)
-                .where(or(...userIds.map((uid) => eq(dogProfiles.ownerId, uid))))
-                .groupBy(dogProfiles.ownerId)
-            : [];
+        const { items, total, dogCounts } = await adminDataRepo.listUsers(input);
 
         const dogCountMap = new Map(dogCounts.map((d) => [d.ownerId, d.count]));
-        const total = totalRow?.value ?? 0;
 
         return {
           data: items.map((u) => ({
@@ -1462,59 +788,19 @@ export function createAdminRouter(db: NeonHttpDatabase) {
             createdAt: u.createdAt,
           })),
           total,
-          page,
-          pageSize,
-          totalPages: Math.ceil(total / pageSize),
+          page: input.page,
+          pageSize: input.pageSize,
+          totalPages: Math.ceil(total / input.pageSize),
         };
       }),
 
     getUser: adminProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ input }) => {
-      const [user] = await db
-        .select({
-          id: users.id,
-          displayName: users.displayName,
-          email: users.email,
-          avatarUrl: users.avatarUrl,
-          isActive: users.isActive,
-          authProvider: users.authProvider,
-          createdAt: users.createdAt,
-          lastLoginAt: users.lastLoginAt,
-          followersCount: users.followersCount,
-          followingCount: users.followingCount,
-        })
-        .from(users)
-        .where(eq(users.id, input.id));
-
-      if (!user) {
+      const result = await adminDataRepo.getUser(input.id);
+      if (!result) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
       }
 
-      const dogs = await db
-        .select({
-          id: dogProfiles.id,
-          name: dogProfiles.name,
-          breed: dogProfiles.breed,
-          isActive: dogProfiles.isActive,
-        })
-        .from(dogProfiles)
-        .where(eq(dogProfiles.ownerId, input.id));
-
-      const [reportsRow] = await db
-        .select({ value: count() })
-        .from(reports)
-        .where(eq(reports.reportedUserId, input.id));
-
-      // Count matches through the user's dogs
-      const dogIds = dogs.map((d) => d.id);
-      const [matchesRow] =
-        dogIds.length > 0
-          ? await db
-              .select({ value: count() })
-              .from(matches)
-              .where(
-                or(...dogIds.flatMap((did) => [eq(matches.dogAId, did), eq(matches.dogBId, did)])),
-              )
-          : [{ value: 0 }];
+      const { user, dogs, reportsCount, matchesCount } = result;
 
       return {
         id: user.id,
@@ -1528,8 +814,8 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         dogs,
         followersCount: user.followersCount,
         followingCount: user.followingCount,
-        reportsReceived: reportsRow?.value ?? 0,
-        matchesCount: matchesRow?.value ?? 0,
+        reportsReceived: reportsCount,
+        matchesCount,
       };
     }),
 
@@ -1537,11 +823,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(z.object({ userId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [user] = await db.select().from(users).where(eq(users.id, input.userId));
+
+        const user = await adminDataRepo.findUserById(input.userId);
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
-        await db.update(users).set({ isActive: false }).where(eq(users.id, input.userId));
+
+        await adminDataRepo.setUserActive(input.userId, false);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1558,11 +846,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(z.object({ userId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [user] = await db.select().from(users).where(eq(users.id, input.userId));
+
+        const user = await adminDataRepo.findUserById(input.userId);
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
-        await db.update(users).set({ isActive: false }).where(eq(users.id, input.userId));
+
+        await adminDataRepo.setUserActive(input.userId, false);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1579,11 +869,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(z.object({ userId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [user] = await db.select().from(users).where(eq(users.id, input.userId));
+
+        const user = await adminDataRepo.findUserById(input.userId);
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
-        await db.update(users).set({ isActive: true }).where(eq(users.id, input.userId));
+
+        await adminDataRepo.setUserActive(input.userId, true);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1598,22 +890,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     // ── Photo moderation ─────────────────────────────────────────────────────
     listPendingPhotos: adminProcedure.query(async () => {
-      const rows = await db
-        .select({
-          id: dogPhotos.id,
-          dogId: dogPhotos.dogId,
-          imageUrl: dogPhotos.url,
-          uploadedAt: dogPhotos.uploadedAt,
-          dogName: dogProfiles.name,
-          userId: dogProfiles.ownerId,
-          userName: users.displayName,
-        })
-        .from(dogPhotos)
-        .innerJoin(dogProfiles, eq(dogPhotos.dogId, dogProfiles.id))
-        .innerJoin(users, eq(dogProfiles.ownerId, users.id))
-        .where(eq(dogPhotos.moderationStatus, 'pending'))
-        .orderBy(dogPhotos.uploadedAt);
-
+      const rows = await adminDataRepo.listPendingPhotos();
       return rows.map((r) => ({
         id: r.id,
         userId: r.userId,
@@ -1630,14 +907,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(z.object({ photoId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Moderator);
-        const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, input.photoId));
+
+        const photo = await adminDataRepo.findPhotoById(input.photoId);
         if (!photo) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
         }
-        await db
-          .update(dogPhotos)
-          .set({ moderationStatus: 'approved' })
-          .where(eq(dogPhotos.id, input.photoId));
+
+        await adminDataRepo.updatePhotoModeration(input.photoId, 'approved');
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1657,14 +933,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(z.object({ photoId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Moderator);
-        const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, input.photoId));
+
+        const photo = await adminDataRepo.findPhotoById(input.photoId);
         if (!photo) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
         }
-        await db
-          .update(dogPhotos)
-          .set({ moderationStatus: 'rejected' })
-          .where(eq(dogPhotos.id, input.photoId));
+
+        await adminDataRepo.updatePhotoModeration(input.photoId, 'rejected');
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1682,10 +957,8 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     approveAllPhotos: adminProcedure.mutation(async ({ ctx }) => {
       requireRole(ctx.adminRole, AdminRole.Moderator);
-      await db
-        .update(dogPhotos)
-        .set({ moderationStatus: 'approved' })
-        .where(eq(dogPhotos.moderationStatus, 'pending'));
+
+      await adminDataRepo.approveAllPendingPhotos();
 
       void logAdminAction(db, {
         adminId: ctx.userId,
@@ -1705,32 +978,9 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         }),
       )
       .query(async ({ input }) => {
-        const { page, pageSize } = input;
-        const offset = (page - 1) * pageSize;
-
-        const condition = and(eq(users.isActive, false), isNotNull(users.deletionScheduledAt));
-
-        const [items, [totalRow]] = await Promise.all([
-          db
-            .select({
-              id: users.id,
-              displayName: users.displayName,
-              email: users.email,
-              createdAt: users.createdAt,
-              deletionScheduledAt: users.deletionScheduledAt,
-            })
-            .from(users)
-            .where(condition)
-            .orderBy(users.deletionScheduledAt)
-            .limit(pageSize)
-            .offset(offset),
-          db.select({ value: count() }).from(users).where(condition),
-        ]);
-
-        const total = totalRow?.value ?? 0;
-
+        const result = await adminDataRepo.listPendingDeletions(input);
         return {
-          data: items.map((u) => ({
+          data: result.data.map((u) => ({
             id: u.id,
             displayName: u.displayName,
             email: maskEmail(u.email),
@@ -1746,10 +996,10 @@ export function createAdminRouter(db: NeonHttpDatabase) {
                 )
               : 0,
           })),
-          total,
-          page,
-          pageSize,
-          totalPages: Math.ceil(total / pageSize),
+          total: result.total,
+          page: input.page,
+          pageSize: input.pageSize,
+          totalPages: Math.ceil(result.total / input.pageSize),
         };
       }),
 
@@ -1757,19 +1007,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .input(z.object({ userId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
-        const [user] = await db
-          .select({ id: users.id, isActive: users.isActive })
-          .from(users)
-          .where(eq(users.id, input.userId));
 
+        const user = await adminDataRepo.findUserById(input.userId);
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
 
-        await db
-          .update(users)
-          .set({ isActive: true, deletionScheduledAt: null })
-          .where(eq(users.id, input.userId));
+        await adminDataRepo.cancelDeletion(input.userId);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -1792,43 +1036,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         }),
       )
       .query(async ({ input }) => {
-        const { page, pageSize, type } = input;
-        const offset = (page - 1) * pageSize;
-
-        const conditions = type ? eq(walkSafetyCheckins.type, type) : undefined;
-
-        const [items, [totalRow]] = await Promise.all([
-          db
-            .select({
-              id: walkSafetyCheckins.id,
-              walkId: walkSafetyCheckins.walkId,
-              userId: walkSafetyCheckins.userId,
-              userName: users.displayName,
-              type: walkSafetyCheckins.type,
-              latitude: walkSafetyCheckins.latitude,
-              longitude: walkSafetyCheckins.longitude,
-              createdAt: walkSafetyCheckins.createdAt,
-              walkTitle: walks.title,
-              walkStatus: walks.status,
-              walkScheduledAt: walks.scheduledAt,
-            })
-            .from(walkSafetyCheckins)
-            .leftJoin(users, eq(walkSafetyCheckins.userId, users.id))
-            .leftJoin(walks, eq(walkSafetyCheckins.walkId, walks.id))
-            .where(conditions)
-            .orderBy(desc(walkSafetyCheckins.createdAt))
-            .limit(pageSize)
-            .offset(offset),
-          db.select({ value: count() }).from(walkSafetyCheckins).where(conditions),
-        ]);
-
-        const total = totalRow?.value ?? 0;
+        const result = await adminDataRepo.listSosAlerts(input);
         return {
-          data: items,
-          total,
-          page,
-          pageSize,
-          totalPages: Math.ceil(total / pageSize),
+          data: result.data,
+          total: result.total,
+          page: input.page,
+          pageSize: input.pageSize,
+          totalPages: Math.ceil(result.total / input.pageSize),
         };
       }),
 
@@ -1841,56 +1055,21 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         }),
       )
       .query(async ({ input }) => {
-        const { page, pageSize, search } = input;
-        const offset = (page - 1) * pageSize;
-
-        const searchCondition = search
-          ? or(
-              ilike(emergencyContacts.name, `%${search}%`),
-              ilike(users.displayName, `%${search}%`),
-            )
-          : undefined;
-
-        const [items, [totalRow]] = await Promise.all([
-          db
-            .select({
-              id: emergencyContacts.id,
-              userId: emergencyContacts.userId,
-              userName: users.displayName,
-              contactName: emergencyContacts.name,
-              phone: emergencyContacts.phone,
-              relationship: emergencyContacts.relationship,
-              createdAt: emergencyContacts.createdAt,
-            })
-            .from(emergencyContacts)
-            .leftJoin(users, eq(emergencyContacts.userId, users.id))
-            .where(searchCondition)
-            .orderBy(desc(emergencyContacts.createdAt))
-            .limit(pageSize)
-            .offset(offset),
-          db
-            .select({ value: count() })
-            .from(emergencyContacts)
-            .leftJoin(users, eq(emergencyContacts.userId, users.id))
-            .where(searchCondition),
-        ]);
-
-        const total = totalRow?.value ?? 0;
+        const result = await adminDataRepo.listEmergencyContacts(input);
         return {
-          data: items.map((item) => ({
+          data: result.data.map((item) => ({
             ...item,
             phone: maskPhone(item.phone),
           })),
-          total,
-          page,
-          pageSize,
-          totalPages: Math.ceil(total / pageSize),
+          total: result.total,
+          page: input.page,
+          pageSize: input.pageSize,
+          totalPages: Math.ceil(result.total / input.pageSize),
         };
       }),
 
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────
     getSettings: adminProcedure.query(async () => {
-      // MVP: return defaults. Real persistence via key-value table or Redis later.
       return {
         appName: 'PawMeet',
         supportEmail: 'support@pawmeet.io',
@@ -1907,10 +1086,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     updateSettings: adminProcedure.input(updateSettingsSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.SuperAdmin);
-      // MVP: accept the input and return it. No persistence yet.
-      // In production, store in a settings table or Redis.
 
-      // Validate matching weights sum to 1.0 if any are provided
       const weightSize = input.matchWeightSize ?? DEFAULT_WEIGHTS.size;
       const weightEnergy = input.matchWeightEnergy ?? DEFAULT_WEIGHTS.energy;
       const weightBehavior = input.matchWeightBehavior ?? DEFAULT_WEIGHTS.behavior;
@@ -1953,48 +1129,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     listAdminUsers: adminProcedure.input(listAdminUsersSchema).query(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.Admin);
 
-      const { page, pageSize, search, role } = input;
-      const offset = (page - 1) * pageSize;
-
-      const conditions = [];
-      if (search) {
-        conditions.push(
-          or(ilike(adminUsers.email, `%${search}%`), ilike(adminUsers.displayName, `%${search}%`)),
-        );
-      }
-      if (role) {
-        conditions.push(eq(adminUsers.role, role));
-      }
-
-      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-      const [items, [totalRow]] = await Promise.all([
-        db
-          .select({
-            id: adminUsers.id,
-            email: adminUsers.email,
-            displayName: adminUsers.displayName,
-            role: adminUsers.role,
-            isActive: adminUsers.isActive,
-            lastLoginAt: adminUsers.lastLoginAt,
-            createdAt: adminUsers.createdAt,
-          })
-          .from(adminUsers)
-          .where(whereClause)
-          .orderBy(desc(adminUsers.createdAt))
-          .limit(pageSize)
-          .offset(offset),
-        db.select({ value: count() }).from(adminUsers).where(whereClause),
-      ]);
-
-      const total = totalRow?.value ?? 0;
-
+      const result = await adminDataRepo.listAdminUsers(input);
       return {
-        data: items,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
+        data: result.data,
+        total: result.total,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(result.total / input.pageSize),
       };
     }),
 
@@ -2003,7 +1144,6 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.SuperAdmin);
 
-        // Cannot set role higher than own role
         if (!hasMinRole(ctx.adminRole, input.role)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
@@ -2011,13 +1151,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           });
         }
 
-        // Check if email already exists
-        const [existing] = await db
-          .select({ id: adminUsers.id })
-          .from(adminUsers)
-          .where(eq(adminUsers.email, input.email))
-          .limit(1);
-
+        const existing = await adminDataRepo.findAdminUserByEmail(input.email);
         if (existing) {
           throw new TRPCError({
             code: 'CONFLICT',
@@ -2027,25 +1161,18 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
         const passwordHash = await hash(input.temporaryPassword, 10);
 
-        const [created] = await db
-          .insert(adminUsers)
-          .values({
-            email: input.email,
-            displayName: input.displayName,
-            role: input.role,
-            passwordHash,
-          })
-          .returning({
-            id: adminUsers.id,
-            email: adminUsers.email,
-            displayName: adminUsers.displayName,
-            role: adminUsers.role,
-            isActive: adminUsers.isActive,
-            createdAt: adminUsers.createdAt,
-          });
+        const created = await adminDataRepo.createAdminUser({
+          email: input.email,
+          displayName: input.displayName,
+          role: input.role,
+          passwordHash,
+        });
 
         if (!created) {
-          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create admin' });
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to create admin',
+          });
         }
 
         void logAdminAction(db, {
@@ -2077,7 +1204,6 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           });
         }
 
-        // Cannot set role higher than caller's role
         if (!hasMinRole(ctx.adminRole, input.newRole)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
@@ -2085,21 +1211,11 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           });
         }
 
-        const [target] = await db
-          .select({
-            id: adminUsers.id,
-            role: adminUsers.role,
-            displayName: adminUsers.displayName,
-          })
-          .from(adminUsers)
-          .where(eq(adminUsers.id, input.adminId))
-          .limit(1);
-
+        const target = await adminDataRepo.findAdminUserById(input.adminId);
         if (!target) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
         }
 
-        // Cannot modify a user with equal or higher role
         if (hasMinRole(target.role, ctx.adminRole as AdminRoleValue)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
@@ -2107,17 +1223,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           });
         }
 
-        const [updated] = await db
-          .update(adminUsers)
-          .set({ role: input.newRole, updatedAt: new Date() })
-          .where(eq(adminUsers.id, input.adminId))
-          .returning({
-            id: adminUsers.id,
-            email: adminUsers.email,
-            displayName: adminUsers.displayName,
-            role: adminUsers.role,
-          });
-
+        const updated = await adminDataRepo.updateAdminRole(input.adminId, input.newRole);
         if (!updated) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
         }
@@ -2148,17 +1254,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           });
         }
 
-        const [target] = await db
-          .select({
-            id: adminUsers.id,
-            role: adminUsers.role,
-            isActive: adminUsers.isActive,
-            displayName: adminUsers.displayName,
-          })
-          .from(adminUsers)
-          .where(eq(adminUsers.id, input.adminId))
-          .limit(1);
-
+        const target = await adminDataRepo.findAdminUserById(input.adminId);
         if (!target) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
         }
@@ -2172,18 +1268,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
         const newStatus = !target.isActive;
 
-        const [updated] = await db
-          .update(adminUsers)
-          .set({ isActive: newStatus, updatedAt: new Date() })
-          .where(eq(adminUsers.id, input.adminId))
-          .returning({
-            id: adminUsers.id,
-            email: adminUsers.email,
-            displayName: adminUsers.displayName,
-            role: adminUsers.role,
-            isActive: adminUsers.isActive,
-          });
-
+        const updated = await adminDataRepo.toggleAdminActive(input.adminId, newStatus);
         if (!updated) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
         }
@@ -2214,21 +1299,11 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           });
         }
 
-        const [target] = await db
-          .select({
-            id: adminUsers.id,
-            role: adminUsers.role,
-            displayName: adminUsers.displayName,
-          })
-          .from(adminUsers)
-          .where(eq(adminUsers.id, input.adminId))
-          .limit(1);
-
+        const target = await adminDataRepo.findAdminUserById(input.adminId);
         if (!target) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
         }
 
-        // Cannot reset password for a user with equal or higher role
         if (hasMinRole(target.role, ctx.adminRole as AdminRoleValue)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
@@ -2237,11 +1312,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         }
 
         const passwordHash = await hash(input.newPassword, 10);
-
-        await db
-          .update(adminUsers)
-          .set({ passwordHash, updatedAt: new Date() })
-          .where(eq(adminUsers.id, input.adminId));
+        await adminDataRepo.updateAdminPassword(input.adminId, passwordHash);
 
         void logAdminAction(db, {
           adminId: ctx.userId,
@@ -2258,70 +1329,26 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     listBreeds: adminProcedure.input(listBreedsSchema).query(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.Moderator);
 
-      const { page, pageSize, search, group } = input;
-      const offset = (page - 1) * pageSize;
-
-      const conditions = [];
-      if (search) {
-        conditions.push(or(ilike(breeds.name, `%${search}%`), ilike(breeds.nameIt, `%${search}%`)));
-      }
-      if (group) {
-        conditions.push(eq(breeds.group, group));
-      }
-
-      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-      const [items, [totalRow]] = await Promise.all([
-        db
-          .select()
-          .from(breeds)
-          .where(whereClause)
-          .orderBy(asc(breeds.name))
-          .limit(pageSize)
-          .offset(offset),
-        db.select({ value: count() }).from(breeds).where(whereClause),
-      ]);
-
-      const total = totalRow?.value ?? 0;
-
+      const result = await adminDataRepo.listBreeds(input);
       return {
-        data: items,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
+        data: result.data,
+        total: result.total,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(result.total / input.pageSize),
       };
     }),
 
     createBreed: adminProcedure.input(createBreedSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.Admin);
 
-      const [created] = await db
-        .insert(breeds)
-        .values({
-          name: input.name,
-          nameIt: input.nameIt,
-          group: input.group,
-          sizeCategory: input.sizeCategory,
-          avgWeightKg: input.avgWeightKg,
-          energy: input.energy ?? null,
-          playfulness: input.playfulness ?? null,
-          trainability: input.trainability ?? null,
-          barking: input.barking ?? null,
-          goodWithOtherDogs: input.goodWithOtherDogs ?? null,
-          goodWithChildren: input.goodWithChildren ?? null,
-          goodWithStrangers: input.goodWithStrangers ?? null,
-          protectiveness: input.protectiveness ?? null,
-          shedding: input.shedding ?? null,
-          grooming: input.grooming ?? null,
-        })
-        .returning();
+      const created = await adminDataRepo.createBreed(input);
 
       void logAdminAction(db, {
         adminId: ctx.userId,
         action: 'create_breed',
         resourceType: RESOURCE_TYPE.breed,
-        resourceId: String(created?.id),
+        resourceId: String((created as { id?: number }).id),
         changes: { after: input as unknown as Record<string, unknown> },
       });
 
@@ -2333,7 +1360,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
       const { id, ...updates } = input;
 
-      const [existing] = await db.select().from(breeds).where(eq(breeds.id, id));
+      const existing = await adminDataRepo.findBreedById(id);
       if (!existing) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Breed not found' });
       }
@@ -2344,25 +1371,12 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       if (updates.group !== undefined) setValues.group = updates.group;
       if (updates.sizeCategory !== undefined) setValues.sizeCategory = updates.sizeCategory;
       if (updates.avgWeightKg !== undefined) setValues.avgWeightKg = updates.avgWeightKg;
-      if (updates.energy !== undefined) setValues.energy = updates.energy;
-      if (updates.playfulness !== undefined) setValues.playfulness = updates.playfulness;
-      if (updates.trainability !== undefined) setValues.trainability = updates.trainability;
-      if (updates.barking !== undefined) setValues.barking = updates.barking;
-      if (updates.goodWithOtherDogs !== undefined)
-        setValues.goodWithOtherDogs = updates.goodWithOtherDogs;
-      if (updates.goodWithChildren !== undefined)
-        setValues.goodWithChildren = updates.goodWithChildren;
-      if (updates.goodWithStrangers !== undefined)
-        setValues.goodWithStrangers = updates.goodWithStrangers;
-      if (updates.protectiveness !== undefined) setValues.protectiveness = updates.protectiveness;
-      if (updates.shedding !== undefined) setValues.shedding = updates.shedding;
-      if (updates.grooming !== undefined) setValues.grooming = updates.grooming;
 
       if (Object.keys(setValues).length === 0) {
         return existing;
       }
 
-      const [updated] = await db.update(breeds).set(setValues).where(eq(breeds.id, id)).returning();
+      const updated = await adminDataRepo.updateBreed(id, setValues);
 
       void logAdminAction(db, {
         adminId: ctx.userId,
@@ -2381,27 +1395,21 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     deleteBreed: adminProcedure.input(deleteBreedSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.Admin);
 
-      const [existing] = await db.select().from(breeds).where(eq(breeds.id, input.id));
+      const existing = await adminDataRepo.findBreedById(input.id);
       if (!existing) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Breed not found' });
       }
 
-      // Check if any dogs reference this breed
-      const [dogCount] = await db
-        .select({ value: count() })
-        .from(dogProfiles)
-        .where(
-          or(eq(dogProfiles.breed, existing.name), eq(dogProfiles.breedSecondary, existing.name)),
-        );
+      const dogCount = await adminDataRepo.countDogsReferencingBreed(existing.name as string);
 
-      if ((dogCount?.value ?? 0) > 0) {
+      if (dogCount > 0) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: `Cannot delete breed "${existing.name}": ${dogCount?.value} dog(s) still reference it`,
+          message: `Cannot delete breed "${existing.name}": ${dogCount} dog(s) still reference it`,
         });
       }
 
-      await db.delete(breeds).where(eq(breeds.id, input.id));
+      await adminDataRepo.deleteBreed(input.id);
 
       void logAdminAction(db, {
         adminId: ctx.userId,
@@ -2427,10 +1435,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
-        const activeUsersWithToken = await db
-          .select({ id: users.id })
-          .from(users)
-          .where(and(isNotNull(users.pushToken), eq(users.isActive, true)));
+        const activeUsersWithToken = await adminDataRepo.getActiveUsersWithPushToken();
 
         const BATCH_SIZE = 100;
         for (let i = 0; i < activeUsersWithToken.length; i += BATCH_SIZE) {
@@ -2475,10 +1480,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
-        const targetUsers = await db
-          .select({ id: users.id, pushToken: users.pushToken })
-          .from(users)
-          .where(and(inArray(users.id, input.userIds), eq(users.isActive, true)));
+        const targetUsers = await adminDataRepo.getTargetedUsers(input.userIds);
 
         const usersWithToken = targetUsers.filter((u) => u.pushToken != null);
         const skippedCount = input.userIds.length - usersWithToken.length;
@@ -2514,41 +1516,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     getNotificationStats: adminProcedure.query(async ({ ctx }) => {
       requireRole(ctx.adminRole, AdminRole.Moderator);
-
-      const [totalRow] = await db.select({ value: count() }).from(users);
-      const [tokenRow] = await db
-        .select({ value: count() })
-        .from(users)
-        .where(isNotNull(users.pushToken));
-
-      const [prefStats] = await db
-        .select({
-          matches: count(
-            sql`CASE WHEN (${users.notificationPrefs}->>'matches')::boolean = true THEN 1 END`,
-          ),
-          messages: count(
-            sql`CASE WHEN (${users.notificationPrefs}->>'messages')::boolean = true THEN 1 END`,
-          ),
-          reminders: count(
-            sql`CASE WHEN (${users.notificationPrefs}->>'reminders')::boolean = true THEN 1 END`,
-          ),
-          feed: count(
-            sql`CASE WHEN (${users.notificationPrefs}->>'feed')::boolean = true THEN 1 END`,
-          ),
-        })
-        .from(users)
-        .where(eq(users.isActive, true));
-
-      return {
-        totalUsers: totalRow?.value ?? 0,
-        usersWithToken: tokenRow?.value ?? 0,
-        prefStats: {
-          matches: prefStats?.matches ?? 0,
-          messages: prefStats?.messages ?? 0,
-          reminders: prefStats?.reminders ?? 0,
-          feed: prefStats?.feed ?? 0,
-        },
-      };
+      return adminDataRepo.getNotificationStats();
     }),
   });
 }

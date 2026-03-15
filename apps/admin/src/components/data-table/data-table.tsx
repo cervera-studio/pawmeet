@@ -93,7 +93,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border border-neutral-200">
+      <div className="rounded-md border border-neutral-200 dark:border-neutral-700">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -114,7 +114,9 @@ export function DataTable<TData, TValue>({
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex items-center justify-center">
                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-700 border-t-transparent" />
-                    <span className="ml-2 text-neutral-500">{tc('loading')}</span>
+                    <span className="ml-2 text-neutral-500 dark:text-neutral-400">
+                      {tc('loading')}
+                    </span>
                   </div>
                 </TableCell>
               </TableRow>
@@ -130,7 +132,10 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-neutral-500">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-neutral-500 dark:text-neutral-400"
+                >
                   {tc('noResults')}
                 </TableCell>
               </TableRow>
@@ -141,7 +146,7 @@ export function DataTable<TData, TValue>({
 
       {/* Pagination */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           {total > 0 ? t('totalResults', { total }) : t('noResults')}
         </p>
         <div className="flex items-center gap-2">
@@ -153,7 +158,7 @@ export function DataTable<TData, TValue>({
           >
             {t('previous')}
           </Button>
-          <span className="text-sm text-neutral-600">
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">
             {t('pageOf', { current: (pagination?.pageIndex ?? 0) + 1, total: totalPages })}
           </span>
           <Button

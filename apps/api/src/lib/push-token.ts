@@ -40,5 +40,7 @@ export function hashPushToken(token: string): string {
   if (!salt && process.env.NODE_ENV === 'production') {
     throw new Error('PUSH_TOKEN_SALT is required in production');
   }
-  return createHmac('sha256', salt ?? 'dev-salt').update(token).digest('hex');
+  return createHmac('sha256', salt ?? 'dev-salt')
+    .update(token)
+    .digest('hex');
 }

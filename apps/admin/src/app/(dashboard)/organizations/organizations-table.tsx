@@ -1,15 +1,15 @@
 'use client';
 
 import type { PaginatedResult } from '@pawmeet/types';
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { formatDateTime } from '@/lib/formatters';
 import type { AdminOrganizationListItem, ListOrganizationsParams } from '@/repositories';
-import { fetchOrganizations } from './actions';
+import { useOrganizationsViewModel } from './page.view-model';
 
 type OrgType = NonNullable<ListOrganizationsParams['type']>;
 
@@ -26,28 +26,7 @@ interface OrganizationsTableProps {
 
 export function OrganizationsTable({ initialData, pageSize }: OrganizationsTableProps) {
   const t = useTranslations('organizations');
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<OrgType | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-  const [data, setData] = useState<PaginatedResult<AdminOrganizationListItem>>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-
-  const isInitialState = pagination.pageIndex === 0 && debouncedSearch === '' && !typeFilter;
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    if (debounceTimer) clearTimeout(debounceTimer);
-    const timer = setTimeout(() => {
-      setDebouncedSearch(value);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    }, 300);
-    setDebounceTimer(timer);
-  }
+  const vm = useOrganizationsViewModel(initialData, pageSize);
 
   const columns: ColumnDef<AdminOrganizationListItem>[] = useMemo(
     () => [
@@ -67,7 +46,9 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
         accessorKey: 'slug',
         header: t('columns.slug'),
         cell: ({ row }) => (
-          <span className="font-mono text-sm text-neutral-500">{row.original.slug}</span>
+          <span className="font-mono text-sm text-neutral-500 dark:text-neutral-400">
+            {row.original.slug}
+          </span>
         ),
       },
       {
@@ -109,44 +90,21 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
     [t],
   );
 
-  const loadOrganizations = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchOrganizations({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
-        search: debouncedSearch || undefined,
-        type: typeFilter,
-      });
-      setData(result);
-    } catch (error) {
-      console.error('[Organizations] Failed to fetch:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch, typeFilter]);
-
-  useEffect(() => {
-    if (isInitialState) return;
-    void loadOrganizations();
-  }, [loadOrganizations, isInitialState]);
-
   return (
     <>
       <div className="flex items-center gap-4">
         <Input
           placeholder={t('searchPlaceholder')}
           className="max-w-sm"
-          value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
+          value={vm.search}
+          onChange={(e) => vm.setSearch(e.target.value)}
         />
         <select
-          className="rounded-md border border-neutral-200 px-3 py-2 text-sm"
-          value={typeFilter ?? ''}
+          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          value={vm.typeFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;
-            setTypeFilter(isOrgType(v) ? v : undefined);
-            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            vm.setTypeFilter(isOrgType(v) ? v : undefined);
           }}
         >
           <option value="">{t('allTypes')}</option>
@@ -159,12 +117,12 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
 
       <DataTable
         columns={columns}
-        data={data.data ?? []}
-        total={data.total}
-        totalPages={Math.ceil(data.total / pagination.pageSize)}
-        isLoading={isLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
+        data={vm.data ?? []}
+        total={vm.total}
+        totalPages={vm.totalPages}
+        isLoading={vm.isLoading}
+        pagination={vm.pagination}
+        onPaginationChange={vm.setPagination}
       />
     </>
   );

@@ -1,8 +1,8 @@
 'use client';
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,29 +15,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { createBreed, deleteBreed, fetchBreeds, updateBreed } from './actions';
-
-interface Breed {
-  id: number;
-  name: string;
-  nameIt: string;
-  group: string | null;
-  sizeCategory: string | null;
-  avgWeightKg: number | null;
-}
-
-interface BreedsData {
-  data: Breed[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
-interface BreedsTableProps {
-  initialData: BreedsData;
-  pageSize: number;
-}
+import { createBreed, deleteBreed, updateBreed } from './actions';
+import { type Breed, type BreedsData, useBreedsViewModel } from './page.view-model';
 
 const SIZE_CATEGORIES = ['toy', 'piccola', 'media', 'grande', 'gigante'] as const;
 type SizeCategory = (typeof SIZE_CATEGORIES)[number];
@@ -52,6 +31,67 @@ const BREED_GROUPS = [
   'Working',
   'Miscellaneous',
 ] as const;
+
+const SCORE_FIELDS = [
+  'energy',
+  'playfulness',
+  'trainability',
+  'barking',
+  'goodWithOtherDogs',
+  'goodWithChildren',
+  'goodWithStrangers',
+  'protectiveness',
+  'shedding',
+  'grooming',
+] as const;
+type ScoreField = (typeof SCORE_FIELDS)[number];
+
+function ScoreBar({ value }: { value: number | null }) {
+  if (value === null) return <span className="text-neutral-300 dark:text-neutral-600">-</span>;
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <div
+          key={n}
+          className={`h-2 w-2 rounded-sm ${
+            n <= value ? 'bg-primary' : 'bg-neutral-200 dark:bg-neutral-700'
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ScoreInput({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number | null;
+  onChange: (v: number | null) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="text-sm">{label}</span>
+      <select
+        className="w-20 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-2 py-1 text-sm"
+        value={value ?? ''}
+        onChange={(e) => {
+          const v = e.target.value;
+          onChange(v === '' ? null : Number(v));
+        }}
+      >
+        <option value="">-</option>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <option key={n} value={n}>
+            {n}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
 
 function getSizeBadgeVariant(size: string) {
   switch (size) {
@@ -70,20 +110,28 @@ function getSizeBadgeVariant(size: string) {
   }
 }
 
+const DEFAULT_SCORES: Record<ScoreField, number | null> = {
+  energy: null,
+  playfulness: null,
+  trainability: null,
+  barking: null,
+  goodWithOtherDogs: null,
+  goodWithChildren: null,
+  goodWithStrangers: null,
+  protectiveness: null,
+  shedding: null,
+  grooming: null,
+};
+
+interface BreedsTableProps {
+  initialData: BreedsData;
+  pageSize: number;
+}
+
 export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
   const t = useTranslations('breeds');
   const tc = useTranslations('common');
-
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [groupFilter, setGroupFilter] = useState<string | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-  const [data, setData] = useState<BreedsData>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const vm = useBreedsViewModel(initialData, pageSize);
 
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -97,41 +145,10 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
   const [formGroup, setFormGroup] = useState<string>(BREED_GROUPS[0]);
   const [formSizeCategory, setFormSizeCategory] = useState<SizeCategory>('media');
   const [formAvgWeight, setFormAvgWeight] = useState(10);
+  const [formScores, setFormScores] = useState<Record<ScoreField, number | null>>({
+    ...DEFAULT_SCORES,
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const isInitialState = pagination.pageIndex === 0 && debouncedSearch === '' && !groupFilter;
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    if (debounceTimer) clearTimeout(debounceTimer);
-    const timer = setTimeout(() => {
-      setDebouncedSearch(value);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    }, 300);
-    setDebounceTimer(timer);
-  }
-
-  const loadData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchBreeds({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
-        search: debouncedSearch || undefined,
-        group: groupFilter,
-      });
-      setData(result);
-    } catch (error) {
-      console.error('[Breeds] Failed to fetch:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch, groupFilter]);
-
-  useEffect(() => {
-    if (isInitialState) return;
-    void loadData();
-  }, [loadData, isInitialState]);
 
   function resetForm() {
     setFormName('');
@@ -139,6 +156,7 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
     setFormGroup(BREED_GROUPS[0]);
     setFormSizeCategory('media');
     setFormAvgWeight(10);
+    setFormScores({ ...DEFAULT_SCORES });
   }
 
   async function handleCreate() {
@@ -150,10 +168,11 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
         group: formGroup,
         sizeCategory: formSizeCategory,
         avgWeightKg: formAvgWeight,
+        ...formScores,
       });
       setCreateDialogOpen(false);
       resetForm();
-      void loadData();
+      void vm.refetch();
     } catch (error) {
       console.error('[Breeds] Failed to create:', error);
     } finally {
@@ -172,11 +191,12 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
         group: formGroup,
         sizeCategory: formSizeCategory,
         avgWeightKg: formAvgWeight,
+        ...formScores,
       });
       setEditDialogOpen(false);
       setSelectedBreed(null);
       resetForm();
-      void loadData();
+      void vm.refetch();
     } catch (error) {
       console.error('[Breeds] Failed to update:', error);
     } finally {
@@ -191,7 +211,7 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
       await deleteBreed({ id: selectedBreed.id });
       setDeleteDialogOpen(false);
       setSelectedBreed(null);
-      void loadData();
+      void vm.refetch();
     } catch (error) {
       console.error('[Breeds] Failed to delete:', error);
     } finally {
@@ -206,6 +226,18 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
     setFormGroup(breed.group ?? BREED_GROUPS[0]);
     setFormSizeCategory((breed.sizeCategory as SizeCategory) ?? 'media');
     setFormAvgWeight(breed.avgWeightKg ?? 10);
+    setFormScores({
+      energy: breed.energy,
+      playfulness: breed.playfulness,
+      trainability: breed.trainability,
+      barking: breed.barking,
+      goodWithOtherDogs: breed.goodWithOtherDogs,
+      goodWithChildren: breed.goodWithChildren,
+      goodWithStrangers: breed.goodWithStrangers,
+      protectiveness: breed.protectiveness,
+      shedding: breed.shedding,
+      grooming: breed.grooming,
+    });
     setEditDialogOpen(true);
   }, []);
 
@@ -224,7 +256,11 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
       {
         accessorKey: 'nameIt',
         header: t('columns.nameIt'),
-        cell: ({ row }) => <span className="text-sm text-neutral-500">{row.original.nameIt}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            {row.original.nameIt}
+          </span>
+        ),
       },
       {
         accessorKey: 'group',
@@ -251,6 +287,41 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
         cell: ({ row }) => <span className="text-sm">{row.original.avgWeightKg} kg</span>,
       },
       {
+        id: 'scores',
+        header: t('scores.title'),
+        cell: ({ row }) => {
+          const b = row.original;
+          const hasScores = b.energy !== null;
+          if (!hasScores) {
+            return <span className="text-xs text-neutral-400">{t('scores.noData')}</span>;
+          }
+          return (
+            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
+              <div className="flex items-center gap-1">
+                <span className="w-8 text-neutral-500">{t('columns.energy').slice(0, 3)}</span>
+                <ScoreBar value={b.energy} />
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="w-8 text-neutral-500">{t('columns.playfulness').slice(0, 3)}</span>
+                <ScoreBar value={b.playfulness} />
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="w-8 text-neutral-500">
+                  {t('columns.trainability').slice(0, 3)}
+                </span>
+                <ScoreBar value={b.trainability} />
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="w-8 text-neutral-500">
+                  {t('columns.goodWithOtherDogs').slice(0, 3)}
+                </span>
+                <ScoreBar value={b.goodWithOtherDogs} />
+              </div>
+            </div>
+          );
+        },
+      },
+      {
         id: 'actions',
         header: t('columns.actions'),
         cell: ({ row }) => (
@@ -268,6 +339,102 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
     [t, openEditDialog, openDeleteDialog],
   );
 
+  function renderBreedForm(idPrefix: string) {
+    return (
+      <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor={`${idPrefix}-name`}>
+            {t('columns.name')}
+          </label>
+          <Input
+            id={`${idPrefix}-name`}
+            value={formName}
+            onChange={(e) => setFormName(e.target.value)}
+            placeholder={t('createDialog.namePlaceholder')}
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor={`${idPrefix}-name-it`}>
+            {t('columns.nameIt')}
+          </label>
+          <Input
+            id={`${idPrefix}-name-it`}
+            value={formNameIt}
+            onChange={(e) => setFormNameIt(e.target.value)}
+            placeholder={t('createDialog.nameItPlaceholder')}
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor={`${idPrefix}-group`}>
+            {t('columns.group')}
+          </label>
+          <select
+            id={`${idPrefix}-group`}
+            className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+            value={formGroup}
+            onChange={(e) => setFormGroup(e.target.value)}
+          >
+            {BREED_GROUPS.map((group) => (
+              <option key={group} value={group}>
+                {group}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor={`${idPrefix}-size`}>
+            {t('columns.sizeCategory')}
+          </label>
+          <select
+            id={`${idPrefix}-size`}
+            className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+            value={formSizeCategory}
+            onChange={(e) => setFormSizeCategory(e.target.value as SizeCategory)}
+          >
+            {SIZE_CATEGORIES.map((size) => (
+              <option key={size} value={size}>
+                {t(
+                  `sizes.${size}` as
+                    | 'sizes.toy'
+                    | 'sizes.piccola'
+                    | 'sizes.media'
+                    | 'sizes.grande'
+                    | 'sizes.gigante',
+                )}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor={`${idPrefix}-weight`}>
+            {t('columns.avgWeightKg')}
+          </label>
+          <Input
+            id={`${idPrefix}-weight`}
+            type="number"
+            value={formAvgWeight}
+            onChange={(e) => setFormAvgWeight(Number(e.target.value))}
+            min={0}
+            step={0.1}
+          />
+        </div>
+        <div className="space-y-2">
+          <span className="text-sm font-medium">{t('scores.title')}</span>
+          <div className="grid grid-cols-2 gap-2">
+            {SCORE_FIELDS.map((field) => (
+              <ScoreInput
+                key={field}
+                label={t(`columns.${field}` as Parameters<typeof t>[0])}
+                value={formScores[field]}
+                onChange={(v) => setFormScores((prev) => ({ ...prev, [field]: v }))}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex items-center justify-between gap-4">
@@ -275,17 +442,13 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
           <Input
             placeholder={t('searchPlaceholder')}
             className="max-w-sm"
-            value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            value={vm.search}
+            onChange={(e) => vm.setSearch(e.target.value)}
           />
           <select
-            className="rounded-md border border-neutral-200 px-3 py-2 text-sm"
-            value={groupFilter ?? ''}
-            onChange={(e) => {
-              const v = e.target.value;
-              setGroupFilter(v || undefined);
-              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-            }}
+            className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+            value={vm.groupFilter ?? ''}
+            onChange={(e) => vm.setGroupFilter(e.target.value || undefined)}
           >
             <option value="">{t('allGroups')}</option>
             {BREED_GROUPS.map((group) => (
@@ -307,12 +470,12 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
 
       <DataTable
         columns={columns}
-        data={data.data ?? []}
-        total={data.total}
-        totalPages={Math.ceil(data.total / pagination.pageSize)}
-        isLoading={isLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
+        data={vm.data ?? []}
+        total={vm.total}
+        totalPages={vm.totalPages}
+        isLoading={vm.isLoading}
+        pagination={vm.pagination}
+        onPaginationChange={vm.setPagination}
       />
 
       {/* Create Breed Dialog */}
@@ -322,84 +485,7 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
             <DialogTitle>{t('createDialog.title')}</DialogTitle>
             <DialogDescription>{t('createDialog.description')}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-name">
-                {t('columns.name')}
-              </label>
-              <Input
-                id="create-name"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-                placeholder={t('createDialog.namePlaceholder')}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-name-it">
-                {t('columns.nameIt')}
-              </label>
-              <Input
-                id="create-name-it"
-                value={formNameIt}
-                onChange={(e) => setFormNameIt(e.target.value)}
-                placeholder={t('createDialog.nameItPlaceholder')}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-group">
-                {t('columns.group')}
-              </label>
-              <select
-                id="create-group"
-                className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm"
-                value={formGroup}
-                onChange={(e) => setFormGroup(e.target.value)}
-              >
-                {BREED_GROUPS.map((group) => (
-                  <option key={group} value={group}>
-                    {group}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-size">
-                {t('columns.sizeCategory')}
-              </label>
-              <select
-                id="create-size"
-                className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm"
-                value={formSizeCategory}
-                onChange={(e) => setFormSizeCategory(e.target.value as SizeCategory)}
-              >
-                {SIZE_CATEGORIES.map((size) => (
-                  <option key={size} value={size}>
-                    {t(
-                      `sizes.${size}` as
-                        | 'sizes.toy'
-                        | 'sizes.piccola'
-                        | 'sizes.media'
-                        | 'sizes.grande'
-                        | 'sizes.gigante',
-                    )}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-weight">
-                {t('columns.avgWeightKg')}
-              </label>
-              <Input
-                id="create-weight"
-                type="number"
-                value={formAvgWeight}
-                onChange={(e) => setFormAvgWeight(Number(e.target.value))}
-                min={0}
-                step={0.1}
-              />
-            </div>
-          </div>
+          {renderBreedForm('create')}
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
               {tc('cancel')}
@@ -420,82 +506,7 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
               {t('editDialog.description', { name: selectedBreed?.name ?? '' })}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="edit-name">
-                {t('columns.name')}
-              </label>
-              <Input
-                id="edit-name"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="edit-name-it">
-                {t('columns.nameIt')}
-              </label>
-              <Input
-                id="edit-name-it"
-                value={formNameIt}
-                onChange={(e) => setFormNameIt(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="edit-group">
-                {t('columns.group')}
-              </label>
-              <select
-                id="edit-group"
-                className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm"
-                value={formGroup}
-                onChange={(e) => setFormGroup(e.target.value)}
-              >
-                {BREED_GROUPS.map((group) => (
-                  <option key={group} value={group}>
-                    {group}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="edit-size">
-                {t('columns.sizeCategory')}
-              </label>
-              <select
-                id="edit-size"
-                className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm"
-                value={formSizeCategory}
-                onChange={(e) => setFormSizeCategory(e.target.value as SizeCategory)}
-              >
-                {SIZE_CATEGORIES.map((size) => (
-                  <option key={size} value={size}>
-                    {t(
-                      `sizes.${size}` as
-                        | 'sizes.toy'
-                        | 'sizes.piccola'
-                        | 'sizes.media'
-                        | 'sizes.grande'
-                        | 'sizes.gigante',
-                    )}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="edit-weight">
-                {t('columns.avgWeightKg')}
-              </label>
-              <Input
-                id="edit-weight"
-                type="number"
-                value={formAvgWeight}
-                onChange={(e) => setFormAvgWeight(Number(e.target.value))}
-                min={0}
-                step={0.1}
-              />
-            </div>
-          </div>
+          {renderBreedForm('edit')}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               {tc('cancel')}

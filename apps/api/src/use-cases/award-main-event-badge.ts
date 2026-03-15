@@ -9,7 +9,7 @@ type Deps = {
 };
 
 export function createAwardMainEventBadge({ badgeRepo, groupEventRepo }: Deps) {
-  return async (userId: string, dogId: string, eventId: string): Promise<Result<Badge | null>> => {
+  return async (_userId: string, dogId: string, eventId: string): Promise<Result<Badge | null>> => {
     const event = await groupEventRepo.findById(eventId);
     if (!event || !event.isOfficial) {
       return fail(new AppError('NOT_OFFICIAL_EVENT', "L'evento non è un Main Event", 400));

@@ -23,7 +23,7 @@ export function LocaleSwitcher() {
       value={locale}
       onChange={(e) => onChange(e.target.value)}
       disabled={isPending}
-      className="h-9 rounded-md border border-neutral-200 bg-white px-2 text-sm text-neutral-600 outline-none hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-300 dark:bg-neutral-100"
+      className="h-9 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-2 text-sm text-neutral-600 dark:text-neutral-300 outline-none hover:bg-neutral-50 dark:hover:bg-neutral-800 disabled:opacity-50"
     >
       {locales.map((loc) => (
         <option key={loc} value={loc}>

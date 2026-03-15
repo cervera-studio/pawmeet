@@ -4,8 +4,7 @@ import type {
   ToxicityResult,
 } from '../ports/toxicity-detection-service.js';
 
-const PERSPECTIVE_API_URL =
-  'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
+const PERSPECTIVE_API_URL = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
 const TOXICITY_THRESHOLD = 0.7;
 
 export class PerspectiveToxicityService implements ToxicityDetectionService {

@@ -98,13 +98,19 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="app-name" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="app-name"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('general.appName')}
             </label>
             <Input id="app-name" value={appName} onChange={(e) => setAppName(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <label htmlFor="support-email" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="support-email"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('general.supportEmail')}
             </label>
             <Input
@@ -127,7 +133,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="photo-confidence" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="photo-confidence"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('moderation.photoThreshold')}
             </label>
             <Input
@@ -140,7 +149,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="max-reports" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="max-reports"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('moderation.maxReports')}
             </label>
             <Input
@@ -165,7 +177,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="match-size" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="match-size"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('matching.size')}
             </label>
             <Input
@@ -179,7 +194,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="match-energy" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="match-energy"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('matching.energy')}
             </label>
             <Input
@@ -193,7 +211,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="match-behavior" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="match-behavior"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('matching.behavior')}
             </label>
             <Input
@@ -207,7 +228,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="match-walk" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="match-walk"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('matching.walk')}
             </label>
             <Input
@@ -221,7 +245,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="match-distance" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="match-distance"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('matching.distance')}
             </label>
             <Input
@@ -235,7 +262,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="match-leash" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="match-leash"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('matching.leash')}
             </label>
             <Input
@@ -249,7 +279,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <div className="flex items-center gap-2">
-            <p className="text-sm text-neutral-600">
+            <p className="text-sm text-neutral-600 dark:text-neutral-300">
               {t('matching.sum')}: <span className="font-medium">{matchWeightSum.toFixed(2)}</span>
             </p>
             {!isMatchWeightValid && (
@@ -271,8 +301,12 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-neutral-900">{t('dangerZone.clearCache')}</p>
-              <p className="text-xs text-neutral-500">{t('dangerZone.clearCacheDesc')}</p>
+              <p className="text-sm font-medium text-neutral-900 dark:text-neutral-50">
+                {t('dangerZone.clearCache')}
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                {t('dangerZone.clearCacheDesc')}
+              </p>
             </div>
             <Button variant="destructive" size="sm" onClick={handleClearCache}>
               {t('dangerZone.clearButton')}

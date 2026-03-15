@@ -12,8 +12,12 @@ export default async function EmergencyContactsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Contatti di emergenza</h1>
-        <p className="text-neutral-500">Contatti di emergenza registrati dagli utenti</p>
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+          Contatti di emergenza
+        </h1>
+        <p className="text-neutral-500 dark:text-neutral-400">
+          Contatti di emergenza registrati dagli utenti
+        </p>
       </div>
 
       <ContactsTable initialData={initialData} pageSize={DEFAULT_PAGE_SIZE} />

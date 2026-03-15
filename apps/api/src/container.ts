@@ -1,8 +1,8 @@
-import { AppError, fail, succeed } from '@pawmeet/types';
 // Infra implementations
 
 import { BullMQNotificationService } from './infra/bullmq-notification-service.js';
 import { DrizzleActivityRepository } from './infra/drizzle-activity-repository.js';
+import { DrizzleAdminDataRepository } from './infra/drizzle-admin-data-repository.js';
 import { DrizzleAdminUserRepository } from './infra/drizzle-admin-user-repository.js';
 import { DrizzleBadgeRepository } from './infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from './infra/drizzle-breed-repository.js';
@@ -108,6 +108,7 @@ import { createGetMatchExplanation } from './use-cases/get-match-explanation.js'
 import { createGetMatchingInsights } from './use-cases/get-matching-insights.js';
 import { createGetMessages } from './use-cases/get-messages.js';
 import { createGetOptimalTimes } from './use-cases/get-optimal-times.js';
+import { createGetOrganization } from './use-cases/get-organization.js';
 import { createGetPendingReports } from './use-cases/get-pending-reports.js';
 import { createGetPostComments } from './use-cases/get-post-comments.js';
 import { createGetPostDetail } from './use-cases/get-post-detail.js';
@@ -138,6 +139,8 @@ import { createListGroupConversations } from './use-cases/list-group-conversatio
 import { createListMatches } from './use-cases/list-matches.js';
 import { createListNearbyEvents } from './use-cases/list-nearby-events.js';
 import { createListOccurrences } from './use-cases/list-occurrences.js';
+import { createListOrganizationMembers } from './use-cases/list-organization-members.js';
+import { createListOrganizations } from './use-cases/list-organizations.js';
 import { createListPendingRequests } from './use-cases/list-pending-requests.js';
 import { createListUpcomingWalks } from './use-cases/list-upcoming-walks.js';
 import { createListUserDogs } from './use-cases/list-user-dogs.js';
@@ -164,6 +167,7 @@ import { createRefreshTokens } from './use-cases/refresh-tokens.js';
 import { createRegisterPushToken } from './use-cases/register-push-token.js';
 import { createRegisterUser } from './use-cases/register-user.js';
 import { createRemoveEventSponsor } from './use-cases/remove-event-sponsor.js';
+import { createRemoveOrganizationMember } from './use-cases/remove-organization-member.js';
 import { createRemovePostTag } from './use-cases/remove-post-tag.js';
 import { createReorderDogPhotos } from './use-cases/reorder-dog-photos.js';
 import { createReportContent } from './use-cases/report-content.js';
@@ -173,6 +177,7 @@ import { createResendVerification } from './use-cases/resend-verification.js';
 import { createResetPassword } from './use-cases/reset-password.js';
 import { createRespondToWalk } from './use-cases/respond-to-walk.js';
 import { createReviewContentReport } from './use-cases/review-content-report.js';
+import { createRevokeOrganization } from './use-cases/revoke-organization.js';
 import { createSearchBreeds } from './use-cases/search-breeds.js';
 import { createSearchUsers } from './use-cases/search-users.js';
 import { createSendGroupMessage } from './use-cases/send-group-message.js';
@@ -202,6 +207,7 @@ import { createWalkCheckin, createWalkSos } from './use-cases/walk-sos.js';
 
 // ── Repositories ────────────────────────────────────────────────────────────────
 
+const adminDataRepo = new DrizzleAdminDataRepository(db);
 const adminUserRepo = new DrizzleAdminUserRepository(db);
 const userRepo = new DrizzleUserRepository(db);
 const dogRepo = new DrizzleDogRepository(db);
@@ -478,44 +484,12 @@ export const groupEventDeps = {
 export const organizationDeps = {
   createOrganization: createCreateOrganization({ organizationRepo }),
   verifyOrganization: createVerifyOrganization({ organizationRepo }),
-  revokeOrganization: async (organizationId: string) => {
-    const org = await organizationRepo.findById(organizationId);
-    if (!org) return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
-    const revoked = await organizationRepo.revoke(organizationId);
-    return succeed(revoked);
-  },
-  getOrganization: async (id: string) => {
-    const org = await organizationRepo.findById(id);
-    if (!org) return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
-    return succeed(org);
-  },
-  listOrganizations: async (input: {
-    page: number;
-    pageSize: number;
-    search?: string;
-    type?: string;
-  }) => {
-    const result = await organizationRepo.list(input);
-    return succeed(result);
-  },
+  revokeOrganization: createRevokeOrganization({ organizationRepo }),
+  getOrganization: createGetOrganization({ organizationRepo }),
+  listOrganizations: createListOrganizations({ organizationRepo }),
   addOrganizationMember: createAddOrganizationMember({ organizationRepo }),
-  removeOrganizationMember: async (
-    actorUserId: string,
-    input: { organizationId: string; userId: string },
-  ) => {
-    const actorMember = await organizationRepo.findMember(input.organizationId, actorUserId);
-    if (!actorMember || (actorMember.role !== 'owner' && actorMember.role !== 'admin')) {
-      return fail(
-        new AppError('ORG_NOT_AUTHORIZED', 'Non hai i permessi per rimuovere membri', 403),
-      );
-    }
-    await organizationRepo.removeMember(input.organizationId, input.userId);
-    return succeed({ success: true as const });
-  },
-  listOrganizationMembers: async (organizationId: string) => {
-    const members = await organizationRepo.listMembers(organizationId);
-    return succeed(members);
-  },
+  removeOrganizationMember: createRemoveOrganizationMember({ organizationRepo }),
+  listOrganizationMembers: createListOrganizationMembers({ organizationRepo }),
 };
 
 // ── Event sponsor deps ────────────────────────────────────────────────────
@@ -617,6 +591,7 @@ export const followDeps = {
 
 export const adminDeps = {
   adminUserRepo,
+  adminDataRepo,
   emailService,
 };
 

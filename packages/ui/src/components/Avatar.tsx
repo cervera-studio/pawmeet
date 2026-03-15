@@ -1,12 +1,12 @@
-import { Image, type ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { lightColors, spacing } from '@pawmeet/design-tokens';
+import { Image, type ImageSourcePropType, StyleSheet, View } from 'react-native';
 
 const SIZES = {
-  xs: spacing.xl,       // 24
-  sm: spacing['2xl'],   // 32
-  md: spacing['3xl'],   // 40
-  lg: spacing['4xl'],   // 48
-  xl: spacing['5xl'],   // 64
+  xs: spacing.xl, // 24
+  sm: spacing['2xl'], // 32
+  md: spacing['3xl'], // 40
+  lg: spacing['4xl'], // 48
+  xl: spacing['5xl'], // 64
   '2xl': 96,
 } as const;
 

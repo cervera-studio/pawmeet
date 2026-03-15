@@ -1,4 +1,5 @@
 import {
+  adminDeps,
   authDeps,
   badgeDeps,
   chatDeps,
@@ -51,7 +52,7 @@ export const appRouter = router({
   matches: createMatchesRouter(matchDeps),
   matchingAi: createMatchingAiRouter(matchingAiDeps),
   chat: createChatRouter(chatDeps),
-  admin: createAdminRouter(db),
+  admin: createAdminRouter(db, adminDeps),
   walks: createWalksRouter(walkDeps),
   feedback: createFeedbackRouter(feedbackDeps),
   feed: createFeedRouter(feedDeps),

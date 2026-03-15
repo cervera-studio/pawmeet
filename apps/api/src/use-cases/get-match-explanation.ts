@@ -1,4 +1,3 @@
-import type { DogProfile } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import {
   calculateBehaviorScore,

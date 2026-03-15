@@ -64,11 +64,11 @@ interface EventDetailProps {
     visibility: string;
     status: string;
     scheduledAt: string | Date;
-    durationMin: number;
-    location: string;
-    latitude: number;
-    longitude: number;
-    maxParticipants: number;
+    durationMin: number | null;
+    location: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    maxParticipants: number | null;
     requiresApproval: boolean;
     recurrenceRule: string | null;
     recurrenceEnd: string | Date | null;
@@ -85,11 +85,11 @@ interface EventDetailProps {
       id: string;
       userId: string;
       userName: string | null;
-      dogId: string;
+      dogId: string | null;
       dogName: string | null;
       status: string;
       isOrganizer: boolean;
-      joinedAt: string | Date;
+      joinedAt: string | Date | null;
     }[];
   };
 }
@@ -244,7 +244,7 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
             <div>
               <span className="text-neutral-500 dark:text-neutral-400">Coordinate:</span>{' '}
               <span className="font-medium">
-                {event.latitude.toFixed(4)}, {event.longitude.toFixed(4)}
+                {event.latitude?.toFixed(4)}, {event.longitude?.toFixed(4)}
               </span>
             </div>
             {event.description && (
@@ -318,7 +318,7 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
                     <div className="flex items-center gap-2">
                       <Badge variant={pStatus.variant}>{pStatus.label}</Badge>
                       <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                        {formatDateTime(p.joinedAt)}
+                        {p.joinedAt ? formatDateTime(p.joinedAt) : '-'}
                       </span>
                       {!p.isOrganizer && (p.status === 'accepted' || p.status === 'pending') && (
                         <Button

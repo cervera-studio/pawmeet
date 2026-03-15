@@ -1,7 +1,7 @@
 export interface PendingPhoto {
   id: string;
   userId: string;
-  userName: string;
+  userName: string | null;
   dogId: string | null;
   dogName: string | null;
   imageUrl: string;

@@ -1,9 +1,9 @@
 import { dogProfiles, matches, walks } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { and, between, eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { db } from '../lib/db.js';
-import { enqueueNotification, getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { enqueueNotification, getRedisConnection } from './queue.js';
 
 const WALK_REMINDER = 'walk-reminder';
 

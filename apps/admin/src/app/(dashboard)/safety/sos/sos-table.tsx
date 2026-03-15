@@ -1,29 +1,12 @@
 'use client';
 
-import type { PaginatedResult } from '@pawmeet/types';
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { formatDateTime } from '@/lib/formatters';
-import { fetchSosAlerts } from '../actions';
-
-type AlertType = 'sos' | 'auto_alert' | 'checkin';
-
-interface SosAlertItem {
-  id: string;
-  walkId: string;
-  userId: string;
-  userName: string | null;
-  type: string;
-  latitude: string | null;
-  longitude: string | null;
-  createdAt: string | Date;
-  walkTitle: string | null;
-  walkStatus: string | null;
-  walkScheduledAt: string | Date | null;
-}
+import { isAlertType, type SosAlertItem, type SosData, useSosViewModel } from './page.view-model';
 
 const typeVariants: Record<string, 'destructive' | 'warning' | 'secondary'> = {
   sos: 'destructive',
@@ -32,22 +15,14 @@ const typeVariants: Record<string, 'destructive' | 'warning' | 'secondary'> = {
 };
 
 interface SosTableProps {
-  initialData: PaginatedResult<SosAlertItem>;
+  initialData: SosData;
   pageSize: number;
 }
 
 export function SosTable({ initialData, pageSize }: SosTableProps) {
   const t = useTranslations('safety.sos');
   const tc = useTranslations('common');
-  const [typeFilter, setTypeFilter] = useState<AlertType | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-  const [data, setData] = useState<PaginatedResult<SosAlertItem>>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const isInitialState = pagination.pageIndex === 0 && !typeFilter;
+  const vm = useSosViewModel(initialData, pageSize);
 
   const columns: ColumnDef<SosAlertItem>[] = useMemo(
     () => [
@@ -109,7 +84,7 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
           const { latitude, longitude } = row.original;
           if (!latitude || !longitude) return '-';
           return (
-            <span className="font-mono text-sm text-neutral-500">
+            <span className="font-mono text-sm text-neutral-500 dark:text-neutral-400">
               {latitude}, {longitude}
             </span>
           );
@@ -124,37 +99,15 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
     [t, tc],
   );
 
-  const loadAlerts = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchSosAlerts({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
-        type: typeFilter,
-      });
-      setData(result);
-    } catch (error) {
-      console.error('[Safety] Failed to fetch alerts:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [pagination.pageIndex, pagination.pageSize, typeFilter]);
-
-  useEffect(() => {
-    if (isInitialState) return;
-    void loadAlerts();
-  }, [loadAlerts, isInitialState]);
-
   return (
     <>
       <div className="flex items-center gap-4">
         <select
-          className="rounded-md border border-neutral-200 px-3 py-2 text-sm"
-          value={typeFilter ?? ''}
+          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          value={vm.typeFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;
-            setTypeFilter(v === 'sos' || v === 'auto_alert' || v === 'checkin' ? v : undefined);
-            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            vm.setTypeFilter(isAlertType(v) ? v : undefined);
           }}
         >
           <option value="">{t('allTypes')}</option>
@@ -166,12 +119,12 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
 
       <DataTable
         columns={columns}
-        data={data.data ?? []}
-        total={data.total}
-        totalPages={Math.ceil(data.total / pagination.pageSize)}
-        isLoading={isLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
+        data={vm.data ?? []}
+        total={vm.total}
+        totalPages={vm.totalPages}
+        isLoading={vm.isLoading}
+        pagination={vm.pagination}
+        onPaginationChange={vm.setPagination}
       />
     </>
   );

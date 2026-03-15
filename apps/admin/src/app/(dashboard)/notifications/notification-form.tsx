@@ -96,7 +96,10 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <label htmlFor="broadcast-title" className="text-sm font-medium text-neutral-700">
+          <label
+            htmlFor="broadcast-title"
+            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+          >
             {t('broadcast.titleLabel')}
           </label>
           <Input
@@ -106,10 +109,13 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
             placeholder={t('broadcast.titlePlaceholder')}
             maxLength={100}
           />
-          <p className="text-xs text-neutral-400">{title.length}/100</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">{title.length}/100</p>
         </div>
         <div className="space-y-2">
-          <label htmlFor="broadcast-body" className="text-sm font-medium text-neutral-700">
+          <label
+            htmlFor="broadcast-body"
+            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+          >
             {t('broadcast.bodyLabel')}
           </label>
           <textarea
@@ -119,9 +125,9 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
             placeholder={t('broadcast.bodyPlaceholder')}
             maxLength={500}
             rows={4}
-            className="flex w-full rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           />
-          <p className="text-xs text-neutral-400">{body.length}/500</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">{body.length}/500</p>
         </div>
 
         {result && (
@@ -207,7 +213,10 @@ function TargetedForm() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <label htmlFor="targeted-title" className="text-sm font-medium text-neutral-700">
+          <label
+            htmlFor="targeted-title"
+            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+          >
             {t('broadcast.titleLabel')}
           </label>
           <Input
@@ -217,10 +226,13 @@ function TargetedForm() {
             placeholder={t('broadcast.titlePlaceholder')}
             maxLength={100}
           />
-          <p className="text-xs text-neutral-400">{title.length}/100</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">{title.length}/100</p>
         </div>
         <div className="space-y-2">
-          <label htmlFor="targeted-body" className="text-sm font-medium text-neutral-700">
+          <label
+            htmlFor="targeted-body"
+            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+          >
             {t('broadcast.bodyLabel')}
           </label>
           <textarea
@@ -230,12 +242,15 @@ function TargetedForm() {
             placeholder={t('broadcast.bodyPlaceholder')}
             maxLength={500}
             rows={4}
-            className="flex w-full rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           />
-          <p className="text-xs text-neutral-400">{body.length}/500</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">{body.length}/500</p>
         </div>
         <div className="space-y-2">
-          <label htmlFor="targeted-user-ids" className="text-sm font-medium text-neutral-700">
+          <label
+            htmlFor="targeted-user-ids"
+            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+          >
             {t('targeted.userIdsLabel')}
           </label>
           <textarea
@@ -247,7 +262,7 @@ function TargetedForm() {
             className="flex w-full rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm font-mono shadow-sm transition-colors placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           />
           {userIds.length > 0 && (
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">
               {userIds.length} {userIds.length === 1 ? 'user' : 'users'}
             </p>
           )}

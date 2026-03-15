@@ -89,9 +89,7 @@ export function createAnalyticsWorker(
             }),
           );
 
-          consentedEvents = valid.filter(
-            (e) => e.userId != null && consentedUserIds.has(e.userId),
-          );
+          consentedEvents = valid.filter((e) => e.userId != null && consentedUserIds.has(e.userId));
         }
 
         const providerEvents = PostHogAnalyticsProvider.toProviderEvents(consentedEvents);

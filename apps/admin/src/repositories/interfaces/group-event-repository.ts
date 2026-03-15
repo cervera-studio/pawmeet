@@ -7,8 +7,8 @@ export interface AdminGroupEventListItem {
   visibility: string;
   status: string;
   scheduledAt: string;
-  location: string;
-  maxParticipants: number;
+  location: string | null;
+  maxParticipants: number | null;
   requiresApproval: boolean;
   participantCount: number;
   pendingCount: number;
@@ -20,9 +20,9 @@ export interface AdminGroupEventListItem {
 
 export interface AdminGroupEventDetail extends AdminGroupEventListItem {
   description: string | null;
-  durationMin: number;
-  latitude: number;
-  longitude: number;
+  durationMin: number | null;
+  latitude: number | null;
+  longitude: number | null;
   recurrenceRule: string | null;
   recurrenceEnd: string | null;
   parentEventId: string | null;
@@ -35,11 +35,11 @@ export interface AdminEventParticipant {
   id: string;
   userId: string;
   userName: string | null;
-  dogId: string;
+  dogId: string | null;
   dogName: string | null;
   status: string;
   isOrganizer: boolean;
-  joinedAt: string;
+  joinedAt: string | null;
 }
 
 export interface ListGroupEventsParams {

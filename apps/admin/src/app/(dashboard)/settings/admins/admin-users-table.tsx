@@ -1,8 +1,8 @@
 'use client';
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,39 +16,14 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { formatDateTime } from '@/lib/formatters';
+import { createAdminUser, resetAdminPassword, toggleAdminActive, updateAdminRole } from './actions';
 import {
-  createAdminUser,
-  fetchAdminUsers,
-  resetAdminPassword,
-  toggleAdminActive,
-  updateAdminRole,
-} from './actions';
-
-interface AdminUser {
-  id: string;
-  displayName: string;
-  email: string;
-  role: string;
-  isActive: boolean;
-  lastLoginAt: string | null;
-  createdAt: string;
-}
-
-interface AdminUsersData {
-  data: AdminUser[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
-interface AdminUsersTableProps {
-  initialData: AdminUsersData;
-  pageSize: number;
-}
-
-const ROLES = ['super_admin', 'admin', 'moderator', 'viewer'] as const;
-type Role = (typeof ROLES)[number];
+  type AdminUser,
+  type AdminUsersData,
+  ROLES,
+  type Role,
+  useAdminUsersViewModel,
+} from './page.view-model';
 
 function getRoleBadgeVariant(role: string) {
   switch (role) {
@@ -67,20 +42,15 @@ function getStatusBadgeVariant(isActive: boolean) {
   return isActive ? ('success' as const) : ('outline' as const);
 }
 
+interface AdminUsersTableProps {
+  initialData: AdminUsersData;
+  pageSize: number;
+}
+
 export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps) {
   const t = useTranslations('adminUsers');
   const tc = useTranslations('common');
-
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState<Role | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-  const [data, setData] = useState<AdminUsersData>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const vm = useAdminUsersViewModel(initialData, pageSize);
 
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -94,42 +64,8 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
   const [newTempPassword, setNewTempPassword] = useState('');
   const [newRole, setNewRole] = useState<Role>('viewer');
   const [editRole, setEditRole] = useState<Role>('viewer');
-  const [resetPassword, setResetPassword] = useState('');
+  const [resetPwd, setResetPwd] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const isInitialState = pagination.pageIndex === 0 && debouncedSearch === '' && !roleFilter;
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    if (debounceTimer) clearTimeout(debounceTimer);
-    const timer = setTimeout(() => {
-      setDebouncedSearch(value);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    }, 300);
-    setDebounceTimer(timer);
-  }
-
-  const loadData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchAdminUsers({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
-        search: debouncedSearch || undefined,
-        role: roleFilter,
-      });
-      setData(result);
-    } catch (error) {
-      console.error('[AdminUsers] Failed to fetch:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch, roleFilter]);
-
-  useEffect(() => {
-    if (isInitialState) return;
-    void loadData();
-  }, [loadData, isInitialState]);
 
   async function handleCreate() {
     setIsSubmitting(true);
@@ -145,7 +81,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
       setNewDisplayName('');
       setNewTempPassword('');
       setNewRole('viewer');
-      void loadData();
+      void vm.refetch();
     } catch (error) {
       console.error('[AdminUsers] Failed to create:', error);
     } finally {
@@ -160,7 +96,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
       await updateAdminRole({ adminId: selectedUser.id, newRole: editRole });
       setEditRoleDialogOpen(false);
       setSelectedUser(null);
-      void loadData();
+      void vm.refetch();
     } catch (error) {
       console.error('[AdminUsers] Failed to update role:', error);
     } finally {
@@ -172,22 +108,22 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
     async (user: AdminUser) => {
       try {
         await toggleAdminActive({ adminId: user.id });
-        void loadData();
+        void vm.refetch();
       } catch (error) {
         console.error('[AdminUsers] Failed to toggle active:', error);
       }
     },
-    [loadData],
+    [vm],
   );
 
   async function handleResetPassword() {
     if (!selectedUser) return;
     setIsSubmitting(true);
     try {
-      await resetAdminPassword({ adminId: selectedUser.id, newPassword: resetPassword });
+      await resetAdminPassword({ adminId: selectedUser.id, newPassword: resetPwd });
       setResetPasswordDialogOpen(false);
       setSelectedUser(null);
-      setResetPassword('');
+      setResetPwd('');
     } catch (error) {
       console.error('[AdminUsers] Failed to reset password:', error);
     } finally {
@@ -216,7 +152,11 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
       {
         accessorKey: 'email',
         header: t('columns.email'),
-        cell: ({ row }) => <span className="text-sm text-neutral-500">{row.original.email}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            {row.original.email}
+          </span>
+        ),
       },
       {
         accessorKey: 'role',
@@ -248,7 +188,8 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         header: t('columns.lastLoginAt'),
         cell: ({ row }) => {
           const value = row.original.lastLoginAt;
-          if (!value) return <span className="text-neutral-400">{tc('never')}</span>;
+          if (!value)
+            return <span className="text-neutral-400 dark:text-neutral-500">{tc('never')}</span>;
           return formatDateTime(value);
         },
       },
@@ -282,6 +223,29 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
     [t, tc, handleToggleActive, openEditRoleDialog, openResetPasswordDialog],
   );
 
+  function renderRoleSelect(id: string, value: Role, onChange: (r: Role) => void) {
+    return (
+      <select
+        id={id}
+        className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+        value={value}
+        onChange={(e) => onChange(e.target.value as Role)}
+      >
+        {ROLES.map((role) => (
+          <option key={role} value={role}>
+            {t(
+              `roles.${role}` as
+                | 'roles.super_admin'
+                | 'roles.admin'
+                | 'roles.moderator'
+                | 'roles.viewer',
+            )}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
   return (
     <>
       <div className="flex items-center justify-between gap-4">
@@ -289,16 +253,15 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
           <Input
             placeholder={t('searchPlaceholder')}
             className="max-w-sm"
-            value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            value={vm.search}
+            onChange={(e) => vm.setSearch(e.target.value)}
           />
           <select
-            className="rounded-md border border-neutral-200 px-3 py-2 text-sm"
-            value={roleFilter ?? ''}
+            className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+            value={vm.roleFilter ?? ''}
             onChange={(e) => {
               const v = e.target.value;
-              setRoleFilter((ROLES as readonly string[]).includes(v) ? (v as Role) : undefined);
-              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+              vm.setRoleFilter((ROLES as readonly string[]).includes(v) ? (v as Role) : undefined);
             }}
           >
             <option value="">{t('allRoles')}</option>
@@ -320,12 +283,12 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
 
       <DataTable
         columns={columns}
-        data={data.data ?? []}
-        total={data.total}
-        totalPages={Math.ceil(data.total / pagination.pageSize)}
-        isLoading={isLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
+        data={vm.data ?? []}
+        total={vm.total}
+        totalPages={vm.totalPages}
+        isLoading={vm.isLoading}
+        pagination={vm.pagination}
+        onPaginationChange={vm.setPagination}
       />
 
       {/* Create Admin Dialog */}
@@ -375,24 +338,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
               <label className="text-sm font-medium" htmlFor="create-role">
                 {t('createDialog.roleLabel')}
               </label>
-              <select
-                id="create-role"
-                className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm"
-                value={newRole}
-                onChange={(e) => setNewRole(e.target.value as Role)}
-              >
-                {ROLES.map((role) => (
-                  <option key={role} value={role}>
-                    {t(
-                      `roles.${role}` as
-                        | 'roles.super_admin'
-                        | 'roles.admin'
-                        | 'roles.moderator'
-                        | 'roles.viewer',
-                    )}
-                  </option>
-                ))}
-              </select>
+              {renderRoleSelect('create-role', newRole, setNewRole)}
             </div>
           </div>
           <DialogFooter>
@@ -423,24 +369,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
               <label className="text-sm font-medium" htmlFor="edit-role">
                 {t('editRoleDialog.roleLabel')}
               </label>
-              <select
-                id="edit-role"
-                className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm"
-                value={editRole}
-                onChange={(e) => setEditRole(e.target.value as Role)}
-              >
-                {ROLES.map((role) => (
-                  <option key={role} value={role}>
-                    {t(
-                      `roles.${role}` as
-                        | 'roles.super_admin'
-                        | 'roles.admin'
-                        | 'roles.moderator'
-                        | 'roles.viewer',
-                    )}
-                  </option>
-                ))}
-              </select>
+              {renderRoleSelect('edit-role', editRole, setEditRole)}
             </div>
           </div>
           <DialogFooter>
@@ -471,8 +400,8 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
               <Input
                 id="reset-password"
                 type="password"
-                value={resetPassword}
-                onChange={(e) => setResetPassword(e.target.value)}
+                value={resetPwd}
+                onChange={(e) => setResetPwd(e.target.value)}
                 placeholder={t('resetPasswordDialog.passwordPlaceholder')}
               />
             </div>
@@ -484,7 +413,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
             <Button
               variant="destructive"
               onClick={handleResetPassword}
-              disabled={isSubmitting || !resetPassword}
+              disabled={isSubmitting || !resetPwd}
             >
               {isSubmitting ? tc('saving') : t('resetPasswordDialog.confirm')}
             </Button>

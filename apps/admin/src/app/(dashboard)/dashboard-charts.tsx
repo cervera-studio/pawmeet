@@ -44,7 +44,7 @@ export function DashboardCharts({
         </CardHeader>
         <CardContent>
           {userRegistrations.length === 0 ? (
-            <div className="flex h-64 items-center justify-center text-neutral-400">
+            <div className="flex h-64 items-center justify-center text-neutral-400 dark:text-neutral-500">
               {tc('noData')}
             </div>
           ) : (
@@ -74,7 +74,7 @@ export function DashboardCharts({
         </CardHeader>
         <CardContent>
           {dailyMatches.length === 0 ? (
-            <div className="flex h-64 items-center justify-center text-neutral-400">
+            <div className="flex h-64 items-center justify-center text-neutral-400 dark:text-neutral-500">
               {tc('noData')}
             </div>
           ) : (
@@ -97,7 +97,7 @@ export function DashboardCharts({
         </CardHeader>
         <CardContent>
           {dauTimeSeries.length === 0 ? (
-            <div className="flex h-64 items-center justify-center text-neutral-400">
+            <div className="flex h-64 items-center justify-center text-neutral-400 dark:text-neutral-500">
               {tc('noData')}
             </div>
           ) : (

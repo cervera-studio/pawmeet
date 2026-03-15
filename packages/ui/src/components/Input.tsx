@@ -1,6 +1,6 @@
+import { lightColors, radius, spacing, typography } from '@pawmeet/design-tokens';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, type TextInputProps, View } from 'react-native';
-import { lightColors, radius, spacing, typography } from '@pawmeet/design-tokens';
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   label?: string;

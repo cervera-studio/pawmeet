@@ -91,9 +91,7 @@ export function createUsersRouter(deps: typeof userDeps) {
     reactivateAccount: protectedProcedure
       .input(reactivateAccountSchema)
       .mutation(async ({ ctx, input }) => {
-        const result = unwrapResult(
-          await deps.reactivateAccount(ctx.userId, input.password),
-        );
+        const result = unwrapResult(await deps.reactivateAccount(ctx.userId, input.password));
         return { message: result.message };
       }),
 

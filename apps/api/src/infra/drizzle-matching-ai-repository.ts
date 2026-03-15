@@ -65,13 +65,14 @@ export class DrizzleMatchingAiRepository implements MatchingAiRepository {
     if (options.cursor) {
       const parsed = decodeCursor(options.cursor);
       if (parsed) {
-        whereClause = and(
+        const combined = and(
           baseWhere,
           or(
             lt(swipeScoreLogs.createdAt, parsed.createdAt),
             and(eq(swipeScoreLogs.createdAt, parsed.createdAt), lt(swipeScoreLogs.id, parsed.id)),
           ),
-        )!;
+        );
+        if (combined) whereClause = combined;
       }
     }
 
@@ -87,9 +88,7 @@ export class DrizzleMatchingAiRepository implements MatchingAiRepository {
 
     const lastRow = pageRows[pageRows.length - 1];
     const nextCursor =
-      hasMore && lastRow
-        ? encodeCursor(lastRow.createdAt as Date, lastRow.id)
-        : null;
+      hasMore && lastRow ? encodeCursor(lastRow.createdAt as Date, lastRow.id) : null;
 
     return { logs: rowsAs<SwipeScoreLog>(pageRows), nextCursor };
   }

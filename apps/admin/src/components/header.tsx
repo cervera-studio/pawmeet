@@ -28,7 +28,7 @@ export function Header() {
   const t = useTranslations('header');
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-neutral-200 bg-white dark:bg-neutral-100 px-6">
+    <header className="flex h-16 items-center justify-between border-b border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-950 px-6">
       {/* Search */}
       <div className="flex-1 max-w-md">
         <Input type="search" placeholder={t('searchPlaceholder')} className="w-full" />
@@ -46,21 +46,30 @@ export function Header() {
           title={isDark ? t('lightTheme') : t('darkTheme')}
         >
           {isDark ? (
-            <SunIcon className="h-5 w-5 text-neutral-600" title={t('lightTheme')} />
+            <SunIcon
+              className="h-5 w-5 text-neutral-600 dark:text-neutral-300"
+              title={t('lightTheme')}
+            />
           ) : (
-            <MoonIcon className="h-5 w-5 text-neutral-600" title={t('darkTheme')} />
+            <MoonIcon
+              className="h-5 w-5 text-neutral-600 dark:text-neutral-300"
+              title={t('darkTheme')}
+            />
           )}
         </Button>
 
         {/* Notifications */}
         <Button variant="ghost" size="icon" className="relative">
-          <BellIcon className="h-5 w-5 text-neutral-600" title={t('notifications')} />
+          <BellIcon
+            className="h-5 w-5 text-neutral-600 dark:text-neutral-300"
+            title={t('notifications')}
+          />
           <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
         </Button>
 
         {/* Profile */}
         <Button variant="ghost" size="icon">
-          <div className="h-8 w-8 rounded-full bg-neutral-200" />
+          <div className="h-8 w-8 rounded-full bg-neutral-200 dark:bg-neutral-700" />
         </Button>
       </div>
     </header>

@@ -1,12 +1,8 @@
-import dynamic from 'next/dynamic';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatNumber } from '@/lib/formatters';
 import { getServerTrpcClient } from '@/lib/server-api';
-
-const DashboardCharts = dynamic(() => import('./dashboard-charts').then((m) => m.DashboardCharts), {
-  ssr: false,
-});
+import { LazyDashboardCharts as DashboardCharts } from './dashboard-charts-lazy';
 
 export default async function DashboardPage() {
   const t = await getTranslations('dashboard');

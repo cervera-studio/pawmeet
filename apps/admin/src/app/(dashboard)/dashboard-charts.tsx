@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 import type { TimeSeriesPoint } from '@/repositories';
 
-interface DashboardChartsProps {
+export interface DashboardChartsProps {
   userRegistrations: TimeSeriesPoint[];
   dailyMatches: TimeSeriesPoint[];
   dauTimeSeries: TimeSeriesPoint[];

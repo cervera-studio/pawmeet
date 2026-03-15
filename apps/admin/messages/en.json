@@ -51,7 +51,8 @@
     "safetySos": "SOS Alerts",
     "safetyContacts": "Emergency contacts",
     "accountDeletions": "Deletions",
-    "settings": "Settings"
+    "settings": "Settings",
+    "auditLog": "Audit Log"
   },
   "header": {
     "searchPlaceholder": "Search users, dogs, reports...",
@@ -418,6 +419,37 @@
       "scheduledDeletion": "Scheduled deletion",
       "timeRemaining": "Time remaining",
       "cancelDeletion": "Cancel deletion"
+    }
+  },
+  "auditLog": {
+    "title": "Audit Log",
+    "subtitle": "Record of all administrative actions",
+    "searchPlaceholder": "Search by action...",
+    "allResources": "All resources",
+    "columns": {
+      "admin": "Admin",
+      "action": "Action",
+      "resource": "Resource",
+      "resourceId": "Resource ID",
+      "changes": "Changes",
+      "date": "Date"
+    },
+    "viewChanges": "View details",
+    "noChanges": "No changes recorded",
+    "before": "Before",
+    "after": "After",
+    "resourceTypes": {
+      "user": "User",
+      "dog": "Dog",
+      "photo": "Photo",
+      "report": "Report",
+      "post": "Post",
+      "story": "Story",
+      "event": "Event",
+      "organization": "Organization",
+      "sponsor": "Sponsor",
+      "settings": "Settings",
+      "deletion": "Deletion"
     }
   }
 }

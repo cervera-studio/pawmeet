@@ -7,6 +7,7 @@ import {
   CalendarIcon,
   LayoutDashboardIcon,
   PawPrintIcon,
+  ScrollTextIcon,
   SettingsIcon,
   ShieldIcon,
   UsersIcon,
@@ -44,6 +45,7 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
     },
     { name: t('accountDeletions'), href: '/account-deletions', icon: UserXIcon },
     { name: t('settings'), href: '/settings', icon: SettingsIcon },
+    { name: t('auditLog'), href: '/audit-log', icon: ScrollTextIcon },
   ];
 }
 

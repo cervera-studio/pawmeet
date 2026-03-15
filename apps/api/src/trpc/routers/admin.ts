@@ -1,8 +1,11 @@
 import {
+  adminAuditLog,
+  adminUsers,
   analyticsEvents,
   contentReports,
   dogPhotos,
   dogProfiles,
+  emergencyContacts,
   eventSponsors,
   groupEventParticipants,
   groupEvents,
@@ -16,13 +19,13 @@ import {
   users,
   walkSafetyCheckins,
   walks,
-  emergencyContacts,
 } from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
 import { and, count, desc, eq, gte, ilike, isNotNull, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
+import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import { protectedProcedure, router } from '../trpc.js';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
@@ -134,6 +137,17 @@ const removeSponsorSchema = z.object({
 
 const listEventSponsorsSchema = z.object({
   eventId: z.string().uuid(),
+});
+
+const listAuditLogSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(20),
+  adminId: z.string().uuid().optional(),
+  resourceType: z.string().optional(),
+  action: z.string().optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  search: z.string().optional(),
 });
 
 // ── Router ─────────────────────────────────────────────────────────────────────
@@ -251,6 +265,59 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         totalEvents: totalEventsRow?.value ?? 0,
         eventsLast24h: eventsLast24hRow?.value ?? 0,
         dauTimeSeries,
+      };
+    }),
+
+    // ── Audit log ──────────────────────────────────────────────────────────
+    listAuditLog: adminProcedure.input(listAuditLogSchema).query(async ({ input }) => {
+      const { page, pageSize, adminId, resourceType, action, from, to, search } = input;
+      const offset = (page - 1) * pageSize;
+
+      const conditions = [];
+      if (adminId) conditions.push(eq(adminAuditLog.adminId, adminId));
+      if (resourceType) conditions.push(eq(adminAuditLog.resourceType, resourceType));
+      if (action) conditions.push(ilike(adminAuditLog.action, `%${action}%`));
+      if (from) conditions.push(gte(adminAuditLog.createdAt, new Date(from)));
+      if (to) conditions.push(sql`${adminAuditLog.createdAt} <= ${new Date(to)}`);
+      if (search) conditions.push(ilike(adminAuditLog.action, `%${search}%`));
+
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const [items, [totalRow]] = await Promise.all([
+        db
+          .select({
+            id: adminAuditLog.id,
+            adminId: adminAuditLog.adminId,
+            adminName: adminUsers.displayName,
+            adminEmail: adminUsers.email,
+            action: adminAuditLog.action,
+            resourceType: adminAuditLog.resourceType,
+            resourceId: adminAuditLog.resourceId,
+            changes: adminAuditLog.changes,
+            reason: adminAuditLog.reason,
+            ipAddress: adminAuditLog.ipAddress,
+            createdAt: adminAuditLog.createdAt,
+          })
+          .from(adminAuditLog)
+          .leftJoin(adminUsers, eq(adminAuditLog.adminId, adminUsers.id))
+          .where(whereClause)
+          .orderBy(desc(adminAuditLog.createdAt))
+          .limit(pageSize)
+          .offset(offset),
+        db
+          .select({ value: count() })
+          .from(adminAuditLog)
+          .where(whereClause),
+      ]);
+
+      const total = totalRow?.value ?? 0;
+
+      return {
+        data: items,
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
       };
     }),
 
@@ -426,6 +493,14 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         await db.update(users).set({ isActive: false }).where(eq(users.id, report.reportedUserId));
       }
 
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: `report.${input.action}`,
+        resourceType: RESOURCE_TYPE.report,
+        resourceId: input.id,
+        changes: { before: { status: 'pending' }, after: { status: newStatus } },
+      });
+
       return { success: true };
     }),
 
@@ -528,7 +603,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     updatePostModeration: adminProcedure
       .input(updatePostModerationSchema)
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [post] = await db.select().from(posts).where(eq(posts.id, input.postId));
         if (!post) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Post not found' });
@@ -543,6 +618,14 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         if (input.status === 'rejected') {
           await db.update(posts).set({ isDeleted: true }).where(eq(posts.id, input.postId));
         }
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: `post.${input.status}`,
+          resourceType: RESOURCE_TYPE.post,
+          resourceId: input.postId,
+          changes: { before: { moderationStatus: post.moderationStatus }, after: { moderationStatus: input.status } },
+        });
 
         return { success: true };
       }),
@@ -590,12 +673,20 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     deleteStory: adminProcedure
       .input(z.object({ storyId: z.string().uuid() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [story] = await db.select().from(stories).where(eq(stories.id, input.storyId));
         if (!story) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Story not found' });
         }
         await db.delete(stories).where(eq(stories.id, input.storyId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'story.delete',
+          resourceType: RESOURCE_TYPE.story,
+          resourceId: input.storyId,
+        });
+
         return { success: true };
       }),
 
@@ -776,7 +867,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       };
     }),
 
-    cancelGroupEvent: adminProcedure.input(cancelGroupEventSchema).mutation(async ({ input }) => {
+    cancelGroupEvent: adminProcedure.input(cancelGroupEventSchema).mutation(async ({ ctx, input }) => {
       const [event] = await db.select().from(groupEvents).where(eq(groupEvents.id, input.eventId));
 
       if (!event) {
@@ -795,12 +886,19 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         .set({ status: 'cancelled', updatedAt: new Date() })
         .where(eq(groupEvents.id, input.eventId));
 
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: 'event.cancel',
+        resourceType: RESOURCE_TYPE.event,
+        resourceId: input.eventId,
+      });
+
       return { success: true };
     }),
 
     removeEventParticipant: adminProcedure
       .input(removeParticipantSchema)
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [participant] = await db
           .select()
           .from(groupEventParticipants)
@@ -814,6 +912,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           .update(groupEventParticipants)
           .set({ status: 'removed' })
           .where(eq(groupEventParticipants.id, input.participantId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'event.removeParticipant',
+          resourceType: RESOURCE_TYPE.event,
+          resourceId: input.participantId,
+        });
 
         return { success: true };
       }),
@@ -943,12 +1048,19 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           })
           .where(eq(organizations.id, input.organizationId));
 
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'organization.verify',
+          resourceType: RESOURCE_TYPE.organization,
+          resourceId: input.organizationId,
+        });
+
         return { success: true };
       }),
 
     revokeOrganization: adminProcedure
       .input(z.object({ organizationId: z.string().uuid() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [org] = await db
           .select()
           .from(organizations)
@@ -967,6 +1079,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
             updatedAt: new Date(),
           })
           .where(eq(organizations.id, input.organizationId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'organization.revoke',
+          resourceType: RESOURCE_TYPE.organization,
+          resourceId: input.organizationId,
+        });
 
         return { success: true };
       }),
@@ -992,7 +1111,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       return { data: sponsors };
     }),
 
-    addEventSponsor: adminProcedure.input(addSponsorSchema).mutation(async ({ input }) => {
+    addEventSponsor: adminProcedure.input(addSponsorSchema).mutation(async ({ ctx, input }) => {
       // Check event exists
       const [event] = await db.select().from(groupEvents).where(eq(groupEvents.id, input.eventId));
       if (!event) {
@@ -1031,10 +1150,19 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       }
 
       const [sponsor] = await db.insert(eventSponsors).values(input).returning();
+
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: 'sponsor.add',
+        resourceType: RESOURCE_TYPE.sponsor,
+        resourceId: input.eventId,
+        changes: { after: { organizationId: input.organizationId, tier: input.tier } },
+      });
+
       return sponsor;
     }),
 
-    removeEventSponsor: adminProcedure.input(removeSponsorSchema).mutation(async ({ input }) => {
+    removeEventSponsor: adminProcedure.input(removeSponsorSchema).mutation(async ({ ctx, input }) => {
       const [existing] = await db
         .select()
         .from(eventSponsors)
@@ -1057,6 +1185,14 @@ export function createAdminRouter(db: NeonHttpDatabase) {
             eq(eventSponsors.organizationId, input.organizationId),
           ),
         );
+
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: 'sponsor.remove',
+        resourceType: RESOURCE_TYPE.sponsor,
+        resourceId: input.eventId,
+        changes: { before: { organizationId: input.organizationId } },
+      });
 
       return { success: true };
     }),
@@ -1210,34 +1346,61 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     suspendUser: adminProcedure
       .input(z.object({ userId: z.string().uuid() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [user] = await db.select().from(users).where(eq(users.id, input.userId));
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
         await db.update(users).set({ isActive: false }).where(eq(users.id, input.userId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'user.suspend',
+          resourceType: RESOURCE_TYPE.user,
+          resourceId: input.userId,
+          changes: { before: { isActive: true }, after: { isActive: false } },
+        });
+
         return { success: true };
       }),
 
     banUser: adminProcedure
       .input(z.object({ userId: z.string().uuid() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [user] = await db.select().from(users).where(eq(users.id, input.userId));
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
         await db.update(users).set({ isActive: false }).where(eq(users.id, input.userId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'user.ban',
+          resourceType: RESOURCE_TYPE.user,
+          resourceId: input.userId,
+          changes: { before: { isActive: true }, after: { isActive: false } },
+        });
+
         return { success: true };
       }),
 
     reactivateUser: adminProcedure
       .input(z.object({ userId: z.string().uuid() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [user] = await db.select().from(users).where(eq(users.id, input.userId));
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
         await db.update(users).set({ isActive: true }).where(eq(users.id, input.userId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'user.reactivate',
+          resourceType: RESOURCE_TYPE.user,
+          resourceId: input.userId,
+          changes: { before: { isActive: false }, after: { isActive: true } },
+        });
+
         return { success: true };
       }),
 
@@ -1273,7 +1436,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     approvePhoto: adminProcedure
       .input(z.object({ photoId: z.string().uuid() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, input.photoId));
         if (!photo) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
@@ -1282,12 +1445,21 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           .update(dogPhotos)
           .set({ moderationStatus: 'approved' })
           .where(eq(dogPhotos.id, input.photoId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'photo.approve',
+          resourceType: RESOURCE_TYPE.photo,
+          resourceId: input.photoId,
+          changes: { before: { moderationStatus: 'pending' }, after: { moderationStatus: 'approved' } },
+        });
+
         return { success: true };
       }),
 
     rejectPhoto: adminProcedure
       .input(z.object({ photoId: z.string().uuid() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, input.photoId));
         if (!photo) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
@@ -1296,14 +1468,30 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           .update(dogPhotos)
           .set({ moderationStatus: 'rejected' })
           .where(eq(dogPhotos.id, input.photoId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'photo.reject',
+          resourceType: RESOURCE_TYPE.photo,
+          resourceId: input.photoId,
+          changes: { before: { moderationStatus: 'pending' }, after: { moderationStatus: 'rejected' } },
+        });
+
         return { success: true };
       }),
 
-    approveAllPhotos: adminProcedure.mutation(async () => {
+    approveAllPhotos: adminProcedure.mutation(async ({ ctx }) => {
       await db
         .update(dogPhotos)
         .set({ moderationStatus: 'approved' })
         .where(eq(dogPhotos.moderationStatus, 'pending'));
+
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: 'photo.approveAll',
+        resourceType: RESOURCE_TYPE.photo,
+      });
+
       return { success: true };
     }),
 
@@ -1366,7 +1554,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
     cancelDeletion: adminProcedure
       .input(z.object({ userId: z.string().uuid() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const [user] = await db
           .select({ id: users.id, isActive: users.isActive })
           .from(users)
@@ -1380,6 +1568,13 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           .update(users)
           .set({ isActive: true, deletionScheduledAt: null })
           .where(eq(users.id, input.userId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'deletion.cancel',
+          resourceType: RESOURCE_TYPE.deletion,
+          resourceId: input.userId,
+        });
 
         return { success: true };
       }),
@@ -1502,9 +1697,17 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       };
     }),
 
-    updateSettings: adminProcedure.input(updateSettingsSchema).mutation(async ({ input }) => {
+    updateSettings: adminProcedure.input(updateSettingsSchema).mutation(async ({ ctx, input }) => {
       // MVP: accept the input and return it. No persistence yet.
       // In production, store in a settings table or Redis.
+
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: 'settings.update',
+        resourceType: RESOURCE_TYPE.settings,
+        changes: { after: input as unknown as Record<string, unknown> },
+      });
+
       return {
         appName: input.appName ?? 'PawMeet',
         supportEmail: input.supportEmail ?? 'support@pawmeet.io',

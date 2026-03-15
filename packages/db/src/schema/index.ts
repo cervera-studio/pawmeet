@@ -1,3 +1,4 @@
+export * from './admin-audit-log';
 export * from './admin-users';
 export * from './analytics';
 export * from './analytics-daily';

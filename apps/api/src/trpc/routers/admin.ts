@@ -24,9 +24,10 @@ import {
 } from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
 import { hash } from 'bcryptjs';
-import { and, asc, count, desc, eq, gte, ilike, isNotNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, ilike, inArray, isNotNull, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
+import { enqueueNotification } from '../../jobs/queue.js';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import {
   AdminRole,
@@ -2294,6 +2295,143 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       });
 
       return { success: true };
+    }),
+
+    // ── Push notifications ──────────────────────────────────────────────────────
+
+    sendBroadcastNotification: adminProcedure
+      .input(
+        z.object({
+          title: z.string().min(1).max(100),
+          body: z.string().min(1).max(500),
+          data: z.record(z.string(), z.string()).optional(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        const activeUsersWithToken = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(and(isNotNull(users.pushToken), eq(users.isActive, true)));
+
+        const BATCH_SIZE = 100;
+        for (let i = 0; i < activeUsersWithToken.length; i += BATCH_SIZE) {
+          const batch = activeUsersWithToken.slice(i, i + BATCH_SIZE);
+          await Promise.all(
+            batch.map((user) =>
+              enqueueNotification({
+                userId: user.id,
+                title: input.title,
+                body: input.body,
+                data: input.data,
+              }),
+            ),
+          );
+        }
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'send_broadcast',
+          resourceType: RESOURCE_TYPE.notification,
+          changes: {
+            after: {
+              title: input.title,
+              body: input.body,
+              sentCount: activeUsersWithToken.length,
+            },
+          },
+        });
+
+        return { sentCount: activeUsersWithToken.length };
+      }),
+
+    sendTargetedNotification: adminProcedure
+      .input(
+        z.object({
+          userIds: z.array(z.string().uuid()).min(1).max(100),
+          title: z.string().min(1).max(100),
+          body: z.string().min(1).max(500),
+          data: z.record(z.string(), z.string()).optional(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        const targetUsers = await db
+          .select({ id: users.id, pushToken: users.pushToken })
+          .from(users)
+          .where(and(inArray(users.id, input.userIds), eq(users.isActive, true)));
+
+        const usersWithToken = targetUsers.filter((u) => u.pushToken != null);
+        const skippedCount = input.userIds.length - usersWithToken.length;
+
+        await Promise.all(
+          usersWithToken.map((user) =>
+            enqueueNotification({
+              userId: user.id,
+              title: input.title,
+              body: input.body,
+              data: input.data,
+            }),
+          ),
+        );
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'send_targeted',
+          resourceType: RESOURCE_TYPE.notification,
+          changes: {
+            after: {
+              title: input.title,
+              body: input.body,
+              targetUserIds: input.userIds,
+              sentCount: usersWithToken.length,
+              skippedCount,
+            },
+          },
+        });
+
+        return { sentCount: usersWithToken.length, skippedCount };
+      }),
+
+    getNotificationStats: adminProcedure.query(async ({ ctx }) => {
+      requireRole(ctx.adminRole, AdminRole.Moderator);
+
+      const [totalRow] = await db.select({ value: count() }).from(users);
+      const [tokenRow] = await db
+        .select({ value: count() })
+        .from(users)
+        .where(isNotNull(users.pushToken));
+
+      const [prefStats] = await db
+        .select({
+          matches: count(
+            sql`CASE WHEN (${users.notificationPrefs}->>'matches')::boolean = true THEN 1 END`,
+          ),
+          messages: count(
+            sql`CASE WHEN (${users.notificationPrefs}->>'messages')::boolean = true THEN 1 END`,
+          ),
+          reminders: count(
+            sql`CASE WHEN (${users.notificationPrefs}->>'reminders')::boolean = true THEN 1 END`,
+          ),
+          feed: count(
+            sql`CASE WHEN (${users.notificationPrefs}->>'feed')::boolean = true THEN 1 END`,
+          ),
+        })
+        .from(users)
+        .where(eq(users.isActive, true));
+
+      return {
+        totalUsers: totalRow?.value ?? 0,
+        usersWithToken: tokenRow?.value ?? 0,
+        prefStats: {
+          matches: prefStats?.matches ?? 0,
+          messages: prefStats?.messages ?? 0,
+          reminders: prefStats?.reminders ?? 0,
+          feed: prefStats?.feed ?? 0,
+        },
+      };
     }),
   });
 }

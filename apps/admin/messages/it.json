@@ -55,6 +55,7 @@
     "settings": "Impostazioni",
     "settingsGeneral": "Generali",
     "settingsAdmins": "Utenti Admin",
+    "notifications": "Notifiche",
     "auditLog": "Audit Log"
   },
   "header": {
@@ -507,6 +508,41 @@
       "title": "Elimina Razza",
       "description": "Sei sicuro di voler eliminare la razza {name}? Questa azione non può essere annullata.",
       "confirm": "Elimina"
+    }
+  },
+  "notifications": {
+    "title": "Notifiche Push",
+    "subtitle": "Invia notifiche push e visualizza le statistiche",
+    "stats": {
+      "totalUsers": "Utenti Totali",
+      "usersWithToken": "Utenti con Token Push",
+      "prefMatches": "Notifiche Match",
+      "prefMessages": "Notifiche Messaggi",
+      "prefReminders": "Notifiche Promemoria",
+      "prefFeed": "Notifiche Feed"
+    },
+    "broadcast": {
+      "broadcastTitle": "Broadcast",
+      "broadcastDescription": "Invia una notifica a tutti gli utenti con token push",
+      "titleLabel": "Titolo",
+      "titlePlaceholder": "Titolo notifica",
+      "bodyLabel": "Corpo",
+      "bodyPlaceholder": "Corpo della notifica",
+      "sendButton": "Invia",
+      "confirmTitle": "Conferma broadcast",
+      "confirmDescription": "La notifica verrà inviata a {count} utenti. Continuare?",
+      "successMessage": "Notifica inviata a {count} utenti"
+    },
+    "targeted": {
+      "targetedTitle": "Mirata",
+      "targetedDescription": "Invia una notifica a utenti specifici",
+      "userIdsLabel": "ID Utenti",
+      "userIdsPlaceholder": "Inserisci gli ID utente, separati da virgola o uno per riga",
+      "sendButton": "Invia",
+      "successMessage": "Inviata a {sentCount} utenti, {skippedCount} saltati"
+    },
+    "common": {
+      "cancel": "Annulla"
     }
   },
   "adminUsers": {

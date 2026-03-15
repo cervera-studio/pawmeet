@@ -55,6 +55,7 @@
     "settings": "Settings",
     "settingsGeneral": "General",
     "settingsAdmins": "Admin Users",
+    "notifications": "Notifications",
     "auditLog": "Audit Log"
   },
   "header": {
@@ -507,6 +508,41 @@
       "title": "Delete Breed",
       "description": "Are you sure you want to delete the breed {name}? This action cannot be undone.",
       "confirm": "Delete"
+    }
+  },
+  "notifications": {
+    "title": "Push Notifications",
+    "subtitle": "Send push notifications and view notification statistics",
+    "stats": {
+      "totalUsers": "Total Users",
+      "usersWithToken": "Users with Push Token",
+      "prefMatches": "Matches Notifications",
+      "prefMessages": "Messages Notifications",
+      "prefReminders": "Reminders Notifications",
+      "prefFeed": "Feed Notifications"
+    },
+    "broadcast": {
+      "broadcastTitle": "Broadcast",
+      "broadcastDescription": "Send a notification to all users with a push token",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Notification title",
+      "bodyLabel": "Body",
+      "bodyPlaceholder": "Notification body",
+      "sendButton": "Send",
+      "confirmTitle": "Confirm broadcast",
+      "confirmDescription": "This will send the notification to {count} users. Continue?",
+      "successMessage": "Notification sent to {count} users"
+    },
+    "targeted": {
+      "targetedTitle": "Targeted",
+      "targetedDescription": "Send a notification to specific users",
+      "userIdsLabel": "User IDs",
+      "userIdsPlaceholder": "Enter user IDs, comma-separated or one per line",
+      "sendButton": "Send",
+      "successMessage": "Sent to {sentCount} users, {skippedCount} skipped"
+    },
+    "common": {
+      "cancel": "Cancel"
     }
   },
   "adminUsers": {

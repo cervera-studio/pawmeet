@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import {
   AlertTriangleIcon,
+  BellIcon,
   BuildingIcon,
   CalendarIcon,
   LayoutDashboardIcon,
@@ -46,6 +47,7 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
         { name: t('safetyContacts'), href: '/safety/contacts' },
       ],
     },
+    { name: t('notifications'), href: '/notifications', icon: BellIcon },
     { name: t('accountDeletions'), href: '/account-deletions', icon: UserXIcon },
     {
       name: t('settings'),

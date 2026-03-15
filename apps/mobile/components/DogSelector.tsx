@@ -16,7 +16,9 @@ export function DogSelector() {
 
   return (
     <View className="px-4 py-2">
-      <Text className="mb-2 text-xs font-medium text-gray-500 dark:text-neutral-500">Scopri con</Text>
+      <Text className="mb-2 text-xs font-medium text-gray-500 dark:text-neutral-500">
+        Scopri con
+      </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="flex-row gap-2">
           {dogs.map((dog) => {

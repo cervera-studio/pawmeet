@@ -70,8 +70,12 @@ export const PostCard = memo(function PostCard({
         <Pressable onPress={onPress} className="flex-1 flex-row items-center gap-3">
           <Avatar size="sm" imageUrl={post.author.avatarUrl} name={post.author.displayName} />
           <View className="flex-1">
-            <Text className="text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">{post.author.displayName}</Text>
-            <Text className="text-xs text-gray-400 dark:text-neutral-500">{formatTimeAgo(post.createdAt)}</Text>
+            <Text className="text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">
+              {post.author.displayName}
+            </Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              {formatTimeAgo(post.createdAt)}
+            </Text>
           </View>
         </Pressable>
         <Pressable onPress={() => setMenuVisible(true)} className="px-1 py-2" hitSlop={8}>
@@ -147,7 +151,10 @@ export const PostCard = memo(function PostCard({
       {sortedMedia.length > 1 ? (
         <View className="flex-row items-center justify-center gap-1 py-1">
           {sortedMedia.map((m) => (
-            <View key={`dot-${m.id}`} className="h-1.5 w-1.5 rounded-full bg-gray-300 dark:bg-[#48484A]" />
+            <View
+              key={`dot-${m.id}`}
+              className="h-1.5 w-1.5 rounded-full bg-gray-300 dark:bg-[#48484A]"
+            />
           ))}
         </View>
       ) : null}
@@ -168,7 +175,7 @@ export const PostCard = memo(function PostCard({
 
       {/* Caption */}
       {post.caption ? (
-        <Text className="px-4 pb-2 text-sm text-gray-700" numberOfLines={3}>
+        <Text className="px-4 pb-2 text-sm text-gray-700 dark:text-[#D1D1D6]" numberOfLines={3}>
           <Text className="font-semibold">{post.author.displayName} </Text>
           {post.caption}
         </Text>
@@ -178,11 +185,11 @@ export const PostCard = memo(function PostCard({
       <View className="flex-row items-center gap-4 px-4 pb-3">
         <Pressable onPress={onLike} className="flex-row items-center gap-1">
           <Text className="text-lg">{post.isLikedByMe ? '❤️' : '🤍'}</Text>
-          <Text className="text-sm text-gray-600">{post.likesCount}</Text>
+          <Text className="text-sm text-gray-600 dark:text-[#D1D1D6]">{post.likesCount}</Text>
         </Pressable>
         <Pressable onPress={onPress} className="flex-row items-center gap-1">
           <Text className="text-lg">💬</Text>
-          <Text className="text-sm text-gray-600">{post.commentsCount}</Text>
+          <Text className="text-sm text-gray-600 dark:text-[#D1D1D6]">{post.commentsCount}</Text>
         </Pressable>
       </View>
     </View>

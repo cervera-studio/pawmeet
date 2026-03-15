@@ -50,7 +50,9 @@ function LocationCard({ location, isMine }: { location: LocationData; isMine: bo
           <Text className="text-3xl">📍</Text>
         </View>
         <View className="px-4 py-2">
-          <Text className={`text-sm font-medium ${isMine ? 'text-white' : 'text-gray-900 dark:text-[#F5F5F7]'}`}>
+          <Text
+            className={`text-sm font-medium ${isMine ? 'text-white' : 'text-gray-900 dark:text-[#F5F5F7]'}`}
+          >
             {location.label ?? 'Punto di incontro'}
           </Text>
           <Text className={`text-xs ${isMine ? 'text-white/70' : 'text-primary'}`}>
@@ -90,7 +92,11 @@ export const ChatBubble = memo(function ChatBubble({
             isMine ? 'rounded-br-sm bg-primary' : 'rounded-bl-sm bg-gray-100 dark:bg-[#38383A]'
           }`}
         >
-          <Text className={`text-base ${isMine ? 'text-white' : 'text-gray-900 dark:text-[#F5F5F7]'}`}>{text}</Text>
+          <Text
+            className={`text-base ${isMine ? 'text-white' : 'text-gray-900 dark:text-[#F5F5F7]'}`}
+          >
+            {text}
+          </Text>
         </View>
       )}
 
@@ -100,7 +106,9 @@ export const ChatBubble = memo(function ChatBubble({
       >
         <Text className="text-xs text-gray-400 dark:text-neutral-500">{timestamp}</Text>
         {isMine && status && (
-          <Text className={`text-xs ${status === 'read' ? 'text-blue-500' : 'text-gray-400 dark:text-neutral-500'}`}>
+          <Text
+            className={`text-xs ${status === 'read' ? 'text-blue-500' : 'text-gray-400 dark:text-neutral-500'}`}
+          >
             {STATUS_ICONS[status]}
           </Text>
         )}

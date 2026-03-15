@@ -34,7 +34,9 @@ export function FeedbackModal({ visible, walkId, toDogId, onClose, onSubmit }: P
           <Pressable onPress={vm.handleClose}>
             <Text className="text-base text-gray-500 dark:text-neutral-500">Annulla</Text>
           </Pressable>
-          <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">Feedback passeggiata</Text>
+          <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">
+            Feedback passeggiata
+          </Text>
           <View style={{ width: 60 }} />
         </View>
 
@@ -58,7 +60,9 @@ export function FeedbackModal({ visible, walkId, toDogId, onClose, onSubmit }: P
 
           {/* Comment */}
           <View className="mb-6">
-            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Commento (opzionale)</Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+              Commento (opzionale)
+            </Text>
             <TextInput
               value={vm.comment}
               onChangeText={vm.setComment}

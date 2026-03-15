@@ -11,8 +11,13 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <ScrollView className="flex-1 bg-white dark:bg-[#1C1C1E]" contentContainerClassName="px-6 py-8">
-        <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Privacy e consensi</Text>
+      <ScrollView
+        className="flex-1 bg-white dark:bg-[#1C1C1E]"
+        contentContainerClassName="px-6 py-8"
+      >
+        <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          Privacy e consensi
+        </Text>
         <Text className="mb-6 text-base text-gray-500 dark:text-neutral-500">
           Scegli quali servizi opzionali attivare. Puoi modificare le tue preferenze in qualsiasi
           momento dalle Impostazioni.
@@ -105,11 +110,15 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
         </Pressable>
 
         <Pressable onPress={vm.rejectAll} className="items-center rounded-xl px-6 py-4">
-          <Text className="text-base font-medium text-gray-500 dark:text-neutral-500">Rifiuta tutto</Text>
+          <Text className="text-base font-medium text-gray-500 dark:text-neutral-500">
+            Rifiuta tutto
+          </Text>
         </Pressable>
 
         <Pressable className="mt-4 items-center">
-          <Text className="text-sm text-gray-400 dark:text-neutral-500 underline">Leggi la Privacy Policy completa</Text>
+          <Text className="text-sm text-gray-400 dark:text-neutral-500 underline">
+            Leggi la Privacy Policy completa
+          </Text>
         </Pressable>
       </ScrollView>
     </Modal>

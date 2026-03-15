@@ -112,7 +112,9 @@ export function SwipeCard({ dog, onSwipeRight, onSwipeLeft, onSwipeUp }: SwipeCa
         {/* Photo placeholder */}
         <View className="flex-1 items-center justify-center bg-gray-100 dark:bg-[#38383A]">
           <Avatar name={dog.name} size="lg" />
-          <Text className="mt-3 text-lg font-semibold text-gray-600 dark:text-[#D1D1D6]">{dog.name}</Text>
+          <Text className="mt-3 text-lg font-semibold text-gray-600 dark:text-[#D1D1D6]">
+            {dog.name}
+          </Text>
         </View>
 
         {/* Like overlay */}

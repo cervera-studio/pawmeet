@@ -100,7 +100,10 @@ interface ReportsListProps {
 export function ReportsList({ initialData }: ReportsListProps) {
   const t = useTranslations('reports');
   const [statusFilter, setStatusFilter] = useState<ReportStatus | undefined>(undefined);
-  const [pagination, setPagination] = useState<{ pageIndex: number; pageSize: number }>({ pageIndex: 0, pageSize: PAGINATION.DEFAULT_PAGE_SIZE });
+  const [pagination, setPagination] = useState<{ pageIndex: number; pageSize: number }>({
+    pageIndex: 0,
+    pageSize: PAGINATION.DEFAULT_PAGE_SIZE,
+  });
   const [data, setData] = useState<PaginatedResult<AdminReportListItem>>(initialData);
   const [isLoading, setIsLoading] = useState(false);
 

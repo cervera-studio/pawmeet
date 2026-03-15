@@ -4,8 +4,8 @@ import { createOrganizationAuthorizer } from '../domain/organization-authorizer.
 import { BullMQNotificationService } from '../infra/bullmq-notification-service.js';
 import { DrizzleActivityRepository } from '../infra/drizzle-activity-repository.js';
 import { DrizzleAdminDataRepository } from '../infra/drizzle-admin-data-repository.js';
-import { DrizzleAnalyticsRepository } from '../infra/drizzle-analytics-repository.js';
 import { DrizzleAdminUserRepository } from '../infra/drizzle-admin-user-repository.js';
+import { DrizzleAnalyticsRepository } from '../infra/drizzle-analytics-repository.js';
 import { DrizzleBadgeRepository } from '../infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from '../infra/drizzle-breed-repository.js';
 import { DrizzleConsentRepository } from '../infra/drizzle-consent-repository.js';

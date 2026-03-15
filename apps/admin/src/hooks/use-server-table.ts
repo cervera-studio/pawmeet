@@ -23,7 +23,11 @@ interface PaginatedResponse<T> {
   totalPages: number;
 }
 
-export function useServerTable<T>({ endpoint, queryKey, pageSize = PAGINATION.DEFAULT_PAGE_SIZE }: UseServerTableOptions<T>) {
+export function useServerTable<T>({
+  endpoint,
+  queryKey,
+  pageSize = PAGINATION.DEFAULT_PAGE_SIZE,
+}: UseServerTableOptions<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

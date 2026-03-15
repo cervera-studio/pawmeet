@@ -85,7 +85,12 @@ export function DashboardCharts({
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
                 <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
-                <Bar dataKey="count" name={t('matchLabel')} fill={CHART_COLORS.matches} radius={[4, 4, 0, 0]} />
+                <Bar
+                  dataKey="count"
+                  name={t('matchLabel')}
+                  fill={CHART_COLORS.matches}
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}

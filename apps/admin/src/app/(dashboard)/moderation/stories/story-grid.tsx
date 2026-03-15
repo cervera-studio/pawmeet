@@ -43,7 +43,10 @@ export function StoryGrid({ initialData }: StoryGridProps) {
   const fetchStories = useCallback(async (targetPage: number) => {
     setIsLoading(true);
     try {
-      const result = await fetchStoriesAction({ page: targetPage, pageSize: PAGINATION.DEFAULT_PAGE_SIZE });
+      const result = await fetchStoriesAction({
+        page: targetPage,
+        pageSize: PAGINATION.DEFAULT_PAGE_SIZE,
+      });
       setStories(result.data);
       setTotalPages(result.totalPages);
       setTotal(result.total);

@@ -1,5 +1,6 @@
 // User domain: profile, location, preferences, avatar, account management
 
+import { enqueueGdprExport } from '../jobs/queue.js';
 import { createConfirmAvatar } from '../use-cases/confirm-avatar.js';
 import { createDeleteAccount } from '../use-cases/delete-account.js';
 import { createDeleteAvatar } from '../use-cases/delete-avatar.js';
@@ -16,7 +17,6 @@ import { createUpdateLocation } from '../use-cases/update-location.js';
 import { createUpdateNotificationPrefs } from '../use-cases/update-notification-prefs.js';
 import { createUpdatePreferences } from '../use-cases/update-preferences.js';
 import { createUploadAvatarUrl } from '../use-cases/upload-avatar-url.js';
-import { enqueueGdprExport } from '../jobs/queue.js';
 import {
   analyticsProviders,
   analyticsRepo,

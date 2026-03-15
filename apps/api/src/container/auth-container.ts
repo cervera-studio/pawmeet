@@ -9,13 +9,7 @@ import { createResendVerification } from '../use-cases/resend-verification.js';
 import { createResetPassword } from '../use-cases/reset-password.js';
 import { createSocialLogin } from '../use-cases/social-login.js';
 import { createVerifyEmailOtp } from '../use-cases/verify-email-otp.js';
-import {
-  authService,
-  emailService,
-  socialAuthVerifier,
-  tokenRepo,
-  userRepo,
-} from './services.js';
+import { authService, emailService, socialAuthVerifier, tokenRepo, userRepo } from './services.js';
 
 export const authDeps = {
   registerUser: createRegisterUser({ userRepo, tokenRepo, authService, emailService }),

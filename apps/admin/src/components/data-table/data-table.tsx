@@ -11,7 +11,6 @@ import {
 } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { PAGINATION } from '@/lib/constants';
 import {
   Table,
   TableBody,
@@ -20,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { PAGINATION } from '@/lib/constants';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -52,7 +52,10 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const t = useTranslations('table');
   const tc = useTranslations('common');
-  const defaultPagination: PaginationState = { pageIndex: 0, pageSize: PAGINATION.DEFAULT_PAGE_SIZE };
+  const defaultPagination: PaginationState = {
+    pageIndex: 0,
+    pageSize: PAGINATION.DEFAULT_PAGE_SIZE,
+  };
   const currentPagination = pagination ?? defaultPagination;
 
   const table = useReactTable({

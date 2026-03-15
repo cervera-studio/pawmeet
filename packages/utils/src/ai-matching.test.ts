@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
 import type { UserMatchingPreferences } from '@pawmeet/types';
+import { describe, expect, it } from 'vitest';
 import {
-  type MatchingWeights,
   blendWeights,
   calculateWeightedScore,
+  type MatchingWeights,
   normalizeWeights,
 } from './ai-matching';
 
@@ -21,9 +21,7 @@ function buildWeights(overrides: Partial<MatchingWeights> = {}): MatchingWeights
   };
 }
 
-function buildUserPrefs(
-  overrides: Partial<UserMatchingPreferences> = {},
-): UserMatchingPreferences {
+function buildUserPrefs(overrides: Partial<UserMatchingPreferences> = {}): UserMatchingPreferences {
   return {
     id: 'pref-1',
     userId: 'user-1',
@@ -222,8 +220,7 @@ describe('calculateWeightedScore', () => {
 
     const result = calculateWeightedScore(scores, weights);
 
-    const expected =
-      0.25 * 1.0 + 0.25 * 0.8 + 0.2 * 0.6 + 0.15 * 0.4 + 0.1 * 0.2 + 0.05 * 0.0;
+    const expected = 0.25 * 1.0 + 0.25 * 0.8 + 0.2 * 0.6 + 0.15 * 0.4 + 0.1 * 0.2 + 0.05 * 0.0;
     expect(result).toBeCloseTo(expected);
   });
 
@@ -264,7 +261,14 @@ describe('calculateWeightedScore', () => {
       distanceScore: 0.0,
       leashScore: 0.0,
     };
-    const weights = buildWeights({ size: 0.8, energy: 0.04, behavior: 0.04, walk: 0.04, distance: 0.04, leash: 0.04 });
+    const weights = buildWeights({
+      size: 0.8,
+      energy: 0.04,
+      behavior: 0.04,
+      walk: 0.04,
+      distance: 0.04,
+      leash: 0.04,
+    });
 
     const result = calculateWeightedScore(scores, weights);
 

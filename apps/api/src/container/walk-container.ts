@@ -7,9 +7,9 @@ import { createEndWalkTracking } from '../use-cases/end-walk-tracking.js';
 import { createGetActivityStats } from '../use-cases/get-activity-stats.js';
 import { createGetDogHealthGoal } from '../use-cases/get-dog-health-goal.js';
 import { createGetDogRating } from '../use-cases/get-dog-rating.js';
+import { createGetUserTracks } from '../use-cases/get-user-tracks.js';
 import { createGetWalkAlbum } from '../use-cases/get-walk-album.js';
 import { createGetWalkTrack } from '../use-cases/get-walk-track.js';
-import { createGetUserTracks } from '../use-cases/get-user-tracks.js';
 import { createListUpcomingWalks } from '../use-cases/list-upcoming-walks.js';
 import { createListWalkFeedback } from '../use-cases/list-walk-feedback.js';
 import { createListWalksByMatch } from '../use-cases/list-walks-by-match.js';
@@ -22,8 +22,8 @@ import { awardXp } from './gamification-container.js';
 import {
   activityRepo,
   dogRepo,
-  feedRepo,
   feedbackRepo,
+  feedRepo,
   matchRepo,
   messageRepo,
   notificationService,

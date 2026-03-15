@@ -97,7 +97,11 @@ export function createProposeWalk({
       }
     }
 
-    logger.info('ProposeWalk', 'Walk proposed', { userId, walkId: walk.id, matchId: input.matchId });
+    logger.info('ProposeWalk', 'Walk proposed', {
+      userId,
+      walkId: walk.id,
+      matchId: input.matchId,
+    });
 
     return succeed({ walkId: walk.id, matchAgeHours, messageCountBeforeProposal });
   };

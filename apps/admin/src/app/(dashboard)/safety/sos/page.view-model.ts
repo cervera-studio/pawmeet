@@ -1,6 +1,6 @@
-import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { useDataTable } from '@/hooks/use-data-table';
 import { handleError } from '@/lib/error-handler';
 import { fetchSosAlerts } from '../actions';
 
@@ -17,20 +17,18 @@ export function isAlertType(v: string): v is AlertType {
 
 export function useSosViewModel(initialData: SosData, pageSize: number) {
   const [typeFilter, setTypeFilter] = useState<AlertType | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const isInitialRender = useRef(true);
+
+  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await fetchSosAlerts({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
+        page: table.page,
+        pageSize: table.pageSize,
         type: typeFilter,
       });
       setData(result);
@@ -39,7 +37,7 @@ export function useSosViewModel(initialData: SosData, pageSize: number) {
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, typeFilter]);
+  }, [table.page, table.pageSize, typeFilter]);
 
   useEffect(() => {
     if (isInitialRender.current) {
@@ -51,17 +49,17 @@ export function useSosViewModel(initialData: SosData, pageSize: number) {
 
   function handleTypeFilterChange(type: AlertType | undefined) {
     setTypeFilter(type);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    table.onPageChange(0);
   }
 
   return {
     data: data.data,
     total: data.total,
-    totalPages: Math.ceil(data.total / pagination.pageSize),
+    totalPages: table.totalPages,
     isLoading,
     typeFilter,
     setTypeFilter: handleTypeFilterChange,
-    pagination,
-    setPagination,
+    pagination: table.pagination,
+    setPagination: table.setPagination,
   };
 }

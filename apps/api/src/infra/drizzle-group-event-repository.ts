@@ -4,13 +4,13 @@ import { and, desc, eq, isNotNull, lte, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   CreateGroupEventInput,
-  GroupEventRepository,
+  FullGroupEventRepository,
   NearbyEventsQuery,
   PendingParticipant,
 } from '../ports/group-event-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
-export class DrizzleGroupEventRepository implements GroupEventRepository {
+export class DrizzleGroupEventRepository implements FullGroupEventRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
   async create(input: CreateGroupEventInput): Promise<GroupEvent> {

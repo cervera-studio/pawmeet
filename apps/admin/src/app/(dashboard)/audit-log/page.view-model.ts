@@ -1,7 +1,7 @@
-import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useDataTable } from '@/hooks/use-data-table';
 import { handleError } from '@/lib/error-handler';
 import { fetchAuditLog } from './actions';
 
@@ -35,20 +35,18 @@ export function useAuditLogViewModel(initialData: AuditLogData, pageSize: number
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, 300);
   const [resourceFilter, setResourceFilter] = useState<ResourceType | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const isInitialRender = useRef(true);
+
+  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await fetchAuditLog({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
+        page: table.page,
+        pageSize: table.pageSize,
         search: debouncedSearch || undefined,
         resourceType: resourceFilter,
       });
@@ -58,7 +56,7 @@ export function useAuditLogViewModel(initialData: AuditLogData, pageSize: number
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch, resourceFilter]);
+  }, [table.page, table.pageSize, debouncedSearch, resourceFilter]);
 
   useEffect(() => {
     if (isInitialRender.current) {
@@ -70,26 +68,26 @@ export function useAuditLogViewModel(initialData: AuditLogData, pageSize: number
 
   function handleResourceFilterChange(type: ResourceType | undefined) {
     setResourceFilter(type);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    table.onPageChange(0);
   }
 
   function handleSearchChange(value: string) {
     setSearch(value);
     if (value === '') {
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      table.onPageChange(0);
     }
   }
 
   return {
     data: data.data,
     total: data.total,
-    totalPages: Math.ceil(data.total / pagination.pageSize),
+    totalPages: table.totalPages,
     isLoading,
     search,
     setSearch: handleSearchChange,
     resourceFilter,
     setResourceFilter: handleResourceFilterChange,
-    pagination,
-    setPagination,
+    pagination: table.pagination,
+    setPagination: table.setPagination,
   };
 }

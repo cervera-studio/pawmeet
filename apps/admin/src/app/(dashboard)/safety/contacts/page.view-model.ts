@@ -1,7 +1,7 @@
-import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useDataTable } from '@/hooks/use-data-table';
 import { handleError } from '@/lib/error-handler';
 import { fetchEmergencyContacts } from '../actions';
 
@@ -11,20 +11,18 @@ export type EmergencyContactItem = ContactsData['data'][number];
 export function useContactsViewModel(initialData: ContactsData, pageSize: number) {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, 300);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const isInitialRender = useRef(true);
+
+  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await fetchEmergencyContacts({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
+        page: table.page,
+        pageSize: table.pageSize,
         search: debouncedSearch || undefined,
       });
       setData(result);
@@ -33,7 +31,7 @@ export function useContactsViewModel(initialData: ContactsData, pageSize: number
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch]);
+  }, [table.page, table.pageSize, debouncedSearch]);
 
   useEffect(() => {
     if (isInitialRender.current) {
@@ -46,18 +44,18 @@ export function useContactsViewModel(initialData: ContactsData, pageSize: number
   function handleSearchChange(value: string) {
     setSearch(value);
     if (value === '') {
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      table.onPageChange(0);
     }
   }
 
   return {
     data: data.data,
     total: data.total,
-    totalPages: Math.ceil(data.total / pagination.pageSize),
+    totalPages: table.totalPages,
     isLoading,
     search,
     setSearch: handleSearchChange,
-    pagination,
-    setPagination,
+    pagination: table.pagination,
+    setPagination: table.setPagination,
   };
 }

@@ -7,6 +7,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
+import { DialogForm } from '@/components/dialog-form';
+import { FormField } from '@/components/form-field';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -298,98 +300,76 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
       />
 
       {/* Create Admin Dialog */}
-      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('createDialog.title')}</DialogTitle>
-            <DialogDescription>{t('createDialog.description')}</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={createForm.handleSubmit(handleCreate)}>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="create-name">
-                  {t('createDialog.nameLabel')}
-                </label>
-                <Input
-                  id="create-name"
-                  {...createForm.register('displayName')}
-                  placeholder={t('createDialog.namePlaceholder')}
-                />
-                {createForm.formState.errors.displayName && (
-                  <p className="text-xs text-red-600">
-                    {createForm.formState.errors.displayName.message}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="create-email">
-                  {t('createDialog.emailLabel')}
-                </label>
-                <Input
-                  id="create-email"
-                  type="email"
-                  {...createForm.register('email')}
-                  placeholder={t('createDialog.emailPlaceholder')}
-                />
-                {createForm.formState.errors.email && (
-                  <p className="text-xs text-red-600">
-                    {createForm.formState.errors.email.message}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="create-password">
-                  {t('createDialog.passwordLabel')}
-                </label>
-                <Input
-                  id="create-password"
-                  type="password"
-                  {...createForm.register('temporaryPassword')}
-                  placeholder={t('createDialog.passwordPlaceholder')}
-                />
-                {createForm.formState.errors.temporaryPassword && (
-                  <p className="text-xs text-red-600">
-                    {createForm.formState.errors.temporaryPassword.message}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="create-role">
-                  {t('createDialog.roleLabel')}
-                </label>
-                <select
-                  id="create-role"
-                  className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
-                  {...createForm.register('role')}
-                >
-                  {ROLES.map((role) => (
-                    <option key={role} value={role}>
-                      {t(
-                        `roles.${role}` as
-                          | 'roles.super_admin'
-                          | 'roles.admin'
-                          | 'roles.moderator'
-                          | 'roles.viewer',
-                      )}
-                    </option>
-                  ))}
-                </select>
-                {createForm.formState.errors.role && (
-                  <p className="text-xs text-red-600">{createForm.formState.errors.role.message}</p>
-                )}
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
-                {tc('cancel')}
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? tc('saving') : t('createDialog.submit')}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <DialogForm
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        title={t('createDialog.title')}
+        description={t('createDialog.description')}
+        isSubmitting={isSubmitting}
+        onSubmit={createForm.handleSubmit(handleCreate)}
+        submitLabel={t('createDialog.submit')}
+      >
+        <div className="space-y-4 py-4">
+          <FormField
+            label={t('createDialog.nameLabel')}
+            name="create-name"
+            error={createForm.formState.errors.displayName?.message}
+          >
+            <Input
+              id="create-name"
+              {...createForm.register('displayName')}
+              placeholder={t('createDialog.namePlaceholder')}
+            />
+          </FormField>
+          <FormField
+            label={t('createDialog.emailLabel')}
+            name="create-email"
+            error={createForm.formState.errors.email?.message}
+          >
+            <Input
+              id="create-email"
+              type="email"
+              {...createForm.register('email')}
+              placeholder={t('createDialog.emailPlaceholder')}
+            />
+          </FormField>
+          <FormField
+            label={t('createDialog.passwordLabel')}
+            name="create-password"
+            error={createForm.formState.errors.temporaryPassword?.message}
+          >
+            <Input
+              id="create-password"
+              type="password"
+              {...createForm.register('temporaryPassword')}
+              placeholder={t('createDialog.passwordPlaceholder')}
+            />
+          </FormField>
+          <FormField
+            label={t('createDialog.roleLabel')}
+            name="create-role"
+            error={createForm.formState.errors.role?.message}
+          >
+            <select
+              id="create-role"
+              className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+              {...createForm.register('role')}
+            >
+              {ROLES.map((role) => (
+                <option key={role} value={role}>
+                  {t(
+                    `roles.${role}` as
+                      | 'roles.super_admin'
+                      | 'roles.admin'
+                      | 'roles.moderator'
+                      | 'roles.viewer',
+                  )}
+                </option>
+              ))}
+            </select>
+          </FormField>
+        </div>
+      </DialogForm>
 
       {/* Edit Role Dialog */}
       <Dialog open={editRoleDialogOpen} onOpenChange={setEditRoleDialogOpen}>

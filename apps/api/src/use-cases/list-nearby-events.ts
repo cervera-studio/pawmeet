@@ -1,8 +1,8 @@
 import { type GroupEvent, type Result, succeed } from '@pawmeet/types';
-import type { FollowRepository, GroupEventRepository } from '../ports/index.js';
+import type { FollowRepository, GroupEventDiscoveryRepository } from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventDiscoveryRepository, 'findNearby'>;
   followRepo: FollowRepository;
 };
 

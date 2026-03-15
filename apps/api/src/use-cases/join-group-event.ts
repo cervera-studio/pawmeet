@@ -7,11 +7,16 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
-import type { DogRepository, FollowRepository, GroupEventRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  FollowRepository,
+  GroupEventParticipationRepository,
+  GroupEventRepository,
+} from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findById'> & GroupEventParticipationRepository;
   dogRepo: DogRepository;
   followRepo: FollowRepository;
   notificationService: NotificationService;

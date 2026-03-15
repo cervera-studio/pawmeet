@@ -5,15 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { DialogForm } from '@/components/dialog-form';
 import { handleError } from '@/lib/error-handler';
 import { type BreedFormValues, breedFormSchema } from '@/lib/schemas/breed';
 import { createBreed } from './actions';
@@ -36,7 +28,6 @@ interface BreedCreateDialogProps {
 
 export function BreedCreateDialog({ open, onClose, onCreated }: BreedCreateDialogProps) {
   const t = useTranslations('breeds');
-  const tc = useTranslations('common');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<BreedFormValues>({
@@ -79,29 +70,16 @@ export function BreedCreateDialog({ open, onClose, onCreated }: BreedCreateDialo
   }
 
   return (
-    <Dialog
+    <DialogForm
       open={open}
-      onOpenChange={(v) => {
-        if (!v) resetAndClose();
-      }}
+      onClose={resetAndClose}
+      title={t('createDialog.title')}
+      description={t('createDialog.description')}
+      isSubmitting={isSubmitting}
+      onSubmit={form.handleSubmit(handleCreate)}
+      submitLabel={t('createDialog.submit')}
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('createDialog.title')}</DialogTitle>
-          <DialogDescription>{t('createDialog.description')}</DialogDescription>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(handleCreate)}>
-          <BreedFormFields idPrefix="create" form={form} />
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={resetAndClose}>
-              {tc('cancel')}
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? tc('saving') : t('createDialog.submit')}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <BreedFormFields idPrefix="create" form={form} />
+    </DialogForm>
   );
 }

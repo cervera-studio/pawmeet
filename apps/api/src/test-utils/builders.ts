@@ -48,7 +48,7 @@ import type {
   FeedRealtimeService,
   FeedRepository,
   FollowRepository,
-  GroupEventRepository,
+  FullGroupEventRepository,
   GroupMessageRepository,
   MatchRepository,
   MessageRepository,
@@ -457,8 +457,8 @@ export function buildBadgeRepo(overrides: Partial<BadgeRepository> = {}): BadgeR
 }
 
 export function buildGroupEventRepo(
-  overrides: Partial<GroupEventRepository> = {},
-): GroupEventRepository {
+  overrides: Partial<FullGroupEventRepository> = {},
+): FullGroupEventRepository {
   return {
     create: vi.fn().mockResolvedValue(buildGroupEvent()),
     findById: vi.fn(),

@@ -32,8 +32,14 @@ export type { FollowRepository, PaginatedQuery } from './follow-repository.js';
 export type { GdprExportRepository } from './gdpr-export-repository.js';
 export type {
   CreateGroupEventInput,
+  FullGroupEventRepository,
+  GroupEventDiscoveryRepository,
+  GroupEventParticipationRepository,
+  GroupEventRecurrenceRepository,
   GroupEventRepository,
+  GroupEventTransitionQueries,
   NearbyEventsQuery,
+  PendingParticipant,
 } from './group-event-repository.js';
 export type { GroupMessageRepository } from './group-message-repository.js';
 export type { CandidateDog, MatchRepository } from './match-repository.js';

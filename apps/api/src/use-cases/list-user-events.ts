@@ -1,8 +1,8 @@
 import { type GroupEvent, type Result, succeed } from '@pawmeet/types';
-import type { GroupEventRepository } from '../ports/index.js';
+import type { GroupEventDiscoveryRepository } from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventDiscoveryRepository, 'findByParticipant'>;
 };
 
 export function createListUserEvents({ groupEventRepo }: Deps) {

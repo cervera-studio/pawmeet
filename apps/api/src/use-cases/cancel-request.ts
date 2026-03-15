@@ -1,8 +1,11 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import type { GroupEventRepository } from '../ports/index.js';
+import type { GroupEventParticipationRepository } from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<
+    GroupEventParticipationRepository,
+    'findParticipant' | 'updateParticipantStatus'
+  >;
 };
 
 export function createCancelRequest({ groupEventRepo }: Deps) {

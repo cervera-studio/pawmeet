@@ -8,7 +8,7 @@ import {
 import type { GroupEventRepository } from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findByIdWithParticipants'>;
 };
 
 export function createGetGroupEvent({ groupEventRepo }: Deps) {

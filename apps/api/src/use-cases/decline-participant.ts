@@ -1,9 +1,10 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import type { GroupEventRepository } from '../ports/index.js';
+import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findById'> &
+    Pick<GroupEventParticipationRepository, 'findParticipant' | 'updateParticipantStatus'>;
   notificationService: NotificationService;
 };
 

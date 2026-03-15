@@ -1,9 +1,13 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import type { PendingParticipant } from '../ports/group-event-repository.js';
-import type { GroupEventRepository } from '../ports/index.js';
+import type {
+  GroupEventParticipationRepository,
+  GroupEventRepository,
+  PendingParticipant,
+} from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findById'> &
+    Pick<GroupEventParticipationRepository, 'findPendingParticipants'>;
 };
 
 export function createListPendingRequests({ groupEventRepo }: Deps) {

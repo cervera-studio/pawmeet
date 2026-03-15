@@ -11,10 +11,17 @@ import {
   succeed,
 } from '@pawmeet/types';
 import { RRule } from 'rrule';
-import type { DogRepository, GroupEventRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  GroupEventParticipationRepository,
+  GroupEventRecurrenceRepository,
+  GroupEventRepository,
+} from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'create'> &
+    Pick<GroupEventParticipationRepository, 'addParticipant'> &
+    Pick<GroupEventRecurrenceRepository, 'countActiveTemplates'>;
   dogRepo: DogRepository;
 };
 

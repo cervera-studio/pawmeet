@@ -1,20 +1,19 @@
 import type { PaginatedResult } from '@pawmeet/types';
-import type { PaginationState, SortingState } from '@tanstack/react-table';
+import type { SortingState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { useDataTable } from '@/hooks/use-data-table';
 import { handleError } from '@/lib/error-handler';
 import type { AdminUserListItem } from '@/repositories';
 import { fetchUsers as fetchUsersAction } from './actions';
 
 export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  });
   const [globalFilter, setGlobalFilter] = useState('');
   const [result, setResult] = useState<PaginatedResult<AdminUserListItem>>(initialData);
   const [isLoading, setIsLoading] = useState(false);
+
+  const table = useDataTable({ totalItems: result.total, initialPageSize: 20 });
 
   // Track whether the user has interacted (changed search/sort/pagination)
   const isInitialRender = useRef(true);
@@ -24,8 +23,8 @@ export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem
     try {
       const firstSort = sorting[0];
       const data = await fetchUsersAction({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
+        page: table.page,
+        pageSize: table.pageSize,
         search: globalFilter || undefined,
         sortBy: firstSort?.id,
         sortOrder: firstSort ? (firstSort.desc ? 'desc' : 'asc') : undefined,
@@ -36,7 +35,7 @@ export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, globalFilter, sorting]);
+  }, [table.page, table.pageSize, globalFilter, sorting]);
 
   useEffect(() => {
     // Skip the first render — we already have server data
@@ -50,12 +49,12 @@ export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem
   return {
     data: result.data,
     total: result.total,
-    totalPages: Math.ceil(result.total / pagination.pageSize),
+    totalPages: table.totalPages,
     isLoading,
     sorting,
     setSorting,
-    pagination,
-    setPagination,
+    pagination: table.pagination,
+    setPagination: table.setPagination,
     globalFilter,
     setGlobalFilter,
   };

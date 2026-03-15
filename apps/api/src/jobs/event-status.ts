@@ -1,11 +1,16 @@
 import { Worker } from 'bullmq';
 import type { BadgeRepository } from '../ports/badge-repository.js';
-import type { GroupEventRepository, NotificationService } from '../ports/index.js';
+import type {
+  GroupEventRepository,
+  GroupEventTransitionQueries,
+  NotificationService,
+} from '../ports/index.js';
 import { createTransitionEventStatuses } from '../use-cases/transition-event-statuses.js';
 import { getEventStatusQueue, getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findByIdWithParticipants' | 'updateStatus'> &
+    GroupEventTransitionQueries;
   notificationService: NotificationService;
   badgeRepo: BadgeRepository;
 };

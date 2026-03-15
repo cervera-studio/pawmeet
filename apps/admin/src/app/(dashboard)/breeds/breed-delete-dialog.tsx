@@ -3,15 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { DialogForm } from '@/components/dialog-form';
 import { handleError } from '@/lib/error-handler';
 import { deleteBreed } from './actions';
 import type { Breed } from './page.view-model';
@@ -25,7 +17,6 @@ interface BreedDeleteDialogProps {
 
 export function BreedDeleteDialog({ breed, open, onClose, onDeleted }: BreedDeleteDialogProps) {
   const t = useTranslations('breeds');
-  const tc = useTranslations('common');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleDelete() {
@@ -43,28 +34,21 @@ export function BreedDeleteDialog({ breed, open, onClose, onDeleted }: BreedDele
   }
 
   return (
-    <Dialog
+    <DialogForm
       open={open}
-      onOpenChange={(v) => {
-        if (!v) onClose();
+      onClose={onClose}
+      title={t('deleteDialog.title')}
+      description={t('deleteDialog.description', { name: breed?.name ?? '' })}
+      isSubmitting={isSubmitting}
+      onSubmit={(e) => {
+        e.preventDefault();
+        void handleDelete();
       }}
+      submitLabel={t('deleteDialog.confirm')}
+      submitVariant="destructive"
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-          <DialogDescription>
-            {t('deleteDialog.description', { name: breed?.name ?? '' })}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {tc('cancel')}
-          </Button>
-          <Button variant="destructive" onClick={handleDelete} disabled={isSubmitting}>
-            {isSubmitting ? tc('saving') : t('deleteDialog.confirm')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      {/* No additional form fields for delete confirmation */}
+      <div />
+    </DialogForm>
   );
 }

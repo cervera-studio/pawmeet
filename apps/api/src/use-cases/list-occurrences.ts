@@ -1,8 +1,9 @@
 import { AppError, fail, type GroupEvent, type Result, succeed } from '@pawmeet/types';
-import type { GroupEventRepository } from '../ports/index.js';
+import type { GroupEventRecurrenceRepository, GroupEventRepository } from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findById'> &
+    Pick<GroupEventRecurrenceRepository, 'findOccurrences'>;
 };
 
 export function createListOccurrences({ groupEventRepo }: Deps) {

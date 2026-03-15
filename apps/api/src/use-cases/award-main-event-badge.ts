@@ -5,7 +5,7 @@ import type { GroupEventRepository } from '../ports/group-event-repository.js';
 
 type Deps = {
   badgeRepo: BadgeRepository;
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findById'>;
 };
 
 export function createAwardMainEventBadge({ badgeRepo, groupEventRepo }: Deps) {

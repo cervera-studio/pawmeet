@@ -2,10 +2,15 @@ import type { Result } from '@pawmeet/types';
 import { succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import type { BadgeRepository } from '../ports/badge-repository.js';
-import type { GroupEventRepository, NotificationService } from '../ports/index.js';
+import type {
+  GroupEventRepository,
+  GroupEventTransitionQueries,
+  NotificationService,
+} from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findByIdWithParticipants' | 'updateStatus'> &
+    GroupEventTransitionQueries;
   notificationService: NotificationService;
   badgeRepo: BadgeRepository;
 };

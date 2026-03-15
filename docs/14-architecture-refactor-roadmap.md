@@ -143,15 +143,15 @@
 
 **Tasks:**
 
-- [ ] Split into focused interfaces:
+- [x] Split into focused interfaces:
   - `GroupEventRepository` — core CRUD
   - `GroupEventDiscoveryRepository` — findNearby, findByCreator, findFeatured
   - `GroupEventParticipationRepository` — participant management, waitlist
   - `GroupEventRecurrenceRepository` — templates, occurrences
   - `GroupEventTransitionQueries` — scheduler-specific queries
-- [ ] Update `DrizzleGroupEventRepository` to implement all interfaces
-- [ ] Update use case dependencies to inject only needed interfaces
-- [ ] Update container wiring
+- [x] Update `DrizzleGroupEventRepository` to implement all interfaces
+- [x] Update use case dependencies to inject only needed interfaces (via Pick<>)
+- [x] Update container wiring (structural typing, no changes needed)
 
 **Files:** `ports/group-event-repository.ts`, `infra/drizzle-group-event-repository.ts`, `container.ts`, affected use cases
 **Effort:** 2–3 days
@@ -194,11 +194,10 @@
 
 **Tasks:**
 
-- [ ] Create `components/form-field.tsx` — label + input + error display
-- [ ] Create `components/dialog-form.tsx` — dialog wrapper with submit/cancel/loading
-- [ ] Refactor `BreedCreateDialog`, `BreedEditDialog` to use `DialogForm`
-- [ ] Refactor `CreateOfficialEventForm` to use `DialogForm`
-- [ ] Refactor admin user creation to use `DialogForm`
+- [x] Create `components/form-field.tsx` — label + input + error display
+- [x] Create `components/dialog-form.tsx` — dialog wrapper with submit/cancel/loading
+- [x] Refactor `BreedCreateDialog`, `BreedEditDialog`, `BreedDeleteDialog` to use `DialogForm`
+- [x] Refactor admin user creation to use `DialogForm` + `FormField`
 
 **Effort:** 2 days
 
@@ -210,10 +209,9 @@
 
 **Tasks:**
 
-- [ ] Create `hooks/useDataTable.ts` hook encapsulating all table state
-- [ ] Simplify `DataTable` props to accept hook return value
-- [ ] Refactor all table consumers to use `useDataTable`
-- [ ] Remove manual `totalPages` calculations
+- [x] Create `hooks/useDataTable.ts` hook encapsulating pagination state
+- [x] Refactor 9 view-models to use `useDataTable`
+- [x] Remove manual `totalPages` calculations
 
 **Effort:** 1–2 days
 

@@ -149,9 +149,12 @@ describe('official event end-to-end flow', () => {
       badgeRepo,
     });
 
-    const { completedCount } = await transitionStatuses();
+    const result = await transitionStatuses();
 
-    expect(completedCount).toBe(1);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.completedCount).toBe(1);
+    }
     expect(completionGroupEventRepo.updateStatus).toHaveBeenCalledWith(event.id, 'completed');
     // Badge awarded to both participants' dogs
     expect(badgeRepo.hasBadge).toHaveBeenCalledWith('dog-1', 'main_event');

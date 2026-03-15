@@ -1,8 +1,12 @@
 import { AppError, fail, type GroupEvent, type Result, succeed } from '@pawmeet/types';
-import type { DogRepository, GroupEventRepository } from '../ports/index.js';
+import type {
+  DogRepository,
+  GroupEventParticipationRepository,
+  GroupEventRepository,
+} from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: GroupEventRepository & GroupEventParticipationRepository;
   dogRepo: DogRepository;
 };
 

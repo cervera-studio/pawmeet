@@ -13,7 +13,7 @@ const TIER_LIMITS: Record<string, number> = {
 
 type Deps = {
   eventSponsorRepo: EventSponsorRepository;
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findById'>;
   organizationRepo: OrganizationRepository;
 };
 

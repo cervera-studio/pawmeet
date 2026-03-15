@@ -5,15 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { DialogForm } from '@/components/dialog-form';
 import { handleError } from '@/lib/error-handler';
 import { type BreedFormValues, breedFormSchema } from '@/lib/schemas/breed';
 import { updateBreed } from './actions';
@@ -106,31 +98,16 @@ export function BreedEditDialog({ breed, open, onClose, onUpdated }: BreedEditDi
   }
 
   return (
-    <Dialog
+    <DialogForm
       open={open}
-      onOpenChange={(v) => {
-        if (!v) onClose();
-      }}
+      onClose={onClose}
+      title={t('editDialog.title')}
+      description={t('editDialog.description', { name: breed?.name ?? '' })}
+      isSubmitting={isSubmitting}
+      onSubmit={form.handleSubmit(handleEdit)}
+      submitLabel={tc('saveChanges')}
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('editDialog.title')}</DialogTitle>
-          <DialogDescription>
-            {t('editDialog.description', { name: breed?.name ?? '' })}
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(handleEdit)}>
-          <BreedFormFields idPrefix="edit" form={form} />
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              {tc('cancel')}
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? tc('saving') : tc('saveChanges')}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <BreedFormFields idPrefix="edit" form={form} />
+    </DialogForm>
   );
 }

@@ -3,7 +3,7 @@ import type { GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findByIdWithParticipants' | 'updateStatus'>;
   notificationService: NotificationService;
 };
 

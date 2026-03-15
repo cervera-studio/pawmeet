@@ -2,7 +2,7 @@ import { AppError, fail, type GroupEvent, type Result, succeed } from '@pawmeet/
 import type { GroupEventRepository } from '../ports/index.js';
 
 type Deps = {
-  groupEventRepo: GroupEventRepository;
+  groupEventRepo: Pick<GroupEventRepository, 'findById' | 'update'>;
 };
 
 type UpdateGroupEventInput = {

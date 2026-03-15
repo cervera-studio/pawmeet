@@ -1,6 +1,6 @@
-import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { useDataTable } from '@/hooks/use-data-table';
 import { handleError } from '@/lib/error-handler';
 import { fetchPendingDeletions } from './actions';
 
@@ -8,20 +8,18 @@ export type DeletionsData = Awaited<ReturnType<typeof fetchPendingDeletions>>;
 export type PendingDeletion = DeletionsData['data'][number];
 
 export function useDeletionsViewModel(initialData: DeletionsData, pageSize: number) {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const isInitialRender = useRef(true);
+
+  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await fetchPendingDeletions({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
+        page: table.page,
+        pageSize: table.pageSize,
       });
       setData(result);
     } catch (error) {
@@ -29,7 +27,7 @@ export function useDeletionsViewModel(initialData: DeletionsData, pageSize: numb
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize]);
+  }, [table.page, table.pageSize]);
 
   useEffect(() => {
     if (isInitialRender.current) {
@@ -42,10 +40,10 @@ export function useDeletionsViewModel(initialData: DeletionsData, pageSize: numb
   return {
     data: data.data,
     total: data.total,
-    totalPages: Math.ceil(data.total / pagination.pageSize),
+    totalPages: table.totalPages,
     isLoading,
-    pagination,
-    setPagination,
+    pagination: table.pagination,
+    setPagination: table.setPagination,
     refetch: fetchData,
   };
 }

@@ -39,25 +39,28 @@ export interface PendingParticipant {
   dogName: string;
 }
 
+// ── Core CRUD ──────────────────────────────────────────────────────────────────
+
 export interface GroupEventRepository {
   create(input: CreateGroupEventInput): Promise<GroupEvent>;
   findById(id: string): Promise<GroupEvent | null>;
   findByIdWithParticipants(id: string): Promise<GroupEventWithParticipants | null>;
+  update(id: string, data: Partial<CreateGroupEventInput>): Promise<GroupEvent>;
+  updateStatus(id: string, status: string): Promise<void>;
+}
+
+// ── Discovery ──────────────────────────────────────────────────────────────────
+
+export interface GroupEventDiscoveryRepository {
   findNearby(query: NearbyEventsQuery): Promise<(GroupEvent & { distanceKm: number })[]>;
   findByCreator(userId: string): Promise<GroupEvent[]>;
   findByParticipant(userId: string): Promise<GroupEvent[]>;
-  update(id: string, data: Partial<CreateGroupEventInput>): Promise<GroupEvent>;
-  updateStatus(id: string, status: string): Promise<void>;
-  findScheduledPastStart(): Promise<GroupEvent[]>;
-  findInProgressPastEnd(): Promise<GroupEvent[]>;
   findFeatured(limit: number, offset: number): Promise<GroupEvent[]>;
+}
 
-  // Recurrence
-  findTemplates(): Promise<GroupEvent[]>;
-  findOccurrences(parentEventId: string): Promise<GroupEvent[]>;
-  countActiveTemplates(userId: string): Promise<number>;
+// ── Participation ──────────────────────────────────────────────────────────────
 
-  // Participants
+export interface GroupEventParticipationRepository {
   addParticipant(input: {
     eventId: string;
     userId: string;
@@ -76,3 +79,27 @@ export interface GroupEventRepository {
   findPendingParticipants(eventId: string): Promise<PendingParticipant[]>;
   promoteFromWaitlist(eventId: string): Promise<GroupEventParticipant | null>;
 }
+
+// ── Recurrence ─────────────────────────────────────────────────────────────────
+
+export interface GroupEventRecurrenceRepository {
+  findTemplates(): Promise<GroupEvent[]>;
+  findOccurrences(parentEventId: string): Promise<GroupEvent[]>;
+  countActiveTemplates(userId: string): Promise<number>;
+}
+
+// ── Transition queries (scheduler-specific) ────────────────────────────────────
+
+export interface GroupEventTransitionQueries {
+  findScheduledPastStart(): Promise<GroupEvent[]>;
+  findInProgressPastEnd(): Promise<GroupEvent[]>;
+}
+
+// ── Full repository (backward-compatible union of all interfaces) ──────────────
+
+export interface FullGroupEventRepository
+  extends GroupEventRepository,
+    GroupEventDiscoveryRepository,
+    GroupEventParticipationRepository,
+    GroupEventRecurrenceRepository,
+    GroupEventTransitionQueries {}

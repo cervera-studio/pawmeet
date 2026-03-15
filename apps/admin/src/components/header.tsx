@@ -101,11 +101,7 @@ export function Header() {
                   }}
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                 >
-                  {isDark ? (
-                    <SunIcon className="h-4 w-4" />
-                  ) : (
-                    <MoonIcon className="h-4 w-4" />
-                  )}
+                  {isDark ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
                   {isDark ? t('lightTheme') : t('darkTheme')}
                 </button>
               </div>

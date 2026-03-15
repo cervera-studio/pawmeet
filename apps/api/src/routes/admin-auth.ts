@@ -16,8 +16,8 @@ import {
   authRateLimitMiddleware,
   passwordResetRateLimitMiddleware,
 } from '../middleware/rate-limit.js';
+import type { AdminNotificationService } from '../ports/admin-notification-service.js';
 import type { AdminUserRepository } from '../ports/admin-user-repository.js';
-import type { EmailService } from '../ports/email-service.js';
 
 const adminLoginSchema = z.object({
   email: z
@@ -56,7 +56,7 @@ const RESET_OTP_TTL_SECONDS = Math.ceil(PASSWORD_RESET_OTP_EXPIRY_MS / 1000);
 
 interface AdminAuthDeps {
   adminUserRepo: AdminUserRepository;
-  emailService: EmailService;
+  adminNotificationService: AdminNotificationService;
 }
 
 /** Lazy-initialized Redis — avoids import-time crash in tests */
@@ -94,7 +94,7 @@ async function incrementFailedAttempts(
 }
 
 export function createAdminAuthRoutes(deps: AdminAuthDeps) {
-  const { adminUserRepo, emailService } = deps;
+  const { adminUserRepo, adminNotificationService } = deps;
 
   return new Hono()
     .use('/login', authRateLimitMiddleware)
@@ -261,7 +261,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
         });
 
         // Fire-and-forget
-        emailService.sendPasswordResetOtp(email, otp).catch(() => {
+        adminNotificationService.sendPasswordResetOtp(email, otp).catch(() => {
           /* swallow — user already sees generic message */
         });
       }

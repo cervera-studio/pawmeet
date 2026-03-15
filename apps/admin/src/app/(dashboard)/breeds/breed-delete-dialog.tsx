@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,8 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { Breed } from './page.view-model';
+import { handleError } from '@/lib/error-handler';
 import { deleteBreed } from './actions';
+import type { Breed } from './page.view-model';
 
 interface BreedDeleteDialogProps {
   breed: Breed | null;
@@ -34,14 +36,19 @@ export function BreedDeleteDialog({ breed, open, onClose, onDeleted }: BreedDele
       onClose();
       onDeleted();
     } catch (error) {
-      console.error('[Breeds] Failed to delete:', error);
+      toast.error(handleError(error, "Errore durante l'eliminazione della razza"));
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) onClose();
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('deleteDialog.title')}</DialogTitle>

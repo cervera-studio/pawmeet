@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,9 +14,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { handleError } from '@/lib/error-handler';
 import { type BreedFormValues, breedFormSchema } from '@/lib/schemas/breed';
-import { BreedFormFields, BREED_GROUPS, DEFAULT_SCORES } from './breed-form-fields';
 import { createBreed } from './actions';
+import { BREED_GROUPS, BreedFormFields, DEFAULT_SCORES } from './breed-form-fields';
 
 const DEFAULT_VALUES: BreedFormValues = {
   name: '',
@@ -70,14 +72,19 @@ export function BreedCreateDialog({ open, onClose, onCreated }: BreedCreateDialo
       resetAndClose();
       onCreated();
     } catch (error) {
-      console.error('[Breeds] Failed to create:', error);
+      toast.error(handleError(error, 'Errore durante la creazione della razza'));
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) resetAndClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) resetAndClose();
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('createDialog.title')}</DialogTitle>

@@ -16,7 +16,10 @@ export function createEventStatusWorker(deps: Deps): Worker {
   const worker = new Worker(
     QUEUE_NAMES.EVENT_STATUS,
     async () => {
-      await transitionStatuses();
+      const result = await transitionStatuses();
+      if (!result.success) {
+        throw result.error;
+      }
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );

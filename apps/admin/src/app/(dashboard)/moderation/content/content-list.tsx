@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { ContentReport, ContentReportPage, ReviewAction } from '@/repositories';
 import { fetchPendingContent, reviewContent } from './actions';
@@ -28,7 +29,7 @@ export function ContentList({ initialData }: ContentListProps) {
       setReports(result.reports);
       setNextCursor(result.nextCursor);
     } catch (error) {
-      console.error('[ContentModeration] Failed to fetch reports:', error);
+      toast.error(handleError(error, 'Errore nel caricamento dei contenuti segnalati'));
     } finally {
       setIsLoading(false);
     }
@@ -40,7 +41,7 @@ export function ContentList({ initialData }: ContentListProps) {
       await reviewContent(reportId, action);
       void fetchReports();
     } catch (error) {
-      console.error('[ContentModeration] Failed to review report:', error);
+      toast.error(handleError(error, 'Errore durante la revisione del contenuto'));
     } finally {
       setIsReviewing(false);
     }

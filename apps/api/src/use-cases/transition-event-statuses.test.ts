@@ -19,7 +19,10 @@ describe('transitionEventStatuses', () => {
 
     const result = await transition();
 
-    expect(result.startedCount).toBe(1);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.startedCount).toBe(1);
+    }
     expect(groupEventRepo.updateStatus).toHaveBeenCalledWith('event-1', 'in_progress');
   });
 
@@ -35,7 +38,10 @@ describe('transitionEventStatuses', () => {
 
     const result = await transition();
 
-    expect(result.completedCount).toBe(1);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.completedCount).toBe(1);
+    }
     expect(groupEventRepo.updateStatus).toHaveBeenCalledWith('event-2', 'completed');
   });
 
@@ -48,8 +54,11 @@ describe('transitionEventStatuses', () => {
 
     const result = await transition();
 
-    expect(result.startedCount).toBe(0);
-    expect(result.completedCount).toBe(0);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.startedCount).toBe(0);
+      expect(result.data.completedCount).toBe(0);
+    }
     expect(groupEventRepo.updateStatus).not.toHaveBeenCalled();
   });
 });

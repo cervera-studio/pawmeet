@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* PawMeet — Palette A: Deep Forest & Champagne */
   /* Aligned with web + mobile + @pawmeet/design-tokens */

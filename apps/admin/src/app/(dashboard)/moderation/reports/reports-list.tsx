@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { handleError } from '@/lib/error-handler';
 import { formatDate } from '@/lib/formatters';
 import type { AdminReportListItem, ReportStatus, ResolveAction } from '@/repositories';
 import { fetchReports as fetchReportsAction, resolveReport } from './actions';
@@ -124,7 +125,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
       });
       setData(result);
     } catch (error) {
-      console.error('[Reports] Failed to fetch reports:', error);
+      toast.error(handleError(error, 'Errore nel caricamento delle segnalazioni'));
     } finally {
       setIsLoading(false);
     }

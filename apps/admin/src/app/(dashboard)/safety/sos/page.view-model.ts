@@ -1,5 +1,7 @@
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { handleError } from '@/lib/error-handler';
 import { fetchSosAlerts } from '../actions';
 
 export type AlertType = 'sos' | 'auto_alert' | 'checkin';
@@ -33,7 +35,7 @@ export function useSosViewModel(initialData: SosData, pageSize: number) {
       });
       setData(result);
     } catch (error) {
-      console.error('[Safety] Failed to fetch alerts:', error);
+      toast.error(handleError(error, 'Errore nel caricamento degli avvisi SOS'));
     } finally {
       setIsLoading(false);
     }

@@ -8,10 +8,7 @@ export const generalSettingsSchema = z.object({
 export type GeneralSettingsFormValues = z.infer<typeof generalSettingsSchema>;
 
 export const moderationSettingsSchema = z.object({
-  photoConfidenceThreshold: z.coerce
-    .number()
-    .min(0, 'Minimo 0')
-    .max(100, 'Massimo 100'),
+  photoConfidenceThreshold: z.coerce.number().min(0, 'Minimo 0').max(100, 'Massimo 100'),
   maxReportsBeforeSuspension: z.coerce
     .number()
     .int('Deve essere un numero intero')

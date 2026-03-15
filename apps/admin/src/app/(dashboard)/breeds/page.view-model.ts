@@ -1,6 +1,8 @@
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { handleError } from '@/lib/error-handler';
 import { fetchBreeds } from './actions';
 
 export type BreedsData = Awaited<ReturnType<typeof fetchBreeds>>;
@@ -29,7 +31,7 @@ export function useBreedsViewModel(initialData: BreedsData, pageSize: number) {
       });
       setData(result);
     } catch (error) {
-      console.error('[Breeds] Failed to fetch:', error);
+      toast.error(handleError(error, 'Errore nel caricamento delle razze'));
     } finally {
       setIsLoading(false);
     }

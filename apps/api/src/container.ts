@@ -1,5 +1,6 @@
 // Infra implementations
 
+import { createOrganizationAuthorizer } from './domain/organization-authorizer.js';
 import { BullMQNotificationService } from './infra/bullmq-notification-service.js';
 import { DrizzleActivityRepository } from './infra/drizzle-activity-repository.js';
 import { DrizzleAdminDataRepository } from './infra/drizzle-admin-data-repository.js';
@@ -28,6 +29,7 @@ import { DrizzleUserRepository } from './infra/drizzle-user-repository.js';
 import { DrizzleWalkAlbumRepository } from './infra/drizzle-walk-album-repository.js';
 import { DrizzleWalkRepository } from './infra/drizzle-walk-repository.js';
 import { DrizzleWalkTrackRepository } from './infra/drizzle-walk-track-repository.js';
+import { EmailAdminNotificationService } from './infra/email-admin-notification-service.js';
 import { JwksSocialAuthVerifier } from './infra/jwks-social-auth-verifier.js';
 import { JwtAuthService } from './infra/jwt-auth-service.js';
 import { PostHogAnalyticsProvider } from './infra/posthog-analytics-provider.js';
@@ -243,10 +245,12 @@ const socialAuthVerifier = new JwksSocialAuthVerifier(
   process.env.GOOGLE_CLIENT_ID ?? '',
 );
 const emailService = new ResendEmailService();
+const adminNotificationService = new EmailAdminNotificationService(emailService);
 const storage = new R2StorageService();
 const chat = new WsChatService();
 const notificationService = new BullMQNotificationService();
 const feedRealtime = new WsFeedRealtimeService();
+const organizationAuthorizer = createOrganizationAuthorizer();
 const experimentService = new StatsigExperimentService(
   process.env.STATSIG_SERVER_SECRET ?? '',
   consentRepo,
@@ -487,8 +491,11 @@ export const organizationDeps = {
   revokeOrganization: createRevokeOrganization({ organizationRepo }),
   getOrganization: createGetOrganization({ organizationRepo }),
   listOrganizations: createListOrganizations({ organizationRepo }),
-  addOrganizationMember: createAddOrganizationMember({ organizationRepo }),
-  removeOrganizationMember: createRemoveOrganizationMember({ organizationRepo }),
+  addOrganizationMember: createAddOrganizationMember({ organizationRepo, organizationAuthorizer }),
+  removeOrganizationMember: createRemoveOrganizationMember({
+    organizationRepo,
+    organizationAuthorizer,
+  }),
   listOrganizationMembers: createListOrganizationMembers({ organizationRepo }),
 };
 
@@ -592,7 +599,7 @@ export const followDeps = {
 export const adminDeps = {
   adminUserRepo,
   adminDataRepo,
-  emailService,
+  adminNotificationService,
 };
 
 // ── Data cleanup worker deps ─────────────────────────────────────────────────

@@ -1,5 +1,7 @@
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { handleError } from '@/lib/error-handler';
 import { fetchPendingDeletions } from './actions';
 
 export type DeletionsData = Awaited<ReturnType<typeof fetchPendingDeletions>>;
@@ -23,7 +25,7 @@ export function useDeletionsViewModel(initialData: DeletionsData, pageSize: numb
       });
       setData(result);
     } catch (error) {
-      console.error('[AccountDeletions] Failed to fetch:', error);
+      toast.error(handleError(error, 'Errore nel caricamento delle cancellazioni'));
     } finally {
       setIsLoading(false);
     }

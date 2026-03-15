@@ -186,9 +186,7 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
             ))}
           </select>
         </div>
-        <Button onClick={() => setCreateDialogOpen(true)}>
-          {t('createButton')}
-        </Button>
+        <Button onClick={() => setCreateDialogOpen(true)}>{t('createButton')}</Button>
       </div>
 
       <DataTable

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { AdminStory, AdminStoryPage } from '@/repositories';
 import { deleteStory as deleteStoryAction, fetchStories as fetchStoriesAction } from './actions';
@@ -47,7 +48,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
       setTotal(result.total);
       setPage(targetPage);
     } catch (error) {
-      console.error('[StoryModeration] Failed to fetch stories:', error);
+      toast.error(handleError(error, 'Errore nel caricamento delle storie'));
     } finally {
       setIsLoading(false);
     }
@@ -60,8 +61,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
       toast.success(t('toast.deleted'));
       void fetchStories(page);
     } catch (error) {
-      console.error('[StoryModeration] Failed to delete story:', error);
-      toast.error(t('toast.deleteError'));
+      toast.error(handleError(error, t('toast.deleteError')));
     } finally {
       setIsDeleting(false);
     }

@@ -8,15 +8,15 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import type { AppSettings } from '@/repositories';
 import {
   type GeneralSettingsFormValues,
+  generalSettingsSchema,
   type MatchingSettingsFormValues,
   type ModerationSettingsFormValues,
-  generalSettingsSchema,
   matchingSettingsSchema,
   moderationSettingsSchema,
 } from '@/lib/schemas/settings';
+import type { AppSettings } from '@/repositories';
 import { updateSettings } from './actions';
 
 interface SettingsFormProps {
@@ -153,10 +153,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
           <CardDescription>{t('moderation.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            onSubmit={moderationForm.handleSubmit(handleSaveModeration)}
-            className="space-y-4"
-          >
+          <form onSubmit={moderationForm.handleSubmit(handleSaveModeration)} className="space-y-4">
             <div className="space-y-2">
               <label
                 htmlFor="photo-confidence"
@@ -338,7 +335,8 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             </div>
             <div className="flex items-center gap-2">
               <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                {t('matching.sum')}: <span className="font-medium">{matchWeightSum.toFixed(2)}</span>
+                {t('matching.sum')}:{' '}
+                <span className="font-medium">{matchWeightSum.toFixed(2)}</span>
               </p>
               {!isMatchWeightValid && (
                 <p className="text-sm text-red-500">{t('matching.validationError')}</p>

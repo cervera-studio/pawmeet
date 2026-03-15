@@ -1,7 +1,9 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { handleError } from '@/lib/error-handler';
 import type { AdminOrganizationListItem, ListOrganizationsParams } from '@/repositories';
 import { fetchOrganizations } from './actions';
 
@@ -33,7 +35,7 @@ export function useOrganizationsViewModel(
       });
       setData(result);
     } catch (error) {
-      console.error('[Organizations] Failed to fetch:', error);
+      toast.error(handleError(error, 'Errore nel caricamento delle organizzazioni'));
     } finally {
       setIsLoading(false);
     }

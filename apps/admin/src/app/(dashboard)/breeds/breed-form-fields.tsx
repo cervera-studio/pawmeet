@@ -1,7 +1,7 @@
 'use client';
 
-import type { UseFormReturn } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
+import type { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import type { BreedFormValues } from '@/lib/schemas/breed';
 
@@ -93,7 +93,12 @@ interface BreedFormFieldsProps {
 
 export function BreedFormFields({ idPrefix, form }: BreedFormFieldsProps) {
   const t = useTranslations('breeds');
-  const { register, watch, setValue, formState: { errors } } = form;
+  const {
+    register,
+    watch,
+    setValue,
+    formState: { errors },
+  } = form;
 
   return (
     <div className="space-y-4 py-4">
@@ -173,9 +178,7 @@ export function BreedFormFields({ idPrefix, form }: BreedFormFieldsProps) {
           min={0}
           step={0.1}
         />
-        {errors.avgWeightKg && (
-          <p className="text-xs text-red-600">{errors.avgWeightKg.message}</p>
-        )}
+        {errors.avgWeightKg && <p className="text-xs text-red-600">{errors.avgWeightKg.message}</p>}
       </div>
       <div className="space-y-2">
         <span className="text-sm font-medium">{t('scores.title')}</span>

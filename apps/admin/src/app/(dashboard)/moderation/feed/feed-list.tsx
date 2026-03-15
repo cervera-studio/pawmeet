@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { FeedPostPage, FeedStats } from '@/repositories';
 import { fetchFeedPosts, fetchFeedStats, moderatePost } from './actions';
@@ -67,7 +68,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
       setTotalPages(result.totalPages);
       setTotal(result.total);
     } catch (error) {
-      console.error('[FeedModeration] Failed to fetch posts:', error);
+      toast.error(handleError(error, 'Errore nel caricamento dei post'));
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +79,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
       const result = await fetchFeedStats();
       setStats(result);
     } catch (error) {
-      console.error('[FeedModeration] Failed to fetch stats:', error);
+      toast.error(handleError(error, 'Errore nel caricamento delle statistiche'));
     }
   }
 
@@ -89,7 +90,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
       void fetchPosts();
       void fetchStats();
     } catch (error) {
-      console.error('[FeedModeration] Failed to update post:', error);
+      toast.error(handleError(error, 'Errore durante la moderazione del post'));
     } finally {
       setIsUpdating(false);
     }

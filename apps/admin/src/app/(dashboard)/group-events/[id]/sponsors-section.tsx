@@ -2,9 +2,11 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { handleError } from '@/lib/error-handler';
 import { addSponsorToEvent, fetchEventSponsors, removeSponsorFromEvent } from '../actions';
 
 interface EventSponsor {
@@ -58,7 +60,7 @@ export function SponsorsSection({
       setOrgId('');
       setShowAddForm(false);
     } catch (error) {
-      console.error('Failed to add sponsor:', error);
+      toast.error(handleError(error, "Errore durante l'aggiunta dello sponsor"));
     } finally {
       setLoading(false);
     }
@@ -70,7 +72,7 @@ export function SponsorsSection({
       await removeSponsorFromEvent(eventId, organizationId);
       setSponsors((prev) => prev.filter((s) => s.organizationId !== organizationId));
     } catch (error) {
-      console.error('Failed to remove sponsor:', error);
+      toast.error(handleError(error, 'Errore durante la rimozione dello sponsor'));
     } finally {
       setLoading(false);
     }

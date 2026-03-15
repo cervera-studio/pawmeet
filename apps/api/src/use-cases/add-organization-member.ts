@@ -6,10 +6,12 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
+import type { OrganizationAuthorizer } from '../domain/organization-authorizer.js';
 import type { OrganizationRepository } from '../ports/index.js';
 
 type Deps = {
   organizationRepo: OrganizationRepository;
+  organizationAuthorizer: OrganizationAuthorizer;
 };
 
 type AddMemberInput = {
@@ -18,7 +20,7 @@ type AddMemberInput = {
   role: OrganizationMemberRole;
 };
 
-export function createAddOrganizationMember({ organizationRepo }: Deps) {
+export function createAddOrganizationMember({ organizationRepo, organizationAuthorizer }: Deps) {
   return async (
     actorUserId: string,
     input: AddMemberInput,
@@ -30,7 +32,7 @@ export function createAddOrganizationMember({ organizationRepo }: Deps) {
 
     // Check that the actor is an owner or admin of the org
     const actorMember = await organizationRepo.findMember(input.organizationId, actorUserId);
-    if (!actorMember || (actorMember.role !== 'owner' && actorMember.role !== 'admin')) {
+    if (!actorMember || !organizationAuthorizer.canManageMembers(actorMember.role)) {
       return fail(
         new AppError('ORG_NOT_AUTHORIZED', 'Non hai i permessi per aggiungere membri', 403),
       );

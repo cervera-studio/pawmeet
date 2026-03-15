@@ -93,9 +93,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                 {...register('title')}
                 placeholder="Passeggiata al Parco Sempione"
               />
-              {errors.title && (
-                <p className="text-xs text-red-600">{errors.title.message}</p>
-              )}
+              {errors.title && <p className="text-xs text-red-600">{errors.title.message}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -123,11 +121,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               <label htmlFor="official-date" className="text-sm font-medium">
                 Data e ora *
               </label>
-              <Input
-                id="official-date"
-                type="datetime-local"
-                {...register('scheduledAt')}
-              />
+              <Input id="official-date" type="datetime-local" {...register('scheduledAt')} />
               {errors.scheduledAt && (
                 <p className="text-xs text-red-600">{errors.scheduledAt.message}</p>
               )}
@@ -158,9 +152,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                 {...register('location')}
                 placeholder="Parco Sempione, Milano"
               />
-              {errors.location && (
-                <p className="text-xs text-red-600">{errors.location.message}</p>
-              )}
+              {errors.location && <p className="text-xs text-red-600">{errors.location.message}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -176,9 +168,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                 <option value="meetup">Incontro</option>
                 <option value="training">Addestramento</option>
               </select>
-              {errors.category && (
-                <p className="text-xs text-red-600">{errors.category.message}</p>
-              )}
+              {errors.category && <p className="text-xs text-red-600">{errors.category.message}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -192,9 +182,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                 {...register('latitude')}
                 placeholder="45.4773"
               />
-              {errors.latitude && (
-                <p className="text-xs text-red-600">{errors.latitude.message}</p>
-              )}
+              {errors.latitude && <p className="text-xs text-red-600">{errors.latitude.message}</p>}
             </div>
 
             <div className="space-y-1.5">

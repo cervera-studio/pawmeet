@@ -1,6 +1,8 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { handleError } from '@/lib/error-handler';
 import type { AdminUserListItem } from '@/repositories';
 import { fetchUsers as fetchUsersAction } from './actions';
 
@@ -30,7 +32,7 @@ export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem
       });
       setResult(data);
     } catch (error) {
-      console.error('[Users] Failed to fetch users:', error);
+      toast.error(handleError(error, 'Errore nel caricamento degli utenti'));
     } finally {
       setIsLoading(false);
     }

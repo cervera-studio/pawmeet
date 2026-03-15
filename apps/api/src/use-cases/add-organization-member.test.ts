@@ -1,5 +1,6 @@
 import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
+import { createOrganizationAuthorizer } from '../domain/organization-authorizer.js';
 import {
   buildOrganization,
   buildOrganizationMember,
@@ -27,7 +28,8 @@ describe('addOrganizationMember', () => {
       }),
     });
 
-    const addMember = createAddOrganizationMember({ organizationRepo });
+    const organizationAuthorizer = createOrganizationAuthorizer();
+    const addMember = createAddOrganizationMember({ organizationRepo, organizationAuthorizer });
     return { addMember, organizationRepo };
   }
 

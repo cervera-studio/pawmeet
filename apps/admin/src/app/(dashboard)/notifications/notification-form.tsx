@@ -18,8 +18,8 @@ import {
 import { Input } from '@/components/ui/input';
 import {
   type BroadcastNotificationFormValues,
-  type TargetedNotificationFormValues,
   broadcastNotificationSchema,
+  type TargetedNotificationFormValues,
   targetedNotificationSchema,
 } from '@/lib/schemas/notification';
 import { sendBroadcast, sendTargeted } from './actions';
@@ -149,9 +149,7 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
           {form.formState.errors.body ? (
             <p className="text-xs text-red-600">{form.formState.errors.body.message}</p>
           ) : (
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              {bodyValue.length}/500
-            </p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">{bodyValue.length}/500</p>
           )}
         </div>
 

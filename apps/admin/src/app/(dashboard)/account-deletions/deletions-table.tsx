@@ -3,9 +3,11 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo } from 'react';
+import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import { cancelDeletion } from './actions';
 import { type DeletionsData, type PendingDeletion, useDeletionsViewModel } from './page.view-model';
@@ -31,7 +33,7 @@ export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
         await cancelDeletion(userId);
         void vm.refetch();
       } catch (error) {
-        console.error('[AccountDeletions] Failed to cancel:', error);
+        toast.error(handleError(error, "Errore durante l'annullamento della cancellazione"));
       }
     },
     [vm],

@@ -5,6 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import { type CreateAdminUserFormValues, createAdminUserSchema } from '@/lib/schemas/admin-user';
 import { createAdminUser, resetAdminPassword, toggleAdminActive, updateAdminRole } from './actions';
@@ -87,7 +89,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
       createForm.reset();
       void vm.refetch();
     } catch (error) {
-      console.error('[AdminUsers] Failed to create:', error);
+      toast.error(handleError(error, "Errore durante la creazione dell'amministratore"));
     } finally {
       setIsSubmitting(false);
     }
@@ -102,7 +104,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
       setSelectedUser(null);
       void vm.refetch();
     } catch (error) {
-      console.error('[AdminUsers] Failed to update role:', error);
+      toast.error(handleError(error, "Errore durante l'aggiornamento del ruolo"));
     } finally {
       setIsSubmitting(false);
     }
@@ -114,7 +116,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         await toggleAdminActive({ adminId: user.id });
         void vm.refetch();
       } catch (error) {
-        console.error('[AdminUsers] Failed to toggle active:', error);
+        toast.error(handleError(error, 'Errore durante il cambio di stato'));
       }
     },
     [vm],
@@ -129,7 +131,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
       setSelectedUser(null);
       setResetPwd('');
     } catch (error) {
-      console.error('[AdminUsers] Failed to reset password:', error);
+      toast.error(handleError(error, 'Errore durante il reset della password'));
     } finally {
       setIsSubmitting(false);
     }
@@ -373,9 +375,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
                   ))}
                 </select>
                 {createForm.formState.errors.role && (
-                  <p className="text-xs text-red-600">
-                    {createForm.formState.errors.role.message}
-                  </p>
+                  <p className="text-xs text-red-600">{createForm.formState.errors.role.message}</p>
                 )}
               </div>
             </div>

@@ -1,3 +1,5 @@
+import type { Result } from '@pawmeet/types';
+import { succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import type { BadgeRepository } from '../ports/badge-repository.js';
 import type { GroupEventRepository, NotificationService } from '../ports/index.js';
@@ -13,7 +15,7 @@ export function createTransitionEventStatuses({
   notificationService,
   badgeRepo,
 }: Deps) {
-  return async (): Promise<{ startedCount: number; completedCount: number }> => {
+  return async (): Promise<Result<{ startedCount: number; completedCount: number }>> => {
     let startedCount = 0;
     let completedCount = 0;
 
@@ -67,6 +69,6 @@ export function createTransitionEventStatuses({
       );
     }
 
-    return { startedCount, completedCount };
+    return succeed({ startedCount, completedCount });
   };
 }

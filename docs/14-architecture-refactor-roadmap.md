@@ -72,15 +72,15 @@
 
 **Tasks:**
 
-- [ ] Add `react-hook-form` + `@hookform/resolvers/zod` to admin
-- [ ] Create Zod schemas (reuse from `packages/validation` where possible):
+- [x] Add `react-hook-form` + `@hookform/resolvers/zod` to admin
+- [x] Create Zod schemas (reuse from `packages/validation` where possible):
   - `createOfficialEventSchema` (title, coordinates, date, duration, maxParticipants)
   - `settingsSchema` (appName, supportEmail, match weights)
   - `createBreedSchema` (name, nameIt, group, size, avgWeight)
   - `adminUserSchema` (email, role)
   - `notificationSchema` (title, body, target)
-- [ ] Refactor forms to use `useForm()` + `zodResolver()`
-- [ ] Add field-level error display to all forms
+- [x] Refactor forms to use `useForm()` + `zodResolver()`
+- [x] Add field-level error display to all forms
 
 **Files:** All form components, new `lib/schemas/` directory
 **Effort:** 2–3 days
@@ -93,12 +93,12 @@
 
 **Tasks:**
 
-- [ ] Extract `BreedCreateDialog` component
-- [ ] Extract `BreedEditDialog` component
-- [ ] Extract `BreedDeleteDialog` component
-- [ ] Slim `BreedsTable` to data display + dialog triggers only
-- [ ] Apply same pattern to `group-events-table.tsx` (extract `CreateOfficialEventDialog`)
-- [ ] Apply same pattern to `organizations-table.tsx` if applicable
+- [x] Extract `BreedCreateDialog` component
+- [x] Extract `BreedEditDialog` component
+- [x] Extract `BreedDeleteDialog` component
+- [x] Slim `BreedsTable` to data display + dialog triggers only
+- [x] `group-events-table.tsx` — already clean, no inline dialogs
+- [x] `organizations-table.tsx` — already clean, no inline dialogs
 
 **Files:** `breeds-table.tsx`, `group-events-table.tsx`, `organizations-table.tsx`, new dialog components
 **Effort:** 2 days
@@ -225,10 +225,10 @@
 
 **Tasks:**
 
-- [ ] Create `hooks/useDebouncedValue.ts`
-- [ ] Replace manual debounce in `organizations-table.tsx`
-- [ ] Replace manual debounce in `breeds-table.tsx`
-- [ ] Replace manual debounce in `group-events-table.tsx`
+- [x] Create `hooks/useDebouncedValue.ts` (done in task 1.3)
+- [x] Replace manual debounce in `organizations-table.tsx` (done in task 1.3)
+- [x] Replace manual debounce in `breeds-table.tsx` (done in task 1.3)
+- [x] Replace manual debounce in `group-events-table.tsx` (done in task 1.3)
 
 **Effort:** 2 hours
 

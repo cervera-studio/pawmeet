@@ -1,6 +1,8 @@
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { handleError } from '@/lib/error-handler';
 import { fetchEmergencyContacts } from '../actions';
 
 export type ContactsData = Awaited<ReturnType<typeof fetchEmergencyContacts>>;
@@ -27,7 +29,7 @@ export function useContactsViewModel(initialData: ContactsData, pageSize: number
       });
       setData(result);
     } catch (error) {
-      console.error('[Safety] Failed to fetch contacts:', error);
+      toast.error(handleError(error, 'Errore nel caricamento dei contatti'));
     } finally {
       setIsLoading(false);
     }

@@ -4,9 +4,11 @@ import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { handleError } from '@/lib/error-handler';
 import { formatDate } from '@/lib/formatters';
 import type { AdminDogListItem } from '@/repositories';
 import { fetchDogs } from './actions';
@@ -123,7 +125,7 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
       });
       setData(result);
     } catch (error) {
-      console.error('[Dogs] Failed to fetch dogs:', error);
+      toast.error(handleError(error, 'Errore nel caricamento dei cani'));
     } finally {
       setIsLoading(false);
     }

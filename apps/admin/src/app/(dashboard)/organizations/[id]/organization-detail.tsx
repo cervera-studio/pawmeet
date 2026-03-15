@@ -2,9 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import { revokeOrganization, verifyOrganization } from '../actions';
 
@@ -59,7 +61,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       await verifyOrganization(organization.id);
       router.refresh();
     } catch (error) {
-      console.error('Failed to verify organization:', error);
+      toast.error(handleError(error, "Errore durante la verifica dell'organizzazione"));
     } finally {
       setIsProcessing(false);
     }
@@ -72,7 +74,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       await revokeOrganization(organization.id);
       router.refresh();
     } catch (error) {
-      console.error('Failed to revoke organization:', error);
+      toast.error(handleError(error, 'Errore durante la revoca della verifica'));
     } finally {
       setIsProcessing(false);
     }

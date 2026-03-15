@@ -1,7 +1,9 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { handleError } from '@/lib/error-handler';
 import type { AdminGroupEventListItem, ListGroupEventsParams } from '@/repositories';
 import { fetchGroupEvents } from './actions';
 
@@ -36,7 +38,7 @@ export function useGroupEventsViewModel(
       });
       setData(result);
     } catch (error) {
-      console.error('[GroupEvents] Failed to fetch:', error);
+      toast.error(handleError(error, 'Errore nel caricamento degli eventi'));
     } finally {
       setIsLoading(false);
     }

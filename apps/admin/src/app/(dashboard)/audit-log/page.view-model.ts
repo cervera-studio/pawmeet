@@ -1,6 +1,8 @@
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { handleError } from '@/lib/error-handler';
 import { fetchAuditLog } from './actions';
 
 export type AuditLogData = Awaited<ReturnType<typeof fetchAuditLog>>;
@@ -52,7 +54,7 @@ export function useAuditLogViewModel(initialData: AuditLogData, pageSize: number
       });
       setData(result);
     } catch (error) {
-      console.error('[AuditLog] Failed to fetch:', error);
+      toast.error(handleError(error, 'Errore nel caricamento del registro'));
     } finally {
       setIsLoading(false);
     }

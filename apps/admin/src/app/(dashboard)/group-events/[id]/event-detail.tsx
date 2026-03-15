@@ -2,9 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import { cancelGroupEvent, removeParticipant } from '../actions';
 import { SponsorsSection } from './sponsors-section';
@@ -109,7 +111,7 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
       await cancelGroupEvent(event.id);
       router.refresh();
     } catch (error) {
-      console.error('Failed to cancel event:', error);
+      toast.error(handleError(error, "Errore durante l'annullamento dell'evento"));
     } finally {
       setIsCancelling(false);
     }
@@ -122,7 +124,7 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
       await removeParticipant(participantId, event.id);
       router.refresh();
     } catch (error) {
-      console.error('Failed to remove participant:', error);
+      toast.error(handleError(error, 'Errore durante la rimozione del partecipante'));
     } finally {
       setRemovingId(null);
     }

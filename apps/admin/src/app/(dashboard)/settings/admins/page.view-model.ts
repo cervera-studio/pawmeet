@@ -1,6 +1,8 @@
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { handleError } from '@/lib/error-handler';
 import { fetchAdminUsers } from './actions';
 
 interface AdminUser {
@@ -52,7 +54,7 @@ export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: nu
       });
       setData(result);
     } catch (error) {
-      console.error('[AdminUsers] Failed to fetch:', error);
+      toast.error(handleError(error, 'Errore nel caricamento degli amministratori'));
     } finally {
       setIsLoading(false);
     }

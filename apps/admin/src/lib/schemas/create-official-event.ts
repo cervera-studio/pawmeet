@@ -22,10 +22,7 @@ export const createOfficialEventFormSchema = z.object({
     .min(DURATION_MIN, `Minimo ${DURATION_MIN} minuti`)
     .max(DURATION_MAX, `Massimo ${DURATION_MAX} minuti`),
   location: z.string().min(1, 'Il luogo è obbligatorio').max(200, 'Massimo 200 caratteri'),
-  latitude: z.coerce
-    .number()
-    .min(-90, 'Latitudine minima: -90')
-    .max(90, 'Latitudine massima: 90'),
+  latitude: z.coerce.number().min(-90, 'Latitudine minima: -90').max(90, 'Latitudine massima: 90'),
   longitude: z.coerce
     .number()
     .min(-180, 'Longitudine minima: -180')

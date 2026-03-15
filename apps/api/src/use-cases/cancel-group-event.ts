@@ -1,4 +1,5 @@
 import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@pawmeet/types';
+import { canTransitionTo } from '../domain/group-event-state-machine.js';
 import type { GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -20,8 +21,14 @@ export function createCancelGroupEvent({ groupEventRepo, notificationService }: 
       );
     }
 
-    if (event.status === GROUP_EVENT_STATUS.CANCELLED) {
-      return fail(new AppError('EVENT_ALREADY_CANCELLED', 'Evento già annullato', 400));
+    if (!canTransitionTo(event.status, GROUP_EVENT_STATUS.CANCELLED)) {
+      return fail(
+        new AppError(
+          'INVALID_STATUS_TRANSITION',
+          `Impossibile annullare un evento con stato "${event.status}"`,
+          400,
+        ),
+      );
     }
 
     await groupEventRepo.updateStatus(eventId, GROUP_EVENT_STATUS.CANCELLED);

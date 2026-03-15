@@ -93,6 +93,38 @@ describe('cancelGroupEvent', () => {
 
     expect(isFailure(result)).toBe(true);
     if (!isFailure(result)) return;
-    expect(result.error.code).toBe('EVENT_ALREADY_CANCELLED');
+    expect(result.error.code).toBe('INVALID_STATUS_TRANSITION');
+  });
+
+  it('fails when event is completed', async () => {
+    const groupEventRepo = buildGroupEventRepo({
+      findByIdWithParticipants: vi
+        .fn()
+        .mockResolvedValue(buildGroupEventWithParticipants({ status: 'completed' })),
+    });
+    const notificationService = buildNotificationService();
+    const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
+
+    const result = await cancelEvent('user-1', 'event-1');
+
+    expect(isFailure(result)).toBe(true);
+    if (!isFailure(result)) return;
+    expect(result.error.code).toBe('INVALID_STATUS_TRANSITION');
+  });
+
+  it('fails when event is in_progress', async () => {
+    const groupEventRepo = buildGroupEventRepo({
+      findByIdWithParticipants: vi
+        .fn()
+        .mockResolvedValue(buildGroupEventWithParticipants({ status: 'in_progress' })),
+    });
+    const notificationService = buildNotificationService();
+    const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
+
+    const result = await cancelEvent('user-1', 'event-1');
+
+    expect(isFailure(result)).toBe(true);
+    if (!isFailure(result)) return;
+    expect(result.error.code).toBe('INVALID_STATUS_TRANSITION');
   });
 });

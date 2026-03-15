@@ -1,6 +1,7 @@
 import type { Result } from '@pawmeet/types';
 import { succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { canTransitionTo } from '../domain/group-event-state-machine.js';
 import type { BadgeRepository } from '../ports/badge-repository.js';
 import type {
   GroupEventRepository,
@@ -27,6 +28,13 @@ export function createTransitionEventStatuses({
     // Transition: scheduled → in_progress
     const toStart = await groupEventRepo.findScheduledPastStart();
     for (const event of toStart) {
+      if (!canTransitionTo(event.status, 'in_progress')) {
+        logger.warn(
+          'transitionEventStatuses',
+          `Skipping event ${event.id}: cannot transition from "${event.status}" to "in_progress"`,
+        );
+        continue;
+      }
       await groupEventRepo.updateStatus(event.id, 'in_progress');
       startedCount++;
 
@@ -36,6 +44,13 @@ export function createTransitionEventStatuses({
     // Transition: in_progress → completed
     const toComplete = await groupEventRepo.findInProgressPastEnd();
     for (const event of toComplete) {
+      if (!canTransitionTo(event.status, 'completed')) {
+        logger.warn(
+          'transitionEventStatuses',
+          `Skipping event ${event.id}: cannot transition from "${event.status}" to "completed"`,
+        );
+        continue;
+      }
       await groupEventRepo.updateStatus(event.id, 'completed');
       completedCount++;
 

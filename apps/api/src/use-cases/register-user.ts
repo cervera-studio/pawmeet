@@ -33,7 +33,8 @@ interface Deps {
 export function createRegisterUser(deps: Deps) {
   return async (input: RegisterInput): Promise<Result<RegisterOutput>> => {
     const { userRepo, tokenRepo, authService, emailService } = deps;
-    const { email, password, displayName, dateOfBirth } = input;
+    const { password, displayName, dateOfBirth } = input;
+    const email = input.email.toLowerCase().trim();
 
     // Check if email already exists
     const existing = await userRepo.findByEmail(email);

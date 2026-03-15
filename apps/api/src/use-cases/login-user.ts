@@ -34,7 +34,8 @@ interface Deps {
 export function createLoginUser(deps: Deps) {
   return async (input: LoginInput): Promise<Result<LoginOutput>> => {
     const { userRepo, tokenRepo, authService } = deps;
-    const { email, password } = input;
+    const { password } = input;
+    const email = input.email.toLowerCase().trim();
 
     // Find user by email
     const user = await userRepo.findByEmail(email);

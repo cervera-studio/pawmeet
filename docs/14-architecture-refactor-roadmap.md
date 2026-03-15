@@ -240,14 +240,14 @@
 
 **Tasks:**
 
-- [ ] Create `container/` directory with domain-specific files:
+- [x] Create `container/` directory with domain-specific files:
   - `auth-container.ts`, `dog-container.ts`, `match-container.ts`
   - `walk-container.ts`, `chat-container.ts`, `feed-container.ts`
   - `gamification-container.ts`, `organization-container.ts`
   - `group-event-container.ts`, `admin-container.ts`
   - `services.ts` (shared repositories and services)
-- [ ] Create `container/index.ts` re-exporting all deps
-- [ ] Verify all imports still resolve
+- [x] Create `container/index.ts` re-exporting all deps
+- [x] Verify all imports still resolve
 
 **Effort:** 2 days
 
@@ -259,10 +259,10 @@
 
 **Tasks:**
 
-- [ ] Create `ports/analytics-repository.ts` with `anonymizeUserEvents(userId)`
-- [ ] Create `infra/drizzle-analytics-repository.ts`
-- [ ] Remove `db` dependency from `delete-account.ts`
-- [ ] Wire in container
+- [x] Create `ports/analytics-repository.ts` with `anonymizeUserEvents(userId)`
+- [x] Create `infra/drizzle-analytics-repository.ts`
+- [x] Remove `db` dependency from `delete-account.ts`
+- [x] Wire in container
 
 **Effort:** 4 hours
 
@@ -274,12 +274,12 @@
 
 **Tasks:**
 
-- [ ] Define logging convention: `logger.info(UseCaseName, { key data })` on success, `logger.warn` on domain errors
-- [ ] Add logging to high-impact use cases first:
+- [x] Define logging convention: `logger.info(UseCaseName, { key data })` on success, `logger.warn` on domain errors
+- [x] Add logging to high-impact use cases first:
   - `create-dog`, `propose-walk`, `send-message`, `discover-candidates`
   - `register-user`, `login-user`, `delete-account`
   - All moderation actions
-- [ ] Ensure PII rules are followed (no email, GPS, chat content in logs)
+- [x] Ensure PII rules are followed (no email, GPS, chat content in logs)
 
 **Effort:** 3–4 days
 
@@ -291,9 +291,9 @@
 
 **Tasks:**
 
-- [ ] Create type guard: `hasLocation(user): user is User & { latitude: number; longitude: number }`
-- [ ] Apply to `discover-candidates.ts` and similar use cases
-- [ ] Audit other nullable field narrowing across use cases
+- [x] Create type guard: `hasLocation(user): user is User & { latitude: number; longitude: number }`
+- [x] Apply to `discover-candidates.ts` and similar use cases
+- [x] Audit other nullable field narrowing across use cases
 
 **Effort:** 4 hours
 
@@ -305,12 +305,12 @@
 
 **Tasks:**
 
-- [ ] Create `lib/constants.ts` with:
+- [x] Create `lib/constants.ts` with:
   - `PAGINATION` (DEFAULT_PAGE_SIZE, MIN, MAX)
   - `TIMING` (DEBOUNCE_DELAY_MS)
   - `CHART_COLORS` (GREEN_PRIMARY, GREEN_SECONDARY, GOLD)
   - `EVENT` (DURATION_MIN, DURATION_MAX)
-- [ ] Replace all magic numbers with constants
+- [x] Replace all magic numbers with constants
 
 **Effort:** 2 hours
 
@@ -322,9 +322,9 @@
 
 **Tasks:**
 
-- [ ] Track `deletingStoryId` instead of boolean `isDeleting`
-- [ ] Apply same pattern to any component with per-row operations
-- [ ] Show spinner/loading text only on the affected row
+- [x] Track `deletingStoryId` instead of boolean `isDeleting`
+- [x] Apply same pattern to any component with per-row operations
+- [x] Show spinner/loading text only on the affected row
 
 **Effort:** 1 hour
 
@@ -336,9 +336,9 @@
 
 **Tasks:**
 
-- [ ] Move all hardcoded strings in `error.tsx` to translation files
-- [ ] Audit for other hardcoded strings across admin app
-- [ ] Ensure all new components use `useTranslations()`
+- [x] Move all hardcoded strings in `error.tsx` to translation files
+- [x] Audit for other hardcoded strings across admin app
+- [x] Ensure all new components use `useTranslations()`
 
 **Effort:** 2 hours
 
@@ -350,13 +350,13 @@
 
 **Tasks:**
 
-- [ ] Define admin analytics events in `AnalyticsEventMap`
-- [ ] Add `trackEvent()` to server actions:
+- [x] Define admin analytics events in `AnalyticsEventMap`
+- [x] Add `trackEvent()` to server actions:
   - `suspendUser`, `banUser`, `reactivateUser`
   - `resolveReport`
   - `createOfficialEvent`
   - `updateSettings`
-- [ ] Follow convention: track AFTER successful action, at router/action level
+- [x] Follow convention: track AFTER successful action, at router/action level
 
 **Effort:** 4 hours
 

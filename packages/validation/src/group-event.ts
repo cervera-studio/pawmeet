@@ -93,6 +93,7 @@ export const listNearbyEventsSchema = z.object({
   longitude: z.number().min(-180).max(180),
   radiusKm: z.number().min(MIN_SEARCH_RADIUS_KM).max(MAX_SEARCH_RADIUS_KM).default(10),
   limit: z.number().int().min(1).max(50).default(20),
+  category: z.enum(['walk', 'meetup', 'training']).optional(),
 });
 
 export const requestJoinEventSchema = z.object({
@@ -134,6 +135,15 @@ export const createOfficialEventSchema = z.object({
   coverImageUrl: z.string().url().max(500).optional(),
   dogId: z.string().uuid(),
   organizationId: z.string().uuid(),
+});
+
+export const inviteToEventSchema = z.object({
+  eventId: z.string().uuid(),
+  userId: z.string().uuid(),
+});
+
+export const getEventRecapSchema = z.object({
+  eventId: z.string().uuid(),
 });
 
 export const listFeaturedEventsSchema = z.object({

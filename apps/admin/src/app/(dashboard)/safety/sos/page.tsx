@@ -1,24 +1,14 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchSosAlerts } from '../actions';
 import { SosTable } from './sos-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default async function SosAlertsPage() {
-  const [api, t] = await Promise.all([getServerTrpcClient(), getTranslations('safety.sos')]);
-
-  const result = await api.admin.listSosAlerts.query({
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
-
-  const initialData = {
-    data: result.data,
-    total: result.total,
-    page: result.page,
-    pageSize: result.pageSize,
-    hasMore: result.page < result.totalPages,
-  };
+  const [initialData, t] = await Promise.all([
+    fetchSosAlerts({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    getTranslations('safety.sos'),
+  ]);
 
   return (
     <div className="space-y-6">

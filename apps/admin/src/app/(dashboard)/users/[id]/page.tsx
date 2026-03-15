@@ -4,7 +4,7 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate, formatDateTime, formatNumber } from '@/lib/formatters';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchUser } from '../actions';
 import { UserActions } from './user-actions';
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -22,11 +22,13 @@ interface UserDetailPageProps {
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id } = await params;
-  const t = await getTranslations('users');
-  const tc = await getTranslations('common');
+  const [user, t, tc] = await Promise.all([
+    fetchUser(id),
+    getTranslations('users'),
+    getTranslations('common'),
+  ]);
 
-  const api = await getServerTrpcClient();
-  const user = await api.admin.getUser.query({ id }).catch(() => notFound());
+  if (!user) notFound();
 
   return (
     <div className="space-y-6">

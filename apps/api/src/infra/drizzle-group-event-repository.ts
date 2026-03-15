@@ -47,7 +47,8 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
   }
 
   async findNearby(query: NearbyEventsQuery): Promise<(GroupEvent & { distanceKm: number })[]> {
-    const { latitude, longitude, radiusKm, limit = 20, excludeUserId, friendUserIds } = query;
+    const { latitude, longitude, radiusKm, limit = 20, excludeUserId, friendUserIds, category } =
+      query;
 
     const radiusMeters = radiusKm * 1000;
 
@@ -74,6 +75,10 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
       );
     } else {
       conditions.push(eq(groupEvents.visibility, 'public'));
+    }
+
+    if (category) {
+      conditions.push(eq(groupEvents.category, category));
     }
 
     if (excludeUserId) {

@@ -1,12 +1,9 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
-import type { AppSettings } from '@/repositories';
+import { fetchSettings } from './actions';
 import { SettingsForm } from './settings-form';
 
 export default async function SettingsPage() {
-  const t = await getTranslations('settings');
-  const api = await getServerTrpcClient();
-  const settings: AppSettings = await api.admin.getSettings.query();
+  const [settings, t] = await Promise.all([fetchSettings(), getTranslations('settings')]);
 
   return (
     <div className="space-y-6">

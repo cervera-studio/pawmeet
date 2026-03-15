@@ -99,6 +99,8 @@ import { createGetDogRating } from './use-cases/get-dog-rating.js';
 import { createGetFeed } from './use-cases/get-feed.js';
 import { createGetFeedStories } from './use-cases/get-feed-stories.js';
 import { createGetFollowStatus } from './use-cases/get-follow-status.js';
+import { createGetEventRecap } from './use-cases/get-event-recap.js';
+import { createInviteToEvent } from './use-cases/invite-to-event.js';
 import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
 import { createGetGroupMessages } from './use-cases/get-group-messages.js';
@@ -467,6 +469,8 @@ export const groupEventDeps = {
   createOfficialEvent: createCreateOfficialEvent({ organizationRepo, groupEventRepo, dogRepo }),
   listFeaturedEvents: createListFeaturedEvents({ groupEventRepo }),
   listEventSponsors: createListEventSponsors({ eventSponsorRepo }),
+  getEventRecap: createGetEventRecap({ groupEventRepo, userRepo }),
+  inviteToEvent: createInviteToEvent({ groupEventRepo, userRepo, dogRepo, notificationService }),
 };
 
 // ── Organization deps ────────────────────────────────────────────────────────

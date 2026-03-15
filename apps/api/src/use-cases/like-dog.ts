@@ -9,6 +9,17 @@ import type {
   UserRepository,
 } from '../ports/index.js';
 
+/** Haversine distance between two coordinates in km */
+function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 type Deps = {
   dogRepo: DogRepository;
   matchRepo: MatchRepository;
@@ -22,7 +33,13 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
     dogId: string,
     targetDogId: string,
   ): Promise<
-    Result<{ match?: Match; isMatch: boolean; sizePair?: string; energyPair?: string }>
+    Result<{
+      match?: Match;
+      isMatch: boolean;
+      sizePair?: string;
+      energyPair?: string;
+      distanceKm?: number;
+    }>
   > => {
     // Verify ownership
     const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
@@ -58,9 +75,10 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
 
       // Notify the other dog's owner about the match (if they opted in)
       const targetDog = await dogRepo.findById(targetDogId);
-      if (targetDog) {
-        const recipient = await userRepo.findById(targetDog.ownerId);
-        const wantsMatchNotifs = recipient?.notificationPrefs?.matches !== false;
+      const recipient = targetDog ? await userRepo.findById(targetDog.ownerId) : null;
+
+      if (targetDog && recipient) {
+        const wantsMatchNotifs = recipient.notificationPrefs?.matches !== false;
 
         if (wantsMatchNotifs) {
           notificationService
@@ -74,11 +92,29 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
         }
       }
 
+      // Compute distance between owners if both have locations
+      let distanceKm: number | undefined;
+      const myUser = await userRepo.findById(userId);
+      if (
+        myUser?.latitude != null &&
+        myUser?.longitude != null &&
+        recipient?.latitude != null &&
+        recipient?.longitude != null
+      ) {
+        distanceKm = haversineKm(
+          myUser.latitude,
+          myUser.longitude,
+          recipient.latitude,
+          recipient.longitude,
+        );
+      }
+
       return succeed({
         match,
         isMatch: true,
         sizePair: targetDog ? `${myDog.size}-${targetDog.size}` : undefined,
         energyPair: targetDog ? `${myDog.energyLevel}-${targetDog.energyLevel}` : undefined,
+        distanceKm,
       });
     }
 

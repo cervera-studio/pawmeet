@@ -2,7 +2,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { getServerTrpcClient } from '@/lib/server-api';
-import type { UpdateSettingsInput } from '@/repositories/interfaces';
+import type { AppSettings, UpdateSettingsInput } from '@/repositories/interfaces';
+
+export async function fetchSettings(): Promise<AppSettings> {
+  const api = await getServerTrpcClient();
+  return api.admin.getSettings.query();
+}
 
 export async function updateSettings(
   data: UpdateSettingsInput,

@@ -1,5 +1,5 @@
-node_modules
-.turbo
+**/node_modules
+**/.turbo
 .git
 .env
 .env.*

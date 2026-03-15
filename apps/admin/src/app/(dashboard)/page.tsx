@@ -1,16 +1,14 @@
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatNumber } from '@/lib/formatters';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchAnalyticsKpis, fetchDashboardStats } from './actions';
 import { LazyDashboardCharts as DashboardCharts } from './dashboard-charts-lazy';
 
 export default async function DashboardPage() {
-  const t = await getTranslations('dashboard');
-  const api = await getServerTrpcClient();
-
-  const [stats, analyticsKpis] = await Promise.all([
-    api.admin.getStats.query(),
-    api.admin.getAnalyticsKpis.query(),
+  const [stats, analyticsKpis, t] = await Promise.all([
+    fetchDashboardStats(),
+    fetchAnalyticsKpis(),
+    getTranslations('dashboard'),
   ]);
 
   const kpiCards = [

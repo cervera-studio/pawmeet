@@ -1,16 +1,14 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchAuditLog } from './actions';
 import { AuditLogTable } from './audit-log-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default async function AuditLogPage() {
-  const [api, t] = await Promise.all([getServerTrpcClient(), getTranslations('auditLog')]);
-
-  const initialData = await api.admin.listAuditLog.query({
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
+  const [initialData, t] = await Promise.all([
+    fetchAuditLog({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    getTranslations('auditLog'),
+  ]);
 
   return (
     <div className="space-y-6">

@@ -29,6 +29,7 @@ export interface NearbyEventsQuery {
   limit?: number;
   excludeUserId?: string;
   friendUserIds?: string[];
+  category?: 'walk' | 'meetup' | 'training';
 }
 
 export interface PendingParticipant {

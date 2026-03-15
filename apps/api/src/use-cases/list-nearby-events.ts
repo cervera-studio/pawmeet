@@ -11,6 +11,7 @@ type ListNearbyEventsInput = {
   longitude: number;
   radiusKm: number;
   limit?: number;
+  category?: 'walk' | 'meetup' | 'training';
 };
 
 export function createListNearbyEvents({ groupEventRepo, followRepo }: Deps) {
@@ -29,6 +30,7 @@ export function createListNearbyEvents({ groupEventRepo, followRepo }: Deps) {
       limit: input.limit,
       excludeUserId: userId,
       friendUserIds,
+      category: input.category,
     });
     return succeed(events);
   };

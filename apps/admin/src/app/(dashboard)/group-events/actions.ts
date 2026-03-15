@@ -19,6 +19,15 @@ export async function fetchGroupEvents(
   };
 }
 
+export async function fetchGroupEvent(id: string) {
+  const api = await getServerTrpcClient();
+  try {
+    return await api.admin.getGroupEvent.query({ id });
+  } catch {
+    return null;
+  }
+}
+
 export async function cancelGroupEvent(eventId: string) {
   const api = await getServerTrpcClient();
   await api.admin.cancelGroupEvent.mutate({ eventId });

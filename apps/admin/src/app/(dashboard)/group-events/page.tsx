@@ -1,24 +1,14 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchGroupEvents } from './actions';
 import { GroupEventsTable } from './group-events-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default async function GroupEventsPage() {
-  const [api, t] = await Promise.all([getServerTrpcClient(), getTranslations('events')]);
-
-  const result = await api.admin.listGroupEvents.query({
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
-
-  const initialData = {
-    data: result.data,
-    total: result.total,
-    page: result.page,
-    pageSize: result.pageSize,
-    hasMore: result.page < result.totalPages,
-  };
+  const [initialData, t] = await Promise.all([
+    fetchGroupEvents({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    getTranslations('events'),
+  ]);
 
   return (
     <div className="space-y-6">

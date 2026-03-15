@@ -43,6 +43,15 @@ export async function reactivateUser(
   }
 }
 
+export async function fetchUser(id: string) {
+  const api = await getServerTrpcClient();
+  try {
+    return await api.admin.getUser.query({ id });
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchUsers(
   params: ListUsersParams,
 ): Promise<PaginatedResult<AdminUserListItem>> {

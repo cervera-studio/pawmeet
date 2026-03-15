@@ -1,16 +1,14 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchAdminUsers } from './actions';
 import { AdminUsersTable } from './admin-users-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default async function AdminUsersPage() {
-  const [api, t] = await Promise.all([getServerTrpcClient(), getTranslations('adminUsers')]);
-
-  const initialData = await api.admin.listAdminUsers.query({
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
+  const [initialData, t] = await Promise.all([
+    fetchAdminUsers({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    getTranslations('adminUsers'),
+  ]);
 
   return (
     <div className="space-y-6">

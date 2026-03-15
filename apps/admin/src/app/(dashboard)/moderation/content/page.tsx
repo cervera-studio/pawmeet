@@ -1,11 +1,8 @@
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchPendingContent } from './actions';
 import { ContentList } from './content-list';
 
 export default async function ContentModerationPage() {
-  const api = await getServerTrpcClient();
-  const initialData = await api.contentModeration.pendingReports.query({
-    limit: 20,
-  });
+  const initialData = await fetchPendingContent({ limit: 20 });
 
   return (
     <div className="space-y-6">

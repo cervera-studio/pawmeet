@@ -1,12 +1,12 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchStories } from './actions';
 import { StoryGrid } from './story-grid';
 
 export default async function StoryModerationPage() {
-  const api = await getServerTrpcClient();
-  const t = await getTranslations('stories');
-
-  const initialData = await api.admin.listStories.query({ page: 1, pageSize: 20 });
+  const [initialData, t] = await Promise.all([
+    fetchStories({ page: 1, pageSize: 20 }),
+    getTranslations('stories'),
+  ]);
 
   return (
     <div className="space-y-6">

@@ -1,24 +1,14 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchPendingDeletions } from './actions';
 import { DeletionsTable } from './deletions-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default async function AccountDeletionsPage() {
-  const [api, t] = await Promise.all([getServerTrpcClient(), getTranslations('accountDeletions')]);
-
-  const result = await api.admin.listPendingDeletions.query({
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
-
-  const initialData = {
-    data: result.data,
-    total: result.total,
-    page: result.page,
-    pageSize: result.pageSize,
-    hasMore: result.page < result.totalPages,
-  };
+  const [initialData, t] = await Promise.all([
+    fetchPendingDeletions({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    getTranslations('accountDeletions'),
+  ]);
 
   return (
     <div className="space-y-6">

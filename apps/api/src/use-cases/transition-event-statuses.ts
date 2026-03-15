@@ -26,6 +26,20 @@ export function createTransitionEventStatuses({ groupEventRepo, notificationServ
       await groupEventRepo.updateStatus(event.id, 'completed');
       completedCount++;
 
+      // Notify all accepted participants that the event has ended
+      const full = await groupEventRepo.findByIdWithParticipants(event.id);
+      if (full) {
+        const accepted = full.participants.filter((p) => p.status === 'accepted');
+        for (const p of accepted) {
+          await notificationService.send({
+            userId: p.userId,
+            title: 'Evento completato',
+            body: `"${event.title}" è terminato. Com'è andata?`,
+            data: { type: 'event_completed', eventId: event.id },
+          });
+        }
+      }
+
       logger.info('transitionEventStatuses', `Event ${event.id} completed: ${event.title}`);
     }
 

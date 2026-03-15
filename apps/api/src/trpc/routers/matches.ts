@@ -23,7 +23,7 @@ export function createMatchesRouter(deps: typeof matchDeps) {
       if (result.isMatch && result.match) {
         trackEvent('match_created', ctx.userId, {
           compatibilityScore: result.match.compatibilityScore,
-          distanceKm: 0, // TODO: compute from PostGIS when location is in match flow
+          distanceKm: result.distanceKm ?? 0,
           sizePair: result.sizePair ?? 'unknown',
           energyPair: result.energyPair ?? 'unknown',
         });

@@ -8,7 +8,7 @@ FROM base AS deps
 WORKDIR /app
 
 # Copy workspace config
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc ./
 
 # Copy all package.json files to resolve workspace dependencies
 COPY apps/api/package.json ./apps/api/
@@ -21,9 +21,13 @@ COPY packages/api-client/package.json ./packages/api-client/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY tooling/vitest/package.json ./tooling/vitest/
 
-# Install all dependencies (frozen lockfile for reproducibility)
+# Use hoisted node_modules to avoid pnpm symlink issues in Docker multi-stage
 # --ignore-scripts: skip lefthook prepare (no git in container)
-RUN pnpm install --frozen-lockfile --ignore-scripts
+RUN echo "node-linker=hoisted" >> .npmrc && \
+    pnpm install --frozen-lockfile --ignore-scripts
+
+# Rebuild esbuild so its platform-specific binary is available for tsup
+RUN pnpm rebuild esbuild
 
 # ── Stage 3: Build ───────────────────────────────────────────
 FROM base AS builder

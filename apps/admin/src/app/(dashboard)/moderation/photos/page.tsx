@@ -1,9 +1,8 @@
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchPendingPhotos } from './actions';
 import { PhotoList } from './photo-list';
 
 export default async function PhotoModerationPage() {
-  const api = await getServerTrpcClient();
-  const photos = await api.admin.listPendingPhotos.query();
+  const photos = await fetchPendingPhotos();
 
   return (
     <div className="space-y-6">

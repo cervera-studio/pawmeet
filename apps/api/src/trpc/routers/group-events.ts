@@ -6,7 +6,9 @@ import {
   createOfficialEventSchema,
   createRecurringEventSchema,
   declineParticipantSchema,
+  getEventRecapSchema,
   getGroupEventSchema,
+  inviteToEventSchema,
   joinGroupEventSchema,
   leaveGroupEventSchema,
   listEventSponsorsSchema,
@@ -188,5 +190,17 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
     listSponsors: protectedProcedure
       .input(listEventSponsorsSchema)
       .query(async ({ input }) => unwrapResult(await deps.listEventSponsors(input.eventId))),
+
+    invite: protectedProcedure
+      .input(inviteToEventSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.inviteToEvent(ctx.userId, input.eventId, input.userId)),
+      ),
+
+    recap: protectedProcedure
+      .input(getEventRecapSchema)
+      .query(async ({ ctx, input }) =>
+        unwrapResult(await deps.getEventRecap(ctx.userId, input.eventId)),
+      ),
   });
 }

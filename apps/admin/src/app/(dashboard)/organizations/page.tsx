@@ -1,24 +1,14 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchOrganizations } from './actions';
 import { OrganizationsTable } from './organizations-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default async function OrganizationsPage() {
-  const [api, t] = await Promise.all([getServerTrpcClient(), getTranslations('organizations')]);
-
-  const result = await api.admin.listOrganizations.query({
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
-
-  const initialData = {
-    data: result.data,
-    total: result.total,
-    page: result.page,
-    pageSize: result.pageSize,
-    hasMore: result.page < result.totalPages,
-  };
+  const [initialData, t] = await Promise.all([
+    fetchOrganizations({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    getTranslations('organizations'),
+  ]);
 
   return (
     <div className="space-y-6">

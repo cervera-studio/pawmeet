@@ -19,6 +19,15 @@ export async function fetchOrganizations(
   };
 }
 
+export async function fetchOrganization(id: string) {
+  const api = await getServerTrpcClient();
+  try {
+    return await api.admin.getOrganization.query({ id });
+  } catch {
+    return null;
+  }
+}
+
 export async function verifyOrganization(organizationId: string) {
   const api = await getServerTrpcClient();
   await api.admin.verifyOrganization.mutate({ organizationId });

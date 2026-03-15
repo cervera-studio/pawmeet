@@ -10,7 +10,7 @@ export function Sidebar() {
   const t = useTranslations('auth');
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-300 dark:bg-neutral-100">
+    <aside className="flex h-full min-h-0 w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-300 dark:bg-neutral-100">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-neutral-200 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-800 text-white font-bold text-sm">
@@ -20,7 +20,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
         {vm.navigation.map((item) => {
           const isActive = vm.isNavActive(item.href);
           const hasChildren = !!item.children;

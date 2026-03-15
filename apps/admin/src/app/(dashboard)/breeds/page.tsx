@@ -1,16 +1,14 @@
 import { getTranslations } from 'next-intl/server';
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchBreeds } from './actions';
 import { BreedsTable } from './breeds-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default async function BreedsPage() {
-  const [api, t] = await Promise.all([getServerTrpcClient(), getTranslations('breeds')]);
-
-  const initialData = await api.admin.listBreeds.query({
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
+  const [initialData, t] = await Promise.all([
+    fetchBreeds({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    getTranslations('breeds'),
+  ]);
 
   return (
     <div className="space-y-6">

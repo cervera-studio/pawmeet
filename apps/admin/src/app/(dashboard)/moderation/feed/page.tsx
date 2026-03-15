@@ -1,12 +1,10 @@
-import { getServerTrpcClient } from '@/lib/server-api';
+import { fetchFeedPosts, fetchFeedStats } from './actions';
 import { FeedList } from './feed-list';
 
 export default async function FeedModerationPage() {
-  const api = await getServerTrpcClient();
-
   const [initialPosts, initialStats] = await Promise.all([
-    api.admin.listFeedPosts.query({ page: 1, pageSize: 20 }),
-    api.admin.getFeedStats.query(),
+    fetchFeedPosts({ page: 1, pageSize: 20 }),
+    fetchFeedStats(),
   ]);
 
   return (

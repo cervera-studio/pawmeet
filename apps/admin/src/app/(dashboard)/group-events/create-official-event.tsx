@@ -1,10 +1,16 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+  type CreateOfficialEventFormValues,
+  createOfficialEventFormSchema,
+} from '@/lib/schemas/create-official-event';
 import { createOfficialEvent } from './actions';
 
 interface Organization {
@@ -16,48 +22,49 @@ interface Organization {
 export function CreateOfficialEventForm({ organizations }: { organizations: Organization[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [scheduledAt, setScheduledAt] = useState('');
-  const [durationMin, setDurationMin] = useState(60);
-  const [location, setLocation] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
-  const [maxParticipants, setMaxParticipants] = useState(100);
-  const [organizationId, setOrganizationId] = useState('');
-  const [category, setCategory] = useState<'walk' | 'meetup' | 'training'>('meetup');
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CreateOfficialEventFormValues>({
+    resolver: zodResolver(createOfficialEventFormSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      scheduledAt: '',
+      durationMin: 60,
+      location: '',
+      latitude: 0,
+      longitude: 0,
+      maxParticipants: 100,
+      organizationId: '',
+      category: 'meetup',
+    },
+  });
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!title || !scheduledAt || !location || !latitude || !longitude || !organizationId) {
-      setError('Compila tutti i campi obbligatori');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
+  async function onSubmit(data: CreateOfficialEventFormValues) {
+    setServerError(null);
     try {
       await createOfficialEvent({
-        title,
-        description: description || undefined,
-        scheduledAt: new Date(scheduledAt).toISOString(),
-        durationMin,
-        location,
-        latitude: Number(latitude),
-        longitude: Number(longitude),
-        maxParticipants,
-        organizationId,
-        category,
+        title: data.title,
+        description: data.description || undefined,
+        scheduledAt: new Date(data.scheduledAt).toISOString(),
+        durationMin: data.durationMin,
+        location: data.location,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        maxParticipants: data.maxParticipants,
+        organizationId: data.organizationId,
+        category: data.category,
       });
       setOpen(false);
+      reset();
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Errore durante la creazione');
-    } finally {
-      setLoading(false);
+      setServerError(err instanceof Error ? err.message : 'Errore durante la creazione');
     }
   }
 
@@ -75,7 +82,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
         <CardTitle className="text-lg">Nuovo Main Event</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="official-title" className="text-sm font-medium">
@@ -83,11 +90,12 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               </label>
               <Input
                 id="official-title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                {...register('title')}
                 placeholder="Passeggiata al Parco Sempione"
-                required
               />
+              {errors.title && (
+                <p className="text-xs text-red-600">{errors.title.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -97,9 +105,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               <select
                 id="official-org"
                 className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
-                value={organizationId}
-                onChange={(e) => setOrganizationId(e.target.value)}
-                required
+                {...register('organizationId')}
               >
                 <option value="">Seleziona...</option>
                 {organizations.map((org) => (
@@ -108,6 +114,9 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                   </option>
                 ))}
               </select>
+              {errors.organizationId && (
+                <p className="text-xs text-red-600">{errors.organizationId.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -117,10 +126,11 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               <Input
                 id="official-date"
                 type="datetime-local"
-                value={scheduledAt}
-                onChange={(e) => setScheduledAt(e.target.value)}
-                required
+                {...register('scheduledAt')}
               />
+              {errors.scheduledAt && (
+                <p className="text-xs text-red-600">{errors.scheduledAt.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -130,11 +140,13 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               <Input
                 id="official-duration"
                 type="number"
-                value={durationMin}
-                onChange={(e) => setDurationMin(Number(e.target.value))}
+                {...register('durationMin')}
                 min={15}
                 max={180}
               />
+              {errors.durationMin && (
+                <p className="text-xs text-red-600">{errors.durationMin.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -143,11 +155,12 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               </label>
               <Input
                 id="official-location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                {...register('location')}
                 placeholder="Parco Sempione, Milano"
-                required
               />
+              {errors.location && (
+                <p className="text-xs text-red-600">{errors.location.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -157,13 +170,15 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               <select
                 id="official-category"
                 className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
-                value={category}
-                onChange={(e) => setCategory(e.target.value as typeof category)}
+                {...register('category')}
               >
                 <option value="walk">Passeggiata</option>
                 <option value="meetup">Incontro</option>
                 <option value="training">Addestramento</option>
               </select>
+              {errors.category && (
+                <p className="text-xs text-red-600">{errors.category.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -174,11 +189,12 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                 id="official-lat"
                 type="number"
                 step="any"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
+                {...register('latitude')}
                 placeholder="45.4773"
-                required
               />
+              {errors.latitude && (
+                <p className="text-xs text-red-600">{errors.latitude.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -189,11 +205,12 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                 id="official-lng"
                 type="number"
                 step="any"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
+                {...register('longitude')}
                 placeholder="9.1815"
-                required
               />
+              {errors.longitude && (
+                <p className="text-xs text-red-600">{errors.longitude.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -203,11 +220,13 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               <Input
                 id="official-max"
                 type="number"
-                value={maxParticipants}
-                onChange={(e) => setMaxParticipants(Number(e.target.value))}
+                {...register('maxParticipants')}
                 min={2}
                 max={500}
               />
+              {errors.maxParticipants && (
+                <p className="text-xs text-red-600">{errors.maxParticipants.message}</p>
+              )}
             </div>
           </div>
 
@@ -218,17 +237,19 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
             <textarea
               id="official-desc"
               className="flex min-h-[80px] w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              {...register('description')}
               placeholder="Descrizione dell'evento..."
             />
+            {errors.description && (
+              <p className="text-xs text-red-600">{errors.description.message}</p>
+            )}
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {serverError && <p className="text-sm text-red-600">{serverError}</p>}
 
           <div className="flex gap-2">
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Creazione...' : 'Crea evento'}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Creazione...' : 'Crea evento'}
             </Button>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annulla

@@ -1,12 +1,22 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import type { AppSettings } from '@/repositories';
+import {
+  type GeneralSettingsFormValues,
+  type MatchingSettingsFormValues,
+  type ModerationSettingsFormValues,
+  generalSettingsSchema,
+  matchingSettingsSchema,
+  moderationSettingsSchema,
+} from '@/lib/schemas/settings';
 import { updateSettings } from './actions';
 
 interface SettingsFormProps {
@@ -17,33 +27,48 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const t = useTranslations('settings');
   const tc = useTranslations('common');
   const [isSaving, setIsSaving] = useState(false);
-  const [appName, setAppName] = useState(initialSettings.appName);
-  const [supportEmail, setSupportEmail] = useState(initialSettings.supportEmail);
-  const [photoConfidence, setPhotoConfidence] = useState(initialSettings.photoConfidenceThreshold);
-  const [maxReports, setMaxReports] = useState(initialSettings.maxReportsBeforeSuspension);
-  const [matchWeightSize, setMatchWeightSize] = useState(initialSettings.matchWeightSize);
-  const [matchWeightEnergy, setMatchWeightEnergy] = useState(initialSettings.matchWeightEnergy);
-  const [matchWeightBehavior, setMatchWeightBehavior] = useState(
-    initialSettings.matchWeightBehavior,
-  );
-  const [matchWeightWalk, setMatchWeightWalk] = useState(initialSettings.matchWeightWalk);
-  const [matchWeightDistance, setMatchWeightDistance] = useState(
-    initialSettings.matchWeightDistance,
-  );
-  const [matchWeightLeash, setMatchWeightLeash] = useState(initialSettings.matchWeightLeash);
 
+  const generalForm = useForm<GeneralSettingsFormValues>({
+    resolver: zodResolver(generalSettingsSchema),
+    defaultValues: {
+      appName: initialSettings.appName,
+      supportEmail: initialSettings.supportEmail,
+    },
+  });
+
+  const moderationForm = useForm<ModerationSettingsFormValues>({
+    resolver: zodResolver(moderationSettingsSchema),
+    defaultValues: {
+      photoConfidenceThreshold: initialSettings.photoConfidenceThreshold,
+      maxReportsBeforeSuspension: initialSettings.maxReportsBeforeSuspension,
+    },
+  });
+
+  const matchingForm = useForm<MatchingSettingsFormValues>({
+    resolver: zodResolver(matchingSettingsSchema),
+    defaultValues: {
+      matchWeightSize: initialSettings.matchWeightSize,
+      matchWeightEnergy: initialSettings.matchWeightEnergy,
+      matchWeightBehavior: initialSettings.matchWeightBehavior,
+      matchWeightWalk: initialSettings.matchWeightWalk,
+      matchWeightDistance: initialSettings.matchWeightDistance,
+      matchWeightLeash: initialSettings.matchWeightLeash,
+    },
+  });
+
+  const matchValues = matchingForm.watch();
   const matchWeightSum =
-    matchWeightSize +
-    matchWeightEnergy +
-    matchWeightBehavior +
-    matchWeightWalk +
-    matchWeightDistance +
-    matchWeightLeash;
+    (matchValues.matchWeightSize || 0) +
+    (matchValues.matchWeightEnergy || 0) +
+    (matchValues.matchWeightBehavior || 0) +
+    (matchValues.matchWeightWalk || 0) +
+    (matchValues.matchWeightDistance || 0) +
+    (matchValues.matchWeightLeash || 0);
   const isMatchWeightValid = Math.abs(matchWeightSum - 1.0) < 0.001;
 
-  async function handleSaveGeneral() {
+  async function handleSaveGeneral(data: GeneralSettingsFormValues) {
     setIsSaving(true);
-    const result = await updateSettings({ appName, supportEmail });
+    const result = await updateSettings(data);
     if (result.success) {
       toast.success(t('saved'));
     } else {
@@ -52,12 +77,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     setIsSaving(false);
   }
 
-  async function handleSaveModeration() {
+  async function handleSaveModeration(data: ModerationSettingsFormValues) {
     setIsSaving(true);
-    const result = await updateSettings({
-      photoConfidenceThreshold: photoConfidence,
-      maxReportsBeforeSuspension: maxReports,
-    });
+    const result = await updateSettings(data);
     if (result.success) {
       toast.success(t('saved'));
     } else {
@@ -66,16 +88,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     setIsSaving(false);
   }
 
-  async function handleSaveMatching() {
+  async function handleSaveMatching(data: MatchingSettingsFormValues) {
     setIsSaving(true);
-    const result = await updateSettings({
-      matchWeightSize,
-      matchWeightEnergy,
-      matchWeightBehavior,
-      matchWeightWalk,
-      matchWeightDistance,
-      matchWeightLeash,
-    });
+    const result = await updateSettings(data);
     if (result.success) {
       toast.success(t('saved'));
     } else {
@@ -90,209 +105,252 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   return (
     <div className="grid gap-6 max-w-2xl">
-      {/* General Settings */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{t('general.title')}</CardTitle>
           <CardDescription>{t('general.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label
-              htmlFor="app-name"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('general.appName')}
-            </label>
-            <Input id="app-name" value={appName} onChange={(e) => setAppName(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="support-email"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('general.supportEmail')}
-            </label>
-            <Input
-              id="support-email"
-              value={supportEmail}
-              onChange={(e) => setSupportEmail(e.target.value)}
-            />
-          </div>
-          <Button size="sm" onClick={handleSaveGeneral} disabled={isSaving}>
-            {isSaving ? tc('saving') : tc('saveChanges')}
-          </Button>
+        <CardContent>
+          <form onSubmit={generalForm.handleSubmit(handleSaveGeneral)} className="space-y-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="app-name"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('general.appName')}
+              </label>
+              <Input id="app-name" {...generalForm.register('appName')} />
+              {generalForm.formState.errors.appName && (
+                <p className="text-xs text-red-600">
+                  {generalForm.formState.errors.appName.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="support-email"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('general.supportEmail')}
+              </label>
+              <Input id="support-email" {...generalForm.register('supportEmail')} />
+              {generalForm.formState.errors.supportEmail && (
+                <p className="text-xs text-red-600">
+                  {generalForm.formState.errors.supportEmail.message}
+                </p>
+              )}
+            </div>
+            <Button type="submit" size="sm" disabled={isSaving}>
+              {isSaving ? tc('saving') : tc('saveChanges')}
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
-      {/* Moderation Settings */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{t('moderation.title')}</CardTitle>
           <CardDescription>{t('moderation.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label
-              htmlFor="photo-confidence"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('moderation.photoThreshold')}
-            </label>
-            <Input
-              id="photo-confidence"
-              type="number"
-              value={photoConfidence}
-              onChange={(e) => setPhotoConfidence(Number(e.target.value))}
-              min={0}
-              max={100}
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="max-reports"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('moderation.maxReports')}
-            </label>
-            <Input
-              id="max-reports"
-              type="number"
-              value={maxReports}
-              onChange={(e) => setMaxReports(Number(e.target.value))}
-              min={1}
-            />
-          </div>
-          <Button size="sm" onClick={handleSaveModeration} disabled={isSaving}>
-            {isSaving ? tc('saving') : tc('saveChanges')}
-          </Button>
+        <CardContent>
+          <form
+            onSubmit={moderationForm.handleSubmit(handleSaveModeration)}
+            className="space-y-4"
+          >
+            <div className="space-y-2">
+              <label
+                htmlFor="photo-confidence"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('moderation.photoThreshold')}
+              </label>
+              <Input
+                id="photo-confidence"
+                type="number"
+                {...moderationForm.register('photoConfidenceThreshold')}
+                min={0}
+                max={100}
+              />
+              {moderationForm.formState.errors.photoConfidenceThreshold && (
+                <p className="text-xs text-red-600">
+                  {moderationForm.formState.errors.photoConfidenceThreshold.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="max-reports"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('moderation.maxReports')}
+              </label>
+              <Input
+                id="max-reports"
+                type="number"
+                {...moderationForm.register('maxReportsBeforeSuspension')}
+                min={1}
+              />
+              {moderationForm.formState.errors.maxReportsBeforeSuspension && (
+                <p className="text-xs text-red-600">
+                  {moderationForm.formState.errors.maxReportsBeforeSuspension.message}
+                </p>
+              )}
+            </div>
+            <Button type="submit" size="sm" disabled={isSaving}>
+              {isSaving ? tc('saving') : tc('saveChanges')}
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
-      {/* Matching Configuration */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{t('matching.title')}</CardTitle>
           <CardDescription>{t('matching.description')}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label
-              htmlFor="match-size"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('matching.size')}
-            </label>
-            <Input
-              id="match-size"
-              type="number"
-              value={matchWeightSize}
-              onChange={(e) => setMatchWeightSize(Number(e.target.value))}
-              min={0}
-              max={1}
-              step={0.01}
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="match-energy"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('matching.energy')}
-            </label>
-            <Input
-              id="match-energy"
-              type="number"
-              value={matchWeightEnergy}
-              onChange={(e) => setMatchWeightEnergy(Number(e.target.value))}
-              min={0}
-              max={1}
-              step={0.01}
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="match-behavior"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('matching.behavior')}
-            </label>
-            <Input
-              id="match-behavior"
-              type="number"
-              value={matchWeightBehavior}
-              onChange={(e) => setMatchWeightBehavior(Number(e.target.value))}
-              min={0}
-              max={1}
-              step={0.01}
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="match-walk"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('matching.walk')}
-            </label>
-            <Input
-              id="match-walk"
-              type="number"
-              value={matchWeightWalk}
-              onChange={(e) => setMatchWeightWalk(Number(e.target.value))}
-              min={0}
-              max={1}
-              step={0.01}
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="match-distance"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('matching.distance')}
-            </label>
-            <Input
-              id="match-distance"
-              type="number"
-              value={matchWeightDistance}
-              onChange={(e) => setMatchWeightDistance(Number(e.target.value))}
-              min={0}
-              max={1}
-              step={0.01}
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="match-leash"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('matching.leash')}
-            </label>
-            <Input
-              id="match-leash"
-              type="number"
-              value={matchWeightLeash}
-              onChange={(e) => setMatchWeightLeash(Number(e.target.value))}
-              min={0}
-              max={1}
-              step={0.01}
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <p className="text-sm text-neutral-600 dark:text-neutral-300">
-              {t('matching.sum')}: <span className="font-medium">{matchWeightSum.toFixed(2)}</span>
-            </p>
-            {!isMatchWeightValid && (
-              <p className="text-sm text-red-500">{t('matching.validationError')}</p>
-            )}
-          </div>
-          <Button size="sm" onClick={handleSaveMatching} disabled={isSaving || !isMatchWeightValid}>
-            {isSaving ? tc('saving') : tc('saveChanges')}
-          </Button>
+        <CardContent>
+          <form onSubmit={matchingForm.handleSubmit(handleSaveMatching)} className="space-y-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="match-size"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('matching.size')}
+              </label>
+              <Input
+                id="match-size"
+                type="number"
+                {...matchingForm.register('matchWeightSize')}
+                min={0}
+                max={1}
+                step={0.01}
+              />
+              {matchingForm.formState.errors.matchWeightSize && (
+                <p className="text-xs text-red-600">
+                  {matchingForm.formState.errors.matchWeightSize.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="match-energy"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('matching.energy')}
+              </label>
+              <Input
+                id="match-energy"
+                type="number"
+                {...matchingForm.register('matchWeightEnergy')}
+                min={0}
+                max={1}
+                step={0.01}
+              />
+              {matchingForm.formState.errors.matchWeightEnergy && (
+                <p className="text-xs text-red-600">
+                  {matchingForm.formState.errors.matchWeightEnergy.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="match-behavior"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('matching.behavior')}
+              </label>
+              <Input
+                id="match-behavior"
+                type="number"
+                {...matchingForm.register('matchWeightBehavior')}
+                min={0}
+                max={1}
+                step={0.01}
+              />
+              {matchingForm.formState.errors.matchWeightBehavior && (
+                <p className="text-xs text-red-600">
+                  {matchingForm.formState.errors.matchWeightBehavior.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="match-walk"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('matching.walk')}
+              </label>
+              <Input
+                id="match-walk"
+                type="number"
+                {...matchingForm.register('matchWeightWalk')}
+                min={0}
+                max={1}
+                step={0.01}
+              />
+              {matchingForm.formState.errors.matchWeightWalk && (
+                <p className="text-xs text-red-600">
+                  {matchingForm.formState.errors.matchWeightWalk.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="match-distance"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('matching.distance')}
+              </label>
+              <Input
+                id="match-distance"
+                type="number"
+                {...matchingForm.register('matchWeightDistance')}
+                min={0}
+                max={1}
+                step={0.01}
+              />
+              {matchingForm.formState.errors.matchWeightDistance && (
+                <p className="text-xs text-red-600">
+                  {matchingForm.formState.errors.matchWeightDistance.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="match-leash"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('matching.leash')}
+              </label>
+              <Input
+                id="match-leash"
+                type="number"
+                {...matchingForm.register('matchWeightLeash')}
+                min={0}
+                max={1}
+                step={0.01}
+              />
+              {matchingForm.formState.errors.matchWeightLeash && (
+                <p className="text-xs text-red-600">
+                  {matchingForm.formState.errors.matchWeightLeash.message}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                {t('matching.sum')}: <span className="font-medium">{matchWeightSum.toFixed(2)}</span>
+              </p>
+              {!isMatchWeightValid && (
+                <p className="text-sm text-red-500">{t('matching.validationError')}</p>
+              )}
+            </div>
+            <Button type="submit" size="sm" disabled={isSaving || !isMatchWeightValid}>
+              {isSaving ? tc('saving') : tc('saveChanges')}
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
-      {/* Danger Zone */}
       <Card className="border-red-200">
         <CardHeader>
           <CardTitle className="text-base text-red-600">{t('dangerZone.title')}</CardTitle>

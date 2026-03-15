@@ -1,8 +1,10 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { formatDateTime } from '@/lib/formatters';
+import { type CreateAdminUserFormValues, createAdminUserSchema } from '@/lib/schemas/admin-user';
 import { createAdminUser, resetAdminPassword, toggleAdminActive, updateAdminRole } from './actions';
 import {
   type AdminUser,
@@ -52,35 +55,36 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
   const tc = useTranslations('common');
   const vm = useAdminUsersViewModel(initialData, pageSize);
 
-  // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editRoleDialogOpen, setEditRoleDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
-  // Form states
-  const [newEmail, setNewEmail] = useState('');
-  const [newDisplayName, setNewDisplayName] = useState('');
-  const [newTempPassword, setNewTempPassword] = useState('');
-  const [newRole, setNewRole] = useState<Role>('viewer');
   const [editRole, setEditRole] = useState<Role>('viewer');
   const [resetPwd, setResetPwd] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleCreate() {
+  const createForm = useForm<CreateAdminUserFormValues>({
+    resolver: zodResolver(createAdminUserSchema),
+    defaultValues: {
+      email: '',
+      displayName: '',
+      temporaryPassword: '',
+      role: 'viewer',
+    },
+  });
+
+  async function handleCreate(data: CreateAdminUserFormValues) {
     setIsSubmitting(true);
     try {
       await createAdminUser({
-        email: newEmail,
-        displayName: newDisplayName,
-        role: newRole,
-        temporaryPassword: newTempPassword,
+        email: data.email,
+        displayName: data.displayName,
+        role: data.role,
+        temporaryPassword: data.temporaryPassword,
       });
       setCreateDialogOpen(false);
-      setNewEmail('');
-      setNewDisplayName('');
-      setNewTempPassword('');
-      setNewRole('viewer');
+      createForm.reset();
       void vm.refetch();
     } catch (error) {
       console.error('[AdminUsers] Failed to create:', error);
@@ -298,60 +302,92 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
             <DialogTitle>{t('createDialog.title')}</DialogTitle>
             <DialogDescription>{t('createDialog.description')}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-name">
-                {t('createDialog.nameLabel')}
-              </label>
-              <Input
-                id="create-name"
-                value={newDisplayName}
-                onChange={(e) => setNewDisplayName(e.target.value)}
-                placeholder={t('createDialog.namePlaceholder')}
-              />
+          <form onSubmit={createForm.handleSubmit(handleCreate)}>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="create-name">
+                  {t('createDialog.nameLabel')}
+                </label>
+                <Input
+                  id="create-name"
+                  {...createForm.register('displayName')}
+                  placeholder={t('createDialog.namePlaceholder')}
+                />
+                {createForm.formState.errors.displayName && (
+                  <p className="text-xs text-red-600">
+                    {createForm.formState.errors.displayName.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="create-email">
+                  {t('createDialog.emailLabel')}
+                </label>
+                <Input
+                  id="create-email"
+                  type="email"
+                  {...createForm.register('email')}
+                  placeholder={t('createDialog.emailPlaceholder')}
+                />
+                {createForm.formState.errors.email && (
+                  <p className="text-xs text-red-600">
+                    {createForm.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="create-password">
+                  {t('createDialog.passwordLabel')}
+                </label>
+                <Input
+                  id="create-password"
+                  type="password"
+                  {...createForm.register('temporaryPassword')}
+                  placeholder={t('createDialog.passwordPlaceholder')}
+                />
+                {createForm.formState.errors.temporaryPassword && (
+                  <p className="text-xs text-red-600">
+                    {createForm.formState.errors.temporaryPassword.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="create-role">
+                  {t('createDialog.roleLabel')}
+                </label>
+                <select
+                  id="create-role"
+                  className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+                  {...createForm.register('role')}
+                >
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>
+                      {t(
+                        `roles.${role}` as
+                          | 'roles.super_admin'
+                          | 'roles.admin'
+                          | 'roles.moderator'
+                          | 'roles.viewer',
+                      )}
+                    </option>
+                  ))}
+                </select>
+                {createForm.formState.errors.role && (
+                  <p className="text-xs text-red-600">
+                    {createForm.formState.errors.role.message}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-email">
-                {t('createDialog.emailLabel')}
-              </label>
-              <Input
-                id="create-email"
-                type="email"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                placeholder={t('createDialog.emailPlaceholder')}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-password">
-                {t('createDialog.passwordLabel')}
-              </label>
-              <Input
-                id="create-password"
-                type="password"
-                value={newTempPassword}
-                onChange={(e) => setNewTempPassword(e.target.value)}
-                placeholder={t('createDialog.passwordPlaceholder')}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="create-role">
-                {t('createDialog.roleLabel')}
-              </label>
-              {renderRoleSelect('create-role', newRole, setNewRole)}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
-              {tc('cancel')}
-            </Button>
-            <Button
-              onClick={handleCreate}
-              disabled={isSubmitting || !newEmail || !newDisplayName || !newTempPassword}
-            >
-              {isSubmitting ? tc('saving') : t('createDialog.submit')}
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
+                {tc('cancel')}
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? tc('saving') : t('createDialog.submit')}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 

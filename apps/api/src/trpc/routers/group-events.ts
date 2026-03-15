@@ -178,6 +178,11 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
           requiresApproval: false,
           isRecurring: false,
         });
+        trackEvent('event_main_created', ctx.userId, {
+          organizationType: 'association',
+          maxParticipants: input.maxParticipants,
+          hasSponsor: false,
+        });
         return result;
       }),
 
@@ -189,7 +194,17 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
 
     listSponsors: protectedProcedure
       .input(listEventSponsorsSchema)
-      .query(async ({ input }) => unwrapResult(await deps.listEventSponsors(input.eventId))),
+      .query(async ({ ctx, input }) => {
+        const sponsors = unwrapResult(await deps.listEventSponsors(input.eventId));
+        const firstSponsor = sponsors[0];
+        if (firstSponsor) {
+          trackEvent('event_sponsor_viewed', ctx.userId, {
+            sponsorTier: firstSponsor.tier as 'title' | 'gold' | 'silver' | 'partner',
+            placement: firstSponsor.logoPlacement,
+          });
+        }
+        return sponsors;
+      }),
 
     invite: protectedProcedure
       .input(inviteToEventSchema)

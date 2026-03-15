@@ -175,22 +175,41 @@ const listBreedsSchema = z.object({
   group: z.string().optional(),
 });
 
-const createBreedSchema = z.object({
-  name: z.string().min(1).max(100),
-  nameIt: z.string().min(1).max(100),
-  group: z.string().max(50).optional(),
-  sizeCategory: sizeCategoryEnum,
-  avgWeightKg: z.number().int().positive().optional(),
+const scoreField = z.number().int().min(1).max(5).nullable().optional();
+
+const breedScoresSchema = z.object({
+  energy: scoreField,
+  playfulness: scoreField,
+  trainability: scoreField,
+  barking: scoreField,
+  goodWithOtherDogs: scoreField,
+  goodWithChildren: scoreField,
+  goodWithStrangers: scoreField,
+  protectiveness: scoreField,
+  shedding: scoreField,
+  grooming: scoreField,
 });
 
-const updateBreedSchema = z.object({
-  id: z.number().int().positive(),
-  name: z.string().min(1).max(100).optional(),
-  nameIt: z.string().min(1).max(100).optional(),
-  group: z.string().max(50).optional(),
-  sizeCategory: sizeCategoryEnum.optional(),
-  avgWeightKg: z.number().int().positive().optional(),
-});
+const createBreedSchema = z
+  .object({
+    name: z.string().min(1).max(100),
+    nameIt: z.string().min(1).max(100),
+    group: z.string().max(50).optional(),
+    sizeCategory: sizeCategoryEnum,
+    avgWeightKg: z.number().int().positive().optional(),
+  })
+  .merge(breedScoresSchema);
+
+const updateBreedSchema = z
+  .object({
+    id: z.number().int().positive(),
+    name: z.string().min(1).max(100).optional(),
+    nameIt: z.string().min(1).max(100).optional(),
+    group: z.string().max(50).optional(),
+    sizeCategory: sizeCategoryEnum.optional(),
+    avgWeightKg: z.number().int().positive().optional(),
+  })
+  .merge(breedScoresSchema);
 
 const deleteBreedSchema = z.object({
   id: z.number().int().positive(),
@@ -1179,6 +1198,81 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         });
 
         return { success: true };
+      }),
+
+    // ── Create official event from admin ────────────────────────────────────
+    createOfficialEvent: adminProcedure
+      .input(
+        z.object({
+          title: z.string().min(3).max(100),
+          description: z.string().max(2000).optional(),
+          scheduledAt: z.string().datetime(),
+          durationMin: z.number().int().min(15).max(180).default(60),
+          location: z.string().min(1),
+          latitude: z.number().min(-90).max(90),
+          longitude: z.number().min(-180).max(180),
+          maxParticipants: z.number().int().min(2).max(500).default(100),
+          organizationId: z.string().uuid(),
+          coverImageUrl: z.string().url().optional(),
+          category: z.enum(['walk', 'meetup', 'training']).default('meetup'),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        // Verify organization exists and is verified
+        const [org] = await db
+          .select()
+          .from(organizations)
+          .where(eq(organizations.id, input.organizationId));
+
+        if (!org) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
+        }
+        if (!org.isVerified || !org.isActive) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Organization must be verified and active',
+          });
+        }
+
+        const [event] = await db
+          .insert(groupEvents)
+          .values({
+            createdBy: ctx.userId,
+            title: input.title,
+            description: input.description ?? null,
+            scheduledAt: new Date(input.scheduledAt),
+            durationMin: input.durationMin,
+            location: input.location,
+            latitude: input.latitude,
+            longitude: input.longitude,
+            maxParticipants: input.maxParticipants,
+            visibility: 'public',
+            status: 'scheduled',
+            category: input.category,
+            requiresApproval: false,
+            coverImageUrl: input.coverImageUrl ?? null,
+            organizationId: input.organizationId,
+            isOfficial: true,
+          })
+          .returning();
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'event.createOfficial',
+          resourceType: RESOURCE_TYPE.event,
+          resourceId: event?.id,
+          changes: {
+            after: {
+              title: input.title,
+              organizationId: input.organizationId,
+              maxParticipants: input.maxParticipants,
+            },
+          },
+        });
+
+        return event;
       }),
 
     // ── Event sponsors management ────────────────────────────────────────────
@@ -2210,6 +2304,16 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           group: input.group,
           sizeCategory: input.sizeCategory,
           avgWeightKg: input.avgWeightKg,
+          energy: input.energy ?? null,
+          playfulness: input.playfulness ?? null,
+          trainability: input.trainability ?? null,
+          barking: input.barking ?? null,
+          goodWithOtherDogs: input.goodWithOtherDogs ?? null,
+          goodWithChildren: input.goodWithChildren ?? null,
+          goodWithStrangers: input.goodWithStrangers ?? null,
+          protectiveness: input.protectiveness ?? null,
+          shedding: input.shedding ?? null,
+          grooming: input.grooming ?? null,
         })
         .returning();
 
@@ -2240,6 +2344,19 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       if (updates.group !== undefined) setValues.group = updates.group;
       if (updates.sizeCategory !== undefined) setValues.sizeCategory = updates.sizeCategory;
       if (updates.avgWeightKg !== undefined) setValues.avgWeightKg = updates.avgWeightKg;
+      if (updates.energy !== undefined) setValues.energy = updates.energy;
+      if (updates.playfulness !== undefined) setValues.playfulness = updates.playfulness;
+      if (updates.trainability !== undefined) setValues.trainability = updates.trainability;
+      if (updates.barking !== undefined) setValues.barking = updates.barking;
+      if (updates.goodWithOtherDogs !== undefined)
+        setValues.goodWithOtherDogs = updates.goodWithOtherDogs;
+      if (updates.goodWithChildren !== undefined)
+        setValues.goodWithChildren = updates.goodWithChildren;
+      if (updates.goodWithStrangers !== undefined)
+        setValues.goodWithStrangers = updates.goodWithStrangers;
+      if (updates.protectiveness !== undefined) setValues.protectiveness = updates.protectiveness;
+      if (updates.shedding !== undefined) setValues.shedding = updates.shedding;
+      if (updates.grooming !== undefined) setValues.grooming = updates.grooming;
 
       if (Object.keys(setValues).length === 0) {
         return existing;

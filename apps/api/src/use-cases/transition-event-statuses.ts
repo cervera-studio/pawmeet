@@ -1,12 +1,18 @@
 import { logger } from '@pawmeet/utils';
+import type { BadgeRepository } from '../ports/badge-repository.js';
 import type { GroupEventRepository, NotificationService } from '../ports/index.js';
 
 type Deps = {
   groupEventRepo: GroupEventRepository;
   notificationService: NotificationService;
+  badgeRepo: BadgeRepository;
 };
 
-export function createTransitionEventStatuses({ groupEventRepo, notificationService }: Deps) {
+export function createTransitionEventStatuses({
+  groupEventRepo,
+  notificationService,
+  badgeRepo,
+}: Deps) {
   return async (): Promise<{ startedCount: number; completedCount: number }> => {
     let startedCount = 0;
     let completedCount = 0;
@@ -37,6 +43,17 @@ export function createTransitionEventStatuses({ groupEventRepo, notificationServ
             body: `"${event.title}" è terminato. Com'è andata?`,
             data: { type: 'event_completed', eventId: event.id },
           });
+        }
+
+        // Award Main Event badge to participants of official events
+        if (event.isOfficial) {
+          for (const p of accepted) {
+            const hasBadge = await badgeRepo.hasBadge(p.dogId, 'main_event');
+            if (!hasBadge) {
+              await badgeRepo.award(p.dogId, 'main_event');
+              logger.info('transitionEventStatuses', `Awarded main_event badge to dog ${p.dogId}`);
+            }
+          }
         }
       }
 

@@ -47,8 +47,15 @@ export class DrizzleGroupEventRepository implements GroupEventRepository {
   }
 
   async findNearby(query: NearbyEventsQuery): Promise<(GroupEvent & { distanceKm: number })[]> {
-    const { latitude, longitude, radiusKm, limit = 20, excludeUserId, friendUserIds, category } =
-      query;
+    const {
+      latitude,
+      longitude,
+      radiusKm,
+      limit = 20,
+      excludeUserId,
+      friendUserIds,
+      category,
+    } = query;
 
     const radiusMeters = radiusKm * 1000;
 

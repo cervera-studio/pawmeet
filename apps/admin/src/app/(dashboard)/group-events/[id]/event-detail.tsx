@@ -43,7 +43,19 @@ const participantStatusConfig: Record<
   cancelled: { label: 'Annullato', variant: 'secondary' },
 };
 
+interface EventSponsorData {
+  id: string;
+  eventId: string;
+  organizationId: string;
+  tier: string;
+  logoPlacement: string;
+  createdAt: string;
+  organizationName: string;
+  organizationLogoUrl: string | null;
+}
+
 interface EventDetailProps {
+  initialSponsors: EventSponsorData[];
   event: {
     id: string;
     title: string;
@@ -82,7 +94,7 @@ interface EventDetailProps {
   };
 }
 
-export function EventDetail({ event }: EventDetailProps) {
+export function EventDetail({ event, initialSponsors }: EventDetailProps) {
   const router = useRouter();
   const [isCancelling, setIsCancelling] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
@@ -129,11 +141,13 @@ export function EventDetail({ event }: EventDetailProps) {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-neutral-900">{event.title}</h1>
+            <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+              {event.title}
+            </h1>
             <Badge variant={status.variant}>{status.label}</Badge>
             {event.isRecurring && <Badge variant="secondary">Ricorrente</Badge>}
           </div>
-          <p className="mt-1 text-neutral-500">
+          <p className="mt-1 text-neutral-500 dark:text-neutral-400">
             Creato da{' '}
             <a href={`/users/${event.creatorId}`} className="text-primary-600 hover:underline">
               {event.creatorName ?? 'Sconosciuto'}
@@ -156,7 +170,9 @@ export function EventDetail({ event }: EventDetailProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Categoria</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              Categoria
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Badge variant="outline">{categoryLabels[event.category] ?? event.category}</Badge>
@@ -165,17 +181,23 @@ export function EventDetail({ event }: EventDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Data e ora</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              Data e ora
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">{formatDateTime(event.scheduledAt)}</p>
-            <p className="text-xs text-neutral-500">{event.durationMin} minuti</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              {event.durationMin} minuti
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Partecipanti</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              Partecipanti
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">
@@ -191,14 +213,18 @@ export function EventDetail({ event }: EventDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Visibilità</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              Visibilità
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">
               {visibilityLabels[event.visibility] ?? event.visibility}
             </p>
             {event.requiresApproval && (
-              <p className="text-xs text-neutral-500">Richiede approvazione</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                Richiede approvazione
+              </p>
             )}
           </CardContent>
         </Card>
@@ -212,32 +238,32 @@ export function EventDetail({ event }: EventDetailProps) {
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-neutral-500">Luogo:</span>{' '}
+              <span className="text-neutral-500 dark:text-neutral-400">Luogo:</span>{' '}
               <span className="font-medium">{event.location}</span>
             </div>
             <div>
-              <span className="text-neutral-500">Coordinate:</span>{' '}
+              <span className="text-neutral-500 dark:text-neutral-400">Coordinate:</span>{' '}
               <span className="font-medium">
                 {event.latitude.toFixed(4)}, {event.longitude.toFixed(4)}
               </span>
             </div>
             {event.description && (
               <div className="col-span-2">
-                <span className="text-neutral-500">Descrizione:</span>
+                <span className="text-neutral-500 dark:text-neutral-400">Descrizione:</span>
                 <p className="mt-1 font-medium">{event.description}</p>
               </div>
             )}
             {event.recurrenceRule && (
               <div>
-                <span className="text-neutral-500">Regola ricorrenza:</span>{' '}
-                <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs">
+                <span className="text-neutral-500 dark:text-neutral-400">Regola ricorrenza:</span>{' '}
+                <code className="rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 text-xs">
                   {event.recurrenceRule}
                 </code>
               </div>
             )}
             {event.parentEventId && (
               <div>
-                <span className="text-neutral-500">Evento padre:</span>{' '}
+                <span className="text-neutral-500 dark:text-neutral-400">Evento padre:</span>{' '}
                 <a
                   href={`/group-events/${event.parentEventId}`}
                   className="text-primary-600 hover:underline"
@@ -247,11 +273,11 @@ export function EventDetail({ event }: EventDetailProps) {
               </div>
             )}
             <div>
-              <span className="text-neutral-500">Creato il:</span>{' '}
+              <span className="text-neutral-500 dark:text-neutral-400">Creato il:</span>{' '}
               <span className="font-medium">{formatDateTime(event.createdAt)}</span>
             </div>
             <div>
-              <span className="text-neutral-500">Aggiornato il:</span>{' '}
+              <span className="text-neutral-500 dark:text-neutral-400">Aggiornato il:</span>{' '}
               <span className="font-medium">{formatDateTime(event.updatedAt)}</span>
             </div>
           </div>
@@ -265,9 +291,9 @@ export function EventDetail({ event }: EventDetailProps) {
         </CardHeader>
         <CardContent>
           {activeParticipants.length === 0 ? (
-            <p className="text-sm text-neutral-500">Nessun partecipante</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Nessun partecipante</p>
           ) : (
-            <div className="divide-y divide-neutral-100">
+            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
               {activeParticipants.map((p) => {
                 const pStatus = participantStatusConfig[p.status] ?? {
                   label: p.status,
@@ -283,7 +309,7 @@ export function EventDetail({ event }: EventDetailProps) {
                         >
                           {p.userName ?? 'Sconosciuto'}
                         </a>
-                        <p className="text-xs text-neutral-500">
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
                           con {p.dogName ?? 'cane sconosciuto'}
                           {p.isOrganizer && ' — Organizzatore'}
                         </p>
@@ -291,7 +317,9 @@ export function EventDetail({ event }: EventDetailProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant={pStatus.variant}>{pStatus.label}</Badge>
-                      <span className="text-xs text-neutral-400">{formatDateTime(p.joinedAt)}</span>
+                      <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                        {formatDateTime(p.joinedAt)}
+                      </span>
                       {!p.isOrganizer && (p.status === 'accepted' || p.status === 'pending') && (
                         <Button
                           variant="ghost"
@@ -315,12 +343,12 @@ export function EventDetail({ event }: EventDetailProps) {
       {inactiveParticipants.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-neutral-500">
+            <CardTitle className="text-neutral-500 dark:text-neutral-400">
               Partecipanti passati ({inactiveParticipants.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="divide-y divide-neutral-100">
+            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
               {inactiveParticipants.map((p) => {
                 const pStatus = participantStatusConfig[p.status] ?? {
                   label: p.status,
@@ -335,7 +363,7 @@ export function EventDetail({ event }: EventDetailProps) {
                       >
                         {p.userName ?? 'Sconosciuto'}
                       </a>
-                      <p className="text-xs text-neutral-500">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         con {p.dogName ?? 'cane sconosciuto'}
                       </p>
                     </div>
@@ -354,7 +382,7 @@ export function EventDetail({ event }: EventDetailProps) {
           <CardTitle>Sponsor</CardTitle>
         </CardHeader>
         <CardContent>
-          <SponsorsSection eventId={event.id} initialSponsors={[]} />
+          <SponsorsSection eventId={event.id} initialSponsors={initialSponsors} />
         </CardContent>
       </Card>
     </div>

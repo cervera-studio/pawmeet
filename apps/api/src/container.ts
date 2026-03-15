@@ -96,11 +96,10 @@ import { createGetDog } from './use-cases/get-dog.js';
 import { createGetDogHealthGoal } from './use-cases/get-dog-health-goal.js';
 // Use cases — feedback
 import { createGetDogRating } from './use-cases/get-dog-rating.js';
+import { createGetEventRecap } from './use-cases/get-event-recap.js';
 import { createGetFeed } from './use-cases/get-feed.js';
 import { createGetFeedStories } from './use-cases/get-feed-stories.js';
 import { createGetFollowStatus } from './use-cases/get-follow-status.js';
-import { createGetEventRecap } from './use-cases/get-event-recap.js';
-import { createInviteToEvent } from './use-cases/invite-to-event.js';
 import { createGetGroupEvent } from './use-cases/get-group-event.js';
 // Use cases — chat
 import { createGetGroupMessages } from './use-cases/get-group-messages.js';
@@ -119,6 +118,7 @@ import { createGetUserTracks } from './use-cases/get-user-tracks.js';
 import { createGetWalkAlbum } from './use-cases/get-walk-album.js';
 import { createGetWalkTrack } from './use-cases/get-walk-track.js';
 import { createGetXpSummary } from './use-cases/get-xp-summary.js';
+import { createInviteToEvent } from './use-cases/invite-to-event.js';
 import { createJoinGroupEvent } from './use-cases/join-group-event.js';
 import { createLearnUserPreferences } from './use-cases/learn-user-preferences.js';
 import { createLeaveGroupEvent } from './use-cases/leave-group-event.js';
@@ -641,6 +641,7 @@ export const gdprExportWorkerDeps = {
 export const eventStatusDeps = {
   groupEventRepo,
   notificationService,
+  badgeRepo,
 };
 
 // ── Recurring event deps ─────────────────────────────────────────────────────

@@ -1,15 +1,15 @@
 'use client';
 
 import type { PaginatedResult } from '@pawmeet/types';
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { formatDateTime } from '@/lib/formatters';
 import type { AdminGroupEventListItem, ListGroupEventsParams } from '@/repositories';
-import { fetchGroupEvents } from './actions';
+import { useGroupEventsViewModel } from './page.view-model';
 
 type EventStatus = NonNullable<ListGroupEventsParams['status']>;
 type EventCategory = NonNullable<ListGroupEventsParams['category']>;
@@ -50,30 +50,7 @@ interface GroupEventsTableProps {
 export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProps) {
   const t = useTranslations('events');
   const tc = useTranslations('common');
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<EventStatus | undefined>(undefined);
-  const [categoryFilter, setCategoryFilter] = useState<EventCategory | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-  const [data, setData] = useState<PaginatedResult<AdminGroupEventListItem>>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-
-  const isInitialState =
-    pagination.pageIndex === 0 && debouncedSearch === '' && !statusFilter && !categoryFilter;
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    if (debounceTimer) clearTimeout(debounceTimer);
-    const timer = setTimeout(() => {
-      setDebouncedSearch(value);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    }, 300);
-    setDebounceTimer(timer);
-  }
+  const vm = useGroupEventsViewModel(initialData, pageSize);
 
   const columns: ColumnDef<AdminGroupEventListItem>[] = useMemo(
     () => [
@@ -186,45 +163,21 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
     [t, tc],
   );
 
-  const loadEvents = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchGroupEvents({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
-        search: debouncedSearch || undefined,
-        status: statusFilter,
-        category: categoryFilter,
-      });
-      setData(result);
-    } catch (error) {
-      console.error('[GroupEvents] Failed to fetch events:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch, statusFilter, categoryFilter]);
-
-  useEffect(() => {
-    if (isInitialState) return;
-    void loadEvents();
-  }, [loadEvents, isInitialState]);
-
   return (
     <>
       <div className="flex items-center gap-4">
         <Input
           placeholder={t('searchPlaceholder')}
           className="max-w-sm"
-          value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
+          value={vm.search}
+          onChange={(e) => vm.setSearch(e.target.value)}
         />
         <select
-          className="rounded-md border border-neutral-200 px-3 py-2 text-sm"
-          value={statusFilter ?? ''}
+          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          value={vm.statusFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;
-            setStatusFilter(isEventStatus(v) ? v : undefined);
-            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            vm.setStatusFilter(isEventStatus(v) ? v : undefined);
           }}
         >
           <option value="">{t('allStatuses')}</option>
@@ -235,12 +188,11 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
           <option value="template">{t('statuses.template')}</option>
         </select>
         <select
-          className="rounded-md border border-neutral-200 px-3 py-2 text-sm"
-          value={categoryFilter ?? ''}
+          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          value={vm.categoryFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;
-            setCategoryFilter(isEventCategory(v) ? v : undefined);
-            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            vm.setCategoryFilter(isEventCategory(v) ? v : undefined);
           }}
         >
           <option value="">{t('allCategories')}</option>
@@ -252,12 +204,12 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
 
       <DataTable
         columns={columns}
-        data={data.data ?? []}
-        total={data.total}
-        totalPages={Math.ceil(data.total / pagination.pageSize)}
-        isLoading={isLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
+        data={vm.data ?? []}
+        total={vm.total}
+        totalPages={vm.totalPages}
+        isLoading={vm.isLoading}
+        pagination={vm.pagination}
+        onPaginationChange={vm.setPagination}
       />
     </>
   );

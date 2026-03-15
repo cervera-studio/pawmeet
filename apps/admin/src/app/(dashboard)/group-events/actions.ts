@@ -72,3 +72,33 @@ export async function removeSponsorFromEvent(eventId: string, organizationId: st
   revalidatePath(`/group-events/${eventId}`);
   return { success: true };
 }
+
+export async function createOfficialEvent(input: {
+  title: string;
+  description?: string;
+  scheduledAt: string;
+  durationMin: number;
+  location: string;
+  latitude: number;
+  longitude: number;
+  maxParticipants: number;
+  organizationId: string;
+  coverImageUrl?: string;
+  category: 'walk' | 'meetup' | 'training';
+}) {
+  const api = await getServerTrpcClient();
+  const event = await api.admin.createOfficialEvent.mutate(input);
+  revalidatePath('/group-events');
+  return event;
+}
+
+export async function fetchVerifiedOrganizations() {
+  const api = await getServerTrpcClient();
+  const result = await api.admin.listOrganizations.query({
+    page: 1,
+    pageSize: 100,
+  });
+  return result.data.filter(
+    (org: { isVerified: boolean; isActive: boolean }) => org.isVerified && org.isActive,
+  );
+}

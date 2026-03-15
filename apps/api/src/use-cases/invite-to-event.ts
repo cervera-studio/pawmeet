@@ -31,9 +31,7 @@ export function createInviteToEvent({
 
     // Only the creator can invite
     if (event.createdBy !== userId) {
-      return fail(
-        new AppError('NOT_CREATOR', 'Solo il creatore può invitare partecipanti', 403),
-      );
+      return fail(new AppError('NOT_CREATOR', 'Solo il creatore può invitare partecipanti', 403));
     }
 
     if (event.status !== 'scheduled') {
@@ -45,9 +43,7 @@ export function createInviteToEvent({
     // Check if already a participant
     const existing = event.participants.find((p) => p.userId === invitedUserId);
     if (existing) {
-      return fail(
-        new AppError('ALREADY_PARTICIPANT', "L'utente è già un partecipante", 409),
-      );
+      return fail(new AppError('ALREADY_PARTICIPANT', "L'utente è già un partecipante", 409));
     }
 
     // Check capacity
@@ -65,9 +61,7 @@ export function createInviteToEvent({
     const dogs = await dogRepo.findByOwner(invitedUserId, true);
     const firstDog = dogs[0];
     if (!firstDog) {
-      return fail(
-        new AppError('NO_ACTIVE_DOG', "L'utente non ha cani attivi", 400),
-      );
+      return fail(new AppError('NO_ACTIVE_DOG', "L'utente non ha cani attivi", 400));
     }
 
     // Add as accepted participant with their first active dog

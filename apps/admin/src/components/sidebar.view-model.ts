@@ -6,6 +6,7 @@ import {
   BuildingIcon,
   CalendarIcon,
   LayoutDashboardIcon,
+  ListIcon,
   PawPrintIcon,
   ScrollTextIcon,
   SettingsIcon,
@@ -33,6 +34,7 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
       ],
     },
     { name: t('dogs'), href: '/dogs', icon: PawPrintIcon },
+    { name: t('breeds'), href: '/breeds', icon: ListIcon },
     { name: t('events'), href: '/group-events', icon: CalendarIcon },
     { name: t('organizations'), href: '/organizations', icon: BuildingIcon },
     {

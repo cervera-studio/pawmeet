@@ -45,6 +45,7 @@
     "moderationContent": "Contenuti",
     "moderationReports": "Segnalazioni",
     "dogs": "Cani",
+    "breeds": "Razze",
     "events": "Eventi",
     "organizations": "Organizzazioni",
     "safety": "Sicurezza",
@@ -170,6 +171,18 @@
       "subtitle": "Configura le regole di moderazione automatica",
       "photoThreshold": "Soglia auto-approvazione foto (confidence %)",
       "maxReports": "Max segnalazioni prima di sospensione"
+    },
+    "matching": {
+      "title": "Configurazione Matching",
+      "description": "Configura i pesi utilizzati dall'algoritmo di matching",
+      "size": "Peso taglia",
+      "energy": "Peso energia",
+      "behavior": "Peso comportamento",
+      "walk": "Peso preferenze passeggiata",
+      "distance": "Peso distanza",
+      "leash": "Peso guinzaglio",
+      "sum": "Somma totale",
+      "validationError": "I pesi devono sommare a 1.0"
     },
     "dangerZone": {
       "title": "Zona Pericolosa",
@@ -452,6 +465,48 @@
       "sponsor": "Sponsor",
       "settings": "Impostazioni",
       "deletion": "Eliminazione"
+    }
+  },
+  "breeds": {
+    "title": "Razze",
+    "subtitle": "Gestisci le razze canine sulla piattaforma",
+    "searchPlaceholder": "Cerca per nome...",
+    "allGroups": "Tutti i gruppi",
+    "createButton": "Aggiungi Razza",
+    "columns": {
+      "name": "Nome (EN)",
+      "nameIt": "Nome (IT)",
+      "group": "Gruppo",
+      "sizeCategory": "Categoria taglia",
+      "avgWeightKg": "Peso medio (kg)",
+      "actions": "Azioni"
+    },
+    "sizes": {
+      "toy": "Toy",
+      "piccola": "Piccola",
+      "media": "Media",
+      "grande": "Grande",
+      "gigante": "Gigante"
+    },
+    "actions": {
+      "edit": "Modifica",
+      "delete": "Elimina"
+    },
+    "createDialog": {
+      "title": "Aggiungi Razza",
+      "description": "Aggiungi una nuova razza canina alla piattaforma.",
+      "namePlaceholder": "Inserisci il nome della razza (EN)",
+      "nameItPlaceholder": "Inserisci il nome della razza (IT)",
+      "submit": "Crea"
+    },
+    "editDialog": {
+      "title": "Modifica Razza",
+      "description": "Modifica la razza {name}"
+    },
+    "deleteDialog": {
+      "title": "Elimina Razza",
+      "description": "Sei sicuro di voler eliminare la razza {name}? Questa azione non può essere annullata.",
+      "confirm": "Elimina"
     }
   },
   "adminUsers": {

@@ -3,6 +3,12 @@ export interface AppSettings {
   supportEmail: string;
   photoConfidenceThreshold: number;
   maxReportsBeforeSuspension: number;
+  matchWeightSize: number;
+  matchWeightEnergy: number;
+  matchWeightBehavior: number;
+  matchWeightWalk: number;
+  matchWeightDistance: number;
+  matchWeightLeash: number;
 }
 
 export interface UpdateSettingsInput {
@@ -10,6 +16,12 @@ export interface UpdateSettingsInput {
   supportEmail?: string;
   photoConfidenceThreshold?: number;
   maxReportsBeforeSuspension?: number;
+  matchWeightSize?: number;
+  matchWeightEnergy?: number;
+  matchWeightBehavior?: number;
+  matchWeightWalk?: number;
+  matchWeightDistance?: number;
+  matchWeightLeash?: number;
 }
 
 export interface SettingsRepository {

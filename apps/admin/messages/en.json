@@ -45,6 +45,7 @@
     "moderationContent": "Content",
     "moderationReports": "Reports",
     "dogs": "Dogs",
+    "breeds": "Breeds",
     "events": "Events",
     "organizations": "Organizations",
     "safety": "Safety",
@@ -170,6 +171,18 @@
       "subtitle": "Configure automatic moderation rules",
       "photoThreshold": "Photo auto-approval threshold (confidence %)",
       "maxReports": "Max reports before suspension"
+    },
+    "matching": {
+      "title": "Matching Configuration",
+      "description": "Configure the weights used by the matching algorithm",
+      "size": "Size weight",
+      "energy": "Energy weight",
+      "behavior": "Behavior weight",
+      "walk": "Walk preferences weight",
+      "distance": "Distance weight",
+      "leash": "Leash weight",
+      "sum": "Total sum",
+      "validationError": "Weights must sum to 1.0"
     },
     "dangerZone": {
       "title": "Danger Zone",
@@ -452,6 +465,48 @@
       "sponsor": "Sponsor",
       "settings": "Settings",
       "deletion": "Deletion"
+    }
+  },
+  "breeds": {
+    "title": "Breeds",
+    "subtitle": "Manage dog breeds in the platform",
+    "searchPlaceholder": "Search by name...",
+    "allGroups": "All groups",
+    "createButton": "Add Breed",
+    "columns": {
+      "name": "Name (EN)",
+      "nameIt": "Name (IT)",
+      "group": "Group",
+      "sizeCategory": "Size Category",
+      "avgWeightKg": "Avg Weight (kg)",
+      "actions": "Actions"
+    },
+    "sizes": {
+      "toy": "Toy",
+      "piccola": "Small",
+      "media": "Medium",
+      "grande": "Large",
+      "gigante": "Giant"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "createDialog": {
+      "title": "Add Breed",
+      "description": "Add a new dog breed to the platform.",
+      "namePlaceholder": "Enter breed name (EN)",
+      "nameItPlaceholder": "Enter breed name (IT)",
+      "submit": "Create"
+    },
+    "editDialog": {
+      "title": "Edit Breed",
+      "description": "Edit the breed {name}"
+    },
+    "deleteDialog": {
+      "title": "Delete Breed",
+      "description": "Are you sure you want to delete the breed {name}? This action cannot be undone.",
+      "confirm": "Delete"
     }
   },
   "adminUsers": {

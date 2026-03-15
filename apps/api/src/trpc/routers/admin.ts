@@ -1,7 +1,9 @@
+import { DEFAULT_WEIGHTS } from '@pawmeet/config';
 import {
   adminAuditLog,
   adminUsers,
   analyticsEvents,
+  breeds,
   contentReports,
   dogPhotos,
   dogProfiles,
@@ -22,7 +24,7 @@ import {
 } from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
 import { hash } from 'bcryptjs';
-import { and, count, desc, eq, gte, ilike, isNotNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, ilike, isNotNull, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
@@ -116,6 +118,12 @@ const updateSettingsSchema = z.object({
   supportEmail: z.string().email().optional(),
   photoConfidenceThreshold: z.number().int().min(0).max(100).optional(),
   maxReportsBeforeSuspension: z.number().int().min(1).optional(),
+  matchWeightSize: z.number().min(0).max(1).optional(),
+  matchWeightEnergy: z.number().min(0).max(1).optional(),
+  matchWeightBehavior: z.number().min(0).max(1).optional(),
+  matchWeightWalk: z.number().min(0).max(1).optional(),
+  matchWeightDistance: z.number().min(0).max(1).optional(),
+  matchWeightLeash: z.number().min(0).max(1).optional(),
 });
 
 const listFeedPostsSchema = z.object({
@@ -155,6 +163,36 @@ const listAuditLogSchema = z.object({
   from: z.string().datetime().optional(),
   to: z.string().datetime().optional(),
   search: z.string().optional(),
+});
+
+const sizeCategoryEnum = z.enum(['toy', 'piccola', 'media', 'grande', 'gigante']);
+
+const listBreedsSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(20),
+  search: z.string().optional(),
+  group: z.string().optional(),
+});
+
+const createBreedSchema = z.object({
+  name: z.string().min(1).max(100),
+  nameIt: z.string().min(1).max(100),
+  group: z.string().max(50).optional(),
+  sizeCategory: sizeCategoryEnum,
+  avgWeightKg: z.number().int().positive().optional(),
+});
+
+const updateBreedSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1).max(100).optional(),
+  nameIt: z.string().min(1).max(100).optional(),
+  group: z.string().max(50).optional(),
+  sizeCategory: sizeCategoryEnum.optional(),
+  avgWeightKg: z.number().int().positive().optional(),
+});
+
+const deleteBreedSchema = z.object({
+  id: z.number().int().positive(),
 });
 
 const adminRoleEnum = z.enum(['viewer', 'moderator', 'admin', 'super_admin']);
@@ -1763,6 +1801,12 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         supportEmail: 'support@pawmeet.io',
         photoConfidenceThreshold: 95,
         maxReportsBeforeSuspension: 5,
+        matchWeightSize: DEFAULT_WEIGHTS.size,
+        matchWeightEnergy: DEFAULT_WEIGHTS.energy,
+        matchWeightBehavior: DEFAULT_WEIGHTS.behavior,
+        matchWeightWalk: DEFAULT_WEIGHTS.walk,
+        matchWeightDistance: DEFAULT_WEIGHTS.distance,
+        matchWeightLeash: DEFAULT_WEIGHTS.leash,
       };
     }),
 
@@ -1770,6 +1814,23 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       requireRole(ctx.adminRole, AdminRole.SuperAdmin);
       // MVP: accept the input and return it. No persistence yet.
       // In production, store in a settings table or Redis.
+
+      // Validate matching weights sum to 1.0 if any are provided
+      const weightSize = input.matchWeightSize ?? DEFAULT_WEIGHTS.size;
+      const weightEnergy = input.matchWeightEnergy ?? DEFAULT_WEIGHTS.energy;
+      const weightBehavior = input.matchWeightBehavior ?? DEFAULT_WEIGHTS.behavior;
+      const weightWalk = input.matchWeightWalk ?? DEFAULT_WEIGHTS.walk;
+      const weightDistance = input.matchWeightDistance ?? DEFAULT_WEIGHTS.distance;
+      const weightLeash = input.matchWeightLeash ?? DEFAULT_WEIGHTS.leash;
+
+      const weightsSum =
+        weightSize + weightEnergy + weightBehavior + weightWalk + weightDistance + weightLeash;
+      if (Math.abs(weightsSum - 1.0) > 0.01) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Matching weights must sum to 1.0 (current sum: ${weightsSum.toFixed(4)})`,
+        });
+      }
 
       void logAdminAction(db, {
         adminId: ctx.userId,
@@ -1783,6 +1844,12 @@ export function createAdminRouter(db: NeonHttpDatabase) {
         supportEmail: input.supportEmail ?? 'support@pawmeet.io',
         photoConfidenceThreshold: input.photoConfidenceThreshold ?? 95,
         maxReportsBeforeSuspension: input.maxReportsBeforeSuspension ?? 5,
+        matchWeightSize: weightSize,
+        matchWeightEnergy: weightEnergy,
+        matchWeightBehavior: weightBehavior,
+        matchWeightWalk: weightWalk,
+        matchWeightDistance: weightDistance,
+        matchWeightLeash: weightLeash,
       };
     }),
 
@@ -2090,5 +2157,143 @@ export function createAdminRouter(db: NeonHttpDatabase) {
 
         return { success: true };
       }),
+
+    // ── Breeds management ──────────────────────────────────────────────────────
+
+    listBreeds: adminProcedure.input(listBreedsSchema).query(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Moderator);
+
+      const { page, pageSize, search, group } = input;
+      const offset = (page - 1) * pageSize;
+
+      const conditions = [];
+      if (search) {
+        conditions.push(or(ilike(breeds.name, `%${search}%`), ilike(breeds.nameIt, `%${search}%`)));
+      }
+      if (group) {
+        conditions.push(eq(breeds.group, group));
+      }
+
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const [items, [totalRow]] = await Promise.all([
+        db
+          .select()
+          .from(breeds)
+          .where(whereClause)
+          .orderBy(asc(breeds.name))
+          .limit(pageSize)
+          .offset(offset),
+        db.select({ value: count() }).from(breeds).where(whereClause),
+      ]);
+
+      const total = totalRow?.value ?? 0;
+
+      return {
+        data: items,
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      };
+    }),
+
+    createBreed: adminProcedure.input(createBreedSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Admin);
+
+      const [created] = await db
+        .insert(breeds)
+        .values({
+          name: input.name,
+          nameIt: input.nameIt,
+          group: input.group,
+          sizeCategory: input.sizeCategory,
+          avgWeightKg: input.avgWeightKg,
+        })
+        .returning();
+
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: 'create_breed',
+        resourceType: RESOURCE_TYPE.breed,
+        resourceId: String(created?.id),
+        changes: { after: input as unknown as Record<string, unknown> },
+      });
+
+      return created;
+    }),
+
+    updateBreed: adminProcedure.input(updateBreedSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Admin);
+
+      const { id, ...updates } = input;
+
+      const [existing] = await db.select().from(breeds).where(eq(breeds.id, id));
+      if (!existing) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Breed not found' });
+      }
+
+      const setValues: Record<string, unknown> = {};
+      if (updates.name !== undefined) setValues.name = updates.name;
+      if (updates.nameIt !== undefined) setValues.nameIt = updates.nameIt;
+      if (updates.group !== undefined) setValues.group = updates.group;
+      if (updates.sizeCategory !== undefined) setValues.sizeCategory = updates.sizeCategory;
+      if (updates.avgWeightKg !== undefined) setValues.avgWeightKg = updates.avgWeightKg;
+
+      if (Object.keys(setValues).length === 0) {
+        return existing;
+      }
+
+      const [updated] = await db.update(breeds).set(setValues).where(eq(breeds.id, id)).returning();
+
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: 'update_breed',
+        resourceType: RESOURCE_TYPE.breed,
+        resourceId: String(id),
+        changes: {
+          before: existing as unknown as Record<string, unknown>,
+          after: updated as unknown as Record<string, unknown>,
+        },
+      });
+
+      return updated;
+    }),
+
+    deleteBreed: adminProcedure.input(deleteBreedSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Admin);
+
+      const [existing] = await db.select().from(breeds).where(eq(breeds.id, input.id));
+      if (!existing) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Breed not found' });
+      }
+
+      // Check if any dogs reference this breed
+      const [dogCount] = await db
+        .select({ value: count() })
+        .from(dogProfiles)
+        .where(
+          or(eq(dogProfiles.breed, existing.name), eq(dogProfiles.breedSecondary, existing.name)),
+        );
+
+      if ((dogCount?.value ?? 0) > 0) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Cannot delete breed "${existing.name}": ${dogCount?.value} dog(s) still reference it`,
+        });
+      }
+
+      await db.delete(breeds).where(eq(breeds.id, input.id));
+
+      void logAdminAction(db, {
+        adminId: ctx.userId,
+        action: 'delete_breed',
+        resourceType: RESOURCE_TYPE.breed,
+        resourceId: String(input.id),
+        changes: { before: existing as unknown as Record<string, unknown> },
+      });
+
+      return { success: true };
+    }),
   });
 }

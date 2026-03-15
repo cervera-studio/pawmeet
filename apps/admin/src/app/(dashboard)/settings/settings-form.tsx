@@ -21,6 +21,25 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const [supportEmail, setSupportEmail] = useState(initialSettings.supportEmail);
   const [photoConfidence, setPhotoConfidence] = useState(initialSettings.photoConfidenceThreshold);
   const [maxReports, setMaxReports] = useState(initialSettings.maxReportsBeforeSuspension);
+  const [matchWeightSize, setMatchWeightSize] = useState(initialSettings.matchWeightSize);
+  const [matchWeightEnergy, setMatchWeightEnergy] = useState(initialSettings.matchWeightEnergy);
+  const [matchWeightBehavior, setMatchWeightBehavior] = useState(
+    initialSettings.matchWeightBehavior,
+  );
+  const [matchWeightWalk, setMatchWeightWalk] = useState(initialSettings.matchWeightWalk);
+  const [matchWeightDistance, setMatchWeightDistance] = useState(
+    initialSettings.matchWeightDistance,
+  );
+  const [matchWeightLeash, setMatchWeightLeash] = useState(initialSettings.matchWeightLeash);
+
+  const matchWeightSum =
+    matchWeightSize +
+    matchWeightEnergy +
+    matchWeightBehavior +
+    matchWeightWalk +
+    matchWeightDistance +
+    matchWeightLeash;
+  const isMatchWeightValid = Math.abs(matchWeightSum - 1.0) < 0.001;
 
   async function handleSaveGeneral() {
     setIsSaving(true);
@@ -38,6 +57,24 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     const result = await updateSettings({
       photoConfidenceThreshold: photoConfidence,
       maxReportsBeforeSuspension: maxReports,
+    });
+    if (result.success) {
+      toast.success(t('saved'));
+    } else {
+      toast.error(result.error ?? t('saveError'));
+    }
+    setIsSaving(false);
+  }
+
+  async function handleSaveMatching() {
+    setIsSaving(true);
+    const result = await updateSettings({
+      matchWeightSize,
+      matchWeightEnergy,
+      matchWeightBehavior,
+      matchWeightWalk,
+      matchWeightDistance,
+      matchWeightLeash,
     });
     if (result.success) {
       toast.success(t('saved'));
@@ -115,6 +152,111 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             />
           </div>
           <Button size="sm" onClick={handleSaveModeration} disabled={isSaving}>
+            {isSaving ? tc('saving') : tc('saveChanges')}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Matching Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('matching.title')}</CardTitle>
+          <CardDescription>{t('matching.description')}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="match-size" className="text-sm font-medium text-neutral-700">
+              {t('matching.size')}
+            </label>
+            <Input
+              id="match-size"
+              type="number"
+              value={matchWeightSize}
+              onChange={(e) => setMatchWeightSize(Number(e.target.value))}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="match-energy" className="text-sm font-medium text-neutral-700">
+              {t('matching.energy')}
+            </label>
+            <Input
+              id="match-energy"
+              type="number"
+              value={matchWeightEnergy}
+              onChange={(e) => setMatchWeightEnergy(Number(e.target.value))}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="match-behavior" className="text-sm font-medium text-neutral-700">
+              {t('matching.behavior')}
+            </label>
+            <Input
+              id="match-behavior"
+              type="number"
+              value={matchWeightBehavior}
+              onChange={(e) => setMatchWeightBehavior(Number(e.target.value))}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="match-walk" className="text-sm font-medium text-neutral-700">
+              {t('matching.walk')}
+            </label>
+            <Input
+              id="match-walk"
+              type="number"
+              value={matchWeightWalk}
+              onChange={(e) => setMatchWeightWalk(Number(e.target.value))}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="match-distance" className="text-sm font-medium text-neutral-700">
+              {t('matching.distance')}
+            </label>
+            <Input
+              id="match-distance"
+              type="number"
+              value={matchWeightDistance}
+              onChange={(e) => setMatchWeightDistance(Number(e.target.value))}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="match-leash" className="text-sm font-medium text-neutral-700">
+              {t('matching.leash')}
+            </label>
+            <Input
+              id="match-leash"
+              type="number"
+              value={matchWeightLeash}
+              onChange={(e) => setMatchWeightLeash(Number(e.target.value))}
+              min={0}
+              max={1}
+              step={0.01}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-neutral-600">
+              {t('matching.sum')}: <span className="font-medium">{matchWeightSum.toFixed(2)}</span>
+            </p>
+            {!isMatchWeightValid && (
+              <p className="text-sm text-red-500">{t('matching.validationError')}</p>
+            )}
+          </div>
+          <Button size="sm" onClick={handleSaveMatching} disabled={isSaving || !isMatchWeightValid}>
             {isSaving ? tc('saving') : tc('saveChanges')}
           </Button>
         </CardContent>

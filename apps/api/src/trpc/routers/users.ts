@@ -10,7 +10,7 @@ import {
   updatePreferencesSchema,
 } from '@pawmeet/validation';
 import { z } from 'zod';
-import type { userDeps } from '../../container.js';
+import type { userDeps } from '../../container/index.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { gdprExportProtectedProcedure, protectedProcedure, router, unwrapResult } from '../trpc.js';

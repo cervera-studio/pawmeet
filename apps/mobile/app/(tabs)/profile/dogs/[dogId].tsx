@@ -14,8 +14,10 @@ type DogPhoto = RouterOutput['dogs']['get']['photos'][number];
 function InfoChip({ title, value }: { title: string; value: string }) {
   return (
     <View className="flex-1 items-center rounded-xl bg-primary-50 p-3">
-      <Text className="text-xs text-gray-500">{title}</Text>
-      <Text className="text-center text-sm font-semibold text-gray-900">{value}</Text>
+      <Text className="text-xs text-gray-500 dark:text-neutral-500">{title}</Text>
+      <Text className="text-center text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">
+        {value}
+      </Text>
     </View>
   );
 }
@@ -24,18 +26,22 @@ function DogHeader({ dog, primaryPhotoUrl }: { dog: Dog; primaryPhotoUrl: string
   return (
     <View className="items-center">
       <Avatar name={dog.name} imageUrl={primaryPhotoUrl} size="lg" />
-      <Text className="mt-3 text-2xl font-bold text-gray-900">{dog.name}</Text>
-      <Text className="text-base text-gray-500">{dog.breed}</Text>
+      <Text className="mt-3 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">{dog.name}</Text>
+      <Text className="text-base text-gray-500 dark:text-neutral-500">{dog.breed}</Text>
       {dog.breedSecondary ? (
-        <Text className="text-sm text-gray-400">Incrocio con {dog.breedSecondary}</Text>
+        <Text className="text-sm text-gray-400 dark:text-neutral-500">
+          Incrocio con {dog.breedSecondary}
+        </Text>
       ) : null}
-      <Text className="text-sm text-gray-400">
+      <Text className="text-sm text-gray-400 dark:text-neutral-500">
         {formatDogAge(new Date(dog.birthDate))} - {label(dog.gender)} -{' '}
         {dog.isNeutered ? 'Sterilizzato/a' : 'Non sterilizzato/a'}
       </Text>
       {!dog.isActive && (
-        <View className="mt-2 rounded-full bg-gray-200 px-3 py-1">
-          <Text className="text-xs font-medium text-gray-600">Profilo disattivato</Text>
+        <View className="mt-2 rounded-full bg-gray-200 dark:bg-[#48484A] px-3 py-1">
+          <Text className="text-xs font-medium text-gray-600 dark:text-[#D1D1D6]">
+            Profilo disattivato
+          </Text>
         </View>
       )}
     </View>
@@ -57,7 +63,9 @@ function DogTraits({ dog }: { dog: Dog }) {
     <>
       {/* Temperament */}
       <View className="mt-4 gap-3">
-        <Text className="text-base font-semibold text-gray-900">Temperamento</Text>
+        <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
+          Temperamento
+        </Text>
         <View className="flex-row gap-3">
           <InfoChip title="Con cani" value={label(dog.behaviorWithDogs)} />
           <InfoChip title="Con persone" value={label(dog.behaviorWithPeople)} />
@@ -74,20 +82,30 @@ function DogTraits({ dog }: { dog: Dog }) {
 
       {/* Walk preferences */}
       <View className="mt-4 gap-3">
-        <Text className="text-base font-semibold text-gray-900">Preferenze passeggiata</Text>
-        <View className="rounded-2xl bg-gray-50 p-4">
-          <Text className="mb-1 text-sm font-medium text-gray-500">Orari</Text>
-          <Text className="text-base text-gray-700">{dog.walkPrefTime.map(label).join(', ')}</Text>
+        <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
+          Preferenze passeggiata
+        </Text>
+        <View className="rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
+          <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-neutral-500">
+            Orari
+          </Text>
+          <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+            {dog.walkPrefTime.map(label).join(', ')}
+          </Text>
         </View>
-        <View className="rounded-2xl bg-gray-50 p-4">
-          <Text className="mb-1 text-sm font-medium text-gray-500">Terreno</Text>
-          <Text className="text-base text-gray-700">
+        <View className="rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
+          <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-neutral-500">
+            Terreno
+          </Text>
+          <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
             {dog.walkPrefTerrain.map(label).join(', ')}
           </Text>
         </View>
-        <View className="rounded-2xl bg-gray-50 p-4">
-          <Text className="mb-1 text-sm font-medium text-gray-500">Durata</Text>
-          <Text className="text-base text-gray-700">
+        <View className="rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
+          <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-neutral-500">
+            Durata
+          </Text>
+          <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
             {dog.walkPrefDurationMin} - {dog.walkPrefDurationMax} minuti
           </Text>
         </View>
@@ -111,7 +129,7 @@ function PhotoGallery({
 }) {
   return (
     <View className="mt-4">
-      <Text className="mb-2 text-base font-semibold text-gray-900">
+      <Text className="mb-2 text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
         Foto ({photos.length}/{MAX_PHOTOS})
       </Text>
       <View className="flex-row flex-wrap gap-2">
@@ -145,18 +163,20 @@ function PhotoGallery({
           <Pressable
             onPress={onUploadPhoto}
             disabled={uploading}
-            className="h-24 w-24 items-center justify-center rounded-xl border-2 border-dashed border-gray-300"
+            className="h-24 w-24 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 dark:border-[#48484A]"
           >
             {uploading ? (
               <ActivityIndicator size="small" color="#065F46" />
             ) : (
-              <Text className="text-2xl text-gray-400">+</Text>
+              <Text className="text-2xl text-gray-400 dark:text-neutral-500">+</Text>
             )}
           </Pressable>
         )}
       </View>
       {photos.length > 0 && (
-        <Text className="mt-1 text-xs text-gray-400">Tieni premuto su una foto per eliminarla</Text>
+        <Text className="mt-1 text-xs text-gray-400 dark:text-neutral-500">
+          Tieni premuto su una foto per eliminarla
+        </Text>
       )}
     </View>
   );
@@ -212,7 +232,7 @@ export default function DogDetailScreen() {
           options={{ headerShown: true, title: 'Errore', headerBackTitle: 'Profilo' }}
         />
         <View className="flex-1 items-center justify-center bg-white">
-          <Text className="text-gray-500">Cane non trovato</Text>
+          <Text className="text-gray-500 dark:text-neutral-500">Cane non trovato</Text>
         </View>
       </>
     );
@@ -227,7 +247,7 @@ export default function DogDetailScreen() {
           headerBackTitle: 'Profilo',
         }}
       />
-      <SafeAreaView edges={['bottom']} className="flex-1 bg-white">
+      <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
         <ScrollView contentContainerClassName="px-6 py-4">
           {/* Header */}
           <DogHeader dog={vm.dog} primaryPhotoUrl={vm.primaryPhoto?.url} />
@@ -236,10 +256,10 @@ export default function DogDetailScreen() {
           {vm.dogRating && vm.dogRating.count > 0 && (
             <View className="mt-3 flex-row items-center justify-center gap-1">
               <Text className="text-base">{'\u{2B50}'}</Text>
-              <Text className="text-base font-semibold text-gray-900">
+              <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
                 {vm.dogRating.average?.toFixed(1) ?? '-'}
               </Text>
-              <Text className="text-sm text-gray-500">
+              <Text className="text-sm text-gray-500 dark:text-neutral-500">
                 ({vm.dogRating.count} {vm.dogRating.count === 1 ? 'recensione' : 'recensioni'})
               </Text>
             </View>
@@ -247,15 +267,19 @@ export default function DogDetailScreen() {
 
           {/* Badges */}
           <View className="mt-4">
-            <Text className="mb-2 text-base font-semibold text-gray-900">Badge</Text>
+            <Text className="mb-2 text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
+              Badge
+            </Text>
             <BadgeDisplay badges={vm.badges} />
           </View>
 
           {/* Bio */}
           {vm.dog.bio ? (
-            <View className="mt-6 rounded-2xl bg-gray-50 p-4">
-              <Text className="mb-1 text-sm font-medium text-gray-500">Bio</Text>
-              <Text className="text-base text-gray-700">{vm.dog.bio}</Text>
+            <View className="mt-6 rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
+              <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-neutral-500">
+                Bio
+              </Text>
+              <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">{vm.dog.bio}</Text>
             </View>
           ) : null}
 

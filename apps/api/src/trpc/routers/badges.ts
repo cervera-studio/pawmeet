@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { badgeDeps } from '../../container.js';
+import type { badgeDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 const listByDogSchema = z.object({

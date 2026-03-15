@@ -1,7 +1,8 @@
-import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useDataTable } from '@/hooks/use-data-table';
+import { TIMING } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { fetchAdminUsers } from './actions';
 
@@ -33,22 +34,20 @@ export type { Role };
 
 export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: number) {
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search, 300);
+  const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [roleFilter, setRoleFilter] = useState<Role | undefined>(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const isInitialRender = useRef(true);
+
+  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await fetchAdminUsers({
-        page: pagination.pageIndex + 1,
-        pageSize: pagination.pageSize,
+        page: table.page,
+        pageSize: table.pageSize,
         search: debouncedSearch || undefined,
         role: roleFilter,
       });
@@ -58,7 +57,7 @@ export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: nu
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch, roleFilter]);
+  }, [table.page, table.pageSize, debouncedSearch, roleFilter]);
 
   useEffect(() => {
     if (isInitialRender.current) {
@@ -70,27 +69,27 @@ export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: nu
 
   function handleRoleFilterChange(role: Role | undefined) {
     setRoleFilter(role);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    table.onPageChange(0);
   }
 
   function handleSearchChange(value: string) {
     setSearch(value);
     if (value === '') {
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      table.onPageChange(0);
     }
   }
 
   return {
     data: data.data,
     total: data.total,
-    totalPages: Math.ceil(data.total / pagination.pageSize),
+    totalPages: table.totalPages,
     isLoading,
     search,
     setSearch: handleSearchChange,
     roleFilter,
     setRoleFilter: handleRoleFilterChange,
-    pagination,
-    setPagination,
+    pagination: table.pagination,
+    setPagination: table.setPagination,
     refetch: fetchData,
   };
 }

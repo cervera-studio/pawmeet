@@ -57,9 +57,9 @@ export function ChipSelect<T extends string>(props: ChipSelectProps<T>) {
           <Pressable
             key={opt.value}
             onPress={() => handlePress(opt.value as T)}
-            className={`rounded-full px-4 py-2 ${active ? 'bg-primary' : 'bg-gray-100'}`}
+            className={`rounded-full px-4 py-2 ${active ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'}`}
           >
-            <Text className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-700'}`}>
+            <Text className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'}`}>
               {opt.label}
             </Text>
           </Pressable>

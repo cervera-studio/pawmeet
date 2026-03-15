@@ -57,14 +57,14 @@ function statusColor(status: string): string {
 
 function EventCardSkeleton() {
   return (
-    <View className="mb-3 rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
+    <View className="mb-3 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm border border-gray-100 dark:border-[#38383A]">
       <View className="flex-row items-center justify-between mb-2">
-        <View className="h-5 w-40 rounded bg-gray-200 animate-pulse" />
-        <View className="h-6 w-20 rounded-full bg-gray-200 animate-pulse" />
+        <View className="h-5 w-40 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
+        <View className="h-6 w-20 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
       </View>
-      <View className="h-4 w-32 rounded bg-gray-200 animate-pulse mt-1" />
-      <View className="h-4 w-24 rounded bg-gray-200 animate-pulse mt-1" />
-      <View className="h-4 w-28 rounded bg-gray-200 animate-pulse mt-1" />
+      <View className="h-4 w-32 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-1" />
+      <View className="h-4 w-24 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-1" />
+      <View className="h-4 w-28 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-1" />
     </View>
   );
 }
@@ -91,11 +91,14 @@ const EventCard = memo(function EventCard({
   return (
     <Pressable
       onPress={onPress}
-      className="mb-3 rounded-2xl bg-white p-4 shadow-sm border border-gray-100"
+      className="mb-3 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm border border-gray-100 dark:border-[#38383A]"
     >
       {/* Title + status */}
       <View className="flex-row items-center justify-between mb-2">
-        <Text className="text-lg font-semibold text-gray-900 flex-1 mr-2" numberOfLines={1}>
+        <Text
+          className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] flex-1 mr-2"
+          numberOfLines={1}
+        >
           {event.title}
         </Text>
         <View className={`rounded-full px-3 py-1 ${statusColor(event.status)}`}>
@@ -105,20 +108,22 @@ const EventCard = memo(function EventCard({
 
       {/* Date and time */}
       <View className="flex-row items-center mb-1">
-        <Text className="text-sm text-gray-500">
+        <Text className="text-sm text-gray-500 dark:text-neutral-500">
           {formatDate(event.scheduledAt)} alle {formatTime(event.scheduledAt)}
         </Text>
       </View>
 
       {/* Location */}
       <View className="flex-row items-center mb-1">
-        <Text className="text-sm text-gray-500">{event.location}</Text>
+        <Text className="text-sm text-gray-500 dark:text-neutral-500">{event.location}</Text>
       </View>
 
       {/* Info */}
       <View className="flex-row items-center justify-between mt-2">
-        <Text className="text-sm text-gray-400">Max {event.maxParticipants} partecipanti</Text>
-        <Text className="text-sm text-gray-400">{event.durationMin} min</Text>
+        <Text className="text-sm text-gray-400 dark:text-neutral-500">
+          Max {event.maxParticipants} partecipanti
+        </Text>
+        <Text className="text-sm text-gray-400 dark:text-neutral-500">{event.durationMin} min</Text>
       </View>
     </Pressable>
   );
@@ -132,10 +137,10 @@ function EventsEmptyState() {
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F4C5}'}</Text>
-      <Text className="mt-4 text-lg font-semibold text-gray-900">
+      <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
         Nessun evento nelle vicinanze
       </Text>
-      <Text className="mt-2 text-center text-sm text-gray-500 px-8">
+      <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
         Crea un evento per organizzare una passeggiata di gruppo!
       </Text>
     </View>
@@ -148,9 +153,9 @@ export default function EventDiscoveryScreen() {
   const vm = useEventDiscoveryViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <View className="border-b border-gray-100 bg-white px-4 py-4">
-        <Text className="text-2xl font-bold text-gray-900">Eventi</Text>
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
+      <View className="border-b border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-4">
+        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Eventi</Text>
       </View>
 
       {vm.isInitialLoad ? (

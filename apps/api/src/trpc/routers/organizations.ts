@@ -7,7 +7,7 @@ import {
   verifyOrganizationSchema,
 } from '@pawmeet/validation';
 import { TRPCError } from '@trpc/server';
-import type { organizationDeps } from '../../container.js';
+import type { organizationDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 function createAdminGuard() {

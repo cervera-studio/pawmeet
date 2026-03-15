@@ -3,7 +3,7 @@ import {
   markGroupMessagesReadSchema,
   sendGroupMessageSchema,
 } from '@pawmeet/validation';
-import type { groupChatDeps } from '../../container.js';
+import type { groupChatDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createGroupChatRouter(deps: typeof groupChatDeps) {

@@ -7,7 +7,7 @@ import {
   recordActivityWindowSchema,
   recordMatchInteractionSchema,
 } from '@pawmeet/validation';
-import type { matchingAiDeps } from '../../container.js';
+import type { matchingAiDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createMatchingAiRouter(deps: typeof matchingAiDeps) {

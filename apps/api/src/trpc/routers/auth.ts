@@ -9,7 +9,7 @@ import {
   socialLoginSchema,
   verifyEmailOtpSchema,
 } from '@pawmeet/validation';
-import type { authDeps } from '../../container.js';
+import type { authDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { publicProcedure, rateLimitedPublicProcedure, router, unwrapResult } from '../trpc.js';
 

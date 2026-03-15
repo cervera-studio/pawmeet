@@ -1,5 +1,6 @@
 import type { ContentReport } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type { ContentReportRepository } from '../ports/index.js';
 
 type Deps = {
@@ -25,6 +26,14 @@ export function createReportContent({ contentReportRepo }: Deps) {
       contentId,
       reason,
       description,
+    });
+
+    logger.info('ReportContent', 'Content reported', {
+      userId,
+      reportId: report.id,
+      contentType,
+      contentId,
+      reason,
     });
 
     return succeed({ report });

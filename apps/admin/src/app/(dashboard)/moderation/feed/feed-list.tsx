@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { FeedPostPage, FeedStats } from '@/repositories';
@@ -30,7 +31,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
   );
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [updatingPostId, setUpdatingPostId] = useState<string | null>(null);
 
   const STATUS_STYLES: Record<
     string,
@@ -60,7 +61,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
     try {
       const result = await fetchFeedPosts({
         page: p,
-        pageSize: 20,
+        pageSize: PAGINATION.DEFAULT_PAGE_SIZE,
         status: s,
         search: q || undefined,
       });
@@ -84,7 +85,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
   }
 
   async function handleModeration(postId: string, status: 'approved' | 'rejected') {
-    setIsUpdating(true);
+    setUpdatingPostId(postId);
     try {
       await moderatePost(postId, status);
       void fetchPosts();
@@ -92,7 +93,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
     } catch (error) {
       toast.error(handleError(error, 'Errore durante la moderazione del post'));
     } finally {
-      setIsUpdating(false);
+      setUpdatingPostId(null);
     }
   }
 
@@ -242,7 +243,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                       <Button
                         size="sm"
                         variant="default"
-                        disabled={isUpdating}
+                        disabled={updatingPostId === post.id}
                         onClick={() => {
                           handleModeration(post.id, 'approved');
                           toast.success(t('postApproved'));
@@ -253,7 +254,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                       <Button
                         size="sm"
                         variant="destructive"
-                        disabled={isUpdating}
+                        disabled={updatingPostId === post.id}
                         onClick={() => {
                           handleModeration(post.id, 'rejected');
                           toast.success(t('postRejected'));
@@ -267,7 +268,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                       <Button
                         size="sm"
                         variant="destructive"
-                        disabled={isUpdating}
+                        disabled={updatingPostId === post.id}
                         onClick={() => {
                           handleModeration(post.id, 'rejected');
                           toast.success(t('postRejected'));

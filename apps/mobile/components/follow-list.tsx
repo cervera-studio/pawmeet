@@ -12,12 +12,12 @@ function ListSkeleton() {
     <View className="px-4 pt-4">
       {[1, 2, 3, 4, 5].map((i) => (
         <View key={i} className="mb-3 flex-row items-center gap-3">
-          <View className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />
+          <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
           <View className="flex-1">
-            <View className="mb-1 h-4 w-32 rounded bg-gray-200 animate-pulse" />
-            <View className="h-3 w-20 rounded bg-gray-200 animate-pulse" />
+            <View className="mb-1 h-4 w-32 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
+            <View className="h-3 w-20 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
           </View>
-          <View className="h-8 w-20 rounded-xl bg-gray-200 animate-pulse" />
+          <View className="h-8 w-20 rounded-xl bg-gray-200 dark:bg-[#48484A] animate-pulse" />
         </View>
       ))}
     </View>
@@ -51,8 +51,8 @@ function EmptyState({ mode }: { mode: 'followers' | 'following' | 'friends' }) {
   const messages = EMPTY_MESSAGES[mode];
   return (
     <View className="flex-1 items-center justify-center px-8 pt-20">
-      <Text className="mb-2 text-center text-lg font-semibold text-gray-900">{messages.title}</Text>
-      <Text className="text-center text-sm text-gray-500">{messages.subtitle}</Text>
+      <Text className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">{messages.title}</Text>
+      <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">{messages.subtitle}</Text>
     </View>
   );
 }
@@ -74,9 +74,9 @@ const UserRow = memo(function UserRow({
     <Pressable onPress={() => onPress(user.id)} className="flex-row items-center gap-3 px-4 py-3">
       <Avatar name={user.displayName} imageUrl={user.avatarUrl} size="sm" />
       <View className="flex-1">
-        <Text className="text-base font-medium text-gray-900">{user.displayName}</Text>
+        <Text className="text-base font-medium text-gray-900 dark:text-[#F5F5F7]">{user.displayName}</Text>
         {user.isFollowingMe && !user.isFollowedByMe ? (
-          <Text className="text-xs text-gray-400">Ti segue</Text>
+          <Text className="text-xs text-gray-400 dark:text-neutral-500">Ti segue</Text>
         ) : null}
       </View>
       {!isCurrentUser ? <FollowButton userId={user.id} size="sm" /> : null}

@@ -37,14 +37,14 @@ const GridTile = memo(function GridTile({
 function AlbumSkeleton() {
   return (
     <View className="p-4">
-      <View className="mb-4 h-6 w-2/3 rounded bg-gray-100" />
-      <View className="mb-2 h-4 w-1/3 rounded bg-gray-100" />
+      <View className="mb-4 h-6 w-2/3 rounded bg-gray-100 dark:bg-[#38383A]" />
+      <View className="mb-2 h-4 w-1/3 rounded bg-gray-100 dark:bg-[#38383A]" />
       <View className="mt-4 flex-row flex-wrap gap-[2px]">
         {[0, 1, 2, 3, 4, 5].map((i) => (
           <View
             key={`skeleton-${i}`}
             style={{ width: TILE_SIZE, height: TILE_SIZE }}
-            className="bg-gray-100"
+            className="bg-gray-100 dark:bg-[#38383A]"
           />
         ))}
       </View>
@@ -66,7 +66,7 @@ export default function WalkAlbumScreen() {
 
   if (vm.loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
         <AlbumSkeleton />
       </SafeAreaView>
     );
@@ -74,14 +74,19 @@ export default function WalkAlbumScreen() {
 
   if (!vm.album || vm.media.length === 0) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white" edges={['bottom']}>
-        <Text className="text-base text-gray-400">Nessuna foto in questo album</Text>
+      <SafeAreaView
+        className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E]"
+        edges={['bottom']}
+      >
+        <Text className="text-base text-gray-400 dark:text-neutral-500">
+          Nessuna foto in questo album
+        </Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <FlatList
         data={vm.media}
         keyExtractor={(item) => item.id}
@@ -89,17 +94,17 @@ export default function WalkAlbumScreen() {
         columnWrapperStyle={{ gap: TILE_GAP }}
         ListHeaderComponent={
           <View className="px-4 py-3">
-            <Text className="text-lg font-bold text-gray-900">
+            <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">
               {vm.album.album.title ?? 'Album passeggiata'}
             </Text>
-            <Text className="mt-1 text-sm text-gray-500">
+            <Text className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
               {vm.album.posts.length} {vm.album.posts.length === 1 ? 'post' : 'post'}
             </Text>
           </View>
         }
         renderItem={({ item }) => <GridTile item={item} onPress={handleMediaPress} />}
         ListEmptyComponent={
-          <Text className="px-4 py-8 text-center text-sm text-gray-400">
+          <Text className="px-4 py-8 text-center text-sm text-gray-400 dark:text-neutral-500">
             Nessuna foto in questo album
           </Text>
         }

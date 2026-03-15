@@ -1,6 +1,6 @@
 import { markReadSchema, sendMessageSchema } from '@pawmeet/validation';
 import { z } from 'zod';
-import type { chatDeps } from '../../container.js';
+import type { chatDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

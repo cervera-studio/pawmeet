@@ -15,6 +15,7 @@ export const ANALYTICS_EVENT_CATEGORIES = {
   App: 'app',
   Permission: 'permission',
   Privacy: 'privacy',
+  Admin: 'admin',
 } as const;
 
 export type AnalyticsEventCategory =
@@ -173,6 +174,14 @@ export interface AnalyticsEventMap {
   // Permissions
   permission_location_changed: { newStatus: string; wasPrompted: boolean };
   permission_notification_changed: { newStatus: string; wasPrompted: boolean };
+
+  // Admin Actions
+  admin_user_suspended: { targetUserId: string };
+  admin_user_banned: { targetUserId: string };
+  admin_user_reactivated: { targetUserId: string };
+  admin_report_resolved: { reportId: string; action: string };
+  admin_event_created: { eventId: string; category: string; maxParticipants: number };
+  admin_settings_updated: { changedFields: string[] };
 
   // Privacy
   privacy_consent_updated: {

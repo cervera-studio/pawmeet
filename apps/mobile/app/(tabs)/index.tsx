@@ -98,9 +98,11 @@ function FilterChip({
   return (
     <Pressable
       onPress={onPress}
-      className={`mr-2 mb-2 rounded-full px-4 py-2 ${selected ? 'bg-primary' : 'bg-gray-200'}`}
+      className={`mr-2 mb-2 rounded-full px-4 py-2 ${selected ? 'bg-primary' : 'bg-gray-200 dark:bg-[#48484A]'}`}
     >
-      <Text className={`text-sm font-medium ${selected ? 'text-white' : 'text-gray-700'}`}>
+      <Text
+        className={`text-sm font-medium ${selected ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'}`}
+      >
         {label}
       </Text>
     </Pressable>
@@ -147,14 +149,14 @@ function FilterModal({
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View className="flex-1 justify-end bg-black/40">
-        <View className="max-h-[85%] rounded-t-3xl bg-white px-5 pb-8 pt-4">
+        <View className="max-h-[85%] rounded-t-3xl bg-white dark:bg-[#1C1C1E] px-5 pb-8 pt-4">
           {/* Handle bar */}
           <View className="mb-4 items-center">
-            <View className="h-1 w-10 rounded-full bg-gray-300" />
+            <View className="h-1 w-10 rounded-full bg-gray-300 dark:bg-[#48484A]" />
           </View>
 
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-gray-900">Filtri</Text>
+            <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">Filtri</Text>
             <Pressable onPress={handleReset}>
               <Text className="font-semibold text-primary">Resetta</Text>
             </Pressable>
@@ -163,7 +165,9 @@ function FilterModal({
           <ScrollView showsVerticalScrollIndicator={false}>
             {FILTER_SECTIONS.map((section) => (
               <View key={section.key} className="mb-5">
-                <Text className="mb-2 text-sm font-semibold text-gray-600">{section.label}</Text>
+                <Text className="mb-2 text-sm font-semibold text-gray-600 dark:text-[#D1D1D6]">
+                  {section.label}
+                </Text>
                 <View className="flex-row flex-wrap">
                   {section.options.map((opt) => {
                     const selected = ((draft[section.key] as string[] | undefined) ?? []).includes(
@@ -184,7 +188,7 @@ function FilterModal({
 
             {/* Distance slider (discrete steps) */}
             <View className="mb-5">
-              <Text className="mb-2 text-sm font-semibold text-gray-600">
+              <Text className="mb-2 text-sm font-semibold text-gray-600 dark:text-[#D1D1D6]">
                 Distanza massima
                 {draft.maxDistanceKm ? ` — ${draft.maxDistanceKm} km` : ''}
               </Text>
@@ -221,16 +225,16 @@ export default function DiscoveryScreen() {
   const vm = useDiscoveryViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-2">
         <View>
-          <Text className="text-2xl font-bold text-gray-900">Scopri</Text>
-          <Text className="text-sm text-gray-500">Cani nelle vicinanze</Text>
+          <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Scopri</Text>
+          <Text className="text-sm text-gray-500 dark:text-neutral-500">Cani nelle vicinanze</Text>
         </View>
         <Pressable
           onPress={vm.openFilterModal}
-          className="relative h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
+          className="relative h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-[#1C1C1E] shadow-sm"
         >
           <Text className="text-lg">{vm.activeFilterCount > 0 ? '\u2699\uFE0F' : '\u2699'}</Text>
           {vm.activeFilterCount > 0 && (
@@ -249,10 +253,10 @@ export default function DiscoveryScreen() {
         {vm.dogs.length === 0 ? (
           <View className="items-center px-8">
             <Text className="text-5xl">{'\u{1F436}'}</Text>
-            <Text className="mt-4 text-center text-lg font-semibold text-gray-900">
+            <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
               Aggiungi il tuo cane
             </Text>
-            <Text className="mt-2 text-center text-sm text-gray-500">
+            <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
               Per iniziare a scoprire cani compatibili, aggiungi il tuo primo cane.
             </Text>
             <Pressable
@@ -265,10 +269,10 @@ export default function DiscoveryScreen() {
         ) : !vm.coordinates ? (
           <View className="items-center px-8">
             <Text className="text-5xl">📍</Text>
-            <Text className="mt-4 text-center text-lg font-semibold text-gray-900">
+            <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
               Posizione necessaria
             </Text>
-            <Text className="mt-2 text-center text-sm text-gray-500">
+            <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
               Abilita la posizione per scoprire cani nelle vicinanze.
             </Text>
             <Pressable
@@ -281,7 +285,9 @@ export default function DiscoveryScreen() {
         ) : vm.isLoading ? (
           <View className="items-center">
             <ActivityIndicator size="large" color="#065F46" />
-            <Text className="mt-4 text-gray-400">Cerco cani compatibili...</Text>
+            <Text className="mt-4 text-gray-400 dark:text-neutral-500">
+              Cerco cani compatibili...
+            </Text>
           </View>
         ) : vm.currentProfile && vm.hasMore ? (
           <SwipeCard
@@ -302,8 +308,10 @@ export default function DiscoveryScreen() {
         ) : (
           <View className="items-center">
             <Text className="text-5xl">🐕</Text>
-            <Text className="mt-4 text-lg font-semibold text-gray-900">Nessun altro profilo</Text>
-            <Text className="mt-2 text-center text-sm text-gray-500">
+            <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
+              Nessun altro profilo
+            </Text>
+            <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
               Hai visto tutti i cani nelle vicinanze. Riprova più tardi!
             </Text>
             <Pressable
@@ -321,7 +329,7 @@ export default function DiscoveryScreen() {
         <View className="flex-row items-center justify-center gap-6 pb-4">
           <Pressable
             onPress={vm.handleSwipeLeft}
-            className="h-16 w-16 items-center justify-center rounded-full bg-white shadow-md"
+            className="h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-[#1C1C1E] shadow-md"
           >
             <Text className="text-2xl">✕</Text>
           </Pressable>

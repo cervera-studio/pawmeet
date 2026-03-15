@@ -12,6 +12,7 @@ import {
   hasMinRole,
   requireRole,
 } from '../../lib/admin-permissions.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 import { protectedProcedure, router } from '../trpc.js';
@@ -321,6 +322,11 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
         resourceType: RESOURCE_TYPE.report,
         resourceId: input.id,
         changes: { before: { status: 'pending' }, after: { status: newStatus } },
+      });
+
+      trackEvent('admin_report_resolved', ctx.userId, {
+        reportId: input.id,
+        action: input.action,
       });
 
       return { success: true };
@@ -681,6 +687,14 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           },
         });
 
+        if (event) {
+          trackEvent('admin_event_created', ctx.userId, {
+            eventId: event.id,
+            category: input.category,
+            maxParticipants: input.maxParticipants,
+          });
+        }
+
         return event;
       }),
 
@@ -839,6 +853,8 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           changes: { before: { isActive: true }, after: { isActive: false } },
         });
 
+        trackEvent('admin_user_suspended', ctx.userId, { targetUserId: input.userId });
+
         return { success: true };
       }),
 
@@ -862,6 +878,8 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           changes: { before: { isActive: true }, after: { isActive: false } },
         });
 
+        trackEvent('admin_user_banned', ctx.userId, { targetUserId: input.userId });
+
         return { success: true };
       }),
 
@@ -884,6 +902,8 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           resourceId: input.userId,
           changes: { before: { isActive: false }, after: { isActive: true } },
         });
+
+        trackEvent('admin_user_reactivated', ctx.userId, { targetUserId: input.userId });
 
         return { success: true };
       }),
@@ -1108,6 +1128,10 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
         action: 'settings.update',
         resourceType: RESOURCE_TYPE.settings,
         changes: { after: input as unknown as Record<string, unknown> },
+      });
+
+      trackEvent('admin_settings_updated', ctx.userId, {
+        changedFields: Object.keys(input),
       });
 
       return {

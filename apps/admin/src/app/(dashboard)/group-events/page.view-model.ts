@@ -1,8 +1,9 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { useDataTable } from '@/hooks/use-data-table';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { TIMING } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import type { AdminGroupEventListItem, ListGroupEventsParams } from '@/repositories';
 import { fetchGroupEvents } from './actions';
@@ -15,7 +16,7 @@ export function useGroupEventsViewModel(
   pageSize: number,
 ) {
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search, 300);
+  const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [statusFilter, setStatusFilter] = useState<EventStatus | undefined>(undefined);
   const [categoryFilter, setCategoryFilter] = useState<EventCategory | undefined>(undefined);
   const [data, setData] = useState(initialData);

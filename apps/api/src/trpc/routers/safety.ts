@@ -4,7 +4,7 @@ import {
   walkCheckinSchema,
   walkSosSchema,
 } from '@pawmeet/validation';
-import type { emergencyContactDeps } from '../../container.js';
+import type { emergencyContactDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createSafetyRouter(deps: typeof emergencyContactDeps) {

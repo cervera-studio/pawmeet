@@ -27,9 +27,13 @@ function StepIndicator({ step }: { step: number }) {
       {STEPS.map((s, i) => (
         <View key={s} className="flex-1 items-center">
           <View
-            className={`mb-1 h-1 w-full rounded-full ${i <= step ? 'bg-primary' : 'bg-gray-200'}`}
+            className={`mb-1 h-1 w-full rounded-full ${i <= step ? 'bg-primary' : 'bg-gray-200 dark:bg-[#48484A]'}`}
           />
-          <Text className={`text-xs ${i <= step ? 'text-primary' : 'text-gray-400'}`}>{s}</Text>
+          <Text
+            className={`text-xs ${i <= step ? 'text-primary' : 'text-gray-400 dark:text-neutral-500'}`}
+          >
+            {s}
+          </Text>
         </View>
       ))}
     </View>
@@ -52,7 +56,9 @@ function Step1BasicInfo({
 }) {
   return (
     <View className="gap-4">
-      <Text className="text-xl font-bold text-gray-900">Come si chiama il tuo cane?</Text>
+      <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+        Come si chiama il tuo cane?
+      </Text>
 
       <View>
         <Input placeholder="Nome" value={state.name} onChangeText={(v) => setField('name', v)} />
@@ -90,7 +96,7 @@ function Step1BasicInfo({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Taglia</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Taglia</Text>
         <ChipSelect
           options={SIZE_OPTIONS}
           selected={state.size ?? ('' as string)}
@@ -100,7 +106,7 @@ function Step1BasicInfo({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Sesso</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Sesso</Text>
         <ChipSelect
           options={GENDER_OPTIONS}
           selected={state.gender ?? ('' as string)}
@@ -110,17 +116,19 @@ function Step1BasicInfo({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Sterilizzato/a?</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Sterilizzato/a?
+        </Text>
         <View className="flex-row gap-2">
           <Pressable
             onPress={() => setField('isNeutered', true)}
             className={`rounded-full px-4 py-2 ${
-              state.isNeutered === true ? 'bg-primary' : 'bg-gray-100'
+              state.isNeutered === true ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'
             }`}
           >
             <Text
               className={`text-sm font-medium ${
-                state.isNeutered === true ? 'text-white' : 'text-gray-700'
+                state.isNeutered === true ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'
               }`}
             >
               Si
@@ -129,12 +137,12 @@ function Step1BasicInfo({
           <Pressable
             onPress={() => setField('isNeutered', false)}
             className={`rounded-full px-4 py-2 ${
-              state.isNeutered === false ? 'bg-primary' : 'bg-gray-100'
+              state.isNeutered === false ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'
             }`}
           >
             <Text
               className={`text-sm font-medium ${
-                state.isNeutered === false ? 'text-white' : 'text-gray-700'
+                state.isNeutered === false ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'
               }`}
             >
               No
@@ -166,10 +174,14 @@ function Step2Personality({
 }) {
   return (
     <View className="gap-5">
-      <Text className="text-xl font-bold text-gray-900">Parlaci del suo carattere</Text>
+      <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+        Parlaci del suo carattere
+      </Text>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Livello di energia</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Livello di energia
+        </Text>
         <ChipSelect
           options={ENERGY_OPTIONS}
           selected={state.energyLevel ?? ('' as string)}
@@ -179,7 +191,9 @@ function Step2Personality({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Comportamento con altri cani</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Comportamento con altri cani
+        </Text>
         <ChipSelect
           options={BEHAVIOR_DOGS_OPTIONS}
           selected={state.behaviorWithDogs ?? ('' as string)}
@@ -189,7 +203,9 @@ function Step2Personality({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Comportamento con le persone</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Comportamento con le persone
+        </Text>
         <ChipSelect
           options={BEHAVIOR_PEOPLE_OPTIONS}
           selected={state.behaviorWithPeople ?? ('' as string)}
@@ -199,7 +215,9 @@ function Step2Personality({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Comportamento al guinzaglio</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Comportamento al guinzaglio
+        </Text>
         <ChipSelect
           options={LEASH_OPTIONS}
           selected={state.leashBehavior ?? ('' as string)}
@@ -209,7 +227,9 @@ function Step2Personality({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Richiamo (opzionale)</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Richiamo (opzionale)
+        </Text>
         <ChipSelect
           options={RECALL_OPTIONS}
           selected={state.recallReliability ?? ('' as string)}
@@ -231,10 +251,14 @@ function Step3WalkPrefs({
 }) {
   return (
     <View className="gap-5">
-      <Text className="text-xl font-bold text-gray-900">Preferenze passeggiata</Text>
+      <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+        Preferenze passeggiata
+      </Text>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Orari preferiti</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Orari preferiti
+        </Text>
         <ChipSelect
           options={WALK_TIME_OPTIONS}
           selected={state.walkPrefTime}
@@ -245,7 +269,9 @@ function Step3WalkPrefs({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Tipo di terreno</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Tipo di terreno
+        </Text>
         <ChipSelect
           options={TERRAIN_OPTIONS}
           selected={state.walkPrefTerrain}
@@ -256,7 +282,9 @@ function Step3WalkPrefs({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Durata minima (minuti)</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Durata minima (minuti)
+        </Text>
         <Input
           placeholder="30"
           value={state.walkPrefDurationMin}
@@ -267,7 +295,9 @@ function Step3WalkPrefs({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700">Durata massima (minuti)</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          Durata massima (minuti)
+        </Text>
         <Input
           placeholder="60"
           value={state.walkPrefDurationMax}
@@ -283,13 +313,15 @@ function Step3WalkPrefs({
 function Step4Photos() {
   return (
     <View className="gap-4">
-      <Text className="text-xl font-bold text-gray-900">Aggiungi delle foto</Text>
-      <Text className="text-sm text-gray-500">
+      <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+        Aggiungi delle foto
+      </Text>
+      <Text className="text-sm text-gray-500 dark:text-neutral-500">
         Potrai aggiungere foto dopo aver creato il profilo.
       </Text>
-      <View className="h-48 items-center justify-center rounded-2xl border-2 border-dashed border-gray-200">
+      <View className="h-48 items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-[#38383A]">
         <Text className="text-4xl">📷</Text>
-        <Text className="mt-2 text-sm text-gray-400">
+        <Text className="mt-2 text-sm text-gray-400 dark:text-neutral-500">
           Le foto saranno disponibili dopo la creazione
         </Text>
       </View>
@@ -312,13 +344,13 @@ export default function NewDogScreen() {
           headerBackTitle: 'Profilo',
         }}
       />
-      <SafeAreaView edges={['bottom']} className="flex-1 bg-white">
+      <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
         <ScrollView contentContainerClassName="px-6 py-4" keyboardShouldPersistTaps="handled">
           <StepIndicator step={step} />
 
           {apiError ? (
             <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
-              <Text className="text-sm text-red-600">{apiError}</Text>
+              <Text className="text-sm text-red-600 dark:text-red-400">{apiError}</Text>
             </View>
           ) : null}
 

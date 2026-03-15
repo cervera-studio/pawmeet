@@ -6,7 +6,7 @@ import {
 } from '@pawmeet/validation';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import type { userDeps as UserDeps } from '../container.js';
+import type { userDeps as UserDeps } from '../container/index.js';
 import { handleResult } from '../lib/result.js';
 import { ALLOWED_IMAGE_TYPES_TUPLE, MAX_FILE_SIZE } from '../lib/storage.js';
 import { authMiddleware } from '../middleware/auth.js';

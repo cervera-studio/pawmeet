@@ -7,7 +7,7 @@ import {
   unblockUserSchema,
   unfollowUserSchema,
 } from '@pawmeet/validation';
-import type { followDeps } from '../../container.js';
+import type { followDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

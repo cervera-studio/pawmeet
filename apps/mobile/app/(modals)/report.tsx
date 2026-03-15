@@ -7,10 +7,12 @@ export default function ReportModal() {
   const vm = useReportViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <View className="flex-1 px-6 py-4">
-        <Text className="mb-2 text-2xl font-bold text-gray-900">Segnala</Text>
-        <Text className="mb-6 text-base text-gray-500">Seleziona il motivo della segnalazione</Text>
+        <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Segnala</Text>
+        <Text className="mb-6 text-base text-gray-500 dark:text-neutral-500">
+          Seleziona il motivo della segnalazione
+        </Text>
 
         <View className="gap-2">
           {vm.reasons.map((reason) => {
@@ -20,12 +22,16 @@ export default function ReportModal() {
                 key={reason.key}
                 onPress={() => vm.setSelectedReason(reason.key)}
                 className={`rounded-xl border px-4 py-3 ${
-                  isSelected ? 'border-emerald-700 bg-emerald-50' : 'border-gray-200'
+                  isSelected
+                    ? 'border-emerald-700 bg-emerald-50'
+                    : 'border-gray-200 dark:border-[#38383A]'
                 }`}
               >
                 <Text
                   className={`text-base ${
-                    isSelected ? 'font-medium text-emerald-800' : 'text-gray-700'
+                    isSelected
+                      ? 'font-medium text-emerald-800'
+                      : 'text-gray-700 dark:text-[#D1D1D6]'
                   }`}
                 >
                   {reason.label}
@@ -36,7 +42,7 @@ export default function ReportModal() {
         </View>
 
         <TextInput
-          className="mt-4 h-24 rounded-xl border border-gray-200 p-4 text-base"
+          className="mt-4 h-24 rounded-xl border border-gray-200 dark:border-[#38383A] p-4 text-base text-gray-900 dark:text-[#F5F5F7]"
           placeholder="Dettagli aggiuntivi (opzionale)"
           value={vm.description}
           onChangeText={vm.setDescription}

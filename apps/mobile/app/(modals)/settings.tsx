@@ -26,19 +26,23 @@ export default function SettingsModal() {
   );
 
   return (
-    <ScrollView className="flex-1 bg-white" contentContainerClassName="px-6 py-4">
-      <Text className="mb-6 text-2xl font-bold text-gray-900">Impostazioni</Text>
+    <ScrollView className="flex-1 bg-white dark:bg-[#1C1C1E]" contentContainerClassName="px-6 py-4">
+      <Text className="mb-6 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+        Impostazioni
+      </Text>
 
       <View className="gap-1">
         {/* Privacy & Consent section */}
-        <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-400">
+        <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500">
           Privacy e consensi
         </Text>
 
         <View className="flex-row items-center justify-between py-4">
           <View className="flex-1 pr-4">
-            <Text className="text-base text-gray-700">Analisi di utilizzo</Text>
-            <Text className="text-xs text-gray-400">Dati anonimi per migliorare l'app</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Analisi di utilizzo</Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              Dati anonimi per migliorare l'app
+            </Text>
           </View>
           <Switch
             value={consents.analytics}
@@ -49,8 +53,10 @@ export default function SettingsModal() {
 
         <View className="flex-row items-center justify-between py-4">
           <View className="flex-1 pr-4">
-            <Text className="text-base text-gray-700">Esperimenti A/B</Text>
-            <Text className="text-xs text-gray-400">Partecipa a test comparativi</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Esperimenti A/B</Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              Partecipa a test comparativi
+            </Text>
           </View>
           <Switch
             value={consents.abTesting}
@@ -61,8 +67,8 @@ export default function SettingsModal() {
 
         <View className="flex-row items-center justify-between py-4">
           <View className="flex-1 pr-4">
-            <Text className="text-base text-gray-700">Segnalazione errori</Text>
-            <Text className="text-xs text-gray-400">
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Segnalazione errori</Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
               Report dettagliati (sempre anonimi senza consenso)
             </Text>
           </View>
@@ -75,8 +81,12 @@ export default function SettingsModal() {
 
         <View className="flex-row items-center justify-between py-4">
           <View className="flex-1 pr-4">
-            <Text className="text-base text-gray-700">Comunicazioni marketing</Text>
-            <Text className="text-xs text-gray-400">Novità, eventi e promozioni via email</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              Comunicazioni marketing
+            </Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              Novità, eventi e promozioni via email
+            </Text>
           </View>
           <Switch
             value={consents.marketing}
@@ -90,14 +100,16 @@ export default function SettingsModal() {
         </Pressable>
 
         {/* Notification settings section */}
-        <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
+        <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500">
           Notifiche
         </Text>
 
         <View className="flex-row items-center justify-between py-4">
           <View className="flex-1 pr-4">
-            <Text className="text-base text-gray-700">Nuovi match</Text>
-            <Text className="text-xs text-gray-400">Ricevi notifiche per nuovi match</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Nuovi match</Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              Ricevi notifiche per nuovi match
+            </Text>
           </View>
           <Switch
             value={vm.prefs.matches}
@@ -108,8 +120,10 @@ export default function SettingsModal() {
 
         <View className="flex-row items-center justify-between py-4">
           <View className="flex-1 pr-4">
-            <Text className="text-base text-gray-700">Messaggi</Text>
-            <Text className="text-xs text-gray-400">Ricevi notifiche per nuovi messaggi</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Messaggi</Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              Ricevi notifiche per nuovi messaggi
+            </Text>
           </View>
           <Switch
             value={vm.prefs.messages}
@@ -120,8 +134,10 @@ export default function SettingsModal() {
 
         <View className="flex-row items-center justify-between py-4">
           <View className="flex-1 pr-4">
-            <Text className="text-base text-gray-700">Promemoria passeggiate</Text>
-            <Text className="text-xs text-gray-400">
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              Promemoria passeggiate
+            </Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
               Ricevi promemoria per le passeggiate programmate
             </Text>
           </View>
@@ -133,12 +149,12 @@ export default function SettingsModal() {
         </View>
 
         {/* General settings section */}
-        <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
+        <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500">
           Generali
         </Text>
 
         <View className="flex-row items-center justify-between py-4">
-          <Text className="text-base text-gray-700">Condividi posizione</Text>
+          <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Condividi posizione</Text>
           <Switch
             value={vm.locationSharing}
             onValueChange={vm.setLocationSharing}
@@ -147,7 +163,7 @@ export default function SettingsModal() {
         </View>
 
         <View className="flex-row items-center justify-between py-4">
-          <Text className="text-base text-gray-700">Tema scuro</Text>
+          <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Tema scuro</Text>
           <Switch
             value={vm.darkMode}
             onValueChange={vm.setDarkMode}
@@ -155,39 +171,39 @@ export default function SettingsModal() {
           />
         </View>
 
-        <View className="mt-4 border-t border-gray-100 pt-4">
+        <View className="mt-4 border-t border-gray-100 dark:border-[#38383A] pt-4">
           <Pressable className="py-4">
-            <Text className="text-base text-gray-700">Raggio di ricerca</Text>
-            <Text className="text-sm text-gray-400">5 km</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Raggio di ricerca</Text>
+            <Text className="text-sm text-gray-400 dark:text-neutral-500">5 km</Text>
           </Pressable>
 
           <Pressable className="py-4">
-            <Text className="text-base text-gray-700">Lingua</Text>
-            <Text className="text-sm text-gray-400">Italiano</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Lingua</Text>
+            <Text className="text-sm text-gray-400 dark:text-neutral-500">Italiano</Text>
           </Pressable>
         </View>
 
-        <View className="mt-4 border-t border-gray-100 pt-4">
+        <View className="mt-4 border-t border-gray-100 dark:border-[#38383A] pt-4">
           <Pressable className="py-4" onPress={() => Linking.openURL(`${WEB_URL}/terms`)}>
-            <Text className="text-base text-gray-700">Termini di servizio</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Termini di servizio</Text>
           </Pressable>
 
           <Pressable className="py-4" onPress={() => Linking.openURL(`${WEB_URL}/privacy`)}>
-            <Text className="text-base text-gray-700">Privacy Policy</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Privacy Policy</Text>
           </Pressable>
 
           <Pressable className="py-4" onPress={() => Linking.openURL(`${WEB_URL}/cookie`)}>
-            <Text className="text-base text-gray-700">Cookie Policy</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Cookie Policy</Text>
           </Pressable>
 
           <Pressable className="py-4">
-            <Text className="text-base text-gray-700">Versione app</Text>
-            <Text className="text-sm text-gray-400">0.0.1</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Versione app</Text>
+            <Text className="text-sm text-gray-400 dark:text-neutral-500">0.0.1</Text>
           </Pressable>
         </View>
 
         {/* Account section */}
-        <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
+        <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500">
           Account
         </Text>
 

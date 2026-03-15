@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 export default {
+  darkMode: 'class',
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
@@ -31,6 +32,15 @@ export default {
           700: '#836A24',
           800: '#6B551E',
           900: '#574518',
+        },
+        neutral: {
+          50: '#FAFAFA',
+          100: '#F2F2F7',
+          200: '#E5E5EA',
+          300: '#C7C7CC',
+          500: '#8E8E93',
+          700: '#4A4A5A',
+          900: '#1A1A2E',
         },
       },
       fontFamily: {

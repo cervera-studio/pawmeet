@@ -31,11 +31,11 @@ export const MatchCard = memo(function MatchCard({
   const statusInfo = status ? STATUS_LABELS[status] : null;
 
   return (
-    <View className="mb-3 flex-row items-center rounded-2xl bg-white p-4 shadow-sm">
+    <View className="mb-3 flex-row items-center rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm">
       <Avatar name={dogName} size="md" />
       <View className="ml-3 flex-1">
         <View className="flex-row items-center gap-2">
-          <Text className="text-base font-semibold text-gray-900">
+          <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
             {dogName} & {ownerName}
           </Text>
           {statusInfo && (
@@ -46,7 +46,7 @@ export const MatchCard = memo(function MatchCard({
             </View>
           )}
         </View>
-        <Text className="text-sm text-gray-500">{breed}</Text>
+        <Text className="text-sm text-gray-500 dark:text-neutral-500">{breed}</Text>
         {compatibilityScore != null && (
           <Text className="text-xs text-primary">
             {Math.round(compatibilityScore * 100)}% compatibile
@@ -54,11 +54,11 @@ export const MatchCard = memo(function MatchCard({
         )}
         {myDogName && (
           <View className="mt-1 flex-row items-center">
-            <Text className="text-[10px] text-gray-400">via {myDogName}</Text>
+            <Text className="text-[10px] text-gray-400 dark:text-neutral-500">via {myDogName}</Text>
           </View>
         )}
       </View>
-      <Text className="text-xs text-gray-400">{matchedAt}</Text>
+      <Text className="text-xs text-gray-400 dark:text-neutral-500">{matchedAt}</Text>
     </View>
   );
 });

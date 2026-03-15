@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { AdminStory, AdminStoryPage } from '@/repositories';
@@ -36,13 +37,13 @@ export function StoryGrid({ initialData }: StoryGridProps) {
   const [page, setPage] = useState(initialData.page);
   const [totalPages, setTotalPages] = useState(initialData.totalPages);
   const [total, setTotal] = useState(initialData.total);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchStories = useCallback(async (targetPage: number) => {
     setIsLoading(true);
     try {
-      const result = await fetchStoriesAction({ page: targetPage, pageSize: 20 });
+      const result = await fetchStoriesAction({ page: targetPage, pageSize: PAGINATION.DEFAULT_PAGE_SIZE });
       setStories(result.data);
       setTotalPages(result.totalPages);
       setTotal(result.total);
@@ -55,7 +56,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
   }, []);
 
   async function handleDelete(storyId: string) {
-    setIsDeleting(true);
+    setDeletingStoryId(storyId);
     try {
       await deleteStoryAction(storyId);
       toast.success(t('toast.deleted'));
@@ -63,7 +64,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
     } catch (error) {
       toast.error(handleError(error, t('toast.deleteError')));
     } finally {
-      setIsDeleting(false);
+      setDeletingStoryId(null);
     }
   }
 
@@ -148,7 +149,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                       size="sm"
                       variant="destructive"
                       className="w-full"
-                      disabled={isDeleting}
+                      disabled={deletingStoryId === story.id}
                       onClick={() => handleDelete(story.id)}
                     >
                       {t('deleteAction')}

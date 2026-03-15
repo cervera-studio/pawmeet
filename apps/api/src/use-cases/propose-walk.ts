@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type {
   DogRepository,
   MatchRepository,
@@ -95,6 +96,8 @@ export function createProposeWalk({
         });
       }
     }
+
+    logger.info('ProposeWalk', 'Walk proposed', { userId, walkId: walk.id, matchId: input.matchId });
 
     return succeed({ walkId: walk.id, matchAgeHours, messageCountBeforeProposal });
   };

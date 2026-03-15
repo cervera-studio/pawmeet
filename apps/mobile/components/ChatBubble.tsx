@@ -42,15 +42,15 @@ function LocationCard({ location, isMine }: { location: LocationData; isMine: bo
     <Pressable onPress={() => Linking.openURL(mapsUrl)}>
       <View
         className={`overflow-hidden rounded-2xl ${
-          isMine ? 'rounded-br-sm bg-primary' : 'rounded-bl-sm bg-gray-100'
+          isMine ? 'rounded-br-sm bg-primary' : 'rounded-bl-sm bg-gray-100 dark:bg-[#38383A]'
         }`}
       >
         {/* Map placeholder */}
-        <View className="h-32 items-center justify-center bg-gray-200">
+        <View className="h-32 items-center justify-center bg-gray-200 dark:bg-[#48484A]">
           <Text className="text-3xl">📍</Text>
         </View>
         <View className="px-4 py-2">
-          <Text className={`text-sm font-medium ${isMine ? 'text-white' : 'text-gray-900'}`}>
+          <Text className={`text-sm font-medium ${isMine ? 'text-white' : 'text-gray-900 dark:text-[#F5F5F7]'}`}>
             {location.label ?? 'Punto di incontro'}
           </Text>
           <Text className={`text-xs ${isMine ? 'text-white/70' : 'text-primary'}`}>
@@ -87,10 +87,10 @@ export const ChatBubble = memo(function ChatBubble({
         /* Text message */
         <View
           className={`rounded-2xl px-4 py-3 ${
-            isMine ? 'rounded-br-sm bg-primary' : 'rounded-bl-sm bg-gray-100'
+            isMine ? 'rounded-br-sm bg-primary' : 'rounded-bl-sm bg-gray-100 dark:bg-[#38383A]'
           }`}
         >
-          <Text className={`text-base ${isMine ? 'text-white' : 'text-gray-900'}`}>{text}</Text>
+          <Text className={`text-base ${isMine ? 'text-white' : 'text-gray-900 dark:text-[#F5F5F7]'}`}>{text}</Text>
         </View>
       )}
 
@@ -98,9 +98,9 @@ export const ChatBubble = memo(function ChatBubble({
       <View
         className={`mt-1 flex-row items-center gap-1 ${isMine ? 'justify-end' : 'justify-start'}`}
       >
-        <Text className="text-xs text-gray-400">{timestamp}</Text>
+        <Text className="text-xs text-gray-400 dark:text-neutral-500">{timestamp}</Text>
         {isMine && status && (
-          <Text className={`text-xs ${status === 'read' ? 'text-blue-500' : 'text-gray-400'}`}>
+          <Text className={`text-xs ${status === 'read' ? 'text-blue-500' : 'text-gray-400 dark:text-neutral-500'}`}>
             {STATUS_ICONS[status]}
           </Text>
         )}

@@ -65,23 +65,23 @@ function ViewModeToggle({
   onToggle: (mode: ViewMode) => void;
 }) {
   return (
-    <View className="flex-row rounded-lg bg-gray-100 p-0.5">
+    <View className="flex-row rounded-lg bg-gray-100 dark:bg-[#38383A] p-0.5">
       <Pressable
         onPress={() => onToggle('week')}
-        className={`rounded-md px-3 py-1.5 ${viewMode === 'week' ? 'bg-white shadow-sm' : ''}`}
+        className={`rounded-md px-3 py-1.5 ${viewMode === 'week' ? 'bg-white dark:bg-[#1C1C1E] shadow-sm' : ''}`}
       >
         <Text
-          className={`text-xs font-medium ${viewMode === 'week' ? 'text-gray-900' : 'text-gray-500'}`}
+          className={`text-xs font-medium ${viewMode === 'week' ? 'text-gray-900 dark:text-[#F5F5F7]' : 'text-gray-500 dark:text-neutral-500'}`}
         >
           Settimana
         </Text>
       </Pressable>
       <Pressable
         onPress={() => onToggle('month')}
-        className={`rounded-md px-3 py-1.5 ${viewMode === 'month' ? 'bg-white shadow-sm' : ''}`}
+        className={`rounded-md px-3 py-1.5 ${viewMode === 'month' ? 'bg-white dark:bg-[#1C1C1E] shadow-sm' : ''}`}
       >
         <Text
-          className={`text-xs font-medium ${viewMode === 'month' ? 'text-gray-900' : 'text-gray-500'}`}
+          className={`text-xs font-medium ${viewMode === 'month' ? 'text-gray-900 dark:text-[#F5F5F7]' : 'text-gray-500 dark:text-neutral-500'}`}
         >
           Mese
         </Text>
@@ -116,8 +116,8 @@ const CalendarDay = memo(function CalendarDay({
     : isToday
       ? 'text-emerald-800 font-bold'
       : isCurrentMonth
-        ? 'text-gray-900'
-        : 'text-gray-300';
+        ? 'text-gray-900 dark:text-[#F5F5F7]'
+        : 'text-gray-300 dark:text-[#48484A]';
 
   // Show up to 3 status dots — keyed by position (1-based) to satisfy noArrayIndexKey
   const dots = walkStatuses.slice(0, 3).map((status, pos) => ({ key: pos + 1, status }));
@@ -157,14 +157,18 @@ const WalkItem = memo(function WalkItem({
   status: string;
 }) {
   return (
-    <View className="flex-row items-center rounded-xl bg-white p-3 shadow-sm border border-gray-100 mb-2">
+    <View className="flex-row items-center rounded-xl bg-white dark:bg-[#1C1C1E] p-3 shadow-sm border border-gray-100 dark:border-[#38383A] mb-2">
       <View className={`h-10 w-1 rounded-full mr-3 ${statusColor(status)}`} />
       <View className="flex-1">
-        <Text className="text-sm font-semibold text-gray-900">{title ?? 'Passeggiata'}</Text>
-        <Text className="text-xs text-gray-500">
+        <Text className="text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">
+          {title ?? 'Passeggiata'}
+        </Text>
+        <Text className="text-xs text-gray-500 dark:text-neutral-500">
           {time} - {duration} min
         </Text>
-        {location && <Text className="text-xs text-gray-400 mt-0.5">{location}</Text>}
+        {location && (
+          <Text className="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">{location}</Text>
+        )}
       </View>
       <View className={`rounded-full px-2 py-1 ${statusBadgeColor(status)}`}>
         <Text className="text-xs font-medium">{statusLabel(status)}</Text>
@@ -180,16 +184,22 @@ WalkItem.displayName = 'WalkItem';
 function CalendarSkeleton() {
   return (
     <View className="px-4 py-6">
-      <View className="h-8 w-48 rounded bg-gray-200 animate-pulse mb-4" />
+      <View className="h-8 w-48 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mb-4" />
       <View className="flex-row gap-1 mb-2">
         {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-          <View key={n} className="flex-1 h-4 rounded bg-gray-200 animate-pulse" />
+          <View
+            key={n}
+            className="flex-1 h-4 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse"
+          />
         ))}
       </View>
       {[1, 2, 3, 4, 5].map((row) => (
         <View key={row} className="flex-row gap-1 mb-1">
           {[1, 2, 3, 4, 5, 6, 7].map((col) => (
-            <View key={col} className="flex-1 h-10 rounded bg-gray-100 animate-pulse" />
+            <View
+              key={col}
+              className="flex-1 h-10 rounded bg-gray-100 dark:bg-[#38383A] animate-pulse"
+            />
           ))}
         </View>
       ))}
@@ -212,13 +222,13 @@ export default function CalendarScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
       {/* Header */}
-      <View className="flex-row items-center justify-between border-b border-gray-100 bg-white px-4 py-3">
+      <View className="flex-row items-center justify-between border-b border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-3">
         <Pressable onPress={() => router.back()}>
           <Text className="text-base text-emerald-700 font-medium">Indietro</Text>
         </Pressable>
-        <Text className="text-lg font-bold text-gray-900">Calendario</Text>
+        <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">Calendario</Text>
         <Pressable onPress={vm.goToToday}>
           <Text className="text-base text-emerald-700 font-medium">Oggi</Text>
         </Pressable>
@@ -235,11 +245,13 @@ export default function CalendarScreen() {
           <View className="px-4 pt-4 pb-2">
             <View className="flex-row items-center justify-between mb-3">
               <Pressable onPress={vm.navigatePrev} className="p-2">
-                <Text className="text-lg text-gray-600">{'\u2039'}</Text>
+                <Text className="text-lg text-gray-600 dark:text-[#D1D1D6]">{'\u2039'}</Text>
               </Pressable>
-              <Text className="text-base font-semibold text-gray-900">{vm.headerTitle}</Text>
+              <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
+                {vm.headerTitle}
+              </Text>
               <Pressable onPress={vm.navigateNext} className="p-2">
-                <Text className="text-lg text-gray-600">{'\u203A'}</Text>
+                <Text className="text-lg text-gray-600 dark:text-[#D1D1D6]">{'\u203A'}</Text>
               </Pressable>
             </View>
             <View className="items-center mb-3">
@@ -251,42 +263,48 @@ export default function CalendarScreen() {
           <View className="flex-row px-4 mb-1">
             {WEEKDAY_LABELS.map((label) => (
               <View key={label} className="flex-1 items-center">
-                <Text className="text-xs font-medium text-gray-400">{label}</Text>
+                <Text className="text-xs font-medium text-gray-400 dark:text-neutral-500">
+                  {label}
+                </Text>
               </View>
             ))}
           </View>
 
           {/* Calendar grid */}
           <View className="px-4 mb-4">
-            {Array.from({ length: vm.viewMode === 'week' ? 1 : 6 }, (_, i) => i + 1).map((rowNum) => (
-              <View key={rowNum} className="flex-row">
-                {vm.calendarDays.slice((rowNum - 1) * 7, (rowNum - 1) * 7 + 7).map((day) => {
-                  const walks = vm.getWalksForDay(day);
-                  return (
-                    <CalendarDay
-                      key={day.toISOString()}
-                      day={day}
-                      isToday={vm.isSameDay(day, vm.today)}
-                      isSelected={vm.isSameDay(day, vm.selectedDate)}
-                      isCurrentMonth={day.getMonth() === vm.currentDate.getMonth()}
-                      walkCount={walks.length}
-                      walkStatuses={walks.map((w) => w.status)}
-                      onPress={() => vm.setSelectedDate(day)}
-                    />
-                  );
-                })}
-              </View>
-            ))}
+            {Array.from({ length: vm.viewMode === 'week' ? 1 : 6 }, (_, i) => i + 1).map(
+              (rowNum) => (
+                <View key={rowNum} className="flex-row">
+                  {vm.calendarDays.slice((rowNum - 1) * 7, (rowNum - 1) * 7 + 7).map((day) => {
+                    const walks = vm.getWalksForDay(day);
+                    return (
+                      <CalendarDay
+                        key={day.toISOString()}
+                        day={day}
+                        isToday={vm.isSameDay(day, vm.today)}
+                        isSelected={vm.isSameDay(day, vm.selectedDate)}
+                        isCurrentMonth={day.getMonth() === vm.currentDate.getMonth()}
+                        walkCount={walks.length}
+                        walkStatuses={walks.map((w) => w.status)}
+                        onPress={() => vm.setSelectedDate(day)}
+                      />
+                    );
+                  })}
+                </View>
+              ),
+            )}
           </View>
 
           {/* Selected day walks */}
           <View className="px-4 pb-6">
-            <Text className="text-sm font-semibold text-gray-900 mb-3 capitalize">
+            <Text className="text-sm font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3 capitalize">
               {selectedDateLabel}
             </Text>
             {vm.walksForSelectedDate.length === 0 ? (
               <View className="items-center py-8">
-                <Text className="text-gray-400 text-sm">Nessuna passeggiata</Text>
+                <Text className="text-gray-400 dark:text-neutral-500 text-sm">
+                  Nessuna passeggiata
+                </Text>
               </View>
             ) : (
               vm.walksForSelectedDate.map((walk) => (

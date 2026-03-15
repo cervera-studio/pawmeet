@@ -6,7 +6,7 @@ export default function MatchingInsightsScreen() {
   const vm = useMatchingInsightsViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <ScrollView className="flex-1 px-4 pt-4">
         {/* Dog selector */}
         {vm.dogs.length > 1 && (
@@ -16,12 +16,12 @@ export default function MatchingInsightsScreen() {
                 key={dog.id}
                 onPress={() => vm.selectDog(dog.id)}
                 className={`mr-2 rounded-full px-4 py-2 ${
-                  vm.selectedDogId === dog.id ? 'bg-emerald-800' : 'bg-zinc-100'
+                  vm.selectedDogId === dog.id ? 'bg-emerald-800' : 'bg-zinc-100 dark:bg-[#38383A]'
                 }`}
               >
                 <Text
                   className={`text-sm font-medium ${
-                    vm.selectedDogId === dog.id ? 'text-white' : 'text-zinc-700'
+                    vm.selectedDogId === dog.id ? 'text-white' : 'text-zinc-700 dark:text-[#D1D1D6]'
                   }`}
                 >
                   {dog.name}
@@ -50,20 +50,22 @@ export default function MatchingInsightsScreen() {
 
             {/* Preference dimensions */}
             {vm.insights.dimensions.length > 0 && (
-              <View className="rounded-xl bg-white border border-zinc-200 p-4">
-                <Text className="mb-3 text-lg font-bold text-zinc-900">Le tue preferenze</Text>
-                <Text className="mb-3 text-sm text-zinc-500">
+              <View className="rounded-xl bg-white dark:bg-[#1C1C1E] border border-zinc-200 dark:border-[#38383A] p-4">
+                <Text className="mb-3 text-lg font-bold text-zinc-900 dark:text-[#F5F5F7]">
+                  Le tue preferenze
+                </Text>
+                <Text className="mb-3 text-sm text-zinc-500 dark:text-neutral-500">
                   Come valutiamo la compatibilità per te
                 </Text>
                 {vm.insights.dimensions.map((dim) => (
                   <View key={dim.label} className="mb-2">
                     <View className="flex-row justify-between mb-1">
-                      <Text className="text-sm text-zinc-700">{dim.label}</Text>
+                      <Text className="text-sm text-zinc-700 dark:text-[#D1D1D6]">{dim.label}</Text>
                       <Text className="text-sm font-semibold text-emerald-800">
                         {dim.percentage}
                       </Text>
                     </View>
-                    <View className="h-2 rounded-full bg-zinc-100">
+                    <View className="h-2 rounded-full bg-zinc-100 dark:bg-[#38383A]">
                       <View
                         className="h-2 rounded-full bg-emerald-600"
                         style={{ width: `${Math.round(dim.weight * 100)}%` }}
@@ -76,19 +78,23 @@ export default function MatchingInsightsScreen() {
 
             {/* Optimal times */}
             {vm.insights.optimalTimes.length > 0 && (
-              <View className="rounded-xl bg-white border border-zinc-200 p-4">
-                <Text className="mb-3 text-lg font-bold text-zinc-900">Orari migliori</Text>
-                <Text className="mb-3 text-sm text-zinc-500">
+              <View className="rounded-xl bg-white dark:bg-[#1C1C1E] border border-zinc-200 dark:border-[#38383A] p-4">
+                <Text className="mb-3 text-lg font-bold text-zinc-900 dark:text-[#F5F5F7]">
+                  Orari migliori
+                </Text>
+                <Text className="mb-3 text-sm text-zinc-500 dark:text-neutral-500">
                   Quando è più probabile trovare compagni di passeggiata
                 </Text>
                 {vm.insights.optimalTimes.map((time) => (
                   <View
                     key={time.label}
-                    className="flex-row items-center justify-between mb-2 rounded-lg bg-zinc-50 px-3 py-2"
+                    className="flex-row items-center justify-between mb-2 rounded-lg bg-zinc-50 dark:bg-[#2C2C2E] px-3 py-2"
                   >
-                    <Text className="text-sm font-medium text-zinc-800">{time.label}</Text>
+                    <Text className="text-sm font-medium text-zinc-800 dark:text-[#F5F5F7]">
+                      {time.label}
+                    </Text>
                     <View className="flex-row items-center">
-                      <Text className="text-xs text-zinc-500 mr-2">
+                      <Text className="text-xs text-zinc-500 dark:text-neutral-500 mr-2">
                         {time.nearbyActiveUsers} utenti attivi
                       </Text>
                       <View
@@ -108,8 +114,8 @@ export default function MatchingInsightsScreen() {
 
             {/* A/B variant indicator (dev only) */}
             {vm.insights.variant && (
-              <View className="rounded-lg bg-zinc-100 px-3 py-2">
-                <Text className="text-xs text-zinc-500">
+              <View className="rounded-lg bg-zinc-100 dark:bg-[#38383A] px-3 py-2">
+                <Text className="text-xs text-zinc-500 dark:text-neutral-500">
                   Algoritmo: {vm.insights.variant === 'ai_enhanced' ? 'AI potenziato' : 'Standard'}
                 </Text>
               </View>
@@ -117,8 +123,8 @@ export default function MatchingInsightsScreen() {
           </View>
         ) : (
           <View className="items-center justify-center py-20">
-            <Text className="text-zinc-500">Nessun dato disponibile</Text>
-            <Text className="text-sm text-zinc-400 mt-1">
+            <Text className="text-zinc-500 dark:text-neutral-500">Nessun dato disponibile</Text>
+            <Text className="text-sm text-zinc-400 dark:text-neutral-500 mt-1">
               Inizia a fare swipe per vedere le tue statistiche
             </Text>
           </View>
@@ -130,9 +136,9 @@ export default function MatchingInsightsScreen() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <View className="flex-1 min-w-[45%] rounded-lg bg-white px-3 py-2">
+    <View className="flex-1 min-w-[45%] rounded-lg bg-white dark:bg-[#1C1C1E] px-3 py-2">
       <Text className="text-xl font-bold text-emerald-800">{value}</Text>
-      <Text className="text-xs text-zinc-500">{label}</Text>
+      <Text className="text-xs text-zinc-500 dark:text-neutral-500">{label}</Text>
     </View>
   );
 }

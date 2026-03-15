@@ -1,5 +1,5 @@
 import { updateConsentSchema } from '@pawmeet/validation';
-import type { consentDeps } from '../../container.js';
+import type { consentDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createConsentRouter(deps: typeof consentDeps) {

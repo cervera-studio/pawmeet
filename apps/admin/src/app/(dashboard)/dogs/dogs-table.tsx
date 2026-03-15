@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
+import { TIMING } from '@/lib/constants';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { handleError } from '@/lib/error-handler';
@@ -111,7 +112,7 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
     const timer = setTimeout(() => {
       setDebouncedSearch(value);
       setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    }, 300);
+    }, TIMING.DEBOUNCE_DELAY_MS);
     setDebounceTimer(timer);
   }
 

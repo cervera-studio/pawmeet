@@ -2,7 +2,7 @@ import { zValidator } from '@hono/zod-validator';
 import { swipeSchema } from '@pawmeet/validation';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import type { matchDeps as MatchDeps } from '../container.js';
+import type { matchDeps as MatchDeps } from '../container/index.js';
 import { handleResult } from '../lib/result.js';
 import { uuidParamOrBail } from '../lib/validate-param.js';
 import { authMiddleware } from '../middleware/auth.js';

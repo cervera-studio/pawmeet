@@ -7,7 +7,7 @@ import {
   followDeps,
   matchDeps,
   userDeps,
-} from '../container.js';
+} from '../container/index.js';
 import { createAdminAuthRoutes } from './admin-auth.js';
 import { createAuthRoutes } from './auth.js';
 import { createChatRoutes } from './chat.js';

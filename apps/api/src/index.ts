@@ -2,7 +2,7 @@ import { serve } from '@hono/node-server';
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import { adminDeps, experimentService } from './container.js';
+import { adminDeps, experimentService } from './container/index.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { cacheControlMiddleware } from './middleware/cache-control.js';

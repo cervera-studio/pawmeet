@@ -15,6 +15,7 @@ import {
   YAxis,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CHART_COLORS } from '@/lib/constants';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 import type { TimeSeriesPoint } from '@/repositories';
 
@@ -50,7 +51,7 @@ export function DashboardCharts({
           ) : (
             <ResponsiveContainer width="100%" height={256}>
               <AreaChart data={userRegistrations}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
                 <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
@@ -58,8 +59,8 @@ export function DashboardCharts({
                   type="monotone"
                   dataKey="count"
                   name={t('registrationsLabel')}
-                  stroke="#065F46"
-                  fill="#059669"
+                  stroke={CHART_COLORS.registrations.stroke}
+                  fill={CHART_COLORS.registrations.fill}
                   fillOpacity={0.15}
                 />
               </AreaChart>
@@ -80,11 +81,11 @@ export function DashboardCharts({
           ) : (
             <ResponsiveContainer width="100%" height={256}>
               <BarChart data={dailyMatches}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
                 <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
-                <Bar dataKey="count" name={t('matchLabel')} fill="#C9A84C" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" name={t('matchLabel')} fill={CHART_COLORS.matches} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -103,7 +104,7 @@ export function DashboardCharts({
           ) : (
             <ResponsiveContainer width="100%" height={256}>
               <LineChart data={dauTimeSeries}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
                 <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
@@ -111,7 +112,7 @@ export function DashboardCharts({
                   type="monotone"
                   dataKey="count"
                   name={t('dauLabel')}
-                  stroke="#10B981"
+                  stroke={CHART_COLORS.dau}
                   strokeWidth={2}
                   dot={false}
                 />

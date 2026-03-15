@@ -8,7 +8,7 @@ import {
   startTrackingSchema,
   syncHealthDataSchema,
 } from '@pawmeet/validation';
-import type { fitnessDeps } from '../../container.js';
+import type { fitnessDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

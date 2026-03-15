@@ -79,6 +79,8 @@ export function createRegisterUser(deps: Deps) {
     // Update last login
     await userRepo.update(user.id, { lastLoginAt: new Date() });
 
+    logger.info('RegisterUser', 'User registered', { userId: user.id });
+
     logSecurityEvent({ event: SECURITY_EVENT.RegisterSuccess, userId: user.id, email });
 
     return succeed({

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { useDataTable } from '@/hooks/use-data-table';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { TIMING } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { fetchEmergencyContacts } from '../actions';
 
@@ -10,7 +11,7 @@ export type EmergencyContactItem = ContactsData['data'][number];
 
 export function useContactsViewModel(initialData: ContactsData, pageSize: number) {
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search, 300);
+  const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const isInitialRender = useRef(true);

@@ -16,12 +16,12 @@ interface ErrorFallbackProps {
 /** Standalone fallback screen – used both by the class boundary and Expo Router. */
 function ErrorFallback({ error, retry }: ErrorFallbackProps) {
   return (
-    <SafeAreaView className="flex-1 items-center justify-center bg-white px-8">
+    <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E] px-8">
       <Text className="text-5xl">🐾</Text>
-      <Text className="mt-6 text-center text-xl font-bold text-gray-900">
+      <Text className="mt-6 text-center text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
         Qualcosa è andato storto
       </Text>
-      <Text className="mt-2 text-center text-sm text-gray-500">
+      <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
         Si è verificato un errore imprevisto. Prova a ricaricare la schermata.
       </Text>
 

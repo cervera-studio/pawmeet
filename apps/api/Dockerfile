@@ -33,6 +33,10 @@ RUN pnpm rebuild esbuild
 FROM base AS builder
 WORKDIR /app
 
+# Release version injected at build time (git SHA or tag)
+ARG APP_VERSION=unknown
+ENV APP_VERSION=${APP_VERSION}
+
 # Copy installed dependencies
 COPY --from=deps /app/ ./
 
@@ -55,7 +59,9 @@ RUN corepack enable && corepack prepare pnpm@10.6.0 --activate
 RUN apk add --no-cache libc6-compat dumb-init
 WORKDIR /app
 
+ARG APP_VERSION=unknown
 ENV NODE_ENV=production
+ENV APP_VERSION=${APP_VERSION}
 
 # Copy only the bundled output (tsup bundles all deps except bullmq)
 COPY --from=builder /app/apps/api/dist/ ./dist/

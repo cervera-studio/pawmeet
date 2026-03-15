@@ -1,5 +1,5 @@
 import { getLeaderboardSchema, listAchievementsSchema } from '@pawmeet/validation';
-import type { gamificationDeps } from '../../container.js';
+import type { gamificationDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createGamificationRouter(deps: typeof gamificationDeps) {

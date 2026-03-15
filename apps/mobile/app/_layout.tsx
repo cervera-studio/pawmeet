@@ -2,10 +2,12 @@ import '../global.css';
 
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';
+import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ConsentModal } from '@/components/ConsentModal';
@@ -18,6 +20,7 @@ import { container } from '@/repositories/container';
 import { ANALYTICS_SERVICE } from '@/repositories/tokens';
 import { useAuthStore } from '@/stores/auth';
 import { initConsentSubscription, useConsentStore } from '@/stores/consent';
+import { useThemeStore } from '@/stores/theme';
 
 // Wire analytics service optIn/optOut to consent store changes
 initConsentSubscription(container.resolve(ANALYTICS_SERVICE));
@@ -33,6 +36,8 @@ initConsentSubscription(container.resolve(ANALYTICS_SERVICE));
  */
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? '',
+  release: `io.pawmeet.mobile@${Constants.expoConfig?.version ?? '0.0.1'}`,
+  dist: Constants.expoConfig?.extra?.eas?.buildNumber ?? undefined,
   tracesSampleRate: __DEV__ ? 1.0 : 0.2,
   enabled: !__DEV__,
   beforeSend(event) {
@@ -134,6 +139,10 @@ function RootLayout() {
   const userId = useAuthStore((s) => s.user?.id);
   const hasSeenConsentModal = useConsentStore((s) => s.hasSeenConsentModal);
   const [showConsentModal, setShowConsentModal] = useState(false);
+  const colorScheme = useColorScheme();
+
+  // Hydrate theme store (triggers Appearance.setColorScheme on rehydrate)
+  useThemeStore();
 
   // Show consent modal after authentication if not yet seen
   useEffect(() => {
@@ -170,7 +179,7 @@ function RootLayout() {
           <AuthHydrator />
           {isAuthenticated && <PushNotificationRegistration />}
           {isAuthenticated && <WebSocketManager />}
-          <StatusBar style="auto" />
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
           <Stack>
             <Stack.Protected guard={!isAuthenticated}>
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />

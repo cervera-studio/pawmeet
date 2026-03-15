@@ -11,7 +11,7 @@ import {
   verifyEmailOtpSchema,
 } from '@pawmeet/validation';
 import { Hono } from 'hono';
-import type { authDeps as AuthDeps } from '../container.js';
+import type { authDeps as AuthDeps } from '../container/index.js';
 import { handleResult } from '../lib/result.js';
 import {
   authRateLimitMiddleware,

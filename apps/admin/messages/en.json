@@ -17,6 +17,11 @@
     "inactive": "Inactive",
     "never": "Never"
   },
+  "error": {
+    "title": "Something went wrong",
+    "defaultMessage": "Error loading the page",
+    "retry": "Retry"
+  },
   "metadata": {
     "description": "PawMeet Administration Panel"
   },

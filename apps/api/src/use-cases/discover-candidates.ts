@@ -7,7 +7,9 @@ import {
   calculateDistanceScore,
   calculateEnergyScore,
   calculateSizeScore,
+  logger,
 } from '@pawmeet/utils';
+import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
 import type {
   DogRepository,
   FollowRepository,
@@ -181,16 +183,9 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
 
     // Get current user's location
     const user = await userRepo.findById(userId);
-    if (
-      user?.latitude === null ||
-      user?.latitude === undefined ||
-      user?.longitude === null ||
-      user?.longitude === undefined
-    ) {
+    if (!user || !hasLocation(user)) {
       return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
     }
-    const userLat = user.latitude;
-    const userLon = user.longitude;
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
@@ -203,12 +198,12 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
     // Apply discovery filters, score, and rank
     const scored = candidates
       .flatMap((c) => {
-        if (c.ownerLat === null || c.ownerLon === null) return [];
+        if (!hasOwnerLocation(c)) return [];
         if (swipedIds.has(c.dog.id)) return [];
         // Apply user-selected filters before expensive scoring
         if (filters && !matchesFilters(c.dog, filters)) return [];
 
-        const distanceKm = calculateDistance(userLat, userLon, c.ownerLat, c.ownerLon);
+        const distanceKm = calculateDistance(user.latitude, user.longitude, c.ownerLat, c.ownerLon);
         if (distanceKm > radiusKm) return [];
 
         const breakdown = calculateCompatibilityScoreWithBreakdown(myDog, c.dog, distanceKm);
@@ -240,6 +235,11 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
         });
       }
     }
+
+    logger.info('DiscoverCandidates', 'Candidates discovered', {
+      userId,
+      candidateCount: suggestions.length,
+    });
 
     return succeed({ suggestions });
   };

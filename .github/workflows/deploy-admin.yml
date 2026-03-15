@@ -1,0 +1,41 @@
+name: Deploy Admin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - apps/admin/**
+      - packages/**
+      - pnpm-lock.yaml
+
+concurrency:
+  group: deploy-admin
+  cancel-in-progress: true
+
+jobs:
+  sentry-release:
+    name: Create Sentry Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Set release version
+        run: |
+          SHORT_SHA="$(git rev-parse --short HEAD)"
+          echo "RELEASE_VERSION=pawmeet-admin@${SHORT_SHA}" >> "$GITHUB_ENV"
+
+      - name: Create Sentry release
+        if: env.SENTRY_AUTH_TOKEN != ''
+        run: |
+          npx @sentry/cli releases new "${RELEASE_VERSION}"
+          npx @sentry/cli releases set-commits "${RELEASE_VERSION}" --auto
+          npx @sentry/cli releases deploys "${RELEASE_VERSION}" new -e production
+          npx @sentry/cli releases finalize "${RELEASE_VERSION}"
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT_ADMIN }}

@@ -61,16 +61,16 @@ function statusColor(status: string): string {
 
 function WalkCardSkeleton() {
   return (
-    <View className="mb-3 rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
+    <View className="mb-3 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm border border-gray-100 dark:border-[#38383A]">
       <View className="flex-row items-center justify-between mb-2">
         <View>
-          <View className="h-5 w-28 rounded bg-gray-200 animate-pulse" />
-          <View className="mt-1 h-4 w-20 rounded bg-gray-200 animate-pulse" />
+          <View className="h-5 w-28 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
+          <View className="mt-1 h-4 w-20 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
         </View>
-        <View className="h-6 w-20 rounded-full bg-gray-200 animate-pulse" />
+        <View className="h-6 w-20 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
       </View>
-      <View className="h-4 w-40 rounded bg-gray-200 animate-pulse mt-1" />
-      <View className="h-4 w-32 rounded bg-gray-200 animate-pulse mt-1" />
+      <View className="h-4 w-40 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-1" />
+      <View className="h-4 w-32 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-1" />
     </View>
   );
 }
@@ -108,14 +108,14 @@ const WalkCard = memo(function WalkCard({
   const isCompleted = walk.status === WALK_STATUS.COMPLETED;
 
   return (
-    <View className="mb-3 rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
+    <View className="mb-3 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm border border-gray-100 dark:border-[#38383A]">
       {/* Header with date and status */}
       <View className="flex-row items-center justify-between mb-2">
         <View>
-          <Text className="text-lg font-semibold text-gray-900">
+          <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
             {formatDate(walk.scheduledAt)}
           </Text>
-          <Text className="text-sm text-gray-500">
+          <Text className="text-sm text-gray-500 dark:text-neutral-500">
             {formatTime(walk.scheduledAt)} - {walk.durationMin} min
           </Text>
         </View>
@@ -127,13 +127,19 @@ const WalkCard = memo(function WalkCard({
       </View>
 
       {/* Title and location */}
-      {walk.title && <Text className="text-base font-medium text-gray-800 mb-1">{walk.title}</Text>}
+      {walk.title && (
+        <Text className="text-base font-medium text-gray-800 dark:text-[#F5F5F7] mb-1">
+          {walk.title}
+        </Text>
+      )}
       {walk.location && (
         <View className="flex-row items-center mb-1">
-          <Text className="text-sm text-gray-500">{walk.location}</Text>
+          <Text className="text-sm text-gray-500 dark:text-neutral-500">{walk.location}</Text>
         </View>
       )}
-      {walk.notes && <Text className="text-sm text-gray-400 mb-2">{walk.notes}</Text>}
+      {walk.notes && (
+        <Text className="text-sm text-gray-400 dark:text-neutral-500 mb-2">{walk.notes}</Text>
+      )}
 
       {/* Action buttons */}
       {isPending && !isMine && (
@@ -152,8 +158,11 @@ const WalkCard = memo(function WalkCard({
 
       {((isPending && isMine) || isAccepted) && (
         <View className="mt-2">
-          <Pressable onPress={onCancel} className="items-center rounded-xl bg-gray-100 py-3">
-            <Text className="font-semibold text-gray-600">Annulla</Text>
+          <Pressable
+            onPress={onCancel}
+            className="items-center rounded-xl bg-gray-100 dark:bg-[#38383A] py-3"
+          >
+            <Text className="font-semibold text-gray-600 dark:text-[#D1D1D6]">Annulla</Text>
           </Pressable>
         </View>
       )}
@@ -177,10 +186,10 @@ function WalksEmptyState() {
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F5D3}'}</Text>
-      <Text className="mt-4 text-lg font-semibold text-gray-900">
+      <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
         Nessuna passeggiata in programma
       </Text>
-      <Text className="mt-2 text-center text-sm text-gray-500 px-8">
+      <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
         Proponi una passeggiata dalla chat con uno dei tuoi match!
       </Text>
     </View>
@@ -194,15 +203,17 @@ export default function WalksScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <View className="flex-row items-center justify-between border-b border-gray-100 bg-white px-4 py-4">
-        <Text className="text-2xl font-bold text-gray-900">Passeggiate</Text>
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
+      <View className="flex-row items-center justify-between border-b border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-4">
+        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Passeggiate</Text>
         <View className="flex-row gap-2">
           <Pressable
             onPress={() => router.push('/(tabs)/walks/calendar')}
-            className="rounded-full bg-gray-100 px-4 py-2"
+            className="rounded-full bg-gray-100 dark:bg-[#38383A] px-4 py-2"
           >
-            <Text className="text-sm font-semibold text-gray-700">Calendario</Text>
+            <Text className="text-sm font-semibold text-gray-700 dark:text-[#D1D1D6]">
+              Calendario
+            </Text>
           </Pressable>
           <Pressable
             onPress={() => router.push('/(tabs)/walks/tracking')}

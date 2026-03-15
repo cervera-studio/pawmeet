@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useCallback, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
+import { PAGINATION } from '@/lib/constants';
 
 interface UseServerTableOptions<_T> {
   /** API endpoint path (e.g. "/admin/users") */
@@ -22,7 +23,7 @@ interface PaginatedResponse<T> {
   totalPages: number;
 }
 
-export function useServerTable<T>({ endpoint, queryKey, pageSize = 20 }: UseServerTableOptions<T>) {
+export function useServerTable<T>({ endpoint, queryKey, pageSize = PAGINATION.DEFAULT_PAGE_SIZE }: UseServerTableOptions<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

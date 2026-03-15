@@ -1,5 +1,6 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { hasLocation } from '../domain/type-guards.js';
 import type { UserRepository } from '../ports/index.js';
 
 type Deps = {
@@ -33,7 +34,7 @@ export function createUpdateLocation({ userRepo }: Deps) {
 
     // Check for unrealistic movement speed
     const user = await userRepo.findById(userId);
-    if (user?.latitude != null && user.longitude != null && user.locationUpdatedAt) {
+    if (user && hasLocation(user) && user.locationUpdatedAt) {
       const elapsedHours =
         (Date.now() - new Date(user.locationUpdatedAt).getTime()) / (1000 * 60 * 60);
       if (elapsedHours > 0) {

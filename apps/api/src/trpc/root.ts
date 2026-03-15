@@ -19,7 +19,7 @@ import {
   organizationDeps,
   userDeps,
   walkDeps,
-} from '../container.js';
+} from '../container/index.js';
 import { db } from '../lib/db.js';
 import { createAdminRouter } from './routers/admin.js';
 import { createAuthRouter } from './routers/auth.js';

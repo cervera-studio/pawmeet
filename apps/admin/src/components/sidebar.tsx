@@ -1,13 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { useSidebarViewModel } from './sidebar.view-model';
 
 export function Sidebar() {
   const vm = useSidebarViewModel();
-  const t = useTranslations('auth');
 
   return (
     <aside className="flex h-full min-h-0 w-64 flex-col border-r border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-950">
@@ -79,30 +77,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Footer */}
-      <div className="border-t border-neutral-200 dark:border-neutral-700 p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900 dark:text-primary-200">
-            {vm.userInitial}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-50 truncate">
-              {vm.userName}
-            </p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-              {vm.userEmail}
-            </p>
-          </div>
-          <button
-            onClick={vm.logout}
-            type="button"
-            className="text-xs text-neutral-400 hover:text-red-500 transition-colors"
-          >
-            {t('logout')}
-          </button>
-        </div>
-      </div>
     </aside>
   );
 }

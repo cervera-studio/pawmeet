@@ -14,7 +14,7 @@ export default function FriendsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <FollowList
         mode="friends"
         userId={user?.id ?? ''}

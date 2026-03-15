@@ -1,10 +1,11 @@
 import { getTranslations } from 'next-intl/server';
+import { PAGINATION } from '@/lib/constants';
 import { fetchStories } from './actions';
 import { StoryGrid } from './story-grid';
 
 export default async function StoryModerationPage() {
   const [initialData, t] = await Promise.all([
-    fetchStories({ page: 1, pageSize: 20 }),
+    fetchStories({ page: 1, pageSize: PAGINATION.DEFAULT_PAGE_SIZE }),
     getTranslations('stories'),
   ]);
 

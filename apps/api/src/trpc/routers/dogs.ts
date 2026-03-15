@@ -5,7 +5,7 @@ import {
   updateDogSchema,
 } from '@pawmeet/validation';
 import { z } from 'zod';
-import type { dogDeps } from '../../container.js';
+import type { dogDeps } from '../../container/index.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, publicProcedure, router, unwrapResult } from '../trpc.js';

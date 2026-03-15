@@ -57,17 +57,17 @@ function statusColor(status: string): string {
 function EventDetailSkeleton() {
   return (
     <View className="p-4">
-      <View className="h-8 w-64 rounded bg-gray-200 animate-pulse" />
-      <View className="h-6 w-24 rounded-full bg-gray-200 animate-pulse mt-3" />
-      <View className="h-4 w-48 rounded bg-gray-200 animate-pulse mt-4" />
-      <View className="h-4 w-40 rounded bg-gray-200 animate-pulse mt-2" />
-      <View className="h-4 w-32 rounded bg-gray-200 animate-pulse mt-2" />
-      <View className="h-20 w-full rounded bg-gray-200 animate-pulse mt-4" />
-      <View className="h-4 w-28 rounded bg-gray-200 animate-pulse mt-6" />
+      <View className="h-8 w-64 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
+      <View className="h-6 w-24 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse mt-3" />
+      <View className="h-4 w-48 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-4" />
+      <View className="h-4 w-40 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-2" />
+      <View className="h-4 w-32 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-2" />
+      <View className="h-20 w-full rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-4" />
+      <View className="h-4 w-28 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse mt-6" />
       <View className="flex-row gap-3 mt-3">
-        <View className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />
-        <View className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />
-        <View className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />
+        <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
+        <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
+        <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
       </View>
     </View>
   );
@@ -87,13 +87,15 @@ export default function EventDetailScreen() {
           headerBackTitle: 'Eventi',
         }}
       />
-      <SafeAreaView edges={['bottom']} className="flex-1 bg-white">
+      <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
         {vm.loading ? (
           <EventDetailSkeleton />
         ) : vm.event ? (
           <ScrollView className="flex-1" contentContainerClassName="p-4">
             {/* Title */}
-            <Text className="text-2xl font-bold text-gray-900">{vm.event.title}</Text>
+            <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+              {vm.event.title}
+            </Text>
 
             {/* Status badge */}
             <View className="flex-row mt-3">
@@ -115,10 +117,12 @@ export default function EventDetailScreen() {
             {/* Date, time, duration */}
             <View className="mt-4">
               <View className="flex-row items-center mb-2">
-                <Text className="text-base text-gray-700">{formatDate(vm.event.scheduledAt)}</Text>
+                <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+                  {formatDate(vm.event.scheduledAt)}
+                </Text>
               </View>
               <View className="flex-row items-center mb-2">
-                <Text className="text-base text-gray-700">
+                <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
                   Ore {formatTime(vm.event.scheduledAt)} - Durata {vm.event.durationMin} min
                 </Text>
               </View>
@@ -126,19 +130,23 @@ export default function EventDetailScreen() {
 
             {/* Location */}
             <View className="mt-2 flex-row items-center">
-              <Text className="text-base text-gray-700">{vm.event.location}</Text>
+              <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+                {vm.event.location}
+              </Text>
             </View>
 
             {/* Description */}
             {vm.event.description && (
-              <View className="mt-4 rounded-xl bg-gray-50 p-4">
-                <Text className="text-base text-gray-700">{vm.event.description}</Text>
+              <View className="mt-4 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
+                <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+                  {vm.event.description}
+                </Text>
               </View>
             )}
 
             {/* Participants */}
             <View className="mt-6">
-              <Text className="text-lg font-semibold text-gray-900 mb-3">
+              <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3">
                 Partecipanti ({vm.event.participantCount}/{vm.event.maxParticipants})
               </Text>
               {vm.event.participants && vm.event.participants.length > 0 ? (
@@ -146,14 +154,16 @@ export default function EventDetailScreen() {
                   {vm.event.participants.map((participant) => (
                     <View key={participant.id} className="items-center">
                       <Avatar name={participant.userId} size="md" />
-                      <Text className="mt-1 text-xs text-gray-500">
+                      <Text className="mt-1 text-xs text-gray-500 dark:text-neutral-500">
                         {participant.isOrganizer ? 'Org.' : ''}
                       </Text>
                     </View>
                   ))}
                 </View>
               ) : (
-                <Text className="text-sm text-gray-400">Nessun partecipante ancora</Text>
+                <Text className="text-sm text-gray-400 dark:text-neutral-500">
+                  Nessun partecipante ancora
+                </Text>
               )}
             </View>
 
@@ -189,9 +199,11 @@ export default function EventDetailScreen() {
                 <Pressable
                   onPress={vm.handleLeave}
                   disabled={vm.actionLoading}
-                  className="items-center rounded-xl bg-gray-100 py-4"
+                  className="items-center rounded-xl bg-gray-100 dark:bg-[#38383A] py-4"
                 >
-                  <Text className="font-semibold text-gray-600">Lascia evento</Text>
+                  <Text className="font-semibold text-gray-600 dark:text-[#D1D1D6]">
+                    Lascia evento
+                  </Text>
                 </Pressable>
               )}
 
@@ -209,7 +221,7 @@ export default function EventDetailScreen() {
           </ScrollView>
         ) : (
           <View className="flex-1 items-center justify-center">
-            <Text className="text-lg text-gray-400">Evento non trovato</Text>
+            <Text className="text-lg text-gray-400 dark:text-neutral-500">Evento non trovato</Text>
           </View>
         )}
       </SafeAreaView>

@@ -16,7 +16,7 @@ export function DogSelector() {
 
   return (
     <View className="px-4 py-2">
-      <Text className="mb-2 text-xs font-medium text-gray-500">Scopri con</Text>
+      <Text className="mb-2 text-xs font-medium text-gray-500 dark:text-neutral-500">Scopri con</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="flex-row gap-2">
           {dogs.map((dog) => {
@@ -26,13 +26,13 @@ export function DogSelector() {
                 key={dog.id}
                 onPress={() => setSelectedDog(dog.id)}
                 className={`flex-row items-center rounded-full px-3 py-2 ${
-                  isSelected ? 'bg-primary' : 'bg-gray-100'
+                  isSelected ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'
                 }`}
               >
                 <Avatar name={dog.name} size="sm" />
                 <Text
                   className={`ml-2 text-sm font-medium ${
-                    isSelected ? 'text-white' : 'text-gray-700'
+                    isSelected ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'
                   }`}
                 >
                   {dog.name}

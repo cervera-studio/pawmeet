@@ -17,6 +17,11 @@
     "inactive": "Inattivo",
     "never": "Mai"
   },
+  "error": {
+    "title": "Qualcosa è andato storto",
+    "defaultMessage": "Errore nel caricamento della pagina",
+    "retry": "Riprova"
+  },
   "metadata": {
     "description": "Pannello di amministrazione PawMeet"
   },

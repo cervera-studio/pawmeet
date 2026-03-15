@@ -10,7 +10,7 @@ export default function CreatePostScreen() {
   const vm = useCreatePostViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <Stack.Screen
         options={{
           title: 'Nuovo post',
@@ -21,7 +21,7 @@ export default function CreatePostScreen() {
       <ScrollView className="flex-1 px-4 pt-4">
         {/* Caption */}
         <TextInput
-          className="mb-4 min-h-[80px] rounded-xl bg-gray-50 p-4 text-base text-gray-900"
+          className="mb-4 min-h-[80px] rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4 text-base text-gray-900 dark:text-[#F5F5F7]"
           placeholder="Scrivi una didascalia..."
           value={vm.caption}
           onChangeText={vm.setCaption}
@@ -56,10 +56,10 @@ export default function CreatePostScreen() {
           {vm.selectedMedia.length < 10 ? (
             <Pressable
               onPress={vm.pickMedia}
-              className="h-24 w-24 items-center justify-center rounded-lg border-2 border-dashed border-gray-300"
+              className="h-24 w-24 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-[#48484A]"
             >
-              <Text className="text-2xl text-gray-400">+</Text>
-              <Text className="text-xs text-gray-400">Aggiungi</Text>
+              <Text className="text-2xl text-gray-400 dark:text-neutral-500">+</Text>
+              <Text className="text-xs text-gray-400 dark:text-neutral-500">Aggiungi</Text>
             </Pressable>
           ) : null}
         </View>
@@ -67,11 +67,11 @@ export default function CreatePostScreen() {
         {/* Tags */}
         <Pressable
           onPress={() => vm.setShowTagPicker(!vm.showTagPicker)}
-          className="mb-4 rounded-xl bg-gray-50 p-4"
+          className="mb-4 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4"
         >
           <View className="flex-row items-center gap-2">
             <Text className="text-base">🏷️</Text>
-            <Text className="text-sm text-gray-700">
+            <Text className="text-sm text-gray-700 dark:text-[#D1D1D6]">
               {vm.selectedTags.length > 0
                 ? `${vm.selectedTags.length} tag selezionati`
                 : 'Tagga persone o cani'}
@@ -97,7 +97,7 @@ export default function CreatePostScreen() {
 
         {/* Tag picker */}
         {vm.showTagPicker && vm.tagOptions.length > 0 ? (
-          <View className="mb-4 rounded-xl border border-gray-100 bg-white">
+          <View className="mb-4 rounded-xl border border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E]">
             {vm.tagOptions.map((option: TagOption) => {
               const isSelected = vm.selectedTags.some(
                 (t: TagOption) => t.type === option.type && t.id === option.id,
@@ -106,11 +106,11 @@ export default function CreatePostScreen() {
                 <Pressable
                   key={`${option.type}-${option.id}`}
                   onPress={() => vm.toggleTag(option)}
-                  className={`flex-row items-center justify-between border-b border-gray-50 px-4 py-3 ${isSelected ? 'bg-emerald-50' : ''}`}
+                  className={`flex-row items-center justify-between border-b border-gray-50 dark:border-[#38383A] px-4 py-3 ${isSelected ? 'bg-emerald-50' : ''}`}
                 >
                   <View className="flex-row items-center gap-2">
                     <Text className="text-sm">{option.type === 'user' ? '👤' : '🐕'}</Text>
-                    <Text className="text-sm text-gray-800">{option.name}</Text>
+                    <Text className="text-sm text-gray-800 dark:text-[#F5F5F7]">{option.name}</Text>
                   </View>
                   {isSelected ? <Text className="text-sm text-emerald-700">✓</Text> : null}
                 </Pressable>
@@ -120,10 +120,10 @@ export default function CreatePostScreen() {
         ) : null}
 
         {/* Location toggle */}
-        <View className="mb-4 flex-row items-center justify-between rounded-xl bg-gray-50 p-4">
+        <View className="mb-4 flex-row items-center justify-between rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <View className="flex-row items-center gap-2">
             <Text className="text-base">📍</Text>
-            <Text className="text-sm text-gray-700">Includi posizione</Text>
+            <Text className="text-sm text-gray-700 dark:text-[#D1D1D6]">Includi posizione</Text>
           </View>
           <Switch
             value={vm.includeLocation}
@@ -154,11 +154,11 @@ export default function CreatePostScreen() {
       </ScrollView>
 
       {/* Submit button */}
-      <View className="border-t border-gray-100 px-4 py-3">
+      <View className="border-t border-gray-100 dark:border-[#38383A] px-4 py-3">
         <Pressable
           onPress={vm.handleSubmit}
           disabled={!vm.canSubmit}
-          className={`items-center rounded-xl py-3 ${vm.canSubmit ? 'bg-emerald-800' : 'bg-gray-300'}`}
+          className={`items-center rounded-xl py-3 ${vm.canSubmit ? 'bg-emerald-800' : 'bg-gray-300 dark:bg-[#48484A]'}`}
         >
           <Text className="text-base font-semibold text-white">
             {vm.uploading ? 'Pubblicando...' : 'Pubblica'}

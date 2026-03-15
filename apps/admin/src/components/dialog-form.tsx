@@ -1,7 +1,7 @@
 'use client';
 
-import type { FormEvent, ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
+import type { FormEvent, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

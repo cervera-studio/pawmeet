@@ -43,21 +43,27 @@ const CommentRow = memo(function CommentRow({
   const isReply = Boolean(comment.parentId);
   return (
     <View
-      className={`flex-row gap-3 px-4 py-3 ${isReply ? 'ml-10 border-l-2 border-gray-100 pl-4' : ''}`}
+      className={`flex-row gap-3 px-4 py-3 ${isReply ? 'ml-10 border-l-2 border-gray-100 dark:border-[#38383A] pl-4' : ''}`}
     >
       <Avatar size="sm" imageUrl={comment.author.avatarUrl} name={comment.author.displayName} />
       <View className="flex-1">
-        <Text className="text-sm font-semibold text-gray-900">{comment.author.displayName}</Text>
-        <Text className="text-sm text-gray-700">{comment.content}</Text>
+        <Text className="text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">
+          {comment.author.displayName}
+        </Text>
+        <Text className="text-sm text-gray-700 dark:text-[#D1D1D6]">{comment.content}</Text>
         <View className="mt-1 flex-row items-center gap-3">
-          <Text className="text-xs text-gray-400">{formatDate(comment.createdAt)}</Text>
+          <Text className="text-xs text-gray-400 dark:text-neutral-500">
+            {formatDate(comment.createdAt)}
+          </Text>
           {!isReply ? (
             <>
               <Pressable onPress={() => onReply(comment.id, comment.author.displayName)}>
                 <Text className="text-xs font-medium text-emerald-700">Rispondi</Text>
               </Pressable>
               <Pressable onPress={() => onReport(comment.id)}>
-                <Text className="text-xs font-medium text-gray-400">Segnala</Text>
+                <Text className="text-xs font-medium text-gray-400 dark:text-neutral-500">
+                  Segnala
+                </Text>
               </Pressable>
             </>
           ) : null}
@@ -72,9 +78,9 @@ const CommentRow = memo(function CommentRow({
 function PostDetailSkeleton() {
   return (
     <View className="p-4">
-      <View className="mb-4 h-64 rounded-xl bg-gray-100" />
-      <View className="mb-2 h-4 w-3/4 rounded bg-gray-100" />
-      <View className="h-4 w-1/2 rounded bg-gray-100" />
+      <View className="mb-4 h-64 rounded-xl bg-gray-100 dark:bg-[#38383A]" />
+      <View className="mb-2 h-4 w-3/4 rounded bg-gray-100 dark:bg-[#38383A]" />
+      <View className="h-4 w-1/2 rounded bg-gray-100 dark:bg-[#38383A]" />
     </View>
   );
 }
@@ -91,7 +97,7 @@ export default function PostDetailScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <Stack.Screen
         options={{
           title: 'Post',
@@ -111,7 +117,7 @@ export default function PostDetailScreen() {
             data={vm.comments}
             keyExtractor={(item) => item.id}
             ListHeaderComponent={
-              <View className="border-b border-gray-100">
+              <View className="border-b border-gray-100 dark:border-[#38383A]">
                 {/* Author */}
                 <View className="flex-row items-center gap-3 px-4 py-3">
                   <Avatar
@@ -119,29 +125,39 @@ export default function PostDetailScreen() {
                     imageUrl={vm.post.author.avatarUrl}
                     name={vm.post.author.displayName}
                   />
-                  <Text className="font-semibold text-gray-900">{vm.post.author.displayName}</Text>
+                  <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">
+                    {vm.post.author.displayName}
+                  </Text>
                 </View>
 
                 {/* Caption */}
                 {vm.post.caption ? (
-                  <Text className="px-4 pb-3 text-sm text-gray-700">{vm.post.caption}</Text>
+                  <Text className="px-4 pb-3 text-sm text-gray-700 dark:text-[#D1D1D6]">
+                    {vm.post.caption}
+                  </Text>
                 ) : null}
 
                 {/* Actions */}
-                <View className="flex-row items-center gap-4 border-t border-gray-50 px-4 py-2">
+                <View className="flex-row items-center gap-4 border-t border-gray-50 dark:border-[#38383A] px-4 py-2">
                   <Pressable onPress={vm.handleLike} className="flex-row items-center gap-1">
                     <Text className="text-lg">{vm.post.isLikedByMe ? '❤️' : '🤍'}</Text>
-                    <Text className="text-sm text-gray-600">{vm.post.likesCount}</Text>
+                    <Text className="text-sm text-gray-600 dark:text-[#D1D1D6]">
+                      {vm.post.likesCount}
+                    </Text>
                   </Pressable>
                   <View className="flex-row items-center gap-1">
                     <Text className="text-lg">💬</Text>
-                    <Text className="text-sm text-gray-600">{vm.post.commentsCount}</Text>
+                    <Text className="text-sm text-gray-600 dark:text-[#D1D1D6]">
+                      {vm.post.commentsCount}
+                    </Text>
                   </View>
                 </View>
 
                 {/* Comments header */}
-                <View className="border-t border-gray-100 px-4 py-2">
-                  <Text className="text-sm font-semibold text-gray-500">Commenti</Text>
+                <View className="border-t border-gray-100 dark:border-[#38383A] px-4 py-2">
+                  <Text className="text-sm font-semibold text-gray-500 dark:text-neutral-500">
+                    Commenti
+                  </Text>
                 </View>
               </View>
             }
@@ -155,7 +171,7 @@ export default function PostDetailScreen() {
             onEndReached={vm.loadMoreComments}
             onEndReachedThreshold={0.5}
             ListEmptyComponent={
-              <Text className="px-4 py-8 text-center text-sm text-gray-400">
+              <Text className="px-4 py-8 text-center text-sm text-gray-400 dark:text-neutral-500">
                 Nessun commento ancora
               </Text>
             }
@@ -163,21 +179,23 @@ export default function PostDetailScreen() {
 
           {/* Reply banner */}
           {vm.replyingTo ? (
-            <View className="flex-row items-center justify-between border-t border-gray-100 bg-gray-50 px-4 py-2">
-              <Text className="text-xs text-gray-500">
+            <View className="flex-row items-center justify-between border-t border-gray-100 dark:border-[#38383A] bg-gray-50 dark:bg-[#2C2C2E] px-4 py-2">
+              <Text className="text-xs text-gray-500 dark:text-neutral-500">
                 Rispondi a <Text className="font-semibold">{vm.replyingTo.authorName}</Text>
               </Text>
               <Pressable onPress={vm.cancelReply}>
-                <Text className="text-xs font-medium text-gray-400">Annulla</Text>
+                <Text className="text-xs font-medium text-gray-400 dark:text-neutral-500">
+                  Annulla
+                </Text>
               </Pressable>
             </View>
           ) : null}
 
           {/* Comment Input */}
-          <View className="flex-row items-center gap-2 border-t border-gray-100 px-4 py-2">
+          <View className="flex-row items-center gap-2 border-t border-gray-100 dark:border-[#38383A] px-4 py-2">
             <TextInput
               ref={inputRef}
-              className="flex-1 rounded-full bg-gray-100 px-4 py-2 text-sm"
+              className="flex-1 rounded-full bg-gray-100 dark:bg-[#38383A] px-4 py-2 text-sm"
               placeholder={vm.replyingTo ? 'Scrivi una risposta...' : 'Scrivi un commento...'}
               value={vm.commentText}
               onChangeText={vm.setCommentText}

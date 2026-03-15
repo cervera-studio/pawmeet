@@ -9,7 +9,7 @@ export default function AgeGateScreen() {
   const vm = useAgeGateViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
@@ -18,8 +18,10 @@ export default function AgeGateScreen() {
           contentContainerClassName="flex-grow justify-center px-8"
           keyboardShouldPersistTaps="handled"
         >
-          <Text className="mb-2 text-4xl font-bold text-gray-900">Verifica età</Text>
-          <Text className="mb-8 text-lg text-gray-500">
+          <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+            Verifica età
+          </Text>
+          <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
             Per continuare a usare PawMeet, inserisci la tua data di nascita. Devi avere almeno{' '}
             {MIN_USER_AGE} anni (D.Lgs. 101/2018).
           </Text>

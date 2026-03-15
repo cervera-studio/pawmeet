@@ -12,11 +12,11 @@ function BlockedSkeleton() {
     <View className="px-4 pt-4">
       {[1, 2, 3].map((i) => (
         <View key={i} className="mb-3 flex-row items-center gap-3">
-          <View className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />
+          <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
           <View className="flex-1">
-            <View className="h-4 w-32 rounded bg-gray-200 animate-pulse" />
+            <View className="h-4 w-32 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
           </View>
-          <View className="h-8 w-20 rounded-xl bg-gray-200 animate-pulse" />
+          <View className="h-8 w-20 rounded-xl bg-gray-200 dark:bg-[#48484A] animate-pulse" />
         </View>
       ))}
     </View>
@@ -28,10 +28,10 @@ function BlockedSkeleton() {
 function EmptyBlocked() {
   return (
     <View className="flex-1 items-center justify-center px-8 pt-20">
-      <Text className="mb-2 text-center text-lg font-semibold text-gray-900">
+      <Text className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
         Nessun utente bloccato
       </Text>
-      <Text className="text-center text-sm text-gray-500">
+      <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
         Gli utenti che blocchi non potranno più seguirti o contattarti.
       </Text>
     </View>
@@ -51,7 +51,9 @@ const BlockedUserRow = memo(function BlockedUserRow({
     <View className="flex-row items-center gap-3 px-4 py-3">
       <Avatar name={user.displayName} imageUrl={user.avatarUrl} size="sm" />
       <View className="flex-1">
-        <Text className="text-base font-medium text-gray-900">{user.displayName}</Text>
+        <Text className="text-base font-medium text-gray-900 dark:text-[#F5F5F7]">
+          {user.displayName}
+        </Text>
       </View>
       <Pressable
         onPress={() => onUnblock(user.id, user.displayName)}
@@ -70,14 +72,14 @@ export default function BlockedScreen() {
 
   if (vm.isInitialLoad) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
         <BlockedSkeleton />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <FlatList
         data={vm.users}
         keyExtractor={(item) => item.id}

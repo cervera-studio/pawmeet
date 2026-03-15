@@ -4,7 +4,7 @@ import {
   proposeWalkSchema,
   respondWalkSchema,
 } from '@pawmeet/validation';
-import type { walkDeps } from '../../container.js';
+import type { walkDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

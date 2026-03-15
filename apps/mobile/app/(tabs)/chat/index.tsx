@@ -16,16 +16,18 @@ function SegmentControl({
   onTabChange: (tab: Tab) => void;
 }) {
   return (
-    <View className="mx-4 mb-2 flex-row rounded-xl bg-gray-100 p-1">
+    <View className="mx-4 mb-2 flex-row rounded-xl bg-gray-100 dark:bg-[#38383A] p-1">
       <Pressable
         onPress={() => onTabChange(TABS.MESSAGES)}
         className={`flex-1 items-center rounded-lg py-2 ${
-          activeTab === TABS.MESSAGES ? 'bg-white shadow-sm' : ''
+          activeTab === TABS.MESSAGES ? 'bg-white dark:bg-[#1C1C1E] shadow-sm' : ''
         }`}
       >
         <Text
           className={`text-sm font-medium ${
-            activeTab === TABS.MESSAGES ? 'text-gray-900' : 'text-gray-500'
+            activeTab === TABS.MESSAGES
+              ? 'text-gray-900 dark:text-[#F5F5F7]'
+              : 'text-gray-500 dark:text-neutral-500'
           }`}
         >
           Messaggi
@@ -34,12 +36,14 @@ function SegmentControl({
       <Pressable
         onPress={() => onTabChange(TABS.GROUPS)}
         className={`flex-1 items-center rounded-lg py-2 ${
-          activeTab === TABS.GROUPS ? 'bg-white shadow-sm' : ''
+          activeTab === TABS.GROUPS ? 'bg-white dark:bg-[#1C1C1E] shadow-sm' : ''
         }`}
       >
         <Text
           className={`text-sm font-medium ${
-            activeTab === TABS.GROUPS ? 'text-gray-900' : 'text-gray-500'
+            activeTab === TABS.GROUPS
+              ? 'text-gray-900 dark:text-[#F5F5F7]'
+              : 'text-gray-500 dark:text-neutral-500'
           }`}
         >
           Gruppi
@@ -55,7 +59,7 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center border-b border-gray-50 px-4 py-3"
+      className="flex-row items-center border-b border-gray-50 dark:border-[#38383A] px-4 py-3"
     >
       {/* Avatar */}
       <View className="relative">
@@ -67,21 +71,23 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
           <Text
             className={`text-base ${
               conversation.unreadCount > 0
-                ? 'font-bold text-gray-900'
-                : 'font-semibold text-gray-900'
+                ? 'font-bold text-gray-900 dark:text-[#F5F5F7]'
+                : 'font-semibold text-gray-900 dark:text-[#F5F5F7]'
             }`}
           >
             {conversation.otherDogName ?? 'Cane'} &{' '}
             {conversation.otherUser?.displayName ?? 'Utente'}
           </Text>
-          <Text className="text-xs text-gray-400">
+          <Text className="text-xs text-gray-400 dark:text-neutral-500">
             {conversation.lastMessage ? String(conversation.lastMessage.createdAt) : ''}
           </Text>
         </View>
         <View className="flex-row items-center justify-between">
           <Text
             className={`text-sm ${
-              conversation.unreadCount > 0 ? 'font-medium text-gray-700' : 'text-gray-500'
+              conversation.unreadCount > 0
+                ? 'font-medium text-gray-700 dark:text-[#D1D1D6]'
+                : 'text-gray-500 dark:text-neutral-500'
             }`}
             numberOfLines={1}
           >
@@ -110,7 +116,7 @@ function GroupChatRow({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center border-b border-gray-50 px-4 py-3"
+      className="flex-row items-center border-b border-gray-50 dark:border-[#38383A] px-4 py-3"
     >
       {/* Group avatar */}
       <View className="h-12 w-12 items-center justify-center rounded-full bg-primary/10">
@@ -122,14 +128,14 @@ function GroupChatRow({
           <Text
             className={`text-base ${
               conversation.unreadCount > 0
-                ? 'font-bold text-gray-900'
-                : 'font-semibold text-gray-900'
+                ? 'font-bold text-gray-900 dark:text-[#F5F5F7]'
+                : 'font-semibold text-gray-900 dark:text-[#F5F5F7]'
             }`}
             numberOfLines={1}
           >
             {conversation.eventTitle}
           </Text>
-          <Text className="text-xs text-gray-400">
+          <Text className="text-xs text-gray-400 dark:text-neutral-500">
             {conversation.lastMessage ? String(conversation.lastMessage.createdAt) : ''}
           </Text>
         </View>
@@ -137,7 +143,9 @@ function GroupChatRow({
           <View className="flex-1 flex-row items-center">
             <Text
               className={`text-sm ${
-                conversation.unreadCount > 0 ? 'font-medium text-gray-700' : 'text-gray-500'
+                conversation.unreadCount > 0
+                  ? 'font-medium text-gray-700 dark:text-[#D1D1D6]'
+                  : 'text-gray-500 dark:text-neutral-500'
               }`}
               numberOfLines={1}
             >
@@ -145,7 +153,9 @@ function GroupChatRow({
             </Text>
           </View>
           <View className="flex-row items-center ml-2">
-            <Text className="text-xs text-gray-400 mr-1">{conversation.participantCount}</Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500 mr-1">
+              {conversation.participantCount}
+            </Text>
             {conversation.unreadCount > 0 && (
               <View className="h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5">
                 <Text className="text-xs font-bold text-white">{conversation.unreadCount}</Text>
@@ -164,7 +174,7 @@ function MessagesEmptyState() {
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F4AC}'}</Text>
-      <Text className="mt-4 text-lg text-gray-400">Nessuna chat</Text>
+      <Text className="mt-4 text-lg text-gray-400 dark:text-neutral-500">Nessuna chat</Text>
       <Text className="text-sm text-gray-300">Fai match con qualcuno per iniziare a chattare!</Text>
     </View>
   );
@@ -174,7 +184,9 @@ function GroupsEmptyState() {
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F465}'}</Text>
-      <Text className="mt-4 text-lg text-gray-400">Nessuna chat di gruppo</Text>
+      <Text className="mt-4 text-lg text-gray-400 dark:text-neutral-500">
+        Nessuna chat di gruppo
+      </Text>
       <Text className="text-sm text-gray-300">
         Partecipa a un evento per chattare con il gruppo!
       </Text>
@@ -188,9 +200,9 @@ export default function ChatListScreen() {
   const vm = useChatListViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="border-b border-gray-100 px-4 py-4">
-        <Text className="text-2xl font-bold text-gray-900">Chat</Text>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
+      <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
+        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Chat</Text>
       </View>
 
       <SegmentControl activeTab={vm.activeTab} onTabChange={vm.setActiveTab} />

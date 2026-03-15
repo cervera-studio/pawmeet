@@ -26,8 +26,8 @@ type Props = {
 export const BadgeDisplay = memo(function BadgeDisplay({ badges }: Props) {
   if (badges.length === 0) {
     return (
-      <View className="items-center rounded-2xl bg-gray-50 py-4">
-        <Text className="text-sm text-gray-400">Nessun badge ancora</Text>
+      <View className="items-center rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] py-4">
+        <Text className="text-sm text-gray-400 dark:text-neutral-500">Nessun badge ancora</Text>
       </View>
     );
   }
@@ -37,7 +37,7 @@ export const BadgeDisplay = memo(function BadgeDisplay({ badges }: Props) {
       {badges.map((badge) => (
         <View key={badge.id} className="items-center rounded-xl bg-primary-50 px-3 py-2">
           <Text className="text-2xl">{BADGE_ICONS[badge.type] ?? '\u{1F3C5}'}</Text>
-          <Text className="mt-1 text-xs font-medium text-gray-700">
+          <Text className="mt-1 text-xs font-medium text-gray-700 dark:text-[#D1D1D6]">
             {BADGE_LABELS[badge.type] ?? badge.type}
           </Text>
         </View>

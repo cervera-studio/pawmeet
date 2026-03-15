@@ -6,6 +6,7 @@ import {
   calculateEnergyScore,
   calculateSizeScore,
 } from '@pawmeet/utils';
+import { hasLocation } from '../domain/type-guards.js';
 import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
 
 // ── Scoring helpers (same logic as discover-candidates) ──────────────────────
@@ -119,12 +120,7 @@ export function createGetMatchExplanation({ matchRepo, dogRepo, userRepo }: Deps
     const ownerB = await userRepo.findById(dogB.ownerId);
 
     let distanceKm = 0;
-    if (
-      ownerA?.latitude != null &&
-      ownerA?.longitude != null &&
-      ownerB?.latitude != null &&
-      ownerB?.longitude != null
-    ) {
+    if (ownerA && hasLocation(ownerA) && ownerB && hasLocation(ownerB)) {
       distanceKm = calculateDistance(
         ownerA.latitude,
         ownerA.longitude,

@@ -29,11 +29,11 @@ function ViewersSkeleton() {
     <View className="px-4 pt-4">
       {[1, 2, 3].map((i) => (
         <View key={i} className="mb-3 flex-row items-center gap-3">
-          <View className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />
+          <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
           <View className="flex-1">
-            <View className="h-4 w-32 rounded bg-gray-200 animate-pulse" />
+            <View className="h-4 w-32 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
           </View>
-          <View className="h-3 w-16 rounded bg-gray-200 animate-pulse" />
+          <View className="h-3 w-16 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
         </View>
       ))}
     </View>
@@ -45,10 +45,10 @@ function ViewersSkeleton() {
 function EmptyViewers() {
   return (
     <View className="flex-1 items-center justify-center px-8 pt-20">
-      <Text className="mb-2 text-center text-lg font-semibold text-gray-900">
+      <Text className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
         Nessuna visualizzazione
       </Text>
-      <Text className="text-center text-sm text-gray-500">
+      <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
         Nessuno ha ancora visto questa storia.
       </Text>
     </View>
@@ -66,9 +66,13 @@ const ViewerRow = memo(function ViewerRow({
     <View className="flex-row items-center gap-3 px-4 py-3">
       <Avatar name={viewer.displayName} imageUrl={viewer.avatarUrl} size="sm" />
       <View className="flex-1">
-        <Text className="text-base font-medium text-gray-900">{viewer.displayName}</Text>
+        <Text className="text-base font-medium text-gray-900 dark:text-[#F5F5F7]">
+          {viewer.displayName}
+        </Text>
       </View>
-      <Text className="text-xs text-gray-400">{formatTimeAgo(viewer.viewedAt)}</Text>
+      <Text className="text-xs text-gray-400 dark:text-neutral-500">
+        {formatTimeAgo(viewer.viewedAt)}
+      </Text>
     </View>
   );
 });
@@ -80,14 +84,14 @@ export default function StoryViewersScreen() {
 
   if (vm.isInitialLoad) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
         <ViewersSkeleton />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <FlatList
         data={vm.viewers}
         keyExtractor={(item) => item.id}

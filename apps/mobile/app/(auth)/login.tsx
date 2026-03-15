@@ -8,14 +8,18 @@ export default function LoginScreen() {
   const vm = useLoginViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
         <View className="flex-1 justify-center px-8">
-          <Text className="mb-2 text-4xl font-bold text-gray-900">Bentornato!</Text>
-          <Text className="mb-8 text-lg text-gray-500">Accedi per continuare</Text>
+          <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+            Bentornato!
+          </Text>
+          <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
+            Accedi per continuare
+          </Text>
 
           {vm.apiError ? (
             <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
@@ -53,26 +57,30 @@ export default function LoginScreen() {
 
           <View className="mt-8">
             <View className="mb-4 flex-row items-center">
-              <View className="flex-1 border-b border-gray-200" />
-              <Text className="mx-4 text-gray-400">oppure</Text>
-              <View className="flex-1 border-b border-gray-200" />
+              <View className="flex-1 border-b border-gray-200 dark:border-[#38383A]" />
+              <Text className="mx-4 text-gray-400 dark:text-neutral-500">oppure</Text>
+              <View className="flex-1 border-b border-gray-200 dark:border-[#38383A]" />
             </View>
 
             <Pressable
               onPress={vm.handleGoogleLogin}
               disabled={vm.loading || !vm.googleReady}
-              className="mb-3 flex-row items-center justify-center rounded-2xl border border-gray-200 py-4"
+              className="mb-3 flex-row items-center justify-center rounded-2xl border border-gray-200 dark:border-[#38383A] py-4"
             >
-              <Text className="text-base font-medium text-gray-700">Continua con Google</Text>
+              <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
+                Continua con Google
+              </Text>
             </Pressable>
 
             {vm.showAppleLogin ? (
               <Pressable
                 onPress={vm.handleAppleLogin}
                 disabled={vm.loading}
-                className="flex-row items-center justify-center rounded-2xl border border-gray-200 py-4"
+                className="flex-row items-center justify-center rounded-2xl border border-gray-200 dark:border-[#38383A] py-4"
               >
-                <Text className="text-base font-medium text-gray-700">Continua con Apple</Text>
+                <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
+                  Continua con Apple
+                </Text>
               </Pressable>
             ) : null}
           </View>
@@ -80,7 +88,7 @@ export default function LoginScreen() {
 
         <View className="px-8 pb-8">
           <Pressable onPress={vm.navigateToRegister} className="items-center py-2">
-            <Text className="text-base text-gray-500">
+            <Text className="text-base text-gray-500 dark:text-neutral-500">
               Non hai un account? <Text className="font-semibold text-primary">Registrati</Text>
             </Text>
           </Pressable>

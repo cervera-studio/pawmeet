@@ -22,25 +22,25 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-white dark:bg-[#1C1C1E]">
         {/* Header */}
-        <View className="flex-row items-center justify-between border-b border-gray-100 px-4 py-4">
+        <View className="flex-row items-center justify-between border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
           <Pressable onPress={onClose}>
-            <Text className="text-base text-gray-500">Annulla</Text>
+            <Text className="text-base text-gray-500 dark:text-neutral-500">Annulla</Text>
           </Pressable>
-          <Text className="text-lg font-bold text-gray-900">Proponi passeggiata</Text>
+          <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">Proponi passeggiata</Text>
           <View style={{ width: 60 }} />
         </View>
 
         <ScrollView className="flex-1 px-4 py-4" keyboardShouldPersistTaps="handled">
           {/* Date input */}
           <View className="mb-4">
-            <Text className="mb-1 text-sm font-medium text-gray-700">Data (AAAA-MM-GG) *</Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Data (AAAA-MM-GG) *</Text>
             <TextInput
               value={vm.date}
               onChangeText={vm.setDate}
               placeholder="2026-03-15"
-              className="rounded-xl border border-gray-200 px-4 py-3 text-base"
+              className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               keyboardType="numbers-and-punctuation"
             />
@@ -48,12 +48,12 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
 
           {/* Time input */}
           <View className="mb-4">
-            <Text className="mb-1 text-sm font-medium text-gray-700">Ora (HH:MM) *</Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Ora (HH:MM) *</Text>
             <TextInput
               value={vm.time}
               onChangeText={vm.setTime}
               placeholder="10:00"
-              className="rounded-xl border border-gray-200 px-4 py-3 text-base"
+              className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               keyboardType="numbers-and-punctuation"
             />
@@ -61,19 +61,19 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
 
           {/* Duration selector */}
           <View className="mb-4">
-            <Text className="mb-2 text-sm font-medium text-gray-700">Durata</Text>
+            <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Durata</Text>
             <View className="flex-row flex-wrap gap-2">
               {DURATION_OPTIONS.map((d) => (
                 <Pressable
                   key={d}
                   onPress={() => vm.setDurationMin(d)}
                   className={`rounded-xl px-4 py-2 ${
-                    vm.durationMin === d ? 'bg-primary' : 'bg-gray-100'
+                    vm.durationMin === d ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'
                   }`}
                 >
                   <Text
                     className={`text-sm font-medium ${
-                      vm.durationMin === d ? 'text-white' : 'text-gray-700'
+                      vm.durationMin === d ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'
                     }`}
                   >
                     {d} min
@@ -85,12 +85,12 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
 
           {/* Title */}
           <View className="mb-4">
-            <Text className="mb-1 text-sm font-medium text-gray-700">Titolo</Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Titolo</Text>
             <TextInput
               value={vm.title}
               onChangeText={vm.setTitle}
               placeholder="Es. Passeggiata al parco"
-              className="rounded-xl border border-gray-200 px-4 py-3 text-base"
+              className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={100}
             />
@@ -98,12 +98,12 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
 
           {/* Location */}
           <View className="mb-4">
-            <Text className="mb-1 text-sm font-medium text-gray-700">Luogo</Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Luogo</Text>
             <TextInput
               value={vm.location}
               onChangeText={vm.setLocation}
               placeholder="Es. Parco Sempione, Milano"
-              className="rounded-xl border border-gray-200 px-4 py-3 text-base"
+              className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={200}
             />
@@ -111,12 +111,12 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
 
           {/* Notes */}
           <View className="mb-6">
-            <Text className="mb-1 text-sm font-medium text-gray-700">Note</Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Note</Text>
             <TextInput
               value={vm.notes}
               onChangeText={vm.setNotes}
               placeholder="Es. Ci vediamo all'ingresso principale"
-              className="rounded-xl border border-gray-200 px-4 py-3 text-base"
+              className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={500}
               multiline
@@ -128,7 +128,7 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           <Pressable
             onPress={vm.handleSubmit}
             disabled={vm.submitting}
-            className={`items-center rounded-xl py-4 ${vm.submitting ? 'bg-gray-300' : 'bg-primary'}`}
+            className={`items-center rounded-xl py-4 ${vm.submitting ? 'bg-gray-300 dark:bg-[#48484A]' : 'bg-primary'}`}
           >
             <Text className="text-base font-bold text-white">
               {vm.submitting ? 'Invio...' : 'Proponi'}

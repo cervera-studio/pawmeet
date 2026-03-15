@@ -1,6 +1,7 @@
 import { MAX_DOGS_PER_USER } from '@pawmeet/config';
 import type { DogProfile } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type { CreateDogInput, DogRepository } from '../ports/index.js';
 
 type Deps = {
@@ -24,6 +25,9 @@ export function createCreateDog({ dogRepo }: Deps) {
     }
 
     const dog = await dogRepo.create({ ...input, ownerId: userId });
+
+    logger.info('CreateDog', 'Dog created', { userId, dogId: dog.id });
+
     return succeed({ dog });
   };
 }

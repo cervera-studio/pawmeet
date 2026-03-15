@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDate } from '@/lib/formatters';
 import type { AdminReportListItem, ReportStatus, ResolveAction } from '@/repositories';
@@ -99,7 +100,7 @@ interface ReportsListProps {
 export function ReportsList({ initialData }: ReportsListProps) {
   const t = useTranslations('reports');
   const [statusFilter, setStatusFilter] = useState<ReportStatus | undefined>(undefined);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
+  const [pagination, setPagination] = useState<{ pageIndex: number; pageSize: number }>({ pageIndex: 0, pageSize: PAGINATION.DEFAULT_PAGE_SIZE });
   const [data, setData] = useState<PaginatedResult<AdminReportListItem>>(initialData);
   const [isLoading, setIsLoading] = useState(false);
 

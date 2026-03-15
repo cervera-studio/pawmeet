@@ -1,6 +1,7 @@
 import type { Match } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { hasLocation } from '../domain/type-guards.js';
 import { checkDailySwipeLimit } from '../lib/swipe-limit.js';
 import type {
   DogRepository,
@@ -95,12 +96,7 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
       // Compute distance between owners if both have locations
       let distanceKm: number | undefined;
       const myUser = await userRepo.findById(userId);
-      if (
-        myUser?.latitude != null &&
-        myUser?.longitude != null &&
-        recipient?.latitude != null &&
-        recipient?.longitude != null
-      ) {
+      if (myUser && hasLocation(myUser) && recipient && hasLocation(recipient)) {
         distanceKm = haversineKm(
           myUser.latitude,
           myUser.longitude,

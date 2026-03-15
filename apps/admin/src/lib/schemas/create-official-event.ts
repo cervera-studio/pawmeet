@@ -1,9 +1,8 @@
 import { z } from 'zod';
+import { EVENT } from '@/lib/constants';
 
 const TITLE_MAX = 100;
 const DESCRIPTION_MAX = 1000;
-const DURATION_MIN = 15;
-const DURATION_MAX = 180;
 
 export const createOfficialEventFormSchema = z.object({
   title: z
@@ -19,8 +18,8 @@ export const createOfficialEventFormSchema = z.object({
   durationMin: z.coerce
     .number()
     .int('La durata deve essere un numero intero')
-    .min(DURATION_MIN, `Minimo ${DURATION_MIN} minuti`)
-    .max(DURATION_MAX, `Massimo ${DURATION_MAX} minuti`),
+    .min(EVENT.DURATION_MIN, `Minimo ${String(EVENT.DURATION_MIN)} minuti`)
+    .max(EVENT.DURATION_MAX, `Massimo ${String(EVENT.DURATION_MAX)} minuti`),
   location: z.string().min(1, 'Il luogo è obbligatorio').max(200, 'Massimo 200 caratteri'),
   latitude: z.coerce.number().min(-90, 'Latitudine minima: -90').max(90, 'Latitudine massima: 90'),
   longitude: z.coerce

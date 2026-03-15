@@ -21,6 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0 # Full history for sentry-cli commit association
 
       - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
 
@@ -36,8 +38,26 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
+      - name: Set release version
+        run: |
+          SHORT_SHA="$(git rev-parse --short HEAD)"
+          echo "RELEASE_VERSION=pawmeet-api@${SHORT_SHA}" >> "$GITHUB_ENV"
+
       - uses: superfly/flyctl-actions/setup-flyctl@master # TODO: pin to SHA when stable release available
 
-      - run: flyctl deploy --remote-only
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only --build-arg "APP_VERSION=${RELEASE_VERSION}"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Create Sentry release
+        if: env.SENTRY_AUTH_TOKEN != ''
+        run: |
+          npx @sentry/cli releases new "${RELEASE_VERSION}"
+          npx @sentry/cli releases set-commits "${RELEASE_VERSION}" --auto
+          npx @sentry/cli releases deploys "${RELEASE_VERSION}" new -e production
+          npx @sentry/cli releases finalize "${RELEASE_VERSION}"
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT_API }}

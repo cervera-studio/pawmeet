@@ -9,7 +9,7 @@ import {
   unfollowUserSchema,
 } from '@pawmeet/validation';
 import { Hono } from 'hono';
-import type { followDeps as FollowDeps } from '../container.js';
+import type { followDeps as FollowDeps } from '../container/index.js';
 import { handleResult } from '../lib/result.js';
 import { authMiddleware } from '../middleware/auth.js';
 

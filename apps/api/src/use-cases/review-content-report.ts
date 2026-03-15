@@ -1,5 +1,6 @@
 import type { ContentReport } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type { ContentReportRepository } from '../ports/index.js';
 
 type Deps = {
@@ -16,6 +17,9 @@ export function createReviewContentReport({ contentReportRepo }: Deps) {
     if (!report) {
       return fail(new AppError('REPORT_NOT_FOUND', 'Segnalazione non trovata', 404));
     }
+
+    logger.info('ReviewContentReport', 'Report reviewed', { reportId, reviewerId, action });
+
     return succeed({ report });
   };
 }

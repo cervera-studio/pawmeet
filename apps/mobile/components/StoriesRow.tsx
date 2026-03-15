@@ -28,11 +28,11 @@ const StoryCircle = memo(function StoryCircle({
   return (
     <Pressable onPress={onPress} className="items-center px-2">
       <View
-        className={`rounded-full p-0.5 ${group.hasUnviewed ? 'border-2 border-emerald-700' : 'border-2 border-gray-200'}`}
+        className={`rounded-full p-0.5 ${group.hasUnviewed ? 'border-2 border-emerald-700' : 'border-2 border-gray-200 dark:border-[#38383A]'}`}
       >
         <Avatar size="md" imageUrl={group.author.avatarUrl} name={group.author.displayName} />
       </View>
-      <Text className="mt-1 text-xs text-gray-600" numberOfLines={1}>
+      <Text className="mt-1 text-xs text-gray-600 dark:text-[#D1D1D6]" numberOfLines={1}>
         {group.author.displayName.split(' ')[0]}
       </Text>
     </Pressable>
@@ -56,7 +56,7 @@ export const StoriesRow = memo(function StoriesRow({
   onCreateStory,
 }: StoriesRowProps) {
   return (
-    <View className="border-b border-gray-100 py-3">
+    <View className="border-b border-gray-100 dark:border-[#38383A] py-3">
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-2">
         {onCreateStory ? <CreateStoryButton onPress={onCreateStory} /> : null}
         {groups.map((group) => (

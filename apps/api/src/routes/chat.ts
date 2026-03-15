@@ -2,7 +2,7 @@ import { zValidator } from '@hono/zod-validator';
 import { sendMessageSchema } from '@pawmeet/validation';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import type { chatDeps as ChatDeps } from '../container.js';
+import type { chatDeps as ChatDeps } from '../container/index.js';
 import { handleResult } from '../lib/result.js';
 import { uuidParamOrBail } from '../lib/validate-param.js';
 import { authMiddleware } from '../middleware/auth.js';

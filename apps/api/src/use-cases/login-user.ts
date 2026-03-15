@@ -1,5 +1,6 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { accountLockout, MAX_FAILED_ATTEMPTS } from '../lib/account-lockout.js';
 import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
@@ -41,6 +42,8 @@ export function createLoginUser(deps: Deps) {
     if (!user || !user.passwordHash) {
       // Constant-time: run bcrypt even when user doesn't exist to prevent timing attacks
       await authService.verifyPassword(password, DUMMY_HASH);
+      logger.warn('LoginUser', 'Login failed: user not found');
+
       logSecurityEvent({
         event: SECURITY_EVENT.LoginFailed,
         email,
@@ -51,6 +54,7 @@ export function createLoginUser(deps: Deps) {
 
     // Check account lockout before verifying password
     if (await accountLockout.isLocked(user.id)) {
+      logger.warn('LoginUser', 'Login failed: account locked', { userId: user.id });
       logSecurityEvent({
         event: SECURITY_EVENT.AccountLocked,
         userId: user.id,
@@ -64,6 +68,7 @@ export function createLoginUser(deps: Deps) {
     // Verify password
     const valid = await authService.verifyPassword(password, user.passwordHash);
     if (!valid) {
+      logger.warn('LoginUser', 'Login failed: invalid password', { userId: user.id });
       const attempts = await accountLockout.recordFailedAttempt(user.id);
       logSecurityEvent({
         event: SECURITY_EVENT.LoginFailed,
@@ -87,6 +92,7 @@ export function createLoginUser(deps: Deps) {
 
     // Check if account is active
     if (!user.isActive) {
+      logger.warn('LoginUser', 'Login failed: account disabled', { userId: user.id });
       logSecurityEvent({
         event: SECURITY_EVENT.LoginFailed,
         userId: user.id,
@@ -109,6 +115,8 @@ export function createLoginUser(deps: Deps) {
 
     // Update last login
     await userRepo.update(user.id, { lastLoginAt: new Date() });
+
+    logger.info('LoginUser', 'Login successful', { userId: user.id });
 
     logSecurityEvent({ event: SECURITY_EVENT.LoginSuccess, userId: user.id, email });
 

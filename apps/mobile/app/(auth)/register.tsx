@@ -8,7 +8,7 @@ export default function RegisterScreen() {
   const vm = useRegisterViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
@@ -17,8 +17,12 @@ export default function RegisterScreen() {
           contentContainerClassName="flex-grow justify-center px-8"
           keyboardShouldPersistTaps="handled"
         >
-          <Text className="mb-2 text-4xl font-bold text-gray-900">Crea account</Text>
-          <Text className="mb-8 text-lg text-gray-500">Unisciti alla community PawMeet</Text>
+          <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+            Crea account
+          </Text>
+          <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
+            Unisciti alla community PawMeet
+          </Text>
 
           {vm.apiError ? (
             <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
@@ -73,12 +77,12 @@ export default function RegisterScreen() {
             disabled={vm.loading}
           />
 
-          <Text className="mt-4 text-center text-sm text-gray-400">
+          <Text className="mt-4 text-center text-sm text-gray-400 dark:text-neutral-500">
             Registrandoti accetti i nostri Termini di Servizio e la Privacy Policy
           </Text>
 
           <Pressable onPress={vm.navigateToLogin} className="mt-6 items-center py-2">
-            <Text className="text-base text-gray-500">
+            <Text className="text-base text-gray-500 dark:text-neutral-500">
               Hai già un account? <Text className="font-semibold text-primary">Accedi</Text>
             </Text>
           </Pressable>

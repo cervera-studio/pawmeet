@@ -101,6 +101,8 @@ export function createSendMessage({
       : 0;
     const messageCountInChat = await messageRepo.countByMatch(matchId);
 
+    logger.info('SendMessage', 'Message sent', { userId, matchId });
+
     return succeed({ message, chatAgeHours, messageCountInChat });
   };
 }

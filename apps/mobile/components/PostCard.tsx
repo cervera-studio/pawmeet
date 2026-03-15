@@ -64,27 +64,27 @@ export const PostCard = memo(function PostCard({
   const [menuVisible, setMenuVisible] = useState(false);
 
   return (
-    <View className="border-b border-gray-100 bg-white">
+    <View className="border-b border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E]">
       {/* Author header */}
       <View className="flex-row items-center gap-3 px-4 py-3">
         <Pressable onPress={onPress} className="flex-1 flex-row items-center gap-3">
           <Avatar size="sm" imageUrl={post.author.avatarUrl} name={post.author.displayName} />
           <View className="flex-1">
-            <Text className="text-sm font-semibold text-gray-900">{post.author.displayName}</Text>
-            <Text className="text-xs text-gray-400">{formatTimeAgo(post.createdAt)}</Text>
+            <Text className="text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">{post.author.displayName}</Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">{formatTimeAgo(post.createdAt)}</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => setMenuVisible(true)} className="px-1 py-2" hitSlop={8}>
-          <Text className="text-base text-gray-400">...</Text>
+          <Text className="text-base text-gray-400 dark:text-neutral-500">...</Text>
         </Pressable>
       </View>
 
       {/* Context menu */}
       <Modal visible={menuVisible} transparent animationType="fade">
         <Pressable onPress={() => setMenuVisible(false)} className="flex-1 justify-end bg-black/40">
-          <View className="rounded-t-2xl bg-white pb-8 pt-2">
+          <View className="rounded-t-2xl bg-white dark:bg-[#1C1C1E] pb-8 pt-2">
             <View className="mb-2 items-center">
-              <View className="h-1 w-10 rounded-full bg-gray-300" />
+              <View className="h-1 w-10 rounded-full bg-gray-300 dark:bg-[#48484A]" />
             </View>
             {onReport ? (
               <Pressable
@@ -94,7 +94,7 @@ export const PostCard = memo(function PostCard({
                 }}
                 className="px-6 py-4"
               >
-                <Text className="text-base text-gray-900">Segnala</Text>
+                <Text className="text-base text-gray-900 dark:text-[#F5F5F7]">Segnala</Text>
               </Pressable>
             ) : null}
             {onDelete ? (
@@ -109,7 +109,7 @@ export const PostCard = memo(function PostCard({
               </Pressable>
             ) : null}
             <Pressable onPress={() => setMenuVisible(false)} className="px-6 py-4">
-              <Text className="text-base text-gray-500">Annulla</Text>
+              <Text className="text-base text-gray-500 dark:text-neutral-500">Annulla</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -147,7 +147,7 @@ export const PostCard = memo(function PostCard({
       {sortedMedia.length > 1 ? (
         <View className="flex-row items-center justify-center gap-1 py-1">
           {sortedMedia.map((m) => (
-            <View key={`dot-${m.id}`} className="h-1.5 w-1.5 rounded-full bg-gray-300" />
+            <View key={`dot-${m.id}`} className="h-1.5 w-1.5 rounded-full bg-gray-300 dark:bg-[#48484A]" />
           ))}
         </View>
       ) : null}

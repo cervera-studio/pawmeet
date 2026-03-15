@@ -2,7 +2,7 @@ import type { ChatMessage } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { TRPCError } from '@trpc/server';
 import { describe, expect, it, vi } from 'vitest';
-import type { chatDeps } from '../../container.js';
+import type { chatDeps } from '../../container/index.js';
 import type { ConversationSummary } from '../../ports/index.js';
 import { router } from '../trpc.js';
 import { createChatRouter } from './chat.js';

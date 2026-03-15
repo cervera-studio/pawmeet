@@ -20,7 +20,7 @@ export function ContentList({ initialData }: ContentListProps) {
   const [reports, setReports] = useState<ContentReport[]>(initialData.reports);
   const [nextCursor, setNextCursor] = useState<string | null>(initialData.nextCursor);
   const [isLoading, setIsLoading] = useState(false);
-  const [isReviewing, setIsReviewing] = useState(false);
+  const [reviewingReportId, setReviewingReportId] = useState<string | null>(null);
 
   async function fetchReports(cursor?: string) {
     setIsLoading(true);
@@ -36,14 +36,14 @@ export function ContentList({ initialData }: ContentListProps) {
   }
 
   async function handleReview(reportId: string, action: ReviewAction) {
-    setIsReviewing(true);
+    setReviewingReportId(reportId);
     try {
       await reviewContent(reportId, action);
       void fetchReports();
     } catch (error) {
       toast.error(handleError(error, 'Errore durante la revisione del contenuto'));
     } finally {
-      setIsReviewing(false);
+      setReviewingReportId(null);
     }
   }
 
@@ -109,7 +109,7 @@ export function ContentList({ initialData }: ContentListProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    disabled={isReviewing}
+                    disabled={reviewingReportId === report.id}
                     onClick={() => {
                       handleReview(report.id, 'dismissed');
                       toast.success(t('dismissed'));
@@ -120,7 +120,7 @@ export function ContentList({ initialData }: ContentListProps) {
                   <Button
                     size="sm"
                     variant="default"
-                    disabled={isReviewing}
+                    disabled={reviewingReportId === report.id}
                     onClick={() => {
                       handleReview(report.id, 'reviewed');
                       toast.success(t('reviewed'));

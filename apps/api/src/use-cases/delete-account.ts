@@ -1,11 +1,9 @@
-import { analyticsEvents } from '@pawmeet/db';
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import { eq } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AnalyticsProvider } from '../ports/analytics-provider.js';
+import type { AnalyticsRepository } from '../ports/analytics-repository.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { DogRepository } from '../ports/dog-repository.js';
 import type { EmailService } from '../ports/email-service.js';
@@ -24,7 +22,7 @@ export interface DeleteAccountOutput {
 }
 
 interface Deps {
-  db: NeonHttpDatabase;
+  analyticsRepo: AnalyticsRepository;
   userRepo: UserRepository;
   tokenRepo: TokenRepository;
   authService: AuthService;
@@ -51,7 +49,7 @@ interface Deps {
 export function createDeleteAccount(deps: Deps) {
   return async (userId: string, password: string): Promise<Result<DeleteAccountOutput>> => {
     const {
-      db,
+      analyticsRepo,
       userRepo,
       tokenRepo,
       authService,
@@ -143,11 +141,7 @@ export function createDeleteAccount(deps: Deps) {
 
     // --- Phase 2: Anonymize analytics immediately (don't wait 30 days) ---
     try {
-      await db
-        .update(analyticsEvents)
-        .set({ userId: null })
-        .where(eq(analyticsEvents.userId, userId));
-      logger.info('DeleteAccount', `Anonymized analytics events for user ${userId}`);
+      await analyticsRepo.anonymizeUserEvents(userId);
     } catch (err) {
       logger.warn('DeleteAccount', 'Failed to anonymize analytics events', err);
     }
@@ -184,6 +178,13 @@ export function createDeleteAccount(deps: Deps) {
       userId,
       email: user.email,
       metadata: { reason: 'account_deletion' },
+    });
+
+    logger.info('DeleteAccount', 'Account deleted', {
+      userId,
+      accountAgeDays,
+      dogCount: dogs.length,
+      matchCount,
     });
 
     return succeed({

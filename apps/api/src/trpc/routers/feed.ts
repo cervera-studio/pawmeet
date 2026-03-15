@@ -15,7 +15,7 @@ import {
   viewStorySchema,
 } from '@pawmeet/validation';
 import { z } from 'zod';
-import type { feedDeps } from '../../container.js';
+import type { feedDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

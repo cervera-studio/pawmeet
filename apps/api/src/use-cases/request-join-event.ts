@@ -17,7 +17,10 @@ import type { NotificationService } from '../ports/notification-service.js';
 
 type Deps = {
   groupEventRepo: Pick<GroupEventRepository, 'findById'> &
-    Pick<GroupEventParticipationRepository, 'findParticipant' | 'countParticipants' | 'addParticipant'>;
+    Pick<
+      GroupEventParticipationRepository,
+      'findParticipant' | 'countParticipants' | 'addParticipant'
+    >;
   dogRepo: DogRepository;
   followRepo: FollowRepository;
   notificationService: NotificationService;

@@ -18,7 +18,7 @@ import {
   listPendingRequestsSchema,
   updateGroupEventSchema,
 } from '@pawmeet/validation';
-import type { groupEventDeps } from '../../container.js';
+import type { groupEventDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 

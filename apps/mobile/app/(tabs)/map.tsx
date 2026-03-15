@@ -20,27 +20,31 @@ function UserPreviewCard({
   const primaryDog = user.dogs[0];
 
   return (
-    <View className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white p-4 shadow-lg">
+    <View className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-lg">
       <Pressable onPress={onClose} className="absolute right-3 top-3 z-10">
-        <Text className="text-lg text-gray-400">✕</Text>
+        <Text className="text-lg text-gray-400 dark:text-neutral-500">✕</Text>
       </Pressable>
 
       <Pressable onPress={onViewProfile} className="flex-row items-center">
         <Avatar name={user.displayName} size="md" />
         <View className="ml-3 flex-1">
-          <Text className="text-base font-semibold text-gray-900">{user.displayName}</Text>
-          <Text className="text-sm text-gray-500">{formatDistance(user.distanceKm)}</Text>
+          <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
+            {user.displayName}
+          </Text>
+          <Text className="text-sm text-gray-500 dark:text-neutral-500">
+            {formatDistance(user.distanceKm)}
+          </Text>
           {primaryDog ? (
-            <Text className="text-sm text-gray-400">
+            <Text className="text-sm text-gray-400 dark:text-neutral-500">
               {primaryDog.name} - {primaryDog.breed}
             </Text>
           ) : null}
         </View>
-        <Text className="text-gray-400">›</Text>
+        <Text className="text-gray-400 dark:text-neutral-500">›</Text>
       </Pressable>
 
       {user.dogs.length > 1 && (
-        <Text className="mt-2 text-xs text-gray-400">
+        <Text className="mt-2 text-xs text-gray-400 dark:text-neutral-500">
           +{user.dogs.length - 1} {user.dogs.length === 2 ? 'altro cane' : 'altri cani'}
         </Text>
       )}
@@ -53,21 +57,21 @@ export default function MapScreen() {
 
   if (vm.locationLoading && !vm.coordinates) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
+      <View className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E]">
         <ActivityIndicator size="large" color="#065F46" />
-        <Text className="mt-4 text-gray-500">Recupero posizione...</Text>
+        <Text className="mt-4 text-gray-500 dark:text-neutral-500">Recupero posizione...</Text>
       </View>
     );
   }
 
   if (!vm.coordinates) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white px-8">
+      <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E] px-8">
         <Text className="text-5xl">📍</Text>
-        <Text className="mt-4 text-center text-lg font-semibold text-gray-900">
+        <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
           Posizione necessaria
         </Text>
-        <Text className="mt-2 text-center text-sm text-gray-500">
+        <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
           Abilita la posizione per vedere i cani nelle vicinanze sulla mappa.
         </Text>
         <Pressable
@@ -122,8 +126,8 @@ export default function MapScreen() {
               >
                 <Avatar name={user.dogs[0]?.name ?? user.displayName} size="sm" />
               </View>
-              <View className="mt-0.5 rounded-full bg-white px-1.5 py-0.5 shadow-sm">
-                <Text className="text-[10px] font-medium text-gray-700">
+              <View className="mt-0.5 rounded-full bg-white dark:bg-[#1C1C1E] px-1.5 py-0.5 shadow-sm">
+                <Text className="text-[10px] font-medium text-gray-700 dark:text-[#D1D1D6]">
                   {user.dogs[0]?.name ?? '?'}
                 </Text>
               </View>
@@ -135,7 +139,7 @@ export default function MapScreen() {
       {/* Recenter button */}
       <Pressable
         onPress={vm.handleRecenter}
-        className="absolute right-4 top-16 h-11 w-11 items-center justify-center rounded-full bg-white shadow-md"
+        className="absolute right-4 top-16 h-11 w-11 items-center justify-center rounded-full bg-white dark:bg-[#1C1C1E] shadow-md"
       >
         <Text className="text-lg">📍</Text>
       </Pressable>
@@ -143,12 +147,12 @@ export default function MapScreen() {
       {/* Refresh button */}
       <Pressable
         onPress={vm.fetchNearby}
-        className="absolute left-4 top-16 flex-row items-center rounded-full bg-white px-4 py-2.5 shadow-md"
+        className="absolute left-4 top-16 flex-row items-center rounded-full bg-white dark:bg-[#1C1C1E] px-4 py-2.5 shadow-md"
       >
         {vm.usersLoading ? (
           <ActivityIndicator size="small" color="#065F46" />
         ) : (
-          <Text className="text-sm font-medium text-gray-700">Aggiorna</Text>
+          <Text className="text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Aggiorna</Text>
         )}
       </Pressable>
 

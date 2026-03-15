@@ -1,5 +1,6 @@
 import type { UserBlock } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type { FollowRepository, UserRepository } from '../ports/index.js';
 
 type Deps = {
@@ -25,6 +26,9 @@ export function createBlockUser({ followRepo, userRepo }: Deps) {
 
     // block() also removes mutual follows
     const block = await followRepo.block(userId, targetUserId);
+
+    logger.info('BlockUser', 'User blocked', { userId, targetUserId });
+
     return succeed(block);
   };
 }

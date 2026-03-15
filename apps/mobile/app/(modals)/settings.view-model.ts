@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/trpc';
+import { useThemeStore } from '@/stores/theme';
 
 interface NotificationPrefs {
   matches: boolean;
@@ -20,7 +21,13 @@ export function useSettingsViewModel() {
   const { logout } = useAuth();
   const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
   const [locationSharing, setLocationSharing] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const themePreference = useThemeStore((s) => s.preference);
+  const setThemePreference = useThemeStore((s) => s.setPreference);
+  const darkMode = themePreference === 'dark';
+  const setDarkMode = useCallback(
+    (enabled: boolean) => setThemePreference(enabled ? 'dark' : 'light'),
+    [setThemePreference],
+  );
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Load notification preferences from user profile

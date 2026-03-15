@@ -9,7 +9,7 @@ import {
   photoModerationDeps,
   recurringEventDeps,
   storyCleanupWorkerDeps,
-} from '../container.js';
+} from '../container/index.js';
 import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createDataCleanupWorker } from './data-cleanup.js';

@@ -1,5 +1,5 @@
 import { feedQuerySchema, reviewReportSchema } from '@pawmeet/validation';
-import type { contentModerationDeps } from '../../container.js';
+import type { contentModerationDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createContentModerationRouter(deps: typeof contentModerationDeps) {

@@ -32,8 +32,10 @@ function AlbumEmptyState() {
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">📷</Text>
-      <Text className="mt-4 text-lg font-semibold text-gray-900">Nessuna foto nell'album</Text>
-      <Text className="mt-2 text-center text-sm text-gray-500 px-8">
+      <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
+        Nessuna foto nell'album
+      </Text>
+      <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
         Le foto della passeggiata appariranno qui
       </Text>
     </View>
@@ -44,7 +46,7 @@ export default function WalkAlbumScreen() {
   const vm = useWalkAlbumViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
       <Stack.Screen
         options={{
           title: vm.album?.album?.title ?? 'Album',
@@ -73,8 +75,8 @@ export default function WalkAlbumScreen() {
       )}
 
       {vm.album?.album ? (
-        <View className="border-t border-gray-100 bg-white px-4 py-3">
-          <Text className="text-center text-sm text-gray-500">
+        <View className="border-t border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-3">
+          <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
             {vm.album.posts.length} post ·{' '}
             {vm.album.posts.reduce((acc, p) => acc + p.media.length, 0)} foto
           </Text>

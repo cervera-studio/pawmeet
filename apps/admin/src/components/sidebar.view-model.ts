@@ -13,6 +13,7 @@ import {
   UsersIcon,
   UserXIcon,
 } from '@/components/icons';
+import { canAccessRoute } from '@/lib/auth';
 import { useAuthContext } from '@/lib/auth-store';
 
 function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
@@ -53,7 +54,10 @@ export function useSidebarViewModel() {
   const pathname = usePathname();
   const { user, logout } = useAuthContext();
   const t = useTranslations('nav');
-  const navigation = getNavigation(t);
+  const allNavigation = getNavigation(t);
+  const navigation = allNavigation.filter((item) =>
+    canAccessRoute(user?.role ?? 'viewer', item.href),
+  );
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   function isNavActive(href: string) {

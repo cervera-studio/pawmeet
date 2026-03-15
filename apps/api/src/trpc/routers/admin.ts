@@ -24,8 +24,9 @@ import { TRPCError } from '@trpc/server';
 import { and, count, desc, eq, gte, ilike, isNotNull, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
-import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
+import { AdminRole, requireRole } from '../../lib/admin-permissions.js';
+import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import { protectedProcedure, router } from '../trpc.js';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
@@ -304,10 +305,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           .orderBy(desc(adminAuditLog.createdAt))
           .limit(pageSize)
           .offset(offset),
-        db
-          .select({ value: count() })
-          .from(adminAuditLog)
-          .where(whereClause),
+        db.select({ value: count() }).from(adminAuditLog).where(whereClause),
       ]);
 
       const total = totalRow?.value ?? 0;
@@ -467,6 +465,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     }),
 
     resolveReport: adminProcedure.input(resolveReportSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Moderator);
       const [report] = await db.select().from(reports).where(eq(reports.id, input.id));
       if (!report) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Report not found' });
@@ -604,6 +603,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     updatePostModeration: adminProcedure
       .input(updatePostModerationSchema)
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Moderator);
         const [post] = await db.select().from(posts).where(eq(posts.id, input.postId));
         if (!post) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Post not found' });
@@ -624,7 +624,10 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           action: `post.${input.status}`,
           resourceType: RESOURCE_TYPE.post,
           resourceId: input.postId,
-          changes: { before: { moderationStatus: post.moderationStatus }, after: { moderationStatus: input.status } },
+          changes: {
+            before: { moderationStatus: post.moderationStatus },
+            after: { moderationStatus: input.status },
+          },
         });
 
         return { success: true };
@@ -674,6 +677,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     deleteStory: adminProcedure
       .input(z.object({ storyId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Moderator);
         const [story] = await db.select().from(stories).where(eq(stories.id, input.storyId));
         if (!story) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Story not found' });
@@ -867,38 +871,45 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       };
     }),
 
-    cancelGroupEvent: adminProcedure.input(cancelGroupEventSchema).mutation(async ({ ctx, input }) => {
-      const [event] = await db.select().from(groupEvents).where(eq(groupEvents.id, input.eventId));
+    cancelGroupEvent: adminProcedure
+      .input(cancelGroupEventSchema)
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+        const [event] = await db
+          .select()
+          .from(groupEvents)
+          .where(eq(groupEvents.id, input.eventId));
 
-      if (!event) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
-      }
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
 
-      if (event.status === 'cancelled' || event.status === 'completed') {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Event already cancelled or completed',
+        if (event.status === 'cancelled' || event.status === 'completed') {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Event already cancelled or completed',
+          });
+        }
+
+        await db
+          .update(groupEvents)
+          .set({ status: 'cancelled', updatedAt: new Date() })
+          .where(eq(groupEvents.id, input.eventId));
+
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'event.cancel',
+          resourceType: RESOURCE_TYPE.event,
+          resourceId: input.eventId,
         });
-      }
 
-      await db
-        .update(groupEvents)
-        .set({ status: 'cancelled', updatedAt: new Date() })
-        .where(eq(groupEvents.id, input.eventId));
-
-      void logAdminAction(db, {
-        adminId: ctx.userId,
-        action: 'event.cancel',
-        resourceType: RESOURCE_TYPE.event,
-        resourceId: input.eventId,
-      });
-
-      return { success: true };
-    }),
+        return { success: true };
+      }),
 
     removeEventParticipant: adminProcedure
       .input(removeParticipantSchema)
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
         const [participant] = await db
           .select()
           .from(groupEventParticipants)
@@ -1029,6 +1040,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     verifyOrganization: adminProcedure
       .input(z.object({ organizationId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
         const [org] = await db
           .select()
           .from(organizations)
@@ -1061,6 +1073,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     revokeOrganization: adminProcedure
       .input(z.object({ organizationId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
         const [org] = await db
           .select()
           .from(organizations)
@@ -1112,6 +1125,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     }),
 
     addEventSponsor: adminProcedure.input(addSponsorSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Admin);
       // Check event exists
       const [event] = await db.select().from(groupEvents).where(eq(groupEvents.id, input.eventId));
       if (!event) {
@@ -1162,40 +1176,43 @@ export function createAdminRouter(db: NeonHttpDatabase) {
       return sponsor;
     }),
 
-    removeEventSponsor: adminProcedure.input(removeSponsorSchema).mutation(async ({ ctx, input }) => {
-      const [existing] = await db
-        .select()
-        .from(eventSponsors)
-        .where(
-          and(
-            eq(eventSponsors.eventId, input.eventId),
-            eq(eventSponsors.organizationId, input.organizationId),
-          ),
-        );
+    removeEventSponsor: adminProcedure
+      .input(removeSponsorSchema)
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+        const [existing] = await db
+          .select()
+          .from(eventSponsors)
+          .where(
+            and(
+              eq(eventSponsors.eventId, input.eventId),
+              eq(eventSponsors.organizationId, input.organizationId),
+            ),
+          );
 
-      if (!existing) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Sponsor not found for this event' });
-      }
+        if (!existing) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Sponsor not found for this event' });
+        }
 
-      await db
-        .delete(eventSponsors)
-        .where(
-          and(
-            eq(eventSponsors.eventId, input.eventId),
-            eq(eventSponsors.organizationId, input.organizationId),
-          ),
-        );
+        await db
+          .delete(eventSponsors)
+          .where(
+            and(
+              eq(eventSponsors.eventId, input.eventId),
+              eq(eventSponsors.organizationId, input.organizationId),
+            ),
+          );
 
-      void logAdminAction(db, {
-        adminId: ctx.userId,
-        action: 'sponsor.remove',
-        resourceType: RESOURCE_TYPE.sponsor,
-        resourceId: input.eventId,
-        changes: { before: { organizationId: input.organizationId } },
-      });
+        void logAdminAction(db, {
+          adminId: ctx.userId,
+          action: 'sponsor.remove',
+          resourceType: RESOURCE_TYPE.sponsor,
+          resourceId: input.eventId,
+          changes: { before: { organizationId: input.organizationId } },
+        });
 
-      return { success: true };
-    }),
+        return { success: true };
+      }),
 
     // ── Users management ────────────────────────────────────────────────────
     listUsers: adminProcedure
@@ -1347,6 +1364,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     suspendUser: adminProcedure
       .input(z.object({ userId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
         const [user] = await db.select().from(users).where(eq(users.id, input.userId));
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
@@ -1367,6 +1385,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     banUser: adminProcedure
       .input(z.object({ userId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
         const [user] = await db.select().from(users).where(eq(users.id, input.userId));
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
@@ -1387,6 +1406,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     reactivateUser: adminProcedure
       .input(z.object({ userId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
         const [user] = await db.select().from(users).where(eq(users.id, input.userId));
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
@@ -1437,6 +1457,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     approvePhoto: adminProcedure
       .input(z.object({ photoId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Moderator);
         const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, input.photoId));
         if (!photo) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
@@ -1451,7 +1472,10 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           action: 'photo.approve',
           resourceType: RESOURCE_TYPE.photo,
           resourceId: input.photoId,
-          changes: { before: { moderationStatus: 'pending' }, after: { moderationStatus: 'approved' } },
+          changes: {
+            before: { moderationStatus: 'pending' },
+            after: { moderationStatus: 'approved' },
+          },
         });
 
         return { success: true };
@@ -1460,6 +1484,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     rejectPhoto: adminProcedure
       .input(z.object({ photoId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Moderator);
         const [photo] = await db.select().from(dogPhotos).where(eq(dogPhotos.id, input.photoId));
         if (!photo) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Photo not found' });
@@ -1474,13 +1499,17 @@ export function createAdminRouter(db: NeonHttpDatabase) {
           action: 'photo.reject',
           resourceType: RESOURCE_TYPE.photo,
           resourceId: input.photoId,
-          changes: { before: { moderationStatus: 'pending' }, after: { moderationStatus: 'rejected' } },
+          changes: {
+            before: { moderationStatus: 'pending' },
+            after: { moderationStatus: 'rejected' },
+          },
         });
 
         return { success: true };
       }),
 
     approveAllPhotos: adminProcedure.mutation(async ({ ctx }) => {
+      requireRole(ctx.adminRole, AdminRole.Moderator);
       await db
         .update(dogPhotos)
         .set({ moderationStatus: 'approved' })
@@ -1555,6 +1584,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     cancelDeletion: adminProcedure
       .input(z.object({ userId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
         const [user] = await db
           .select({ id: users.id, isActive: users.isActive })
           .from(users)
@@ -1698,6 +1728,7 @@ export function createAdminRouter(db: NeonHttpDatabase) {
     }),
 
     updateSettings: adminProcedure.input(updateSettingsSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.SuperAdmin);
       // MVP: accept the input and return it. No persistence yet.
       // In production, store in a settings table or Redis.
 

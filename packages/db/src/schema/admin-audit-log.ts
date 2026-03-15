@@ -11,7 +11,10 @@ export const adminAuditLog = pgTable(
     action: varchar('action', { length: 100 }).notNull(),
     resourceType: varchar('resource_type', { length: 50 }).notNull(),
     resourceId: varchar('resource_id', { length: 100 }),
-    changes: jsonb('changes').$type<{ before?: Record<string, unknown>; after?: Record<string, unknown> }>(),
+    changes: jsonb('changes').$type<{
+      before?: Record<string, unknown>;
+      after?: Record<string, unknown>;
+    }>(),
     reason: text('reason'),
     ipAddress: varchar('ip_address', { length: 45 }),
     userAgent: text('user_agent'),

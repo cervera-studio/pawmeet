@@ -25,6 +25,7 @@ export async function POST() {
   cookieStore.delete('admin_access_token');
   cookieStore.delete('admin_refresh_token');
   cookieStore.delete('admin_session');
+  cookieStore.delete('admin_role');
 
   return NextResponse.json({ success: true });
 }

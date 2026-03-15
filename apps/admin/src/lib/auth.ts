@@ -43,9 +43,14 @@ export function hasRole(userRole: AdminRole, requiredRole: AdminRole): boolean {
  */
 export const routePermissions: Record<string, AdminRole> = {
   '/settings': AdminRole.Admin,
+  '/audit-log': AdminRole.Admin,
   '/users': AdminRole.Moderator,
   '/moderation': AdminRole.Moderator,
   '/dogs': AdminRole.Moderator,
+  '/safety': AdminRole.Moderator,
+  '/account-deletions': AdminRole.Admin,
+  '/organizations': AdminRole.Moderator,
+  '/group-events': AdminRole.Moderator,
   '/': AdminRole.Viewer,
 };
 

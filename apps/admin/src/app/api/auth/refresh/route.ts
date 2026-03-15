@@ -27,6 +27,7 @@ export async function POST() {
     cookieStore.delete('admin_access_token');
     cookieStore.delete('admin_refresh_token');
     cookieStore.delete('admin_session');
+    cookieStore.delete('admin_role');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -62,6 +63,17 @@ export async function POST() {
     path: '/',
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
+
+  // Refresh role indicator if user data is returned
+  if (data.user?.role) {
+    cookieStore.set('admin_role', data.user.role, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: REFRESH_TOKEN_MAX_AGE,
+    });
+  }
 
   return NextResponse.json({ token: data.token, user: data.user });
 }

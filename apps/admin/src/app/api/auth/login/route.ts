@@ -53,5 +53,14 @@ export async function POST(request: Request) {
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
 
+  // Role indicator (non-HttpOnly, for middleware RBAC — real enforcement is server-side)
+  cookieStore.set('admin_role', data.user.role, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: REFRESH_TOKEN_MAX_AGE,
+  });
+
   return NextResponse.json({ token: data.token, user: data.user });
 }

@@ -1,3 +1,5 @@
+import { isSuccess } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import {
   addTrackPointsSchema,
   endTrackingSchema,
@@ -40,6 +42,20 @@ export function createFitnessRouter(deps: typeof fitnessDeps) {
         distanceKm: result.track.distanceKm ?? 0,
         participantCount: 1,
       });
+
+      // Auto-create walk album if the track is linked to a walk
+      if (result.track.walkId) {
+        const albumResult = await deps.createWalkAlbum(result.track.walkId, 'Album passeggiata');
+        if (isSuccess(albumResult)) {
+          trackEvent('feed_walk_album_created', ctx.userId, {
+            walkId: result.track.walkId,
+          });
+        } else {
+          // Album already exists or other error — not critical
+          logger.info('FitnessRouter', `Walk album not created: ${albumResult.error.code}`);
+        }
+      }
+
       return result;
     }),
 

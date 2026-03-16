@@ -154,6 +154,17 @@ export interface MessageToxicityJobData {
   content: string;
 }
 
+export interface CommentToxicityJobData {
+  commentId: string;
+  postId: string;
+  authorId: string;
+  content: string;
+}
+
+export async function enqueueCommentToxicityCheck(data: CommentToxicityJobData) {
+  return getMessageToxicityQueue().add('check-comment', data);
+}
+
 export async function enqueueMessageToxicityCheck(data: MessageToxicityJobData) {
   return getMessageToxicityQueue().add('check', data);
 }

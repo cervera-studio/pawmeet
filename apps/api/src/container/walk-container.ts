@@ -60,6 +60,8 @@ export const feedbackDeps = {
   getDogRating: createGetDogRating({ feedbackRepo }),
 };
 
+const createWalkAlbumUseCase = createCreateWalkAlbum({ walkAlbumRepo });
+
 export const fitnessDeps = {
   startWalkTracking: createStartWalkTracking({ walkTrackRepo, walkRepo }),
   addTrackPoints: createAddTrackPoints({ walkTrackRepo }),
@@ -69,6 +71,7 @@ export const fitnessDeps = {
   syncHealthData: createSyncHealthData({ activityRepo }),
   getActivityStats: createGetActivityStats({ activityRepo }),
   getDogHealthGoal: createGetDogHealthGoal({ dogRepo, activityRepo }),
+  createWalkAlbum: createWalkAlbumUseCase,
 };
 
 export const walkAlbumDeps = {

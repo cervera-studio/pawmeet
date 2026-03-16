@@ -16,6 +16,7 @@ import {
 } from '@pawmeet/validation';
 import { z } from 'zod';
 import type { feedDeps } from '../../container/index.js';
+import { enqueueCommentToxicityCheck } from '../../jobs/queue.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
@@ -124,14 +125,21 @@ export function createFeedRouter(deps: typeof feedDeps) {
           postAgeHours: result.postAgeHours,
           isReply: Boolean(input.parentId),
         });
+        enqueueCommentToxicityCheck({
+          commentId: result.comment.id,
+          postId: input.postId,
+          authorId: ctx.userId,
+          content: input.content,
+        }).catch(() => {});
         return { comment: result.comment };
       }),
 
     deleteComment: protectedProcedure
       .input(z.object({ commentId: z.string().uuid() }))
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.deleteComment(input.commentId, ctx.userId)),
-      ),
+      .mutation(async ({ ctx, input }) => {
+        unwrapResult(await deps.deleteComment(input.commentId, ctx.userId));
+        trackEvent('feed_comment_deleted', ctx.userId, { commentAgeHours: 0 });
+      }),
 
     getComments: protectedProcedure
       .input(postCommentsQuerySchema)
@@ -195,17 +203,17 @@ export function createFeedRouter(deps: typeof feedDeps) {
 
     // ── Tags ───────────────────────────────────────────────────────────────
 
-    addTags: protectedProcedure
-      .input(addPostTagsSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.addPostTags(input.postId, ctx.userId, input.tags)),
-      ),
+    addTags: protectedProcedure.input(addPostTagsSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.addPostTags(input.postId, ctx.userId, input.tags));
+      trackEvent('feed_post_tagged', ctx.userId, { tagCount: input.tags.length });
+      return result;
+    }),
 
-    removeTag: protectedProcedure
-      .input(removePostTagSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.removePostTag(input.tagId, ctx.userId)),
-      ),
+    removeTag: protectedProcedure.input(removePostTagSchema).mutation(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.removePostTag(input.tagId, ctx.userId));
+      trackEvent('feed_tag_removed', ctx.userId, {});
+      return result;
+    }),
 
     // ── Walk albums ─────────────────────────────────────────────────────────
 

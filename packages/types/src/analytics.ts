@@ -162,6 +162,10 @@ export interface AnalyticsEventMap {
   feed_story_created: { mediaType: 'photo' | 'video' };
   feed_story_viewed: { storyAgeHours: number };
   feed_content_reported: { contentType: 'post' | 'comment' | 'story'; reason: string };
+  feed_comment_deleted: { commentAgeHours: number };
+  feed_post_tagged: { tagCount: number };
+  feed_tag_removed: Record<string, never>;
+  feed_walk_album_created: { walkId: string };
 
   // App
   app_opened: {

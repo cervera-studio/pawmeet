@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { NotificationService } from '../ports/notification-service.js';
 import type { ToxicityDetectionService } from '../ports/toxicity-detection-service.js';
-import type { MessageToxicityJobData } from './queue.js';
+import type { CommentToxicityJobData, MessageToxicityJobData } from './queue.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 interface MessageToxicityDeps {
@@ -18,29 +18,40 @@ interface MessageToxicityDeps {
 export function createMessageToxicityWorker(deps: MessageToxicityDeps) {
   const { toxicityService, notificationService } = deps;
 
-  const worker = new Worker<MessageToxicityJobData>(
+  const worker = new Worker<MessageToxicityJobData | CommentToxicityJobData>(
     QUEUE_NAMES.MESSAGE_TOXICITY,
     async (job) => {
-      const { messageId, senderId, content } = job.data;
+      const isComment = job.name === 'check-comment';
+      const senderId = isComment
+        ? (job.data as CommentToxicityJobData).authorId
+        : (job.data as MessageToxicityJobData).senderId;
+      const content = job.data.content;
+      const itemId = isComment
+        ? (job.data as CommentToxicityJobData).commentId
+        : (job.data as MessageToxicityJobData).messageId;
 
       if (!content.trim()) return;
 
-      logger.info('MessageToxicity', `Checking message ${messageId}`);
+      logger.info('MessageToxicity', `Checking ${isComment ? 'comment' : 'message'} ${itemId}`);
 
       const result = await toxicityService.analyzeText(content, 'it');
 
       if (result.toxic) {
         logger.warn(
           'MessageToxicity',
-          `Toxic message detected (${messageId}): toxicity=${result.scores.toxicity.toFixed(2)}, severe=${result.scores.severeToxicity.toFixed(2)}`,
+          `Toxic ${isComment ? 'comment' : 'message'} detected (${itemId}): toxicity=${result.scores.toxicity.toFixed(2)}, severe=${result.scores.severeToxicity.toFixed(2)}`,
         );
+
+        const warningBody = isComment
+          ? 'Il tuo commento potrebbe contenere linguaggio inappropriato. Ti chiediamo di mantenere un tono rispettoso.'
+          : 'Il tuo messaggio potrebbe contenere linguaggio inappropriato. Ti chiediamo di mantenere un tono rispettoso.';
 
         // Warn the sender
         await notificationService
           .send({
             userId: senderId,
             title: 'Avviso',
-            body: 'Il tuo messaggio potrebbe contenere linguaggio inappropriato. Ti chiediamo di mantenere un tono rispettoso.',
+            body: warningBody,
           })
           .catch((err) => {
             logger.error('MessageToxicity', 'Failed to send notification', err);

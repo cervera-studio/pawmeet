@@ -6,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
@@ -32,5 +33,24 @@ export const messages = pgTable(
     index('idx_messages_match_id').on(table.matchId),
     index('idx_messages_sender_id').on(table.senderId),
     check('messages_status_valid', sql`${table.status} IN ('sent', 'delivered', 'read')`),
+  ],
+);
+
+export const messageReactions = pgTable(
+  'message_reactions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    messageId: uuid('message_id')
+      .notNull()
+      .references(() => messages.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    emoji: varchar('emoji', { length: 10 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('idx_message_reactions_message_id').on(table.messageId),
+    uniqueIndex('idx_message_reactions_unique').on(table.messageId, table.userId, table.emoji),
   ],
 );

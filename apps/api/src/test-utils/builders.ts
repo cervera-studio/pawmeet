@@ -489,6 +489,7 @@ export function buildGroupEventRepo(
     findOccurrences: vi.fn().mockResolvedValue([]),
     countActiveTemplates: vi.fn().mockResolvedValue(0),
     findFeatured: vi.fn().mockResolvedValue([]),
+    findParticipantStatuses: vi.fn().mockResolvedValue(new Map()),
     ...overrides,
   };
 }
@@ -562,6 +563,7 @@ export function buildStorageService(overrides: Partial<StorageService> = {}): St
     buildDogPhotoKey: vi.fn(),
     buildPostMediaKey: vi.fn(),
     buildStoryMediaKey: vi.fn(),
+    buildChatMediaKey: vi.fn().mockReturnValue('chat/match-1/123.jpeg'),
     deleteObject: vi.fn().mockResolvedValue(undefined),
     uploadObject: vi.fn().mockResolvedValue(undefined),
     generatePresignedDownloadUrl: vi

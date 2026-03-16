@@ -37,6 +37,8 @@ export const updateNotificationPrefsSchema = z.object({
   matches: z.boolean().optional(),
   messages: z.boolean().optional(),
   reminders: z.boolean().optional(),
+  feed: z.boolean().optional(),
+  nearby: z.boolean().optional(),
 });
 
 export type UpdateUserProfileInput = z.infer<typeof updateUserProfileSchema>;

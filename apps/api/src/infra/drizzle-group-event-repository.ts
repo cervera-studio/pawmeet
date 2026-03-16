@@ -1,6 +1,6 @@
 import { dogProfiles, groupEventParticipants, groupEvents, users } from '@pawmeet/db';
 import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
-import { and, desc, eq, isNotNull, lte, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, lte, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   CreateGroupEventInput,
@@ -354,5 +354,28 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
       .where(eq(groupEventParticipants.id, waitlisted.id));
 
     return { ...waitlisted, status: 'accepted' } as GroupEventParticipant;
+  }
+
+  async findParticipantStatuses(
+    userId: string,
+    eventIds: string[],
+  ): Promise<Map<string, GroupEventParticipant>> {
+    if (eventIds.length === 0) return new Map();
+
+    const rows = await this.db
+      .select()
+      .from(groupEventParticipants)
+      .where(
+        and(
+          eq(groupEventParticipants.userId, userId),
+          inArray(groupEventParticipants.eventId, eventIds),
+        ),
+      );
+
+    const map = new Map<string, GroupEventParticipant>();
+    for (const row of rows) {
+      map.set(row.eventId, row as unknown as GroupEventParticipant);
+    }
+    return map;
   }
 }

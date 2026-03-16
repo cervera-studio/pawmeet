@@ -13,6 +13,7 @@ export * from './group-chat';
 export * from './group-event';
 export * from './match';
 export * from './matching-ai';
+export * from './notification';
 export * from './organization';
 export * from './pagination';
 export * from './result';

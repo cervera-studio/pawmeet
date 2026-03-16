@@ -1,6 +1,7 @@
 import {
   type AllowedImageType,
   type AllowedMediaType,
+  buildChatMediaKey as buildChatMediaKeyLib,
   buildDogPhotoKey as buildDogPhotoKeyLib,
   buildPostMediaKey as buildPostMediaKeyLib,
   buildStoryMediaKey as buildStoryMediaKeyLib,
@@ -36,6 +37,10 @@ export class R2StorageService implements StorageService {
 
   buildStoryMediaKey(userId: string, contentType: string): string {
     return buildStoryMediaKeyLib(userId, contentType as AllowedMediaType);
+  }
+
+  buildChatMediaKey(matchId: string, contentType: string): string {
+    return buildChatMediaKeyLib(matchId, contentType as AllowedMediaType);
   }
 
   async deleteObject(key: string): Promise<void> {

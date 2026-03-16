@@ -50,6 +50,7 @@ export type {
   MessageRepository,
   PaginatedMessages,
 } from './message-repository.js';
+export type { NotificationLogRepository } from './notification-log-repository.js';
 export type { NotificationService } from './notification-service.js';
 export type {
   CreateOrganizationInput as CreateOrgInput,

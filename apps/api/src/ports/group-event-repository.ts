@@ -78,6 +78,10 @@ export interface GroupEventParticipationRepository {
   countParticipants(eventId: string): Promise<number>;
   findPendingParticipants(eventId: string): Promise<PendingParticipant[]>;
   promoteFromWaitlist(eventId: string): Promise<GroupEventParticipant | null>;
+  findParticipantStatuses(
+    userId: string,
+    eventIds: string[],
+  ): Promise<Map<string, GroupEventParticipant>>;
 }
 
 // ── Recurrence ─────────────────────────────────────────────────────────────────

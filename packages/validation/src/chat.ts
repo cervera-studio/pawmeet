@@ -14,6 +14,18 @@ export const markReadSchema = z.object({
   matchId: z.string().uuid(),
 });
 
+export const addReactionSchema = z.object({
+  messageId: z.string().uuid(),
+  emoji: z.string().min(1).max(10),
+});
+
+export const removeReactionSchema = z.object({
+  messageId: z.string().uuid(),
+  emoji: z.string().min(1).max(10),
+});
+
 export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 export type GetMessagesInput = z.infer<typeof getMessagesSchema>;
 export type MarkReadInput = z.infer<typeof markReadSchema>;
+export type AddReactionInput = z.infer<typeof addReactionSchema>;
+export type RemoveReactionInput = z.infer<typeof removeReactionSchema>;

@@ -74,6 +74,15 @@ export function buildStoryMediaKey(userId: string, contentType: AllowedMediaType
 }
 
 /**
+ * Build the R2 object key for a chat media file.
+ * Format: chat/{matchId}/{timestamp}.{ext}
+ */
+export function buildChatMediaKey(matchId: string, contentType: AllowedMediaType): string {
+  const ext = contentType.split('/')[1];
+  return `chat/${matchId}/${Date.now()}.${ext}`;
+}
+
+/**
  * Generate a presigned PUT URL for a given key.
  * Returns the presigned URL and the object key.
  */

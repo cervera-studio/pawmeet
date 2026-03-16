@@ -7,6 +7,7 @@ export interface StorageService {
   buildDogPhotoKey(dogId: string, contentType: string): string;
   buildPostMediaKey(postId: string, contentType: string): string;
   buildStoryMediaKey(userId: string, contentType: string): string;
+  buildChatMediaKey(matchId: string, contentType: string): string;
   deleteObject(key: string): Promise<void>;
   uploadObject(key: string, body: string, contentType: string): Promise<void>;
   generatePresignedDownloadUrl(key: string, expiresInSeconds?: number): Promise<string>;

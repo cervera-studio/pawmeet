@@ -47,5 +47,24 @@ export function createChatRouter(deps: typeof chatDeps) {
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.markMessagesRead(ctx.userId, input.matchId)),
       ),
+
+    uploadMediaUrl: protectedProcedure
+      .input(
+        z.object({
+          matchId: z.string().uuid(),
+          contentType: z.string(),
+          fileSize: z.number().int().positive(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(
+          await deps.uploadChatMediaUrl(
+            ctx.userId,
+            input.matchId,
+            input.contentType,
+            input.fileSize,
+          ),
+        ),
+      ),
   });
 }

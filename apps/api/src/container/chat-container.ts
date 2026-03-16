@@ -8,6 +8,7 @@ import { createMarkGroupMessagesRead } from '../use-cases/mark-group-messages-re
 import { createMarkMessagesRead } from '../use-cases/mark-messages-read.js';
 import { createSendGroupMessage } from '../use-cases/send-group-message.js';
 import { createSendMessage } from '../use-cases/send-message.js';
+import { createUploadChatMediaUrl } from '../use-cases/upload-chat-media-url.js';
 import {
   chat,
   dogRepo,
@@ -15,6 +16,7 @@ import {
   matchRepo,
   messageRepo,
   notificationService,
+  storage,
   userRepo,
 } from './services.js';
 
@@ -23,6 +25,7 @@ export const chatDeps = {
   getMessages: createGetMessages({ messageRepo, chat }),
   sendMessage: createSendMessage({ messageRepo, matchRepo, chat, userRepo, notificationService }),
   markMessagesRead: createMarkMessagesRead({ messageRepo, chat }),
+  uploadChatMediaUrl: createUploadChatMediaUrl({ messageRepo, storage }),
 };
 
 export const groupChatDeps = {

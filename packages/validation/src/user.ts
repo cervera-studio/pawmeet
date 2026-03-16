@@ -39,6 +39,17 @@ export const updateNotificationPrefsSchema = z.object({
   reminders: z.boolean().optional(),
   feed: z.boolean().optional(),
   nearby: z.boolean().optional(),
+  quietHoursStart: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/, 'Formato HH:MM')
+    .nullable()
+    .optional(),
+  quietHoursEnd: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/, 'Formato HH:MM')
+    .nullable()
+    .optional(),
+  timezone: z.string().max(50).nullable().optional(),
 });
 
 export type UpdateUserProfileInput = z.infer<typeof updateUserProfileSchema>;

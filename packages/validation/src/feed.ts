@@ -89,3 +89,25 @@ export const addPostTagsSchema = z.object({
 export const removePostTagSchema = z.object({
   tagId: z.string().uuid(),
 });
+
+export const addContentReactionSchema = z.object({
+  contentType: z.enum(['post', 'comment', 'story']),
+  contentId: z.string().uuid(),
+  emoji: z.string().min(1).max(10),
+});
+
+export const removeContentReactionSchema = z.object({
+  contentType: z.enum(['post', 'comment', 'story']),
+  contentId: z.string().uuid(),
+  emoji: z.string().min(1).max(10),
+});
+
+export const searchByHashtagSchema = z.object({
+  hashtag: z.string().min(1).max(100),
+  cursor: z.string().optional(),
+  limit: z.number().int().min(1).max(50).default(20),
+});
+
+export const trendingHashtagsSchema = z.object({
+  limit: z.number().int().min(1).max(20).default(10),
+});

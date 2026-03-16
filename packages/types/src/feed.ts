@@ -142,6 +142,33 @@ export interface WalkAlbum {
   createdAt: Date;
 }
 
+export interface ContentReaction {
+  id: string;
+  contentType: ContentType;
+  contentId: string;
+  userId: string;
+  emoji: string;
+  createdAt: Date;
+}
+
+export const REACTION_TYPE = {
+  HEART: '❤️',
+  LAUGH: '😂',
+  FIRE: '🔥',
+  PAW: '🐾',
+  SAD: '😢',
+  THUMBS_UP: '👍',
+} as const;
+
+export type ReactionType = (typeof REACTION_TYPE)[keyof typeof REACTION_TYPE];
+
+export interface Hashtag {
+  id: string;
+  name: string;
+  usageCount: number;
+  createdAt: Date;
+}
+
 export interface FeedItem extends Post {
   media: PostMedia[];
   author: {

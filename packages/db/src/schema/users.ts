@@ -36,6 +36,9 @@ export const users = pgTable(
         reminders: boolean;
         feed: boolean;
         nearby: boolean;
+        quietHoursStart?: string | null; // "22:00" format
+        quietHoursEnd?: string | null; // "07:00" format
+        timezone?: string | null; // "Europe/Rome" format
       }>()
       .default({
         matches: true,

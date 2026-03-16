@@ -1,4 +1,5 @@
 import {
+  addContentReactionSchema,
   addPostTagsSchema,
   confirmPostMediaSchema,
   confirmStorySchema,
@@ -9,8 +10,11 @@ import {
   likePostSchema,
   postCommentsQuerySchema,
   postMediaUploadSchema,
+  removeContentReactionSchema,
   removePostTagSchema,
   reportContentSchema,
+  searchByHashtagSchema,
+  trendingHashtagsSchema,
   userPostsQuerySchema,
   viewStorySchema,
 } from '@pawmeet/validation';
@@ -214,6 +218,34 @@ export function createFeedRouter(deps: typeof feedDeps) {
       trackEvent('feed_tag_removed', ctx.userId, {});
       return result;
     }),
+
+    // ── Reactions ──────────────────────────────────────────────────────────
+
+    addReaction: protectedProcedure
+      .input(addContentReactionSchema)
+      .mutation(async ({ ctx, input }) =>
+        // TODO: wire to use case once infra is implemented
+        ({ added: true }),
+      ),
+
+    removeReaction: protectedProcedure
+      .input(removeContentReactionSchema)
+      .mutation(async ({ ctx, input }) =>
+        // TODO: wire to use case once infra is implemented
+        ({ removed: true }),
+      ),
+
+    // ── Hashtags ──────────────────────────────────────────────────────────
+
+    searchByHashtag: protectedProcedure.input(searchByHashtagSchema).query(async ({ input }) =>
+      // TODO: wire to repository once infra is implemented
+      ({ items: [] as any[], nextCursor: null }),
+    ),
+
+    trendingHashtags: protectedProcedure.input(trendingHashtagsSchema).query(async ({ input }) =>
+      // TODO: wire to repository once infra is implemented
+      ({ hashtags: [] as any[] }),
+    ),
 
     // ── Walk albums ─────────────────────────────────────────────────────────
 

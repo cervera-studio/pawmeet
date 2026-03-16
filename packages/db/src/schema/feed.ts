@@ -208,6 +208,63 @@ export const contentReports = pgTable(
   ],
 );
 
+export const contentReactions = pgTable(
+  'content_reactions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    contentType: varchar('content_type', { length: 10 }).notNull(),
+    contentId: uuid('content_id').notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    emoji: varchar('emoji', { length: 10 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('content_reactions_content_idx').on(table.contentType, table.contentId),
+    index('content_reactions_user_idx').on(table.userId),
+    uniqueIndex('content_reactions_unique').on(
+      table.contentType,
+      table.contentId,
+      table.userId,
+      table.emoji,
+    ),
+    check(
+      'content_reactions_type_valid',
+      sql`${table.contentType} IN ('post', 'comment', 'story')`,
+    ),
+  ],
+);
+
+export const hashtags = pgTable(
+  'hashtags',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    name: varchar('name', { length: 100 }).notNull().unique(),
+    usageCount: integer('usage_count').notNull().default(0),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('hashtags_usage_count_idx').on(table.usageCount)],
+);
+
+export const postHashtags = pgTable(
+  'post_hashtags',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    postId: uuid('post_id')
+      .notNull()
+      .references(() => posts.id, { onDelete: 'cascade' }),
+    hashtagId: uuid('hashtag_id')
+      .notNull()
+      .references(() => hashtags.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('post_hashtags_unique').on(table.postId, table.hashtagId),
+    index('post_hashtags_hashtag_idx').on(table.hashtagId),
+  ],
+);
+
 export const walkAlbums = pgTable('walk_albums', {
   id: uuid('id').defaultRandom().primaryKey(),
   walkId: uuid('walk_id')

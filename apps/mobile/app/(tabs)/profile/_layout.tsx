@@ -61,6 +61,38 @@ export default function ProfileLayout() {
           headerBackTitle: 'Profilo',
         }}
       />
+      <Stack.Screen
+        name="gamification"
+        options={{
+          headerShown: true,
+          title: 'Gamification',
+          headerBackTitle: 'Profilo',
+        }}
+      />
+      <Stack.Screen
+        name="leaderboard"
+        options={{
+          headerShown: true,
+          title: 'Classifica',
+          headerBackTitle: 'Gamification',
+        }}
+      />
+      <Stack.Screen
+        name="achievements"
+        options={{
+          headerShown: true,
+          title: 'Obiettivi',
+          headerBackTitle: 'Gamification',
+        }}
+      />
+      <Stack.Screen
+        name="challenges"
+        options={{
+          headerShown: true,
+          title: 'Sfide',
+          headerBackTitle: 'Gamification',
+        }}
+      />
     </Stack>
   );
 }

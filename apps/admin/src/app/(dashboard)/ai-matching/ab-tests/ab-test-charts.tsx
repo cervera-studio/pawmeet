@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -14,36 +15,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CHART_COLORS } from '@/lib/constants';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 
-// Mock data: 30 giorni di metriche A/B test
-function generateMockData() {
-  const data = [];
-  const baseDate = new Date('2026-03-10');
-  let aiAcceptance = 0.42;
-  let controlAcceptance = 0.38;
-  let aiCompletion = 0.71;
-  let controlCompletion = 0.65;
-
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(baseDate);
-    date.setDate(date.getDate() + i);
-
-    aiAcceptance += (Math.random() - 0.4) * 0.02;
-    controlAcceptance += (Math.random() - 0.5) * 0.015;
-    aiCompletion += (Math.random() - 0.4) * 0.015;
-    controlCompletion += (Math.random() - 0.5) * 0.01;
-
-    data.push({
-      date: date.toISOString().split('T')[0],
-      aiAcceptance: Math.round(Math.max(0.3, Math.min(0.65, aiAcceptance)) * 100) / 100,
-      controlAcceptance: Math.round(Math.max(0.25, Math.min(0.55, controlAcceptance)) * 100) / 100,
-      aiCompletion: Math.round(Math.max(0.55, Math.min(0.9, aiCompletion)) * 100) / 100,
-      controlCompletion: Math.round(Math.max(0.5, Math.min(0.8, controlCompletion)) * 100) / 100,
-    });
-  }
-  return data;
+interface TimeSeriesEntry {
+  date: string;
+  variant: string;
+  totalMatches: number;
+  totalWalksCompleted: number;
+  avgMatchRate: number | null;
 }
 
-const mockData = generateMockData();
+export interface AbTestChartsProps {
+  data: TimeSeriesEntry[];
+}
 
 function formatTooltipDate(v: unknown) {
   return formatDateShort(String(v));
@@ -56,7 +38,39 @@ function formatPercent(v: unknown) {
 const AI_COLOR = '#3B82F6';
 const CONTROL_COLOR = '#9CA3AF';
 
-export function AbTestCharts() {
+export function AbTestCharts({ data }: AbTestChartsProps) {
+  const chartData = useMemo(() => {
+    const byDate = new Map<
+      string,
+      {
+        date: string;
+        treatment_matchRate?: number;
+        control_matchRate?: number;
+        treatment_walkRate?: number;
+        control_walkRate?: number;
+      }
+    >();
+
+    for (const row of data) {
+      const existing = byDate.get(row.date) ?? { date: row.date.split('T')[0] ?? row.date };
+      const walkRate = row.totalMatches > 0 ? row.totalWalksCompleted / row.totalMatches : 0;
+
+      if (row.variant === 'treatment') {
+        existing.treatment_matchRate = row.avgMatchRate ?? undefined;
+        existing.treatment_walkRate = walkRate;
+      } else {
+        existing.control_matchRate = row.avgMatchRate ?? undefined;
+        existing.control_walkRate = walkRate;
+      }
+
+      byDate.set(row.date, existing);
+    }
+
+    return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+  }, [data]);
+
+  if (chartData.length === 0) return null;
+
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card>
@@ -65,15 +79,15 @@ export function AbTestCharts() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={256}>
-            <LineChart data={mockData}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={formatPercent} domain={[0.2, 0.7]} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={formatPercent} domain={[0, 'auto']} />
               <Tooltip labelFormatter={formatTooltipDate} formatter={formatPercent} />
               <Legend />
               <Line
                 type="monotone"
-                dataKey="aiAcceptance"
+                dataKey="treatment_matchRate"
                 name="AI Matching"
                 stroke={AI_COLOR}
                 strokeWidth={2}
@@ -81,7 +95,7 @@ export function AbTestCharts() {
               />
               <Line
                 type="monotone"
-                dataKey="controlAcceptance"
+                dataKey="control_matchRate"
                 name="Controllo"
                 stroke={CONTROL_COLOR}
                 strokeWidth={2}
@@ -99,15 +113,15 @@ export function AbTestCharts() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={256}>
-            <LineChart data={mockData}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={formatPercent} domain={[0.4, 0.95]} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={formatPercent} domain={[0, 'auto']} />
               <Tooltip labelFormatter={formatTooltipDate} formatter={formatPercent} />
               <Legend />
               <Line
                 type="monotone"
-                dataKey="aiCompletion"
+                dataKey="treatment_walkRate"
                 name="AI Matching"
                 stroke={AI_COLOR}
                 strokeWidth={2}
@@ -115,7 +129,7 @@ export function AbTestCharts() {
               />
               <Line
                 type="monotone"
-                dataKey="controlCompletion"
+                dataKey="control_walkRate"
                 name="Controllo"
                 stroke={CONTROL_COLOR}
                 strokeWidth={2}

@@ -2,12 +2,14 @@ import {
   discoverSchema,
   getMatchExplanationSchema,
   getMatchingInsightsSchema,
+  getNearbyActiveCountSchema,
   getOptimalTimesSchema,
   logSwipeScoreSchema,
   recordActivityWindowSchema,
   recordMatchInteractionSchema,
 } from '@pawmeet/validation';
 import type { matchingAiDeps } from '../../container/index.js';
+import { countActiveUsers } from '../../lib/user-presence.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createMatchingAiRouter(deps: typeof matchingAiDeps) {
@@ -77,5 +79,30 @@ export function createMatchingAiRouter(deps: typeof matchingAiDeps) {
       .query(async ({ ctx, input }) =>
         unwrapResult(await deps.getMatchExplanation(ctx.userId, input.matchId)),
       ),
+
+    getNearbyActiveCount: protectedProcedure
+      .input(getNearbyActiveCountSchema)
+      .query(async ({ ctx, input }) => {
+        const userDogs = await deps.dogRepo.findByOwner(ctx.userId, true);
+        const dogIds = userDogs.map((d) => d.id);
+        if (dogIds.length === 0) return { activeCount: 0, totalMatches: 0 };
+
+        const matches = await deps.matchRepo.findActiveByDogIds(dogIds);
+        if (matches.length === 0) return { activeCount: 0, totalMatches: 0 };
+
+        // Collect the "other" dog IDs from matches
+        const dogIdSet = new Set(dogIds);
+        const otherDogIds = new Set<string>();
+        for (const m of matches) {
+          otherDogIds.add(dogIdSet.has(m.dogAId) ? m.dogBId : m.dogAId);
+        }
+
+        // Resolve other dogs to get their owner IDs
+        const otherDogs = await deps.dogRepo.findByIds([...otherDogIds]);
+        const otherUserIds = [...new Set(otherDogs.map((d) => d.ownerId))];
+
+        const activeCount = await countActiveUsers(otherUserIds);
+        return { activeCount, totalMatches: matches.length };
+      }),
   });
 }

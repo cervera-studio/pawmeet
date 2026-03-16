@@ -100,7 +100,7 @@ export interface AnalyticsEventMap {
   // Gamification
   gamification_badge_earned: { badgeId: string; badgeName: string; badgeCategory: string };
   gamification_xp_awarded: { amount: number; source: string };
-  gamification_level_up: { newLevel: number; totalXp: number };
+  gamification_level_up: { newLevel: string; previousLevel: string; totalXp: number };
   gamification_streak_broken: { streakLength: number; streakType: string };
 
   // Group Events
@@ -228,6 +228,13 @@ export interface AnalyticsEventMap {
   admin_experiment_viewed: { experimentName: string };
   admin_feature_flag_updated: { flagName: string; enabled: boolean; splitPercent?: number };
   admin_model_performance_viewed: { dateRange: string };
+  admin_model_promoted: { version: string };
+
+  // Rising Compatibility
+  rising_compatibility_notified: { risingCount: number };
+
+  // Admin Gamification
+  admin_challenge_created: { challengeId: string; type: string };
 
   // Privacy
   privacy_consent_updated: {

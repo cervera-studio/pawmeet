@@ -10,6 +10,7 @@ import {
   recurringEventDeps,
   storyCleanupWorkerDeps,
 } from '../container/index.js';
+import { gamificationRepo } from '../container/services.js';
 import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createDataCleanupWorker } from './data-cleanup.js';
@@ -31,17 +32,23 @@ import {
   scheduleMlOptimalTimes,
   scheduleMlRecommendations,
   scheduleMlTrainingLabels,
+  scheduleRisingCompatibility,
   scheduleStoryCleanup,
+  scheduleStreakCheck,
+  scheduleWeeklyChallenges,
 } from './queue.js';
 import {
   createRecurringEventWorker,
   scheduleRecurringEventGeneration,
 } from './recurring-event-generate.js';
+import { createRisingCompatibilityWorker } from './rising-compatibility.js';
 import { createEmailWorker } from './send-email.js';
 import { createNotificationWorker } from './send-notification.js';
 import { createStoryCleanupWorker } from './story-cleanup.js';
+import { createStreakCheckWorker } from './streak-check.js';
 import { createWalkReminderWorker, scheduleWalkReminders } from './walk-reminder.js';
 import { createWalkSafetyAlertWorker, scheduleWalkSafetyAlerts } from './walk-safety-alert.js';
+import { createWeeklyChallengeRotationWorker } from './weekly-challenge-rotation.js';
 
 /** Start all BullMQ workers. Call this once on server startup. */
 export async function startWorkers() {
@@ -63,6 +70,9 @@ export async function startWorkers() {
   const mlFeatureComputeWorker = createMlFeatureComputeWorker();
   const mlRecommendationsWorker = createMlRecommendationsWorker();
   const mlOptimalTimesWorker = createMlOptimalTimesWorker();
+  const risingCompatibilityWorker = createRisingCompatibilityWorker();
+  const weeklyChallengeWorker = createWeeklyChallengeRotationWorker({ gamificationRepo });
+  const streakCheckWorker = createStreakCheckWorker();
   const messageToxicityWorker = messageToxicityDeps
     ? createMessageToxicityWorker(messageToxicityDeps)
     : null;
@@ -81,6 +91,9 @@ export async function startWorkers() {
   await scheduleMlFeatureCompute();
   await scheduleMlRecommendations();
   await scheduleMlOptimalTimes();
+  await scheduleRisingCompatibility();
+  await scheduleWeeklyChallenges();
+  await scheduleStreakCheck();
 
   // Handle graceful shutdown
   const shutdown = async () => {
@@ -105,6 +118,9 @@ export async function startWorkers() {
       mlFeatureComputeWorker.close(),
       mlRecommendationsWorker.close(),
       mlOptimalTimesWorker.close(),
+      risingCompatibilityWorker.close(),
+      weeklyChallengeWorker.close(),
+      streakCheckWorker.close(),
       ...(messageToxicityWorker ? [messageToxicityWorker.close()] : []),
     ]);
     // Flush analytics providers after workers stop to prevent event loss on deploys

@@ -1,40 +1,13 @@
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { fetchFeatureFlags } from './actions';
 import { FlagsTable } from './flags-table';
 
 export default async function FlagsPage() {
-  const t = await getTranslations('aiMatching.flags');
-
-  const flags = [
-    {
-      name: 'ml_matching_enabled',
-      description: t('flagMlMatching'),
-      type: 'boolean',
-      enabled: false,
-      split: '—',
-    },
-    {
-      name: 'ml_scoring_strategy',
-      description: t('flagScoringStrategy'),
-      type: 'string',
-      enabled: true,
-      split: 'rule_based: 100%',
-    },
-    {
-      name: 'ab_test_ml_matching',
-      description: t('flagAbTest'),
-      type: 'experiment',
-      enabled: false,
-      split: 'control: 50% / treatment: 50%',
-    },
-    {
-      name: 'ml_confidence_threshold',
-      description: t('flagConfidenceThreshold'),
-      type: 'number',
-      enabled: true,
-      split: '0.7',
-    },
-  ];
+  const [{ flags }, t] = await Promise.all([
+    fetchFeatureFlags(),
+    getTranslations('aiMatching.flags'),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -48,21 +21,25 @@ export default async function FlagsPage() {
           <CardTitle>{t('tableTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <FlagsTable
-            flags={flags}
-            columns={{
-              name: t('columnName'),
-              description: t('columnDescription'),
-              type: t('columnType'),
-              status: t('columnStatus'),
-              split: t('columnSplit'),
-            }}
-            labels={{
-              enabled: t('enabled'),
-              disabled: t('disabled'),
-              edit: 'Modifica',
-            }}
-          />
+          {flags.length === 0 ? (
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              Nessun flag configurato.
+            </p>
+          ) : (
+            <FlagsTable
+              flags={flags}
+              columns={{
+                name: t('columnName'),
+                status: t('columnStatus'),
+                split: t('columnSplit'),
+              }}
+              labels={{
+                enabled: t('enabled'),
+                disabled: t('disabled'),
+                edit: 'Modifica',
+              }}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

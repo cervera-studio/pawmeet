@@ -74,4 +74,4 @@ function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
   );
 }
 
-export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter };
+export { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle };

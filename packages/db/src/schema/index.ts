@@ -21,6 +21,7 @@ export * from './notifications';
 export * from './organizations';
 export * from './refresh-tokens';
 export * from './reports';
+export * from './streaks';
 export * from './user-blocks';
 export * from './user-consents';
 export * from './user-follows';

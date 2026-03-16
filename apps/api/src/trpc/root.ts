@@ -1,4 +1,5 @@
 import {
+  adminAiMatchingDeps,
   adminDeps,
   authDeps,
   badgeDeps,
@@ -20,7 +21,6 @@ import {
   userDeps,
   walkDeps,
 } from '../container/index.js';
-import { db } from '../lib/db.js';
 import { createAdminRouter } from './routers/admin.js';
 import { createAdminAiMatchingRouter } from './routers/admin-ai-matching.js';
 import { createAuthRouter } from './routers/auth.js';
@@ -53,8 +53,8 @@ export const appRouter = router({
   matches: createMatchesRouter(matchDeps),
   matchingAi: createMatchingAiRouter(matchingAiDeps),
   chat: createChatRouter(chatDeps),
-  admin: createAdminRouter(db, adminDeps),
-  adminAiMatching: createAdminAiMatchingRouter(db),
+  admin: createAdminRouter(adminDeps),
+  adminAiMatching: createAdminAiMatchingRouter(adminAiMatchingDeps),
   walks: createWalksRouter(walkDeps),
   feedback: createFeedbackRouter(feedbackDeps),
   feed: createFeedRouter(feedDeps),

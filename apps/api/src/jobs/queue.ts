@@ -34,6 +34,9 @@ export const QUEUE_NAMES = {
   ML_OPTIMAL_TIMES: 'ml-optimal-times',
   EXPERIMENT_METRICS: 'experiment-metrics',
   EXPERIMENT_GUARDRAILS: 'experiment-guardrails',
+  WEEKLY_CHALLENGES: 'weekly-challenges',
+  STREAK_CHECK: 'streak-check',
+  RISING_COMPATIBILITY: 'rising-compatibility',
 } as const;
 
 // --- Lazy queue instances ---
@@ -628,5 +631,88 @@ export async function scheduleExperimentGuardrails() {
     'daily-experiment-guardrails',
     { pattern: '30 4 * * *' },
     { name: 'check' },
+  );
+}
+
+// ── Weekly Challenges ────────────────────────────────────────────────────────
+
+let _weeklyChallengesQueue: Queue | null = null;
+
+export function getWeeklyChallengesQueue(): Queue {
+  if (!_weeklyChallengesQueue) {
+    _weeklyChallengesQueue = new Queue(QUEUE_NAMES.WEEKLY_CHALLENGES, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _weeklyChallengesQueue;
+}
+
+/** Schedule weekly challenge rotation every Monday at 00:00 UTC. */
+export async function scheduleWeeklyChallenges() {
+  const queue = getWeeklyChallengesQueue();
+  await queue.upsertJobScheduler(
+    'weekly-challenge-rotation',
+    { pattern: '0 0 * * 1' },
+    { name: 'rotate' },
+  );
+}
+
+// ── Streak Check ─────────────────────────────────────────────────────────────
+
+let _streakCheckQueue: Queue | null = null;
+
+export function getStreakCheckQueue(): Queue {
+  if (!_streakCheckQueue) {
+    _streakCheckQueue = new Queue(QUEUE_NAMES.STREAK_CHECK, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _streakCheckQueue;
+}
+
+/** Schedule daily streak break check at 01:00 UTC. */
+export async function scheduleStreakCheck() {
+  const queue = getStreakCheckQueue();
+  await queue.upsertJobScheduler('daily-streak-check', { pattern: '0 1 * * *' }, { name: 'check' });
+}
+
+// ── Rising Compatibility ─────────────────────────────────────────────────────
+
+let _risingCompatibilityQueue: Queue | null = null;
+
+export function getRisingCompatibilityQueue(): Queue {
+  if (!_risingCompatibilityQueue) {
+    _risingCompatibilityQueue = new Queue(QUEUE_NAMES.RISING_COMPATIBILITY, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _risingCompatibilityQueue;
+}
+
+/** Schedule daily rising compatibility detection at 05:00 UTC. */
+export async function scheduleRisingCompatibility() {
+  const queue = getRisingCompatibilityQueue();
+  await queue.upsertJobScheduler(
+    'daily-rising-compatibility',
+    { pattern: '0 5 * * *' },
+    { name: 'detect' },
   );
 }

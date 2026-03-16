@@ -91,6 +91,14 @@ export const CHALLENGE_TYPE = {
 
 export type ChallengeType = (typeof CHALLENGE_TYPE)[keyof typeof CHALLENGE_TYPE];
 
+// ── Streak Types ────────────────────────────────────────────────────────────
+
+export const STREAK_TYPE = {
+  DAILY_WALK: 'daily_walk',
+} as const;
+
+export type StreakType = (typeof STREAK_TYPE)[keyof typeof STREAK_TYPE];
+
 // ── Leaderboard ─────────────────────────────────────────────────────────────
 
 export const LEADERBOARD_TYPE = {

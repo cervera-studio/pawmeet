@@ -58,6 +58,19 @@ export interface ChallengeWithProgress extends Challenge {
   completedAt: Date | null;
 }
 
+// ── Streaks ─────────────────────────────────────────────────────────────────
+
+export interface Streak {
+  id: string;
+  userId: string;
+  type: string;
+  currentLength: number;
+  longestLength: number;
+  lastActivityDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // ── Achievements ────────────────────────────────────────────────────────────
 
 export interface Achievement {

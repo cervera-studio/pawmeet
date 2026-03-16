@@ -6,6 +6,7 @@ import {
   dogProfiles,
   groupEventParticipants,
   matches,
+  streaks,
   userChallenges,
   users,
   walks,
@@ -15,13 +16,14 @@ import type {
   Achievement,
   Challenge,
   LeaderboardEntry,
+  Streak,
   UserChallenge,
   XpTransaction,
 } from '@pawmeet/types';
-import { and, desc, eq, gte, inArray, lte, or, sql, sum } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, lt, lte, or, sql, sum } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
-import { firstRow, rowsAs } from './drizzle-helpers.js';
+import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleGamificationRepository implements GamificationRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -132,6 +134,19 @@ export class DrizzleGamificationRepository implements GamificationRepository {
     return rowsAs<Challenge>(rows);
   }
 
+  async createChallenge(data: {
+    type: string;
+    title: string;
+    description: string;
+    targetValue: number;
+    xpReward: number;
+    startsAt: Date;
+    endsAt: Date;
+  }): Promise<Challenge> {
+    const rows = await this.db.insert(challenges).values(data).returning();
+    return firstRow<Challenge>(rows);
+  }
+
   // ── Achievements ──────────────────────────────────────────────────────────
 
   async findAchievementsByUser(userId: string): Promise<Achievement[]> {
@@ -150,6 +165,129 @@ export class DrizzleGamificationRepository implements GamificationRepository {
   async unlockAchievement(userId: string, type: AchievementType): Promise<Achievement> {
     const rows = await this.db.insert(achievements).values({ userId, type }).returning();
     return firstRow<Achievement>(rows);
+  }
+
+  // ── Streaks ──────────────────────────────────────────────────────────────
+
+  async getStreak(userId: string, type: string): Promise<Streak | null> {
+    const rows = await this.db
+      .select()
+      .from(streaks)
+      .where(and(eq(streaks.userId, userId), eq(streaks.type, type)));
+    return firstRowOrNull<Streak>(rows);
+  }
+
+  async upsertStreak(
+    userId: string,
+    type: string,
+    data: { currentLength: number; longestLength: number; lastActivityDate: Date },
+  ): Promise<Streak> {
+    const rows = await this.db
+      .insert(streaks)
+      .values({
+        userId,
+        type,
+        currentLength: data.currentLength,
+        longestLength: data.longestLength,
+        lastActivityDate: data.lastActivityDate.toISOString().slice(0, 10),
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: [streaks.userId, streaks.type],
+        set: {
+          currentLength: data.currentLength,
+          longestLength: data.longestLength,
+          lastActivityDate: data.lastActivityDate.toISOString().slice(0, 10),
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return firstRow<Streak>(rows);
+  }
+
+  async findStreaksOlderThan(date: Date): Promise<Streak[]> {
+    const dateStr = date.toISOString().slice(0, 10);
+    const rows = await this.db
+      .select()
+      .from(streaks)
+      .where(and(lt(streaks.lastActivityDate, dateStr), sql`${streaks.currentLength} > 0`));
+    return rowsAs<Streak>(rows);
+  }
+
+  async breakStreak(streakId: string): Promise<void> {
+    await this.db
+      .update(streaks)
+      .set({ currentLength: 0, updatedAt: new Date() })
+      .where(eq(streaks.id, streakId));
+  }
+
+  // ── Admin challenge management ────────────────────────────────────────────
+
+  async listAllChallenges(
+    limit: number,
+    offset: number,
+  ): Promise<{ data: Challenge[]; total: number }> {
+    const [rows, countResult] = await Promise.all([
+      this.db
+        .select()
+        .from(challenges)
+        .orderBy(desc(challenges.startsAt))
+        .limit(limit)
+        .offset(offset),
+      this.db.select({ count: sql<number>`count(*)::int` }).from(challenges),
+    ]);
+    return { data: rowsAs<Challenge>(rows), total: countResult[0]?.count ?? 0 };
+  }
+
+  async deleteChallenge(challengeId: string): Promise<void> {
+    await this.db.delete(challenges).where(eq(challenges.id, challengeId));
+  }
+
+  // ── Aggregate fitness stats (admin) ─────────────────────────────────────
+
+  async getAggregateFitnessStats(): Promise<{
+    totalWalks: number;
+    avgDistanceKm: number;
+    totalDistanceKm: number;
+    topWalkers: { userId: string; displayName: string | null; totalKm: number }[];
+  }> {
+    const [statsResult, topWalkersResult] = await Promise.all([
+      this.db
+        .select({
+          totalWalks: sql<number>`count(*)::int`,
+          totalDistanceKm: sql<number>`coalesce(sum(${walks.durationMin}::numeric / 60 * 4), 0)::float`,
+          avgDistanceKm: sql<number>`coalesce(avg(${walks.durationMin}::numeric / 60 * 4), 0)::float`,
+        })
+        .from(walks)
+        .where(eq(walks.status, 'completed')),
+      this.db
+        .select({
+          userId: walks.createdBy,
+          displayName: users.displayName,
+          totalKm: sql<number>`coalesce(sum(${walks.durationMin}::numeric / 60 * 4), 0)::float`.as(
+            'total_km',
+          ),
+        })
+        .from(walks)
+        .innerJoin(users, eq(walks.createdBy, users.id))
+        .where(eq(walks.status, 'completed'))
+        .groupBy(walks.createdBy, users.displayName)
+        .orderBy(desc(sql`total_km`))
+        .limit(10),
+    ]);
+
+    const stats = statsResult[0];
+
+    return {
+      totalWalks: stats?.totalWalks ?? 0,
+      avgDistanceKm: Math.round((stats?.avgDistanceKm ?? 0) * 100) / 100,
+      totalDistanceKm: Math.round((stats?.totalDistanceKm ?? 0) * 100) / 100,
+      topWalkers: topWalkersResult.map((r) => ({
+        userId: r.userId,
+        displayName: r.displayName,
+        totalKm: Math.round(r.totalKm * 100) / 100,
+      })),
+    };
   }
 
   // ── Stats ─────────────────────────────────────────────────────────────────

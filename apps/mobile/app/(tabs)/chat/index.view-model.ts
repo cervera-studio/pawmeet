@@ -16,8 +16,8 @@ const TABS = {
 
 type Tab = (typeof TABS)[keyof typeof TABS];
 
-export { TABS };
 export type { Tab };
+export { TABS };
 
 export function useChatListViewModel() {
   const router = useRouter();

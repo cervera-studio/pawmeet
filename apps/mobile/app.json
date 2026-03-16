@@ -14,7 +14,8 @@
         "NSLocationWhenInUseUsageDescription": "Per mostrarti cani nelle vicinanze",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Per aggiornare la tua posizione",
         "NSCameraUsageDescription": "Per scattare foto del tuo cane",
-        "NSPhotoLibraryUsageDescription": "Per caricare foto del tuo cane"
+        "NSPhotoLibraryUsageDescription": "Per caricare foto del tuo cane",
+        "NSHealthShareUsageDescription": "PawMeet utilizza i dati di Apple Salute per sincronizzare passi, distanza e attività con il tuo profilo."
       }
     },
     "android": {
@@ -22,7 +23,14 @@
         "backgroundColor": "#065F46"
       },
       "package": "io.pawmeet.mobile",
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "CAMERA"]
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "android.permission.health.READ_STEPS",
+        "android.permission.health.READ_DISTANCE",
+        "android.permission.health.READ_EXERCISE"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -39,7 +47,13 @@
         }
       ],
       "./plugins/with-certificate-pinning",
-      "./plugins/with-screen-security"
+      "./plugins/with-screen-security",
+      [
+        "react-native-health-connect",
+        {
+          "isSdkExtensionPatched": true
+        }
+      ]
     ]
   }
 }

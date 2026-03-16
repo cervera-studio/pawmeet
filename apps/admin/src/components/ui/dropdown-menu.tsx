@@ -57,9 +57,9 @@ function DropdownMenuLabel({ className, ...props }: React.HTMLAttributes<HTMLDiv
 
 export {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 };

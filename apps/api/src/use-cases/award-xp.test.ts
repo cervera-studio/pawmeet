@@ -21,7 +21,7 @@ describe('awardXp', () => {
   it('creates an XP transaction with correct points for the action', async () => {
     const repo = buildGamificationRepo({
       createXpTransaction: vi.fn().mockResolvedValue(buildXpTransaction()),
-      getTotalXp: vi.fn().mockResolvedValue(50),
+      getTotalXp: vi.fn().mockResolvedValueOnce(0).mockResolvedValueOnce(50),
     });
     const awardXp = createAwardXp({ gamificationRepo: repo });
 
@@ -30,6 +30,7 @@ describe('awardXp', () => {
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
     expect(result.data.xpAwarded).toBe(XP_POINTS[XP_ACTION.WALK_COMPLETED]);
+    expect(result.data.previousLevel).toBe(USER_LEVEL.CUCCIOLO);
     expect(repo.createXpTransaction).toHaveBeenCalledWith(
       'user-1',
       XP_ACTION.WALK_COMPLETED,
@@ -41,7 +42,7 @@ describe('awardXp', () => {
   it('returns correct level for accumulated XP', async () => {
     const repo = buildGamificationRepo({
       createXpTransaction: vi.fn().mockResolvedValue(buildXpTransaction()),
-      getTotalXp: vi.fn().mockResolvedValue(150),
+      getTotalXp: vi.fn().mockResolvedValueOnce(120).mockResolvedValueOnce(150),
     });
     const awardXp = createAwardXp({ gamificationRepo: repo });
 
@@ -51,12 +52,28 @@ describe('awardXp', () => {
     if (!isSuccess(result)) return;
     expect(result.data.summary.totalXp).toBe(150);
     expect(result.data.summary.level).toBe(USER_LEVEL.ESPLORATORE);
+    expect(result.data.previousLevel).toBe(USER_LEVEL.ESPLORATORE);
+  });
+
+  it('detects level-up when XP crosses threshold', async () => {
+    const repo = buildGamificationRepo({
+      createXpTransaction: vi.fn().mockResolvedValue(buildXpTransaction()),
+      getTotalXp: vi.fn().mockResolvedValueOnce(90).mockResolvedValueOnce(110),
+    });
+    const awardXp = createAwardXp({ gamificationRepo: repo });
+
+    const result = await awardXp('user-1', XP_ACTION.WALK_COMPLETED);
+
+    expect(isSuccess(result)).toBe(true);
+    if (!isSuccess(result)) return;
+    expect(result.data.previousLevel).toBe(USER_LEVEL.CUCCIOLO);
+    expect(result.data.summary.level).toBe(USER_LEVEL.ESPLORATORE);
   });
 
   it('passes metadata through to the transaction', async () => {
     const repo = buildGamificationRepo({
       createXpTransaction: vi.fn().mockResolvedValue(buildXpTransaction()),
-      getTotalXp: vi.fn().mockResolvedValue(10),
+      getTotalXp: vi.fn().mockResolvedValueOnce(0).mockResolvedValueOnce(10),
     });
     const awardXp = createAwardXp({ gamificationRepo: repo });
     const metadata = { walkId: 'walk-123' };

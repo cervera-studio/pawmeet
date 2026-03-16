@@ -1,17 +1,16 @@
-import { experimentMetricsSnapshots, modelPerformanceDaily } from '@pawmeet/db';
 import { TRPCError } from '@trpc/server';
-import { and, asc, eq, gte, lte } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import { AdminRole, requireRole } from '../../lib/admin-permissions.js';
 import { redis } from '../../lib/redis.js';
 import { trackEvent } from '../../lib/track-event.js';
+import type { AdminAiMatchingRepository } from '../../ports/admin-ai-matching-repository.js';
+import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import { protectedProcedure, router } from '../trpc.js';
 
 // ── Admin middleware ────────────────────────────────────────────────────────────
 
-function createAdminProcedure(_db: NeonHttpDatabase) {
+function createAdminProcedure() {
   return protectedProcedure.use(async ({ ctx, next }) => {
     if (!ctx.adminRole) {
       throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
@@ -40,6 +39,10 @@ const updateFeatureFlagSchema = z.object({
   splitPercent: z.number().min(0).max(100).optional(),
 });
 
+const promoteModelSchema = z.object({
+  version: z.string(),
+});
+
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 
 const EXPERIMENT_KEY_PREFIX = 'experiment:';
@@ -50,10 +53,18 @@ export interface ExperimentConfig {
   splitPercent: number;
 }
 
+// ── Router deps ─────────────────────────────────────────────────────────────────
+
+export interface AdminAiMatchingRouterDeps {
+  adminAiMatchingRepo: AdminAiMatchingRepository;
+  auditLogRepo: AuditLogRepository;
+}
+
 // ── Router ──────────────────────────────────────────────────────────────────────
 
-export function createAdminAiMatchingRouter(db: NeonHttpDatabase) {
-  const adminProcedure = createAdminProcedure(db);
+export function createAdminAiMatchingRouter(deps: AdminAiMatchingRouterDeps) {
+  const { adminAiMatchingRepo, auditLogRepo } = deps;
+  const adminProcedure = createAdminProcedure();
 
   return router({
     // ── Experiment metrics ─────────────────────────────────────────────────────
@@ -62,20 +73,11 @@ export function createAdminAiMatchingRouter(db: NeonHttpDatabase) {
       .query(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Viewer);
 
-        const conditions = [eq(experimentMetricsSnapshots.experimentName, input.experimentName)];
-
-        if (input.dateFrom) {
-          conditions.push(gte(experimentMetricsSnapshots.snapshotDate, new Date(input.dateFrom)));
-        }
-        if (input.dateTo) {
-          conditions.push(lte(experimentMetricsSnapshots.snapshotDate, new Date(input.dateTo)));
-        }
-
-        const rows = await db
-          .select()
-          .from(experimentMetricsSnapshots)
-          .where(and(...conditions))
-          .orderBy(asc(experimentMetricsSnapshots.snapshotDate));
+        const rows = await adminAiMatchingRepo.getExperimentMetrics(
+          input.experimentName,
+          input.dateFrom ? new Date(input.dateFrom) : undefined,
+          input.dateTo ? new Date(input.dateTo) : undefined,
+        );
 
         // Group by variant for per-variant aggregates
         const variantMap = new Map<
@@ -144,20 +146,10 @@ export function createAdminAiMatchingRouter(db: NeonHttpDatabase) {
       .query(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Viewer);
 
-        const conditions = [];
-
-        if (input.dateFrom) {
-          conditions.push(gte(modelPerformanceDaily.snapshotDate, new Date(input.dateFrom)));
-        }
-        if (input.dateTo) {
-          conditions.push(lte(modelPerformanceDaily.snapshotDate, new Date(input.dateTo)));
-        }
-
-        const rows = await db
-          .select()
-          .from(modelPerformanceDaily)
-          .where(conditions.length > 0 ? and(...conditions) : undefined)
-          .orderBy(asc(modelPerformanceDaily.snapshotDate));
+        const rows = await adminAiMatchingRepo.getModelPerformance(
+          input.dateFrom ? new Date(input.dateFrom) : undefined,
+          input.dateTo ? new Date(input.dateTo) : undefined,
+        );
 
         // Overview KPIs from the latest row
         const latest = rows.at(-1);
@@ -228,7 +220,7 @@ export function createAdminAiMatchingRouter(db: NeonHttpDatabase) {
 
         await redis.set(key, updated);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'featureFlag.update',
           resourceType: RESOURCE_TYPE.settings,
@@ -249,5 +241,38 @@ export function createAdminAiMatchingRouter(db: NeonHttpDatabase) {
 
         return { success: true };
       }),
+
+    // ── Model registry ────────────────────────────────────────────────────────
+    listModels: adminProcedure.query(async ({ ctx }) => {
+      requireRole(ctx.adminRole, AdminRole.Viewer);
+
+      const models = await adminAiMatchingRepo.listModels();
+
+      return { models };
+    }),
+
+    // ── Promote model ─────────────────────────────────────────────────────────
+    promoteModel: adminProcedure.input(promoteModelSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.SuperAdmin);
+
+      await adminAiMatchingRepo.deactivateAllModels();
+      await adminAiMatchingRepo.promoteModel(input.version);
+
+      await redis.set('ml:model:active', input.version);
+
+      void logAdminAction(auditLogRepo, {
+        adminId: ctx.userId,
+        action: 'model.promote',
+        resourceType: RESOURCE_TYPE.settings,
+        resourceId: input.version,
+        changes: { after: { version: input.version } },
+      });
+
+      trackEvent('admin_model_promoted', ctx.userId, {
+        version: input.version,
+      });
+
+      return { success: true };
+    }),
   });
 }

@@ -1,7 +1,7 @@
 // Central re-export — assembles all domain containers into the same public API
 // that the old monolithic container.ts provided.
 
-export { adminDeps } from './admin-container.js';
+export { adminAiMatchingDeps, adminDeps } from './admin-container.js';
 export { authDeps } from './auth-container.js';
 export { chatDeps, groupChatDeps } from './chat-container.js';
 export { dogDeps } from './dog-container.js';
@@ -16,14 +16,28 @@ export { analyticsProviders, experimentService } from './services.js';
 export { consentDeps, userDeps } from './user-container.js';
 export { feedbackDeps, fitnessDeps, walkAlbumDeps, walkDeps } from './walk-container.js';
 export {
+  analyticsAggregationDeps,
   analyticsWorkerDeps,
   contentModerationWorkerDeps,
   dataCleanupDeps,
   eventStatusDeps,
+  experimentGuardrailsDeps,
+  experimentMetricsDeps,
   gdprExportWorkerDeps,
   gpsRetentionDeps,
   messageToxicityDeps,
+  mlFeatureComputeDeps,
+  mlOptimalTimesDeps,
+  mlRecommendationsDeps,
+  mlTrainingLabelsDeps,
+  nearbySuggestionDeps,
   photoModerationDeps,
   recurringEventDeps,
+  risingCompatibilityDeps,
+  sendNotificationDeps,
   storyCleanupWorkerDeps,
+  streakCheckDeps,
+  walkReminderDeps,
+  walkSafetyAlertDeps,
+  weeklyChallengeRotationDeps,
 } from './worker-container.js';

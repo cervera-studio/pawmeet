@@ -176,8 +176,53 @@ export default function ProfileScreen() {
           )}
         </View>
 
+        {/* Gamification XP bar */}
+        {vm.xpSummary ? (
+          <Pressable
+            onPress={vm.navigateToGamification}
+            className="mb-6 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm"
+          >
+            <View className="flex-row items-center justify-between mb-2">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-lg">{'\u2B50'}</Text>
+                <Text className="text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">
+                  {vm.xpSummary.level}
+                </Text>
+              </View>
+              <Text className="text-sm font-bold text-primary">{vm.xpSummary.totalXp} XP</Text>
+            </View>
+            <View className="h-2 rounded-full bg-gray-200 dark:bg-[#48484A] overflow-hidden">
+              <View
+                className="h-2 rounded-full bg-primary"
+                style={{
+                  width: `${Math.round(
+                    vm.xpSummary.xpToNextLevel != null && vm.xpSummary.xpToNextLevel > 0
+                      ? (vm.xpSummary.totalXp /
+                          (vm.xpSummary.totalXp + vm.xpSummary.xpToNextLevel)) *
+                          100
+                      : 100,
+                  )}%`,
+                }}
+              />
+            </View>
+            {vm.xpSummary.xpToNextLevel != null ? (
+              <Text className="mt-1 text-xs text-gray-500 dark:text-neutral-500">
+                {vm.xpSummary.xpToNextLevel} XP al prossimo livello
+              </Text>
+            ) : null}
+          </Pressable>
+        ) : null}
+
         {/* Menu */}
         <View className="gap-1">
+          <Pressable
+            onPress={vm.navigateToGamification}
+            className="flex-row items-center justify-between rounded-xl px-4 py-4"
+          >
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Gamification</Text>
+            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
+          </Pressable>
+
           <Pressable
             onPress={vm.navigateToActivity}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"

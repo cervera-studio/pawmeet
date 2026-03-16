@@ -1,4 +1,4 @@
-import { getLeaderboardSchema, listAchievementsSchema } from '@pawmeet/validation';
+import { getLeaderboardSchema, getStreakSchema, listAchievementsSchema } from '@pawmeet/validation';
 import type { gamificationDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
@@ -19,5 +19,9 @@ export function createGamificationRouter(deps: typeof gamificationDeps) {
     listAchievements: protectedProcedure
       .input(listAchievementsSchema)
       .query(async ({ ctx }) => unwrapResult(await deps.listAchievements(ctx.userId))),
+
+    getStreak: protectedProcedure
+      .input(getStreakSchema)
+      .query(async ({ ctx, input }) => unwrapResult(await deps.getStreak(ctx.userId, input.type))),
   });
 }

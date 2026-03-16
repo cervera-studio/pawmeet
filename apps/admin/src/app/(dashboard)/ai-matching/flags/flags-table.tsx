@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,22 +13,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { updateFlag } from './actions';
 import { EditFlagDialog } from './edit-flag-dialog';
 
 interface Flag {
   name: string;
-  description: string;
-  type: string;
   enabled: boolean;
-  split: string;
+  splitPercent: number;
 }
 
 interface FlagsTableProps {
   flags: Flag[];
   columns: {
     name: string;
-    description: string;
-    type: string;
     status: string;
     split: string;
   };
@@ -37,30 +36,28 @@ interface FlagsTableProps {
   };
 }
 
-export function FlagsTable({ flags: initialFlags, columns, labels }: FlagsTableProps) {
-  const [flags, setFlags] = useState(initialFlags);
+export function FlagsTable({ flags, columns, labels }: FlagsTableProps) {
+  const router = useRouter();
   const [editingFlag, setEditingFlag] = useState<Flag | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   function handleEdit(flag: Flag) {
     setEditingFlag(flag);
     setDialogOpen(true);
   }
 
-  function handleSave(name: string, enabled: boolean, splitPercentage: number) {
-    setFlags((prev) =>
-      prev.map((f) => {
-        if (f.name !== name) return f;
-        return {
-          ...f,
-          enabled,
-          split:
-            f.type === 'experiment'
-              ? `control: ${100 - splitPercentage}% / treatment: ${splitPercentage}%`
-              : f.split,
-        };
-      }),
-    );
+  function handleSave(name: string, enabled: boolean, splitPercent: number) {
+    startTransition(async () => {
+      try {
+        await updateFlag(name, enabled, splitPercent);
+        toast.success(`Flag ${name} aggiornato`);
+        setDialogOpen(false);
+        router.refresh();
+      } catch {
+        toast.error('Errore durante il salvataggio');
+      }
+    });
   }
 
   return (
@@ -69,8 +66,6 @@ export function FlagsTable({ flags: initialFlags, columns, labels }: FlagsTableP
         <TableHeader>
           <TableRow>
             <TableHead>{columns.name}</TableHead>
-            <TableHead>{columns.description}</TableHead>
-            <TableHead>{columns.type}</TableHead>
             <TableHead>{columns.status}</TableHead>
             <TableHead>{columns.split}</TableHead>
             <TableHead />
@@ -80,17 +75,13 @@ export function FlagsTable({ flags: initialFlags, columns, labels }: FlagsTableP
           {flags.map((flag) => (
             <TableRow key={flag.name}>
               <TableCell className="font-mono text-sm">{flag.name}</TableCell>
-              <TableCell>{flag.description}</TableCell>
-              <TableCell>
-                <Badge variant="outline">{flag.type}</Badge>
-              </TableCell>
               <TableCell>
                 <Badge variant={flag.enabled ? 'success' : 'secondary'}>
                   {flag.enabled ? labels.enabled : labels.disabled}
                 </Badge>
               </TableCell>
               <TableCell className="text-sm text-neutral-500 dark:text-neutral-400">
-                {flag.split}
+                {flag.splitPercent}%
               </TableCell>
               <TableCell>
                 <Button variant="outline" size="sm" onClick={() => handleEdit(flag)}>
@@ -107,6 +98,7 @@ export function FlagsTable({ flags: initialFlags, columns, labels }: FlagsTableP
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSave={handleSave}
+        isPending={isPending}
       />
     </>
   );

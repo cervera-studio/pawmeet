@@ -569,6 +569,22 @@ export interface AdminDataRepository {
   deleteBreed(id: number): Promise<void>;
   countDogsReferencingBreed(breedName: string): Promise<number>;
 
+  // Official events
+  createOfficialEvent(input: {
+    createdBy: string;
+    title: string;
+    description: string | null;
+    scheduledAt: Date;
+    durationMin: number;
+    location: string;
+    latitude: number;
+    longitude: number;
+    maxParticipants: number;
+    category: string;
+    coverImageUrl: string | null;
+    organizationId: string;
+  }): Promise<AdminGroupEventDetail>;
+
   // Photos
   listPendingPhotos(): Promise<PendingPhotoItem[]>;
   findPhotoById(id: string): Promise<{ id: string; moderationStatus: string } | null>;

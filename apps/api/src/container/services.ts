@@ -3,31 +3,45 @@
 import { createOrganizationAuthorizer } from '../domain/organization-authorizer.js';
 import { BullMQNotificationService } from '../infra/bullmq-notification-service.js';
 import { DrizzleActivityRepository } from '../infra/drizzle-activity-repository.js';
+import { DrizzleAdminAiMatchingRepository } from '../infra/drizzle-admin-ai-matching-repository.js';
 import { DrizzleAdminDataRepository } from '../infra/drizzle-admin-data-repository.js';
 import { DrizzleAdminUserRepository } from '../infra/drizzle-admin-user-repository.js';
+import { DrizzleAnalyticsJobRepository } from '../infra/drizzle-analytics-job-repository.js';
 import { DrizzleAnalyticsRepository } from '../infra/drizzle-analytics-repository.js';
+import { DrizzleAuditLogRepository } from '../infra/drizzle-audit-log-repository.js';
 import { DrizzleBadgeRepository } from '../infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from '../infra/drizzle-breed-repository.js';
 import { DrizzleConsentRepository } from '../infra/drizzle-consent-repository.js';
 import { DrizzleContentReportRepository } from '../infra/drizzle-content-report-repository.js';
+import { DrizzleDataCleanupRepository } from '../infra/drizzle-data-cleanup-repository.js';
 import { DrizzleDogRepository } from '../infra/drizzle-dog-repository.js';
 import { DrizzleEmergencyContactRepository } from '../infra/drizzle-emergency-contact-repository.js';
 import { DrizzleEventSponsorRepository } from '../infra/drizzle-event-sponsor-repository.js';
+import { DrizzleExperimentGuardrailsRepository } from '../infra/drizzle-experiment-guardrails-repository.js';
+import { DrizzleExperimentMetricsJobRepository } from '../infra/drizzle-experiment-metrics-job-repository.js';
 import { DrizzleFeedRepository } from '../infra/drizzle-feed-repository.js';
 import { DrizzleFeedbackRepository } from '../infra/drizzle-feedback-repository.js';
 import { DrizzleFollowRepository } from '../infra/drizzle-follow-repository.js';
 import { DrizzleGamificationRepository } from '../infra/drizzle-gamification-repository.js';
 import { DrizzleGdprExportRepository } from '../infra/drizzle-gdpr-export-repository.js';
+import { DrizzleGpsRetentionRepository } from '../infra/drizzle-gps-retention-repository.js';
 import { DrizzleGroupEventRepository } from '../infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from '../infra/drizzle-group-message-repository.js';
 import { DrizzleMatchRepository } from '../infra/drizzle-match-repository.js';
 import { DrizzleMatchingAiRepository } from '../infra/drizzle-matching-ai-repository.js';
 import { DrizzleMessageRepository } from '../infra/drizzle-message-repository.js';
+import { DrizzleMlFeatureRepository } from '../infra/drizzle-ml-feature-repository.js';
+import { DrizzleMlOptimalTimesRepository } from '../infra/drizzle-ml-optimal-times-repository.js';
+import { DrizzleMlRecommendationsRepository } from '../infra/drizzle-ml-recommendations-repository.js';
+import { DrizzleMlTrainingRepository } from '../infra/drizzle-ml-training-repository.js';
+import { DrizzleNearbyJobRepository } from '../infra/drizzle-nearby-job-repository.js';
 import { DrizzleOrganizationRepository } from '../infra/drizzle-organization-repository.js';
+import { DrizzleRisingCompatibilityRepository } from '../infra/drizzle-rising-compatibility-repository.js';
 import { DrizzleStoryRepository } from '../infra/drizzle-story-repository.js';
 import { DrizzleTokenRepository } from '../infra/drizzle-token-repository.js';
 import { DrizzleUserRepository } from '../infra/drizzle-user-repository.js';
 import { DrizzleWalkAlbumRepository } from '../infra/drizzle-walk-album-repository.js';
+import { DrizzleWalkJobRepository } from '../infra/drizzle-walk-job-repository.js';
 import { DrizzleWalkRepository } from '../infra/drizzle-walk-repository.js';
 import { DrizzleWalkTrackRepository } from '../infra/drizzle-walk-track-repository.js';
 import { EmailAdminNotificationService } from '../infra/email-admin-notification-service.js';
@@ -44,9 +58,23 @@ import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 
 // ── Repositories ────────────────────────────────────────────────────────────────
 
+export const adminAiMatchingRepo = new DrizzleAdminAiMatchingRepository(db);
+export const analyticsJobRepo = new DrizzleAnalyticsJobRepository(db);
+export const auditLogRepo = new DrizzleAuditLogRepository(db);
 export const adminDataRepo = new DrizzleAdminDataRepository(db);
 export const adminUserRepo = new DrizzleAdminUserRepository(db);
 export const analyticsRepo = new DrizzleAnalyticsRepository(db);
+export const dataCleanupRepo = new DrizzleDataCleanupRepository(db);
+export const experimentGuardrailsRepo = new DrizzleExperimentGuardrailsRepository(db);
+export const experimentMetricsJobRepo = new DrizzleExperimentMetricsJobRepository(db);
+export const gpsRetentionRepo = new DrizzleGpsRetentionRepository(db);
+export const mlFeatureRepo = new DrizzleMlFeatureRepository(db);
+export const mlOptimalTimesRepo = new DrizzleMlOptimalTimesRepository(db);
+export const mlRecommendationsRepo = new DrizzleMlRecommendationsRepository(db);
+export const mlTrainingRepo = new DrizzleMlTrainingRepository(db);
+export const nearbyJobRepo = new DrizzleNearbyJobRepository(db);
+export const risingCompatibilityRepo = new DrizzleRisingCompatibilityRepository(db);
+export const walkJobRepo = new DrizzleWalkJobRepository(db);
 export const userRepo = new DrizzleUserRepository(db);
 export const dogRepo = new DrizzleDogRepository(db);
 export const matchRepo = new DrizzleMatchRepository(db);
@@ -128,6 +156,3 @@ function tryCreateToxicityService() {
 export const contentModerationService = tryCreateContentModerationService();
 export const breedDetectionService = tryCreateBreedDetectionService();
 export const toxicityService = tryCreateToxicityService();
-
-// Re-export db for containers that need it directly
-export { db };

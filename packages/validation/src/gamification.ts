@@ -37,6 +37,10 @@ export const listAchievementsSchema = z.object({
   userId: z.string().uuid(),
 });
 
+export const getStreakSchema = z.object({
+  type: z.string(),
+});
+
 export type AwardXpInput = z.infer<typeof awardXpSchema>;
 export type GetXpSummaryInput = z.infer<typeof getXpSummarySchema>;
 export type GetLeaderboardInput = z.infer<typeof getLeaderboardSchema>;

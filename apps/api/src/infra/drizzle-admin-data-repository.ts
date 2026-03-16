@@ -692,6 +692,45 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
       .where(eq(groupEventParticipants.id, id));
   }
 
+  async createOfficialEvent(input: {
+    createdBy: string;
+    title: string;
+    description: string | null;
+    scheduledAt: Date;
+    durationMin: number;
+    location: string;
+    latitude: number;
+    longitude: number;
+    maxParticipants: number;
+    category: string;
+    coverImageUrl: string | null;
+    organizationId: string;
+  }): Promise<AdminGroupEventDetail> {
+    const [event] = await this.db
+      .insert(groupEvents)
+      .values({
+        createdBy: input.createdBy,
+        title: input.title,
+        description: input.description,
+        scheduledAt: input.scheduledAt,
+        durationMin: input.durationMin,
+        location: input.location,
+        latitude: input.latitude,
+        longitude: input.longitude,
+        maxParticipants: input.maxParticipants,
+        visibility: 'public',
+        status: 'scheduled',
+        category: input.category,
+        requiresApproval: false,
+        coverImageUrl: input.coverImageUrl,
+        organizationId: input.organizationId,
+        isOfficial: true,
+      })
+      .returning();
+
+    return { ...event, creatorId: input.createdBy, creatorName: null } as AdminGroupEventDetail;
+  }
+
   // ── Organizations ───────────────────────────────────────────────────────────
 
   async listOrganizations(input: {

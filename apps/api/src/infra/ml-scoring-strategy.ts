@@ -66,9 +66,7 @@ export class MLScoringStrategy implements ScoringStrategy {
 
       // Append user features if available
       if (userId) {
-        const userFeatures = await redis.get<Record<string, number>>(
-          `ml:features:user:${userId}`,
-        );
+        const userFeatures = await redis.get<Record<string, number>>(`ml:features:user:${userId}`);
         if (userFeatures) {
           features.push(
             userFeatures.likeRate ?? 0,

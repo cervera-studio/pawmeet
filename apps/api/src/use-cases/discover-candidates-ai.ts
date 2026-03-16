@@ -4,6 +4,7 @@ import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { calculateDistance } from '@pawmeet/utils';
 import type { ScoringStrategy } from '../domain/scoring-strategy.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
+import { redis } from '../lib/redis.js';
 import type {
   DogRepository,
   ExperimentService,
@@ -142,6 +143,51 @@ export function createDiscoverCandidatesAi({
       .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
       .slice(0, effectiveLimit);
 
-    return succeed({ suggestions: scored, variant });
+    // ── Backfill with precomputed recommendations ───────────────────────────
+    let suggestions: Suggestion[] = scored;
+
+    if (scored.length < effectiveLimit) {
+      const recsKey = `ml:recs:${userId}`;
+      const rawRecs = await redis.zrange<string[]>(recsKey, 0, effectiveLimit - 1, { rev: true });
+
+      const scoredDogIds = new Set(scored.map((s) => s.dog.id));
+      const candidateMap = new Map(candidates.map((c) => [c.dog.id, c]));
+
+      const backfill: Suggestion[] = [];
+      for (const recDogId of rawRecs) {
+        if (scoredDogIds.has(recDogId) || swipedIds.has(recDogId)) continue;
+        const c = candidateMap.get(recDogId);
+        if (!c || !hasOwnerLocation(c)) continue;
+        if (filters && !matchesFilters(c.dog, filters)) continue;
+
+        const distanceKm = calculateDistance(user.latitude, user.longitude, c.ownerLat, c.ownerLon);
+        if (distanceKm > radiusKm) continue;
+
+        backfill.push({
+          dog: c.dog,
+          distanceKm: Math.round(distanceKm * 10) / 10,
+          compatibilityScore: 0,
+        });
+
+        if (scored.length + backfill.length >= effectiveLimit) break;
+      }
+
+      suggestions = [...scored, ...backfill];
+    }
+
+    // ── Diversity interleave: avoid consecutive same-size dogs ───────────────
+    for (let i = 1; i < suggestions.length - 1; i++) {
+      const curr = suggestions[i];
+      const prev = suggestions[i - 1];
+      if (curr && prev && curr.dog.size === prev.dog.size) {
+        const next = suggestions.findIndex((s, j) => j > i && s.dog.size !== curr.dog.size);
+        if (next !== -1) {
+          suggestions[i] = suggestions[next]!;
+          suggestions[next] = curr;
+        }
+      }
+    }
+
+    return succeed({ suggestions, variant });
   };
 }

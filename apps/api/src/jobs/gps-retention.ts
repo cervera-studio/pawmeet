@@ -1,11 +1,10 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { GpsRetentionRepository } from '../ports/gps-retention-repository.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 interface GpsRetentionDeps {
-  db: NeonHttpDatabase;
+  gpsRetentionRepo: GpsRetentionRepository;
 }
 
 /** GPS data retention period in days */
@@ -19,32 +18,19 @@ const GPS_RETENTION_DAYS = 90;
  * are purged to minimize location data retention.
  */
 export function createGpsRetentionWorker(deps: GpsRetentionDeps) {
-  const { db } = deps;
+  const { gpsRetentionRepo } = deps;
 
   const worker = new Worker(
     QUEUE_NAMES.GPS_RETENTION,
     async () => {
       logger.info('GpsRetention', `Running GPS data purge (>${GPS_RETENTION_DAYS} days)...`);
 
-      const result = await db.execute(
-        sql`DELETE FROM walk_track_points
-            WHERE timestamp < NOW() - INTERVAL '${sql.raw(String(GPS_RETENTION_DAYS))} days'`,
-      );
-
-      logger.info('GpsRetention', `Purged ${result.rowCount ?? 0} GPS track points`);
+      await gpsRetentionRepo.purgeOldTrackPoints(GPS_RETENTION_DAYS);
+      logger.info('GpsRetention', 'Purged old GPS track points');
 
       // Also clear precise location from users who haven't updated in 90+ days
-      const locationCleanup = await db.execute(
-        sql`UPDATE users
-            SET latitude = NULL, longitude = NULL, location_updated_at = NULL
-            WHERE location_updated_at < NOW() - INTERVAL '${sql.raw(String(GPS_RETENTION_DAYS))} days'
-            AND latitude IS NOT NULL`,
-      );
-
-      logger.info(
-        'GpsRetention',
-        `Cleared stale locations for ${locationCleanup.rowCount ?? 0} users`,
-      );
+      await gpsRetentionRepo.clearStaleUserLocations(GPS_RETENTION_DAYS);
+      logger.info('GpsRetention', 'Cleared stale user locations');
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );

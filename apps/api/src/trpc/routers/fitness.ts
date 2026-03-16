@@ -1,3 +1,4 @@
+import { STREAK_TYPE, XP_POINTS } from '@pawmeet/config';
 import { isSuccess } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import {
@@ -41,6 +42,34 @@ export function createFitnessRouter(deps: typeof fitnessDeps) {
         durationMinutes: result.track.durationMinutes ?? 0,
         distanceKm: result.track.distanceKm ?? 0,
         participantCount: 1,
+      });
+
+      // Gamification: challenge progress + achievements (fire and forget)
+      void deps
+        .updateChallengeProgress(ctx.userId, 'walk_count', 1)
+        .catch((e) => console.warn('Gamification error:', e));
+      void deps
+        .updateChallengeProgress(ctx.userId, 'walk_distance_km', result.track.distanceKm ?? 0)
+        .catch((e) => console.warn('Gamification error:', e));
+      void deps
+        .checkAndUnlockAchievements(ctx.userId)
+        .catch((e) => console.warn('Gamification error:', e));
+
+      // Update daily walk streak (fire and forget)
+      void deps
+        .updateStreak(ctx.userId, STREAK_TYPE.DAILY_WALK)
+        .then((streakResult) => {
+          if (isSuccess(streakResult) && streakResult.data.broken) {
+            trackEvent('gamification_streak_broken', ctx.userId, {
+              streakLength: streakResult.data.streak.longestLength,
+              streakType: STREAK_TYPE.DAILY_WALK,
+            });
+          }
+        })
+        .catch((e) => console.warn('Streak update error:', e));
+      trackEvent('gamification_xp_awarded', ctx.userId, {
+        amount: XP_POINTS.walk_tracked,
+        source: 'walk_tracked',
       });
 
       // Auto-create walk album if the track is linked to a walk

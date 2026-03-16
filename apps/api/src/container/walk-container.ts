@@ -8,7 +8,6 @@ import { createGetActivityStats } from '../use-cases/get-activity-stats.js';
 import { createGetDogHealthGoal } from '../use-cases/get-dog-health-goal.js';
 import { createGetDogRating } from '../use-cases/get-dog-rating.js';
 import { createGetUserTracks } from '../use-cases/get-user-tracks.js';
-import { createGetWalkAlbum } from '../use-cases/get-walk-album.js';
 import { createGetWalkTrack } from '../use-cases/get-walk-track.js';
 import { createListUpcomingWalks } from '../use-cases/list-upcoming-walks.js';
 import { createListWalkFeedback } from '../use-cases/list-walk-feedback.js';
@@ -18,12 +17,11 @@ import { createRespondToWalk } from '../use-cases/respond-to-walk.js';
 import { createStartWalkTracking } from '../use-cases/start-walk-tracking.js';
 import { createSubmitFeedback } from '../use-cases/submit-feedback.js';
 import { createSyncHealthData } from '../use-cases/sync-health-data.js';
-import { awardXp } from './gamification-container.js';
+import { gamificationDeps as _gamificationDeps, awardXp } from './gamification-container.js';
 import {
   activityRepo,
   dogRepo,
   feedbackRepo,
-  feedRepo,
   matchRepo,
   messageRepo,
   notificationService,
@@ -58,6 +56,7 @@ export const feedbackDeps = {
   submitFeedback: createSubmitFeedback({ feedbackRepo, walkRepo, matchRepo, dogRepo }),
   listWalkFeedback: createListWalkFeedback({ feedbackRepo }),
   getDogRating: createGetDogRating({ feedbackRepo }),
+  awardXp,
 };
 
 const createWalkAlbumUseCase = createCreateWalkAlbum({ walkAlbumRepo });
@@ -72,6 +71,9 @@ export const fitnessDeps = {
   getActivityStats: createGetActivityStats({ activityRepo }),
   getDogHealthGoal: createGetDogHealthGoal({ dogRepo, activityRepo }),
   createWalkAlbum: createWalkAlbumUseCase,
+  updateChallengeProgress: _gamificationDeps.updateChallengeProgress,
+  checkAndUnlockAchievements: _gamificationDeps.checkAndUnlockAchievements,
+  updateStreak: _gamificationDeps.updateStreak,
 };
 
 export const walkAlbumDeps = {

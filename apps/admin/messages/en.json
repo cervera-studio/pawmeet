@@ -65,7 +65,9 @@
     "aiMatching": "AI Matching",
     "aiMatchingAbTests": "A/B Tests",
     "aiMatchingPerformance": "Performance",
-    "aiMatchingFlags": "Feature Flags"
+    "aiMatchingFlags": "Feature Flags",
+    "challenges": "Challenges",
+    "fitness": "Fitness"
   },
   "header": {
     "searchPlaceholder": "Search users, dogs, reports...",
@@ -619,7 +621,8 @@
       "flagMlMatching": "Enable ML matching",
       "flagScoringStrategy": "Active scoring strategy",
       "flagAbTest": "A/B test ML matching experiment",
-      "flagConfidenceThreshold": "Minimum confidence threshold"
+      "flagConfidenceThreshold": "Minimum confidence threshold",
+      "emptyState": "No feature flags configured"
     }
   },
   "adminUsers": {
@@ -676,6 +679,62 @@
       "passwordLabel": "New Password",
       "passwordPlaceholder": "Enter new password",
       "confirm": "Reset Password"
+    }
+  },
+  "challenges": {
+    "title": "Challenge Management",
+    "subtitle": "Create and manage weekly challenges for users",
+    "createButton": "Create Challenge",
+    "columns": {
+      "type": "Type",
+      "title": "Title",
+      "target": "Target",
+      "xpReward": "XP Reward",
+      "startsAt": "Start",
+      "endsAt": "End",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "types": {
+      "walk_count": "Walks",
+      "walk_distance_km": "Distance (km)",
+      "new_matches": "New matches",
+      "group_events_joined": "Group events"
+    },
+    "statuses": {
+      "active": "Active",
+      "expired": "Expired",
+      "upcoming": "Upcoming"
+    },
+    "actions": {
+      "delete": "Delete"
+    },
+    "createDialog": {
+      "title": "Create Challenge",
+      "description": "Add a new challenge for platform users.",
+      "titlePlaceholder": "Enter the challenge title",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Enter the challenge description",
+      "submit": "Create"
+    },
+    "deleteDialog": {
+      "title": "Delete Challenge",
+      "description": "Are you sure you want to delete the challenge \"{title}\"? This action cannot be undone.",
+      "confirm": "Delete"
+    }
+  },
+  "fitness": {
+    "title": "Fitness Statistics",
+    "subtitle": "Overview of walk activity on the platform",
+    "stats": {
+      "totalWalks": "Total Walks",
+      "totalDistanceKm": "Total Distance",
+      "avgDistanceKm": "Average Distance",
+      "topWalkers": "Top 10 Walkers",
+      "user": "User",
+      "distanceKm": "Distance (km)",
+      "unknownUser": "Unknown user",
+      "noData": "No data available"
     }
   }
 }

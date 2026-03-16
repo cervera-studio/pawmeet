@@ -29,8 +29,8 @@ export type { AdminUser, AdminUsersData };
 const ROLES = ['super_admin', 'admin', 'moderator', 'viewer'] as const;
 type Role = (typeof ROLES)[number];
 
-export { ROLES };
 export type { Role };
+export { ROLES };
 
 export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: number) {
   const [search, setSearch] = useState('');

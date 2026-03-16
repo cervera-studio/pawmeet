@@ -25,8 +25,8 @@ const RESOURCE_TYPES = [
 
 type ResourceType = (typeof RESOURCE_TYPES)[number];
 
-export { RESOURCE_TYPES };
 export type { ResourceType };
+export { RESOURCE_TYPES };
 
 export function isResourceType(v: string): v is ResourceType {
   return (RESOURCE_TYPES as readonly string[]).includes(v);

@@ -1,15 +1,34 @@
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatNumber } from '@/lib/formatters';
+import { fetchModelPerformance, fetchModelRegistry } from './actions';
+import { ModelRegistryTable } from './model-registry-table';
 import { LazyPerformanceCharts } from './performance-charts-lazy';
 
+function fmtPct(value: number | null | undefined): string {
+  if (value == null) return '\u2014';
+  return `${(value * 100).toFixed(1)}%`;
+}
+
+function fmtCount(value: number | null | undefined): string {
+  if (value == null) return '\u2014';
+  return formatNumber(value);
+}
+
 export default async function PerformancePage() {
-  const t = await getTranslations('aiMatching.performance');
+  const [performance, registry, t] = await Promise.all([
+    fetchModelPerformance(),
+    fetchModelRegistry(),
+    getTranslations('aiMatching.performance'),
+  ]);
+
+  const activeModel = registry.models.find((m: { isActive: boolean }) => m.isActive);
 
   const kpis = [
-    { title: t('kpiPredictions'), value: '—' },
-    { title: t('kpiMatches'), value: '—' },
-    { title: t('kpiAccuracy'), value: '—' },
-    { title: t('kpiAvgScore'), value: '—' },
+    { title: t('kpiPredictions'), value: fmtCount(performance.overview?.totalPredictions) },
+    { title: t('kpiMatches'), value: fmtCount(performance.overview?.totalMatches) },
+    { title: t('kpiAvgScore'), value: fmtPct(performance.overview?.avgOverallScore) },
+    { title: 'Modello attivo', value: activeModel?.version ?? '\u2014' },
   ];
 
   return (
@@ -37,8 +56,34 @@ export default async function PerformancePage() {
         ))}
       </div>
 
-      {/* Charts (client component — recharts needs browser APIs) */}
-      <LazyPerformanceCharts />
+      {/* Charts */}
+      <LazyPerformanceCharts
+        scoreBuckets={
+          performance.scoreBuckets as unknown as Parameters<
+            typeof LazyPerformanceCharts
+          >[0]['scoreBuckets']
+        }
+        weightDistribution={
+          performance.weightDistribution as unknown as Parameters<
+            typeof LazyPerformanceCharts
+          >[0]['weightDistribution']
+        }
+        timeSeries={performance.timeSeries}
+      />
+
+      {/* Model Registry */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Modelli registrati</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ModelRegistryTable
+            models={
+              registry.models as unknown as Parameters<typeof ModelRegistryTable>[0]['models']
+            }
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

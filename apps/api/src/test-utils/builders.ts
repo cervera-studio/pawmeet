@@ -428,6 +428,13 @@ export function buildGamificationRepo(
     findUserChallenges: vi.fn().mockResolvedValue([]),
     upsertUserChallenge: vi.fn(),
     findActiveChallengesByType: vi.fn().mockResolvedValue([]),
+    createChallenge: vi.fn().mockImplementation((data) =>
+      Promise.resolve({
+        id: crypto.randomUUID(),
+        ...data,
+        createdAt: new Date(),
+      }),
+    ),
     findAchievementsByUser: vi.fn().mockResolvedValue([]),
     hasAchievement: vi.fn().mockResolvedValue(false),
     unlockAchievement: vi
@@ -439,6 +446,27 @@ export function buildGamificationRepo(
     countMatches: vi.fn().mockResolvedValue(0),
     countGroupEventsJoined: vi.fn().mockResolvedValue(0),
     getTotalWalkDistanceKm: vi.fn().mockResolvedValue(0),
+    getStreak: vi.fn().mockResolvedValue(null),
+    upsertStreak: vi.fn().mockImplementation((_userId: string, type: string, data) =>
+      Promise.resolve({
+        id: crypto.randomUUID(),
+        userId: _userId,
+        type,
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    ),
+    findStreaksOlderThan: vi.fn().mockResolvedValue([]),
+    breakStreak: vi.fn().mockResolvedValue(undefined),
+    listAllChallenges: vi.fn().mockResolvedValue({ data: [], total: 0 }),
+    deleteChallenge: vi.fn().mockResolvedValue(undefined),
+    getAggregateFitnessStats: vi.fn().mockResolvedValue({
+      totalWalks: 0,
+      avgDistanceKm: 0,
+      totalDistanceKm: 0,
+      topWalkers: [],
+    }),
     ...overrides,
   };
 }

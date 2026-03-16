@@ -1,8 +1,6 @@
-import { DEFAULT_WEIGHTS } from '@pawmeet/config';
-import { groupEvents } from '@pawmeet/db';
+import { CHALLENGE_TYPE, DEFAULT_WEIGHTS } from '@pawmeet/config';
 import { TRPCError } from '@trpc/server';
 import { hash } from 'bcryptjs';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { z } from 'zod';
 import { enqueueNotification } from '../../jobs/queue.js';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
@@ -15,6 +13,8 @@ import {
 import { trackEvent } from '../../lib/track-event.js';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
+import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
+import type { GamificationRepository } from '../../ports/gamification-repository.js';
 import { protectedProcedure, router } from '../trpc.js';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ function maskPhone(phone: string | null | undefined): string {
 
 // ── Admin middleware ────────────────────────────────────────────────────────────
 
-function createAdminProcedure(_db: NeonHttpDatabase) {
+function createAdminProcedure() {
   return protectedProcedure.use(async ({ ctx, next }) => {
     if (!ctx.adminRole) {
       throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
@@ -208,13 +208,15 @@ const resetAdminPasswordSchema = z.object({
 
 interface AdminRouterDeps {
   adminDataRepo: AdminDataRepository;
+  auditLogRepo: AuditLogRepository;
+  gamificationRepo?: GamificationRepository;
 }
 
 // ── Router ─────────────────────────────────────────────────────────────────────
 
-export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
-  const adminProcedure = createAdminProcedure(db);
-  const { adminDataRepo } = deps;
+export function createAdminRouter(deps: AdminRouterDeps) {
+  const adminProcedure = createAdminProcedure();
+  const { adminDataRepo, auditLogRepo, gamificationRepo } = deps;
 
   return router({
     // ── Dashboard stats ──────────────────────────────────────────────────────
@@ -316,7 +318,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
         await adminDataRepo.deactivateUser(report.reportedUserId);
       }
 
-      void logAdminAction(db, {
+      void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: `report.${input.action}`,
         resourceType: RESOURCE_TYPE.report,
@@ -375,7 +377,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           await adminDataRepo.softDeletePost(input.postId);
         }
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: `post.${input.status}`,
           resourceType: RESOURCE_TYPE.post,
@@ -419,7 +421,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.deleteStory(input.storyId);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'story.delete',
           resourceType: RESOURCE_TYPE.story,
@@ -508,7 +510,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.cancelGroupEvent(input.eventId);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'event.cancel',
           resourceType: RESOURCE_TYPE.event,
@@ -530,7 +532,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.removeParticipant(input.participantId);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'event.removeParticipant',
           resourceType: RESOURCE_TYPE.event,
@@ -589,7 +591,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.verifyOrganization(input.organizationId, ctx.userId);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'organization.verify',
           resourceType: RESOURCE_TYPE.organization,
@@ -611,7 +613,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.revokeOrganization(input.organizationId);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'organization.revoke',
           resourceType: RESOURCE_TYPE.organization,
@@ -651,29 +653,22 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           });
         }
 
-        const [event] = await db
-          .insert(groupEvents)
-          .values({
-            createdBy: ctx.userId,
-            title: input.title,
-            description: input.description ?? null,
-            scheduledAt: new Date(input.scheduledAt),
-            durationMin: input.durationMin,
-            location: input.location,
-            latitude: input.latitude,
-            longitude: input.longitude,
-            maxParticipants: input.maxParticipants,
-            visibility: 'public',
-            status: 'scheduled',
-            category: input.category,
-            requiresApproval: false,
-            coverImageUrl: input.coverImageUrl ?? null,
-            organizationId: input.organizationId,
-            isOfficial: true,
-          })
-          .returning();
+        const event = await adminDataRepo.createOfficialEvent({
+          createdBy: ctx.userId,
+          title: input.title,
+          description: input.description ?? null,
+          scheduledAt: new Date(input.scheduledAt),
+          durationMin: input.durationMin,
+          location: input.location,
+          latitude: input.latitude,
+          longitude: input.longitude,
+          maxParticipants: input.maxParticipants,
+          category: input.category,
+          coverImageUrl: input.coverImageUrl ?? null,
+          organizationId: input.organizationId,
+        });
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'event.createOfficial',
           resourceType: RESOURCE_TYPE.event,
@@ -740,7 +735,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
       const sponsor = await adminDataRepo.addEventSponsor(input);
 
-      void logAdminAction(db, {
+      void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: 'sponsor.add',
         resourceType: RESOURCE_TYPE.sponsor,
@@ -763,7 +758,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.removeEventSponsor(input.eventId, input.organizationId);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'sponsor.remove',
           resourceType: RESOURCE_TYPE.sponsor,
@@ -845,7 +840,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.setUserActive(input.userId, false);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'user.suspend',
           resourceType: RESOURCE_TYPE.user,
@@ -870,7 +865,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.setUserActive(input.userId, false);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'user.ban',
           resourceType: RESOURCE_TYPE.user,
@@ -895,7 +890,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.setUserActive(input.userId, true);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'user.reactivate',
           resourceType: RESOURCE_TYPE.user,
@@ -935,7 +930,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.updatePhotoModeration(input.photoId, 'approved');
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'photo.approve',
           resourceType: RESOURCE_TYPE.photo,
@@ -961,7 +956,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.updatePhotoModeration(input.photoId, 'rejected');
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'photo.reject',
           resourceType: RESOURCE_TYPE.photo,
@@ -980,7 +975,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
       await adminDataRepo.approveAllPendingPhotos();
 
-      void logAdminAction(db, {
+      void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: 'photo.approveAll',
         resourceType: RESOURCE_TYPE.photo,
@@ -1035,7 +1030,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
         await adminDataRepo.cancelDeletion(input.userId);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'deletion.cancel',
           resourceType: RESOURCE_TYPE.deletion,
@@ -1123,7 +1118,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
         });
       }
 
-      void logAdminAction(db, {
+      void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: 'settings.update',
         resourceType: RESOURCE_TYPE.settings,
@@ -1199,7 +1194,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           });
         }
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'create_admin',
           resourceType: RESOURCE_TYPE.admin,
@@ -1252,7 +1247,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
         }
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'update_admin_role',
           resourceType: RESOURCE_TYPE.admin,
@@ -1297,7 +1292,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
         }
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: newStatus ? 'activate_admin' : 'deactivate_admin',
           resourceType: RESOURCE_TYPE.admin,
@@ -1338,7 +1333,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
         const passwordHash = await hash(input.newPassword, 10);
         await adminDataRepo.updateAdminPassword(input.adminId, passwordHash);
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'reset_admin_password',
           resourceType: RESOURCE_TYPE.admin,
@@ -1368,7 +1363,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
       const created = await adminDataRepo.createBreed(input);
 
-      void logAdminAction(db, {
+      void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: 'create_breed',
         resourceType: RESOURCE_TYPE.breed,
@@ -1402,7 +1397,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
       const updated = await adminDataRepo.updateBreed(id, setValues);
 
-      void logAdminAction(db, {
+      void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: 'update_breed',
         resourceType: RESOURCE_TYPE.breed,
@@ -1435,7 +1430,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
 
       await adminDataRepo.deleteBreed(input.id);
 
-      void logAdminAction(db, {
+      void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: 'delete_breed',
         resourceType: RESOURCE_TYPE.breed,
@@ -1476,7 +1471,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           );
         }
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'send_broadcast',
           resourceType: RESOURCE_TYPE.notification,
@@ -1520,7 +1515,7 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
           ),
         );
 
-        void logAdminAction(db, {
+        void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
           action: 'send_targeted',
           resourceType: RESOURCE_TYPE.notification,
@@ -1541,6 +1536,146 @@ export function createAdminRouter(db: NeonHttpDatabase, deps: AdminRouterDeps) {
     getNotificationStats: adminProcedure.query(async ({ ctx }) => {
       requireRole(ctx.adminRole, AdminRole.Moderator);
       return adminDataRepo.getNotificationStats();
+    }),
+
+    // ── Challenges management ───────────────────────────────────────────────
+
+    listChallenges: adminProcedure
+      .input(
+        z.object({
+          page: z.number().int().min(1).default(1),
+          pageSize: z.number().int().min(1).max(100).default(20),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Moderator);
+
+        if (!gamificationRepo) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Gamification repository not configured',
+          });
+        }
+
+        const offset = (input.page - 1) * input.pageSize;
+        const result = await gamificationRepo.listAllChallenges(input.pageSize, offset);
+
+        return {
+          data: result.data,
+          total: result.total,
+          page: input.page,
+          pageSize: input.pageSize,
+          totalPages: Math.ceil(result.total / input.pageSize),
+        };
+      }),
+
+    createChallenge: adminProcedure
+      .input(
+        z.object({
+          type: z.enum([
+            CHALLENGE_TYPE.WALK_COUNT,
+            CHALLENGE_TYPE.WALK_DISTANCE_KM,
+            CHALLENGE_TYPE.NEW_MATCHES,
+            CHALLENGE_TYPE.GROUP_EVENTS_JOINED,
+          ]),
+          title: z.string().min(1).max(200),
+          description: z.string().min(1).max(1000),
+          targetValue: z.number().int().positive(),
+          xpReward: z.number().int().positive(),
+          startsAt: z.string().datetime(),
+          endsAt: z.string().datetime(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        if (!gamificationRepo) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Gamification repository not configured',
+          });
+        }
+
+        const startsAt = new Date(input.startsAt);
+        const endsAt = new Date(input.endsAt);
+
+        if (startsAt >= endsAt) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Start date must be before end date',
+          });
+        }
+
+        const challenge = await gamificationRepo.createChallenge({
+          type: input.type,
+          title: input.title,
+          description: input.description,
+          targetValue: input.targetValue,
+          xpReward: input.xpReward,
+          startsAt,
+          endsAt,
+        });
+
+        void logAdminAction(auditLogRepo, {
+          adminId: ctx.userId,
+          action: 'challenge.create',
+          resourceType: RESOURCE_TYPE.challenge,
+          resourceId: challenge.id,
+          changes: {
+            after: {
+              type: input.type,
+              title: input.title,
+              targetValue: input.targetValue,
+              xpReward: input.xpReward,
+            },
+          },
+        });
+
+        trackEvent('admin_challenge_created', ctx.userId, {
+          challengeId: challenge.id,
+          type: input.type,
+        });
+
+        return challenge;
+      }),
+
+    deleteChallenge: adminProcedure
+      .input(z.object({ challengeId: z.string().uuid() }))
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        if (!gamificationRepo) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Gamification repository not configured',
+          });
+        }
+
+        await gamificationRepo.deleteChallenge(input.challengeId);
+
+        void logAdminAction(auditLogRepo, {
+          adminId: ctx.userId,
+          action: 'challenge.delete',
+          resourceType: RESOURCE_TYPE.challenge,
+          resourceId: input.challengeId,
+        });
+
+        return { success: true };
+      }),
+
+    // ── Fitness stats (admin) ───────────────────────────────────────────────
+
+    getFitnessStats: adminProcedure.query(async ({ ctx }) => {
+      requireRole(ctx.adminRole, AdminRole.Moderator);
+
+      if (!gamificationRepo) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gamification repository not configured',
+        });
+      }
+
+      return gamificationRepo.getAggregateFitnessStats();
     }),
   });
 }

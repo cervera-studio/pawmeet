@@ -33,4 +33,4 @@ export function resolvePageMeta(options: {
   };
 }
 
-export { SITE_NAME, DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE };
+export { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_NAME };

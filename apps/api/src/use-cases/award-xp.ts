@@ -8,14 +8,18 @@ type Deps = {
   gamificationRepo: GamificationRepository;
 };
 
-/** Award XP for a completed action. Returns updated XP summary. */
+/** Award XP for a completed action. Returns updated XP summary + previous level for level-up detection. */
 export function createAwardXp({ gamificationRepo }: Deps) {
   return async (
     userId: string,
     action: XpAction,
     metadata?: Record<string, unknown>,
-  ): Promise<Result<{ xpAwarded: number; summary: XpSummary }>> => {
+  ): Promise<Result<{ xpAwarded: number; summary: XpSummary; previousLevel: string }>> => {
     const points = XP_POINTS[action];
+
+    // Snapshot level before awarding XP for level-up detection
+    const previousXp = await gamificationRepo.getTotalXp(userId);
+    const { level: previousLevel } = computeLevelFromXp(previousXp);
 
     await gamificationRepo.createXpTransaction(userId, action, points, metadata);
 
@@ -25,6 +29,7 @@ export function createAwardXp({ gamificationRepo }: Deps) {
     return succeed({
       xpAwarded: points,
       summary: { totalXp, level, xpToNextLevel },
+      previousLevel,
     });
   };
 }

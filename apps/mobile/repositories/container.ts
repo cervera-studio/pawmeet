@@ -9,6 +9,7 @@ import { createTrpcChatRepository } from './remote/trpc-chat-repository';
 import { createTrpcFeedRepository } from './remote/trpc-feed-repository';
 import { createTrpcFeedbackRepository } from './remote/trpc-feedback-repository';
 import { createTrpcFollowRepository } from './remote/trpc-follow-repository';
+import { createTrpcGamificationRepository } from './remote/trpc-gamification-repository';
 import { createTrpcGroupChatRepository } from './remote/trpc-group-chat-repository';
 import { createTrpcGroupEventRepository } from './remote/trpc-group-event-repository';
 import { createTrpcMatchRepository } from './remote/trpc-match-repository';
@@ -26,6 +27,7 @@ import {
   FEED_REPOSITORY,
   FEEDBACK_REPOSITORY,
   FOLLOW_REPOSITORY,
+  GAMIFICATION_REPOSITORY,
   GROUP_CHAT_REPOSITORY,
   GROUP_EVENT_REPOSITORY,
   MATCH_REPOSITORY,
@@ -58,6 +60,9 @@ container.register(ACTIVITY_REPOSITORY, { useValue: createTrpcActivityRepository
 container.register(USER_REPOSITORY, { useValue: createTrpcUserRepository(api) });
 container.register(SMART_MATCHING_REPOSITORY, {
   useValue: createTrpcSmartMatchingRepository(api),
+});
+container.register(GAMIFICATION_REPOSITORY, {
+  useValue: createTrpcGamificationRepository(api),
 });
 
 const analyticsService = __DEV__

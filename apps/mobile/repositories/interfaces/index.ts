@@ -20,6 +20,7 @@ export type {
   FollowStatus,
   FollowUser,
 } from './follow-repository';
+export type { GamificationRepository } from './gamification-repository';
 export type { GroupChatRepository, GroupConversation } from './group-chat-repository';
 export type {
   CreateGroupEventInput,

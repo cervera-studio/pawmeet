@@ -56,4 +56,4 @@ export function createAccountLockout(): AccountLockoutService {
 }
 
 export const accountLockout = createAccountLockout();
-export { MAX_FAILED_ATTEMPTS, LOCKOUT_DURATION_SECONDS };
+export { LOCKOUT_DURATION_SECONDS, MAX_FAILED_ATTEMPTS };

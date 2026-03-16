@@ -54,4 +54,4 @@ export function StatusBadge({ status, type, fallbackVariant = 'outline' }: Statu
 }
 
 /** Re-export variant configs for use in view-models that need status info without rendering */
-export { USER_STATUS_VARIANTS, REPORT_STATUS_VARIANTS };
+export { REPORT_STATUS_VARIANTS, USER_STATUS_VARIANTS };

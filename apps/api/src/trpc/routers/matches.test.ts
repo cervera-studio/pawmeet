@@ -77,6 +77,15 @@ function buildMatchDeps(overrides: Partial<typeof matchDeps> = {}): typeof match
     likeDog: vi.fn().mockResolvedValue(succeed({ isMatch: false })),
     passDog: vi.fn().mockResolvedValue(succeed({ message: 'Passato' })),
     unmatch: vi.fn().mockResolvedValue(succeed({ message: 'Match annullato' })),
+    awardXp: vi.fn().mockResolvedValue(
+      succeed({
+        xpAwarded: 30,
+        summary: { totalXp: 30, level: 'cucciolo', xpToNextLevel: 70 },
+        previousLevel: 'cucciolo',
+      }),
+    ),
+    updateChallengeProgress: vi.fn().mockResolvedValue(succeed([])),
+    checkAndUnlockAchievements: vi.fn().mockResolvedValue(succeed([])),
     ...overrides,
   };
 }

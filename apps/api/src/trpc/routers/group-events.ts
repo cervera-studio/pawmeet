@@ -1,3 +1,5 @@
+import { XP_POINTS } from '@pawmeet/config';
+import { isSuccess } from '@pawmeet/types';
 import {
   approveParticipantSchema,
   cancelGroupEventSchema,
@@ -19,6 +21,7 @@ import {
   updateGroupEventSchema,
 } from '@pawmeet/validation';
 import type { groupEventDeps } from '../../container/index.js';
+import { enqueueNotification } from '../../jobs/queue.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
@@ -39,6 +42,30 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
         requiresApproval: input.requiresApproval ?? false,
         isRecurring: false,
       });
+
+      // Gamification: XP for event creation (fire and forget)
+      void deps
+        .awardXp(ctx.userId, 'group_event_created')
+        .then((res) => {
+          if (isSuccess(res) && res.data.previousLevel !== res.data.summary.level) {
+            trackEvent('gamification_level_up', ctx.userId, {
+              newLevel: res.data.summary.level,
+              previousLevel: res.data.previousLevel,
+              totalXp: res.data.summary.totalXp,
+            });
+            void enqueueNotification({
+              userId: ctx.userId,
+              title: 'Livello su!',
+              body: `Sei diventato ${res.data.summary.level}!`,
+            }).catch((e) => console.warn('Gamification error:', e));
+          }
+        })
+        .catch((e) => console.warn('Gamification error:', e));
+      trackEvent('gamification_xp_awarded', ctx.userId, {
+        amount: XP_POINTS.group_event_created,
+        source: 'group_event_created',
+      });
+
       return result;
     }),
 
@@ -62,6 +89,36 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
         participantNumber: result.participantNumber,
         distanceKm: 0,
       });
+
+      // Gamification: XP, challenge progress, achievements (fire and forget)
+      void deps
+        .awardXp(ctx.userId, 'group_event_joined')
+        .then((res) => {
+          if (isSuccess(res) && res.data.previousLevel !== res.data.summary.level) {
+            trackEvent('gamification_level_up', ctx.userId, {
+              newLevel: res.data.summary.level,
+              previousLevel: res.data.previousLevel,
+              totalXp: res.data.summary.totalXp,
+            });
+            void enqueueNotification({
+              userId: ctx.userId,
+              title: 'Livello su!',
+              body: `Sei diventato ${res.data.summary.level}!`,
+            }).catch((e) => console.warn('Gamification error:', e));
+          }
+        })
+        .catch((e) => console.warn('Gamification error:', e));
+      void deps
+        .updateChallengeProgress(ctx.userId, 'group_events_joined', 1)
+        .catch((e) => console.warn('Gamification error:', e));
+      void deps
+        .checkAndUnlockAchievements(ctx.userId)
+        .catch((e) => console.warn('Gamification error:', e));
+      trackEvent('gamification_xp_awarded', ctx.userId, {
+        amount: XP_POINTS.group_event_joined,
+        source: 'group_event_joined',
+      });
+
       return result.participant;
     }),
 

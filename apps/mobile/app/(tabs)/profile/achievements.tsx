@@ -1,0 +1,91 @@
+import { Stack } from 'expo-router';
+import { FlatList, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { type AchievementCardData, useAchievementsViewModel } from './achievements.view-model';
+
+const SKELETON_KEYS_8 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
+
+// ── Skeleton ────────────────────────────────────────────────────────────────
+
+function AchievementsSkeleton() {
+  return (
+    <View className="px-4 py-4 flex-row flex-wrap gap-3">
+      {SKELETON_KEYS_8.map((id) => (
+        <View
+          key={id}
+          className="h-36 rounded-2xl bg-neutral-200 dark:bg-[#48484A] animate-pulse"
+          style={{ width: '47%' }}
+        />
+      ))}
+    </View>
+  );
+}
+
+// ── Achievement Card ────────────────────────────────────────────────────────
+
+function AchievementCard({ card }: { card: AchievementCardData }) {
+  const formattedDate = card.unlockedAt
+    ? new Date(card.unlockedAt).toLocaleDateString('it-IT', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
+  return (
+    <View
+      className={`rounded-2xl p-4 items-center justify-center shadow-sm ${
+        card.unlocked ? 'bg-white dark:bg-[#1C1C1E]' : 'bg-neutral-200 dark:bg-[#48484A]'
+      }`}
+      style={{ width: '47%', minHeight: 140 }}
+    >
+      <Text className="text-3xl mb-2">{card.unlocked ? card.icon : '?'}</Text>
+      <Text
+        className={`text-sm font-semibold text-center ${
+          card.unlocked
+            ? 'text-neutral-900 dark:text-[#F5F5F7]'
+            : 'text-neutral-400 dark:text-neutral-500'
+        }`}
+      >
+        {card.label}
+      </Text>
+      {card.unlocked && formattedDate ? (
+        <Text className="mt-1 text-xs text-primary text-center">{formattedDate}</Text>
+      ) : (
+        <Text className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">Bloccato</Text>
+      )}
+    </View>
+  );
+}
+
+// ── Main Screen ─────────────────────────────────────────────────────────────
+
+export default function AchievementsScreen() {
+  const vm = useAchievementsViewModel();
+
+  return (
+    <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]">
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: 'Obiettivi',
+          headerBackTitle: 'Gamification',
+        }}
+      />
+
+      {vm.loading && vm.cards.length === 0 ? (
+        <AchievementsSkeleton />
+      ) : (
+        <FlatList
+          data={vm.cards}
+          keyExtractor={(item) => item.type}
+          numColumns={2}
+          columnWrapperClassName="justify-between px-4 mb-3"
+          contentContainerClassName="py-4"
+          renderItem={({ item }) => <AchievementCard card={item} />}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </SafeAreaView>
+  );
+}

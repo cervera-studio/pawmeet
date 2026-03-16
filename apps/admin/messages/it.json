@@ -65,7 +65,9 @@
     "aiMatching": "AI Matching",
     "aiMatchingAbTests": "A/B Test",
     "aiMatchingPerformance": "Performance",
-    "aiMatchingFlags": "Feature Flag"
+    "aiMatchingFlags": "Feature Flag",
+    "challenges": "Sfide",
+    "fitness": "Fitness"
   },
   "header": {
     "searchPlaceholder": "Cerca utenti, cani, segnalazioni...",
@@ -619,7 +621,8 @@
       "flagMlMatching": "Abilita matching ML",
       "flagScoringStrategy": "Strategia di scoring attiva",
       "flagAbTest": "Esperimento A/B test ML matching",
-      "flagConfidenceThreshold": "Soglia minima di confidenza"
+      "flagConfidenceThreshold": "Soglia minima di confidenza",
+      "emptyState": "Nessun feature flag configurato"
     }
   },
   "adminUsers": {
@@ -676,6 +679,62 @@
       "passwordLabel": "Nuova Password",
       "passwordPlaceholder": "Inserisci la nuova password",
       "confirm": "Reset Password"
+    }
+  },
+  "challenges": {
+    "title": "Gestione Sfide",
+    "subtitle": "Crea e gestisci le sfide settimanali per gli utenti",
+    "createButton": "Crea Sfida",
+    "columns": {
+      "type": "Tipo",
+      "title": "Titolo",
+      "target": "Obiettivo",
+      "xpReward": "Ricompensa XP",
+      "startsAt": "Inizio",
+      "endsAt": "Fine",
+      "status": "Stato",
+      "actions": "Azioni"
+    },
+    "types": {
+      "walk_count": "Passeggiate",
+      "walk_distance_km": "Distanza (km)",
+      "new_matches": "Nuovi match",
+      "group_events_joined": "Eventi di gruppo"
+    },
+    "statuses": {
+      "active": "Attiva",
+      "expired": "Scaduta",
+      "upcoming": "In arrivo"
+    },
+    "actions": {
+      "delete": "Elimina"
+    },
+    "createDialog": {
+      "title": "Crea Sfida",
+      "description": "Aggiungi una nuova sfida per gli utenti della piattaforma.",
+      "titlePlaceholder": "Inserisci il titolo della sfida",
+      "descriptionLabel": "Descrizione",
+      "descriptionPlaceholder": "Inserisci la descrizione della sfida",
+      "submit": "Crea"
+    },
+    "deleteDialog": {
+      "title": "Elimina Sfida",
+      "description": "Sei sicuro di voler eliminare la sfida \"{title}\"? Questa azione non può essere annullata.",
+      "confirm": "Elimina"
+    }
+  },
+  "fitness": {
+    "title": "Statistiche Fitness",
+    "subtitle": "Panoramica delle attività di passeggiata sulla piattaforma",
+    "stats": {
+      "totalWalks": "Passeggiate Totali",
+      "totalDistanceKm": "Distanza Totale",
+      "avgDistanceKm": "Distanza Media",
+      "topWalkers": "Top 10 Camminatori",
+      "user": "Utente",
+      "distanceKm": "Distanza (km)",
+      "unknownUser": "Utente sconosciuto",
+      "noData": "Nessun dato disponibile"
     }
   }
 }

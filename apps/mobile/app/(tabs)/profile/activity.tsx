@@ -1,9 +1,10 @@
 import { Stack } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
+import { useHealthConnect } from '@/hooks/useHealthConnect';
 import { useActivityViewModel } from './activity.view-model';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -195,6 +196,76 @@ function ProgressRing({
   );
 }
 
+// --- Health Connect Card ---
+
+function HealthConnectCard() {
+  const { isAvailable, isConnected, loading, connect, disconnect, syncNow, lastSyncDate } =
+    useHealthConnect();
+
+  if (!isAvailable && !isConnected) return null;
+
+  const title = Platform.OS === 'ios' ? 'Connetti Apple Salute' : 'Connetti Health Connect';
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('it-IT', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  return (
+    <View className="mb-4 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm">
+      <Text className="mb-1 text-base font-semibold text-neutral-900 dark:text-[#F5F5F7]">
+        {title}
+      </Text>
+      <Text className="mb-3 text-sm text-neutral-500 dark:text-neutral-500">
+        Sincronizza passi e distanza automaticamente
+      </Text>
+
+      {isConnected ? (
+        <>
+          {lastSyncDate ? (
+            <Text className="mb-3 text-xs text-neutral-500 dark:text-neutral-500">
+              Ultima sincronizzazione: {formatDate(lastSyncDate)}
+            </Text>
+          ) : null}
+
+          <View className="flex-row gap-2">
+            <Pressable
+              onPress={() => void syncNow()}
+              disabled={loading}
+              className={`flex-1 items-center rounded-xl py-2.5 ${
+                loading ? 'bg-primary-200' : 'bg-primary'
+              }`}
+            >
+              <Text className="font-medium text-white">
+                {loading ? 'Sincronizzazione...' : 'Sincronizza ora'}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={disconnect}
+              className="items-center rounded-xl border border-neutral-300 dark:border-neutral-600 px-4 py-2.5"
+            >
+              <Text className="font-medium text-neutral-700 dark:text-[#D1D1D6]">Scollega</Text>
+            </Pressable>
+          </View>
+        </>
+      ) : (
+        <Pressable
+          onPress={() => void connect()}
+          disabled={loading}
+          className={`items-center rounded-xl py-2.5 ${loading ? 'bg-primary-200' : 'bg-primary'}`}
+        >
+          <Text className="font-medium text-white">{loading ? 'Connessione...' : 'Connetti'}</Text>
+        </Pressable>
+      )}
+    </View>
+  );
+}
+
 // --- Main Screen ---
 
 export default function ActivityScreen() {
@@ -351,6 +422,9 @@ export default function ActivityScreen() {
               />
             </View>
           ) : null}
+
+          {/* Health Connect / Apple HealthKit integration */}
+          <HealthConnectCard />
         </ScrollView>
       )}
     </SafeAreaView>

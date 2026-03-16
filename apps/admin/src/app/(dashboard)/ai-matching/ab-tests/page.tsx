@@ -9,47 +9,70 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { formatNumber } from '@/lib/formatters';
 import { LazyAbTestCharts } from './ab-test-charts-lazy';
+import { fetchExperimentMetrics } from './actions';
+
+function fmtPct(v: number | null | undefined): string {
+  if (v == null) return '\u2014';
+  return `${(v * 100).toFixed(1)}%`;
+}
+
+function computeLift(control: number | null, treatment: number | null): string {
+  if (control == null || treatment == null || control === 0) return '\u2014';
+  return `${(((treatment - control) / control) * 100).toFixed(1)}%`;
+}
 
 export default async function AbTestsPage() {
-  const t = await getTranslations('aiMatching.abTests');
+  const [data, t] = await Promise.all([
+    fetchExperimentMetrics(),
+    getTranslations('aiMatching.abTests'),
+  ]);
 
-  const experiment = {
-    name: 'ML Matching vs Rule-Based',
-    status: 'running' as const,
-    startDate: '2026-03-10',
-    groups: { control: 50, treatment: 50 },
-    totalUsers: 0,
-  };
+  const control = data.variants.find((v) => v.variant === 'control');
+  const treatment = data.variants.find((v) => v.variant === 'treatment');
+  const totalUsers = data.variants.reduce((sum, v) => sum + v.totalUsers, 0);
+
+  const controlWalkRate =
+    control && control.totalMatches > 0 ? control.totalWalksCompleted / control.totalMatches : null;
+  const treatmentWalkRate =
+    treatment && treatment.totalMatches > 0
+      ? treatment.totalWalksCompleted / treatment.totalMatches
+      : null;
 
   const metrics = [
     {
       name: t('metricMatchRate'),
-      control: '—',
-      treatment: '—',
-      lift: '—',
-      pValue: '—',
-    },
-    {
-      name: t('metricAcceptRate'),
-      control: '—',
-      treatment: '—',
-      lift: '—',
-      pValue: '—',
+      control: fmtPct(control?.avgMatchRate),
+      treatment: fmtPct(treatment?.avgMatchRate),
+      lift: computeLift(control?.avgMatchRate ?? null, treatment?.avgMatchRate ?? null),
     },
     {
       name: t('metricAvgScore'),
-      control: '—',
-      treatment: '—',
-      lift: '—',
-      pValue: '—',
+      control: fmtPct(control?.avgCompatibilityScore),
+      treatment: fmtPct(treatment?.avgCompatibilityScore),
+      lift: computeLift(
+        control?.avgCompatibilityScore ?? null,
+        treatment?.avgCompatibilityScore ?? null,
+      ),
     },
     {
       name: t('metricWalkCompletion'),
-      control: '—',
-      treatment: '—',
-      lift: '—',
-      pValue: '—',
+      control: fmtPct(controlWalkRate),
+      treatment: fmtPct(treatmentWalkRate),
+      lift: computeLift(controlWalkRate, treatmentWalkRate),
+    },
+    {
+      name: t('metricAcceptRate'),
+      control:
+        control && control.totalMatches > 0
+          ? (control.totalMessages / control.totalMatches).toFixed(1)
+          : '\u2014',
+      treatment:
+        treatment && treatment.totalMatches > 0
+          ? (treatment.totalMessages / treatment.totalMatches).toFixed(1)
+          : '\u2014',
+      lift: '\u2014',
     },
   ];
 
@@ -65,8 +88,8 @@ export default async function AbTestsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>{experiment.name}</CardTitle>
-              <CardDescription>{t('startedOn', { date: experiment.startDate })}</CardDescription>
+              <CardTitle>ML Matching vs Rule-Based</CardTitle>
+              <CardDescription>{t('startedOn', { date: '2026-03-10' })}</CardDescription>
             </div>
             <Badge variant="success">{t('statusRunning')}</Badge>
           </div>
@@ -75,22 +98,18 @@ export default async function AbTestsPage() {
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('groupControl')}</p>
-              <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-                {experiment.groups.control}%
-              </p>
+              <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">50%</p>
             </div>
             <div>
               <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 {t('groupTreatment')}
               </p>
-              <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-                {experiment.groups.treatment}%
-              </p>
+              <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">50%</p>
             </div>
             <div>
               <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('totalUsers')}</p>
               <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-                {experiment.totalUsers}
+                {formatNumber(totalUsers)}
               </p>
             </div>
           </div>
@@ -111,7 +130,6 @@ export default async function AbTestsPage() {
                 <TableHead>{t('columnControl')}</TableHead>
                 <TableHead>{t('columnTreatment')}</TableHead>
                 <TableHead>{t('columnLift')}</TableHead>
-                <TableHead>{t('columnPValue')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -121,7 +139,6 @@ export default async function AbTestsPage() {
                   <TableCell>{metric.control}</TableCell>
                   <TableCell>{metric.treatment}</TableCell>
                   <TableCell>{metric.lift}</TableCell>
-                  <TableCell>{metric.pValue}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -130,7 +147,7 @@ export default async function AbTestsPage() {
       </Card>
 
       {/* Charts (client component — recharts needs browser APIs) */}
-      <LazyAbTestCharts />
+      <LazyAbTestCharts data={data.timeSeries} />
     </div>
   );
 }

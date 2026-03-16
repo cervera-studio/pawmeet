@@ -9,7 +9,7 @@ import { useNearbyUsers } from '@/hooks/useNearbyUsers';
 
 type NearbyUser = RouterOutput['users']['findNearby']['users'][number];
 
-export type { NearbyUser, GroupEvent };
+export type { GroupEvent, NearbyUser };
 
 export function useMapViewModel() {
   const router = useRouter();

@@ -8,6 +8,7 @@ import type {
   FeedbackRepository,
   FeedRepository,
   FollowRepository,
+  GamificationRepository,
   GroupChatRepository,
   GroupEventRepository,
   MatchRepository,
@@ -45,4 +46,7 @@ export const SMART_MATCHING_REPOSITORY = Symbol(
   'SmartMatchingRepository',
 ) as InjectionToken<SmartMatchingRepository>;
 export const FOLLOW_REPOSITORY = Symbol('FollowRepository') as InjectionToken<FollowRepository>;
+export const GAMIFICATION_REPOSITORY = Symbol(
+  'GamificationRepository',
+) as InjectionToken<GamificationRepository>;
 export const ANALYTICS_SERVICE = Symbol('AnalyticsService') as InjectionToken<AnalyticsService>;

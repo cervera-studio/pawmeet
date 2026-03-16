@@ -31,6 +31,7 @@ export function createMlTrainingLabelsWorker() {
       // Query mature matches with all signals needed for outcome label computation.
       // LEFT JOINs gather chat, walk, and feedback signals per match.
       const result = await db.execute<{
+        [key: string]: unknown;
         match_id: string;
         dog_a_id: string;
         dog_b_id: string;

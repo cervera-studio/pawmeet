@@ -2,6 +2,7 @@ import { formatDogAge, logger } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useXpSummary } from '@/hooks/useGamification';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
@@ -16,6 +17,7 @@ export function useProfileViewModel() {
   const selectedDogId = useDogsStore((s) => s.selectedDogId);
   const setSelectedDog = useDogsStore((s) => s.setSelectedDog);
   const { uploading, uploadAvatar } = useImageUpload();
+  const { xpSummary, fetchXpSummary } = useXpSummary();
   const [loadingDogs, setLoadingDogs] = useState(true);
   const [followCounts, setFollowCounts] = useState({ followers: 0, following: 0 });
 
@@ -26,6 +28,11 @@ export function useProfileViewModel() {
       .catch((e) => logger.warn('ProfileScreen', 'Failed to fetch dogs', e))
       .finally(() => setLoadingDogs(false));
   }, [setDogs]);
+
+  // Fetch XP summary for gamification bar
+  useEffect(() => {
+    void fetchXpSummary();
+  }, [fetchXpSummary]);
 
   // Fetch denormalized counts from user profile
   useEffect(() => {
@@ -76,6 +83,10 @@ export function useProfileViewModel() {
     router.push('/(tabs)/profile/friends');
   };
 
+  const navigateToGamification = () => {
+    router.push('/(tabs)/profile/gamification');
+  };
+
   const navigateToBlocked = () => {
     router.push('/(modals)/blocked');
   };
@@ -100,9 +111,11 @@ export function useProfileViewModel() {
     navigateToSettings,
     navigateToActivity,
     navigateToMatchingInsights,
+    xpSummary,
     navigateToFollowers,
     navigateToFollowing,
     navigateToFriends,
+    navigateToGamification,
     navigateToBlocked,
     navigateToSearchUsers,
     logout,

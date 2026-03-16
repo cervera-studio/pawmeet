@@ -3,6 +3,7 @@ import type {
   Achievement,
   Challenge,
   LeaderboardEntry,
+  Streak,
   UserChallenge,
   XpTransaction,
 } from '@pawmeet/types';
@@ -28,11 +29,42 @@ export interface GamificationRepository {
     completedAt: Date | null,
   ): Promise<UserChallenge>;
   findActiveChallengesByType(type: ChallengeType, now: Date): Promise<Challenge[]>;
+  createChallenge(data: {
+    type: string;
+    title: string;
+    description: string;
+    targetValue: number;
+    xpReward: number;
+    startsAt: Date;
+    endsAt: Date;
+  }): Promise<Challenge>;
 
   // Achievements
   findAchievementsByUser(userId: string): Promise<Achievement[]>;
   hasAchievement(userId: string, type: AchievementType): Promise<boolean>;
   unlockAchievement(userId: string, type: AchievementType): Promise<Achievement>;
+
+  // Streaks
+  getStreak(userId: string, type: string): Promise<Streak | null>;
+  upsertStreak(
+    userId: string,
+    type: string,
+    data: { currentLength: number; longestLength: number; lastActivityDate: Date },
+  ): Promise<Streak>;
+  findStreaksOlderThan(date: Date): Promise<Streak[]>;
+  breakStreak(streakId: string): Promise<void>;
+
+  // Admin challenge management
+  listAllChallenges(limit: number, offset: number): Promise<{ data: Challenge[]; total: number }>;
+  deleteChallenge(challengeId: string): Promise<void>;
+
+  // Aggregate fitness stats (admin)
+  getAggregateFitnessStats(): Promise<{
+    totalWalks: number;
+    avgDistanceKm: number;
+    totalDistanceKm: number;
+    topWalkers: { userId: string; displayName: string | null; totalKm: number }[];
+  }>;
 
   // Stats (for achievement checks)
   countCompletedWalks(userId: string): Promise<number>;

@@ -23,6 +23,7 @@ import { createListUserEvents } from '../use-cases/list-user-events.js';
 import { createRemoveEventSponsor } from '../use-cases/remove-event-sponsor.js';
 import { createRequestJoinEvent } from '../use-cases/request-join-event.js';
 import { createUpdateGroupEvent } from '../use-cases/update-group-event.js';
+import { gamificationDeps as _gamificationDeps, awardXp } from './gamification-container.js';
 import {
   badgeRepo,
   dogRepo,
@@ -65,6 +66,9 @@ export const groupEventDeps = {
   listEventSponsors: createListEventSponsors({ eventSponsorRepo }),
   getEventRecap: createGetEventRecap({ groupEventRepo, userRepo }),
   inviteToEvent: createInviteToEvent({ groupEventRepo, userRepo, dogRepo, notificationService }),
+  awardXp,
+  updateChallengeProgress: _gamificationDeps.updateChallengeProgress,
+  checkAndUnlockAchievements: _gamificationDeps.checkAndUnlockAchievements,
 };
 
 export const eventSponsorDeps = {

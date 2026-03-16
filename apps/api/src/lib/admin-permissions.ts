@@ -36,5 +36,5 @@ function requireRole(adminRole: string, minRole: AdminRoleValue): void {
   }
 }
 
-export { AdminRole, hasMinRole, requireRole };
 export type { AdminRoleValue };
+export { AdminRole, hasMinRole, requireRole };

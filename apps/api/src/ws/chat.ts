@@ -63,10 +63,20 @@ async function isConnectionAllowed(userId: string): Promise<boolean> {
   }
 }
 
-// Re-export public API so existing imports keep working
-export { WS_EVENT, type WsEvent, type WsMessage };
-export { getConnections, getRooms, isUserOnline, joinRoom, leaveRoom, sendToRoom, sendToUser };
 export { parseWsMessage } from './handlers.js';
+// Re-export public API so existing imports keep working
+export {
+  getConnections,
+  getRooms,
+  isUserOnline,
+  joinRoom,
+  leaveRoom,
+  sendToRoom,
+  sendToUser,
+  WS_EVENT,
+  type WsEvent,
+  type WsMessage,
+};
 
 /** Set up the WebSocket server attached to an HTTP server */
 export function setupWebSocket(server: ServerType) {

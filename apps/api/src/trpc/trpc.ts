@@ -82,6 +82,13 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.userId) {
     throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
   }
+
+  // Fire-and-forget: refresh user presence TTL on every authenticated call
+  const uid = ctx.userId;
+  if (uid) {
+    void import('../lib/user-presence.js').then(({ markUserActive }) => markUserActive(uid));
+  }
+
   return next({ ctx: { ...ctx, userId: ctx.userId } });
 });
 

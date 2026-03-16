@@ -22,6 +22,11 @@
     "turbo": "^2.8.0",
     "vitest": "^4.0.0"
   },
+  "pnpm": {
+    "overrides": {
+      "@smithy/types": "^4.13.1"
+    }
+  },
   "packageManager": "pnpm@10.6.0",
   "engines": {
     "node": ">=22"

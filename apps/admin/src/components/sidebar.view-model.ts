@@ -2,6 +2,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import {
+  ActivityIcon,
   AlertTriangleIcon,
   BellIcon,
   BrainIcon,
@@ -13,6 +14,7 @@ import {
   ScrollTextIcon,
   SettingsIcon,
   ShieldIcon,
+  TrophyIcon,
   UsersIcon,
   UserXIcon,
 } from '@/components/icons';
@@ -38,6 +40,8 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
     { name: t('dogs'), href: '/dogs', icon: PawPrintIcon },
     { name: t('breeds'), href: '/breeds', icon: ListIcon },
     { name: t('events'), href: '/group-events', icon: CalendarIcon },
+    { name: t('challenges'), href: '/challenges', icon: TrophyIcon },
+    { name: t('fitness'), href: '/fitness', icon: ActivityIcon },
     { name: t('organizations'), href: '/organizations', icon: BuildingIcon },
     {
       name: t('safety'),

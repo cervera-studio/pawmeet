@@ -16,6 +16,8 @@ export const ANALYTICS_EVENT_CATEGORIES = {
   Permission: 'permission',
   Privacy: 'privacy',
   Admin: 'admin',
+  Ml: 'ml',
+  Experiment: 'experiment',
 } as const;
 
 export type AnalyticsEventCategory =
@@ -186,6 +188,46 @@ export interface AnalyticsEventMap {
   admin_report_resolved: { reportId: string; action: string };
   admin_event_created: { eventId: string; category: string; maxParticipants: number };
   admin_settings_updated: { changedFields: string[] };
+
+  // ML Matching
+  ml_score_served: {
+    algorithmVariant: 'rule_based' | 'ml_v1' | 'ml_v2';
+    score: number;
+    featureCount: number;
+    latencyMs: number;
+  };
+  ml_model_version_active: {
+    modelVersion: string;
+    trainedAt: string;
+    trainingMetrics: { auc: number; precision: number; recall: number };
+  };
+  ml_score_fallback: {
+    reason: 'model_not_loaded' | 'redis_error' | 'inference_error';
+  };
+
+  // Experiment
+  experiment_user_assigned: {
+    experimentName: string;
+    variant: 'control' | 'treatment';
+    assignmentMethod: 'deterministic_hash';
+  };
+  experiment_variant_evaluated: {
+    experimentName: string;
+    variant: 'control' | 'treatment';
+    gateResult: boolean;
+  };
+  experiment_auto_stopped: {
+    experimentName: string;
+    reason: string;
+    metric: string;
+    treatmentValue: number;
+    controlValue: number;
+  };
+
+  // Admin AI
+  admin_experiment_viewed: { experimentName: string };
+  admin_feature_flag_updated: { flagName: string; enabled: boolean; splitPercent?: number };
+  admin_model_performance_viewed: { dateRange: string };
 
   // Privacy
   privacy_consent_updated: {

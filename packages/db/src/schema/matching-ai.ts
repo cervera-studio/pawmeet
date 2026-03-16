@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+  boolean,
   check,
   doublePrecision,
   index,
@@ -169,5 +170,102 @@ export const userActivityWindows = pgTable(
   ],
 );
 
-// A/B experiments and assignments are managed via Statsig (statsig.com).
-// No custom tables needed — Statsig handles variant assignment, targeting, and metrics.
+// A/B experiments and variant assignments are managed via Redis (Upstash).
+
+// ── ML Training ─────────────────────────────────────────────────────────────
+
+export const mlTrainingSamples = pgTable(
+  'ml_training_samples',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    matchId: uuid('match_id')
+      .notNull()
+      .references(() => matches.id, { onDelete: 'cascade' }),
+    dogAId: uuid('dog_a_id')
+      .notNull()
+      .references(() => dogProfiles.id, { onDelete: 'cascade' }),
+    dogBId: uuid('dog_b_id')
+      .notNull()
+      .references(() => dogProfiles.id, { onDelete: 'cascade' }),
+    featureVector: jsonb('feature_vector').notNull(),
+    outcomeLabel: doublePrecision('outcome_label').notNull(),
+    labelVersion: integer('label_version').notNull().default(1),
+    maturedAt: timestamp('matured_at', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('ml_training_samples_matured_at_idx').on(table.maturedAt),
+    index('ml_training_samples_label_version_idx').on(table.labelVersion),
+    check(
+      'ml_training_samples_outcome_label_range',
+      sql`${table.outcomeLabel} >= -0.3 AND ${table.outcomeLabel} <= 1.0`,
+    ),
+  ],
+);
+
+// ── ML Model Registry ───────────────────────────────────────────────────────
+
+export const mlModelRegistry = pgTable(
+  'ml_model_registry',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    version: varchar('version', { length: 50 }).notNull().unique(),
+    r2Path: varchar('r2_path', { length: 500 }).notNull(),
+    trainingSamplesCount: integer('training_samples_count').notNull(),
+    metrics: jsonb('metrics'),
+    featureSchema: jsonb('feature_schema'),
+    hyperparameters: jsonb('hyperparameters'),
+    isActive: boolean('is_active').notNull().default(false),
+    promotedAt: timestamp('promoted_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('ml_model_registry_is_active_idx').on(table.isActive)],
+);
+
+// ── Experiment Metrics Snapshots ────────────────────────────────────────────
+
+export const experimentMetricsSnapshots = pgTable(
+  'experiment_metrics_snapshots',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    experimentName: varchar('experiment_name', { length: 100 }).notNull(),
+    snapshotDate: timestamp('snapshot_date', { mode: 'date' }).notNull(),
+    variant: varchar('variant', { length: 50 }).notNull(),
+    userCount: integer('user_count').notNull().default(0),
+    totalDiscoveries: integer('total_discoveries').notNull().default(0),
+    totalLikes: integer('total_likes').notNull().default(0),
+    totalMatches: integer('total_matches').notNull().default(0),
+    totalWalksCompleted: integer('total_walks_completed').notNull().default(0),
+    totalMessages: integer('total_messages').notNull().default(0),
+    avgCompatibilityScore: doublePrecision('avg_compatibility_score'),
+    avgMatchRate: doublePrecision('avg_match_rate'),
+    retainedD7: integer('retained_d7').default(0),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('experiment_metrics_snapshots_name_date_variant_idx').on(
+      table.experimentName,
+      table.snapshotDate,
+      table.variant,
+    ),
+    index('experiment_metrics_snapshots_date_idx').on(table.snapshotDate),
+  ],
+);
+
+// ── Model Performance Daily ─────────────────────────────────────────────────
+
+export const modelPerformanceDaily = pgTable(
+  'model_performance_daily',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    snapshotDate: timestamp('snapshot_date', { mode: 'date' }).notNull(),
+    totalPredictions: integer('total_predictions').notNull().default(0),
+    totalMatches: integer('total_matches').notNull().default(0),
+    avgOverallScore: doublePrecision('avg_overall_score'),
+    scoreBuckets: jsonb('score_buckets'),
+    weightDistribution: jsonb('weight_distribution'),
+    successRateDistribution: jsonb('success_rate_distribution'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('model_performance_daily_snapshot_date_idx').on(table.snapshotDate)],
+);

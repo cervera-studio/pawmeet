@@ -35,8 +35,8 @@ import { JwksSocialAuthVerifier } from '../infra/jwks-social-auth-verifier.js';
 import { JwtAuthService } from '../infra/jwt-auth-service.js';
 import { PostHogAnalyticsProvider } from '../infra/posthog-analytics-provider.js';
 import { R2StorageService } from '../infra/r2-storage-service.js';
+import { RedisExperimentService } from '../infra/redis-experiment-service.js';
 import { ResendEmailService } from '../infra/resend-email-service.js';
-import { StatsigExperimentService } from '../infra/statsig-experiment-service.js';
 import { WsChatService } from '../infra/ws-chat-service.js';
 import { WsFeedRealtimeService } from '../infra/ws-feed-realtime-service.js';
 import { db } from '../lib/db.js';
@@ -87,10 +87,7 @@ export const chat = new WsChatService();
 export const notificationService = new BullMQNotificationService();
 export const feedRealtime = new WsFeedRealtimeService();
 export const organizationAuthorizer = createOrganizationAuthorizer();
-export const experimentService = new StatsigExperimentService(
-  process.env.STATSIG_SERVER_SECRET ?? '',
-  consentRepo,
-);
+export const experimentService = new RedisExperimentService(consentRepo);
 
 // ── Analytics providers (dual-write: Neon + external) ───────────────────────
 

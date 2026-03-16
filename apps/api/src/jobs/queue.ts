@@ -27,6 +27,13 @@ export const QUEUE_NAMES = {
   GDPR_EXPORT: 'gdpr-export',
   RECURRING_EVENT: 'recurring-event',
   MESSAGE_TOXICITY: 'message-toxicity',
+  ML_TRAINING_LABELS: 'ml-training-labels',
+  ML_FEATURE_COMPUTE: 'ml-feature-compute',
+  ML_TRAINING: 'ml-training',
+  ML_RECOMMENDATIONS: 'ml-recommendations',
+  ML_OPTIMAL_TIMES: 'ml-optimal-times',
+  EXPERIMENT_METRICS: 'experiment-metrics',
+  EXPERIMENT_GUARDRAILS: 'experiment-guardrails',
 } as const;
 
 // --- Lazy queue instances ---
@@ -423,4 +430,203 @@ export async function moveToAnalyticsDlq(
     error,
     failedAt: new Date().toISOString(),
   });
+}
+
+// ── ML Training Labels ───────────────────────────────────────────────────────
+
+let _mlTrainingLabelsQueue: Queue | null = null;
+
+export function getMlTrainingLabelsQueue(): Queue {
+  if (!_mlTrainingLabelsQueue) {
+    _mlTrainingLabelsQueue = new Queue(QUEUE_NAMES.ML_TRAINING_LABELS, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _mlTrainingLabelsQueue;
+}
+
+/** Schedule daily ML training label materialization at 01:00 UTC (before analytics aggregation). */
+export async function scheduleMlTrainingLabels() {
+  const queue = getMlTrainingLabelsQueue();
+  await queue.upsertJobScheduler(
+    'daily-ml-training-labels',
+    { pattern: '0 1 * * *' },
+    { name: 'materialize' },
+  );
+}
+
+// ── ML Feature Compute ───────────────────────────────────────────────────────
+
+let _mlFeatureComputeQueue: Queue | null = null;
+
+export function getMlFeatureComputeQueue(): Queue {
+  if (!_mlFeatureComputeQueue) {
+    _mlFeatureComputeQueue = new Queue(QUEUE_NAMES.ML_FEATURE_COMPUTE, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _mlFeatureComputeQueue;
+}
+
+/** Schedule ML feature precomputation every 4 hours. */
+export async function scheduleMlFeatureCompute() {
+  const queue = getMlFeatureComputeQueue();
+  await queue.upsertJobScheduler(
+    'periodic-ml-feature-compute',
+    { pattern: '0 */4 * * *' },
+    { name: 'compute' },
+  );
+}
+
+// ── ML Training ──────────────────────────────────────────────────────────────
+
+let _mlTrainingQueue: Queue | null = null;
+
+export function getMlTrainingQueue(): Queue {
+  if (!_mlTrainingQueue) {
+    _mlTrainingQueue = new Queue(QUEUE_NAMES.ML_TRAINING, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 2,
+        backoff: { type: 'exponential', delay: 30000 },
+        removeOnComplete: 10,
+        removeOnFail: 50,
+      },
+    });
+  }
+  return _mlTrainingQueue;
+}
+
+/** Schedule weekly ML model training on Sunday at 03:00 UTC. */
+export async function scheduleMlTraining() {
+  const queue = getMlTrainingQueue();
+  await queue.upsertJobScheduler('weekly-ml-training', { pattern: '0 3 * * 0' }, { name: 'train' });
+}
+
+// ── ML Recommendations ───────────────────────────────────────────────────────
+
+let _mlRecommendationsQueue: Queue | null = null;
+
+export function getMlRecommendationsQueue(): Queue {
+  if (!_mlRecommendationsQueue) {
+    _mlRecommendationsQueue = new Queue(QUEUE_NAMES.ML_RECOMMENDATIONS, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _mlRecommendationsQueue;
+}
+
+/** Schedule ML recommendations precomputation every 2 hours. */
+export async function scheduleMlRecommendations() {
+  const queue = getMlRecommendationsQueue();
+  await queue.upsertJobScheduler(
+    'periodic-ml-recommendations',
+    { pattern: '0 */2 * * *' },
+    { name: 'compute' },
+  );
+}
+
+// ── ML Optimal Times ─────────────────────────────────────────────────────────
+
+let _mlOptimalTimesQueue: Queue | null = null;
+
+export function getMlOptimalTimesQueue(): Queue {
+  if (!_mlOptimalTimesQueue) {
+    _mlOptimalTimesQueue = new Queue(QUEUE_NAMES.ML_OPTIMAL_TIMES, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _mlOptimalTimesQueue;
+}
+
+/** Schedule daily optimal time prediction at 04:00 UTC. */
+export async function scheduleMlOptimalTimes() {
+  const queue = getMlOptimalTimesQueue();
+  await queue.upsertJobScheduler(
+    'daily-ml-optimal-times',
+    { pattern: '0 4 * * *' },
+    { name: 'compute' },
+  );
+}
+
+// ── Experiment Metrics ───────────────────────────────────────────────────────
+
+let _experimentMetricsQueue: Queue | null = null;
+
+export function getExperimentMetricsQueue(): Queue {
+  if (!_experimentMetricsQueue) {
+    _experimentMetricsQueue = new Queue(QUEUE_NAMES.EXPERIMENT_METRICS, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _experimentMetricsQueue;
+}
+
+/** Schedule daily experiment metrics snapshot at 03:30 UTC. */
+export async function scheduleExperimentMetrics() {
+  const queue = getExperimentMetricsQueue();
+  await queue.upsertJobScheduler(
+    'daily-experiment-metrics',
+    { pattern: '30 3 * * *' },
+    { name: 'snapshot' },
+  );
+}
+
+// ── Experiment Guardrails ────────────────────────────────────────────────────
+
+let _experimentGuardrailsQueue: Queue | null = null;
+
+export function getExperimentGuardrailsQueue(): Queue {
+  if (!_experimentGuardrailsQueue) {
+    _experimentGuardrailsQueue = new Queue(QUEUE_NAMES.EXPERIMENT_GUARDRAILS, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 30,
+        removeOnFail: 100,
+      },
+    });
+  }
+  return _experimentGuardrailsQueue;
+}
+
+/** Schedule daily experiment guardrail check at 04:30 UTC. */
+export async function scheduleExperimentGuardrails() {
+  const queue = getExperimentGuardrailsQueue();
+  await queue.upsertJobScheduler(
+    'daily-experiment-guardrails',
+    { pattern: '30 4 * * *' },
+    { name: 'check' },
+  );
 }

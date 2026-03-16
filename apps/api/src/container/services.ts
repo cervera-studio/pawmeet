@@ -101,6 +101,14 @@ export const eventSponsorRepo = new DrizzleEventSponsorRepository(db);
 export const gdprExportRepo = new DrizzleGdprExportRepository(db);
 export const emergencyContactRepo = new DrizzleEmergencyContactRepository(db);
 
+// ── Embedding (pgvector) ─────────────────────────────────────────────────────
+
+import { DrizzleEmbeddingRepository } from '../infra/drizzle-embedding-repository.js';
+import { LocalEmbeddingService } from '../infra/embedding-service.js';
+
+export const embeddingRepo = new DrizzleEmbeddingRepository(db);
+export const embeddingService = new LocalEmbeddingService();
+
 // ── Services ────────────────────────────────────────────────────────────────────
 
 export const authService = new JwtAuthService();

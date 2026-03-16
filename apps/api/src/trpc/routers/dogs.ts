@@ -6,6 +6,7 @@ import {
 } from '@pawmeet/validation';
 import { z } from 'zod';
 import type { dogDeps } from '../../container/index.js';
+import { enqueueEmbeddingGeneration } from '../../jobs/queue.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, publicProcedure, router, unwrapResult } from '../trpc.js';
@@ -45,6 +46,7 @@ export function createDogsRouter(deps: typeof dogDeps) {
         photoCount: 0,
         isNeutered: input.isNeutered,
       });
+      enqueueEmbeddingGeneration({ dogId: result.dog.id, trigger: 'create' });
       return result;
     }),
 
@@ -59,6 +61,7 @@ export function createDogsRouter(deps: typeof dogDeps) {
         trackEvent('dog_profile_updated', ctx.userId, {
           fieldsChanged: Object.keys(input.data),
         });
+        enqueueEmbeddingGeneration({ dogId: input.id, trigger: 'update' });
         return result;
       }),
 

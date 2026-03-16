@@ -1,7 +1,12 @@
 import { container } from 'tsyringe';
 import { api } from '@/lib/trpc';
 import { createBufferedAnalyticsService } from '@/services/buffered-analytics-service';
+import { createNetworkStateAdapter } from '@/services/network-state-adapter';
 import { createNoOpAnalyticsService } from '@/services/noop-analytics-service';
+import { createSqliteLocalCache } from '@/services/sqlite-local-cache';
+import { createSyncQueueAdapter } from '@/services/sync-queue-adapter';
+import { createCompositeChatRepository } from './composite/composite-chat-repository';
+import { createCompositeFeedRepository } from './composite/composite-feed-repository';
 import { createTrpcActivityRepository } from './remote/trpc-activity-repository';
 import { createTrpcAuthRepository } from './remote/trpc-auth-repository';
 import { createTrpcBadgeRepository } from './remote/trpc-badge-repository';
@@ -14,6 +19,7 @@ import { createTrpcGroupChatRepository } from './remote/trpc-group-chat-reposito
 import { createTrpcGroupEventRepository } from './remote/trpc-group-event-repository';
 import { createTrpcMatchRepository } from './remote/trpc-match-repository';
 import { createTrpcMediaRepository } from './remote/trpc-media-repository';
+import { createTrpcSafetyRepository } from './remote/trpc-safety-repository';
 import { createTrpcSmartMatchingRepository } from './remote/trpc-smart-matching-repository';
 import { createTrpcUserRepository } from './remote/trpc-user-repository';
 import { createTrpcWalkRepository } from './remote/trpc-walk-repository';
@@ -32,22 +38,23 @@ import {
   GROUP_EVENT_REPOSITORY,
   MATCH_REPOSITORY,
   MEDIA_REPOSITORY,
+  SAFETY_REPOSITORY,
   SMART_MATCHING_REPOSITORY,
   USER_REPOSITORY,
   WALK_REPOSITORY,
   WALK_TRACKING_REPOSITORY,
 } from './tokens';
 
+// Remote-only repositories (no offline caching needed)
 container.register(AUTH_REPOSITORY, { useValue: createTrpcAuthRepository(api) });
 container.register(MATCH_REPOSITORY, { useValue: createTrpcMatchRepository(api) });
-container.register(CHAT_REPOSITORY, { useValue: createTrpcChatRepository(api) });
 container.register(WALK_REPOSITORY, { useValue: createTrpcWalkRepository(api) });
 container.register(WALK_TRACKING_REPOSITORY, {
   useValue: createTrpcWalkTrackingRepository(api),
 });
-container.register(FEED_REPOSITORY, { useValue: createTrpcFeedRepository(api) });
 container.register(FOLLOW_REPOSITORY, { useValue: createTrpcFollowRepository(api) });
 container.register(MEDIA_REPOSITORY, { useValue: createTrpcMediaRepository(api) });
+container.register(SAFETY_REPOSITORY, { useValue: createTrpcSafetyRepository(api) });
 container.register(GROUP_EVENT_REPOSITORY, {
   useValue: createTrpcGroupEventRepository(api),
 });
@@ -63,6 +70,30 @@ container.register(SMART_MATCHING_REPOSITORY, {
 });
 container.register(GAMIFICATION_REPOSITORY, {
   useValue: createTrpcGamificationRepository(api),
+});
+
+// Shared infrastructure for composite repositories (injected, not imported)
+const localCache = createSqliteLocalCache();
+const networkState = createNetworkStateAdapter();
+const syncQueue = createSyncQueueAdapter();
+
+// Composite repositories (offline-first with SQLite caching + sync queue)
+container.register(CHAT_REPOSITORY, {
+  useValue: createCompositeChatRepository({
+    remote: createTrpcChatRepository(api),
+    cache: localCache,
+    network: networkState,
+    syncQueue,
+  }),
+});
+
+container.register(FEED_REPOSITORY, {
+  useValue: createCompositeFeedRepository({
+    remote: createTrpcFeedRepository(api),
+    cache: localCache,
+    network: networkState,
+    syncQueue,
+  }),
 });
 
 const analyticsService = __DEV__

@@ -5,6 +5,7 @@ import { calculateDistance } from '@pawmeet/utils';
 import type { ScoringStrategy } from '../domain/scoring-strategy.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
 import { redis } from '../lib/redis.js';
+import type { EmbeddingRepository } from '../ports/embedding-repository.js';
 import type {
   DogRepository,
   ExperimentService,
@@ -19,6 +20,7 @@ type Deps = {
   experimentService: ExperimentService;
   ruleBasedStrategy: ScoringStrategy;
   mlStrategy: ScoringStrategy;
+  embeddingRepo: EmbeddingRepository;
 };
 
 // ── Filter helpers ──────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ export function createDiscoverCandidatesAi({
   experimentService,
   ruleBasedStrategy,
   mlStrategy,
+  embeddingRepo,
 }: Deps) {
   return async (
     userId: string,
@@ -96,16 +99,38 @@ export function createDiscoverCandidatesAi({
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
-    // Check Statsig feature gate for AI matching
+    // Check Statsig feature gates for AI matching and vector pre-filtering
     const useAi = await experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
-    const variant = useAi ? 'ai_enhanced' : 'rule_based';
+    const useVector = await experimentService.checkGate(userId, STATSIG_GATE.VECTOR_MATCHING);
+    const variantBase = useAi ? 'ai_enhanced' : 'rule_based';
+    const variant = useVector ? `vector_${variantBase}` : variantBase;
     const strategy = useAi ? mlStrategy : ruleBasedStrategy;
 
     // Get already-swiped dog IDs
     const swipedIds = new Set(await matchRepo.findSwipedDogIds(dogId));
 
-    // Get candidate dogs
-    const candidates = await matchRepo.findCandidateDogs(userId);
+    // Get candidate dogs — vector pre-filtering narrows the pool, standard loads all
+    let candidates: Awaited<ReturnType<typeof matchRepo.findCandidateDogs>>;
+    if (useVector) {
+      const dogEmbedding = await embeddingRepo.findByDogId(dogId);
+      if (dogEmbedding) {
+        // Vector pre-filter: get top-N nearest, then load full profiles via standard repo
+        const nearest = await embeddingRepo.findNearestDogIds(
+          dogEmbedding.embedding,
+          effectiveLimit * 3,
+          userId,
+          [...swipedIds],
+        );
+        const nearestIds = new Set(nearest.map((n) => n.dogId));
+        const allCandidates = await matchRepo.findCandidateDogs(userId);
+        candidates = allCandidates.filter((c) => nearestIds.has(c.dog.id));
+      } else {
+        // No embedding yet — fall back to standard path (embedding generated async by worker)
+        candidates = await matchRepo.findCandidateDogs(userId);
+      }
+    } else {
+      candidates = await matchRepo.findCandidateDogs(userId);
+    }
 
     // Apply filters, score, and rank
     const scoredPromises = candidates.flatMap((c) => {
@@ -182,6 +207,7 @@ export function createDiscoverCandidatesAi({
       if (curr && prev && curr.dog.size === prev.dog.size) {
         const next = suggestions.findIndex((s, j) => j > i && s.dog.size !== curr.dog.size);
         if (next !== -1) {
+          // biome-ignore lint/style/noNonNullAssertion: findIndex guarantees valid index
           suggestions[i] = suggestions[next]!;
           suggestions[next] = curr;
         }

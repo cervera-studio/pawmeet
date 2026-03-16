@@ -37,6 +37,7 @@ export const QUEUE_NAMES = {
   WEEKLY_CHALLENGES: 'weekly-challenges',
   STREAK_CHECK: 'streak-check',
   RISING_COMPATIBILITY: 'rising-compatibility',
+  EMBEDDING_GENERATION: 'embedding-generation',
 } as const;
 
 // --- Lazy queue instances ---
@@ -715,4 +716,34 @@ export async function scheduleRisingCompatibility() {
     { pattern: '0 5 * * *' },
     { name: 'detect' },
   );
+}
+
+// ── Embedding Generation ──────────────────────────────────────────────────────
+
+export interface EmbeddingGenerationJobData {
+  dogId: string;
+  trigger: 'create' | 'update';
+}
+
+let _embeddingGenerationQueue: Queue | null = null;
+
+export function getEmbeddingGenerationQueue(): Queue {
+  if (!_embeddingGenerationQueue) {
+    _embeddingGenerationQueue = new Queue(QUEUE_NAMES.EMBEDDING_GENERATION, {
+      connection: getRedisConnection(),
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: 100,
+        removeOnFail: 500,
+      },
+    });
+  }
+  return _embeddingGenerationQueue;
+}
+
+export async function enqueueEmbeddingGeneration(data: EmbeddingGenerationJobData) {
+  return getEmbeddingGenerationQueue().add('generate', data, {
+    jobId: `embed-${data.dogId}`,
+  });
 }

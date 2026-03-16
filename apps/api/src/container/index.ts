@@ -20,6 +20,7 @@ export {
   analyticsWorkerDeps,
   contentModerationWorkerDeps,
   dataCleanupDeps,
+  embeddingGenerationDeps,
   eventStatusDeps,
   experimentGuardrailsDeps,
   experimentMetricsDeps,

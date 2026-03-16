@@ -1,7 +1,7 @@
 import { ANALYTICS_BATCH_MAX_EVENTS, ANALYTICS_FLUSH_INTERVAL_MS } from '@pawmeet/config';
 import type { AnalyticsEventMap, AnalyticsEventName, AnalyticsService } from '@pawmeet/types';
 import * as Crypto from 'expo-crypto';
-import { AppState } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import { useAuthStore } from '@/stores/auth';
 import { useConsentStore } from '@/stores/consent';
 
@@ -97,7 +97,7 @@ export function createBufferedAnalyticsService(apiUrl: string): AnalyticsService
         eventName: event,
         properties: properties as Record<string, unknown>,
         clientTimestamp: new Date().toISOString(),
-        platform: 'ios', // TODO: detect from Platform.OS
+        platform: Platform.OS as 'ios' | 'android',
         sessionId: sessionId ?? undefined,
       };
 

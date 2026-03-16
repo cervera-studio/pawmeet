@@ -1,12 +1,18 @@
+import { logger } from '@pawmeet/utils';
 import * as Haptics from 'expo-haptics';
+import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useWalkTracking } from '@/hooks/useWalkTracking';
+import { container } from '@/repositories/container';
+import { SAFETY_REPOSITORY } from '@/repositories/tokens';
 
 export function useTrackingViewModel() {
   const router = useRouter();
   const tracking = useWalkTracking();
+  const [sosLoading, setSosLoading] = useState(false);
+  const safetyRepo = useMemo(() => container.resolve(SAFETY_REPOSITORY), []);
 
   const handleStart = useCallback(async () => {
     const success = await tracking.startTracking();
@@ -39,6 +45,45 @@ export function useTrackingViewModel() {
     ]);
   }, [tracking, router]);
 
+  const handleSos = useCallback(() => {
+    Alert.alert(
+      'SOS — Emergenza',
+      'Invia un allarme al tuo compagno di passeggiata con la tua posizione attuale?',
+      [
+        { text: 'Annulla', style: 'cancel' },
+        {
+          text: 'Invia SOS',
+          style: 'destructive',
+          onPress: async () => {
+            setSosLoading(true);
+            try {
+              const walkId = (tracking.track as Record<string, unknown> | null)?.walkId as
+                | string
+                | undefined;
+              if (!walkId) {
+                Alert.alert('Errore', 'Nessuna passeggiata attiva per inviare SOS.');
+                return;
+              }
+              const location = await Location.getLastKnownPositionAsync();
+              await safetyRepo.sos({
+                walkId,
+                latitude: location?.coords.latitude,
+                longitude: location?.coords.longitude,
+              });
+              void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              Alert.alert('SOS inviato', 'Il tuo compagno è stato avvisato.');
+            } catch (e) {
+              logger.warn('TrackingVM', 'SOS failed', e);
+              Alert.alert('Errore', "Impossibile inviare l'SOS. Riprova.");
+            } finally {
+              setSosLoading(false);
+            }
+          },
+        },
+      ],
+    );
+  }, [tracking.track, safetyRepo]);
+
   const formatElapsed = useCallback((seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -50,6 +95,7 @@ export function useTrackingViewModel() {
   return {
     isTracking: tracking.isTracking,
     loading: tracking.loading,
+    sosLoading,
     elapsedSeconds: tracking.elapsedSeconds,
     distanceKm: tracking.distanceKm,
     currentSpeed: tracking.currentSpeed,
@@ -62,5 +108,6 @@ export function useTrackingViewModel() {
     formattedSpeed: `${tracking.currentSpeed.toFixed(1)} km/h`,
     handleStart,
     handleStop,
+    handleSos,
   };
 }

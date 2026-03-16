@@ -28,6 +28,9 @@ export function usePushNotifications() {
   useEffect(() => {
     registerForPushNotifications();
 
+    // Reset badge count when the app is opened
+    Notifications.setBadgeCountAsync(0).catch(() => {});
+
     // Listen for incoming notifications (app in foreground)
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
       logger.debug('Push', 'Notification received', notification.request.content);
@@ -35,7 +38,26 @@ export function usePushNotifications() {
 
     // Listen for notification taps (navigate to relevant screen)
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      // Clear badge on tap
+      Notifications.setBadgeCountAsync(0).catch(() => {});
+
       const data = response.notification.request.content.data;
+
+      if (data?.type === 'walk_overdue' && data?.walkId) {
+        router.push('/(tabs)/walks');
+        return;
+      }
+
+      if (data?.type === 'walk_sos' && data?.walkId) {
+        router.push('/(tabs)/walks');
+        return;
+      }
+
+      if (data?.type === 'event_reminder' && data?.eventId) {
+        router.push(`/(tabs)/events/${data.eventId}`);
+        return;
+      }
+
       if (data?.matchId) {
         router.push(`/(tabs)/chat/${data.matchId}`);
       }

@@ -16,8 +16,12 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useWebSocketManager } from '@/hooks/useWebSocket';
 import { getExpiringPins, validatePinsInitialized } from '@/lib/certificate-pinning';
 import { checkDeviceIntegrity } from '@/lib/device-security';
+import { startNetworkMonitor, stopNetworkMonitor } from '@/lib/network';
+import { api } from '@/lib/trpc';
 import { container } from '@/repositories/container';
 import { ANALYTICS_SERVICE } from '@/repositories/tokens';
+import { drainQueue, initSyncEngine } from '@/services/sync-engine';
+import { createTrpcMutationExecutor } from '@/services/trpc-mutation-executor';
 import { useAuthStore } from '@/stores/auth';
 import { initConsentSubscription, useConsentStore } from '@/stores/consent';
 import { useThemeStore } from '@/stores/theme';
@@ -118,6 +122,23 @@ function CertificatePinMonitor() {
   return null;
 }
 
+/** Initializes the network monitor and sync engine for offline-first support. */
+function OfflineFirstManager() {
+  useEffect(() => {
+    startNetworkMonitor();
+    initSyncEngine(createTrpcMutationExecutor(api));
+
+    // Drain any queued mutations on startup
+    void drainQueue();
+
+    return () => {
+      stopNetworkMonitor();
+    };
+  }, []);
+
+  return null;
+}
+
 /** Checks for root/jailbreak indicators on startup and logs a warning. */
 function DeviceIntegrityMonitor() {
   useEffect(() => {
@@ -176,6 +197,7 @@ function RootLayout() {
         <StatsigProviderExpo sdkKey={STATSIG_CLIENT_KEY} user={statsigUser}>
           <CertificatePinMonitor />
           <DeviceIntegrityMonitor />
+          <OfflineFirstManager />
           <AuthHydrator />
           {isAuthenticated && <PushNotificationRegistration />}
           {isAuthenticated && <WebSocketManager />}

@@ -3,6 +3,7 @@ import {
   analyticsProviders,
   analyticsWorkerDeps,
   dataCleanupDeps,
+  embeddingGenerationDeps,
   eventStatusDeps,
   experimentGuardrailsDeps,
   experimentMetricsDeps,
@@ -27,6 +28,7 @@ import {
 import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createDataCleanupWorker } from './data-cleanup.js';
+import { createEmbeddingGenerationWorker } from './embedding-generation.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
 import { createExperimentGuardrailsWorker } from './experiment-guardrails.js';
 import { createExperimentMetricsWorker } from './experiment-metrics.js';
@@ -92,6 +94,7 @@ export async function startWorkers() {
   const experimentGuardrailsWorker = createExperimentGuardrailsWorker(experimentGuardrailsDeps);
   const weeklyChallengeWorker = createWeeklyChallengeRotationWorker(weeklyChallengeRotationDeps);
   const streakCheckWorker = createStreakCheckWorker(streakCheckDeps);
+  const embeddingGenerationWorker = createEmbeddingGenerationWorker(embeddingGenerationDeps);
   const messageToxicityWorker = messageToxicityDeps
     ? createMessageToxicityWorker(messageToxicityDeps)
     : null;
@@ -144,6 +147,7 @@ export async function startWorkers() {
       experimentGuardrailsWorker.close(),
       weeklyChallengeWorker.close(),
       streakCheckWorker.close(),
+      embeddingGenerationWorker.close(),
       ...(messageToxicityWorker ? [messageToxicityWorker.close()] : []),
     ]);
     // Flush analytics providers after workers stop to prevent event loss on deploys

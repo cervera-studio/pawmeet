@@ -151,7 +151,11 @@ const listBreedsSchema = z.object({
 });
 
 const createBreedSchema = z.object({
-  code: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/, 'Code must be lowercase alphanumeric with underscores'),
+  code: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9_]+$/, 'Code must be lowercase alphanumeric with underscores'),
   group: z.string().max(50).optional(),
   sizeCategory: sizeCategoryEnum,
   avgWeightKg: z.number().int().positive().optional(),
@@ -159,7 +163,12 @@ const createBreedSchema = z.object({
 
 const updateBreedSchema = z.object({
   id: z.number().int().positive(),
-  code: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/).optional(),
+  code: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9_]+$/)
+    .optional(),
   group: z.string().max(50).optional(),
   sizeCategory: sizeCategoryEnum.optional(),
   avgWeightKg: z.number().int().positive().optional(),

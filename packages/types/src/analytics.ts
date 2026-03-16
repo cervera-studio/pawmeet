@@ -230,6 +230,22 @@ export interface AnalyticsEventMap {
   admin_model_performance_viewed: { dateRange: string };
   admin_model_promoted: { version: string };
 
+  // Embedding / Vector Matching
+  ml_embedding_generated: {
+    modelVersion: string;
+    trigger: 'create' | 'update';
+    latencyMs: number;
+  };
+  ml_embedding_generation_failed: {
+    reason: string;
+    trigger: 'create' | 'update';
+  };
+  ml_vector_prefilter_used: {
+    candidateCount: number;
+    topN: number;
+    latencyMs: number;
+  };
+
   // Rising Compatibility
   rising_compatibility_notified: { risingCount: number };
 

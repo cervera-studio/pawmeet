@@ -5,6 +5,7 @@ export * from './analytics-daily';
 export * from './badges';
 export * from './breeds';
 export * from './chat';
+export * from './dog-embeddings';
 export * from './dogs';
 export * from './emergency-contacts';
 export * from './event-sponsors';

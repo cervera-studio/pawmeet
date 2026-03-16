@@ -144,6 +144,39 @@ export function getExpiringPins(): PinnedDomain[] {
 }
 
 /**
+ * Get domains with certificates expiring within a given number of days.
+ * Use in CI or scheduled health checks to ensure pins are rotated before expiry.
+ *
+ * @param daysThreshold - Number of days to check. Defaults to each domain's alertDaysBeforeExpiry.
+ * @returns Array of objects with domain, daysUntilExpiry, and expiryDate.
+ */
+export function getPinRotationReport(): Array<{
+  domain: PinnedDomain;
+  daysUntilExpiry: number;
+  expiryDate: Date;
+  lastRotated: Date;
+  isPlaceholder: boolean;
+}> {
+  const now = new Date();
+
+  return Object.entries(PIN_METADATA).map(([domain, meta]) => {
+    const daysUntilExpiry = Math.floor(
+      (meta.primaryExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    const config = PINNED_DOMAINS[domain as PinnedDomain];
+    const isPlaceholder = config.pins.some((pin) => PLACEHOLDER_PATTERN.test(pin));
+
+    return {
+      domain: domain as PinnedDomain,
+      daysUntilExpiry,
+      expiryDate: meta.primaryExpiry,
+      lastRotated: meta.lastRotated,
+      isPlaceholder,
+    };
+  });
+}
+
+/**
  * Validate that a domain is in the pinning allowlist.
  * Use this to guard network requests in development/testing.
  */

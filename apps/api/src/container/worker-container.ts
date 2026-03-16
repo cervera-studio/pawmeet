@@ -11,6 +11,8 @@ import {
   dataCleanupRepo,
   dogRepo,
   emailService,
+  embeddingRepo,
+  embeddingService,
   experimentGuardrailsRepo,
   experimentMetricsJobRepo,
   feedRepo,
@@ -143,4 +145,10 @@ export const streakCheckDeps = {
 
 export const weeklyChallengeRotationDeps = {
   gamificationRepo,
+};
+
+export const embeddingGenerationDeps = {
+  dogRepo,
+  embeddingRepo,
+  embeddingService,
 };

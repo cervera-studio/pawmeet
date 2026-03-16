@@ -1,7 +1,7 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
 import { getBreedName } from '@pawmeet/config';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';

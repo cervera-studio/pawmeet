@@ -26,6 +26,7 @@ export const STATSIG_EXPERIMENT = {
 /** Statsig feature gate names */
 export const STATSIG_GATE = {
   AI_MATCHING: 'ai_matching_enabled',
+  VECTOR_MATCHING: 'vector_matching_enabled',
   FRIEND_SYSTEM: 'ff_friend_system',
   EVENTS_V2: 'ff_events_v2',
   MAIN_EVENTS: 'ff_main_events',

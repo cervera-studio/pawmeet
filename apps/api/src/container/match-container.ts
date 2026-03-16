@@ -19,6 +19,7 @@ import { createUnmatch } from '../use-cases/unmatch.js';
 import { gamificationDeps as _gamificationDeps, awardXp } from './gamification-container.js';
 import {
   dogRepo,
+  embeddingRepo,
   experimentService,
   followRepo,
   matchingAiRepo,
@@ -62,6 +63,7 @@ export const matchingAiDeps = {
     experimentService,
     ruleBasedStrategy,
     mlStrategy,
+    embeddingRepo,
   }),
   getMatchExplanation: createGetMatchExplanation({ matchRepo, dogRepo, userRepo }),
   // Repositories exposed for presence-based queries in the router

@@ -1,6 +1,6 @@
-import { TRPCError } from '@trpc/server';
 import type { GroupEventStatus } from '@pawmeet/types';
 import { GROUP_EVENT_STATUS } from '@pawmeet/types';
+import { TRPCError } from '@trpc/server';
 
 const VALID_TRANSITIONS: Record<GroupEventStatus, readonly GroupEventStatus[]> = {
   [GROUP_EVENT_STATUS.SCHEDULED]: [GROUP_EVENT_STATUS.IN_PROGRESS, GROUP_EVENT_STATUS.CANCELLED],

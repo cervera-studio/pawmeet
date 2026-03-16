@@ -35,6 +35,7 @@ import {
 export const analyticsWorkerDeps = {
   providers: analyticsProviders,
   consentRepo,
+  analyticsJobRepo,
 };
 
 export const analyticsAggregationDeps = {

@@ -1,11 +1,13 @@
-import { dogProfiles, matches, walks } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { and, eq, sql } from 'drizzle-orm';
-import { db } from '../lib/db.js';
+import type { WalkJobRepository } from '../ports/walk-job-repository.js';
 import { enqueueNotification, getRedisConnection } from './queue.js';
 
 const WALK_REMINDER = 'walk-reminder';
+
+interface WalkReminderDeps {
+  walkJobRepo: WalkJobRepository;
+}
 
 /**
  * Finds accepted walks starting soon and sends push reminders.
@@ -13,7 +15,9 @@ const WALK_REMINDER = 'walk-reminder';
  * - 1 hour before (55-65 min window)
  * - 15 minutes before (10-20 min window)
  */
-export function createWalkReminderWorker() {
+export function createWalkReminderWorker(deps: WalkReminderDeps) {
+  const { walkJobRepo } = deps;
+
   const worker = new Worker(
     WALK_REMINDER,
     async () => {
@@ -27,42 +31,17 @@ export function createWalkReminderWorker() {
       const fifteenMinFrom = new Date(now.getTime() + 10 * 60 * 1000);
       const fifteenMinTo = new Date(now.getTime() + 20 * 60 * 1000);
 
-      const upcomingWalks = await db
-        .select({
-          id: walks.id,
-          title: walks.title,
-          scheduledAt: walks.scheduledAt,
-          location: walks.location,
-          createdBy: walks.createdBy,
-          matchId: walks.matchId,
-        })
-        .from(walks)
-        .where(
-          and(
-            eq(walks.status, 'accepted'),
-            sql`(${walks.scheduledAt} BETWEEN ${oneHourFrom} AND ${oneHourTo}
-              OR ${walks.scheduledAt} BETWEEN ${fifteenMinFrom} AND ${fifteenMinTo})`,
-          ),
-        );
+      const upcomingWalks = await walkJobRepo.findUpcomingAcceptedWalks([
+        { from: oneHourFrom, to: oneHourTo },
+        { from: fifteenMinFrom, to: fifteenMinTo },
+      ]);
 
       if (upcomingWalks.length === 0) return;
 
       logger.info('walk-reminder', `Found ${upcomingWalks.length} walks needing reminders`);
 
       for (const walk of upcomingWalks) {
-        const match = await db
-          .select({ dogAId: matches.dogAId, dogBId: matches.dogBId })
-          .from(matches)
-          .where(eq(matches.id, walk.matchId))
-          .limit(1);
-
-        if (!match[0]) continue;
-
-        // Get owner user IDs from dog profiles
-        const dogs = await db
-          .select({ ownerId: dogProfiles.ownerId })
-          .from(dogProfiles)
-          .where(sql`${dogProfiles.id} IN (${match[0].dogAId}, ${match[0].dogBId})`);
+        const ownerIds = await walkJobRepo.getMatchDogOwnerIds(walk.matchId);
 
         const minutesUntil = Math.round((walk.scheduledAt.getTime() - now.getTime()) / (60 * 1000));
         const timeLabel = minutesUntil > 30 ? '1 ora' : `${minutesUntil} minuti`;
@@ -71,9 +50,9 @@ export function createWalkReminderWorker() {
           ? `Tra ${timeLabel} — ${walk.title ?? 'Passeggiata'} a ${walk.location}`
           : `Tra ${timeLabel} — ${walk.title ?? 'Passeggiata'}`;
 
-        for (const dog of dogs) {
+        for (const ownerId of ownerIds) {
           await enqueueNotification({
-            userId: dog.ownerId,
+            userId: ownerId,
             title,
             body,
             data: { type: 'walk_reminder', walkId: walk.id },

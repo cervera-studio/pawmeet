@@ -1,8 +1,6 @@
-import { analyticsEvents } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { sql } from 'drizzle-orm';
-import { db } from '../lib/db.js';
+import type { ExperimentGuardrailsRepository } from '../ports/experiment-guardrails-repository.js';
 import { redis } from '../lib/redis.js';
 import { trackEvent } from '../lib/track-event.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
@@ -23,6 +21,10 @@ interface GuardrailResult {
   breached: boolean;
 }
 
+interface ExperimentGuardrailsDeps {
+  experimentGuardrailsRepo: ExperimentGuardrailsRepository;
+}
+
 /**
  * BullMQ worker that checks A/B experiment guardrail metrics daily at 04:30 UTC.
  *
@@ -34,7 +36,9 @@ interface GuardrailResult {
  * When any guardrail is breached, sets `experiment:{name}:kill` in Redis
  * and tracks an `experiment_auto_stopped` event.
  */
-export function createExperimentGuardrailsWorker() {
+export function createExperimentGuardrailsWorker(deps: ExperimentGuardrailsDeps) {
+  const { experimentGuardrailsRepo } = deps;
+
   const worker = new Worker(
     QUEUE_NAMES.EXPERIMENT_GUARDRAILS,
     async () => {
@@ -45,63 +49,34 @@ export function createExperimentGuardrailsWorker() {
         return;
       }
 
-      const lookbackFilter = sql`${analyticsEvents.serverTimestamp} >= NOW() - interval '${sql.raw(String(GUARDRAIL_LOOKBACK_DAYS))} days'`;
-      const variantFilter = sql`${analyticsEvents.properties}->>'experiment_variant' IS NOT NULL`;
-      const baseFilter = sql`${lookbackFilter} AND ${variantFilter}`;
+      const now = new Date();
+      const dayStart = new Date(now.getTime() - GUARDRAIL_LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
+      const nextDayStart = now;
 
       // Unmatch rate per variant: match_unmatched / match_created
-      const unmatchRows = await db.execute<{
-        variant: string;
-        unmatches: string;
-        creates: string;
-      }>(sql`
-        SELECT
-          ${analyticsEvents.properties}->>'experiment_variant' AS variant,
-          COUNT(*) FILTER (WHERE ${analyticsEvents.eventName} = 'match_unmatched') AS unmatches,
-          COUNT(*) FILTER (WHERE ${analyticsEvents.eventName} = 'match_created') AS creates
-        FROM ${analyticsEvents}
-        WHERE ${baseFilter}
-          AND ${analyticsEvents.eventName} IN ('match_unmatched', 'match_created')
-        GROUP BY ${analyticsEvents.properties}->>'experiment_variant'
-      `);
+      const unmatchRows = await experimentGuardrailsRepo.getVariantUnmatchRates({
+        dayStart,
+        nextDayStart,
+      });
 
       // Feed empty rate per variant: match_feed_exhausted / match_feed_loaded
-      const feedRows = await db.execute<{
-        variant: string;
-        exhausted: string;
-        loaded: string;
-      }>(sql`
-        SELECT
-          ${analyticsEvents.properties}->>'experiment_variant' AS variant,
-          COUNT(*) FILTER (WHERE ${analyticsEvents.eventName} = 'match_feed_exhausted') AS exhausted,
-          COUNT(*) FILTER (WHERE ${analyticsEvents.eventName} = 'match_feed_loaded') AS loaded
-        FROM ${analyticsEvents}
-        WHERE ${baseFilter}
-          AND ${analyticsEvents.eventName} IN ('match_feed_exhausted', 'match_feed_loaded')
-        GROUP BY ${analyticsEvents.properties}->>'experiment_variant'
-      `);
+      const feedRows = await experimentGuardrailsRepo.getVariantFeedEmptyRates({
+        dayStart,
+        nextDayStart,
+      });
 
       // D7 retention proxy: unique active users (app_opened) / unique enrolled users per variant
-      const retentionRows = await db.execute<{
-        variant: string;
-        active_users: string;
-        enrolled_users: string;
-      }>(sql`
-        SELECT
-          ${analyticsEvents.properties}->>'experiment_variant' AS variant,
-          COUNT(DISTINCT ${analyticsEvents.userId}) FILTER (WHERE ${analyticsEvents.eventName} = 'app_opened') AS active_users,
-          COUNT(DISTINCT ${analyticsEvents.userId}) AS enrolled_users
-        FROM ${analyticsEvents}
-        WHERE ${baseFilter}
-        GROUP BY ${analyticsEvents.properties}->>'experiment_variant'
-      `);
+      const retentionRows = await experimentGuardrailsRepo.getVariantRetentionRates({
+        dayStart,
+        nextDayStart,
+      });
 
       // Build per-variant metrics
       const metrics = new Map<string, VariantMetrics>();
       for (const variant of ['control', 'treatment']) {
-        const unmatch = unmatchRows.rows.find((r) => r.variant === variant);
-        const feed = feedRows.rows.find((r) => r.variant === variant);
-        const retention = retentionRows.rows.find((r) => r.variant === variant);
+        const unmatch = unmatchRows.find((r) => r.variant === variant);
+        const feed = feedRows.find((r) => r.variant === variant);
+        const retention = retentionRows.find((r) => r.variant === variant);
 
         const creates = Number(unmatch?.creates ?? 0);
         const loaded = Number(feed?.loaded ?? 0);

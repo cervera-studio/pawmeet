@@ -1,8 +1,6 @@
-import { users } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { and, eq, gt, isNotNull } from 'drizzle-orm';
-import { db } from '../lib/db.js';
+import type { RisingCompatibilityRepository } from '../ports/rising-compatibility-repository.js';
 import { redis } from '../lib/redis.js';
 import { trackEvent } from '../lib/track-event.js';
 import { enqueueNotification, getRedisConnection, QUEUE_NAMES } from './queue.js';
@@ -12,6 +10,10 @@ const ACTIVE_DAYS = 7;
 const USER_BATCH_SIZE = 200;
 const PREV_SCORES_TTL = 48 * 60 * 60; // 48h
 
+interface RisingCompatibilityDeps {
+  risingCompatibilityRepo: RisingCompatibilityRepository;
+}
+
 /**
  * BullMQ worker that detects "rising compatibility" between users.
  * When a user's compatibility score with a specific candidate increases by >15%
@@ -20,7 +22,9 @@ const PREV_SCORES_TTL = 48 * 60 * 60; // 48h
  *
  * Scheduled daily at 05:00 UTC (after ML recommendations precomputation).
  */
-export function createRisingCompatibilityWorker() {
+export function createRisingCompatibilityWorker(deps: RisingCompatibilityDeps) {
+  const { risingCompatibilityRepo } = deps;
+
   const worker = new Worker(
     QUEUE_NAMES.RISING_COMPATIBILITY,
     async () => {
@@ -35,21 +39,11 @@ export function createRisingCompatibilityWorker() {
 
       while (true) {
         // Fetch batch of active users with location
-        const activeUsers = await db
-          .select({
-            id: users.id,
-          })
-          .from(users)
-          .where(
-            and(
-              eq(users.isActive, true),
-              isNotNull(users.latitude),
-              isNotNull(users.longitude),
-              gt(users.lastLoginAt, activeThreshold),
-            ),
-          )
-          .limit(USER_BATCH_SIZE)
-          .offset(offset);
+        const activeUsers = await risingCompatibilityRepo.getActiveUsersWithLocationBatch(
+          activeThreshold,
+          USER_BATCH_SIZE,
+          offset,
+        );
 
         if (activeUsers.length === 0) break;
 
@@ -147,8 +141,8 @@ async function detectRisingForUser(userId: string): Promise<boolean> {
   if (risingCount > 0) {
     await enqueueNotification({
       userId,
-      title: 'Nuove compatibilit\u00E0 in crescita!',
-      body: `Hai ${risingCount} nuovi match con compatibilit\u00E0 in aumento. Dai un'occhiata!`,
+      title: 'Nuove compatibilità in crescita!',
+      body: `Hai ${risingCount} nuovi match con compatibilità in aumento. Dai un'occhiata!`,
       data: { screen: 'discover' },
     });
 

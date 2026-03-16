@@ -1,10 +1,16 @@
 import { Worker } from 'bullmq';
-import { gamificationRepo } from '../container/services.js';
+import type { GamificationRepository } from '../ports/gamification-repository.js';
 import { trackEvent } from '../lib/track-event.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
+interface StreakCheckDeps {
+  gamificationRepo: GamificationRepository;
+}
+
 /** Worker that breaks stale streaks (lastActivityDate < yesterday). */
-export function createStreakCheckWorker(): Worker {
+export function createStreakCheckWorker(deps: StreakCheckDeps): Worker {
+  const { gamificationRepo } = deps;
+
   return new Worker(
     QUEUE_NAMES.STREAK_CHECK,
     async () => {

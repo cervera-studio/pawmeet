@@ -1,8 +1,6 @@
-import { userActivityWindows, users } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { and, eq, gt, isNotNull, sql } from 'drizzle-orm';
-import { db } from '../lib/db.js';
+import type { MlOptimalTimesRepository } from '../ports/ml-optimal-times-repository.js';
 import { redis } from '../lib/redis.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
@@ -19,13 +17,19 @@ interface OptimalTimeSlot {
   nearbyCount: number;
 }
 
+interface MlOptimalTimesDeps {
+  mlOptimalTimesRepo: MlOptimalTimesRepository;
+}
+
 /**
  * BullMQ worker that computes optimal walking times per active user.
  * Scheduled daily at 04:00 UTC. Cross-correlates user activity windows
  * with nearby users' patterns to find best overlap times.
  * Results stored in Redis as JSON (ml:optimal-times:{userId}).
  */
-export function createMlOptimalTimesWorker() {
+export function createMlOptimalTimesWorker(deps: MlOptimalTimesDeps) {
+  const { mlOptimalTimesRepo } = deps;
+
   const worker = new Worker(
     QUEUE_NAMES.ML_OPTIMAL_TIMES,
     async () => {
@@ -39,24 +43,11 @@ export function createMlOptimalTimesWorker() {
 
       while (true) {
         // Fetch batch of active users with location and activity data
-        const activeUsers = await db
-          .select({
-            id: users.id,
-            latitude: users.latitude,
-            longitude: users.longitude,
-            searchRadiusKm: users.searchRadiusKm,
-          })
-          .from(users)
-          .where(
-            and(
-              eq(users.isActive, true),
-              isNotNull(users.latitude),
-              isNotNull(users.longitude),
-              gt(users.lastLoginAt, activeThreshold),
-            ),
-          )
-          .limit(USER_BATCH_SIZE)
-          .offset(offset);
+        const activeUsers = await mlOptimalTimesRepo.getActiveUsersWithLocationBatch(
+          activeThreshold,
+          USER_BATCH_SIZE,
+          offset,
+        );
 
         if (activeUsers.length === 0) break;
 
@@ -64,7 +55,7 @@ export function createMlOptimalTimesWorker() {
           if (!user.latitude || !user.longitude) continue;
 
           try {
-            await computeOptimalTimesForUser(user);
+            await computeOptimalTimesForUser(mlOptimalTimesRepo, user);
           } catch (err) {
             logger.error(
               'ml-optimal-times',
@@ -97,48 +88,27 @@ export function createMlOptimalTimesWorker() {
   return worker;
 }
 
-async function computeOptimalTimesForUser(user: {
-  id: string;
-  latitude: number | null;
-  longitude: number | null;
-  searchRadiusKm: number;
-}) {
+async function computeOptimalTimesForUser(
+  mlOptimalTimesRepo: MlOptimalTimesRepository,
+  user: {
+    id: string;
+    latitude: number | null;
+    longitude: number | null;
+    searchRadiusKm: number;
+  },
+) {
   // 1. Get this user's activity windows
-  const ownWindows = await db
-    .select({
-      dayOfWeek: userActivityWindows.dayOfWeek,
-      hourOfDay: userActivityWindows.hourOfDay,
-      activityCount: userActivityWindows.activityCount,
-    })
-    .from(userActivityWindows)
-    .where(eq(userActivityWindows.userId, user.id));
+  const ownWindows = await mlOptimalTimesRepo.getUserActivityWindows(user.id);
 
   if (ownWindows.length === 0) return;
 
   // 2. Find nearby users' aggregated activity windows via PostGIS
-  const nearbyActivity = await db
-    .select({
-      dayOfWeek: userActivityWindows.dayOfWeek,
-      hourOfDay: userActivityWindows.hourOfDay,
-      totalActivity: sql<number>`SUM(${userActivityWindows.activityCount})`,
-      userCount: sql<number>`COUNT(DISTINCT ${userActivityWindows.userId})`,
-    })
-    .from(userActivityWindows)
-    .innerJoin(users, eq(userActivityWindows.userId, users.id))
-    .where(
-      and(
-        eq(users.isActive, true),
-        sql`${userActivityWindows.userId} != ${user.id}`,
-        isNotNull(users.latitude),
-        isNotNull(users.longitude),
-        sql`ST_DWithin(
-          ST_Point(${users.longitude}, ${users.latitude})::geography,
-          ST_Point(${user.longitude}, ${user.latitude})::geography,
-          ${user.searchRadiusKm * 1000}
-        )`,
-      ),
-    )
-    .groupBy(userActivityWindows.dayOfWeek, userActivityWindows.hourOfDay);
+  const nearbyActivity = await mlOptimalTimesRepo.getNearbyActivityWindows(
+    user.id,
+    user.latitude!,
+    user.longitude!,
+    user.searchRadiusKm,
+  );
 
   if (nearbyActivity.length === 0) return;
 

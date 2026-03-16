@@ -1,10 +1,22 @@
 import { analyticsDailyMetrics, analyticsEvents } from '@pawmeet/db';
 import { count, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
-import type { AnalyticsJobRepository } from '../ports/analytics-job-repository.js';
+import type {
+  AnalyticsEventInsert,
+  AnalyticsJobRepository,
+} from '../ports/analytics-job-repository.js';
 
 export class DrizzleAnalyticsJobRepository implements AnalyticsJobRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
+
+  async insertEvents(values: AnalyticsEventInsert[]): Promise<void> {
+    if (values.length === 0) return;
+
+    await this.db
+      .insert(analyticsEvents)
+      .values(values)
+      .onConflictDoNothing({ target: analyticsEvents.clientEventId });
+  }
 
   async getEventCountForDay(dayStart: Date, nextDayStart: Date): Promise<number> {
     const tsFilter = sql`${analyticsEvents.serverTimestamp} >= ${dayStart} AND ${analyticsEvents.serverTimestamp} < ${nextDayStart}`;

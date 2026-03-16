@@ -1,10 +1,10 @@
 import { ANALYTICS_MAX_EVENT_AGE_DAYS, ANALYTICS_WORKER_CONCURRENCY } from '@pawmeet/config';
-import { analyticsEvents, CONSENT_TYPE } from '@pawmeet/db';
+import { CONSENT_TYPE } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { ConsentRepository } from '../infra/drizzle-consent-repository.js';
 import { PostHogAnalyticsProvider } from '../infra/posthog-analytics-provider.js';
-import { db } from '../lib/db.js';
+import type { AnalyticsJobRepository } from '../ports/analytics-job-repository.js';
 import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 import type { AnalyticsJobData } from './queue.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
@@ -12,11 +12,12 @@ import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js'
 interface AnalyticsWorkerDeps {
   providers?: AnalyticsProvider[];
   consentRepo: ConsentRepository;
+  analyticsJobRepo: AnalyticsJobRepository;
 }
 
 export function createAnalyticsWorker(deps: AnalyticsWorkerDeps): Worker<AnalyticsJobData>;
 /**
- * @deprecated Pass `{ providers, consentRepo }` object instead.
+ * @deprecated Pass `{ providers, consentRepo, analyticsJobRepo }` object instead.
  */
 export function createAnalyticsWorker(providers: AnalyticsProvider[]): Worker<AnalyticsJobData>;
 export function createAnalyticsWorker(
@@ -26,6 +27,9 @@ export function createAnalyticsWorker(
     ? depsOrProviders
     : (depsOrProviders.providers ?? []);
   const consentRepo = Array.isArray(depsOrProviders) ? null : depsOrProviders.consentRepo;
+  const analyticsJobRepo = Array.isArray(depsOrProviders)
+    ? null
+    : depsOrProviders.analyticsJobRepo;
   const maxAgeMs = ANALYTICS_MAX_EVENT_AGE_DAYS * 24 * 60 * 60 * 1000;
 
   const worker = new Worker<AnalyticsJobData>(
@@ -56,9 +60,9 @@ export function createAnalyticsWorker(
         schemaVersion: 1,
       }));
 
-      await db.insert(analyticsEvents).values(values).onConflictDoNothing({
-        target: analyticsEvents.clientEventId,
-      });
+      if (analyticsJobRepo) {
+        await analyticsJobRepo.insertEvents(values);
+      }
 
       // Forward to external providers (PostHog, future OpenPanel) — best-effort
       // Only forward events from users who have granted analytics consent

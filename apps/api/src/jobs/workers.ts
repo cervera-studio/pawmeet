@@ -1,20 +1,35 @@
 import {
+  analyticsAggregationDeps,
   analyticsProviders,
   analyticsWorkerDeps,
   dataCleanupDeps,
   eventStatusDeps,
+  experimentGuardrailsDeps,
+  experimentMetricsDeps,
   gdprExportWorkerDeps,
   gpsRetentionDeps,
   messageToxicityDeps,
+  mlFeatureComputeDeps,
+  mlOptimalTimesDeps,
+  mlRecommendationsDeps,
+  mlTrainingLabelsDeps,
+  nearbySuggestionDeps,
   photoModerationDeps,
   recurringEventDeps,
+  risingCompatibilityDeps,
+  sendNotificationDeps,
   storyCleanupWorkerDeps,
+  streakCheckDeps,
+  walkReminderDeps,
+  walkSafetyAlertDeps,
+  weeklyChallengeRotationDeps,
 } from '../container/index.js';
-import { gamificationRepo } from '../container/services.js';
 import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createDataCleanupWorker } from './data-cleanup.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
+import { createExperimentGuardrailsWorker } from './experiment-guardrails.js';
+import { createExperimentMetricsWorker } from './experiment-metrics.js';
 import { createGdprExportWorker } from './gdpr-export.js';
 import { createGpsRetentionWorker } from './gps-retention.js';
 import { createMessageToxicityWorker } from './message-toxicity.js';
@@ -27,6 +42,8 @@ import { createPhotoModerationWorker } from './photo-moderation.js';
 import {
   scheduleAnalyticsAggregation,
   scheduleDataCleanup,
+  scheduleExperimentGuardrails,
+  scheduleExperimentMetrics,
   scheduleGpsRetention,
   scheduleMlFeatureCompute,
   scheduleMlOptimalTimes,
@@ -53,26 +70,28 @@ import { createWeeklyChallengeRotationWorker } from './weekly-challenge-rotation
 /** Start all BullMQ workers. Call this once on server startup. */
 export async function startWorkers() {
   const photoWorker = createPhotoModerationWorker(photoModerationDeps);
-  const notifWorker = createNotificationWorker();
+  const notifWorker = createNotificationWorker(sendNotificationDeps);
   const emailWorker = createEmailWorker();
   const eventStatusWorker = createEventStatusWorker(eventStatusDeps);
   const analyticsWorker = createAnalyticsWorker(analyticsWorkerDeps);
-  const aggregationWorker = createAnalyticsAggregationWorker();
+  const aggregationWorker = createAnalyticsAggregationWorker(analyticsAggregationDeps);
   const dataCleanupWorker = createDataCleanupWorker(dataCleanupDeps);
   const gdprExportWorker = createGdprExportWorker(gdprExportWorkerDeps);
   const storyCleanupWorker = createStoryCleanupWorker(storyCleanupWorkerDeps);
   const recurringEventWorker = createRecurringEventWorker(recurringEventDeps);
   const gpsRetentionWorker = createGpsRetentionWorker(gpsRetentionDeps);
-  const walkReminderWorker = createWalkReminderWorker();
-  const walkSafetyAlertWorker = createWalkSafetyAlertWorker();
-  const nearbySuggestionWorker = createNearbySuggestionWorker();
-  const mlTrainingLabelsWorker = createMlTrainingLabelsWorker();
-  const mlFeatureComputeWorker = createMlFeatureComputeWorker();
-  const mlRecommendationsWorker = createMlRecommendationsWorker();
-  const mlOptimalTimesWorker = createMlOptimalTimesWorker();
-  const risingCompatibilityWorker = createRisingCompatibilityWorker();
-  const weeklyChallengeWorker = createWeeklyChallengeRotationWorker({ gamificationRepo });
-  const streakCheckWorker = createStreakCheckWorker();
+  const walkReminderWorker = createWalkReminderWorker(walkReminderDeps);
+  const walkSafetyAlertWorker = createWalkSafetyAlertWorker(walkSafetyAlertDeps);
+  const nearbySuggestionWorker = createNearbySuggestionWorker(nearbySuggestionDeps);
+  const mlTrainingLabelsWorker = createMlTrainingLabelsWorker(mlTrainingLabelsDeps);
+  const mlFeatureComputeWorker = createMlFeatureComputeWorker(mlFeatureComputeDeps);
+  const mlRecommendationsWorker = createMlRecommendationsWorker(mlRecommendationsDeps);
+  const mlOptimalTimesWorker = createMlOptimalTimesWorker(mlOptimalTimesDeps);
+  const risingCompatibilityWorker = createRisingCompatibilityWorker(risingCompatibilityDeps);
+  const experimentMetricsWorker = createExperimentMetricsWorker(experimentMetricsDeps);
+  const experimentGuardrailsWorker = createExperimentGuardrailsWorker(experimentGuardrailsDeps);
+  const weeklyChallengeWorker = createWeeklyChallengeRotationWorker(weeklyChallengeRotationDeps);
+  const streakCheckWorker = createStreakCheckWorker(streakCheckDeps);
   const messageToxicityWorker = messageToxicityDeps
     ? createMessageToxicityWorker(messageToxicityDeps)
     : null;
@@ -92,6 +111,8 @@ export async function startWorkers() {
   await scheduleMlRecommendations();
   await scheduleMlOptimalTimes();
   await scheduleRisingCompatibility();
+  await scheduleExperimentMetrics();
+  await scheduleExperimentGuardrails();
   await scheduleWeeklyChallenges();
   await scheduleStreakCheck();
 
@@ -119,6 +140,8 @@ export async function startWorkers() {
       mlRecommendationsWorker.close(),
       mlOptimalTimesWorker.close(),
       risingCompatibilityWorker.close(),
+      experimentMetricsWorker.close(),
+      experimentGuardrailsWorker.close(),
       weeklyChallengeWorker.close(),
       streakCheckWorker.close(),
       ...(messageToxicityWorker ? [messageToxicityWorker.close()] : []),

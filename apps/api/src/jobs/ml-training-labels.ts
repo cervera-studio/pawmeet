@@ -1,9 +1,11 @@
-import { mlTrainingSamples } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { sql } from 'drizzle-orm';
-import { db } from '../lib/db.js';
+import type { MlTrainingRepository } from '../ports/ml-training-repository.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
+
+interface MlTrainingLabelsDeps {
+  mlTrainingRepo: MlTrainingRepository;
+}
 
 /**
  * BullMQ worker that materializes ML training labels for mature matches (>7 days old).
@@ -19,7 +21,9 @@ import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js'
  *
  * Idempotent: skips matches that already have a row in ml_training_samples.
  */
-export function createMlTrainingLabelsWorker() {
+export function createMlTrainingLabelsWorker(deps: MlTrainingLabelsDeps) {
+  const { mlTrainingRepo } = deps;
+
   const worker = new Worker(
     QUEUE_NAMES.ML_TRAINING_LABELS,
     async () => {
@@ -28,107 +32,7 @@ export function createMlTrainingLabelsWorker() {
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - 7);
 
-      // Query mature matches with all signals needed for outcome label computation.
-      // LEFT JOINs gather chat, walk, and feedback signals per match.
-      const result = await db.execute<{
-        [key: string]: unknown;
-        match_id: string;
-        dog_a_id: string;
-        dog_b_id: string;
-        compatibility_score: number;
-        is_active: boolean;
-        match_created_at: Date;
-        has_first_message: boolean;
-        has_reply_within_24h: boolean;
-        has_walk_proposed: boolean;
-        has_walk_completed: boolean;
-        avg_feedback_rating: number | null;
-        size_score: number | null;
-        energy_score: number | null;
-        behavior_score: number | null;
-        walk_score: number | null;
-        distance_score: number | null;
-        leash_score: number | null;
-        overall_score: number | null;
-      }>(sql`
-        SELECT
-          m.id AS match_id,
-          m.dog_a_id,
-          m.dog_b_id,
-          m.compatibility_score,
-          m.is_active,
-          m.created_at AS match_created_at,
-
-          -- First message exists
-          EXISTS (
-            SELECT 1 FROM messages msg WHERE msg.match_id = m.id
-          ) AS has_first_message,
-
-          -- Reply within 24h: second distinct sender replied within 24h of the first message
-          EXISTS (
-            SELECT 1
-            FROM messages msg1
-            JOIN messages msg2 ON msg2.match_id = m.id
-              AND msg2.sender_id <> msg1.sender_id
-              AND msg2.created_at <= msg1.created_at + interval '24 hours'
-            WHERE msg1.match_id = m.id
-              AND msg1.created_at = (
-                SELECT MIN(created_at) FROM messages WHERE match_id = m.id
-              )
-          ) AS has_reply_within_24h,
-
-          -- Walk proposed
-          EXISTS (
-            SELECT 1 FROM walks w WHERE w.match_id = m.id
-          ) AS has_walk_proposed,
-
-          -- Walk completed
-          EXISTS (
-            SELECT 1 FROM walks w WHERE w.match_id = m.id AND w.status = 'completed'
-          ) AS has_walk_completed,
-
-          -- Average feedback rating across all feedback for walks in this match
-          (
-            SELECT AVG(wf.rating)::double precision
-            FROM walk_feedback wf
-            JOIN walks w ON w.id = wf.walk_id
-            WHERE w.match_id = m.id
-          ) AS avg_feedback_rating,
-
-          -- Feature vector from swipe_score_logs (average of both directions)
-          scores.size_score,
-          scores.energy_score,
-          scores.behavior_score,
-          scores.walk_score,
-          scores.distance_score,
-          scores.leash_score,
-          scores.overall_score
-
-        FROM matches m
-
-        -- Exclude matches already materialized
-        LEFT JOIN ml_training_samples mts ON mts.match_id = m.id
-
-        -- Average swipe score logs for the pair (A→B and B→A)
-        LEFT JOIN LATERAL (
-          SELECT
-            AVG(ssl.size_score)::double precision AS size_score,
-            AVG(ssl.energy_score)::double precision AS energy_score,
-            AVG(ssl.behavior_score)::double precision AS behavior_score,
-            AVG(ssl.walk_score)::double precision AS walk_score,
-            AVG(ssl.distance_score)::double precision AS distance_score,
-            AVG(ssl.leash_score)::double precision AS leash_score,
-            AVG(ssl.overall_score)::double precision AS overall_score
-          FROM swipe_score_logs ssl
-          WHERE (ssl.swiper_dog_id = m.dog_a_id AND ssl.swiped_dog_id = m.dog_b_id)
-             OR (ssl.swiper_dog_id = m.dog_b_id AND ssl.swiped_dog_id = m.dog_a_id)
-        ) scores ON true
-
-        WHERE m.created_at < ${cutoff}
-          AND mts.id IS NULL
-      `);
-
-      const rows = result.rows;
+      const rows = await mlTrainingRepo.findMatureMatchesForLabeling(cutoff);
 
       if (rows.length === 0) {
         logger.info('ml-training-labels', 'No new mature matches to process');
@@ -184,7 +88,7 @@ export function createMlTrainingLabelsWorker() {
       });
 
       // Batch insert
-      await db.insert(mlTrainingSamples).values(samples);
+      await mlTrainingRepo.insertTrainingSamples(samples);
 
       logger.info('ml-training-labels', `Materialized ${samples.length} training labels`);
     },

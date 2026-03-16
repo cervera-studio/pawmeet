@@ -1,15 +1,6 @@
-import {
-  dogProfiles,
-  messages,
-  swipeScoreLogs,
-  userMatchingPreferences,
-  users,
-  walks,
-} from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { avg, count, eq, sql } from 'drizzle-orm';
-import { db } from '../lib/db.js';
+import type { MlFeatureRepository } from '../ports/ml-feature-repository.js';
 import { redis } from '../lib/redis.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
@@ -58,12 +49,18 @@ async function writeFeaturesInBatches(
   }
 }
 
+interface MlFeatureComputeDeps {
+  mlFeatureRepo: MlFeatureRepository;
+}
+
 /**
  * BullMQ worker that precomputes ML features for dogs and users,
  * storing them in Redis for fast access during scoring.
  * Scheduled every 4 hours via repeatable job.
  */
-export function createMlFeatureComputeWorker() {
+export function createMlFeatureComputeWorker(deps: MlFeatureComputeDeps) {
+  const { mlFeatureRepo } = deps;
+
   const worker = new Worker(
     QUEUE_NAMES.ML_FEATURE_COMPUTE,
     async () => {
@@ -75,24 +72,7 @@ export function createMlFeatureComputeWorker() {
       let totalDogs = 0;
 
       while (true) {
-        const dogs = await db
-          .select({
-            id: dogProfiles.id,
-            birthDate: dogProfiles.birthDate,
-            isNeutered: dogProfiles.isNeutered,
-            size: dogProfiles.size,
-            energyLevel: dogProfiles.energyLevel,
-            behaviorWithDogs: dogProfiles.behaviorWithDogs,
-            leashBehavior: dogProfiles.leashBehavior,
-            walkPrefTime: dogProfiles.walkPrefTime,
-            walkPrefDurationMin: dogProfiles.walkPrefDurationMin,
-            walkPrefDurationMax: dogProfiles.walkPrefDurationMax,
-            walkPrefTerrain: dogProfiles.walkPrefTerrain,
-          })
-          .from(dogProfiles)
-          .where(eq(dogProfiles.isActive, true))
-          .limit(DB_BATCH_SIZE)
-          .offset(dogOffset);
+        const dogs = await mlFeatureRepo.getActiveDogsBatch(DB_BATCH_SIZE, dogOffset);
 
         if (dogs.length === 0) break;
 
@@ -128,12 +108,7 @@ export function createMlFeatureComputeWorker() {
       let totalUsers = 0;
 
       while (true) {
-        const activeUsers = await db
-          .select({ id: users.id })
-          .from(users)
-          .where(eq(users.isActive, true))
-          .limit(DB_BATCH_SIZE)
-          .offset(userOffset);
+        const activeUsers = await mlFeatureRepo.getActiveUserIdsBatch(DB_BATCH_SIZE, userOffset);
 
         if (activeUsers.length === 0) break;
 
@@ -141,60 +116,27 @@ export function createMlFeatureComputeWorker() {
 
         for (const user of activeUsers) {
           // Like rate: likes / total swipes (via swipe_score_logs through user's dogs)
-          const [swipeStats] = await db
-            .select({
-              total: count(),
-              likes: sql<number>`count(*) filter (where ${swipeScoreLogs.direction} = 'like')`,
-            })
-            .from(swipeScoreLogs)
-            .innerJoin(dogProfiles, eq(swipeScoreLogs.swiperDogId, dogProfiles.id))
-            .where(eq(dogProfiles.ownerId, user.id));
+          const swipeStats = await mlFeatureRepo.getUserSwipeStats(user.id);
 
-          const totalSwipes = swipeStats?.total ?? 0;
-          const likeRate = totalSwipes > 0 ? Number(swipeStats?.likes ?? 0) / totalSwipes : 0;
+          const totalSwipes = swipeStats.total;
+          const likeRate = totalSwipes > 0 ? swipeStats.likes / totalSwipes : 0;
 
           // Match success rate and sample size from user_matching_preferences
-          const [matchPrefs] = await db
-            .select({
-              successRate: userMatchingPreferences.successRate,
-              sampleSize: userMatchingPreferences.sampleSize,
-            })
-            .from(userMatchingPreferences)
-            .where(eq(userMatchingPreferences.userId, user.id));
+          const matchPrefs = await mlFeatureRepo.getUserMatchPrefs(user.id);
 
           // Avg chat messages per match
-          const [msgStats] = await db
-            .select({
-              avgMessages: avg(sql<number>`msg_count`),
-            })
-            .from(
-              db
-                .select({
-                  matchId: messages.matchId,
-                  msg_count: count().as('msg_count'),
-                })
-                .from(messages)
-                .where(eq(messages.senderId, user.id))
-                .groupBy(messages.matchId)
-                .as('msg_per_match'),
-            );
+          const avgMessages = await mlFeatureRepo.getUserAvgMessages(user.id);
 
           // Walk completion rate: completed / total proposed
-          const [walkStats] = await db
-            .select({
-              total: count(),
-              completed: sql<number>`count(*) filter (where ${walks.status} = 'completed')`,
-            })
-            .from(walks)
-            .where(eq(walks.createdBy, user.id));
+          const walkStats = await mlFeatureRepo.getUserWalkStats(user.id);
 
-          const totalWalks = walkStats?.total ?? 0;
+          const totalWalks = walkStats.total;
 
           const features: UserFeatures = {
             likeRate,
             matchSuccessRate: matchPrefs?.successRate ?? 0,
-            avgChatMessages: Number(msgStats?.avgMessages ?? 0),
-            walkCompletionRate: totalWalks > 0 ? Number(walkStats?.completed ?? 0) / totalWalks : 0,
+            avgChatMessages: avgMessages,
+            walkCompletionRate: totalWalks > 0 ? walkStats.completed / totalWalks : 0,
             sampleSize: matchPrefs?.sampleSize ?? 0,
           };
 

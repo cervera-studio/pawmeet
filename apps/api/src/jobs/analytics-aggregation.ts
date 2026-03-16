@@ -1,9 +1,11 @@
-import { analyticsDailyMetrics, analyticsEvents } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { count, sql } from 'drizzle-orm';
-import { db } from '../lib/db.js';
+import type { AnalyticsJobRepository } from '../ports/analytics-job-repository.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
+
+interface AnalyticsAggregationDeps {
+  analyticsJobRepo: AnalyticsJobRepository;
+}
 
 /**
  * BullMQ worker that aggregates analytics_events into analytics_daily_metrics.
@@ -16,7 +18,9 @@ import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js'
  *
  * Idempotent: uses onConflictDoUpdate so re-runs overwrite with fresh values.
  */
-export function createAnalyticsAggregationWorker() {
+export function createAnalyticsAggregationWorker(deps: AnalyticsAggregationDeps) {
+  const { analyticsJobRepo } = deps;
+
   const worker = new Worker(
     QUEUE_NAMES.ANALYTICS_AGGREGATION,
     async () => {
@@ -32,57 +36,33 @@ export function createAnalyticsAggregationWorker() {
 
       logger.info('analytics-aggregation', `Aggregating metrics for ${dateStr}`);
 
-      const tsFilter = sql`${analyticsEvents.serverTimestamp} >= ${dayStart} AND ${analyticsEvents.serverTimestamp} < ${nextDayStart}`;
-
       // Total event count for the day
-      const [eventCountRow] = await db
-        .select({ value: count() })
-        .from(analyticsEvents)
-        .where(tsFilter);
+      const eventCount = await analyticsJobRepo.getEventCountForDay(dayStart, nextDayStart);
 
       // Unique users for the day
-      const [uniqueUsersRow] = await db
-        .select({ value: sql<number>`count(distinct ${analyticsEvents.userId})` })
-        .from(analyticsEvents)
-        .where(sql`${tsFilter} AND ${analyticsEvents.userId} IS NOT NULL`);
+      const uniqueUsers = await analyticsJobRepo.getUniqueUsersForDay(dayStart, nextDayStart);
 
       // Per-event counts
-      const eventCounts = await db
-        .select({
-          eventName: analyticsEvents.eventName,
-          value: count(),
-        })
-        .from(analyticsEvents)
-        .where(tsFilter)
-        .groupBy(analyticsEvents.eventName);
+      const eventCounts = await analyticsJobRepo.getEventCountsByName(dayStart, nextDayStart);
 
       // Upsert all metrics — onConflictDoUpdate ensures re-runs overwrite correctly
       const metrics = [
-        { date: dateStr, metricName: 'event_count', value: eventCountRow?.value ?? 0 },
-        { date: dateStr, metricName: 'unique_users', value: Number(uniqueUsersRow?.value ?? 0) },
+        { date: dayStart, metricName: 'event_count', value: eventCount },
+        { date: dayStart, metricName: 'unique_users', value: uniqueUsers },
         ...eventCounts.map((row) => ({
-          date: dateStr,
+          date: dayStart,
           metricName: `event:${row.eventName}`,
           value: row.value,
         })),
       ];
 
       if (metrics.length > 0) {
-        await db
-          .insert(analyticsDailyMetrics)
-          .values(metrics.map((m) => ({ ...m, updatedAt: new Date() })))
-          .onConflictDoUpdate({
-            target: [analyticsDailyMetrics.date, analyticsDailyMetrics.metricName],
-            set: {
-              value: sql`EXCLUDED.value`,
-              updatedAt: sql`now()`,
-            },
-          });
+        await analyticsJobRepo.upsertDailyMetrics(metrics);
       }
 
       logger.info(
         'analytics-aggregation',
-        `Aggregated ${metrics.length} metrics for ${dateStr} (${eventCountRow?.value ?? 0} events, ${uniqueUsersRow?.value ?? 0} unique users)`,
+        `Aggregated ${metrics.length} metrics for ${dateStr} (${eventCount} events, ${uniqueUsers} unique users)`,
       );
     },
     { connection: getRedisConnection(), concurrency: 1 },

@@ -1,13 +1,16 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { DrizzleUserRepository } from '../infra/drizzle-user-repository.js';
-import { db } from '../lib/db.js';
+import type { UserRepository } from '../ports/user-repository.js';
 import { expo } from '../lib/push.js';
 import type { NotificationJobData } from './queue.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
-export function createNotificationWorker() {
-  const userRepo = new DrizzleUserRepository(db);
+interface NotificationDeps {
+  userRepo: UserRepository;
+}
+
+export function createNotificationWorker(deps: NotificationDeps) {
+  const { userRepo } = deps;
 
   const worker = new Worker<NotificationJobData>(
     QUEUE_NAMES.NOTIFICATIONS,

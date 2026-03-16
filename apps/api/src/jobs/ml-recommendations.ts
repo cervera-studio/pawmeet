@@ -1,10 +1,8 @@
-import { dogProfiles, swipes, userBlocks, users } from '@pawmeet/db';
 import type { DogProfile } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { and, eq, gt, inArray, isNotNull, sql } from 'drizzle-orm';
 import { RuleBasedStrategy } from '../domain/scoring-strategy.js';
-import { db } from '../lib/db.js';
+import type { MlRecommendationsRepository } from '../ports/ml-recommendations-repository.js';
 import { redis } from '../lib/redis.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
@@ -13,11 +11,16 @@ const TOP_K = 50;
 const RECS_TTL_SECONDS = 4 * 60 * 60; // 4 hours
 const ACTIVE_DAYS = 7;
 
+interface MlRecommendationsDeps {
+  mlRecommendationsRepo: MlRecommendationsRepository;
+}
+
 /**
  * BullMQ worker that precomputes top 50 recommended candidates per active user.
  * Scheduled every 2 hours. Results stored as Redis sorted sets (ml:recs:{userId}).
  */
-export function createMlRecommendationsWorker() {
+export function createMlRecommendationsWorker(deps: MlRecommendationsDeps) {
+  const { mlRecommendationsRepo } = deps;
   const strategy = new RuleBasedStrategy();
 
   const worker = new Worker(
@@ -33,24 +36,11 @@ export function createMlRecommendationsWorker() {
 
       while (true) {
         // Fetch batch of active users with location
-        const activeUsers = await db
-          .select({
-            id: users.id,
-            latitude: users.latitude,
-            longitude: users.longitude,
-            searchRadiusKm: users.searchRadiusKm,
-          })
-          .from(users)
-          .where(
-            and(
-              eq(users.isActive, true),
-              isNotNull(users.latitude),
-              isNotNull(users.longitude),
-              gt(users.lastLoginAt, activeThreshold),
-            ),
-          )
-          .limit(USER_BATCH_SIZE)
-          .offset(offset);
+        const activeUsers = await mlRecommendationsRepo.getActiveUsersWithLocationBatch(
+          activeThreshold,
+          USER_BATCH_SIZE,
+          offset,
+        );
 
         if (activeUsers.length === 0) break;
 
@@ -58,7 +48,7 @@ export function createMlRecommendationsWorker() {
           if (!user.latitude || !user.longitude) continue;
 
           try {
-            await computeRecommendationsForUser(user, strategy);
+            await computeRecommendationsForUser(mlRecommendationsRepo, user, strategy);
           } catch (err) {
             logger.error(
               'ml-recommendations',
@@ -75,7 +65,10 @@ export function createMlRecommendationsWorker() {
         if (activeUsers.length < USER_BATCH_SIZE) break;
       }
 
-      logger.info('ml-recommendations', `Precomputed recommendations for ${totalProcessed} users`);
+      logger.info(
+        'ml-recommendations',
+        `Precomputed recommendations for ${totalProcessed} users`,
+      );
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );
@@ -92,89 +85,32 @@ export function createMlRecommendationsWorker() {
 }
 
 async function computeRecommendationsForUser(
+  mlRecommendationsRepo: MlRecommendationsRepository,
   user: { id: string; latitude: number | null; longitude: number | null; searchRadiusKm: number },
   strategy: RuleBasedStrategy,
 ) {
   // 1. Get user's dogs
-  const userDogs = await db
-    .select()
-    .from(dogProfiles)
-    .where(and(eq(dogProfiles.ownerId, user.id), eq(dogProfiles.isActive, true)));
+  const userDogs = await mlRecommendationsRepo.getUserActiveDogs(user.id);
 
   if (userDogs.length === 0) return;
 
   // 2. Get blocked user IDs (both directions)
-  const blockedRows = await db
-    .select({ blockedId: userBlocks.blockedId })
-    .from(userBlocks)
-    .where(eq(userBlocks.blockerId, user.id));
-  const blockerRows = await db
-    .select({ blockerId: userBlocks.blockerId })
-    .from(userBlocks)
-    .where(eq(userBlocks.blockedId, user.id));
+  const blockedIds = await mlRecommendationsRepo.getBlockedUserIds(user.id);
+  const blockerIds = await mlRecommendationsRepo.getBlockerUserIds(user.id);
 
-  const blockedUserIds = new Set([
-    ...blockedRows.map((r) => r.blockedId),
-    ...blockerRows.map((r) => r.blockerId),
-  ]);
+  const blockedUserIds = new Set([...blockedIds, ...blockerIds]);
 
   // 3. Get already-swiped dog IDs (from all user's dogs)
   const userDogIds = userDogs.map((d) => d.id);
-  const swipedRows = await db
-    .select({ swipedDogId: swipes.swipedDogId })
-    .from(swipes)
-    .where(inArray(swipes.swiperDogId, userDogIds));
-  const swipedDogIds = new Set(swipedRows.map((r) => r.swipedDogId));
+  const swipedDogIds = new Set(await mlRecommendationsRepo.getSwipedDogIds(userDogIds));
 
   // 4. Find nearby candidate dogs (PostGIS)
-  const nearbyDogs = await db
-    .select({
-      id: dogProfiles.id,
-      ownerId: dogProfiles.ownerId,
-      name: dogProfiles.name,
-      birthDate: dogProfiles.birthDate,
-      breed: dogProfiles.breed,
-      breedSecondary: dogProfiles.breedSecondary,
-      size: dogProfiles.size,
-      weightKg: dogProfiles.weightKg,
-      gender: dogProfiles.gender,
-      isNeutered: dogProfiles.isNeutered,
-      energyLevel: dogProfiles.energyLevel,
-      behaviorWithDogs: dogProfiles.behaviorWithDogs,
-      behaviorWithPeople: dogProfiles.behaviorWithPeople,
-      leashBehavior: dogProfiles.leashBehavior,
-      recallReliability: dogProfiles.recallReliability,
-      bio: dogProfiles.bio,
-      walkPrefTime: dogProfiles.walkPrefTime,
-      walkPrefDurationMin: dogProfiles.walkPrefDurationMin,
-      walkPrefDurationMax: dogProfiles.walkPrefDurationMax,
-      walkPrefTerrain: dogProfiles.walkPrefTerrain,
-      isActive: dogProfiles.isActive,
-      createdAt: dogProfiles.createdAt,
-      updatedAt: dogProfiles.updatedAt,
-      ownerLatitude: users.latitude,
-      ownerLongitude: users.longitude,
-      distanceKm: sql<number>`ST_Distance(
-        ST_Point(${users.longitude}, ${users.latitude})::geography,
-        ST_Point(${user.longitude}, ${user.latitude})::geography
-      ) / 1000.0`,
-    })
-    .from(dogProfiles)
-    .innerJoin(users, eq(dogProfiles.ownerId, users.id))
-    .where(
-      and(
-        eq(dogProfiles.isActive, true),
-        eq(users.isActive, true),
-        sql`${dogProfiles.ownerId} != ${user.id}`,
-        isNotNull(users.latitude),
-        isNotNull(users.longitude),
-        sql`ST_DWithin(
-          ST_Point(${users.longitude}, ${users.latitude})::geography,
-          ST_Point(${user.longitude}, ${user.latitude})::geography,
-          ${user.searchRadiusKm * 1000}
-        )`,
-      ),
-    );
+  const nearbyDogs = await mlRecommendationsRepo.getNearbyDogsWithDistance(
+    user.id,
+    user.latitude!,
+    user.longitude!,
+    user.searchRadiusKm,
+  );
 
   // 5. Filter out blocked and already-swiped, then score
   const candidates: Array<{ dogId: string; score: number }> = [];

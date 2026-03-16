@@ -71,6 +71,23 @@ export function useGroupEvents() {
     return result;
   }, []);
 
+  const listPendingRequests = useCallback(async (eventId: string) => {
+    try {
+      return await api.groupEvents.listPendingRequests.query({ eventId });
+    } catch (e) {
+      logger.warn('useGroupEvents', 'Failed to fetch pending requests', e);
+      return [];
+    }
+  }, []);
+
+  const approveParticipant = useCallback(async (eventId: string, userId: string) => {
+    return api.groupEvents.approveParticipant.mutate({ eventId, userId });
+  }, []);
+
+  const declineParticipant = useCallback(async (eventId: string, userId: string) => {
+    return api.groupEvents.declineParticipant.mutate({ eventId, userId });
+  }, []);
+
   return {
     events,
     loading,
@@ -80,5 +97,8 @@ export function useGroupEvents() {
     joinEvent,
     leaveEvent,
     cancelEvent,
+    listPendingRequests,
+    approveParticipant,
+    declineParticipant,
   };
 }

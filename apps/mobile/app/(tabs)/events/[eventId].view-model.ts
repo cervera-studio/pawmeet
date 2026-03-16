@@ -125,6 +125,7 @@ export function useEventDetailViewModel() {
   }, [eventId, router]);
 
   return {
+    eventId,
     event,
     loading,
     actionLoading,

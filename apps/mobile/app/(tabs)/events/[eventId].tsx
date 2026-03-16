@@ -1,9 +1,10 @@
 import { GROUP_EVENT_STATUS } from '@pawmeet/types';
 import { Stack } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import { useEventDetailViewModel } from './[eventId].view-model';
+import { useEventRequestsViewModel } from './requests.view-model';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -69,6 +70,86 @@ function EventDetailSkeleton() {
         <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
         <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
       </View>
+    </View>
+  );
+}
+
+// ── Pending Requests Section (organizer only) ────────────────────────────────
+
+function PendingRequestsSection({ eventId }: { eventId: string }) {
+  const vm = useEventRequestsViewModel(eventId);
+
+  if (vm.loading) {
+    return (
+      <View className="mt-6">
+        <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3">
+          Richieste
+        </Text>
+        <ActivityIndicator size="small" color="#065F46" />
+      </View>
+    );
+  }
+
+  if (vm.requests.length === 0) {
+    return (
+      <View className="mt-6">
+        <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3">
+          Richieste
+        </Text>
+        <Text className="text-sm text-gray-400 dark:text-neutral-500">
+          Nessuna richiesta in attesa
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className="mt-6">
+      <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3">
+        Richieste ({vm.requests.length})
+      </Text>
+      {vm.requests.map((request) => {
+        const userId = request.participant.userId;
+        const isProcessing = vm.processingId === userId;
+        return (
+          <View
+            key={request.participant.id}
+            className="flex-row items-center rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-3 mb-2"
+          >
+            <Avatar name={request.displayName ?? userId} size="md" />
+            <View className="ml-3 flex-1">
+              <Text className="text-base font-medium text-gray-900 dark:text-[#F5F5F7]">
+                {request.displayName ?? userId}
+              </Text>
+              {request.dogName && (
+                <Text className="text-sm text-gray-500 dark:text-neutral-500">
+                  {request.dogName}
+                </Text>
+              )}
+            </View>
+            <View className="flex-row gap-2">
+              <Pressable
+                onPress={() => vm.handleApprove(userId)}
+                disabled={isProcessing}
+                className="rounded-lg bg-green-500 px-3 py-2"
+              >
+                {isProcessing ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className="text-sm font-medium text-white">Approva</Text>
+                )}
+              </Pressable>
+              <Pressable
+                onPress={() => vm.handleDecline(userId)}
+                disabled={isProcessing}
+                className="rounded-lg bg-red-100 dark:bg-red-900/30 px-3 py-2"
+              >
+                <Text className="text-sm font-medium text-red-600 dark:text-red-400">Rifiuta</Text>
+              </Pressable>
+            </View>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -166,6 +247,11 @@ export default function EventDetailScreen() {
                 </Text>
               )}
             </View>
+
+            {/* Pending requests (organizer only, requires approval events) */}
+            {vm.isOrganizer && vm.event.requiresApproval && vm.eventId && (
+              <PendingRequestsSection eventId={vm.eventId} />
+            )}
 
             {/* Action buttons */}
             <View className="mt-6 gap-3">

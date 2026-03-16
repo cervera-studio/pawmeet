@@ -1,7 +1,7 @@
-import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { logger } from '@pawmeet/utils';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { logger } from '@pawmeet/utils';
 
 import { redis } from '../lib/redis.js';
 
@@ -16,10 +16,11 @@ export class OnnxModelLoader {
   private ort: any | null = null; // onnxruntime-node module
 
   async initialize(): Promise<void> {
-    // Try to load onnxruntime-node (optional dependency — not in devDependencies)
+    // Try to load onnxruntime-node (optional dependency — installed only in production)
+    // Dynamic string prevents TypeScript from resolving the module at compile time
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      this.ort = require('onnxruntime-node');
+      const moduleName = 'onnxruntime-node';
+      this.ort = await import(moduleName);
     } catch {
       logger.warn('onnx-model-loader', 'onnxruntime-node not installed, ML inference disabled');
       return;
@@ -47,11 +48,10 @@ export class OnnxModelLoader {
       throw new Error('Model not loaded');
     }
 
-    const inputTensor = new this.ort.Tensor(
-      'float32',
-      Float32Array.from(features),
-      [1, features.length],
-    );
+    const inputTensor = new this.ort.Tensor('float32', Float32Array.from(features), [
+      1,
+      features.length,
+    ]);
     const results = await this.session.run({ input: inputTensor });
 
     // LightGBM ONNX models output a tensor named 'variable' or 'output_label'

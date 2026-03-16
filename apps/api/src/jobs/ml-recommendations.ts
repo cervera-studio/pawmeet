@@ -2,8 +2,8 @@ import type { DogProfile } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { RuleBasedStrategy } from '../domain/scoring-strategy.js';
-import type { MlRecommendationsRepository } from '../ports/ml-recommendations-repository.js';
 import { redis } from '../lib/redis.js';
+import type { MlRecommendationsRepository } from '../ports/ml-recommendations-repository.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 const USER_BATCH_SIZE = 100;
@@ -65,10 +65,7 @@ export function createMlRecommendationsWorker(deps: MlRecommendationsDeps) {
         if (activeUsers.length < USER_BATCH_SIZE) break;
       }
 
-      logger.info(
-        'ml-recommendations',
-        `Precomputed recommendations for ${totalProcessed} users`,
-      );
+      logger.info('ml-recommendations', `Precomputed recommendations for ${totalProcessed} users`);
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );

@@ -1,8 +1,8 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import type { ExperimentGuardrailsRepository } from '../ports/experiment-guardrails-repository.js';
 import { redis } from '../lib/redis.js';
 import { trackEvent } from '../lib/track-event.js';
+import type { ExperimentGuardrailsRepository } from '../ports/experiment-guardrails-repository.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
 
 const EXPERIMENT_NAME = 'ai_matching_enabled';

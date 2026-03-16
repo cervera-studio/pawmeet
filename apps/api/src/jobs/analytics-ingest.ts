@@ -27,9 +27,7 @@ export function createAnalyticsWorker(
     ? depsOrProviders
     : (depsOrProviders.providers ?? []);
   const consentRepo = Array.isArray(depsOrProviders) ? null : depsOrProviders.consentRepo;
-  const analyticsJobRepo = Array.isArray(depsOrProviders)
-    ? null
-    : depsOrProviders.analyticsJobRepo;
+  const analyticsJobRepo = Array.isArray(depsOrProviders) ? null : depsOrProviders.analyticsJobRepo;
   const maxAgeMs = ANALYTICS_MAX_EVENT_AGE_DAYS * 24 * 60 * 60 * 1000;
 
   const worker = new Worker<AnalyticsJobData>(

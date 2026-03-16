@@ -1,6 +1,6 @@
 import { Worker } from 'bullmq';
-import type { GamificationRepository } from '../ports/gamification-repository.js';
 import { trackEvent } from '../lib/track-event.js';
+import type { GamificationRepository } from '../ports/gamification-repository.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 interface StreakCheckDeps {

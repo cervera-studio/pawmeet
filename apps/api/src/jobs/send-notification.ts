@@ -1,7 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import type { UserRepository } from '../ports/user-repository.js';
 import { expo } from '../lib/push.js';
+import type { UserRepository } from '../ports/user-repository.js';
 import type { NotificationJobData } from './queue.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 

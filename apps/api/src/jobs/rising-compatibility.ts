@@ -1,8 +1,8 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import type { RisingCompatibilityRepository } from '../ports/rising-compatibility-repository.js';
 import { redis } from '../lib/redis.js';
 import { trackEvent } from '../lib/track-event.js';
+import type { RisingCompatibilityRepository } from '../ports/rising-compatibility-repository.js';
 import { enqueueNotification, getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 const SCORE_IMPROVEMENT_THRESHOLD = 0.15; // 15%

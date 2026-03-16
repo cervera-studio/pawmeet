@@ -1,7 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import type { NearbyJobRepository } from '../ports/nearby-job-repository.js';
 import { redis } from '../lib/redis.js';
+import type { NearbyJobRepository } from '../ports/nearby-job-repository.js';
 import { enqueueNotification, getRedisConnection } from './queue.js';
 
 const NEARBY_SUGGESTION = 'nearby-suggestion';

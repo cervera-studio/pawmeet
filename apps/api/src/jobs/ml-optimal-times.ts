@@ -1,7 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import type { MlOptimalTimesRepository } from '../ports/ml-optimal-times-repository.js';
 import { redis } from '../lib/redis.js';
+import type { MlOptimalTimesRepository } from '../ports/ml-optimal-times-repository.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 
 const USER_BATCH_SIZE = 200;

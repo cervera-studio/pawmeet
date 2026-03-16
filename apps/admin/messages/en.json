@@ -486,8 +486,8 @@
     "allGroups": "All groups",
     "createButton": "Add Breed",
     "columns": {
-      "name": "Name (EN)",
-      "nameIt": "Name (IT)",
+      "name": "Name",
+      "code": "Code",
       "group": "Group",
       "sizeCategory": "Size Category",
       "avgWeightKg": "Avg Weight (kg)",
@@ -521,17 +521,16 @@
     "createDialog": {
       "title": "Add Breed",
       "description": "Add a new dog breed to the platform.",
-      "namePlaceholder": "Enter breed name (EN)",
-      "nameItPlaceholder": "Enter breed name (IT)",
+      "codePlaceholder": "e.g. golden_retriever",
       "submit": "Create"
     },
     "editDialog": {
       "title": "Edit Breed",
-      "description": "Edit the breed {name}"
+      "description": "Edit the breed {code}"
     },
     "deleteDialog": {
       "title": "Delete Breed",
-      "description": "Are you sure you want to delete the breed {name}? This action cannot be undone.",
+      "description": "Are you sure you want to delete the breed {code}? This action cannot be undone.",
       "confirm": "Delete"
     }
   },

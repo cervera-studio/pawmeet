@@ -39,7 +39,7 @@ async function backfill() {
         shedding: b.shedding,
         grooming: b.grooming,
       })
-      .where(eq(breeds.name, b.name));
+      .where(eq(breeds.code, b.code));
     updated++;
 
     if (updated % 50 === 0) {

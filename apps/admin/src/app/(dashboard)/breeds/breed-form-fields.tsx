@@ -103,26 +103,15 @@ export function BreedFormFields({ idPrefix, form }: BreedFormFieldsProps) {
   return (
     <div className="space-y-4 py-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor={`${idPrefix}-name`}>
-          {t('columns.name')}
+        <label className="text-sm font-medium" htmlFor={`${idPrefix}-code`}>
+          {t('columns.code')}
         </label>
         <Input
-          id={`${idPrefix}-name`}
-          {...register('name')}
-          placeholder={t('createDialog.namePlaceholder')}
+          id={`${idPrefix}-code`}
+          {...register('code')}
+          placeholder={t('createDialog.codePlaceholder')}
         />
-        {errors.name && <p className="text-xs text-red-600">{errors.name.message}</p>}
-      </div>
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor={`${idPrefix}-name-it`}>
-          {t('columns.nameIt')}
-        </label>
-        <Input
-          id={`${idPrefix}-name-it`}
-          {...register('nameIt')}
-          placeholder={t('createDialog.nameItPlaceholder')}
-        />
-        {errors.nameIt && <p className="text-xs text-red-600">{errors.nameIt.message}</p>}
+        {errors.code && <p className="text-xs text-red-600">{errors.code.message}</p>}
       </div>
       <div className="space-y-2">
         <label className="text-sm font-medium" htmlFor={`${idPrefix}-group`}>

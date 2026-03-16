@@ -1,7 +1,8 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
+import { getBreedName } from '@pawmeet/config';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -53,6 +54,7 @@ interface BreedsTableProps {
 
 export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
   const t = useTranslations('breeds');
+  const locale = useLocale();
   const vm = useBreedsViewModel(initialData, pageSize);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -73,18 +75,20 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
   const columns: ColumnDef<Breed>[] = useMemo(
     () => [
       {
-        accessorKey: 'name',
+        accessorKey: 'code',
         header: t('columns.name'),
-        cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
-      },
-      {
-        accessorKey: 'nameIt',
-        header: t('columns.nameIt'),
-        cell: ({ row }) => (
-          <span className="text-sm text-neutral-500 dark:text-neutral-400">
-            {row.original.nameIt}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const code = row.original.code;
+          const displayName = getBreedName(code, locale);
+          return (
+            <div>
+              <span className="font-medium">{displayName}</span>
+              {displayName !== code && (
+                <span className="ml-2 text-xs text-neutral-400">{code}</span>
+              )}
+            </div>
+          );
+        },
       },
       {
         accessorKey: 'group',
@@ -160,7 +164,7 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
         ),
       },
     ],
-    [t, openEditDialog, openDeleteDialog],
+    [t, locale, openEditDialog, openDeleteDialog],
   );
 
   return (

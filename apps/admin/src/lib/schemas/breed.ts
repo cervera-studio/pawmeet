@@ -22,8 +22,10 @@ const scoreField = z.coerce
   .optional();
 
 export const breedFormSchema = z.object({
-  name: z.string().min(1, 'Il nome è obbligatorio'),
-  nameIt: z.string().min(1, 'Il nome in italiano è obbligatorio'),
+  code: z
+    .string()
+    .min(1, 'Il codice è obbligatorio')
+    .regex(/^[a-z0-9_]+$/, 'Solo lettere minuscole, numeri e underscore'),
   group: z.enum(BREED_GROUPS).optional(),
   sizeCategory: z.enum(SIZE_CATEGORIES),
   avgWeightKg: z.coerce.number().positive('Il peso deve essere positivo'),

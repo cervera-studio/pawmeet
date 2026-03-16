@@ -322,8 +322,7 @@ export interface AdminEventSponsorItem {
 
 export interface AdminBreedItem {
   id: number;
-  name: string;
-  nameIt: string;
+  code: string;
   group: string | null;
   sizeCategory: string | null;
   avgWeightKg: number | null;
@@ -556,8 +555,7 @@ export interface AdminDataRepository {
   }): Promise<PaginatedResult<AdminBreedItem>>;
   findBreedById(id: number): Promise<AdminBreedItem | null>;
   createBreed(input: {
-    name: string;
-    nameIt: string;
+    code: string;
     group?: string;
     sizeCategory: string;
     avgWeightKg?: number;
@@ -567,7 +565,7 @@ export interface AdminDataRepository {
     updates: Partial<Omit<AdminBreedItem, 'id'>>,
   ): Promise<AdminBreedItem | null>;
   deleteBreed(id: number): Promise<void>;
-  countDogsReferencingBreed(breedName: string): Promise<number>;
+  countDogsReferencingBreed(breedCode: string): Promise<number>;
 
   // Official events
   createOfficialEvent(input: {

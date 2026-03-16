@@ -22,8 +22,7 @@ async function seed() {
       .insert(breeds)
       .values(
         batch.map((b) => ({
-          name: b.name,
-          nameIt: b.nameIt,
+          code: b.code,
           group: b.group,
           sizeCategory: b.sizeCategory,
           avgWeightKg: b.avgWeightKg,

@@ -151,8 +151,7 @@ const listBreedsSchema = z.object({
 });
 
 const createBreedSchema = z.object({
-  name: z.string().min(1).max(100),
-  nameIt: z.string().min(1).max(100),
+  code: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/, 'Code must be lowercase alphanumeric with underscores'),
   group: z.string().max(50).optional(),
   sizeCategory: sizeCategoryEnum,
   avgWeightKg: z.number().int().positive().optional(),
@@ -160,8 +159,7 @@ const createBreedSchema = z.object({
 
 const updateBreedSchema = z.object({
   id: z.number().int().positive(),
-  name: z.string().min(1).max(100).optional(),
-  nameIt: z.string().min(1).max(100).optional(),
+  code: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/).optional(),
   group: z.string().max(50).optional(),
   sizeCategory: sizeCategoryEnum.optional(),
   avgWeightKg: z.number().int().positive().optional(),
@@ -1385,8 +1383,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       }
 
       const setValues: Record<string, unknown> = {};
-      if (updates.name !== undefined) setValues.name = updates.name;
-      if (updates.nameIt !== undefined) setValues.nameIt = updates.nameIt;
+      if (updates.code !== undefined) setValues.code = updates.code;
       if (updates.group !== undefined) setValues.group = updates.group;
       if (updates.sizeCategory !== undefined) setValues.sizeCategory = updates.sizeCategory;
       if (updates.avgWeightKg !== undefined) setValues.avgWeightKg = updates.avgWeightKg;
@@ -1419,12 +1416,12 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Breed not found' });
       }
 
-      const dogCount = await adminDataRepo.countDogsReferencingBreed(existing.name as string);
+      const dogCount = await adminDataRepo.countDogsReferencingBreed(existing.code);
 
       if (dogCount > 0) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: `Cannot delete breed "${existing.name}": ${dogCount} dog(s) still reference it`,
+          message: `Cannot delete breed "${existing.code}": ${dogCount} dog(s) still reference it`,
         });
       }
 

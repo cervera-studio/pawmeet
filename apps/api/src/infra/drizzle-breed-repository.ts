@@ -1,5 +1,5 @@
 import { breeds } from '@pawmeet/db';
-import { asc, ilike, or } from 'drizzle-orm';
+import { asc, ilike } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { Breed, BreedRepository } from '../ports/breed-repository.js';
 
@@ -8,7 +8,7 @@ export class DrizzleBreedRepository implements BreedRepository {
 
   async search(query?: string): Promise<Breed[]> {
     if (!query) {
-      const rows = await this.db.select().from(breeds).orderBy(asc(breeds.nameIt));
+      const rows = await this.db.select().from(breeds).orderBy(asc(breeds.code));
       return rows.map((r) => ({ ...r, id: String(r.id) }));
     }
 
@@ -16,8 +16,8 @@ export class DrizzleBreedRepository implements BreedRepository {
     const rows = await this.db
       .select()
       .from(breeds)
-      .where(or(ilike(breeds.name, pattern), ilike(breeds.nameIt, pattern)))
-      .orderBy(asc(breeds.nameIt))
+      .where(ilike(breeds.code, pattern))
+      .orderBy(asc(breeds.code))
       .limit(20);
 
     return rows.map((r) => ({ ...r, id: String(r.id) }));

@@ -104,8 +104,7 @@ describe('dogs router', () => {
       const breeds = [
         {
           id: 'b1',
-          name: 'Labrador',
-          nameIt: 'Labrador',
+          code: 'labrador',
           group: 'Retriever',
           sizeCategory: 'large',
           avgWeightKg: 30,

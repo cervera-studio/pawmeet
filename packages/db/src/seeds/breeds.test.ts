@@ -6,23 +6,27 @@ describe('Breeds seed data', () => {
     expect(breedsData.length).toBeGreaterThanOrEqual(200);
   });
 
-  it('has no duplicate names', () => {
-    const names = breedsData.map((b) => b.name);
-    const unique = new Set(names);
-    expect(unique.size).toBe(names.length);
+  it('has no duplicate codes', () => {
+    const codes = breedsData.map((b) => b.code);
+    const unique = new Set(codes);
+    expect(unique.size).toBe(codes.length);
   });
 
   it('every breed has required fields', () => {
     for (const breed of breedsData) {
-      expect(breed.name).toBeTruthy();
-      expect(breed.nameIt).toBeTruthy();
+      expect(breed.code).toBeTruthy();
+    }
+  });
+
+  it('codes are valid slug format', () => {
+    for (const breed of breedsData) {
+      expect(breed.code).toMatch(/^[a-z0-9_]+$/);
     }
   });
 
   it('includes Mixed Breed entry', () => {
-    const mixed = breedsData.find((b) => b.name === 'Mixed Breed');
+    const mixed = breedsData.find((b) => b.code === 'mixed_breed');
     expect(mixed).toBeDefined();
-    expect(mixed?.nameIt).toBe('Meticcio');
   });
 
   it('valid size categories for breeds with size', () => {
@@ -50,8 +54,8 @@ describe('Breeds seed data', () => {
       for (const field of scoreFields) {
         const val = breed[field];
         if (val !== null) {
-          expect(val, `${breed.name}.${field} = ${val}`).toBeGreaterThanOrEqual(1);
-          expect(val, `${breed.name}.${field} = ${val}`).toBeLessThanOrEqual(5);
+          expect(val, `${breed.code}.${field} = ${val}`).toBeGreaterThanOrEqual(1);
+          expect(val, `${breed.code}.${field} = ${val}`).toBeLessThanOrEqual(5);
         }
       }
     }

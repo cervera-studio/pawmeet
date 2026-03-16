@@ -486,8 +486,8 @@
     "allGroups": "Tutti i gruppi",
     "createButton": "Aggiungi Razza",
     "columns": {
-      "name": "Nome (EN)",
-      "nameIt": "Nome (IT)",
+      "name": "Nome",
+      "code": "Codice",
       "group": "Gruppo",
       "sizeCategory": "Categoria taglia",
       "avgWeightKg": "Peso medio (kg)",
@@ -521,17 +521,16 @@
     "createDialog": {
       "title": "Aggiungi Razza",
       "description": "Aggiungi una nuova razza canina alla piattaforma.",
-      "namePlaceholder": "Inserisci il nome della razza (EN)",
-      "nameItPlaceholder": "Inserisci il nome della razza (IT)",
+      "codePlaceholder": "es. golden_retriever",
       "submit": "Crea"
     },
     "editDialog": {
       "title": "Modifica Razza",
-      "description": "Modifica la razza {name}"
+      "description": "Modifica la razza {code}"
     },
     "deleteDialog": {
       "title": "Elimina Razza",
-      "description": "Sei sicuro di voler eliminare la razza {name}? Questa azione non può essere annullata.",
+      "description": "Sei sicuro di voler eliminare la razza {code}? Questa azione non può essere annullata.",
       "confirm": "Elimina"
     }
   },

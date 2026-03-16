@@ -13,8 +13,7 @@ import { BREED_GROUPS, BreedFormFields, DEFAULT_SCORES, isSizeCategory } from '.
 import type { Breed } from './page.view-model';
 
 const DEFAULT_VALUES: BreedFormValues = {
-  name: '',
-  nameIt: '',
+  code: '',
   group: BREED_GROUPS[0],
   sizeCategory: 'media',
   avgWeightKg: 10,
@@ -32,8 +31,7 @@ function breedToFormValues(breed: Breed): BreedFormValues {
   const rawSize = breed.sizeCategory ?? '';
   const sizeCategory = isSizeCategory(rawSize) ? rawSize : 'media';
   return {
-    name: breed.name,
-    nameIt: breed.nameIt,
+    code: breed.code,
     group: (breed.group as BreedFormValues['group']) ?? BREED_GROUPS[0],
     sizeCategory,
     avgWeightKg: breed.avgWeightKg ?? 10,
@@ -72,8 +70,7 @@ export function BreedEditDialog({ breed, open, onClose, onUpdated }: BreedEditDi
     try {
       await updateBreed({
         id: breed.id,
-        name: data.name,
-        nameIt: data.nameIt,
+        code: data.code,
         group: data.group ?? BREED_GROUPS[0],
         sizeCategory: data.sizeCategory,
         avgWeightKg: data.avgWeightKg,
@@ -102,7 +99,7 @@ export function BreedEditDialog({ breed, open, onClose, onUpdated }: BreedEditDi
       open={open}
       onClose={onClose}
       title={t('editDialog.title')}
-      description={t('editDialog.description', { name: breed?.name ?? '' })}
+      description={t('editDialog.description', { code: breed?.code ?? '' })}
       isSubmitting={isSubmitting}
       onSubmit={form.handleSubmit(handleEdit)}
       submitLabel={tc('saveChanges')}

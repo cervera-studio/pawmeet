@@ -38,7 +38,7 @@ export function BreedDeleteDialog({ breed, open, onClose, onDeleted }: BreedDele
       open={open}
       onClose={onClose}
       title={t('deleteDialog.title')}
-      description={t('deleteDialog.description', { name: breed?.name ?? '' })}
+      description={t('deleteDialog.description', { code: breed?.code ?? '' })}
       isSubmitting={isSubmitting}
       onSubmit={(e) => {
         e.preventDefault();

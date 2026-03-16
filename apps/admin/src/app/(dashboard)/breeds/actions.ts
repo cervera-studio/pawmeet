@@ -29,8 +29,7 @@ interface BreedScores {
 
 export async function createBreed(
   data: {
-    name: string;
-    nameIt: string;
+    code: string;
     group: string;
     sizeCategory: SizeCategory;
     avgWeightKg: number;
@@ -43,8 +42,7 @@ export async function createBreed(
 export async function updateBreed(
   data: {
     id: number;
-    name?: string;
-    nameIt?: string;
+    code?: string;
     group?: string;
     sizeCategory?: SizeCategory;
     avgWeightKg?: number;

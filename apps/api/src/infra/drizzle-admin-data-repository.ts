@@ -1323,7 +1323,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
 
     const conditions = [];
     if (search) {
-      conditions.push(or(ilike(breeds.name, `%${search}%`), ilike(breeds.nameIt, `%${search}%`)));
+      conditions.push(ilike(breeds.code, `%${search}%`));
     }
     if (group) {
       conditions.push(eq(breeds.group, group));
@@ -1336,7 +1336,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
         .select()
         .from(breeds)
         .where(whereClause)
-        .orderBy(asc(breeds.name))
+        .orderBy(asc(breeds.code))
         .limit(pageSize)
         .offset(offset),
       this.db.select({ value: count() }).from(breeds).where(whereClause),
@@ -1354,8 +1354,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
   }
 
   async createBreed(input: {
-    name: string;
-    nameIt: string;
+    code: string;
     group?: string;
     sizeCategory: string;
     avgWeightKg?: number;
@@ -1380,11 +1379,11 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     await this.db.delete(breeds).where(eq(breeds.id, id));
   }
 
-  async countDogsReferencingBreed(breedName: string): Promise<number> {
+  async countDogsReferencingBreed(breedCode: string): Promise<number> {
     const [dogCount] = await this.db
       .select({ value: count() })
       .from(dogProfiles)
-      .where(or(eq(dogProfiles.breed, breedName), eq(dogProfiles.breedSecondary, breedName)));
+      .where(or(eq(dogProfiles.breed, breedCode), eq(dogProfiles.breedSecondary, breedCode)));
     return dogCount?.value ?? 0;
   }
 

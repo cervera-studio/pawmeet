@@ -12,8 +12,7 @@ import { createBreed } from './actions';
 import { BREED_GROUPS, BreedFormFields, DEFAULT_SCORES } from './breed-form-fields';
 
 const DEFAULT_VALUES: BreedFormValues = {
-  name: '',
-  nameIt: '',
+  code: '',
   group: BREED_GROUPS[0],
   sizeCategory: 'media',
   avgWeightKg: 10,
@@ -44,8 +43,7 @@ export function BreedCreateDialog({ open, onClose, onCreated }: BreedCreateDialo
     setIsSubmitting(true);
     try {
       await createBreed({
-        name: data.name,
-        nameIt: data.nameIt,
+        code: data.code,
         group: data.group ?? BREED_GROUPS[0],
         sizeCategory: data.sizeCategory,
         avgWeightKg: data.avgWeightKg,

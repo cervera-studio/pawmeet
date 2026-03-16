@@ -8,13 +8,17 @@ import {
   type ScoringStrategy,
 } from '../domain/scoring-strategy.js';
 import { redis } from '../lib/redis.js';
+import type { OnnxModelLoader } from './onnx-model-loader.js';
 
 // ── ML Scoring Strategy ──────────────────────────────────────────────────────
 
 export class MLScoringStrategy implements ScoringStrategy {
   readonly name = 'ml_v1' as const;
 
-  constructor(private ruleBasedFallback: RuleBasedStrategy) {}
+  constructor(
+    private modelLoader: OnnxModelLoader,
+    private ruleBasedFallback: RuleBasedStrategy,
+  ) {}
 
   async score(
     dogA: DogProfile,
@@ -23,18 +27,18 @@ export class MLScoringStrategy implements ScoringStrategy {
     userId?: string,
   ): Promise<CompatibilityBreakdown> {
     try {
+      // If model not ready, fall back to rule-based
+      if (!this.modelLoader.isReady()) {
+        return this.ruleBasedFallback.score(dogA, dogB, distanceKm, userId);
+      }
+
       // 1. Fetch precomputed features from Redis
       const [dogAFeatures, dogBFeatures] = await Promise.all([
         redis.get<Record<string, number>>(`ml:features:dog:${dogA.id}`),
         redis.get<Record<string, number>>(`ml:features:dog:${dogB.id}`),
       ]);
 
-      // Fall back to rule-based if features aren't available
       if (!dogAFeatures || !dogBFeatures) {
-        logger.info('ml-scoring', 'No precomputed features, falling back to rule-based', {
-          dogAId: dogA.id,
-          dogBId: dogB.id,
-        });
         return this.ruleBasedFallback.score(dogA, dogB, distanceKm, userId);
       }
 
@@ -43,46 +47,59 @@ export class MLScoringStrategy implements ScoringStrategy {
       const cached = await redis.get<CompatibilityBreakdown>(cacheKey);
       if (cached) return cached;
 
-      // 3. Compute breakdown using rule-based dimensions as base
+      // 3. Build feature vector for ONNX
       const breakdown = getScoreBreakdown(dogA, dogB, distanceKm);
+      const features = [
+        breakdown.sizeScore,
+        breakdown.energyScore,
+        breakdown.behaviorScore,
+        breakdown.walkScore,
+        breakdown.distanceScore,
+        breakdown.leashScore,
+        distanceKm,
+        dogAFeatures.ageMonths ?? 0,
+        dogBFeatures.ageMonths ?? 0,
+        Math.abs((dogAFeatures.ageMonths ?? 0) - (dogBFeatures.ageMonths ?? 0)),
+        dogAFeatures.isNeutered ? 1 : 0,
+        dogBFeatures.isNeutered ? 1 : 0,
+      ];
 
-      // TODO: Replace with ONNX inference when onnxruntime-node is installed
-      // For now, simulate ML scoring by applying a small perturbation to rule-based scores
-      // based on the precomputed feature vectors
-      const featureSignal =
-        Object.values(dogAFeatures).reduce((sum, v) => sum + v, 0) +
-        Object.values(dogBFeatures).reduce((sum, v) => sum + v, 0);
-      const perturbation = Math.sin(featureSignal) * 0.05; // deterministic, small [-0.05, 0.05]
+      // Append user features if available
+      if (userId) {
+        const userFeatures = await redis.get<Record<string, number>>(
+          `ml:features:user:${userId}`,
+        );
+        if (userFeatures) {
+          features.push(
+            userFeatures.likeRate ?? 0,
+            userFeatures.matchSuccessRate ?? 0,
+            userFeatures.avgChatMessages ?? 0,
+            userFeatures.walkCompletionRate ?? 0,
+            userFeatures.sampleSize ?? 0,
+          );
+        } else {
+          features.push(0, 0, 0, 0, 0);
+        }
+      } else {
+        features.push(0, 0, 0, 0, 0);
+      }
 
-      const mlBreakdown: CompatibilityBreakdown = {
-        sizeScore: clamp(breakdown.sizeScore + perturbation * 0.5),
-        energyScore: clamp(breakdown.energyScore + perturbation * 0.3),
-        behaviorScore: clamp(breakdown.behaviorScore + perturbation * 0.4),
-        walkScore: clamp(breakdown.walkScore + perturbation * 0.3),
-        distanceScore: clamp(breakdown.distanceScore + perturbation * 0.2),
-        leashScore: clamp(breakdown.leashScore + perturbation * 0.2),
-        overallScore: 0,
+      // 4. Run ONNX inference
+      const overallScore = await this.modelLoader.predict(features);
+      const clampedScore = Math.min(1, Math.max(0, overallScore));
+
+      const result: CompatibilityBreakdown = {
+        ...breakdown,
+        overallScore: clampedScore,
       };
 
-      mlBreakdown.overallScore =
-        mlBreakdown.sizeScore * 0.25 +
-        mlBreakdown.energyScore * 0.25 +
-        mlBreakdown.behaviorScore * 0.2 +
-        mlBreakdown.walkScore * 0.15 +
-        mlBreakdown.distanceScore * 0.1 +
-        mlBreakdown.leashScore * 0.05;
+      // 5. Cache result (TTL 1 hour)
+      await redis.set(cacheKey, result, { ex: 3600 });
 
-      // 4. Cache result (TTL 1 hour)
-      await redis.set(cacheKey, mlBreakdown, { ex: 3600 });
-
-      return mlBreakdown;
+      return result;
     } catch (error) {
       logger.warn('ml-scoring', 'Fallback to rule-based', { error: String(error) });
       return this.ruleBasedFallback.score(dogA, dogB, distanceKm, userId);
     }
   }
-}
-
-function clamp(value: number, min = 0, max = 1): number {
-  return Math.min(max, Math.max(min, value));
 }

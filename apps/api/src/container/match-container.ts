@@ -2,6 +2,7 @@
 
 import { RuleBasedStrategy } from '../domain/scoring-strategy.js';
 import { MLScoringStrategy } from '../infra/ml-scoring-strategy.js';
+import { OnnxModelLoader } from '../infra/onnx-model-loader.js';
 import { createDiscoverCandidates } from '../use-cases/discover-candidates.js';
 import { createDiscoverCandidatesAi } from '../use-cases/discover-candidates-ai.js';
 import { createGetMatchExplanation } from '../use-cases/get-match-explanation.js';
@@ -27,7 +28,8 @@ import {
 } from './services.js';
 
 const ruleBasedStrategy = new RuleBasedStrategy(matchingAiRepo);
-const mlStrategy = new MLScoringStrategy(ruleBasedStrategy);
+export const onnxModelLoader = new OnnxModelLoader();
+const mlStrategy = new MLScoringStrategy(onnxModelLoader, ruleBasedStrategy);
 
 export const matchDeps = {
   listMatches: createListMatches({ dogRepo, matchRepo, userRepo }),

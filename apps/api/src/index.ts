@@ -2,7 +2,7 @@ import { serve } from '@hono/node-server';
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import { adminDeps, experimentService } from './container/index.js';
+import { adminDeps, experimentService, onnxModelLoader } from './container/index.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { cacheControlMiddleware } from './middleware/cache-control.js';
@@ -108,6 +108,11 @@ const port = Number(process.env.PORT) || 3000;
 // Initialize Statsig for A/B testing and feature flags
 experimentService.initialize().then(() => {
   console.log('Statsig experiment service ready');
+});
+
+// Initialize ONNX model loader for ML scoring (degrades gracefully if unavailable)
+onnxModelLoader.initialize().then(() => {
+  console.log(`ONNX model loader ready (model loaded: ${onnxModelLoader.isReady()})`);
 });
 
 console.log(`PawMeet API running on port ${port}`);

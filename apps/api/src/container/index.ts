@@ -9,7 +9,7 @@ export { contentModerationDeps, feedDeps } from './feed-container.js';
 export { followDeps } from './follow-container.js';
 export { badgeDeps, gamificationDeps } from './gamification-container.js';
 export { eventSponsorDeps, groupEventDeps } from './group-event-container.js';
-export { matchDeps, matchingAiDeps } from './match-container.js';
+export { matchDeps, matchingAiDeps, onnxModelLoader } from './match-container.js';
 export { organizationDeps } from './organization-container.js';
 export { emergencyContactDeps } from './safety-container.js';
 export { analyticsProviders, experimentService } from './services.js';

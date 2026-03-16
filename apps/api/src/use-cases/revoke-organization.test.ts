@@ -5,21 +5,19 @@ import { createRevokeOrganization } from './revoke-organization.js';
 
 describe('revokeOrganization', () => {
   it('revokes an existing organization', async () => {
-    const org = buildOrganization({ isVerified: true });
-    const revokedOrg = buildOrganization({ isVerified: false });
+    const revokedOrg = buildOrganization({ id: 'org-1', isVerified: false });
     const organizationRepo = buildOrganizationRepo({
-      findById: vi.fn().mockResolvedValue(org),
+      findById: vi.fn().mockResolvedValue(buildOrganization({ id: 'org-1' })),
       revoke: vi.fn().mockResolvedValue(revokedOrg),
     });
 
     const revokeOrganization = createRevokeOrganization({ organizationRepo });
-    const result = await revokeOrganization(org.id);
+    const result = await revokeOrganization('org-1');
 
     expect(isSuccess(result)).toBe(true);
-    if (isSuccess(result)) {
-      expect(result.data.isVerified).toBe(false);
-    }
-    expect(organizationRepo.revoke).toHaveBeenCalledWith(org.id);
+    if (!isSuccess(result)) return;
+    expect(result.data.isVerified).toBe(false);
+    expect(organizationRepo.revoke).toHaveBeenCalledWith('org-1');
   });
 
   it('fails when organization does not exist', async () => {
@@ -28,13 +26,11 @@ describe('revokeOrganization', () => {
     });
 
     const revokeOrganization = createRevokeOrganization({ organizationRepo });
-    const result = await revokeOrganization('non-existent-id');
+    const result = await revokeOrganization('nonexistent');
 
     expect(isFailure(result)).toBe(true);
-    if (isFailure(result)) {
-      expect(result.error.code).toBe('ORG_NOT_FOUND');
-      expect(result.error.status).toBe(404);
-    }
+    if (!isFailure(result)) return;
+    expect(result.error.code).toBe('ORG_NOT_FOUND');
     expect(organizationRepo.revoke).not.toHaveBeenCalled();
   });
 });

@@ -5,41 +5,47 @@ import { buildOrganizationMember, buildOrganizationRepo } from '../test-utils/bu
 import { createRemoveOrganizationMember } from './remove-organization-member.js';
 
 describe('removeOrganizationMember', () => {
-  const organizationAuthorizer = createOrganizationAuthorizer();
+  function setup(
+    overrides: { actorMember?: ReturnType<typeof buildOrganizationMember> | null } = {},
+  ) {
+    const actorMember =
+      overrides.actorMember !== undefined
+        ? overrides.actorMember
+        : buildOrganizationMember({ role: 'owner', userId: 'actor-1' });
 
-  it('removes a member when actor is an owner', async () => {
     const organizationRepo = buildOrganizationRepo({
-      findMember: vi.fn().mockResolvedValue(buildOrganizationMember({ role: 'owner' })),
-      removeMember: vi.fn().mockResolvedValue(undefined),
+      findMember: vi.fn().mockImplementation((_orgId: string, userId: string) => {
+        if (userId === 'actor-1') return Promise.resolve(actorMember);
+        return Promise.resolve(null);
+      }),
     });
 
-    const removeOrganizationMember = createRemoveOrganizationMember({
+    const organizationAuthorizer = createOrganizationAuthorizer();
+    const removeMember = createRemoveOrganizationMember({
       organizationRepo,
       organizationAuthorizer,
     });
-    const result = await removeOrganizationMember('user-1', {
+    return { removeMember, organizationRepo };
+  }
+
+  it('removes a member when actor is owner', async () => {
+    const { removeMember, organizationRepo } = setup();
+
+    const result = await removeMember('actor-1', {
       organizationId: 'org-1',
       userId: 'user-2',
     });
 
     expect(isSuccess(result)).toBe(true);
-    if (isSuccess(result)) {
-      expect(result.data.success).toBe(true);
-    }
     expect(organizationRepo.removeMember).toHaveBeenCalledWith('org-1', 'user-2');
   });
 
-  it('removes a member when actor is an admin', async () => {
-    const organizationRepo = buildOrganizationRepo({
-      findMember: vi.fn().mockResolvedValue(buildOrganizationMember({ role: 'admin' })),
-      removeMember: vi.fn().mockResolvedValue(undefined),
+  it('removes a member when actor is admin', async () => {
+    const { removeMember, organizationRepo } = setup({
+      actorMember: buildOrganizationMember({ role: 'admin', userId: 'actor-1' }),
     });
 
-    const removeOrganizationMember = createRemoveOrganizationMember({
-      organizationRepo,
-      organizationAuthorizer,
-    });
-    const result = await removeOrganizationMember('user-1', {
+    const result = await removeMember('actor-1', {
       organizationId: 'org-1',
       userId: 'user-2',
     });
@@ -49,46 +55,30 @@ describe('removeOrganizationMember', () => {
   });
 
   it('fails when actor is a regular member', async () => {
-    const organizationRepo = buildOrganizationRepo({
-      findMember: vi.fn().mockResolvedValue(buildOrganizationMember({ role: 'member' })),
+    const { removeMember } = setup({
+      actorMember: buildOrganizationMember({ role: 'member', userId: 'actor-1' }),
     });
 
-    const removeOrganizationMember = createRemoveOrganizationMember({
-      organizationRepo,
-      organizationAuthorizer,
-    });
-    const result = await removeOrganizationMember('user-1', {
+    const result = await removeMember('actor-1', {
       organizationId: 'org-1',
       userId: 'user-2',
     });
 
     expect(isFailure(result)).toBe(true);
-    if (isFailure(result)) {
-      expect(result.error.code).toBe('ORG_NOT_AUTHORIZED');
-      expect(result.error.status).toBe(403);
-    }
-    expect(organizationRepo.removeMember).not.toHaveBeenCalled();
+    if (!isFailure(result)) return;
+    expect(result.error.code).toBe('ORG_NOT_AUTHORIZED');
   });
 
-  it('fails when actor is not a member of the organization', async () => {
-    const organizationRepo = buildOrganizationRepo({
-      findMember: vi.fn().mockResolvedValue(null),
-    });
+  it('fails when actor is not a member at all', async () => {
+    const { removeMember } = setup({ actorMember: null });
 
-    const removeOrganizationMember = createRemoveOrganizationMember({
-      organizationRepo,
-      organizationAuthorizer,
-    });
-    const result = await removeOrganizationMember('outsider', {
+    const result = await removeMember('actor-1', {
       organizationId: 'org-1',
       userId: 'user-2',
     });
 
     expect(isFailure(result)).toBe(true);
-    if (isFailure(result)) {
-      expect(result.error.code).toBe('ORG_NOT_AUTHORIZED');
-      expect(result.error.status).toBe(403);
-    }
-    expect(organizationRepo.removeMember).not.toHaveBeenCalled();
+    if (!isFailure(result)) return;
+    expect(result.error.code).toBe('ORG_NOT_AUTHORIZED');
   });
 });

@@ -17,4 +17,5 @@ export * from './matching-ai';
 export * from './organization';
 export * from './search';
 export * from './user';
+export * from './value-objects';
 export * from './walk';

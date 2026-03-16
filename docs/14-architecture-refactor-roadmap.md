@@ -18,7 +18,7 @@
 - [x] Move all direct DB queries from `admin.ts` router into repository methods
 - [x] Wire `AdminDataRepository` in `container.ts`
 - [x] Update admin router to use repository through `adminDeps`
-- [ ] Add unit tests for repository methods
+- [x] Add unit tests for repository methods
 
 **Files:** `admin.ts`, `container.ts`, new `ports/admin-repository.ts`, new `infra/drizzle-admin-repository.ts`
 **Effort:** 3–4 days
@@ -37,7 +37,7 @@
 - [x] Create `use-cases/remove-organization-member.ts` (extract authorization logic)
 - [x] Create `use-cases/list-organization-members.ts`
 - [x] Wire all via factory pattern in `container.ts`
-- [ ] Add unit tests for each use case
+- [x] Add unit tests for each use case
 
 **Files:** `container.ts`, 4 new use case files
 **Effort:** 1 day
@@ -113,8 +113,8 @@
 
 **Tasks:**
 
-- [ ] Update `transition-event-statuses.ts` to return `Result<T>`
-- [ ] Audit all use cases for consistent `Result<T>` return type
+- [x] Update `transition-event-statuses.ts` to return `Result<T>`
+- [x] Audit all use cases for consistent `Result<T>` return type
 - [ ] Document error handling convention in CLAUDE.md
 
 **Effort:** 4 hours
@@ -127,11 +127,11 @@
 
 **Tasks:**
 
-- [ ] Create `lib/error-handler.ts` with `createAppError()` utility
-- [ ] Create `hooks/useErrorHandler.ts` hook
-- [ ] Define strategy: toast for data-fetch errors, inline for form errors
-- [ ] Refactor all table components to use consistent error feedback
-- [ ] Refactor all form components to display errors to user (not just console)
+- [x] Create `lib/error-handler.ts` with `createAppError()` utility
+- [x] Create `hooks/useErrorHandler.ts` hook
+- [x] Define strategy: toast for data-fetch errors, inline for form errors
+- [x] Refactor all table components to use consistent error feedback
+- [x] Refactor all form components to display errors to user (not just console)
 
 **Effort:** 2 days
 
@@ -164,10 +164,10 @@
 
 **Tasks:**
 
-- [ ] Create `domain/organization-authorizer.ts` with methods:
+- [x] Create `domain/organization-authorizer.ts` with methods:
   - `canRemoveMember(actor)`, `canUpdateRole(actor, target)`, `canRevokeOrg(actor)`
-- [ ] Inject authorizer into organization use cases
-- [ ] Add unit tests for authorization rules
+- [x] Inject authorizer into organization use cases
+- [x] Add unit tests for authorization rules
 
 **Effort:** 1 day
 
@@ -179,10 +179,10 @@
 
 **Tasks:**
 
-- [ ] Create `ports/admin-notification-service.ts` interface
-- [ ] Create `infra/email-admin-notification-service.ts` implementation
-- [ ] Update admin auth routes to use abstraction
-- [ ] Wire in container
+- [x] Create `ports/admin-notification-service.ts` interface
+- [x] Create `infra/email-admin-notification-service.ts` implementation
+- [x] Update admin auth routes to use abstraction
+- [x] Wire in container
 
 **Effort:** 1 day
 
@@ -366,22 +366,25 @@
 
 > This phase introduces a proper domain layer. It's architecturally valuable but not blocking current development. Evaluate after Phases 1–3.
 
-### 4.1 Introduce Value Objects
+### 4.1 Introduce Value Objects (Zod branded types)
 
-- [ ] `Email` value object (validation, normalization, domain comparison)
-- [ ] `Coordinates` value object (lat/lon validation, distance calculation)
-- [ ] `CompatibilityScore` value object (weighted calculation, breakdown)
-- [ ] `MatchWeights` value object (sum-to-1 invariant)
+- [x] `Email` value object (validation, normalization via transform, branded type)
+- [x] `Coordinates` value object (lat/lon validation, branded type)
+- [x] `CompatibilityScore` value object (0..1 range, branded type)
+- [x] `MatchWeights` value object (sum-to-1 invariant via refine, branded type)
+- [x] Unit tests for all value objects (14 tests)
 
 ### 4.2 Introduce Domain Entities
 
 - [ ] `DogProfile` aggregate root (invariant protection, business rules)
-- [ ] `GroupEvent` aggregate root (state machine, capacity rules)
+- [x] `GroupEvent` aggregate root (isJoinable, isFull, resolveJoinStatus, state transitions, friends-only check)
+- [x] Unit tests for GroupEvent aggregate (11 tests)
 
 ### 4.3 Extract Domain Services
 
-- [ ] `MatchingAlgorithm` — injectable strategy for compatibility scoring
-- [ ] `OrganizationAuthorizer` → promote to domain service with richer rules
+- [x] `MatchingAlgorithm` — injectable strategy for compatibility scoring with breakdown
+- [x] `OrganizationAuthorizer` — domain service (already done in Phase 2.4)
+- [x] Unit tests for MatchingAlgorithm (5 tests)
 
 **Effort:** 5–7 days total
 

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { AnalyticsJobRepository } from '../ports/analytics-job-repository.js';
 import type { AnalyticsProvider, AnalyticsProviderEvent } from '../ports/analytics-provider.js';
 import type { AnalyticsJobData } from './queue.js';
 
@@ -17,18 +18,7 @@ vi.mock('bullmq', () => {
   return { Worker: WorkerMock };
 });
 
-const mockInsert = vi.fn().mockReturnValue({
-  values: vi.fn().mockReturnValue({
-    onConflictDoNothing: vi.fn().mockResolvedValue(undefined),
-  }),
-});
-
-vi.mock('../lib/db.js', () => ({
-  db: { insert: (...args: unknown[]) => mockInsert(...args) },
-}));
-
 vi.mock('@pawmeet/db', () => ({
-  analyticsEvents: { clientEventId: 'client_event_id' },
   CONSENT_TYPE: {
     Analytics: 'analytics',
     AbTesting: 'ab_testing',
@@ -82,27 +72,46 @@ function buildProvider(overrides: Partial<AnalyticsProvider> = {}): AnalyticsPro
   };
 }
 
+function buildAnalyticsJobRepo(
+  overrides: Partial<AnalyticsJobRepository> = {},
+): AnalyticsJobRepository {
+  return {
+    insertEvents: vi.fn().mockResolvedValue(undefined),
+    getEventCountForDay: vi.fn().mockResolvedValue(0),
+    getUniqueUsersForDay: vi.fn().mockResolvedValue(0),
+    getEventCountsByName: vi.fn().mockResolvedValue([]),
+    upsertDailyMetrics: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
+  };
+}
+
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 describe('createAnalyticsWorker', () => {
   let provider: AnalyticsProvider;
+  let analyticsJobRepo: AnalyticsJobRepository;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     provider = buildProvider();
+    analyticsJobRepo = buildAnalyticsJobRepo();
 
     const { createAnalyticsWorker } = await import('./analytics-ingest.js');
-    createAnalyticsWorker([provider]);
+    createAnalyticsWorker({
+      providers: [provider],
+      consentRepo: null as never,
+      analyticsJobRepo,
+    });
   });
 
-  it('inserts valid events into Neon', async () => {
+  it('inserts valid events via analyticsJobRepo', async () => {
     const event = buildEvent();
     await capturedProcessor({ data: { events: [event] } });
 
-    expect(mockInsert).toHaveBeenCalledTimes(1);
+    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
   });
 
-  it('forwards events to provider after Neon insert', async () => {
+  it('forwards events to provider after insert', async () => {
     const event = buildEvent();
     await capturedProcessor({ data: { events: [event] } });
 
@@ -136,8 +145,8 @@ describe('createAnalyticsWorker', () => {
     const event = buildEvent({ userId: null });
     await capturedProcessor({ data: { events: [event] } });
 
-    // Neon still gets the insert
-    expect(mockInsert).toHaveBeenCalledTimes(1);
+    // Repository still gets the insert
+    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
     // But provider gets nothing (can't pseudonymize null)
     expect(provider.capture).not.toHaveBeenCalled();
   });
@@ -148,15 +157,20 @@ describe('createAnalyticsWorker', () => {
     });
 
     vi.clearAllMocks();
+    analyticsJobRepo = buildAnalyticsJobRepo();
     const { createAnalyticsWorker } = await import('./analytics-ingest.js');
-    createAnalyticsWorker([failingProvider]);
+    createAnalyticsWorker({
+      providers: [failingProvider],
+      consentRepo: null as never,
+      analyticsJobRepo,
+    });
 
     const event = buildEvent();
     // Should not throw
     await expect(capturedProcessor({ data: { events: [event] } })).resolves.toBeUndefined();
 
-    // Neon insert still happened
-    expect(mockInsert).toHaveBeenCalledTimes(1);
+    // Insert still happened
+    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
   });
 
   it('filters out events older than max age', async () => {
@@ -167,20 +181,25 @@ describe('createAnalyticsWorker', () => {
     await capturedProcessor({ data: { events: [staleEvent] } });
 
     // No insert because all events were filtered
-    expect(mockInsert).not.toHaveBeenCalled();
+    expect(analyticsJobRepo.insertEvents).not.toHaveBeenCalled();
     expect(provider.capture).not.toHaveBeenCalled();
   });
 
   it('works with no providers configured', async () => {
     vi.clearAllMocks();
+    analyticsJobRepo = buildAnalyticsJobRepo();
     const { createAnalyticsWorker } = await import('./analytics-ingest.js');
-    createAnalyticsWorker([]);
+    createAnalyticsWorker({
+      providers: [],
+      consentRepo: null as never,
+      analyticsJobRepo,
+    });
 
     const event = buildEvent();
     await capturedProcessor({ data: { events: [event] } });
 
-    // Neon insert still works
-    expect(mockInsert).toHaveBeenCalledTimes(1);
+    // Insert still works
+    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
   });
 
   it('handles mixed valid and stale events', async () => {
@@ -192,8 +211,9 @@ describe('createAnalyticsWorker', () => {
     await capturedProcessor({ data: { events: [valid, stale] } });
 
     // Only 1 event inserted (the valid one)
-    expect(mockInsert).toHaveBeenCalledTimes(1);
-    const insertedValues = mockInsert.mock.results[0].value.values.mock.calls[0][0];
+    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
+    const insertedValues = (analyticsJobRepo.insertEvents as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
     expect(insertedValues).toHaveLength(1);
   });
 });

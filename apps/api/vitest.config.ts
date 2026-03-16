@@ -5,7 +5,7 @@ export default mergeConfig(
   baseConfig,
   defineConfig({
     test: {
-      setupFiles: ['./src/test-utils/setup-env.ts'],
+      setupFiles: ['./src/test-utils/setup-env.ts', './src/test-utils/setup-mocks.ts'],
     },
   }),
 );

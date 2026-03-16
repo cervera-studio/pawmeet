@@ -1,10 +1,11 @@
-import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useGroupEvents } from '@/hooks/useGroupEvents';
 
-type PendingRequest = RouterOutput['groupEvents']['listPendingRequests'][number];
+type PendingRequest = Awaited<
+  ReturnType<ReturnType<typeof useGroupEvents>['listPendingRequests']>
+>[number];
 
 export function useEventRequestsViewModel(eventId: string) {
   const { listPendingRequests, approveParticipant, declineParticipant } = useGroupEvents();

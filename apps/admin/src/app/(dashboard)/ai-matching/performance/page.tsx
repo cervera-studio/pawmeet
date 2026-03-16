@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { LazyPerformanceCharts } from './performance-charts-lazy';
 
 export default async function PerformancePage() {
   const t = await getTranslations('aiMatching.performance');
@@ -36,40 +37,8 @@ export default async function PerformancePage() {
         ))}
       </div>
 
-      {/* Chart placeholders */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('chartCalibration')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-neutral-300 text-neutral-400 dark:border-neutral-600 dark:text-neutral-500">
-              {t('chartPlaceholder')}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('chartWeights')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-neutral-300 text-neutral-400 dark:border-neutral-600 dark:text-neutral-500">
-              {t('chartPlaceholder')}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('chartTimeline')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-neutral-300 text-neutral-400 dark:border-neutral-600 dark:text-neutral-500">
-            {t('chartPlaceholder')}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Charts (client component — recharts needs browser APIs) */}
+      <LazyPerformanceCharts />
     </div>
   );
 }

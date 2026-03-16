@@ -1,14 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { FlagsTable } from './flags-table';
 
 export default async function FlagsPage() {
   const t = await getTranslations('aiMatching.flags');
@@ -56,36 +48,21 @@ export default async function FlagsPage() {
           <CardTitle>{t('tableTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('columnName')}</TableHead>
-                <TableHead>{t('columnDescription')}</TableHead>
-                <TableHead>{t('columnType')}</TableHead>
-                <TableHead>{t('columnStatus')}</TableHead>
-                <TableHead>{t('columnSplit')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {flags.map((flag) => (
-                <TableRow key={flag.name}>
-                  <TableCell className="font-mono text-sm">{flag.name}</TableCell>
-                  <TableCell>{flag.description}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{flag.type}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={flag.enabled ? 'success' : 'secondary'}>
-                      {flag.enabled ? t('enabled') : t('disabled')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-neutral-500 dark:text-neutral-400">
-                    {flag.split}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <FlagsTable
+            flags={flags}
+            columns={{
+              name: t('columnName'),
+              description: t('columnDescription'),
+              type: t('columnType'),
+              status: t('columnStatus'),
+              split: t('columnSplit'),
+            }}
+            labels={{
+              enabled: t('enabled'),
+              disabled: t('disabled'),
+              edit: 'Modifica',
+            }}
+          />
         </CardContent>
       </Card>
     </div>

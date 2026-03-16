@@ -13,7 +13,7 @@ const BREED_GROUPS = [
   'Miscellaneous',
 ] as const;
 
-const scoreField = z.coerce
+const scoreField = z
   .number()
   .int('Deve essere un numero intero')
   .min(1, 'Minimo 1')
@@ -28,7 +28,7 @@ export const breedFormSchema = z.object({
     .regex(/^[a-z0-9_]+$/, 'Solo lettere minuscole, numeri e underscore'),
   group: z.enum(BREED_GROUPS).optional(),
   sizeCategory: z.enum(SIZE_CATEGORIES),
-  avgWeightKg: z.coerce.number().positive('Il peso deve essere positivo'),
+  avgWeightKg: z.number().positive('Il peso deve essere positivo'),
   energy: scoreField,
   playfulness: scoreField,
   trainability: scoreField,

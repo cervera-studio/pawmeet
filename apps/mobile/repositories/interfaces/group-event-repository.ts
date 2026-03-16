@@ -1,9 +1,15 @@
-import type { GroupEvent, GroupEventWithParticipants, Serialized } from '@pawmeet/types';
+import type {
+  GroupEvent,
+  GroupEventWithParticipants,
+  ParticipantStatus,
+  Serialized,
+} from '@pawmeet/types';
 
 export interface NearbyEventsParams {
   latitude: number;
   longitude: number;
   radiusKm?: number;
+  category?: 'walk' | 'meetup' | 'training';
 }
 
 export interface CreateGroupEventInput {
@@ -22,8 +28,12 @@ export interface CreateGroupEventInput {
   coverImageUrl?: string;
 }
 
+export interface NearbyEventWithStatus extends Serialized<GroupEvent> {
+  myStatus?: ParticipantStatus | null;
+}
+
 export interface GroupEventRepository {
-  listNearby(params: NearbyEventsParams): Promise<Serialized<GroupEvent>[]>;
+  listNearby(params: NearbyEventsParams): Promise<NearbyEventWithStatus[]>;
   getById(eventId: string): Promise<Serialized<GroupEventWithParticipants>>;
   create(input: CreateGroupEventInput): Promise<Serialized<GroupEvent>>;
   join(eventId: string, dogId: string): Promise<void>;

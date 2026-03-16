@@ -17,12 +17,20 @@ import { createEventStatusWorker, scheduleEventStatusCheck } from './event-statu
 import { createGdprExportWorker } from './gdpr-export.js';
 import { createGpsRetentionWorker } from './gps-retention.js';
 import { createMessageToxicityWorker } from './message-toxicity.js';
+import { createMlFeatureComputeWorker } from './ml-feature-compute.js';
+import { createMlOptimalTimesWorker } from './ml-optimal-times.js';
+import { createMlRecommendationsWorker } from './ml-recommendations.js';
+import { createMlTrainingLabelsWorker } from './ml-training-labels.js';
 import { createNearbySuggestionWorker, scheduleNearbySuggestions } from './nearby-suggestion.js';
 import { createPhotoModerationWorker } from './photo-moderation.js';
 import {
   scheduleAnalyticsAggregation,
   scheduleDataCleanup,
   scheduleGpsRetention,
+  scheduleMlFeatureCompute,
+  scheduleMlOptimalTimes,
+  scheduleMlRecommendations,
+  scheduleMlTrainingLabels,
   scheduleStoryCleanup,
 } from './queue.js';
 import {
@@ -51,6 +59,10 @@ export async function startWorkers() {
   const walkReminderWorker = createWalkReminderWorker();
   const walkSafetyAlertWorker = createWalkSafetyAlertWorker();
   const nearbySuggestionWorker = createNearbySuggestionWorker();
+  const mlTrainingLabelsWorker = createMlTrainingLabelsWorker();
+  const mlFeatureComputeWorker = createMlFeatureComputeWorker();
+  const mlRecommendationsWorker = createMlRecommendationsWorker();
+  const mlOptimalTimesWorker = createMlOptimalTimesWorker();
   const messageToxicityWorker = messageToxicityDeps
     ? createMessageToxicityWorker(messageToxicityDeps)
     : null;
@@ -65,6 +77,10 @@ export async function startWorkers() {
   await scheduleWalkReminders();
   await scheduleWalkSafetyAlerts();
   await scheduleNearbySuggestions();
+  await scheduleMlTrainingLabels();
+  await scheduleMlFeatureCompute();
+  await scheduleMlRecommendations();
+  await scheduleMlOptimalTimes();
 
   // Handle graceful shutdown
   const shutdown = async () => {
@@ -85,6 +101,10 @@ export async function startWorkers() {
       walkReminderWorker.close(),
       walkSafetyAlertWorker.close(),
       nearbySuggestionWorker.close(),
+      mlTrainingLabelsWorker.close(),
+      mlFeatureComputeWorker.close(),
+      mlRecommendationsWorker.close(),
+      mlOptimalTimesWorker.close(),
       ...(messageToxicityWorker ? [messageToxicityWorker.close()] : []),
     ]);
     // Flush analytics providers after workers stop to prevent event loss on deploys

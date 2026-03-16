@@ -1,5 +1,7 @@
 // Match domain: discovery, likes, passes, AI matching
 
+import { RuleBasedStrategy } from '../domain/scoring-strategy.js';
+import { MLScoringStrategy } from '../infra/ml-scoring-strategy.js';
 import { createDiscoverCandidates } from '../use-cases/discover-candidates.js';
 import { createDiscoverCandidatesAi } from '../use-cases/discover-candidates-ai.js';
 import { createGetMatchExplanation } from '../use-cases/get-match-explanation.js';
@@ -23,6 +25,9 @@ import {
   notificationService,
   userRepo,
 } from './services.js';
+
+const ruleBasedStrategy = new RuleBasedStrategy(matchingAiRepo);
+const mlStrategy = new MLScoringStrategy(ruleBasedStrategy);
 
 export const matchDeps = {
   listMatches: createListMatches({ dogRepo, matchRepo, userRepo }),
@@ -48,8 +53,9 @@ export const matchingAiDeps = {
     dogRepo,
     matchRepo,
     userRepo,
-    matchingAiRepo,
     experimentService,
+    ruleBasedStrategy,
+    mlStrategy,
   }),
   getMatchExplanation: createGetMatchExplanation({ matchRepo, dogRepo, userRepo }),
 };

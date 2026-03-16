@@ -22,6 +22,7 @@ import {
 } from '../container/index.js';
 import { db } from '../lib/db.js';
 import { createAdminRouter } from './routers/admin.js';
+import { createAdminAiMatchingRouter } from './routers/admin-ai-matching.js';
 import { createAuthRouter } from './routers/auth.js';
 import { createBadgesRouter } from './routers/badges.js';
 import { createChatRouter } from './routers/chat.js';
@@ -53,6 +54,7 @@ export const appRouter = router({
   matchingAi: createMatchingAiRouter(matchingAiDeps),
   chat: createChatRouter(chatDeps),
   admin: createAdminRouter(db, adminDeps),
+  adminAiMatching: createAdminAiMatchingRouter(db),
   walks: createWalksRouter(walkDeps),
   feedback: createFeedbackRouter(feedbackDeps),
   feed: createFeedRouter(feedDeps),

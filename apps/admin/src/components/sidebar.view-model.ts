@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import {
   AlertTriangleIcon,
   BellIcon,
+  BrainIcon,
   BuildingIcon,
   CalendarIcon,
   LayoutDashboardIcon,
@@ -45,6 +46,16 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
       children: [
         { name: t('safetySos'), href: '/safety/sos' },
         { name: t('safetyContacts'), href: '/safety/contacts' },
+      ],
+    },
+    {
+      name: t('aiMatching'),
+      href: '/ai-matching',
+      icon: BrainIcon,
+      children: [
+        { name: t('aiMatchingAbTests'), href: '/ai-matching/ab-tests' },
+        { name: t('aiMatchingPerformance'), href: '/ai-matching/performance' },
+        { name: t('aiMatchingFlags'), href: '/ai-matching/flags' },
       ],
     },
     { name: t('notifications'), href: '/notifications', icon: BellIcon },

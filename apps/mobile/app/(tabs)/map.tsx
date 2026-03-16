@@ -1,14 +1,39 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { formatDistance } from '@pawmeet/utils';
+import { memo } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import MapView, { Circle, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import type { NearbyUser } from './map.view-model';
+import type { GroupEvent, NearbyUser } from './map.view-model';
 import { useMapViewModel } from './map.view-model';
 
-function UserPreviewCard({
+function formatEventDate(date: Date | string): string {
+  const d = new Date(date);
+  return d.toLocaleDateString('it-IT', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function categoryLabel(category: string): string {
+  switch (category) {
+    case 'walk':
+      return 'Passeggiata';
+    case 'meetup':
+      return 'Incontro';
+    case 'training':
+      return 'Addestramento';
+    default:
+      return category;
+  }
+}
+
+const UserPreviewCard = memo(function UserPreviewCard({
   user,
   onClose,
   onViewProfile,
@@ -50,7 +75,51 @@ function UserPreviewCard({
       )}
     </View>
   );
-}
+});
+
+const EventPreviewCard = memo(function EventPreviewCard({
+  event,
+  onClose,
+  onViewEvent,
+}: {
+  event: GroupEvent;
+  onClose: () => void;
+  onViewEvent: () => void;
+}) {
+  return (
+    <View className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-lg">
+      <Pressable onPress={onClose} className="absolute right-3 top-3 z-10">
+        <Text className="text-lg text-gray-400 dark:text-neutral-500">✕</Text>
+      </Pressable>
+
+      <Pressable onPress={onViewEvent} className="flex-row items-center">
+        <View className="h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+          <Text className="text-xl">{'\u{1F4C5}'}</Text>
+        </View>
+        <View className="ml-3 flex-1">
+          <Text
+            className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]"
+            numberOfLines={1}
+          >
+            {event.title}
+          </Text>
+          <Text className="text-sm text-gray-500 dark:text-neutral-500">
+            {formatEventDate(event.scheduledAt)}
+          </Text>
+          <View className="flex-row items-center gap-2">
+            <Text className="text-sm text-gray-400 dark:text-neutral-500">
+              {categoryLabel(event.category)}
+            </Text>
+            <Text className="text-sm text-gray-400 dark:text-neutral-500">
+              Max {event.maxParticipants} partecipanti
+            </Text>
+          </View>
+        </View>
+        <Text className="text-gray-400 dark:text-neutral-500">›</Text>
+      </Pressable>
+    </View>
+  );
+});
 
 export default function MapScreen() {
   const vm = useMapViewModel();
@@ -128,7 +197,39 @@ export default function MapScreen() {
               </View>
               <View className="mt-0.5 rounded-full bg-white dark:bg-[#1C1C1E] px-1.5 py-0.5 shadow-sm">
                 <Text className="text-[10px] font-medium text-gray-700 dark:text-[#D1D1D6]">
-                  {user.dogs[0]?.name ?? '?'}
+                  {'\u{1F415}'} {user.dogs[0]?.name ?? '?'}
+                </Text>
+              </View>
+            </View>
+          </Marker>
+        ))}
+
+        {/* Event markers */}
+        {vm.events.map((event) => (
+          <Marker
+            key={`event-${event.id}`}
+            coordinate={{
+              latitude: event.latitude,
+              longitude: event.longitude,
+            }}
+            onPress={() => vm.handleEventMarkerPress(event)}
+          >
+            <View className="items-center">
+              <View
+                className={`h-10 w-10 items-center justify-center rounded-full border-2 ${
+                  vm.selectedEvent?.id === event.id
+                    ? 'border-primary bg-green-100 dark:bg-green-900/30'
+                    : 'border-white bg-green-50 dark:bg-green-900/20'
+                }`}
+              >
+                <Text className="text-lg">{'\u{1F4C5}'}</Text>
+              </View>
+              <View className="mt-0.5 rounded-full bg-green-50 dark:bg-green-900/30 px-1.5 py-0.5 shadow-sm">
+                <Text
+                  className="text-[10px] font-medium text-green-800 dark:text-green-300"
+                  numberOfLines={1}
+                >
+                  {event.title}
                 </Text>
               </View>
             </View>
@@ -162,6 +263,15 @@ export default function MapScreen() {
           user={vm.selectedUser}
           onClose={vm.handleClosePreview}
           onViewProfile={vm.handleViewProfile}
+        />
+      )}
+
+      {/* Event preview card */}
+      {vm.selectedEvent && (
+        <EventPreviewCard
+          event={vm.selectedEvent}
+          onClose={vm.handleClosePreview}
+          onViewEvent={vm.handleViewEvent}
         />
       )}
     </View>

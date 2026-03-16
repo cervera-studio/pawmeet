@@ -25,6 +25,7 @@ export type {
   CreateGroupEventInput,
   GroupEventRepository,
   NearbyEventsParams,
+  NearbyEventWithStatus,
 } from './group-event-repository';
 export type { LikeResult, MatchRepository, MatchSuggestion } from './match-repository';
 export type { MediaContentType, MediaRepository, UploadResult } from './media-repository';

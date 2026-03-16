@@ -46,4 +46,14 @@ export interface FeedRepository {
     contentId: string,
     reason: ContentReportReason,
   ): Promise<void>;
+  addReaction(
+    contentType: 'post' | 'comment' | 'story',
+    contentId: string,
+    emoji: string,
+  ): Promise<{ added: boolean }>;
+  removeReaction(
+    contentType: 'post' | 'comment' | 'story',
+    contentId: string,
+    emoji: string,
+  ): Promise<{ removed: boolean }>;
 }

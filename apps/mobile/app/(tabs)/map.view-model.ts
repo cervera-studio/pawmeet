@@ -2,12 +2,14 @@ import type { RouterOutput } from '@pawmeet/api-client';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type MapView from 'react-native-maps';
+import type { GroupEvent } from '@/hooks/useGroupEvents';
+import { useGroupEvents } from '@/hooks/useGroupEvents';
 import { useLocation } from '@/hooks/useLocation';
 import { useNearbyUsers } from '@/hooks/useNearbyUsers';
 
 type NearbyUser = RouterOutput['users']['findNearby']['users'][number];
 
-export type { NearbyUser };
+export type { NearbyUser, GroupEvent };
 
 export function useMapViewModel() {
   const router = useRouter();
@@ -19,7 +21,9 @@ export function useMapViewModel() {
     searchRadiusKm,
   } = useLocation();
   const { users, loading: usersLoading, fetchNearby } = useNearbyUsers();
+  const { events, loading: eventsLoading, listNearby: listNearbyEvents } = useGroupEvents();
   const [selectedUser, setSelectedUser] = useState<NearbyUser | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<GroupEvent | null>(null);
 
   useEffect(() => {
     getCurrentLocation();
@@ -28,11 +32,18 @@ export function useMapViewModel() {
   useEffect(() => {
     if (coordinates) {
       fetchNearby();
+      listNearbyEvents(coordinates.latitude, coordinates.longitude);
     }
-  }, [coordinates, fetchNearby]);
+  }, [coordinates, fetchNearby, listNearbyEvents]);
 
   const handleMarkerPress = useCallback((user: NearbyUser) => {
+    setSelectedEvent(null);
     setSelectedUser(user);
+  }, []);
+
+  const handleEventMarkerPress = useCallback((event: GroupEvent) => {
+    setSelectedUser(null);
+    setSelectedEvent(event);
   }, []);
 
   const handleRecenter = useCallback(() => {
@@ -51,16 +62,25 @@ export function useMapViewModel() {
 
   const handleMapPress = useCallback(() => {
     setSelectedUser(null);
+    setSelectedEvent(null);
   }, []);
 
   const handleClosePreview = useCallback(() => {
     setSelectedUser(null);
+    setSelectedEvent(null);
   }, []);
 
   const handleViewProfile = useCallback(() => {
     router.push('/(modals)/dog-detail');
     setSelectedUser(null);
   }, [router]);
+
+  const handleViewEvent = useCallback(() => {
+    if (selectedEvent) {
+      router.push(`/(tabs)/events/${selectedEvent.id}`);
+      setSelectedEvent(null);
+    }
+  }, [router, selectedEvent]);
 
   return {
     mapRef,
@@ -70,12 +90,17 @@ export function useMapViewModel() {
     searchRadiusKm,
     users,
     usersLoading,
+    events,
+    eventsLoading,
     selectedUser,
+    selectedEvent,
     handleMarkerPress,
+    handleEventMarkerPress,
     handleRecenter,
     handleMapPress,
     handleClosePreview,
     handleViewProfile,
+    handleViewEvent,
     fetchNearby,
   };
 }

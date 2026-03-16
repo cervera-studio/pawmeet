@@ -28,5 +28,11 @@ export function createTrpcFeedRepository(api: ApiClient): FeedRepository {
     async reportContent(contentType, contentId, reason: ContentReportReason) {
       await api.feed.reportContent.mutate({ contentType, contentId, reason });
     },
+    async addReaction(contentType, contentId, emoji) {
+      return api.feed.addReaction.mutate({ contentType, contentId, emoji });
+    },
+    async removeReaction(contentType, contentId, emoji) {
+      return api.feed.removeReaction.mutate({ contentType, contentId, emoji });
+    },
   };
 }

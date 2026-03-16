@@ -1,12 +1,7 @@
 import type { ApiClient } from '@pawmeet/api-client';
 import type { ChatRepository } from '../interfaces';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? (__DEV__ ? 'http://localhost:3000' : '');
-
-export function createTrpcChatRepository(
-  api: ApiClient,
-  getToken: () => string | null,
-): ChatRepository {
+export function createTrpcChatRepository(api: ApiClient): ChatRepository {
   return {
     async listConversations() {
       return api.chat.listConversations.query();
@@ -21,22 +16,25 @@ export function createTrpcChatRepository(
       await api.chat.markMessagesRead.mutate({ matchId });
     },
     async uploadImage(matchId, imageUri) {
-      const token = getToken();
-      const formData = new FormData();
-      // RN FormData accepts { uri, type, name } objects but TS types expect Blob
-      formData.append('image', {
-        uri: imageUri,
-        type: 'image/jpeg',
-        name: 'chat-image.jpg',
-      } as unknown as Blob);
-
-      const response = await fetch(`${API_URL}/api/chat/${matchId}/upload`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+      // Step 1: Get presigned URL
+      const { uploadUrl, key } = await api.chat.uploadMediaUrl.mutate({
+        matchId,
+        contentType: 'image/jpeg',
+        fileSize: 0, // Size checked server-side after upload
       });
-      const json: { mediaUrl: string } = await response.json();
-      return json;
+
+      // Step 2: Upload to R2
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'image/jpeg' },
+        body: blob,
+      });
+
+      // Step 3: Build the public URL from the key
+      const publicUrl = key; // Server resolves this to full URL when reading
+      return { mediaUrl: publicUrl };
     },
   };
 }

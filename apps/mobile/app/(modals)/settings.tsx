@@ -148,6 +148,80 @@ export default function SettingsModal() {
           />
         </View>
 
+        <View className="flex-row items-center justify-between py-4">
+          <View className="flex-1 pr-4">
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Feed e storie</Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              Ricevi notifiche per like, commenti e nuove storie
+            </Text>
+          </View>
+          <Switch
+            value={vm.prefs.feed}
+            onValueChange={(v) => vm.updatePref('feed', v)}
+            trackColor={{ true: '#065F46' }}
+          />
+        </View>
+
+        <View className="flex-row items-center justify-between py-4">
+          <View className="flex-1 pr-4">
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              Utenti nelle vicinanze
+            </Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              Ricevi notifiche quando ci sono utenti vicino a te
+            </Text>
+          </View>
+          <Switch
+            value={vm.prefs.nearby}
+            onValueChange={(v) => vm.updatePref('nearby', v)}
+            trackColor={{ true: '#065F46' }}
+          />
+        </View>
+
+        {/* Quiet hours section */}
+        <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500">
+          Orari silenziosi
+        </Text>
+
+        <View className="flex-row items-center justify-between py-4">
+          <View className="flex-1 pr-4">
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              Attiva orari silenziosi
+            </Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              Disattiva le notifiche in determinati orari
+            </Text>
+          </View>
+          <Switch
+            value={vm.quietHours.enabled}
+            onValueChange={(v) => vm.updateQuietHours({ enabled: v })}
+            trackColor={{ true: '#065F46' }}
+          />
+        </View>
+
+        {vm.quietHours.enabled && (
+          <View className="flex-row items-center justify-between py-4">
+            <View className="flex-row items-center gap-3">
+              <View>
+                <Text className="text-xs text-gray-400 dark:text-neutral-500 mb-1">Dalle</Text>
+                <Pressable className="rounded-xl bg-gray-100 dark:bg-[#38383A] px-4 py-2.5">
+                  <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
+                    {vm.quietHours.start}
+                  </Text>
+                </Pressable>
+              </View>
+              <View>
+                <Text className="text-xs text-gray-400 dark:text-neutral-500 mb-1">Alle</Text>
+                <Pressable className="rounded-xl bg-gray-100 dark:bg-[#38383A] px-4 py-2.5">
+                  <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
+                    {vm.quietHours.end}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* General settings section */}
         <Text className="mb-2 mt-4 text-sm font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500">
           Generali

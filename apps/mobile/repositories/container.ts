@@ -2,7 +2,6 @@ import { container } from 'tsyringe';
 import { api } from '@/lib/trpc';
 import { createBufferedAnalyticsService } from '@/services/buffered-analytics-service';
 import { createNoOpAnalyticsService } from '@/services/noop-analytics-service';
-import { useAuthStore } from '@/stores/auth';
 import { createTrpcActivityRepository } from './remote/trpc-activity-repository';
 import { createTrpcAuthRepository } from './remote/trpc-auth-repository';
 import { createTrpcBadgeRepository } from './remote/trpc-badge-repository';
@@ -37,11 +36,9 @@ import {
   WALK_TRACKING_REPOSITORY,
 } from './tokens';
 
-const getToken = () => useAuthStore.getState().token;
-
 container.register(AUTH_REPOSITORY, { useValue: createTrpcAuthRepository(api) });
 container.register(MATCH_REPOSITORY, { useValue: createTrpcMatchRepository(api) });
-container.register(CHAT_REPOSITORY, { useValue: createTrpcChatRepository(api, getToken) });
+container.register(CHAT_REPOSITORY, { useValue: createTrpcChatRepository(api) });
 container.register(WALK_REPOSITORY, { useValue: createTrpcWalkRepository(api) });
 container.register(WALK_TRACKING_REPOSITORY, {
   useValue: createTrpcWalkTrackingRepository(api),

@@ -49,6 +49,7 @@ export const routePermissions: Record<string, AdminRole> = {
   '/dogs': AdminRole.Moderator,
   '/breeds': AdminRole.Moderator,
   '/safety': AdminRole.Moderator,
+  '/ai-matching': AdminRole.Admin,
   '/notifications': AdminRole.Admin,
   '/account-deletions': AdminRole.Admin,
   '/organizations': AdminRole.Moderator,

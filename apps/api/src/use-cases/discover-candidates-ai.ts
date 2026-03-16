@@ -1,21 +1,12 @@
 import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM, STATSIG_GATE } from '@pawmeet/config';
 import type { DiscoveryFilters, DogProfile } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import {
-  blendWeights,
-  calculateBehaviorScore,
-  calculateDistance,
-  calculateDistanceScore,
-  calculateEnergyScore,
-  calculateSizeScore,
-  calculateWeightedScore,
-  type MatchingWeights,
-} from '@pawmeet/utils';
+import { calculateDistance } from '@pawmeet/utils';
+import type { ScoringStrategy } from '../domain/scoring-strategy.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
 import type {
   DogRepository,
   ExperimentService,
-  MatchingAiRepository,
   MatchRepository,
   UserRepository,
 } from '../ports/index.js';
@@ -24,69 +15,10 @@ type Deps = {
   dogRepo: DogRepository;
   matchRepo: MatchRepository;
   userRepo: UserRepository;
-  matchingAiRepo: MatchingAiRepository;
   experimentService: ExperimentService;
+  ruleBasedStrategy: ScoringStrategy;
+  mlStrategy: ScoringStrategy;
 };
-
-// ── Scoring helpers ────────────────────────────────────────────────────────────
-
-const LEASH_SCORES: Record<string, number> = {
-  eccellente: 1.0,
-  buono: 0.7,
-  in_addestramento: 0.4,
-  difficile: 0.1,
-};
-
-function calculateLeashScore(a: string, b: string): number {
-  const scoreA = LEASH_SCORES[a] ?? 0.5;
-  const scoreB = LEASH_SCORES[b] ?? 0.5;
-  return 1 - Math.abs(scoreA - scoreB);
-}
-
-function calculateWalkScore(
-  dogA: {
-    walkPrefTime: string[];
-    walkPrefDurationMin: number;
-    walkPrefDurationMax: number;
-    walkPrefTerrain: string[];
-  },
-  dogB: {
-    walkPrefTime: string[];
-    walkPrefDurationMin: number;
-    walkPrefDurationMax: number;
-    walkPrefTerrain: string[];
-  },
-): number {
-  const timeSetA = new Set(dogA.walkPrefTime);
-  const timeOverlap = dogB.walkPrefTime.filter((t) => timeSetA.has(t)).length;
-  const timeTotal = new Set([...dogA.walkPrefTime, ...dogB.walkPrefTime]).size;
-  const timeScore = timeTotal > 0 ? timeOverlap / timeTotal : 0;
-
-  const overlapMin = Math.max(dogA.walkPrefDurationMin, dogB.walkPrefDurationMin);
-  const overlapMax = Math.min(dogA.walkPrefDurationMax, dogB.walkPrefDurationMax);
-  const unionMin = Math.min(dogA.walkPrefDurationMin, dogB.walkPrefDurationMin);
-  const unionMax = Math.max(dogA.walkPrefDurationMax, dogB.walkPrefDurationMax);
-  const durationScore =
-    unionMax > unionMin ? Math.max(0, overlapMax - overlapMin) / (unionMax - unionMin) : 0;
-
-  const terrainSetA = new Set(dogA.walkPrefTerrain);
-  const terrainOverlap = dogB.walkPrefTerrain.filter((t) => terrainSetA.has(t)).length;
-  const terrainTotal = new Set([...dogA.walkPrefTerrain, ...dogB.walkPrefTerrain]).size;
-  const terrainScore = terrainTotal > 0 ? terrainOverlap / terrainTotal : 0;
-
-  return (timeScore + durationScore + terrainScore) / 3;
-}
-
-function getScoreBreakdown(dogA: DogProfile, dogB: DogProfile, distanceKm: number) {
-  return {
-    sizeScore: calculateSizeScore(dogA.size, dogB.size),
-    energyScore: calculateEnergyScore(dogA.energyLevel, dogB.energyLevel),
-    behaviorScore: calculateBehaviorScore(dogA.behaviorWithDogs, dogB.behaviorWithDogs),
-    walkScore: calculateWalkScore(dogA, dogB),
-    distanceScore: calculateDistanceScore(distanceKm),
-    leashScore: calculateLeashScore(dogA.leashBehavior, dogB.leashBehavior),
-  };
-}
 
 // ── Filter helpers ──────────────────────────────────────────────────────────
 
@@ -137,8 +69,9 @@ export function createDiscoverCandidatesAi({
   dogRepo,
   matchRepo,
   userRepo,
-  matchingAiRepo,
   experimentService,
+  ruleBasedStrategy,
+  mlStrategy,
 }: Deps) {
   return async (
     userId: string,
@@ -165,22 +98,7 @@ export function createDiscoverCandidatesAi({
     // Check Statsig feature gate for AI matching
     const useAi = await experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
     const variant = useAi ? 'ai_enhanced' : 'rule_based';
-
-    // Determine weights based on variant
-    let weights: MatchingWeights;
-    if (useAi) {
-      const prefs = await matchingAiRepo.findUserPreferences(userId);
-      weights = blendWeights(prefs);
-    } else {
-      weights = {
-        size: 0.25,
-        energy: 0.25,
-        behavior: 0.2,
-        walk: 0.15,
-        distance: 0.1,
-        leash: 0.05,
-      };
-    }
+    const strategy = useAi ? mlStrategy : ruleBasedStrategy;
 
     // Get already-swiped dog IDs
     const swipedIds = new Set(await matchRepo.findSwipedDogIds(dogId));
@@ -189,28 +107,38 @@ export function createDiscoverCandidatesAi({
     const candidates = await matchRepo.findCandidateDogs(userId);
 
     // Apply filters, score, and rank
-    const scored = candidates
-      .flatMap((c) => {
-        if (!hasOwnerLocation(c)) return [];
-        if (swipedIds.has(c.dog.id)) return [];
-        if (filters && !matchesFilters(c.dog, filters)) return [];
+    const scoredPromises = candidates.flatMap((c) => {
+      if (!hasOwnerLocation(c)) return [];
+      if (swipedIds.has(c.dog.id)) return [];
+      if (filters && !matchesFilters(c.dog, filters)) return [];
 
-        const distanceKm = calculateDistance(user.latitude, user.longitude, c.ownerLat, c.ownerLon);
-        if (distanceKm > radiusKm) return [];
+      const distanceKm = calculateDistance(user.latitude, user.longitude, c.ownerLat, c.ownerLon);
+      if (distanceKm > radiusKm) return [];
 
-        const breakdown = getScoreBreakdown(myDog, c.dog, distanceKm);
-        const score = calculateWeightedScore(breakdown, weights);
-        if (score < COMPATIBILITY_THRESHOLD) return [];
+      return [
+        strategy.score(myDog, c.dog, distanceKm, userId).then((result) => {
+          if (result.overallScore < COMPATIBILITY_THRESHOLD) return null;
 
-        return [
-          {
+          return {
             dog: c.dog,
             distanceKm: Math.round(distanceKm * 10) / 10,
-            compatibilityScore: Math.round(score * 100) / 100,
-            scoreBreakdown: breakdown,
-          },
-        ];
-      })
+            compatibilityScore: Math.round(result.overallScore * 100) / 100,
+            scoreBreakdown: {
+              sizeScore: result.sizeScore,
+              energyScore: result.energyScore,
+              behaviorScore: result.behaviorScore,
+              walkScore: result.walkScore,
+              distanceScore: result.distanceScore,
+              leashScore: result.leashScore,
+            },
+          };
+        }),
+      ];
+    });
+
+    const results = await Promise.all(scoredPromises);
+    const scored = results
+      .filter((s): s is NonNullable<typeof s> => s !== null)
       .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
       .slice(0, effectiveLimit);
 

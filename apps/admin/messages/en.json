@@ -61,7 +61,11 @@
     "settingsGeneral": "General",
     "settingsAdmins": "Admin Users",
     "notifications": "Notifications",
-    "auditLog": "Audit Log"
+    "auditLog": "Audit Log",
+    "aiMatching": "AI Matching",
+    "aiMatchingAbTests": "A/B Tests",
+    "aiMatchingPerformance": "Performance",
+    "aiMatchingFlags": "Feature Flags"
   },
   "header": {
     "searchPlaceholder": "Search users, dogs, reports...",
@@ -562,6 +566,60 @@
     },
     "common": {
       "cancel": "Cancel"
+    }
+  },
+  "aiMatching": {
+    "abTests": {
+      "title": "A/B Tests — AI Matching",
+      "subtitle": "ML vs rule-based matching experiment comparison",
+      "startedOn": "Started on {date}",
+      "statusRunning": "Running",
+      "statusStopped": "Stopped",
+      "groupControl": "Control group",
+      "groupTreatment": "Treatment group",
+      "totalUsers": "Total users",
+      "metricsTitle": "Comparative metrics",
+      "metricsSubtitle": "AI (treatment) vs Rule-Based (control) comparison",
+      "columnMetric": "Metric",
+      "columnControl": "Control",
+      "columnTreatment": "Treatment (AI)",
+      "columnLift": "Lift %",
+      "columnPValue": "p-value",
+      "metricMatchRate": "Match rate",
+      "metricAcceptRate": "Accept rate",
+      "metricAvgScore": "Average score",
+      "metricWalkCompletion": "Walk completion",
+      "chartMatchRate": "Match rate over time",
+      "chartAcceptRate": "Accept rate over time",
+      "chartPlaceholder": "Chart placeholder — Recharts coming soon"
+    },
+    "performance": {
+      "title": "AI Model Performance",
+      "subtitle": "Matching model quality metrics",
+      "kpiPredictions": "Total Predictions",
+      "kpiMatches": "Matches Generated",
+      "kpiAccuracy": "Accuracy",
+      "kpiAvgScore": "Average Score",
+      "chartCalibration": "Calibration curve",
+      "chartWeights": "Feature weights distribution",
+      "chartTimeline": "Performance over time",
+      "chartPlaceholder": "Chart placeholder — Recharts coming soon"
+    },
+    "flags": {
+      "title": "Feature Flags — AI Matching",
+      "subtitle": "Manage feature flags for the AI matching system",
+      "tableTitle": "Active flags",
+      "columnName": "Name",
+      "columnDescription": "Description",
+      "columnType": "Type",
+      "columnStatus": "Status",
+      "columnSplit": "Split / Value",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "flagMlMatching": "Enable ML matching",
+      "flagScoringStrategy": "Active scoring strategy",
+      "flagAbTest": "A/B test ML matching experiment",
+      "flagConfidenceThreshold": "Minimum confidence threshold"
     }
   },
   "adminUsers": {

@@ -16,6 +16,15 @@ interface ResolvedTag {
   taggedDog: { id: string; name: string } | null;
 }
 
+const REACTION_EMOJIS = [
+  '\u{2764}\u{FE0F}',
+  '\u{1F602}',
+  '\u{1F525}',
+  '\u{1F43E}',
+  '\u{1F622}',
+  '\u{1F44D}',
+] as const;
+
 interface PostCardProps {
   post: {
     id: string;
@@ -36,6 +45,7 @@ interface PostCardProps {
   onPress: () => void;
   onDelete?: () => void;
   onReport?: () => void;
+  onReaction?: (emoji: string) => void;
 }
 
 function formatTimeAgo(date: Date | string): string {
@@ -59,6 +69,7 @@ export const PostCard = memo(function PostCard({
   onPress,
   onDelete,
   onReport,
+  onReaction,
 }: PostCardProps) {
   const sortedMedia = [...post.media].sort((a, b) => a.position - b.position);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -182,7 +193,7 @@ export const PostCard = memo(function PostCard({
       ) : null}
 
       {/* Actions */}
-      <View className="flex-row items-center gap-4 px-4 pb-3">
+      <View className="flex-row items-center gap-4 px-4 pb-2">
         <Pressable onPress={onLike} className="flex-row items-center gap-1">
           <Text className="text-lg">{post.isLikedByMe ? '❤️' : '🤍'}</Text>
           <Text className="text-sm text-gray-600 dark:text-[#D1D1D6]">{post.likesCount}</Text>
@@ -192,6 +203,21 @@ export const PostCard = memo(function PostCard({
           <Text className="text-sm text-gray-600 dark:text-[#D1D1D6]">{post.commentsCount}</Text>
         </Pressable>
       </View>
+
+      {/* Reaction bar */}
+      {onReaction ? (
+        <View className="flex-row items-center gap-1 px-4 pb-3">
+          {REACTION_EMOJIS.map((emoji) => (
+            <Pressable
+              key={emoji}
+              onPress={() => onReaction(emoji)}
+              className="rounded-full bg-gray-50 dark:bg-[#2C2C2E] px-2.5 py-1.5 active:bg-gray-200 dark:active:bg-[#48484A]"
+            >
+              <Text className="text-base">{emoji}</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 });

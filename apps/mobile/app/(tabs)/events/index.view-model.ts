@@ -1,6 +1,7 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import type { GroupEventCategory } from '@pawmeet/types';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGroupEvents } from '@/hooks/useGroupEvents';
 import { useLocation } from '@/hooks/useLocation';
 
@@ -12,6 +13,7 @@ export function useEventDiscoveryViewModel() {
   const router = useRouter();
   const { events, loading, listNearby } = useGroupEvents();
   const { coordinates, getCurrentLocation } = useLocation();
+  const [category, setCategory] = useState<GroupEventCategory | null>(null);
 
   const refresh = useCallback(async () => {
     let coords = coordinates;
@@ -19,9 +21,9 @@ export function useEventDiscoveryViewModel() {
       coords = await getCurrentLocation();
     }
     if (coords) {
-      await listNearby(coords.latitude, coords.longitude);
+      await listNearby(coords.latitude, coords.longitude, undefined, category ?? undefined);
     }
-  }, [coordinates, getCurrentLocation, listNearby]);
+  }, [coordinates, getCurrentLocation, listNearby, category]);
 
   useEffect(() => {
     void refresh();
@@ -41,6 +43,8 @@ export function useEventDiscoveryViewModel() {
     events,
     loading,
     isInitialLoad,
+    category,
+    setCategory,
     refresh,
     navigateToEvent,
     navigateToCreate,

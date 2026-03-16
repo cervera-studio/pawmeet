@@ -9,12 +9,28 @@ interface NotificationPrefs {
   matches: boolean;
   messages: boolean;
   reminders: boolean;
+  feed: boolean;
+  nearby: boolean;
+}
+
+interface QuietHours {
+  enabled: boolean;
+  start: string; // HH:mm format
+  end: string; // HH:mm format
 }
 
 const DEFAULT_PREFS: NotificationPrefs = {
   matches: true,
   messages: true,
   reminders: true,
+  feed: true,
+  nearby: true,
+};
+
+const DEFAULT_QUIET_HOURS: QuietHours = {
+  enabled: false,
+  start: '22:00',
+  end: '07:00',
 };
 
 export function useSettingsViewModel() {
@@ -29,6 +45,7 @@ export function useSettingsViewModel() {
     [setThemePreference],
   );
   const [isDeleting, setIsDeleting] = useState(false);
+  const [quietHours, setQuietHours] = useState<QuietHours>(DEFAULT_QUIET_HOURS);
 
   // Load notification preferences from user profile
   useEffect(() => {
@@ -37,6 +54,18 @@ export function useSettingsViewModel() {
       .then((data) => {
         if (data.notificationPrefs) {
           setPrefs(data.notificationPrefs);
+          // Quiet hours are stored as separate fields in notification prefs
+          const np = data.notificationPrefs as {
+            quietHoursStart?: string | null;
+            quietHoursEnd?: string | null;
+          };
+          if (np.quietHoursStart && np.quietHoursEnd) {
+            setQuietHours({
+              enabled: true,
+              start: np.quietHoursStart,
+              end: np.quietHoursEnd,
+            });
+          }
         }
       })
       .catch((e) => logger.warn('Settings', 'Failed to load notification prefs', e));
@@ -55,6 +84,24 @@ export function useSettingsViewModel() {
       });
     },
     [prefs],
+  );
+
+  const updateQuietHours = useCallback(
+    (update: Partial<QuietHours>) => {
+      const updated = { ...quietHours, ...update };
+      setQuietHours(updated);
+
+      api.users.updateNotificationPrefs
+        .mutate({
+          quietHoursStart: updated.enabled ? updated.start : null,
+          quietHoursEnd: updated.enabled ? updated.end : null,
+        })
+        .catch((e) => {
+          logger.warn('Settings', 'Failed to update quiet hours', e);
+          setQuietHours(quietHours);
+        });
+    },
+    [quietHours],
   );
 
   const deleteAccount = useCallback(() => {
@@ -113,6 +160,8 @@ export function useSettingsViewModel() {
     darkMode,
     setDarkMode,
     updatePref,
+    quietHours,
+    updateQuietHours,
     logout,
     deleteAccount,
     isDeleting,

@@ -115,7 +115,7 @@
 
 - [x] Update `transition-event-statuses.ts` to return `Result<T>`
 - [x] Audit all use cases for consistent `Result<T>` return type
-- [ ] Document error handling convention in CLAUDE.md
+- [x] Document error handling convention in CLAUDE.md
 
 **Effort:** 4 hours
 
@@ -376,7 +376,7 @@
 
 ### 4.2 Introduce Domain Entities
 
-- [ ] `DogProfile` aggregate root (invariant protection, business rules)
+- [x] `DogProfile` aggregate root (ownership, photo key validation, creation/photo limits, reindexing)
 - [x] `GroupEvent` aggregate root (isJoinable, isFull, resolveJoinStatus, state transitions, friends-only check)
 - [x] Unit tests for GroupEvent aggregate (11 tests)
 

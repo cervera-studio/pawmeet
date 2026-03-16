@@ -1,4 +1,4 @@
-import type { GroupEvent, GroupEventParticipant } from '@pawmeet/types';
+import type { GroupEventParticipant } from '@pawmeet/types';
 import { describe, expect, it } from 'vitest';
 import { buildGroupEvent } from '../test-utils/builders.js';
 import { createGroupEventAggregate } from './group-event.js';

@@ -77,6 +77,21 @@ pnpm format:check     # Check formatting (Biome)
 - App content/UI text: Italian (it-IT)
 - Code/comments/docs: English
 
+## Error Handling
+
+- **Backend (use cases)**: every use case returns `Result<T>` (either `succeed(data)` or `fail(new AppError(code, message, httpStatus))`). Never throw from use cases — exceptions are only for truly unexpected errors.
+- **Backend (domain)**: domain services and aggregates are pure logic. State machine violations throw `TRPCError` with `PRECONDITION_FAILED`.
+- **Backend (routers)**: tRPC routers call `unwrapResult()` to convert `Result<T>` into tRPC responses. Errors become `TRPCError` automatically.
+- **Admin (frontend)**: centralized error handling via `lib/error-handler.ts` + `hooks/use-error-handler.ts`. Toast notifications for data-fetch errors, inline field errors for form validation. Never use `console.error` for user-facing failures.
+- **Error codes**: use SCREAMING_SNAKE_CASE constants (e.g. `DOG_NOT_FOUND`, `ORG_NOT_AUTHORIZED`). Keep codes specific enough to differentiate error types in the same use case.
+
+## Domain Layer
+
+- **Value Objects** (`packages/validation/src/value-objects.ts`): Zod branded types — `Email`, `Coordinates`, `CompatibilityScore`, `MatchWeights`. Use `parseX()` / `safeParseX()` helpers at system boundaries.
+- **Aggregates** (`apps/api/src/domain/`): `GroupEventAggregate`, `DogProfileAggregate` — encapsulate business rules as pure functions. Use cases orchestrate persistence and side effects.
+- **Domain Services** (`apps/api/src/domain/`): `MatchingAlgorithm` (injectable compatibility scoring), `OrganizationAuthorizer` (role-based access).
+- **State Machine**: `group-event-state-machine.ts` — explicit transition map for event lifecycle.
+
 ## Analytics
 
 Every new feature/issue MUST consider analytics tracking:

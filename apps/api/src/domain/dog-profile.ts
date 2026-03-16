@@ -1,0 +1,72 @@
+import { MAX_DOGS_PER_USER, MAX_PHOTOS_PER_DOG } from '@pawmeet/config';
+import type { DogProfile } from '@pawmeet/types';
+
+/**
+ * DogProfile aggregate root — encapsulates business rules for dog profiles.
+ * Pure domain logic, no side effects.
+ */
+export interface DogProfileAggregate {
+  readonly dog: DogProfile;
+
+  /** Whether the dog profile is visible and usable. */
+  isActive(): boolean;
+
+  /** Whether this dog belongs to the given user. */
+  isOwnedBy(userId: string): boolean;
+
+  /** Whether a photo key matches this dog's storage path. */
+  isValidPhotoKey(key: string): boolean;
+}
+
+export function createDogProfileAggregate(dog: DogProfile): DogProfileAggregate {
+  return {
+    dog,
+
+    isActive() {
+      return dog.isActive;
+    },
+
+    isOwnedBy(userId: string) {
+      return dog.ownerId === userId;
+    },
+
+    isValidPhotoKey(key: string) {
+      return key.startsWith(`dogs/${dog.id}/`);
+    },
+  };
+}
+
+// ── Standalone domain rules (no aggregate instance needed) ───────────────────
+
+/** Whether a user can register another dog. */
+export function canCreateDog(currentDogCount: number): boolean {
+  return currentDogCount < MAX_DOGS_PER_USER;
+}
+
+/** Whether a dog can accept more photos. */
+export function canAddPhoto(currentPhotoCount: number): boolean {
+  return currentPhotoCount < MAX_PHOTOS_PER_DOG;
+}
+
+/**
+ * Recompute photo positions after a deletion or reorder.
+ * Returns new position assignments with the first photo as primary.
+ */
+export function reindexPhotos(
+  photoIds: string[],
+): { id: string; position: number; isPrimary: boolean }[] {
+  return photoIds.map((id, i) => ({
+    id,
+    position: i,
+    isPrimary: i === 0,
+  }));
+}
+
+/**
+ * Validate that a reorder request covers all existing photos exactly once.
+ */
+export function isValidPhotoReorder(requestedIds: string[], existingIds: string[]): boolean {
+  if (requestedIds.length !== existingIds.length) return false;
+  const existing = new Set(existingIds);
+  return requestedIds.every((id) => existing.has(id));
+}

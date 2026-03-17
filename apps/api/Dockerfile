@@ -54,9 +54,10 @@ COPY tooling/typescript/ ./tooling/typescript/
 RUN pnpm turbo build --filter=@pawmeet/api...
 
 # ── Stage 4: Runner ──────────────────────────────────────────
-FROM node:22-alpine AS runner
+# Use Debian-based image (not Alpine) — onnxruntime-node requires glibc
+FROM node:22-slim AS runner
 RUN corepack enable && corepack prepare pnpm@10.6.0 --activate
-RUN apk add --no-cache libc6-compat dumb-init
+RUN apt-get update && apt-get install -y --no-install-recommends dumb-init && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 ARG APP_VERSION=unknown
@@ -72,8 +73,8 @@ RUN echo '{"type":"module","dependencies":{"bullmq":"^5.70.0","@sentry/node":"^1
     pnpm install --prod --no-lockfile
 
 # Run as non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 hono
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs hono
 USER hono
 
 EXPOSE 3000

@@ -56,8 +56,14 @@ export type WsMessage =
   | { type: typeof WS_EVENT.TYPING_STOP; payload: { userId: string; matchId: string } }
   | { type: typeof WS_EVENT.ONLINE_STATUS; payload: { userId: string; online: boolean } }
   | { type: typeof WS_EVENT.ERROR; payload: { error: string } }
-  | { type: typeof WS_EVENT.MESSAGE_REACTION; payload: { matchId: string; messageId: string; emoji: ReactionEmoji; userId: string } }
+  | {
+      type: typeof WS_EVENT.MESSAGE_REACTION;
+      payload: { matchId: string; messageId: string; emoji: ReactionEmoji; userId: string };
+    }
   | { type: typeof WS_EVENT.FEED_NEW_POST; payload: { postId: string; authorId: string } }
   | { type: typeof WS_EVENT.FEED_POST_LIKED; payload: { postId: string; likerName: string } }
-  | { type: typeof WS_EVENT.FEED_POST_COMMENTED; payload: { postId: string; commenterName: string } }
+  | {
+      type: typeof WS_EVENT.FEED_POST_COMMENTED;
+      payload: { postId: string; commenterName: string };
+    }
   | { type: typeof WS_EVENT.FEED_NEW_STORY; payload: { authorId: string } };

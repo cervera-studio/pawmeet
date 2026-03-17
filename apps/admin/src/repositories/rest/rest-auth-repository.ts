@@ -1,4 +1,3 @@
-import type { AdminUser } from '@/lib/auth';
 import type { AuthRepository, AuthResponse } from '../interfaces';
 
 /**

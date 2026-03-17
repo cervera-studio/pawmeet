@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { handleError } from '@/lib/error-handler';
 import { updateAdminRole } from './actions';
-import { type AdminUser, type Role, ROLES, buildRoleLabels, toRole } from './page.view-model';
+import { type AdminUser, buildRoleLabels, ROLES, type Role, toRole } from './page.view-model';
 
 interface EditRoleDialogProps {
   open: boolean;
@@ -26,6 +26,7 @@ interface EditRoleDialogProps {
 export function EditRoleDialog({ open, onOpenChange, user, onUpdated }: EditRoleDialogProps) {
   const t = useTranslations('adminUsers');
   const tc = useTranslations('common');
+  const tt = useTranslations('toast');
   const [editRole, setEditRole] = useState<Role>('viewer');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,7 +45,7 @@ export function EditRoleDialog({ open, onOpenChange, user, onUpdated }: EditRole
       onOpenChange(false);
       onUpdated();
     } catch (error) {
-      toast.error(handleError(error, "Errore durante l'aggiornamento del ruolo"));
+      toast.error(handleError(error, tt('admins.roleUpdateError')));
     } finally {
       setIsSubmitting(false);
     }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { usePermission } from '@/hooks/use-permission';
@@ -14,6 +15,7 @@ interface UserActionsProps {
 
 export function UserActions({ userId, initialStatus }: UserActionsProps) {
   const { isAdmin } = usePermission();
+  const tt = useTranslations('toast');
 
   if (!isAdmin) {
     return null;
@@ -22,27 +24,27 @@ export function UserActions({ userId, initialStatus }: UserActionsProps) {
   async function handleSuspend() {
     const result = await suspendUser(userId);
     if (result.success) {
-      toast.success('Utente sospeso');
+      toast.success(tt('users.suspended'));
     } else {
-      toast.error(result.error ?? 'Errore durante la sospensione');
+      toast.error(result.error ?? tt('users.suspendError'));
     }
   }
 
   async function handleBan() {
     const result = await banUser(userId);
     if (result.success) {
-      toast.success('Utente bannato');
+      toast.success(tt('users.banned'));
     } else {
-      toast.error(result.error ?? 'Errore durante il ban');
+      toast.error(result.error ?? tt('users.banError'));
     }
   }
 
   async function handleReactivate() {
     const result = await reactivateUser(userId);
     if (result.success) {
-      toast.success('Utente riattivato');
+      toast.success(tt('users.reactivated'));
     } else {
-      toast.error(result.error ?? 'Errore durante la riattivazione');
+      toast.error(result.error ?? tt('users.reactivateError'));
     }
   }
 

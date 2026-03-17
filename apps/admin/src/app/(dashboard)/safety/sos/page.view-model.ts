@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/hooks/use-data-table';
@@ -16,6 +17,7 @@ export function isAlertType(v: string): v is AlertType {
 }
 
 export function useSosViewModel(initialData: SosData, pageSize: number) {
+  const tt = useTranslations('toast');
   const [typeFilter, setTypeFilter] = useState<AlertType | undefined>(undefined);
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,11 +35,11 @@ export function useSosViewModel(initialData: SosData, pageSize: number) {
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento degli avvisi SOS'));
+      toast.error(handleError(error, tt('safety.sosLoadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [table.page, table.pageSize, typeFilter]);
+  }, [table.page, table.pageSize, typeFilter, tt]);
 
   useEffect(() => {
     if (isInitialRender.current) {

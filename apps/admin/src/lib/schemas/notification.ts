@@ -1,16 +1,39 @@
+import type { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
-export const broadcastNotificationSchema = z.object({
-  title: z.string().min(1, 'Il titolo è obbligatorio').max(100, 'Massimo 100 caratteri'),
-  body: z.string().min(1, 'Il corpo è obbligatorio').max(500, 'Massimo 500 caratteri'),
-});
+type ValidationTranslationFn = ReturnType<typeof useTranslations<'validation'>>;
 
-export type BroadcastNotificationFormValues = z.infer<typeof broadcastNotificationSchema>;
+export function createBroadcastNotificationSchema(t: ValidationTranslationFn) {
+  return z.object({
+    title: z
+      .string()
+      .min(1, t('required', { field: t('fields.title') }))
+      .max(100, t('maxChars', { max: 100 })),
+    body: z
+      .string()
+      .min(1, t('required', { field: t('fields.body') }))
+      .max(500, t('maxChars', { max: 500 })),
+  });
+}
 
-export const targetedNotificationSchema = z.object({
-  title: z.string().min(1, 'Il titolo è obbligatorio').max(100, 'Massimo 100 caratteri'),
-  body: z.string().min(1, 'Il corpo è obbligatorio').max(500, 'Massimo 500 caratteri'),
-  userIdsText: z.string().min(1, 'Inserisci almeno un ID utente'),
-});
+export type BroadcastNotificationFormValues = z.infer<
+  ReturnType<typeof createBroadcastNotificationSchema>
+>;
 
-export type TargetedNotificationFormValues = z.infer<typeof targetedNotificationSchema>;
+export function createTargetedNotificationSchema(t: ValidationTranslationFn) {
+  return z.object({
+    title: z
+      .string()
+      .min(1, t('required', { field: t('fields.title') }))
+      .max(100, t('maxChars', { max: 100 })),
+    body: z
+      .string()
+      .min(1, t('required', { field: t('fields.body') }))
+      .max(500, t('maxChars', { max: 500 })),
+    userIdsText: z.string().min(1, t('userIdsRequired')),
+  });
+}
+
+export type TargetedNotificationFormValues = z.infer<
+  ReturnType<typeof createTargetedNotificationSchema>
+>;

@@ -31,7 +31,12 @@ export function validateMatchWeights(input: MatchWeightsInput): Result<Validated
   };
 
   const sum =
-    weights.size + weights.energy + weights.behavior + weights.walk + weights.distance + weights.leash;
+    weights.size +
+    weights.energy +
+    weights.behavior +
+    weights.walk +
+    weights.distance +
+    weights.leash;
 
   if (Math.abs(sum - 1.0) > 0.01) {
     return fail(

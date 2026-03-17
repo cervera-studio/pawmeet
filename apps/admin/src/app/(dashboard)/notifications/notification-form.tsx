@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -19,9 +19,9 @@ import { Input } from '@/components/ui/input';
 import { handleError } from '@/lib/error-handler';
 import {
   type BroadcastNotificationFormValues,
-  broadcastNotificationSchema,
+  createBroadcastNotificationSchema,
+  createTargetedNotificationSchema,
   type TargetedNotificationFormValues,
-  targetedNotificationSchema,
 } from '@/lib/schemas/notification';
 import { sendBroadcast, sendTargeted } from './actions';
 
@@ -71,9 +71,11 @@ export function NotificationForm({ usersWithToken }: NotificationFormProps) {
 
 function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
   const t = useTranslations('notifications');
+  const tv = useTranslations('validation');
   const [isSending, setIsSending] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [result, setResult] = useState<{ sentCount: number } | null>(null);
+  const broadcastNotificationSchema = useMemo(() => createBroadcastNotificationSchema(tv), [tv]);
 
   const form = useForm<BroadcastNotificationFormValues>({
     resolver: zodResolver(broadcastNotificationSchema),
@@ -179,8 +181,10 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
 
 function TargetedForm() {
   const t = useTranslations('notifications');
+  const tv = useTranslations('validation');
   const [isSending, setIsSending] = useState(false);
   const [result, setResult] = useState<{ sentCount: number; skippedCount: number } | null>(null);
+  const targetedNotificationSchema = useMemo(() => createTargetedNotificationSchema(tv), [tv]);
 
   const form = useForm<TargetedNotificationFormValues>({
     resolver: zodResolver(targetedNotificationSchema),

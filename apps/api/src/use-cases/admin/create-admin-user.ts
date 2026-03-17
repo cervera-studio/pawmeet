@@ -1,13 +1,10 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { hash } from 'bcryptjs';
-import type { AdminDataRepository, AdminUserRow } from '../../ports/admin-data-repository.js';
 import { type AdminRoleValue, hasMinRole } from '../../lib/admin-permissions.js';
+import type { AdminDataRepository, AdminUserRow } from '../../ports/admin-data-repository.js';
 
 type Deps = {
-  adminDataRepo: Pick<
-    AdminDataRepository,
-    'findAdminUserByEmail' | 'createAdminUser'
-  >;
+  adminDataRepo: Pick<AdminDataRepository, 'findAdminUserByEmail' | 'createAdminUser'>;
 };
 
 interface CreateAdminUserInput {

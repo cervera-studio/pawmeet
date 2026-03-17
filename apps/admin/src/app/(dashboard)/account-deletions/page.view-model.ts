@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/hooks/use-data-table';
@@ -8,6 +9,7 @@ export type DeletionsData = Awaited<ReturnType<typeof fetchPendingDeletions>>;
 export type PendingDeletion = DeletionsData['data'][number];
 
 export function useDeletionsViewModel(initialData: DeletionsData, pageSize: number) {
+  const tt = useTranslations('toast');
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const isInitialRender = useRef(true);
@@ -23,11 +25,11 @@ export function useDeletionsViewModel(initialData: DeletionsData, pageSize: numb
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento delle cancellazioni'));
+      toast.error(handleError(error, tt('deletions.loadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [table.page, table.pageSize]);
+  }, [table.page, table.pageSize, tt]);
 
   useEffect(() => {
     if (isInitialRender.current) {

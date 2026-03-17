@@ -1,4 +1,5 @@
 import type { PaginatedResult } from '@pawmeet/types';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/hooks/use-data-table';
@@ -15,6 +16,7 @@ export function useGroupEventsViewModel(
   initialData: PaginatedResult<AdminGroupEventListItem>,
   pageSize: number,
 ) {
+  const tt = useTranslations('toast');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [statusFilter, setStatusFilter] = useState<EventStatus | undefined>(undefined);
@@ -37,11 +39,11 @@ export function useGroupEventsViewModel(
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento degli eventi'));
+      toast.error(handleError(error, tt('events.loadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [table.page, table.pageSize, debouncedSearch, statusFilter, categoryFilter]);
+  }, [table.page, table.pageSize, debouncedSearch, statusFilter, categoryFilter, tt]);
 
   useEffect(() => {
     if (isInitialRender.current) {

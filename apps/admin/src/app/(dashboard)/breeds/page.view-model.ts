@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/hooks/use-data-table';
@@ -10,6 +11,7 @@ export type BreedsData = Awaited<ReturnType<typeof fetchBreeds>>;
 export type Breed = BreedsData['data'][number];
 
 export function useBreedsViewModel(initialData: BreedsData, pageSize: number) {
+  const tt = useTranslations('toast');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [groupFilter, setGroupFilter] = useState<string | undefined>(undefined);
@@ -30,11 +32,11 @@ export function useBreedsViewModel(initialData: BreedsData, pageSize: number) {
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento delle razze'));
+      toast.error(handleError(error, tt('breeds.loadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [table.page, table.pageSize, debouncedSearch, groupFilter]);
+  }, [table.page, table.pageSize, debouncedSearch, groupFilter, tt]);
 
   useEffect(() => {
     if (isInitialRender.current) {

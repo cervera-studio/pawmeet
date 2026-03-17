@@ -42,7 +42,9 @@ async function isWsRateLimited(userId: string): Promise<boolean> {
 }
 
 /** Parse and validate an incoming WebSocket message */
-export function parseWsMessage(data: string): { type: string; payload: Record<string, unknown> } | null {
+export function parseWsMessage(
+  data: string,
+): { type: string; payload: Record<string, unknown> } | null {
   try {
     return wsMessageSchema.parse(JSON.parse(data));
   } catch {

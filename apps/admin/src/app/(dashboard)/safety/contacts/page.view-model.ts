@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/hooks/use-data-table';
@@ -10,6 +11,7 @@ export type ContactsData = Awaited<ReturnType<typeof fetchEmergencyContacts>>;
 export type EmergencyContactItem = ContactsData['data'][number];
 
 export function useContactsViewModel(initialData: ContactsData, pageSize: number) {
+  const tt = useTranslations('toast');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [data, setData] = useState(initialData);
@@ -28,11 +30,11 @@ export function useContactsViewModel(initialData: ContactsData, pageSize: number
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento dei contatti'));
+      toast.error(handleError(error, tt('safety.contactsLoadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [table.page, table.pageSize, debouncedSearch]);
+  }, [table.page, table.pageSize, debouncedSearch, tt]);
 
   useEffect(() => {
     if (isInitialRender.current) {

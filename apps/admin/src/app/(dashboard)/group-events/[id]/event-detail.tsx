@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -88,6 +89,7 @@ interface EventDetailProps {
 
 export function EventDetail({ event, initialSponsors }: EventDetailProps) {
   const router = useRouter();
+  const tt = useTranslations('toast');
   const [isCancelling, setIsCancelling] = useState(false);
 
   const status = statusConfig[event.status] ?? { label: event.status, variant: 'outline' as const };
@@ -100,7 +102,7 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
       await cancelGroupEvent(event.id);
       router.refresh();
     } catch (error) {
-      toast.error(handleError(error, "Errore durante l'annullamento dell'evento"));
+      toast.error(handleError(error, tt('events.cancelError')));
     } finally {
       setIsCancelling(false);
     }

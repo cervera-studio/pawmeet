@@ -2,6 +2,7 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import { revalidatePath } from 'next/cache';
+import { getTranslations } from 'next-intl/server';
 import { getServerTrpcClient } from '@/lib/server-api';
 import type { AdminUserListItem, ListUsersParams } from '@/repositories/interfaces';
 
@@ -14,7 +15,8 @@ export async function suspendUser(userId: string): Promise<{ success: boolean; e
     return { success: true };
   } catch (error) {
     console.error('[suspendUser]', error);
-    return { success: false, error: 'Errore durante la sospensione' };
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('users.suspendError') };
   }
 }
 
@@ -27,7 +29,8 @@ export async function banUser(userId: string): Promise<{ success: boolean; error
     return { success: true };
   } catch (error) {
     console.error('[banUser]', error);
-    return { success: false, error: 'Errore durante il ban' };
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('users.banError') };
   }
 }
 
@@ -42,7 +45,8 @@ export async function reactivateUser(
     return { success: true };
   } catch (error) {
     console.error('[reactivateUser]', error);
-    return { success: false, error: 'Errore durante la riattivazione' };
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('users.reactivateError') };
   }
 }
 

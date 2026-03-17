@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { getTranslations } from 'next-intl/server';
 import { getServerTrpcClient } from '@/lib/server-api';
 import type { AppSettings, UpdateSettingsInput } from '@/repositories/interfaces';
 
@@ -19,6 +20,7 @@ export async function updateSettings(
     return { success: true };
   } catch (error) {
     console.error('[updateSettings]', error);
-    return { success: false, error: 'Errore durante il salvataggio' };
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('settings.saveError') };
   }
 }

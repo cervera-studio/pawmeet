@@ -2,10 +2,7 @@ import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 
 type Deps = {
-  adminDataRepo: Pick<
-    AdminDataRepository,
-    'findReportById' | 'resolveReport' | 'deactivateUser'
-  >;
+  adminDataRepo: Pick<AdminDataRepository, 'findReportById' | 'resolveReport' | 'deactivateUser'>;
 };
 
 interface ResolveContentReportInput {

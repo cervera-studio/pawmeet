@@ -739,5 +739,108 @@
       "unknownUser": "Utente sconosciuto",
       "noData": "Nessun dato disponibile"
     }
+  },
+  "validation": {
+    "required": "{field} è obbligatorio",
+    "email": "Inserisci un indirizzo email valido",
+    "minChars": "Minimo {min} caratteri",
+    "maxChars": "Massimo {max} caratteri",
+    "minValue": "Minimo {min}",
+    "maxValue": "Massimo {max}",
+    "mustBeInteger": "Deve essere un numero intero",
+    "mustBePositive": "Il valore deve essere positivo",
+    "regexCodeFormat": "Solo lettere minuscole, numeri e underscore",
+    "minParticipants": "Minimo {min} partecipanti",
+    "maxParticipants": "Massimo {max} partecipanti",
+    "selectOrganization": "Seleziona un'organizzazione",
+    "latitudeRange": "Latitudine tra {min} e {max}",
+    "longitudeRange": "Longitudine tra {min} e {max}",
+    "userIdsRequired": "Inserisci almeno un ID utente",
+    "fields": {
+      "code": "Il codice",
+      "title": "Il titolo",
+      "name": "Il nome",
+      "email": "L'email",
+      "password": "La password",
+      "body": "Il corpo",
+      "location": "Il luogo",
+      "date": "La data",
+      "appName": "Il nome app",
+      "duration": "La durata"
+    }
+  },
+  "toast": {
+    "breeds": {
+      "createError": "Errore durante la creazione della razza",
+      "updateError": "Errore durante l'aggiornamento della razza",
+      "deleteError": "Errore durante l'eliminazione della razza",
+      "loadError": "Errore nel caricamento delle razze"
+    },
+    "users": {
+      "suspended": "Utente sospeso",
+      "suspendError": "Errore durante la sospensione",
+      "banned": "Utente bannato",
+      "banError": "Errore durante il ban",
+      "reactivated": "Utente riattivato",
+      "reactivateError": "Errore durante la riattivazione",
+      "loadError": "Errore nel caricamento degli utenti"
+    },
+    "admins": {
+      "createError": "Errore durante la creazione dell'amministratore",
+      "roleUpdateError": "Errore durante l'aggiornamento del ruolo",
+      "passwordResetError": "Errore durante il reset della password",
+      "toggleStatusError": "Errore durante il cambio di stato",
+      "loadError": "Errore nel caricamento degli amministratori"
+    },
+    "events": {
+      "createError": "Errore durante la creazione",
+      "cancelError": "Errore durante l'annullamento dell'evento",
+      "participantRemoveError": "Errore durante la rimozione del partecipante",
+      "sponsorAddError": "Errore durante l'aggiunta dello sponsor",
+      "sponsorRemoveError": "Errore durante la rimozione dello sponsor",
+      "loadError": "Errore nel caricamento degli eventi"
+    },
+    "organizations": {
+      "verifyError": "Errore durante la verifica dell'organizzazione",
+      "revokeError": "Errore durante la revoca della verifica"
+    },
+    "challenges": {
+      "createError": "Errore durante la creazione della sfida",
+      "deleteError": "Errore durante l'eliminazione della sfida"
+    },
+    "deletions": {
+      "cancelError": "Errore durante l'annullamento della cancellazione",
+      "loadError": "Errore nel caricamento delle cancellazioni"
+    },
+    "aiFlags": {
+      "saved": "Flag {name} aggiornato",
+      "saveError": "Errore durante il salvataggio"
+    },
+    "aiModels": {
+      "promoted": "Modello {version} promosso",
+      "promoteError": "Errore durante la promozione del modello"
+    },
+    "settings": {
+      "saveError": "Errore durante il salvataggio"
+    },
+    "moderation": {
+      "reportsLoadError": "Errore nel caricamento delle segnalazioni",
+      "storiesLoadError": "Errore nel caricamento delle storie",
+      "feedLoadError": "Errore nel caricamento dei post",
+      "feedStatsError": "Errore nel caricamento delle statistiche",
+      "feedModerateError": "Errore durante la moderazione del post",
+      "contentLoadError": "Errore nel caricamento dei contenuti segnalati",
+      "contentReviewError": "Errore durante la revisione del contenuto"
+    },
+    "dogs": {
+      "loadError": "Errore nel caricamento dei cani"
+    },
+    "safety": {
+      "sosLoadError": "Errore nel caricamento degli avvisi SOS",
+      "contactsLoadError": "Errore nel caricamento dei contatti"
+    },
+    "auditLog": {
+      "loadError": "Errore nel caricamento del registro"
+    }
   }
 }

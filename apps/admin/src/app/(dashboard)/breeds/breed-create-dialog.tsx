@@ -2,12 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { DialogForm } from '@/components/dialog-form';
 import { handleError } from '@/lib/error-handler';
-import { type BreedFormValues, breedFormSchema } from '@/lib/schemas/breed';
+import { type BreedFormValues, createBreedFormSchema } from '@/lib/schemas/breed';
 import { createBreed } from './actions';
 import { BREED_GROUPS, BreedFormFields, DEFAULT_SCORES } from './breed-form-fields';
 
@@ -27,7 +27,10 @@ interface BreedCreateDialogProps {
 
 export function BreedCreateDialog({ open, onClose, onCreated }: BreedCreateDialogProps) {
   const t = useTranslations('breeds');
+  const tt = useTranslations('toast');
+  const tv = useTranslations('validation');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const breedFormSchema = useMemo(() => createBreedFormSchema(tv), [tv]);
 
   const form = useForm<BreedFormValues>({
     resolver: zodResolver(breedFormSchema),
@@ -61,7 +64,7 @@ export function BreedCreateDialog({ open, onClose, onCreated }: BreedCreateDialo
       resetAndClose();
       onCreated();
     } catch (error) {
-      toast.error(handleError(error, 'Errore durante la creazione della razza'));
+      toast.error(handleError(error, tt('breeds.createError')));
     } finally {
       setIsSubmitting(false);
     }

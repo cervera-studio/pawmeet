@@ -1,5 +1,6 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import type { SortingState } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/hooks/use-data-table';
@@ -8,6 +9,7 @@ import type { AdminUserListItem } from '@/repositories';
 import { fetchUsers as fetchUsersAction } from './actions';
 
 export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem>) {
+  const tt = useTranslations('toast');
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [result, setResult] = useState<PaginatedResult<AdminUserListItem>>(initialData);
@@ -31,11 +33,11 @@ export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem
       });
       setResult(data);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento degli utenti'));
+      toast.error(handleError(error, tt('users.loadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [table.page, table.pageSize, globalFilter, sorting]);
+  }, [table.page, table.pageSize, globalFilter, sorting, tt]);
 
   useEffect(() => {
     // Skip the first render — we already have server data

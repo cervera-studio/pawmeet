@@ -33,20 +33,13 @@ export function createAddEventSponsor({ adminDataRepo }: Deps) {
     }
     if (!org.isVerified || !org.isActive) {
       return fail(
-        new AppError(
-          'ORG_NOT_ELIGIBLE',
-          'Organization must be verified and active',
-          400,
-        ),
+        new AppError('ORG_NOT_ELIGIBLE', 'Organization must be verified and active', 400),
       );
     }
 
     const limit = TIER_LIMITS[input.tier];
     if (limit !== undefined) {
-      const currentCount = await adminDataRepo.countEventSponsorsByTier(
-        input.eventId,
-        input.tier,
-      );
+      const currentCount = await adminDataRepo.countEventSponsorsByTier(input.eventId, input.tier);
       if (currentCount >= limit) {
         return fail(
           new AppError(

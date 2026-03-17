@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +53,7 @@ interface OrganizationDetailProps {
 
 export function OrganizationDetail({ organization }: OrganizationDetailProps) {
   const router = useRouter();
+  const tt = useTranslations('toast');
   const [isProcessing, setIsProcessing] = useState(false);
 
   async function handleVerify() {
@@ -61,7 +63,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       await verifyOrganization(organization.id);
       router.refresh();
     } catch (error) {
-      toast.error(handleError(error, "Errore durante la verifica dell'organizzazione"));
+      toast.error(handleError(error, tt('organizations.verifyError')));
     } finally {
       setIsProcessing(false);
     }
@@ -74,7 +76,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       await revokeOrganization(organization.id);
       router.refresh();
     } catch (error) {
-      toast.error(handleError(error, 'Errore durante la revoca della verifica'));
+      toast.error(handleError(error, tt('organizations.revokeError')));
     } finally {
       setIsProcessing(false);
     }

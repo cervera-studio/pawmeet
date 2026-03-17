@@ -18,6 +18,7 @@ interface ContentListProps {
 
 export function ContentList({ initialData }: ContentListProps) {
   const t = useTranslations('content');
+  const tt = useTranslations('toast');
   const [reports, setReports] = useState<ContentReport[]>(initialData.reports);
   const [nextCursor, setNextCursor] = useState<string | null>(initialData.nextCursor);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +31,7 @@ export function ContentList({ initialData }: ContentListProps) {
       setReports(result.reports);
       setNextCursor(result.nextCursor);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento dei contenuti segnalati'));
+      toast.error(handleError(error, tt('moderation.contentLoadError')));
     } finally {
       setIsLoading(false);
     }
@@ -42,7 +43,7 @@ export function ContentList({ initialData }: ContentListProps) {
       await reviewContent(reportId, action);
       void fetchReports();
     } catch (error) {
-      toast.error(handleError(error, 'Errore durante la revisione del contenuto'));
+      toast.error(handleError(error, tt('moderation.contentReviewError')));
     } finally {
       setReviewingReportId(null);
     }

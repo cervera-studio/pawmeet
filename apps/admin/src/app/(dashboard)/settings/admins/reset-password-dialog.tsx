@@ -32,6 +32,7 @@ export function ResetPasswordDialog({
 }: ResetPasswordDialogProps) {
   const t = useTranslations('adminUsers');
   const tc = useTranslations('common');
+  const tt = useTranslations('toast');
   const [resetPwd, setResetPwd] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,7 +52,7 @@ export function ResetPasswordDialog({
       setResetPwd('');
       onReset();
     } catch (error) {
-      toast.error(handleError(error, 'Errore durante il reset della password'));
+      toast.error(handleError(error, tt('admins.passwordResetError')));
     } finally {
       setIsSubmitting(false);
     }

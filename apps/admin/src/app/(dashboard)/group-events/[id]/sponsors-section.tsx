@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,7 @@ export function SponsorsSection({
   eventId: string;
   initialSponsors: EventSponsor[];
 }) {
+  const tt = useTranslations('toast');
   const [sponsors, setSponsors] = useState<EventSponsor[]>(initialSponsors);
   const [showAddForm, setShowAddForm] = useState(false);
   const [orgId, setOrgId] = useState('');
@@ -60,7 +62,7 @@ export function SponsorsSection({
       setOrgId('');
       setShowAddForm(false);
     } catch (error) {
-      toast.error(handleError(error, "Errore durante l'aggiunta dello sponsor"));
+      toast.error(handleError(error, tt('events.sponsorAddError')));
     } finally {
       setLoading(false);
     }
@@ -72,7 +74,7 @@ export function SponsorsSection({
       await removeSponsorFromEvent(eventId, organizationId);
       setSponsors((prev) => prev.filter((s) => s.organizationId !== organizationId));
     } catch (error) {
-      toast.error(handleError(error, 'Errore durante la rimozione dello sponsor'));
+      toast.error(handleError(error, tt('events.sponsorRemoveError')));
     } finally {
       setLoading(false);
     }

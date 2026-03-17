@@ -2,12 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { DialogForm } from '@/components/dialog-form';
 import { handleError } from '@/lib/error-handler';
-import { type BreedFormValues, breedFormSchema } from '@/lib/schemas/breed';
+import { type BreedFormValues, createBreedFormSchema } from '@/lib/schemas/breed';
 import { updateBreed } from './actions';
 import { BREED_GROUPS, BreedFormFields, DEFAULT_SCORES, isSizeCategory } from './breed-form-fields';
 import type { Breed } from './page.view-model';
@@ -51,7 +51,10 @@ function breedToFormValues(breed: Breed): BreedFormValues {
 export function BreedEditDialog({ breed, open, onClose, onUpdated }: BreedEditDialogProps) {
   const t = useTranslations('breeds');
   const tc = useTranslations('common');
+  const tt = useTranslations('toast');
+  const tv = useTranslations('validation');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const breedFormSchema = useMemo(() => createBreedFormSchema(tv), [tv]);
 
   const form = useForm<BreedFormValues>({
     resolver: zodResolver(breedFormSchema),
@@ -88,7 +91,7 @@ export function BreedEditDialog({ breed, open, onClose, onUpdated }: BreedEditDi
       onClose();
       onUpdated();
     } catch (error) {
-      toast.error(handleError(error, "Errore durante l'aggiornamento della razza"));
+      toast.error(handleError(error, tt('breeds.updateError')));
     } finally {
       setIsSubmitting(false);
     }

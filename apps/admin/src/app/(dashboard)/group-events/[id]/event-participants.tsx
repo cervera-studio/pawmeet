@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +43,7 @@ export function EventParticipants({
   participants,
   onParticipantRemoved,
 }: EventParticipantsProps) {
+  const tt = useTranslations('toast');
   const [removingId, setRemovingId] = useState<string | null>(null);
 
   async function handleRemoveParticipant(participantId: string) {
@@ -51,7 +53,7 @@ export function EventParticipants({
       await removeParticipant(participantId, eventId);
       onParticipantRemoved();
     } catch (error) {
-      toast.error(handleError(error, 'Errore durante la rimozione del partecipante'));
+      toast.error(handleError(error, tt('events.participantRemoveError')));
     } finally {
       setRemovingId(null);
     }

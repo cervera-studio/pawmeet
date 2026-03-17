@@ -1,6 +1,6 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 import { type AdminRoleValue, hasMinRole } from '../../lib/admin-permissions.js';
+import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 
 type Deps = {
   adminDataRepo: Pick<AdminDataRepository, 'findAdminUserById' | 'updateAdminRole'>;

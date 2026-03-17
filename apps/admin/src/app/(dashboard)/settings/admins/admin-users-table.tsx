@@ -16,10 +16,9 @@ import { EditRoleDialog } from './edit-role-dialog';
 import {
   type AdminUser,
   type AdminUsersData,
-  ROLES,
-  type Role,
   buildRoleLabels,
   isValidRole,
+  ROLES,
   useAdminUsersViewModel,
 } from './page.view-model';
 import { ResetPasswordDialog } from './reset-password-dialog';
@@ -49,6 +48,7 @@ interface AdminUsersTableProps {
 export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps) {
   const t = useTranslations('adminUsers');
   const tc = useTranslations('common');
+  const tt = useTranslations('toast');
   const vm = useAdminUsersViewModel(initialData, pageSize);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -62,10 +62,10 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         await toggleAdminActive({ adminId: user.id });
         void vm.refetch();
       } catch (error) {
-        toast.error(handleError(error, 'Errore durante il cambio di stato'));
+        toast.error(handleError(error, tt('admins.toggleStatusError')));
       }
     },
-    [vm],
+    [vm, tt],
   );
 
   const openEditRoleDialog = useCallback((user: AdminUser) => {
@@ -98,7 +98,9 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         cell: ({ row }) => {
           const role = row.original.role;
           return (
-            <Badge variant={getRoleBadgeVariant(role)}>{(isValidRole(role) ? roleLabels[role] : role)}</Badge>
+            <Badge variant={getRoleBadgeVariant(role)}>
+              {isValidRole(role) ? roleLabels[role] : role}
+            </Badge>
           );
         },
       },

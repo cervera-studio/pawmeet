@@ -33,6 +33,7 @@ interface StoryGridProps {
 
 export function StoryGrid({ initialData }: StoryGridProps) {
   const t = useTranslations('stories');
+  const tt = useTranslations('toast');
   const tTable = useTranslations('table');
   const [stories, setStories] = useState<AdminStory[]>(initialData.data);
   const [page, setPage] = useState(initialData.page);
@@ -41,23 +42,26 @@ export function StoryGrid({ initialData }: StoryGridProps) {
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchStories = useCallback(async (targetPage: number) => {
-    setIsLoading(true);
-    try {
-      const result = await fetchStoriesAction({
-        page: targetPage,
-        pageSize: PAGINATION.DEFAULT_PAGE_SIZE,
-      });
-      setStories(result.data);
-      setTotalPages(result.totalPages);
-      setTotal(result.total);
-      setPage(targetPage);
-    } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento delle storie'));
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const fetchStories = useCallback(
+    async (targetPage: number) => {
+      setIsLoading(true);
+      try {
+        const result = await fetchStoriesAction({
+          page: targetPage,
+          pageSize: PAGINATION.DEFAULT_PAGE_SIZE,
+        });
+        setStories(result.data);
+        setTotalPages(result.totalPages);
+        setTotal(result.total);
+        setPage(targetPage);
+      } catch (error) {
+        toast.error(handleError(error, tt('moderation.storiesLoadError')));
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [tt],
+  );
 
   async function handleDelete(storyId: string) {
     setDeletingStoryId(storyId);

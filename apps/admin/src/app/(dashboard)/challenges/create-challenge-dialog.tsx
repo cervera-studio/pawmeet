@@ -29,6 +29,7 @@ interface CreateChallengeDialogProps {
 
 export function CreateChallengeDialog({ open, onClose, onCreated }: CreateChallengeDialogProps) {
   const t = useTranslations('challenges');
+  const tt = useTranslations('toast');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [type, setType] = useState<ChallengeType>(CHALLENGE_TYPES[0]);
@@ -70,7 +71,7 @@ export function CreateChallengeDialog({ open, onClose, onCreated }: CreateChalle
       resetAndClose();
       onCreated();
     } catch (error) {
-      toast.error(handleError(error, 'Errore durante la creazione della sfida'));
+      toast.error(handleError(error, tt('challenges.createError')));
     } finally {
       setIsSubmitting(false);
     }

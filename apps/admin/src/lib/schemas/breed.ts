@@ -1,4 +1,7 @@
+import type { useTranslations } from 'next-intl';
 import { z } from 'zod';
+
+type ValidationTranslationFn = ReturnType<typeof useTranslations<'validation'>>;
 
 const SIZE_CATEGORIES = ['toy', 'piccola', 'media', 'grande', 'gigante'] as const;
 
@@ -13,32 +16,34 @@ const BREED_GROUPS = [
   'Miscellaneous',
 ] as const;
 
-const scoreField = z
-  .number()
-  .int('Deve essere un numero intero')
-  .min(1, 'Minimo 1')
-  .max(5, 'Massimo 5')
-  .nullable()
-  .optional();
+export function createBreedFormSchema(t: ValidationTranslationFn) {
+  const scoreField = z
+    .number()
+    .int(t('mustBeInteger'))
+    .min(1, t('minValue', { min: 1 }))
+    .max(5, t('maxValue', { max: 5 }))
+    .nullable()
+    .optional();
 
-export const breedFormSchema = z.object({
-  code: z
-    .string()
-    .min(1, 'Il codice è obbligatorio')
-    .regex(/^[a-z0-9_]+$/, 'Solo lettere minuscole, numeri e underscore'),
-  group: z.enum(BREED_GROUPS).optional(),
-  sizeCategory: z.enum(SIZE_CATEGORIES),
-  avgWeightKg: z.number().positive('Il peso deve essere positivo'),
-  energy: scoreField,
-  playfulness: scoreField,
-  trainability: scoreField,
-  barking: scoreField,
-  goodWithOtherDogs: scoreField,
-  goodWithChildren: scoreField,
-  goodWithStrangers: scoreField,
-  protectiveness: scoreField,
-  shedding: scoreField,
-  grooming: scoreField,
-});
+  return z.object({
+    code: z
+      .string()
+      .min(1, t('required', { field: t('fields.code') }))
+      .regex(/^[a-z0-9_]+$/, t('regexCodeFormat')),
+    group: z.enum(BREED_GROUPS).optional(),
+    sizeCategory: z.enum(SIZE_CATEGORIES),
+    avgWeightKg: z.number().positive(t('mustBePositive')),
+    energy: scoreField,
+    playfulness: scoreField,
+    trainability: scoreField,
+    barking: scoreField,
+    goodWithOtherDogs: scoreField,
+    goodWithChildren: scoreField,
+    goodWithStrangers: scoreField,
+    protectiveness: scoreField,
+    shedding: scoreField,
+    grooming: scoreField,
+  });
+}
 
-export type BreedFormValues = z.infer<typeof breedFormSchema>;
+export type BreedFormValues = z.infer<ReturnType<typeof createBreedFormSchema>>;

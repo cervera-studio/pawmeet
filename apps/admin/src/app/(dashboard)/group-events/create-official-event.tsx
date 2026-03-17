@@ -2,7 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,8 +22,11 @@ interface Organization {
 
 export function CreateOfficialEventForm({ organizations }: { organizations: Organization[] }) {
   const router = useRouter();
+  const tv = useTranslations('validation');
+  const tt = useTranslations('toast');
   const [open, setOpen] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const officialEventFormSchema = useMemo(() => createOfficialEventFormSchema(tv), [tv]);
 
   const {
     register,
@@ -30,7 +34,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateOfficialEventFormValues>({
-    resolver: zodResolver(createOfficialEventFormSchema),
+    resolver: zodResolver(officialEventFormSchema),
     defaultValues: {
       title: '',
       description: '',
@@ -64,7 +68,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
       reset();
       router.refresh();
     } catch (err) {
-      setServerError(err instanceof Error ? err.message : 'Errore durante la creazione');
+      setServerError(err instanceof Error ? err.message : tt('events.createError'));
     }
   }
 

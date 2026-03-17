@@ -22,6 +22,7 @@ export function DeleteChallengeDialog({
   onDeleted,
 }: DeleteChallengeDialogProps) {
   const t = useTranslations('challenges');
+  const tt = useTranslations('toast');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleDelete() {
@@ -32,7 +33,7 @@ export function DeleteChallengeDialog({
       onClose();
       onDeleted();
     } catch (error) {
-      toast.error(handleError(error, "Errore durante l'eliminazione della sfida"));
+      toast.error(handleError(error, tt('challenges.deleteError')));
     } finally {
       setIsSubmitting(false);
     }

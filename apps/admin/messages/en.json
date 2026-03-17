@@ -739,5 +739,108 @@
       "unknownUser": "Unknown user",
       "noData": "No data available"
     }
+  },
+  "validation": {
+    "required": "{field} is required",
+    "email": "Enter a valid email address",
+    "minChars": "Minimum {min} characters",
+    "maxChars": "Maximum {max} characters",
+    "minValue": "Minimum {min}",
+    "maxValue": "Maximum {max}",
+    "mustBeInteger": "Must be an integer",
+    "mustBePositive": "Value must be positive",
+    "regexCodeFormat": "Only lowercase letters, numbers and underscores",
+    "minParticipants": "Minimum {min} participants",
+    "maxParticipants": "Maximum {max} participants",
+    "selectOrganization": "Select an organization",
+    "latitudeRange": "Latitude between {min} and {max}",
+    "longitudeRange": "Longitude between {min} and {max}",
+    "userIdsRequired": "Enter at least one user ID",
+    "fields": {
+      "code": "Code",
+      "title": "Title",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "body": "Body",
+      "location": "Location",
+      "date": "Date",
+      "appName": "App name",
+      "duration": "Duration"
+    }
+  },
+  "toast": {
+    "breeds": {
+      "createError": "Error creating breed",
+      "updateError": "Error updating breed",
+      "deleteError": "Error deleting breed",
+      "loadError": "Error loading breeds"
+    },
+    "users": {
+      "suspended": "User suspended",
+      "suspendError": "Error suspending user",
+      "banned": "User banned",
+      "banError": "Error banning user",
+      "reactivated": "User reactivated",
+      "reactivateError": "Error reactivating user",
+      "loadError": "Error loading users"
+    },
+    "admins": {
+      "createError": "Error creating administrator",
+      "roleUpdateError": "Error updating role",
+      "passwordResetError": "Error resetting password",
+      "toggleStatusError": "Error changing status",
+      "loadError": "Error loading administrators"
+    },
+    "events": {
+      "createError": "Error creating event",
+      "cancelError": "Error cancelling event",
+      "participantRemoveError": "Error removing participant",
+      "sponsorAddError": "Error adding sponsor",
+      "sponsorRemoveError": "Error removing sponsor",
+      "loadError": "Error loading events"
+    },
+    "organizations": {
+      "verifyError": "Error verifying organization",
+      "revokeError": "Error revoking verification"
+    },
+    "challenges": {
+      "createError": "Error creating challenge",
+      "deleteError": "Error deleting challenge"
+    },
+    "deletions": {
+      "cancelError": "Error cancelling deletion",
+      "loadError": "Error loading deletions"
+    },
+    "aiFlags": {
+      "saved": "Flag {name} updated",
+      "saveError": "Error saving"
+    },
+    "aiModels": {
+      "promoted": "Model {version} promoted",
+      "promoteError": "Error promoting model"
+    },
+    "settings": {
+      "saveError": "Error saving settings"
+    },
+    "moderation": {
+      "reportsLoadError": "Error loading reports",
+      "storiesLoadError": "Error loading stories",
+      "feedLoadError": "Error loading posts",
+      "feedStatsError": "Error loading statistics",
+      "feedModerateError": "Error moderating post",
+      "contentLoadError": "Error loading reported content",
+      "contentReviewError": "Error reviewing content"
+    },
+    "dogs": {
+      "loadError": "Error loading dogs"
+    },
+    "safety": {
+      "sosLoadError": "Error loading SOS alerts",
+      "contactsLoadError": "Error loading contacts"
+    },
+    "auditLog": {
+      "loadError": "Error loading audit log"
+    }
   }
 }

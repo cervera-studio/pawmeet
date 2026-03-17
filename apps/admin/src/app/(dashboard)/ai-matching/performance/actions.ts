@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { getServerTrpcClient } from '@/lib/server-api';
 import type { PerformanceChartsProps } from './performance-charts';
+import type { ModelEntry } from './types';
 
 // ── Response types for typed fetch boundaries ──────────────────────────────
 
@@ -17,21 +18,9 @@ interface ModelPerformanceResponse {
   timeSeries: PerformanceChartsProps['timeSeries'];
 }
 
-interface ModelEntry {
-  id: string;
-  version: string;
-  trainingSamplesCount: number | null;
-  metrics: unknown;
-  isActive: boolean;
-  promotedAt: string | Date | null;
-  createdAt: string | Date;
-}
-
 interface ModelRegistryResponse {
   models: ModelEntry[];
 }
-
-export type { ModelEntry };
 
 // ── Server actions ─────────────────────────────────────────────────────────
 

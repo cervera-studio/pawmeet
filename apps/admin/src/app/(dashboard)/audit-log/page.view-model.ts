@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/hooks/use-data-table';
@@ -33,6 +34,7 @@ export function isResourceType(v: string): v is ResourceType {
 }
 
 export function useAuditLogViewModel(initialData: AuditLogData, pageSize: number) {
+  const tt = useTranslations('toast');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [resourceFilter, setResourceFilter] = useState<ResourceType | undefined>(undefined);
@@ -53,11 +55,11 @@ export function useAuditLogViewModel(initialData: AuditLogData, pageSize: number
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento del registro'));
+      toast.error(handleError(error, tt('auditLog.loadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [table.page, table.pageSize, debouncedSearch, resourceFilter]);
+  }, [table.page, table.pageSize, debouncedSearch, resourceFilter, tt]);
 
   useEffect(() => {
     if (isInitialRender.current) {

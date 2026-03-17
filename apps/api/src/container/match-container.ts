@@ -1,9 +1,9 @@
 // Match domain: discovery, likes, passes, AI matching
 
 import { RuleBasedStrategy } from '../domain/scoring-strategy.js';
-import { createRedisRecommendationCacheRepository } from '../infra/redis-recommendation-cache-repository.js';
 import { MLScoringStrategy } from '../infra/ml-scoring-strategy.js';
 import { OnnxModelLoader } from '../infra/onnx-model-loader.js';
+import { createRedisRecommendationCacheRepository } from '../infra/redis-recommendation-cache-repository.js';
 import { createDiscoverCandidates } from '../use-cases/discover-candidates.js';
 import { createDiscoverCandidatesAi } from '../use-cases/discover-candidates-ai.js';
 import { createGetMatchExplanation } from '../use-cases/get-match-explanation.js';

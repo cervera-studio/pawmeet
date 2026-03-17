@@ -2,19 +2,19 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
+  createGeneralSettingsSchema,
+  createMatchingSettingsSchema,
+  createModerationSettingsSchema,
   type GeneralSettingsFormValues,
-  generalSettingsSchema,
   type MatchingSettingsFormValues,
   type ModerationSettingsFormValues,
-  matchingSettingsSchema,
-  moderationSettingsSchema,
 } from '@/lib/schemas/settings';
 import type { AppSettings } from '@/repositories';
 import { updateSettings } from './actions';
@@ -26,7 +26,11 @@ interface SettingsFormProps {
 export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const t = useTranslations('settings');
   const tc = useTranslations('common');
+  const tv = useTranslations('validation');
   const [isSaving, setIsSaving] = useState(false);
+  const generalSettingsSchema = useMemo(() => createGeneralSettingsSchema(tv), [tv]);
+  const moderationSettingsSchema = useMemo(() => createModerationSettingsSchema(tv), [tv]);
+  const matchingSettingsSchema = useMemo(() => createMatchingSettingsSchema(tv), [tv]);
 
   const generalForm = useForm<GeneralSettingsFormValues>({
     resolver: zodResolver(generalSettingsSchema),

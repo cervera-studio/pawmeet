@@ -33,6 +33,7 @@ interface DogsTableProps {
 export function DogsTable({ initialData, pageSize }: DogsTableProps) {
   const t = useTranslations('dogs');
   const tc = useTranslations('common');
+  const tt = useTranslations('toast');
 
   const columns: ColumnDef<DogRow>[] = useMemo(
     () => [
@@ -123,11 +124,11 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento dei cani'));
+      toast.error(handleError(error, tt('dogs.loadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch]);
+  }, [pagination.pageIndex, pagination.pageSize, debouncedSearch, tt]);
 
   // Only fetch client-side when user interacts (search or paginate beyond initial)
   useEffect(() => {

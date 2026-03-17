@@ -100,6 +100,7 @@ interface ReportsListProps {
 
 export function ReportsList({ initialData }: ReportsListProps) {
   const t = useTranslations('reports');
+  const tt = useTranslations('toast');
   const [statusFilter, setStatusFilter] = useState<ReportStatus | undefined>(undefined);
   const [pagination, setPagination] = useState<{ pageIndex: number; pageSize: number }>({
     pageIndex: 0,
@@ -130,7 +131,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento delle segnalazioni'));
+      toast.error(handleError(error, tt('moderation.reportsLoadError')));
     } finally {
       setIsLoading(false);
     }
@@ -195,11 +196,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
       cell: ({ row }) => {
         const action = row.original.resolvedAction;
         if (!action) return <span className="text-neutral-500">-</span>;
-        return (
-          <span className="text-sm">
-            {translateDynamic(t, 'actions', action)}
-          </span>
-        );
+        return <span className="text-sm">{translateDynamic(t, 'actions', action)}</span>;
       },
     },
     {

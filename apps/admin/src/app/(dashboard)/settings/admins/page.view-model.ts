@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/hooks/use-data-table';
@@ -51,9 +52,10 @@ function buildRoleLabels(t: (key: string) => string): Record<Role, string> {
 }
 
 export type { Role };
-export { ROLES, isValidRole, toRole, buildRoleLabels };
+export { buildRoleLabels, isValidRole, ROLES, toRole };
 
 export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: number) {
+  const tt = useTranslations('toast');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [roleFilter, setRoleFilter] = useState<Role | undefined>(undefined);
@@ -74,11 +76,11 @@ export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: nu
       });
       setData(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento degli amministratori'));
+      toast.error(handleError(error, tt('admins.loadError')));
     } finally {
       setIsLoading(false);
     }
-  }, [table.page, table.pageSize, debouncedSearch, roleFilter]);
+  }, [table.page, table.pageSize, debouncedSearch, roleFilter, tt]);
 
   useEffect(() => {
     if (isInitialRender.current) {

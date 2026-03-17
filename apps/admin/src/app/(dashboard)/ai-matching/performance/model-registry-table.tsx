@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -23,8 +24,8 @@ import {
 } from '@/components/ui/table';
 import { handleError } from '@/lib/error-handler';
 import { formatDateShort } from '@/lib/formatters';
-import type { ModelEntry } from './actions';
 import { promoteModel } from './actions';
+import type { ModelEntry } from './types';
 
 interface ModelMetrics {
   rmse?: number;
@@ -55,6 +56,7 @@ interface ModelRegistryTableProps {
 }
 
 export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
+  const tt = useTranslations('toast');
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [confirmVersion, setConfirmVersion] = useState<string | null>(null);
@@ -63,11 +65,11 @@ export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
     startTransition(async () => {
       try {
         await promoteModel(version);
-        toast.success(LABELS.promoted(version));
+        toast.success(tt('aiModels.promoted', { version }));
         setConfirmVersion(null);
         router.refresh();
       } catch (error) {
-        toast.error(handleError(error, LABELS.promoteError));
+        toast.error(handleError(error, tt('aiModels.promoteError')));
       }
     });
   }

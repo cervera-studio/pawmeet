@@ -25,6 +25,7 @@ interface DeletionsTableProps {
 
 export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
   const t = useTranslations('accountDeletions');
+  const tt = useTranslations('toast');
   const vm = useDeletionsViewModel(initialData, pageSize);
 
   const handleCancel = useCallback(
@@ -33,10 +34,10 @@ export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
         await cancelDeletion(userId);
         void vm.refetch();
       } catch (error) {
-        toast.error(handleError(error, "Errore durante l'annullamento della cancellazione"));
+        toast.error(handleError(error, tt('deletions.cancelError')));
       }
     },
-    [vm],
+    [vm, tt],
   );
 
   const columns: ColumnDef<PendingDeletion>[] = useMemo(

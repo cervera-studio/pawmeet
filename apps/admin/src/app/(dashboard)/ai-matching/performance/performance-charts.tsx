@@ -126,8 +126,18 @@ function WeightDistributionChart({ data }: { data: WeightDimension[] | null }) {
           <ResponsiveContainer width="100%" height={256}>
             <BarChart data={data} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis type="number" tick={{ fontSize: FONT_SIZE.sm }} unit="%" domain={[0, 'auto']} />
-              <YAxis dataKey="dimension" type="category" tick={{ fontSize: FONT_SIZE.sm }} width={100} />
+              <XAxis
+                type="number"
+                tick={{ fontSize: FONT_SIZE.sm }}
+                unit="%"
+                domain={[0, 'auto']}
+              />
+              <YAxis
+                dataKey="dimension"
+                type="category"
+                tick={{ fontSize: FONT_SIZE.sm }}
+                width={100}
+              />
               <Tooltip formatter={(v: unknown) => `${Number(v).toFixed(1)}%`} />
               <Bar
                 dataKey="avgWeight"
@@ -157,7 +167,11 @@ function PerformanceTimeSeries({ data }: { data: TimeSeriesPoint[] }) {
           <ResponsiveContainer width="100%" height={256}>
             <ComposedChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis dataKey="date" tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatDateAxis} />
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: FONT_SIZE.sm }}
+                tickFormatter={formatDateAxis}
+              />
               <YAxis
                 yAxisId="left"
                 tick={{ fontSize: FONT_SIZE.sm }}

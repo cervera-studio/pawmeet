@@ -17,12 +17,12 @@ import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counte
 import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import type { GamificationRepository } from '../../ports/gamification-repository.js';
-import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 import { createAddEventSponsor } from '../../use-cases/admin/add-event-sponsor.js';
 import { createCreateAdminUser } from '../../use-cases/admin/create-admin-user.js';
 import { createResolveContentReport } from '../../use-cases/admin/resolve-content-report.js';
 import { createUpdateAdminRole } from '../../use-cases/admin/update-admin-role.js';
 import { validateMatchWeights } from '../../use-cases/admin/validate-match-weights.js';
+import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 
@@ -1156,7 +1156,12 @@ export function createAdminRouter(deps: AdminRouterDeps) {
           },
         });
 
-        return { id: updated.id, email: updated.email, displayName: updated.displayName, role: updated.role };
+        return {
+          id: updated.id,
+          email: updated.email,
+          displayName: updated.displayName,
+          role: updated.role,
+        };
       }),
 
     toggleAdminActive: adminProcedure

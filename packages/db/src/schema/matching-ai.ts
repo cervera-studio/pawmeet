@@ -212,7 +212,12 @@ export const mlModelRegistry = pgTable(
     version: varchar('version', { length: 50 }).notNull().unique(),
     r2Path: varchar('r2_path', { length: 500 }).notNull(),
     trainingSamplesCount: integer('training_samples_count').notNull(),
-    metrics: jsonb('metrics').$type<{ auc: number; precision: number; recall: number; f1?: number }>(),
+    metrics: jsonb('metrics').$type<{
+      auc: number;
+      precision: number;
+      recall: number;
+      f1?: number;
+    }>(),
     featureSchema: jsonb('feature_schema').$type<string[]>(),
     hyperparameters: jsonb('hyperparameters').$type<Record<string, string | number | boolean>>(),
     isActive: boolean('is_active').notNull().default(false),

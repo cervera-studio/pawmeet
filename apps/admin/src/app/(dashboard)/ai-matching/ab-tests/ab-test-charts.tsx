@@ -83,8 +83,16 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
           <ResponsiveContainer width="100%" height={256}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis dataKey="date" tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatDateAxis} />
-              <YAxis tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatPercent} domain={[0, 'auto']} />
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: FONT_SIZE.sm }}
+                tickFormatter={formatDateAxis}
+              />
+              <YAxis
+                tick={{ fontSize: FONT_SIZE.sm }}
+                tickFormatter={formatPercent}
+                domain={[0, 'auto']}
+              />
               <Tooltip labelFormatter={formatTooltipDate} formatter={formatPercent} />
               <Legend />
               <Line
@@ -117,8 +125,16 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
           <ResponsiveContainer width="100%" height={256}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis dataKey="date" tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatDateAxis} />
-              <YAxis tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatPercent} domain={[0, 'auto']} />
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: FONT_SIZE.sm }}
+                tickFormatter={formatDateAxis}
+              />
+              <YAxis
+                tick={{ fontSize: FONT_SIZE.sm }}
+                tickFormatter={formatPercent}
+                domain={[0, 'auto']}
+              />
               <Tooltip labelFormatter={formatTooltipDate} formatter={formatPercent} />
               <Legend />
               <Line

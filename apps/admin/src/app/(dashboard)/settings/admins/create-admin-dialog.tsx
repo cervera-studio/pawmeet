@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { DialogForm } from '@/components/dialog-form';
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { handleError } from '@/lib/error-handler';
 import { type CreateAdminUserFormValues, createAdminUserSchema } from '@/lib/schemas/admin-user';
 import { createAdminUser } from './actions';
-import { ROLES, buildRoleLabels } from './page.view-model';
+import { buildRoleLabels, ROLES } from './page.view-model';
 
 interface CreateAdminDialogProps {
   open: boolean;
@@ -21,11 +21,14 @@ interface CreateAdminDialogProps {
 
 export function CreateAdminDialog({ open, onOpenChange, onCreated }: CreateAdminDialogProps) {
   const t = useTranslations('adminUsers');
+  const tt = useTranslations('toast');
+  const tv = useTranslations('validation');
   const roleLabels = buildRoleLabels(t);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const adminUserSchema = useMemo(() => createAdminUserSchema(tv), [tv]);
 
   const form = useForm<CreateAdminUserFormValues>({
-    resolver: zodResolver(createAdminUserSchema),
+    resolver: zodResolver(adminUserSchema),
     defaultValues: {
       email: '',
       displayName: '',
@@ -47,7 +50,7 @@ export function CreateAdminDialog({ open, onOpenChange, onCreated }: CreateAdmin
       form.reset();
       onCreated();
     } catch (error) {
-      toast.error(handleError(error, "Errore durante la creazione dell'amministratore"));
+      toast.error(handleError(error, tt('admins.createError')));
     } finally {
       setIsSubmitting(false);
     }

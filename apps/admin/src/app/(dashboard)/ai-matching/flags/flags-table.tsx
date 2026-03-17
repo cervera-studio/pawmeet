@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +39,7 @@ interface FlagsTableProps {
 }
 
 export function FlagsTable({ flags, columns, labels }: FlagsTableProps) {
+  const tt = useTranslations('toast');
   const router = useRouter();
   const [editingFlag, setEditingFlag] = useState<Flag | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -52,11 +54,11 @@ export function FlagsTable({ flags, columns, labels }: FlagsTableProps) {
     startTransition(async () => {
       try {
         await updateFlag(name, enabled, splitPercent);
-        toast.success(`Flag ${name} aggiornato`);
+        toast.success(tt('aiFlags.saved', { name }));
         setDialogOpen(false);
         router.refresh();
       } catch (error) {
-        toast.error(handleError(error, 'Errore durante il salvataggio'));
+        toast.error(handleError(error, tt('aiFlags.saveError')));
       }
     });
   }

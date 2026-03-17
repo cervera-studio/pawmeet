@@ -149,11 +149,16 @@ export function learnWeightsFromSwipes(
     const key = scoreKeys[dim];
     const likeAvg = likes.reduce((sum, s) => sum + s[key], 0) / likes.length;
     const passAvg =
-      passes.length > 0 ? passes.reduce((sum, s) => sum + s[key], 0) / passes.length : DEFAULT_PASS_AVERAGE;
+      passes.length > 0
+        ? passes.reduce((sum, s) => sum + s[key], 0) / passes.length
+        : DEFAULT_PASS_AVERAGE;
 
     // Higher difference = user cares more about this dimension
     // Also consider absolute like average (user prefers high scores here)
-    importance[dim] = Math.max(MIN_IMPORTANCE_FLOOR, likeAvg - passAvg + likeAvg * LIKE_AVERAGE_BONUS);
+    importance[dim] = Math.max(
+      MIN_IMPORTANCE_FLOOR,
+      likeAvg - passAvg + likeAvg * LIKE_AVERAGE_BONUS,
+    );
   }
 
   return normalizeWeights({

@@ -17,6 +17,7 @@ interface BreedDeleteDialogProps {
 
 export function BreedDeleteDialog({ breed, open, onClose, onDeleted }: BreedDeleteDialogProps) {
   const t = useTranslations('breeds');
+  const tt = useTranslations('toast');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleDelete() {
@@ -27,7 +28,7 @@ export function BreedDeleteDialog({ breed, open, onClose, onDeleted }: BreedDele
       onClose();
       onDeleted();
     } catch (error) {
-      toast.error(handleError(error, "Errore durante l'eliminazione della razza"));
+      toast.error(handleError(error, tt('breeds.deleteError')));
     } finally {
       setIsSubmitting(false);
     }

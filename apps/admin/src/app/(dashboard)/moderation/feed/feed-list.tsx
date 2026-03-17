@@ -20,6 +20,7 @@ interface FeedListProps {
 
 export function FeedList({ initialPosts, initialStats }: FeedListProps) {
   const t = useTranslations('feed');
+  const tt = useTranslations('toast');
   const tTable = useTranslations('table');
   const [posts, setPosts] = useState(initialPosts.data);
   const [total, setTotal] = useState(initialPosts.total);
@@ -69,7 +70,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
       setTotalPages(result.totalPages);
       setTotal(result.total);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento dei post'));
+      toast.error(handleError(error, tt('moderation.feedLoadError')));
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +81,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
       const result = await fetchFeedStats();
       setStats(result);
     } catch (error) {
-      toast.error(handleError(error, 'Errore nel caricamento delle statistiche'));
+      toast.error(handleError(error, tt('moderation.feedStatsError')));
     }
   }
 
@@ -91,7 +92,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
       void fetchPosts();
       void fetchStats();
     } catch (error) {
-      toast.error(handleError(error, 'Errore durante la moderazione del post'));
+      toast.error(handleError(error, tt('moderation.feedModerateError')));
     } finally {
       setUpdatingPostId(null);
     }

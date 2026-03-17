@@ -161,7 +161,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         accessorKey: 'email',
         header: t('columns.email'),
         cell: ({ row }) => (
-          <span className="text-sm text-neutral-500 dark:text-neutral-400">
+          <span className="text-sm text-neutral-500">
             {row.original.email}
           </span>
         ),
@@ -197,7 +197,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         cell: ({ row }) => {
           const value = row.original.lastLoginAt;
           if (!value)
-            return <span className="text-neutral-400 dark:text-neutral-500">{tc('never')}</span>;
+            return <span className="text-neutral-500">{tc('never')}</span>;
           return formatDateTime(value);
         },
       },
@@ -235,7 +235,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
     return (
       <select
         id={id}
-        className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+        className="w-full rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
         value={value}
         onChange={(e) => onChange(e.target.value as Role)}
       >
@@ -265,7 +265,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
             onChange={(e) => vm.setSearch(e.target.value)}
           />
           <select
-            className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+            className="rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
             value={vm.roleFilter ?? ''}
             onChange={(e) => {
               const v = e.target.value;
@@ -352,7 +352,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
           >
             <select
               id="create-role"
-              className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+              className="w-full rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
               {...createForm.register('role')}
             >
               {ROLES.map((role) => (

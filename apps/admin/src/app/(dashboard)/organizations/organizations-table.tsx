@@ -46,7 +46,7 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
         accessorKey: 'slug',
         header: t('columns.slug'),
         cell: ({ row }) => (
-          <span className="font-mono text-sm text-neutral-500 dark:text-neutral-400">
+          <span className="font-mono text-sm text-neutral-500">
             {row.original.slug}
           </span>
         ),
@@ -100,7 +100,7 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
           onChange={(e) => vm.setSearch(e.target.value)}
         />
         <select
-          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
           value={vm.typeFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;

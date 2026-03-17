@@ -61,7 +61,7 @@ export function UsersTable({ initialData }: UsersTableProps) {
         cell: ({ row }) => (
           <a
             href={`/users/${row.original.id}`}
-            className="inline-flex items-center justify-center h-8 rounded-md px-3 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            className="inline-flex items-center justify-center h-8 rounded-md px-3 text-xs hover:bg-neutral-100 transition-colors"
           >
             {tc('details')}
           </a>

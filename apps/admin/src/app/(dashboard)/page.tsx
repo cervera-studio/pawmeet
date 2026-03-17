@@ -31,8 +31,8 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{t('title')}</h1>
-        <p className="text-neutral-500 dark:text-neutral-400">{t('subtitle')}</p>
+        <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+        <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
       {/* KPI Cards */}
@@ -40,12 +40,12 @@ export default async function DashboardPage() {
         {kpiCards.map((kpi) => (
           <Card key={kpi.title}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              <CardTitle className="text-sm font-medium text-neutral-500">
                 {kpi.title}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+              <div className="text-2xl font-bold text-neutral-900">
                 {formatNumber(kpi.value)}
               </div>
             </CardContent>
@@ -55,19 +55,19 @@ export default async function DashboardPage() {
 
       {/* Analytics KPI Cards */}
       <div>
-        <h2 className="mb-3 text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+        <h2 className="mb-3 text-lg font-semibold text-neutral-700">
           {t('analyticsRealtime')}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {analyticsCards.map((kpi) => (
             <Card key={kpi.title}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                <CardTitle className="text-sm font-medium text-neutral-500">
                   {kpi.title}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+                <div className="text-2xl font-bold text-neutral-900">
                   {formatNumber(kpi.value)}
                 </div>
               </CardContent>

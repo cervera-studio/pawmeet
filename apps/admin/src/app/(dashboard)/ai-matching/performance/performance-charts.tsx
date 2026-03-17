@@ -56,7 +56,7 @@ function formatTooltipDate(v: unknown) {
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex h-64 items-center justify-center">
-      <p className="text-sm text-neutral-500 dark:text-neutral-400">{message}</p>
+      <p className="text-sm text-neutral-500">{message}</p>
     </div>
   );
 }

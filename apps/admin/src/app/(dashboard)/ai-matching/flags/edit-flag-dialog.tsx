@@ -63,7 +63,7 @@ export function EditFlagDialog({
         <div className="space-y-4 py-4">
           {/* Status radio group */}
           <fieldset className="space-y-2">
-            <legend className="text-sm font-medium text-neutral-900 dark:text-neutral-50">
+            <legend className="text-sm font-medium text-neutral-900">
               Stato
             </legend>
             <div className="flex gap-4">
@@ -93,7 +93,7 @@ export function EditFlagDialog({
           {/* Split percentage */}
           <div className="space-y-2">
             <label
-              className="text-sm font-medium text-neutral-900 dark:text-neutral-50"
+              className="text-sm font-medium text-neutral-900"
               htmlFor="split-pct"
             >
               Percentuale split (treatment)

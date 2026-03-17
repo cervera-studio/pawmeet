@@ -15,14 +15,14 @@ import { BREED_GROUPS } from './breed-form-fields';
 import { type Breed, type BreedsData, useBreedsViewModel } from './page.view-model';
 
 function ScoreBar({ value }: { value: number | null }) {
-  if (value === null) return <span className="text-neutral-300 dark:text-neutral-600">-</span>;
+  if (value === null) return <span className="text-neutral-300">-</span>;
   return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((n) => (
         <div
           key={n}
           className={`h-2 w-2 rounded-sm ${
-            n <= value ? 'bg-primary' : 'bg-neutral-200 dark:bg-neutral-700'
+            n <= value ? 'bg-primary' : 'bg-neutral-200'
           }`}
         />
       ))}
@@ -178,7 +178,7 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
             onChange={(e) => vm.setSearch(e.target.value)}
           />
           <select
-            className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+            className="rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
             value={vm.groupFilter ?? ''}
             onChange={(e) => vm.setGroupFilter(e.target.value || undefined)}
           >

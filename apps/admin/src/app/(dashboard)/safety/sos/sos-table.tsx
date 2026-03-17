@@ -84,7 +84,7 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
           const { latitude, longitude } = row.original;
           if (!latitude || !longitude) return '-';
           return (
-            <span className="font-mono text-sm text-neutral-500 dark:text-neutral-400">
+            <span className="font-mono text-sm text-neutral-500">
               {latitude}, {longitude}
             </span>
           );
@@ -103,7 +103,7 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
     <>
       <div className="flex items-center gap-4">
         <select
-          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
           value={vm.typeFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;

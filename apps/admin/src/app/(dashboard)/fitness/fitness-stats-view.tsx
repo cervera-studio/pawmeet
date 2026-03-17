@@ -31,12 +31,12 @@ export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            <CardTitle className="text-sm font-medium text-neutral-500">
               {t('stats.totalWalks')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-50">
+            <p className="text-3xl font-bold text-neutral-900">
               {stats.totalWalks.toLocaleString('it-IT')}
             </p>
           </CardContent>
@@ -44,12 +44,12 @@ export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            <CardTitle className="text-sm font-medium text-neutral-500">
               {t('stats.totalDistanceKm')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-50">
+            <p className="text-3xl font-bold text-neutral-900">
               {stats.totalDistanceKm.toLocaleString('it-IT')} km
             </p>
           </CardContent>
@@ -57,12 +57,12 @@ export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            <CardTitle className="text-sm font-medium text-neutral-500">
               {t('stats.avgDistanceKm')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-50">
+            <p className="text-3xl font-bold text-neutral-900">
               {stats.avgDistanceKm.toLocaleString('it-IT')} km
             </p>
           </CardContent>
@@ -76,7 +76,7 @@ export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
         </CardHeader>
         <CardContent>
           {stats.topWalkers.length === 0 ? (
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('stats.noData')}</p>
+            <p className="text-sm text-neutral-500">{t('stats.noData')}</p>
           ) : (
             <Table>
               <TableHeader>

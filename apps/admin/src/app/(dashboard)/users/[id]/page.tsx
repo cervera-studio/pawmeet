@@ -10,8 +10,8 @@ import { UserActions } from './user-actions';
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between text-sm">
-      <span className="text-neutral-500 dark:text-neutral-400">{label}</span>
-      <span className="font-medium text-neutral-900 dark:text-neutral-50">{value}</span>
+      <span className="text-neutral-500">{label}</span>
+      <span className="font-medium text-neutral-900">{value}</span>
     </div>
   );
 }
@@ -39,10 +39,10 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
             {(user.displayName ?? '?').charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+            <h1 className="text-2xl font-bold text-neutral-900">
               {user.displayName}
             </h1>
-            <p className="text-neutral-500 dark:text-neutral-400">{user.email}</p>
+            <p className="text-neutral-500">{user.email}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -84,16 +84,16 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
           </CardHeader>
           <CardContent>
             {user.dogs.length === 0 ? (
-              <p className="text-sm text-neutral-400 dark:text-neutral-500">{t('detail.noDogs')}</p>
+              <p className="text-sm text-neutral-500">{t('detail.noDogs')}</p>
             ) : (
               <div className="space-y-3">
                 {user.dogs.map((dog) => (
                   <div key={dog.id} className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-neutral-900 dark:text-neutral-50">
+                      <p className="text-sm font-medium text-neutral-900">
                         {dog.name}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">{dog.breed}</p>
+                      <p className="text-xs text-neutral-500">{dog.breed}</p>
                     </div>
                     <Badge variant={dog.isActive ? 'success' : 'outline'}>
                       {dog.isActive ? tc('active') : tc('inactive')}
@@ -112,13 +112,13 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
           <CardContent className="space-y-2">
             <a
               href={`/moderation/reports?user=${id}`}
-              className="inline-flex w-full items-center justify-start h-9 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              className="inline-flex w-full items-center justify-start h-9 rounded-md border border-neutral-200 bg-surface px-3 text-sm font-medium hover:bg-neutral-100 transition-colors"
             >
               {t('detail.viewReports')}
             </a>
             <a
               href={`/moderation/photos?user=${id}`}
-              className="inline-flex w-full items-center justify-start h-9 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              className="inline-flex w-full items-center justify-start h-9 rounded-md border border-neutral-200 bg-surface px-3 text-sm font-medium hover:bg-neutral-100 transition-colors"
             >
               {t('detail.viewPhotos')}
             </a>

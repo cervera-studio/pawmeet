@@ -93,7 +93,7 @@ export function CreateChallengeDialog({ open, onClose, onCreated }: CreateChalle
           </label>
           <select
             id="challenge-type"
-            className="w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-950"
+            className="w-full rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
             value={type}
             onChange={(e) => {
               if (isChallengeType(e.target.value)) setType(e.target.value);
@@ -126,7 +126,7 @@ export function CreateChallengeDialog({ open, onClose, onCreated }: CreateChalle
           </label>
           <textarea
             id="challenge-description"
-            className="w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-950"
+            className="w-full rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}

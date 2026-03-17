@@ -16,7 +16,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn('[&_tr]:border-b dark:[&_tr]:border-neutral-700', className)}
+    className={cn('[&_tr]:border-b', className)}
     {...props}
   />
 ));
@@ -37,7 +37,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      'border-t bg-neutral-100/50 font-medium dark:border-neutral-700 dark:bg-neutral-800/50 [&>tr]:last:border-b-0',
+      'border-t bg-neutral-100/50 font-medium [&>tr]:last:border-b-0',
       className,
     )}
     {...props}
@@ -50,7 +50,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        'border-b transition-colors hover:bg-neutral-100/50 data-[state=selected]:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800/50 dark:data-[state=selected]:bg-neutral-800',
+        'border-b transition-colors hover:bg-neutral-100/50 data-[state=selected]:bg-neutral-100',
         className,
       )}
       {...props}
@@ -66,7 +66,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-10 px-2 text-left align-middle font-medium text-neutral-500 dark:text-neutral-400 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+      'h-10 px-2 text-left align-middle font-medium text-neutral-500 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
       className,
     )}
     {...props}
@@ -95,7 +95,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn('mt-4 text-sm text-neutral-500 dark:text-neutral-400', className)}
+    className={cn('mt-4 text-sm text-neutral-500', className)}
     {...props}
   />
 ));

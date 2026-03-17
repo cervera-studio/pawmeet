@@ -79,7 +79,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
     <>
       {/* Summary */}
       <div className="flex items-center gap-3">
-        <span className="text-sm text-neutral-500 dark:text-neutral-400">
+        <span className="text-sm text-neutral-500">
           {t('count', { count: total })}
         </span>
       </div>
@@ -89,15 +89,15 @@ export function StoryGrid({ initialData }: StoryGridProps) {
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <Card key={`skeleton-${String(i)}`} className="animate-pulse p-4">
-              <div className="aspect-[9/16] w-full rounded bg-neutral-200 dark:bg-neutral-700" />
-              <div className="mt-3 h-3 w-2/3 rounded bg-neutral-200 dark:bg-neutral-700" />
-              <div className="mt-2 h-3 w-1/2 rounded bg-neutral-200 dark:bg-neutral-700" />
+              <div className="aspect-[9/16] w-full rounded bg-neutral-200" />
+              <div className="mt-3 h-3 w-2/3 rounded bg-neutral-200" />
+              <div className="mt-2 h-3 w-1/2 rounded bg-neutral-200" />
             </Card>
           ))}
         </div>
       ) : stories.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-lg text-neutral-500 dark:text-neutral-400">{t('noStories')}</p>
+          <p className="text-lg text-neutral-500">{t('noStories')}</p>
         </Card>
       ) : (
         <>
@@ -107,7 +107,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
               return (
                 <Card key={story.id} className="overflow-hidden">
                   {/* Media preview */}
-                  <div className="relative aspect-[9/16] w-full bg-neutral-100 dark:bg-neutral-800">
+                  <div className="relative aspect-[9/16] w-full bg-neutral-100">
                     {story.mediaType === 'video' ? (
                       <video
                         src={story.mediaUrl}
@@ -131,7 +131,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                   {/* Story details */}
                   <div className="space-y-2 p-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-neutral-900 dark:text-neutral-50">
+                      <span className="text-sm font-medium text-neutral-900">
                         {story.authorName ?? t('unknownUser')}
                       </span>
                       <Badge variant="outline">
@@ -141,7 +141,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                       </Badge>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div className="flex items-center gap-3 text-xs text-neutral-500">
                       <span>
                         {story.viewCount} {t('views')}
                       </span>
@@ -174,7 +174,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
               >
                 {tTable('previous')}
               </Button>
-              <span className="text-sm text-neutral-500 dark:text-neutral-400">
+              <span className="text-sm text-neutral-500">
                 {tTable('pageOf', { current: page, total: totalPages })}
               </span>
               <Button

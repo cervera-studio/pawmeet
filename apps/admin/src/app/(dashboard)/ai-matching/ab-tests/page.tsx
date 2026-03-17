@@ -79,8 +79,8 @@ export default async function AbTestsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{t('title')}</h1>
-        <p className="text-neutral-500 dark:text-neutral-400">{t('subtitle')}</p>
+        <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+        <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
       {/* Experiment status banner */}
@@ -97,18 +97,18 @@ export default async function AbTestsPage() {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('groupControl')}</p>
-              <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">50%</p>
+              <p className="text-sm text-neutral-500">{t('groupControl')}</p>
+              <p className="text-lg font-semibold text-neutral-900">50%</p>
             </div>
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500">
                 {t('groupTreatment')}
               </p>
-              <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">50%</p>
+              <p className="text-lg font-semibold text-neutral-900">50%</p>
             </div>
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('totalUsers')}</p>
-              <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
+              <p className="text-sm text-neutral-500">{t('totalUsers')}</p>
+              <p className="text-lg font-semibold text-neutral-900">
                 {formatNumber(totalUsers)}
               </p>
             </div>

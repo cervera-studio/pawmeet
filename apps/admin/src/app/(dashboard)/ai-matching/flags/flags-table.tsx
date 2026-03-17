@@ -80,7 +80,7 @@ export function FlagsTable({ flags, columns, labels }: FlagsTableProps) {
                   {flag.enabled ? labels.enabled : labels.disabled}
                 </Badge>
               </TableCell>
-              <TableCell className="text-sm text-neutral-500 dark:text-neutral-400">
+              <TableCell className="text-sm text-neutral-500">
                 {flag.splitPercent}%
               </TableCell>
               <TableCell>

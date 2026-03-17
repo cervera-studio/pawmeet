@@ -67,7 +67,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
       {photos.length === 0 ? (
         <Card>
           <CardContent className="flex h-64 items-center justify-center">
-            <p className="text-neutral-400">{t('noPending')}</p>
+            <p className="text-neutral-500">{t('noPending')}</p>
           </CardContent>
         </Card>
       ) : (

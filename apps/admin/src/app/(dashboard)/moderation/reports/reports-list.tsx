@@ -51,7 +51,7 @@ function ReportActions({
 
   if (status !== 'pending') {
     return (
-      <span className="text-xs text-neutral-400 dark:text-neutral-500">
+      <span className="text-xs text-neutral-500">
         {tStatus(`report.${status}` as Parameters<typeof tStatus>[0])}
       </span>
     );
@@ -195,7 +195,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
       header: t('columns.action'),
       cell: ({ row }) => {
         const action = row.getValue('resolvedAction') as string | null;
-        if (!action) return <span className="text-neutral-400 dark:text-neutral-500">-</span>;
+        if (!action) return <span className="text-neutral-500">-</span>;
         return (
           <span className="text-sm">
             {t.has(`actions.${action}`) ? t(`actions.${action}` as 'actions.dismiss') : action}
@@ -224,8 +224,8 @@ export function ReportsList({ initialData }: ReportsListProps) {
   return (
     <>
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{t('title')}</h1>
-        <p className="text-neutral-500 dark:text-neutral-400">{t('subtitle')}</p>
+        <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
+        <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
       {/* Status filter tabs */}

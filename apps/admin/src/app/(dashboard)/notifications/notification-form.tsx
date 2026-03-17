@@ -113,7 +113,7 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
         <div className="space-y-2">
           <label
             htmlFor="broadcast-title"
-            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            className="text-sm font-medium text-neutral-700"
           >
             {t('broadcast.titleLabel')}
           </label>
@@ -126,7 +126,7 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
           {form.formState.errors.title ? (
             <p className="text-xs text-red-600">{form.formState.errors.title.message}</p>
           ) : (
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">
+            <p className="text-xs text-neutral-500">
               {titleValue.length}/100
             </p>
           )}
@@ -134,7 +134,7 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
         <div className="space-y-2">
           <label
             htmlFor="broadcast-body"
-            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            className="text-sm font-medium text-neutral-700"
           >
             {t('broadcast.bodyLabel')}
           </label>
@@ -144,12 +144,12 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
             placeholder={t('broadcast.bodyPlaceholder')}
             maxLength={500}
             rows={4}
-            className="flex w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           />
           {form.formState.errors.body ? (
             <p className="text-xs text-red-600">{form.formState.errors.body.message}</p>
           ) : (
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">{bodyValue.length}/500</p>
+            <p className="text-xs text-neutral-500">{bodyValue.length}/500</p>
           )}
         </div>
 
@@ -243,7 +243,7 @@ function TargetedForm() {
           <div className="space-y-2">
             <label
               htmlFor="targeted-title"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              className="text-sm font-medium text-neutral-700"
             >
               {t('broadcast.titleLabel')}
             </label>
@@ -256,7 +256,7 @@ function TargetedForm() {
             {form.formState.errors.title ? (
               <p className="text-xs text-red-600">{form.formState.errors.title.message}</p>
             ) : (
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">
+              <p className="text-xs text-neutral-500">
                 {titleValue.length}/100
               </p>
             )}
@@ -264,7 +264,7 @@ function TargetedForm() {
           <div className="space-y-2">
             <label
               htmlFor="targeted-body"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              className="text-sm font-medium text-neutral-700"
             >
               {t('broadcast.bodyLabel')}
             </label>
@@ -274,12 +274,12 @@ function TargetedForm() {
               placeholder={t('broadcast.bodyPlaceholder')}
               maxLength={500}
               rows={4}
-              className="flex w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex w-full rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
             />
             {form.formState.errors.body ? (
               <p className="text-xs text-red-600">{form.formState.errors.body.message}</p>
             ) : (
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">
+              <p className="text-xs text-neutral-500">
                 {bodyValue.length}/500
               </p>
             )}
@@ -287,7 +287,7 @@ function TargetedForm() {
           <div className="space-y-2">
             <label
               htmlFor="targeted-user-ids"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              className="text-sm font-medium text-neutral-700"
             >
               {t('targeted.userIdsLabel')}
             </label>
@@ -302,7 +302,7 @@ function TargetedForm() {
               <p className="text-xs text-red-600">{form.formState.errors.userIdsText.message}</p>
             ) : (
               userIds.length > 0 && (
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                <p className="text-xs text-neutral-500">
                   {userIds.length} {userIds.length === 1 ? 'utente' : 'utenti'}
                 </p>
               )

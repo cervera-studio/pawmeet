@@ -202,7 +202,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
                         className="h-20 w-20 rounded-lg object-cover"
                       />
                       {post.media.length > 1 ? (
-                        <p className="mt-1 text-center text-xs text-neutral-400">
+                        <p className="mt-1 text-center text-xs text-neutral-500">
                           +{post.media.length - 1}
                         </p>
                       ) : null}

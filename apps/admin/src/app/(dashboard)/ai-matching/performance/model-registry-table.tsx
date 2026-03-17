@@ -63,7 +63,7 @@ export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
 
   if (models.length === 0) {
     return (
-      <p className="text-sm text-neutral-500 dark:text-neutral-400">Nessun modello registrato.</p>
+      <p className="text-sm text-neutral-500">Nessun modello registrato.</p>
     );
   }
 

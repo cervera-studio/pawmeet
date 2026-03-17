@@ -44,7 +44,7 @@ export function ContactsTable({ initialData, pageSize }: ContactsTableProps) {
         accessorKey: 'phone',
         header: t('columns.phone'),
         cell: ({ row }) => (
-          <span className="font-mono text-sm text-neutral-500 dark:text-neutral-400">
+          <span className="font-mono text-sm text-neutral-500">
             {row.original.phone}
           </span>
         ),

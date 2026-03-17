@@ -42,7 +42,7 @@ function ChangesDetail({
   const [isOpen, setIsOpen] = useState(false);
 
   if (!changes || Object.keys(changes).length === 0) {
-    return <span className="text-sm text-neutral-400 dark:text-neutral-500">{noChangesLabel}</span>;
+    return <span className="text-sm text-neutral-500">{noChangesLabel}</span>;
   }
 
   const before = (changes.before ?? null) as Record<string, unknown> | null;
@@ -54,29 +54,29 @@ function ChangesDetail({
         {isOpen ? '-' : '+'}
       </Button>
       {isOpen && (
-        <div className="absolute right-0 top-8 z-50 w-96 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 p-4 shadow-lg">
+        <div className="absolute right-0 top-8 z-50 w-96 rounded-md border border-neutral-200 bg-surface p-4 shadow-lg">
           {before && (
             <div className="mb-3">
-              <p className="mb-1 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+              <p className="mb-1 text-xs font-semibold text-neutral-500">
                 {beforeLabel}
               </p>
-              <pre className="max-h-40 overflow-auto rounded bg-neutral-50 dark:bg-neutral-900 p-2 text-xs">
+              <pre className="max-h-40 overflow-auto rounded bg-neutral-50 p-2 text-xs">
                 {JSON.stringify(before, null, 2)}
               </pre>
             </div>
           )}
           {after && (
             <div>
-              <p className="mb-1 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+              <p className="mb-1 text-xs font-semibold text-neutral-500">
                 {afterLabel}
               </p>
-              <pre className="max-h-40 overflow-auto rounded bg-neutral-50 dark:bg-neutral-900 p-2 text-xs">
+              <pre className="max-h-40 overflow-auto rounded bg-neutral-50 p-2 text-xs">
                 {JSON.stringify(after, null, 2)}
               </pre>
             </div>
           )}
           {!before && !after && (
-            <pre className="max-h-40 overflow-auto rounded bg-neutral-50 dark:bg-neutral-900 p-2 text-xs">
+            <pre className="max-h-40 overflow-auto rounded bg-neutral-50 p-2 text-xs">
               {JSON.stringify(changes, null, 2)}
             </pre>
           )}
@@ -104,7 +104,7 @@ export function AuditLogTable({ initialData, pageSize }: AuditLogTableProps) {
           <div>
             <span className="font-medium">{row.original.adminName}</span>
             <br />
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            <span className="text-sm text-neutral-500">
               {row.original.adminEmail}
             </span>
           </div>
@@ -142,9 +142,9 @@ export function AuditLogTable({ initialData, pageSize }: AuditLogTableProps) {
         header: t('columns.resourceId'),
         cell: ({ row }) => {
           const id = row.original.resourceId;
-          if (!id) return <span className="text-neutral-400 dark:text-neutral-500">-</span>;
+          if (!id) return <span className="text-neutral-500">-</span>;
           return (
-            <span className="font-mono text-sm text-neutral-500 dark:text-neutral-400" title={id}>
+            <span className="font-mono text-sm text-neutral-500" title={id}>
               {id.length > 12 ? `${id.slice(0, 12)}...` : id}
             </span>
           );
@@ -181,7 +181,7 @@ export function AuditLogTable({ initialData, pageSize }: AuditLogTableProps) {
           onChange={(e) => vm.setSearch(e.target.value)}
         />
         <select
-          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
           value={vm.resourceFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;

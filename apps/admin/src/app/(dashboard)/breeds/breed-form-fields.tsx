@@ -66,7 +66,7 @@ function ScoreInput({
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm">{label}</span>
         <select
-          className="w-20 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-2 py-1 text-sm"
+          className="w-20 rounded-md border border-neutral-200 bg-surface px-2 py-1 text-sm"
           value={value ?? ''}
           onChange={(e) => {
             const v = e.target.value;
@@ -119,7 +119,7 @@ export function BreedFormFields({ idPrefix, form }: BreedFormFieldsProps) {
         </label>
         <select
           id={`${idPrefix}-group`}
-          className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
           {...register('group')}
         >
           {BREED_GROUPS.map((group) => (
@@ -136,7 +136,7 @@ export function BreedFormFields({ idPrefix, form }: BreedFormFieldsProps) {
         </label>
         <select
           id={`${idPrefix}-size`}
-          className="w-full rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
           {...register('sizeCategory')}
         >
           {SIZE_CATEGORIES.map((size) => (

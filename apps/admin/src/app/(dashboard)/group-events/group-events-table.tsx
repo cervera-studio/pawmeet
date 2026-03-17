@@ -173,7 +173,7 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
           onChange={(e) => vm.setSearch(e.target.value)}
         />
         <select
-          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
           value={vm.statusFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;
@@ -188,7 +188,7 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
           <option value="template">{t('statuses.template')}</option>
         </select>
         <select
-          className="rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
           value={vm.categoryFilter ?? ''}
           onChange={(e) => {
             const v = e.target.value;

@@ -115,7 +115,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="app-name"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('general.appName')}
               </label>
@@ -129,7 +129,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="support-email"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('general.supportEmail')}
               </label>
@@ -157,7 +157,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="photo-confidence"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('moderation.photoThreshold')}
               </label>
@@ -177,7 +177,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="max-reports"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('moderation.maxReports')}
               </label>
@@ -210,7 +210,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="match-size"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('matching.size')}
               </label>
@@ -231,7 +231,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="match-energy"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('matching.energy')}
               </label>
@@ -252,7 +252,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="match-behavior"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('matching.behavior')}
               </label>
@@ -273,7 +273,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="match-walk"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('matching.walk')}
               </label>
@@ -294,7 +294,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="match-distance"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('matching.distance')}
               </label>
@@ -315,7 +315,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="match-leash"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 {t('matching.leash')}
               </label>
@@ -334,7 +334,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
             </div>
             <div className="flex items-center gap-2">
-              <p className="text-sm text-neutral-600 dark:text-neutral-300">
+              <p className="text-sm text-neutral-500">
                 {t('matching.sum')}:{' '}
                 <span className="font-medium">{matchWeightSum.toFixed(2)}</span>
               </p>
@@ -357,10 +357,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-neutral-900 dark:text-neutral-50">
+              <p className="text-sm font-medium text-neutral-900">
                 {t('dangerZone.clearCache')}
               </p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-neutral-500">
                 {t('dangerZone.clearCacheDesc')}
               </p>
             </div>

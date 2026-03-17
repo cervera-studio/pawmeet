@@ -91,10 +91,10 @@ export function ContentList({ initialData }: ContentListProps) {
                         : report.reason}
                     </Badge>
                   </div>
-                  <p className="text-sm text-neutral-600">
+                  <p className="text-sm text-neutral-500">
                     {t('contentId')}: <span className="font-mono text-xs">{report.contentId}</span>
                   </p>
-                  <p className="text-sm text-neutral-600">
+                  <p className="text-sm text-neutral-500">
                     {t('reporter')}: <span className="font-mono text-xs">{report.reporterId}</span>
                   </p>
                   {report.description ? (
@@ -102,7 +102,7 @@ export function ContentList({ initialData }: ContentListProps) {
                       &quot;{report.description}&quot;
                     </p>
                   ) : null}
-                  <p className="text-xs text-neutral-400">{formatDateTime(report.createdAt)}</p>
+                  <p className="text-xs text-neutral-500">{formatDateTime(report.createdAt)}</p>
                 </div>
 
                 <div className="flex gap-2">

@@ -86,7 +86,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+            <h1 className="text-2xl font-bold text-neutral-900">
               {organization.name}
             </h1>
             {organization.isVerified ? (
@@ -95,7 +95,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
               <Badge variant="secondary">Non verificata</Badge>
             )}
           </div>
-          <p className="mt-1 font-mono text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="mt-1 font-mono text-sm text-neutral-500">
             {organization.slug}
           </p>
         </div>
@@ -119,7 +119,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            <CardTitle className="text-sm font-medium text-neutral-500">
               Tipo
             </CardTitle>
           </CardHeader>
@@ -130,7 +130,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            <CardTitle className="text-sm font-medium text-neutral-500">
               Membri
             </CardTitle>
           </CardHeader>
@@ -141,7 +141,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            <CardTitle className="text-sm font-medium text-neutral-500">
               Creata il
             </CardTitle>
           </CardHeader>
@@ -152,7 +152,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            <CardTitle className="text-sm font-medium text-neutral-500">
               Verifica
             </CardTitle>
           </CardHeader>
@@ -160,7 +160,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
             {organization.isVerified && organization.verifiedAt ? (
               <p className="text-sm font-medium">{formatDateTime(organization.verifiedAt)}</p>
             ) : (
-              <p className="text-sm text-neutral-400 dark:text-neutral-500">Non verificata</p>
+              <p className="text-sm text-neutral-500">Non verificata</p>
             )}
           </CardContent>
         </Card>
@@ -175,24 +175,24 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
           <div className="grid grid-cols-2 gap-4 text-sm">
             {organization.description && (
               <div className="col-span-2">
-                <span className="text-neutral-500 dark:text-neutral-400">Descrizione:</span>
+                <span className="text-neutral-500">Descrizione:</span>
                 <p className="mt-1 font-medium">{organization.description}</p>
               </div>
             )}
             {organization.contactEmail && (
               <div>
-                <span className="text-neutral-500 dark:text-neutral-400">Email contatto:</span>{' '}
+                <span className="text-neutral-500">Email contatto:</span>{' '}
                 <span className="font-medium">{organization.contactEmail}</span>
               </div>
             )}
             {organization.websiteUrl && (
               <div>
-                <span className="text-neutral-500 dark:text-neutral-400">Sito web:</span>{' '}
+                <span className="text-neutral-500">Sito web:</span>{' '}
                 <span className="font-medium">{organization.websiteUrl}</span>
               </div>
             )}
             <div>
-              <span className="text-neutral-500 dark:text-neutral-400">Aggiornata il:</span>{' '}
+              <span className="text-neutral-500">Aggiornata il:</span>{' '}
               <span className="font-medium">{formatDateTime(organization.updatedAt)}</span>
             </div>
           </div>
@@ -206,9 +206,9 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
         </CardHeader>
         <CardContent>
           {organization.members.length === 0 ? (
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">Nessun membro</p>
+            <p className="text-sm text-neutral-500">Nessun membro</p>
           ) : (
-            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+            <div className="divide-y divide-neutral-100">
               {organization.members.map((member) => (
                 <div key={member.id} className="flex items-center justify-between py-3">
                   <div>
@@ -219,14 +219,14 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
                       {member.userName ?? 'Sconosciuto'}
                     </a>
                     {member.userEmail && (
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs text-neutral-500">
                         {member.userEmail}
                       </p>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{roleLabels[member.role] ?? member.role}</Badge>
-                    <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                    <span className="text-xs text-neutral-500">
                       {formatDateTime(member.createdAt)}
                     </span>
                   </div>

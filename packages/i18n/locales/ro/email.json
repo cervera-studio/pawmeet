@@ -1,0 +1,40 @@
+{
+  "verification": {
+    "subject": "Codul tău de verificare - PawMeet",
+    "heading": "Cod de verificare PawMeet",
+    "body": "Folosește codul de mai jos pentru a-ți verifica emailul:",
+    "expiry": "Codul expiră în 5 minute.",
+    "ignore": "Dacă nu ai creat un cont, ignoră acest email."
+  },
+  "passwordReset": {
+    "subject": "Cod de resetare a parolei - PawMeet",
+    "heading": "Resetare parolă PawMeet",
+    "body": "Folosește codul de mai jos pentru a-ți reseta parola:",
+    "expiry": "Codul expiră în 5 minute.",
+    "ignore": "Dacă nu ai solicitat resetarea, ignoră acest email."
+  },
+  "gdprExportReady": {
+    "subject": "Exportul tău de date este gata - PawMeet",
+    "greeting": "Bună {displayName},",
+    "body": "Exportul tău de date GDPR este gata pentru descărcare.",
+    "cta": "Descarcă datele tale",
+    "expiry": "Important: linkul expiră în 48 de ore.",
+    "legal": "Exportul conține toate informațiile personale asociate contului tău, conform GDPR (Art. 15 și Art. 20).",
+    "notRequested": "Dacă nu ai solicitat acest export, contactează-ne la"
+  },
+  "gdprExportFailed": {
+    "subject": "Eroare la exportul de date - PawMeet",
+    "greeting": "Bună {displayName},",
+    "body": "Din păcate, a apărut o eroare la generarea exportului de date.",
+    "retry": "Poți încerca din nou din secțiunea Setări a aplicației. Dacă problema persistă, contactează-ne la"
+  },
+  "accountDeleted": {
+    "subject": "Contul tău PawMeet a fost dezactivat",
+    "greeting": "Bună {displayName},",
+    "body": "Confirmăm că contul tău PawMeet a fost dezactivat cu succes.",
+    "retention": "Datele tale personale vor fi șterse definitiv în termen de 30 de zile, conform GDPR (Art. 17).",
+    "undo": "Dacă te răzgândești, ne poți contacta în termen de 30 de zile la",
+    "undoSuffix": "pentru a solicita restaurarea.",
+    "farewell": "Mulțumim că ai făcut parte din comunitatea PawMeet."
+  }
+}

@@ -41,12 +41,12 @@ export const updateNotificationPrefsSchema = z.object({
   nearby: z.boolean().optional(),
   quietHoursStart: z
     .string()
-    .regex(/^\d{2}:\d{2}$/, 'Formato HH:MM')
+    .regex(/^\d{2}:\d{2}$/, 'time_format')
     .nullable()
     .optional(),
   quietHoursEnd: z
     .string()
-    .regex(/^\d{2}:\d{2}$/, 'Formato HH:MM')
+    .regex(/^\d{2}:\d{2}$/, 'time_format')
     .nullable()
     .optional(),
   timezone: z.string().max(50).nullable().optional(),
@@ -67,13 +67,13 @@ export const submitDateOfBirthSchema = z.object({
 export type SubmitDateOfBirthInput = z.infer<typeof submitDateOfBirthSchema>;
 
 export const deleteAccountSchema = z.object({
-  password: z.string().min(1, 'Password richiesta per confermare la cancellazione'),
+  password: z.string().min(1, 'delete_account_password_required'),
 });
 
 export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>;
 
 export const reactivateAccountSchema = z.object({
-  password: z.string().min(1, "Password richiesta per riattivare l'account"),
+  password: z.string().min(1, 'reactivate_account_password_required'),
 });
 
 export type ReactivateAccountInput = z.infer<typeof reactivateAccountSchema>;

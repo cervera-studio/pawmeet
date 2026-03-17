@@ -1,0 +1,40 @@
+{
+  "verification": {
+    "subject": "Il tuo codice di verifica - PawMeet",
+    "heading": "Codice di verifica PawMeet",
+    "body": "Usa il codice qui sotto per verificare la tua email:",
+    "expiry": "Il codice scade tra 5 minuti.",
+    "ignore": "Se non hai creato un account, ignora questa email."
+  },
+  "passwordReset": {
+    "subject": "Codice di reset password - PawMeet",
+    "heading": "Reset password PawMeet",
+    "body": "Usa il codice qui sotto per reimpostare la tua password:",
+    "expiry": "Il codice scade tra 5 minuti.",
+    "ignore": "Se non hai richiesto il reset, ignora questa email."
+  },
+  "gdprExportReady": {
+    "subject": "Il tuo export dati è pronto - PawMeet",
+    "greeting": "Ciao {displayName},",
+    "body": "Il tuo export dati GDPR è pronto per il download.",
+    "cta": "Scarica i tuoi dati",
+    "expiry": "Importante: il link scade tra 48 ore.",
+    "legal": "L'export contiene tutte le informazioni personali associate al tuo account, come previsto dal GDPR (Art. 15 e Art. 20).",
+    "notRequested": "Se non hai richiesto questo export, contattaci a"
+  },
+  "gdprExportFailed": {
+    "subject": "Errore nell'export dati - PawMeet",
+    "greeting": "Ciao {displayName},",
+    "body": "Purtroppo si è verificato un errore durante la generazione del tuo export dati.",
+    "retry": "Puoi riprovare dalla sezione Impostazioni dell'app. Se il problema persiste, contattaci a"
+  },
+  "accountDeleted": {
+    "subject": "Il tuo account PawMeet è stato disattivato",
+    "greeting": "Ciao {displayName},",
+    "body": "Confermiamo che il tuo account PawMeet è stato disattivato con successo.",
+    "retention": "I tuoi dati personali verranno eliminati definitivamente entro 30 giorni, come previsto dal GDPR (Art. 17).",
+    "undo": "Se cambi idea, puoi contattarci entro 30 giorni all'indirizzo",
+    "undoSuffix": "per richiedere il ripristino.",
+    "farewell": "Grazie per aver fatto parte della community PawMeet."
+  }
+}

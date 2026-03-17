@@ -1,9 +1,11 @@
 import {
   breedsSearchSchema,
   createDogSchema,
+  generateDogBioSchema,
   photoReorderSchema,
   updateDogSchema,
 } from '@pawmeet/validation';
+import { Ratelimit } from '@upstash/ratelimit';
 import { z } from 'zod';
 import type { dogDeps } from '../../container/index.js';
 import { enqueueEmbeddingGeneration } from '../../jobs/queue.js';
@@ -26,6 +28,20 @@ const photoDeleteSchema = z.object({
   dogId: z.string().uuid(),
   photoId: z.string().uuid(),
 });
+
+let _bioRateLimiter: Ratelimit | null = null;
+
+async function getBioRateLimiter(): Promise<Ratelimit> {
+  if (!_bioRateLimiter) {
+    const { redis } = await import('../../lib/redis.js');
+    _bioRateLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, '24h'),
+      prefix: 'rl:trpc:dog-bio',
+    });
+  }
+  return _bioRateLimiter;
+}
 
 export function createDogsRouter(deps: typeof dogDeps) {
   return router({
@@ -95,5 +111,23 @@ export function createDogsRouter(deps: typeof dogDeps) {
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.reorderDogPhotos(input.dogId, ctx.userId, input.photoIds)),
       ),
+
+    generateBio: protectedProcedure.input(generateDogBioSchema).mutation(async ({ ctx, input }) => {
+      const limiter = await getBioRateLimiter();
+      const { success } = await limiter.limit(ctx.userId);
+      if (!success) {
+        throw new (await import('@trpc/server')).TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: 'Hai raggiunto il limite giornaliero di generazione bio. Riprova domani.',
+        });
+      }
+
+      const result = unwrapResult(await deps.generateDogBio(input));
+      trackEvent('dog_bio_generated', ctx.userId, {
+        breed: input.breed,
+        size: input.size,
+      });
+      return result;
+    }),
   });
 }

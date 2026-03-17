@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 
 interface MatchCardProps {
@@ -11,6 +11,10 @@ interface MatchCardProps {
   status?: 'nuovo' | 'in_chat' | 'incontrato';
   /** Name of the user's own dog for this match (shown when user has multiple dogs) */
   myDogName?: string;
+  /** Top compatibility reason label */
+  topReason?: string;
+  /** Callback when compatibility score is tapped */
+  onCompatibilityTap?: () => void;
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -27,6 +31,8 @@ export const MatchCard = memo(function MatchCard({
   compatibilityScore,
   status,
   myDogName,
+  topReason,
+  onCompatibilityTap,
 }: MatchCardProps) {
   const statusInfo = status ? STATUS_LABELS[status] : null;
 
@@ -48,9 +54,12 @@ export const MatchCard = memo(function MatchCard({
         </View>
         <Text className="text-sm text-gray-500 dark:text-neutral-500">{breed}</Text>
         {compatibilityScore != null && (
-          <Text className="text-xs text-primary">
-            {Math.round(compatibilityScore * 100)}% compatibile
-          </Text>
+          <Pressable onPress={onCompatibilityTap}>
+            <Text className="text-xs text-primary">
+              {Math.round(compatibilityScore * 100)}% compatibile
+            </Text>
+            {topReason && <Text className="text-xs text-primary/70">{topReason}</Text>}
+          </Pressable>
         )}
         {myDogName && (
           <View className="mt-1 flex-row items-center">

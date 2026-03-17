@@ -1,6 +1,25 @@
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@pawmeet/i18n';
+import emailEn from '@pawmeet/i18n/locales/en/email.json' with { type: 'json' };
+import emailEs from '@pawmeet/i18n/locales/es/email.json' with { type: 'json' };
+import emailIt from '@pawmeet/i18n/locales/it/email.json' with { type: 'json' };
+import emailRo from '@pawmeet/i18n/locales/ro/email.json' with { type: 'json' };
 import { Resend } from 'resend';
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'PawMeet <noreply@pawmeet.io>';
+const PRIVACY_EMAIL = 'privacy@pawmeet.io';
+
+type EmailMessages = typeof emailIt;
+
+const emailMessages: Record<Locale, EmailMessages> = {
+  it: emailIt,
+  en: emailEn,
+  es: emailEs as EmailMessages,
+  ro: emailRo as EmailMessages,
+};
+
+function getEmailMessages(locale?: string): EmailMessages {
+  return emailMessages[isLocale(locale) ? locale : DEFAULT_LOCALE];
+}
 
 /** Lazy-initialized Resend client to avoid env-var checks at import time */
 let _resend: Resend | null = null;
@@ -45,17 +64,22 @@ export function generateOtp(): string {
 /**
  * Send an email verification OTP.
  */
-export async function sendVerificationOtp(email: string, code: string): Promise<void> {
+export async function sendVerificationOtp(
+  email: string,
+  code: string,
+  locale?: string,
+): Promise<void> {
+  const t = getEmailMessages(locale).verification;
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Il tuo codice di verifica - PawMeet',
+    subject: t.subject,
     html: `
-      <h2>Codice di verifica PawMeet</h2>
-      <p>Usa il codice qui sotto per verificare la tua email:</p>
+      <h2>${t.heading}</h2>
+      <p>${t.body}</p>
       <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 16px 0;">${code}</p>
-      <p>Il codice scade tra 5 minuti.</p>
-      <p>Se non hai creato un account, ignora questa email.</p>
+      <p>${t.expiry}</p>
+      <p>${t.ignore}</p>
     `,
   });
 }
@@ -63,24 +87,26 @@ export async function sendVerificationOtp(email: string, code: string): Promise<
 /**
  * Send a password reset OTP email.
  */
-export async function sendPasswordResetOtp(email: string, code: string): Promise<void> {
+export async function sendPasswordResetOtp(
+  email: string,
+  code: string,
+  locale?: string,
+): Promise<void> {
+  const t = getEmailMessages(locale).passwordReset;
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Codice di reset password - PawMeet',
+    subject: t.subject,
     html: `
-      <h2>Reset password PawMeet</h2>
-      <p>Usa il codice qui sotto per reimpostare la tua password:</p>
+      <h2>${t.heading}</h2>
+      <p>${t.body}</p>
       <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 16px 0;">${code}</p>
-      <p>Il codice scade tra 5 minuti.</p>
-      <p>Se non hai richiesto il reset, ignora questa email.</p>
+      <p>${t.expiry}</p>
+      <p>${t.ignore}</p>
     `,
   });
 }
 
-/**
- * Send account deletion confirmation email (GDPR Art. 17 acknowledgment).
- */
 /**
  * GDPR export ready — download link email.
  */
@@ -88,20 +114,22 @@ export async function sendGdprExportReady(
   email: string,
   displayName: string,
   downloadUrl: string,
+  locale?: string,
 ): Promise<void> {
+  const t = getEmailMessages(locale).gdprExportReady;
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Il tuo export dati è pronto - PawMeet',
+    subject: t.subject,
     html: `
-      <h2>Ciao ${displayName},</h2>
-      <p>Il tuo export dati GDPR è pronto per il download.</p>
+      <h2>${t.greeting.replace('{displayName}', displayName)}</h2>
+      <p>${t.body}</p>
       <p style="text-align: center; padding: 16px 0;">
-        <a href="${downloadUrl}" style="background-color: #065F46; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Scarica i tuoi dati</a>
+        <a href="${downloadUrl}" style="background-color: #065F46; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">${t.cta}</a>
       </p>
-      <p><strong>Importante:</strong> il link scade tra 48 ore.</p>
-      <p>L'export contiene tutte le informazioni personali associate al tuo account, come previsto dal GDPR (Art. 15 e Art. 20).</p>
-      <p>Se non hai richiesto questo export, contattaci a <a href="mailto:privacy@pawmeet.io">privacy@pawmeet.io</a>.</p>
+      <p><strong>${t.expiry}</strong></p>
+      <p>${t.legal}</p>
+      <p>${t.notRequested} <a href="mailto:${PRIVACY_EMAIL}">${PRIVACY_EMAIL}</a>.</p>
     `,
   });
 }
@@ -109,15 +137,20 @@ export async function sendGdprExportReady(
 /**
  * GDPR export failed — notification email.
  */
-export async function sendGdprExportFailed(email: string, displayName: string): Promise<void> {
+export async function sendGdprExportFailed(
+  email: string,
+  displayName: string,
+  locale?: string,
+): Promise<void> {
+  const t = getEmailMessages(locale).gdprExportFailed;
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Errore nell'export dati - PawMeet",
+    subject: t.subject,
     html: `
-      <h2>Ciao ${displayName},</h2>
-      <p>Purtroppo si è verificato un errore durante la generazione del tuo export dati.</p>
-      <p>Puoi riprovare dalla sezione Impostazioni dell'app. Se il problema persiste, contattaci a <a href="mailto:privacy@pawmeet.io">privacy@pawmeet.io</a>.</p>
+      <h2>${t.greeting.replace('{displayName}', displayName)}</h2>
+      <p>${t.body}</p>
+      <p>${t.retry} <a href="mailto:${PRIVACY_EMAIL}">${PRIVACY_EMAIL}</a>.</p>
     `,
   });
 }
@@ -128,17 +161,19 @@ export async function sendGdprExportFailed(email: string, displayName: string): 
 export async function sendAccountDeletedConfirmation(
   email: string,
   displayName: string,
+  locale?: string,
 ): Promise<void> {
+  const t = getEmailMessages(locale).accountDeleted;
   await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Il tuo account PawMeet è stato disattivato',
+    subject: t.subject,
     html: `
-      <h2>Ciao ${displayName},</h2>
-      <p>Confermiamo che il tuo account PawMeet è stato disattivato con successo.</p>
-      <p>I tuoi dati personali verranno eliminati definitivamente entro 30 giorni, come previsto dal GDPR (Art. 17).</p>
-      <p>Se cambi idea, puoi contattarci entro 30 giorni all'indirizzo <a href="mailto:privacy@pawmeet.io">privacy@pawmeet.io</a> per richiedere il ripristino.</p>
-      <p>Grazie per aver fatto parte della community PawMeet.</p>
+      <h2>${t.greeting.replace('{displayName}', displayName)}</h2>
+      <p>${t.body}</p>
+      <p>${t.retention}</p>
+      <p>${t.undo} <a href="mailto:${PRIVACY_EMAIL}">${PRIVACY_EMAIL}</a> ${t.undoSuffix}</p>
+      <p>${t.farewell}</p>
     `,
   });
 }

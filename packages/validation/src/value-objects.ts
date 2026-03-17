@@ -8,7 +8,7 @@ import { z } from 'zod';
  */
 export const emailSchema = z
   .string()
-  .email('Email non valida')
+  .email('email_invalid')
   .max(255)
   .transform((v) => v.toLowerCase())
   .brand<'Email'>();
@@ -31,8 +31,8 @@ export function safeParseEmail(raw: string) {
  */
 export const coordinatesSchema = z
   .object({
-    latitude: z.number().min(-90, 'Latitudine fuori range').max(90, 'Latitudine fuori range'),
-    longitude: z.number().min(-180, 'Longitudine fuori range').max(180, 'Longitudine fuori range'),
+    latitude: z.number().min(-90, 'latitude_out_of_range').max(90, 'latitude_out_of_range'),
+    longitude: z.number().min(-180, 'longitude_out_of_range').max(180, 'longitude_out_of_range'),
   })
   .brand<'Coordinates'>();
 
@@ -53,8 +53,8 @@ export function safeParseCoordinates(lat: number, lon: number) {
  */
 export const compatibilityScoreSchema = z
   .number()
-  .min(0, 'Il punteggio deve essere >= 0')
-  .max(1, 'Il punteggio deve essere <= 1')
+  .min(0, 'score_min_zero')
+  .max(1, 'score_max_one')
   .brand<'CompatibilityScore'>();
 
 export type CompatibilityScore = z.output<typeof compatibilityScoreSchema>;
@@ -83,7 +83,7 @@ export const matchWeightsSchema = z
       const sum = w.size + w.energy + w.behavior + w.walk + w.distance + w.leash;
       return Math.abs(sum - 1) <= 0.001;
     },
-    { message: 'I pesi devono sommare a 1' },
+    { message: 'weights_must_sum_to_one' },
   )
   .brand<'MatchWeights'>();
 

@@ -1,0 +1,20 @@
+{
+  "password_min_length": "At least 8 characters",
+  "password_uppercase_required": "At least one uppercase letter",
+  "password_digit_required": "At least one digit",
+  "email_invalid": "Invalid email address",
+  "date_of_birth_required": "Date of birth is required",
+  "date_of_birth_future": "Date of birth cannot be in the future",
+  "date_of_birth_min_age": "You must be at least {minAge} years old to use PawMeet",
+  "social_nonce_required": "Nonce required for Google login",
+  "otp_format": "8-digit code",
+  "time_format": "Format HH:MM",
+  "delete_account_password_required": "Password required to confirm deletion",
+  "reactivate_account_password_required": "Password required to reactivate account",
+  "latitude_out_of_range": "Latitude out of range",
+  "longitude_out_of_range": "Longitude out of range",
+  "score_min_zero": "Score must be >= 0",
+  "score_max_one": "Score must be <= 1",
+  "weights_must_sum_to_one": "Weights must sum to 1",
+  "slug_format": "Only lowercase letters, numbers and hyphens"
+}

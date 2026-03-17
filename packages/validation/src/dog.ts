@@ -69,7 +69,22 @@ export const photoReorderSchema = z.object({
   photoIds: z.array(z.string().uuid()).min(1).max(MAX_PHOTOS_PER_DOG),
 });
 
+export const generateDogBioSchema = z.object({
+  name: z.string().min(2).max(50),
+  breed: z.string().min(1).max(100),
+  breedSecondary: z.string().max(100).optional(),
+  size: dogSizeEnum,
+  gender: genderEnum,
+  energyLevel: energyLevelEnum,
+  behaviorWithDogs: behaviorWithDogsEnum,
+  behaviorWithPeople: behaviorWithPeopleEnum,
+  leashBehavior: leashBehaviorEnum,
+  walkPrefTime: z.array(walkTimeEnum).min(1),
+  walkPrefTerrain: z.array(walkTerrainEnum).min(1),
+});
+
 export type CreateDogInput = z.infer<typeof createDogSchema>;
 export type UpdateDogInput = z.infer<typeof updateDogSchema>;
+export type GenerateDogBioInput = z.infer<typeof generateDogBioSchema>;
 export type BreedsSearchInput = z.infer<typeof breedsSearchSchema>;
 export type PhotoReorderInput = z.infer<typeof photoReorderSchema>;

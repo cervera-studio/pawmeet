@@ -35,10 +35,7 @@ export const matches = pgTable(
     ),
     // Prevent duplicate matches: normalize pair as (LEAST, GREATEST) to catch both orderings
     unique('uq_matches_dog_pair').on(table.dogAId, table.dogBId),
-    check(
-      'matches_dog_pair_ordered',
-      sql`${table.dogAId} < ${table.dogBId}`,
-    ),
+    check('matches_dog_pair_ordered', sql`${table.dogAId} < ${table.dogBId}`),
   ],
 );
 

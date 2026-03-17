@@ -24,6 +24,7 @@
     "@hono/zod-validator": "^0.7.0",
     "@neondatabase/serverless": "^1.0.0",
     "@pawmeet/config": "workspace:*",
+    "@pawmeet/i18n": "workspace:*",
     "@pawmeet/db": "workspace:*",
     "@pawmeet/types": "workspace:*",
     "@pawmeet/utils": "workspace:*",

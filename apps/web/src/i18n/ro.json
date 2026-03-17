@@ -1,0 +1,165 @@
+{
+  "nav": {
+    "home": "Acasă",
+    "about": "Despre noi",
+    "blog": "Blog",
+    "contact": "Contact",
+    "waitlist": "Lista de așteptare",
+    "openMenu": "Deschide meniu",
+    "closeMenu": "Închide meniu",
+    "changeLanguage": "Schimbă limba",
+    "changeTheme": "Schimbă tema",
+    "skipToContent": "Sari la conținutul principal",
+    "langLabel": "RO"
+  },
+  "hero": {
+    "eyebrow": "Lansare 2027",
+    "headlinePart1": "Găsește companionul",
+    "headlinePart2": "de plimbare",
+    "headlineHighlight": "perfect",
+    "subtitle": "Conectează-te cu alți proprietari de câini din zona ta. Organizează plimbări și transformă fiecare ieșire într-o aventură.",
+    "ctaPrimary": "Înscrie-te pe lista de așteptare",
+    "ctaSecondary": "Află mai multe",
+    "ctaHref": "/ro/waitlist",
+    "ctaSecondaryHref": "#cum-functioneaza"
+  },
+  "features": {
+    "heading": "Tot ce ai nevoie",
+    "description": "Funcționalități gândite pentru a face din fiecare plimbare o experiență mai bună.",
+    "comingSoonLabel": "În curând",
+    "items": {
+      "smartMatch": {
+        "title": "Potrivire inteligentă",
+        "description": "Algoritmul nostru găsește câini compatibili după mărime, energie și temperament. Plimbări fără stres."
+      },
+      "interactiveMap": {
+        "title": "Hartă interactivă",
+        "description": "Vizualizează trasee și puncte de întâlnire din zona ta. Găsește cele mai bune parcuri și poteci pentru câini."
+      },
+      "secureChat": {
+        "title": "Chat securizat",
+        "description": "Comunică cu alți proprietari, împărtășește sfaturi și organizează plimbări spontane în cartierul tău."
+      },
+      "detailedProfiles": {
+        "title": "Profile detaliate",
+        "description": "Fiecare câine are un profil cu fotografii, preferințe și istoric. Cunoaște companionii de plimbare înainte de a-i întâlni."
+      },
+      "sharedCalendar": {
+        "title": "Calendar partajat",
+        "description": "Planifică plimbările din timp și primește notificări. Nu rata niciodată o întâlnire cu prietenii tăi."
+      },
+      "routeTracking": {
+        "title": "Urmărire trasee",
+        "description": "Înregistrează traseele preferate, distanța și timpul. Ține evidența aventurilor câinelui tău."
+      }
+    }
+  },
+  "steps": {
+    "heading": "Cum funcționează",
+    "description": "Trei pași simpli pentru a începe să te plimbi în companie.",
+    "stepLabel": "Pasul",
+    "sectionId": "cum-functioneaza",
+    "items": {
+      "createProfile": {
+        "title": "Creează profilul câinelui tău",
+        "description": "Înregistrează-te și adaugă prietenul tău cu patru labe cu fotografii, rasă, mărime și preferințele de socializare."
+      },
+      "findCompanions": {
+        "title": "Găsește potrivirea perfectă",
+        "description": "Explorează câinii compatibili din zona ta. Algoritmul nostru analizează mărimea, energia și comportamentul."
+      },
+      "walkTogether": {
+        "title": "Plimbați-vă împreună",
+        "description": "Cunoaște noi prieteni — atât bipezi cât și patrupezi — împărtășește trasee și fă din fiecare ieșire un moment special."
+      }
+    }
+  },
+  "downloadCta": {
+    "heading": "Pregătit de plimbare?",
+    "description": "Descarcă aplicația și alătură-te miilor de proprietari de câini care și-au găsit deja companionii de plimbare.",
+    "appStoreLabel": "Descarcă de pe",
+    "googlePlayLabel": "Disponibil pe",
+    "comingSoon": "Disponibil în curând pe iOS și Android."
+  },
+  "waitlist": {
+    "heading": "Înscrie-te pe lista de așteptare",
+    "description": "Fii printre primii care încearcă PawMeet. Lasă emailul tău și te vom anunța la lansare.",
+    "emailLabel": "Adresa ta de email",
+    "emailPlaceholder": "Emailul tău",
+    "submitButton": "Înscrie-mă",
+    "loadingButton": "Se înscrie...",
+    "successButton": "Înscris!",
+    "successMessage": "Verifică emailul pentru confirmare.",
+    "errorMessage": "Ceva nu a funcționat. Încearcă din nou în curând.",
+    "noSpam": "Fără spam, promitem. Doar actualizări importante.",
+    "pageHeading": "Alătură-te listei de așteptare",
+    "pageDescription": "PawMeet vine! Înscrie-te pentru a fi printre primii care descoperă aplicația și primesc acces anticipat exclusiv.",
+    "statsSubscribers": "Înscriși pe lista de așteptare",
+    "statsCities": "Orașe acoperite",
+    "statsLaunch": "Lansare prevăzută"
+  },
+  "contact": {
+    "heading": "Contactează-ne",
+    "description": "Ai întrebări, sugestii sau vrei să colaborezi cu noi? Scrie-ne!",
+    "nameLabel": "Nume",
+    "namePlaceholder": "Numele tău",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Emailul tău",
+    "messageLabel": "Mesaj",
+    "messagePlaceholder": "Scrie mesajul tău...",
+    "submitButton": "Trimite mesajul",
+    "loadingButton": "Se trimite...",
+    "successHeading": "Mesaj trimis!",
+    "successMessage": "Mulțumim că ne-ai scris. Îți vom răspunde cât mai curând.",
+    "errorMessage": "Ceva nu a funcționat. Încearcă din nou în curând.",
+    "directEmail": "Ne poți scrie și direct la"
+  },
+  "footer": {
+    "tagline": "Comunitatea pentru cei care iubesc să se plimbe cu câinele lor. Găsește companioni de plimbare compatibili din zona ta.",
+    "exploreHeading": "Explorează",
+    "legalHeading": "Legal",
+    "copyright": "PawMeet S.r.l.",
+    "vat": "P.IVA 12345678901",
+    "termsLabel": "Termeni și Condiții"
+  },
+  "meta": {
+    "homeTitle": "Plimbă-te împreună cu câinele tău",
+    "homeDescription": "PawMeet - Găsește companionul de plimbare perfect pentru câinele tău. Conectează-te cu alți proprietari din zona ta.",
+    "aboutTitle": "Despre noi",
+    "aboutDescription": "Descoperă echipa din spatele PawMeet și misiunea noastră.",
+    "blogTitle": "Blog",
+    "blogDescription": "Sfaturi, ghiduri și povești din lumea PawMeet.",
+    "contactTitle": "Contact",
+    "contactDescription": "Contactează-ne pentru orice întrebare sau sugestie despre PawMeet.",
+    "waitlistTitle": "Lista de așteptare",
+    "waitlistDescription": "Alătură-te listei de așteptare PawMeet și fii printre primii care încearcă aplicația.",
+    "privacyTitle": "Politica de Confidențialitate",
+    "termsTitle": "Termeni și Condiții de Utilizare",
+    "cookieTitle": "Politica de Cookie-uri"
+  },
+  "about": {
+    "heading": "Despre noi",
+    "intro": "Suntem un grup de iubitori de câini care crede în puterea plimbărilor împreună.",
+    "missionHeading": "Misiunea noastră",
+    "missionText": "PawMeet s-a născut din ideea că plimbarea cu câinele tău poate fi mult mai mult decât o simplă rutină zilnică. Vrem să creăm conexiuni reale între oameni prin dragostea comună pentru prietenii noștri cu patru labe.",
+    "whyHeading": "De ce PawMeet",
+    "whyText": "În fiecare zi milioane de proprietari de câini ies la plimbare. Adesea aceleași trasee, aceleași ore, aceleași obiceiuri. PawMeet transformă această rutină într-o oportunitate de a socializa, explora trasee noi și a lăsa câinii noștri să se distreze cu noi compani de joacă.",
+    "teamHeading": "Echipa",
+    "teamText": "Suntem o echipă mică de dezvoltatori, designeri și, mai presus de toate, proprietari de câini. Fiecare funcționalitate pe care o creăm se naște dintr-o nevoie reală pe care am experimentat-o personal."
+  },
+  "blog": {
+    "heading": "Blog",
+    "description": "Sfaturi, ghiduri și povești pentru tine și prietenul tău cu patru labe.",
+    "emptyHeading": "Pregătim primele articole",
+    "emptyText": "În curând vei găsi ghiduri despre socializarea câinilor, cele mai bune parcuri pentru câini și sfaturi pentru plimbări sigure. Rămâi pe fază!",
+    "emptyCta": "Înscrie-te pe lista de așteptare"
+  },
+  "privacy": {
+    "heading": "Politica de Confidențialitate",
+    "lastUpdated": "Ultima actualizare: 11 martie 2026",
+    "intro": "Această politică descrie modul în care <strong>PawMeet</strong> (aplicația mobilă și site-ul web pawmeet.io) colectează, procesează și protejează datele personale ale utilizatorilor săi, conform articolelor 13 și 14 din Regulamentul (UE) 2016/679 (GDPR) și D.Lgs. 196/2003.",
+    "footer": "Politică conformă cu GDPR, D.Lgs. 196/2003 și indicațiile Autorității pentru protecția datelor personale."
+  },
+  "terms": {},
+  "cookie": {}
+}

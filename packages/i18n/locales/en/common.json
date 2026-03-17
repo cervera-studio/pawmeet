@@ -1,0 +1,18 @@
+{
+  "loading": "Loading...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "confirm": "Confirm",
+  "search": "Search...",
+  "yes": "Yes",
+  "no": "No",
+  "back": "Back",
+  "next": "Next",
+  "retry": "Retry",
+  "noResults": "No results found.",
+  "noData": "No data available",
+  "unknown": "Unknown",
+  "error": "Error",
+  "success": "Operation completed"
+}

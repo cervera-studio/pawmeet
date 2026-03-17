@@ -10,7 +10,7 @@ export const createOrganizationSchema = z.object({
     .string()
     .min(1)
     .max(100)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug deve contenere solo lettere minuscole e trattini'),
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'slug_format'),
   type: organizationTypeEnum,
   description: z.string().max(2000).optional(),
   logoUrl: z.string().url().max(500).optional(),

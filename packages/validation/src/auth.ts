@@ -13,19 +13,19 @@ export type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER];
 /** Reusable strong-password validator (min 8 chars, 1 uppercase, 1 digit) */
 export const passwordSchema = z
   .string()
-  .min(8, 'Minimo 8 caratteri')
-  .regex(/[A-Z]/, 'Almeno una maiuscola')
-  .regex(/[0-9]/, 'Almeno un numero');
+  .min(8, 'password_min_length')
+  .regex(/[A-Z]/, 'password_uppercase_required')
+  .regex(/[0-9]/, 'password_digit_required');
 
 export const dateOfBirthSchema = z.coerce
-  .date({ error: 'Data di nascita obbligatoria' })
-  .refine((d) => d <= new Date(), { message: 'La data di nascita non può essere nel futuro' })
+  .date({ error: 'date_of_birth_required' })
+  .refine((d) => d <= new Date(), { message: 'date_of_birth_future' })
   .refine((d) => calculateAge(d) >= MIN_USER_AGE, {
-    message: `Devi avere almeno ${MIN_USER_AGE} anni per usare PawMeet`,
+    message: 'date_of_birth_min_age',
   });
 
 export const registerSchema = z.object({
-  email: z.string().email('Email non valida'),
+  email: z.string().email('email_invalid'),
   password: passwordSchema,
   displayName: z.string().min(2).max(50),
   dateOfBirth: dateOfBirthSchema,
@@ -52,7 +52,7 @@ export const socialLoginSchema = z
     displayName: z.string().min(2).max(50).optional(),
   })
   .refine((data) => data.provider !== 'google' || data.nonce, {
-    message: 'Nonce obbligatorio per Google login',
+    message: 'social_nonce_required',
     path: ['nonce'],
   });
 
@@ -65,7 +65,7 @@ export const verifyEmailOtpSchema = z.object({
   code: z
     .string()
     .length(8)
-    .regex(/^\d{8}$/, 'Codice a 8 cifre'),
+    .regex(/^\d{8}$/, 'otp_format'),
 });
 
 export const resendVerificationSchema = z.object({
@@ -77,7 +77,7 @@ export const resetPasswordOtpSchema = z.object({
   code: z
     .string()
     .length(8)
-    .regex(/^\d{8}$/, 'Codice a 8 cifre'),
+    .regex(/^\d{8}$/, 'otp_format'),
   password: passwordSchema,
 });
 

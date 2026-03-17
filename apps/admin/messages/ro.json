@@ -1,0 +1,846 @@
+{
+  "common": {
+    "loading": "Se incarca...",
+    "noResults": "Niciun rezultat gasit.",
+    "noData": "Nu exista date disponibile",
+    "save": "Salveaza",
+    "cancel": "Anuleaza",
+    "details": "Detalii",
+    "search": "Cauta...",
+    "unknown": "Necunoscut",
+    "saving": "Se salveaza...",
+    "saveChanges": "Salveaza modificarile",
+    "yes": "Da",
+    "no": "Nu",
+    "delete": "Sterge",
+    "active": "Activ",
+    "inactive": "Inactiv",
+    "never": "Niciodata"
+  },
+  "error": {
+    "title": "Ceva nu a functionat corect",
+    "defaultMessage": "Eroare la incarcarea paginii",
+    "retry": "Reincearca"
+  },
+  "metadata": {
+    "description": "Panoul de administrare PawMeet"
+  },
+  "auth": {
+    "title": "PawMeet Admin",
+    "subtitle": "Conecteaza-te la panoul de administrare",
+    "emailLabel": "Email",
+    "passwordLabel": "Parola",
+    "loginButton": "Conecteaza-te",
+    "loggingIn": "Conectare in curs...",
+    "logout": "Deconecteaza-te",
+    "errors": {
+      "invalidCredentials": "Email sau parola invalide",
+      "accountDisabled": "Cont dezactivat. Contacteaza un administrator.",
+      "serverError": "Eroare de server. Incearca din nou mai tarziu.",
+      "generic": "Eroare la autentificare"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "users": "Utilizatori",
+    "moderation": "Moderare",
+    "moderationFeed": "Feed",
+    "moderationStories": "Povesti",
+    "moderationPhotos": "Fotografii",
+    "moderationContent": "Continut",
+    "moderationReports": "Raportari",
+    "dogs": "Caini",
+    "breeds": "Rase",
+    "events": "Evenimente",
+    "organizations": "Organizatii",
+    "safety": "Siguranta",
+    "safetySos": "Alarme SOS",
+    "safetyContacts": "Contacte de urgenta",
+    "accountDeletions": "Stergeri",
+    "settings": "Setari",
+    "settingsGeneral": "Generale",
+    "settingsAdmins": "Utilizatori Admin",
+    "notifications": "Notificari",
+    "auditLog": "Audit Log",
+    "aiMatching": "AI Matching",
+    "aiMatchingAbTests": "A/B Test",
+    "aiMatchingPerformance": "Performance",
+    "aiMatchingFlags": "Feature Flag",
+    "challenges": "Provocari",
+    "fitness": "Fitness"
+  },
+  "header": {
+    "searchPlaceholder": "Cauta utilizatori, caini, raportari...",
+    "lightTheme": "Tema deschisa",
+    "darkTheme": "Tema inchisa",
+    "notifications": "Notificari"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Prezentare generala a metricilor principale",
+    "totalUsers": "Utilizatori Totali",
+    "registeredDogs": "Caini Inregistrati",
+    "activeMatches": "Match-uri Active",
+    "pendingPhotos": "Fotografii in Asteptare",
+    "pendingReports": "Raportari in Asteptare",
+    "totalMatches": "Match-uri Totale",
+    "dauToday": "DAU (Astazi)",
+    "registrationsToday": "Inregistrari Astazi",
+    "matchesToday": "Match-uri Astazi",
+    "eventsLast24h": "Evenimente Ultimele 24h",
+    "totalEvents": "Evenimente Totale",
+    "analyticsRealtime": "Analytics (Real-time)",
+    "chartRegistrations": "Inregistrari Utilizatori (ultimele 30 de zile)",
+    "chartDailyMatches": "Match-uri Zilnice (ultimele 30 de zile)",
+    "chartDau": "DAU — Utilizatori Activi Zilnic (ultimele 30 de zile)",
+    "registrationsLabel": "Inregistrari",
+    "matchLabel": "Match-uri",
+    "dauLabel": "DAU"
+  },
+  "table": {
+    "totalResults": "{total} rezultate totale",
+    "noResults": "Niciun rezultat",
+    "previous": "Anterioara",
+    "next": "Urmatoarea",
+    "pageOf": "Pagina {current} din {total}"
+  },
+  "status": {
+    "user": {
+      "active": "Activ",
+      "suspended": "Suspendat",
+      "banned": "Banat"
+    },
+    "report": {
+      "pending": "In asteptare",
+      "resolved": "Rezolvat",
+      "dismissed": "Arhivat"
+    }
+  },
+  "users": {
+    "title": "Utilizatori",
+    "subtitle": "Gestioneaza utilizatorii platformei",
+    "searchPlaceholder": "Cauta utilizatori...",
+    "columns": {
+      "name": "Nume",
+      "email": "Email",
+      "status": "Stare",
+      "dogs": "Caini",
+      "followers": "Urmaritori",
+      "following": "Urmariti",
+      "registeredAt": "Inregistrat la"
+    },
+    "detail": {
+      "provider": "Furnizor",
+      "lastLogin": "Ultima conectare",
+      "reportsReceived": "Raportari primite",
+      "totalMatches": "Match-uri totale",
+      "dogsCount": "Caini ({count})",
+      "noDogs": "Niciun caine inregistrat",
+      "breed": "Rasa",
+      "quickActions": "Actiuni rapide",
+      "information": "Informatii",
+      "name": "Nume",
+      "email": "Email",
+      "registeredAt": "Inregistrat la",
+      "followers": "Urmaritori",
+      "following": "Urmariti",
+      "viewReports": "Vezi raportarile",
+      "viewPhotos": "Vezi fotografiile"
+    }
+  },
+  "dogs": {
+    "title": "Caini",
+    "subtitle": "Toti cainii inregistrati pe platforma",
+    "searchPlaceholder": "Cauta dupa nume, rasa sau proprietar...",
+    "columns": {
+      "name": "Nume",
+      "breed": "Rasa",
+      "owner": "Proprietar",
+      "size": "Marime",
+      "status": "Stare",
+      "addedAt": "Adaugat la"
+    },
+    "sizes": {
+      "small": "Mic",
+      "medium": "Mediu",
+      "large": "Mare"
+    }
+  },
+  "settings": {
+    "title": "Setari",
+    "subtitle": "Configureaza panoul de administrare",
+    "saved": "Setari salvate",
+    "saveError": "Eroare la salvarea setarilor",
+    "notImplemented": "Functionalitate neimplementata inca",
+    "general": {
+      "title": "Setari Generale",
+      "subtitle": "Configureaza setarile de baza ale platformei",
+      "appName": "Numele Aplicatiei",
+      "supportEmail": "Email Suport"
+    },
+    "moderation": {
+      "title": "Moderare",
+      "subtitle": "Configureaza regulile de moderare automata",
+      "photoThreshold": "Prag auto-aprobare fotografii (incredere %)",
+      "maxReports": "Nr. maxim de raportari inainte de suspendare"
+    },
+    "matching": {
+      "title": "Configurare Matching",
+      "description": "Configureaza ponderile utilizate de algoritmul de matching",
+      "size": "Pondere marime",
+      "energy": "Pondere energie",
+      "behavior": "Pondere comportament",
+      "walk": "Pondere preferinte plimbare",
+      "distance": "Pondere distanta",
+      "leash": "Pondere lesa",
+      "sum": "Suma totala",
+      "validationError": "Ponderile trebuie sa insumeze 1.0"
+    },
+    "dangerZone": {
+      "title": "Zona Periculoasa",
+      "subtitle": "Actiuni ireversibile",
+      "clearCache": "Goleste cache-ul",
+      "clearCacheDesc": "Invalideaza tot cache-ul sistemului",
+      "clearButton": "Goleste"
+    }
+  },
+  "reports": {
+    "title": "Raportari",
+    "subtitle": "Gestioneaza raportarile utilizatorilor",
+    "tabs": {
+      "all": "Toate",
+      "pending": "In asteptare",
+      "resolved": "Rezolvate",
+      "dismissed": "Arhivate"
+    },
+    "reasons": {
+      "inappropriate_behavior": "Comportament inadecvat",
+      "fake_profile": "Profil fals",
+      "harassment": "Hartuire",
+      "spam": "Spam",
+      "other": "Altele"
+    },
+    "actions": {
+      "manage": "Gestioneaza",
+      "processing": "Se proceseaza...",
+      "dismiss": "Arhiveaza",
+      "warn": "Avertizeaza utilizatorul",
+      "suspend": "Suspenda utilizatorul",
+      "ban": "Baneaza utilizatorul",
+      "completed": "Actiune finalizata",
+      "error": "Eroare la executarea actiunii"
+    },
+    "columns": {
+      "reporter": "Raportor",
+      "reported": "Raportat",
+      "reason": "Motiv",
+      "status": "Stare",
+      "action": "Actiune",
+      "date": "Data"
+    }
+  },
+  "content": {
+    "title": "Moderare continut",
+    "subtitle": "Gestioneaza raportarile continutului din feed",
+    "noPending": "Nicio raportare in asteptare",
+    "reasons": {
+      "inappropriate": "Continut inadecvat",
+      "spam": "Spam",
+      "harassment": "Hartuire",
+      "violence": "Violenta",
+      "other": "Altele"
+    },
+    "types": {
+      "post": "Postare",
+      "comment": "Comentariu",
+      "story": "Poveste"
+    },
+    "contentId": "ID Continut",
+    "reporter": "Raportor",
+    "dismiss": "Arhiveaza",
+    "review": "Revizuieste",
+    "dismissed": "Raportare arhivata",
+    "reviewed": "Raportare revizuita",
+    "loadMore": "Incarca mai multe"
+  },
+  "photos": {
+    "title": "Moderare Fotografii",
+    "subtitle": "{count} fotografii in asteptarea revizuirii",
+    "approveAll": "Aproba toate",
+    "noPending": "Nicio fotografie in asteptarea moderarii",
+    "photoOf": "Fotografia lui {name}",
+    "photo": "Fotografie",
+    "types": {
+      "profile": "Profil",
+      "dog": "Caine"
+    },
+    "actions": {
+      "approve": "Aproba",
+      "reject": "Respinge"
+    },
+    "toast": {
+      "approved": "Fotografie aprobata",
+      "approveError": "Eroare la aprobarea fotografiei",
+      "rejected": "Fotografie respinsa",
+      "rejectError": "Eroare la respingerea fotografiei",
+      "allApproved": "Toate fotografiile aprobate",
+      "allApproveError": "Eroare la aprobarea fotografiilor"
+    }
+  },
+  "stories": {
+    "title": "Gestionare povesti",
+    "subtitle": "Vizualizeaza si modereaza povestile utilizatorilor",
+    "expired": "Expirata",
+    "types": {
+      "image": "Imagine",
+      "video": "Video"
+    },
+    "noStories": "Nicio poveste gasita",
+    "unknownUser": "Utilizator necunoscut",
+    "deleteAction": "Sterge",
+    "toast": {
+      "deleted": "Poveste stearsa",
+      "deleteError": "Eroare la stergerea povestii"
+    },
+    "count": "{count, plural, one {# poveste} other {# povesti}}",
+    "views": "vizualizari"
+  },
+  "feed": {
+    "title": "Gestionare feed",
+    "subtitle": "Modereaza postarile din feed si monitorizeaza statisticile",
+    "statuses": {
+      "pending": "In asteptare",
+      "approved": "Aprobat",
+      "rejected": "Respins"
+    },
+    "tabs": {
+      "all": "Toate",
+      "pending": "In asteptare",
+      "approved": "Aprobate",
+      "rejected": "Respinse"
+    },
+    "stats": {
+      "totalPosts": "Postari totale",
+      "pending": "In asteptare",
+      "rejected": "Respinse",
+      "stories": "Povesti",
+      "reports": "Raportari"
+    },
+    "searchPlaceholder": "Cauta dupa autor...",
+    "resultCount": "{count, plural, one {# rezultat} other {# rezultate}}",
+    "noPostsFound": "Nicio postare gasita",
+    "noCaption": "Fara descriere",
+    "unknownUser": "Utilizator necunoscut",
+    "deleted": "Sters",
+    "approve": "Aproba",
+    "reject": "Respinge",
+    "postApproved": "Postare aprobata",
+    "postRejected": "Postare respinsa",
+    "reportCount": "{count, plural, one {# raportare} other {# raportari}}"
+  },
+  "organizations": {
+    "title": "Organizatii",
+    "subtitle": "Gestionarea organizatiilor verificate si a membrilor",
+    "searchPlaceholder": "Cauta dupa nume sau slug...",
+    "allTypes": "Toate tipurile",
+    "types": {
+      "pawmeet_team": "PawMeet Team",
+      "association": "Asociatie",
+      "educator": "Educator",
+      "brand": "Brand"
+    },
+    "columns": {
+      "name": "Nume",
+      "slug": "Slug",
+      "type": "Tip",
+      "status": "Stare",
+      "members": "Membri",
+      "createdAt": "Creata la"
+    },
+    "verified": "Verificata",
+    "notVerified": "Neverificata"
+  },
+  "events": {
+    "title": "Evenimente",
+    "subtitle": "Gestionarea evenimentelor de grup pe platforma",
+    "searchPlaceholder": "Cauta dupa titlu...",
+    "allStatuses": "Toate starile",
+    "allCategories": "Toate categoriile",
+    "categories": {
+      "walk": "Plimbare",
+      "meetup": "Intalnire",
+      "training": "Antrenament"
+    },
+    "statuses": {
+      "scheduled": "Programat",
+      "in_progress": "In desfasurare",
+      "completed": "Finalizat",
+      "cancelled": "Anulat",
+      "template": "Sablon"
+    },
+    "visibility": {
+      "public": "Public",
+      "friends_only": "Doar prieteni",
+      "invite_only": "Doar pe invitatie"
+    },
+    "columns": {
+      "title": "Titlu",
+      "category": "Categorie",
+      "status": "Stare",
+      "visibility": "Vizibilitate",
+      "date": "Data",
+      "creator": "Creator",
+      "participants": "Participanti",
+      "pending": "in asteptare",
+      "recurring": "Recurent",
+      "approval": "Aprobare"
+    }
+  },
+  "safety": {
+    "sos": {
+      "title": "Alarme SOS si Check-in",
+      "subtitle": "Jurnal alarme SOS, alerte automate si check-in de siguranta",
+      "autoAlert": "Alerta automata",
+      "allTypes": "Toate tipurile",
+      "types": {
+        "sos": "SOS",
+        "auto_alert": "Alerte automate",
+        "check_in": "Check-in"
+      },
+      "columns": {
+        "type": "Tip",
+        "user": "Utilizator",
+        "walk": "Plimbare",
+        "walkStatus": "Stare plimbare",
+        "location": "Locatie",
+        "date": "Data"
+      },
+      "walkStatuses": {
+        "pending": "In asteptare",
+        "accepted": "Acceptata",
+        "rejected": "Respinsa",
+        "cancelled": "Anulata",
+        "completed": "Finalizata"
+      }
+    },
+    "contacts": {
+      "title": "Contacte de urgenta",
+      "subtitle": "Contacte de urgenta inregistrate de utilizatori",
+      "searchPlaceholder": "Cauta dupa numele contactului sau utilizator...",
+      "columns": {
+        "owner": "Proprietar",
+        "contactName": "Nume contact",
+        "phone": "Telefon",
+        "relationship": "Relatie",
+        "addedAt": "Adaugat la"
+      }
+    }
+  },
+  "accountDeletions": {
+    "title": "Stergeri conturi",
+    "subtitle": "Conturi in curs de stergere (perioada de gratie 30 de zile)",
+    "daysRemaining": "{days}z ramase",
+    "columns": {
+      "user": "Utilizator",
+      "registeredAt": "Inregistrat la",
+      "scheduledDeletion": "Stergere programata",
+      "timeRemaining": "Timp ramas",
+      "cancelDeletion": "Anuleaza stergerea"
+    }
+  },
+  "auditLog": {
+    "title": "Audit Log",
+    "subtitle": "Registru al tuturor actiunilor administrative",
+    "searchPlaceholder": "Cauta dupa actiune...",
+    "allResources": "Toate resursele",
+    "columns": {
+      "admin": "Admin",
+      "action": "Actiune",
+      "resource": "Resursa",
+      "resourceId": "ID Resursa",
+      "changes": "Modificari",
+      "date": "Data"
+    },
+    "viewChanges": "Vezi detalii",
+    "noChanges": "Nicio modificare inregistrata",
+    "before": "Inainte",
+    "after": "Dupa",
+    "resourceTypes": {
+      "user": "Utilizator",
+      "dog": "Caine",
+      "photo": "Fotografie",
+      "report": "Raportare",
+      "post": "Postare",
+      "story": "Poveste",
+      "event": "Eveniment",
+      "organization": "Organizatie",
+      "sponsor": "Sponsor",
+      "settings": "Setari",
+      "deletion": "Stergere"
+    }
+  },
+  "breeds": {
+    "title": "Rase",
+    "subtitle": "Gestioneaza rasele canine de pe platforma",
+    "searchPlaceholder": "Cauta dupa nume...",
+    "allGroups": "Toate grupurile",
+    "createButton": "Adauga Rasa",
+    "columns": {
+      "name": "Nume",
+      "code": "Cod",
+      "group": "Grup",
+      "sizeCategory": "Categorie marime",
+      "avgWeightKg": "Greutate medie (kg)",
+      "energy": "Energie",
+      "playfulness": "Jucausie",
+      "trainability": "Antrenabilitate",
+      "barking": "Latrat",
+      "goodWithOtherDogs": "Cu alti caini",
+      "goodWithChildren": "Cu copii",
+      "goodWithStrangers": "Cu straini",
+      "protectiveness": "Protectivitate",
+      "shedding": "Naparlire",
+      "grooming": "Ingrijire",
+      "actions": "Actiuni"
+    },
+    "scores": {
+      "title": "Scoruri comportamentale",
+      "noData": "Nu exista date"
+    },
+    "sizes": {
+      "toy": "Toy",
+      "piccola": "Mica",
+      "media": "Medie",
+      "grande": "Mare",
+      "gigante": "Gigant"
+    },
+    "actions": {
+      "edit": "Editeaza",
+      "delete": "Sterge"
+    },
+    "createDialog": {
+      "title": "Adauga Rasa",
+      "description": "Adauga o noua rasa canina pe platforma.",
+      "codePlaceholder": "ex. golden_retriever",
+      "submit": "Creeaza"
+    },
+    "editDialog": {
+      "title": "Editeaza Rasa",
+      "description": "Editeaza rasa {code}"
+    },
+    "deleteDialog": {
+      "title": "Sterge Rasa",
+      "description": "Esti sigur ca vrei sa stergi rasa {code}? Aceasta actiune nu poate fi anulata.",
+      "confirm": "Sterge"
+    }
+  },
+  "notifications": {
+    "title": "Notificari Push",
+    "subtitle": "Trimite notificari push si vizualizeaza statisticile",
+    "stats": {
+      "totalUsers": "Utilizatori Totali",
+      "usersWithToken": "Utilizatori cu Token Push",
+      "prefMatches": "Notificari Match-uri",
+      "prefMessages": "Notificari Mesaje",
+      "prefReminders": "Notificari Memento-uri",
+      "prefFeed": "Notificari Feed"
+    },
+    "broadcast": {
+      "broadcastTitle": "Broadcast",
+      "broadcastDescription": "Trimite o notificare tuturor utilizatorilor cu token push",
+      "titleLabel": "Titlu",
+      "titlePlaceholder": "Titlul notificarii",
+      "bodyLabel": "Continut",
+      "bodyPlaceholder": "Continutul notificarii",
+      "sendButton": "Trimite",
+      "confirmTitle": "Confirma broadcast",
+      "confirmDescription": "Notificarea va fi trimisa catre {count} utilizatori. Continui?",
+      "successMessage": "Notificare trimisa catre {count} utilizatori",
+      "sendError": "Eroare la trimiterea notificarii broadcast"
+    },
+    "targeted": {
+      "targetedTitle": "Tintita",
+      "targetedDescription": "Trimite o notificare catre utilizatori specifici",
+      "userIdsLabel": "ID-uri Utilizatori",
+      "userIdsPlaceholder": "Introdu ID-urile utilizatorilor, separate prin virgula sau cate unul pe linie",
+      "sendButton": "Trimite",
+      "successMessage": "Trimis catre {sentCount} utilizatori, {skippedCount} omisi",
+      "sendError": "Eroare la trimiterea notificarii tintite"
+    },
+    "common": {
+      "cancel": "Anuleaza"
+    }
+  },
+  "aiMatching": {
+    "abTests": {
+      "title": "A/B Test — AI Matching",
+      "subtitle": "Comparatie experimente ML vs matching bazat pe reguli",
+      "startedOn": "Inceput la {date}",
+      "statusRunning": "In desfasurare",
+      "statusStopped": "Oprit",
+      "groupControl": "Grup de control",
+      "groupTreatment": "Grup de tratament",
+      "totalUsers": "Utilizatori totali",
+      "metricsTitle": "Metrici comparative",
+      "metricsSubtitle": "Comparatie AI (treatment) vs Rule-Based (control)",
+      "columnMetric": "Metrica",
+      "columnControl": "Control",
+      "columnTreatment": "Treatment (AI)",
+      "columnLift": "Lift %",
+      "columnPValue": "p-value",
+      "metricMatchRate": "Rata de match",
+      "metricAcceptRate": "Rata de acceptare",
+      "metricAvgScore": "Scor mediu",
+      "metricWalkCompletion": "Finalizare plimbari",
+      "chartMatchRate": "Rata de match in timp",
+      "chartAcceptRate": "Rata de acceptare in timp",
+      "chartPlaceholder": "Grafic placeholder — Recharts in curand"
+    },
+    "performance": {
+      "title": "Performance Model AI",
+      "subtitle": "Metrici de calitate ale modelului de matching",
+      "kpiPredictions": "Predictii Totale",
+      "kpiMatches": "Match-uri Generate",
+      "kpiAccuracy": "Acuratete",
+      "kpiAvgScore": "Scor Mediu",
+      "kpiActiveModel": "Model activ",
+      "registeredModels": "Modele inregistrate",
+      "chartCalibration": "Curba de calibrare",
+      "chartWeights": "Distributia ponderilor caracteristicilor",
+      "chartTimeline": "Evolutia performantei in timp",
+      "chartPlaceholder": "Grafic placeholder — Recharts in curand"
+    },
+    "flags": {
+      "title": "Feature Flag — AI Matching",
+      "subtitle": "Gestionarea feature flag-urilor pentru sistemul de matching AI",
+      "tableTitle": "Flag-uri active",
+      "columnName": "Nume",
+      "columnDescription": "Descriere",
+      "columnType": "Tip",
+      "columnStatus": "Stare",
+      "columnSplit": "Split / Valoare",
+      "enabled": "Activ",
+      "disabled": "Inactiv",
+      "flagMlMatching": "Activeaza matching ML",
+      "flagScoringStrategy": "Strategia activa de scoring",
+      "flagAbTest": "Experiment A/B test ML matching",
+      "flagConfidenceThreshold": "Prag minim de incredere",
+      "emptyState": "Niciun feature flag configurat"
+    }
+  },
+  "adminUsers": {
+    "title": "Utilizatori Admin",
+    "subtitle": "Gestioneaza conturile de administrator si permisiunile",
+    "searchPlaceholder": "Cauta dupa nume sau email...",
+    "allRoles": "Toate rolurile",
+    "createButton": "Creeaza Admin",
+    "columns": {
+      "displayName": "Nume",
+      "email": "Email",
+      "role": "Rol",
+      "status": "Stare",
+      "lastLoginAt": "Ultima conectare",
+      "createdAt": "Creat la",
+      "actions": "Actiuni"
+    },
+    "roles": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "moderator": "Moderator",
+      "viewer": "Vizualizator"
+    },
+    "statuses": {
+      "active": "Activ",
+      "inactive": "Inactiv"
+    },
+    "actions": {
+      "editRole": "Editeaza Rolul",
+      "activate": "Activeaza",
+      "deactivate": "Dezactiveaza",
+      "resetPassword": "Reseteaza Parola"
+    },
+    "createDialog": {
+      "title": "Creeaza Utilizator Admin",
+      "description": "Adauga un nou administrator pe platforma. O parola temporara va fi trimisa prin email.",
+      "nameLabel": "Nume afisat",
+      "namePlaceholder": "Introdu numele",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Introdu adresa de email",
+      "passwordLabel": "Parola temporara",
+      "passwordPlaceholder": "Introdu parola temporara",
+      "roleLabel": "Rol",
+      "submit": "Creeaza"
+    },
+    "editRoleDialog": {
+      "title": "Editeaza Rolul",
+      "description": "Schimba rolul pentru {name}",
+      "roleLabel": "Rol Nou"
+    },
+    "resetPasswordDialog": {
+      "title": "Reseteaza Parola",
+      "description": "Seteaza o parola noua pentru {name}.",
+      "passwordLabel": "Parola Noua",
+      "passwordPlaceholder": "Introdu parola noua",
+      "confirm": "Reseteaza Parola"
+    }
+  },
+  "challenges": {
+    "title": "Gestionare Provocari",
+    "subtitle": "Creeaza si gestioneaza provocarile saptamanale pentru utilizatori",
+    "createButton": "Creeaza Provocare",
+    "columns": {
+      "type": "Tip",
+      "title": "Titlu",
+      "target": "Obiectiv",
+      "xpReward": "Recompensa XP",
+      "startsAt": "Inceput",
+      "endsAt": "Sfarsit",
+      "status": "Stare",
+      "actions": "Actiuni"
+    },
+    "types": {
+      "walk_count": "Plimbari",
+      "walk_distance_km": "Distanta (km)",
+      "new_matches": "Match-uri noi",
+      "group_events_joined": "Evenimente de grup"
+    },
+    "statuses": {
+      "active": "Activa",
+      "expired": "Expirata",
+      "upcoming": "In curand"
+    },
+    "actions": {
+      "delete": "Sterge"
+    },
+    "createDialog": {
+      "title": "Creeaza Provocare",
+      "description": "Adauga o noua provocare pentru utilizatorii platformei.",
+      "titlePlaceholder": "Introdu titlul provocarii",
+      "descriptionLabel": "Descriere",
+      "descriptionPlaceholder": "Introdu descrierea provocarii",
+      "submit": "Creeaza"
+    },
+    "deleteDialog": {
+      "title": "Sterge Provocare",
+      "description": "Esti sigur ca vrei sa stergi provocarea \"{title}\"? Aceasta actiune nu poate fi anulata.",
+      "confirm": "Sterge"
+    }
+  },
+  "fitness": {
+    "title": "Statistici Fitness",
+    "subtitle": "Prezentare generala a activitatilor de plimbare pe platforma",
+    "stats": {
+      "totalWalks": "Plimbari Totale",
+      "totalDistanceKm": "Distanta Totala",
+      "avgDistanceKm": "Distanta Medie",
+      "topWalkers": "Top 10 Plimbatori",
+      "user": "Utilizator",
+      "distanceKm": "Distanta (km)",
+      "unknownUser": "Utilizator necunoscut",
+      "noData": "Nu exista date disponibile"
+    }
+  },
+  "validation": {
+    "required": "{field} este obligatoriu",
+    "email": "Introdu o adresa de email valida",
+    "minChars": "Minim {min} caractere",
+    "maxChars": "Maxim {max} caractere",
+    "minValue": "Minim {min}",
+    "maxValue": "Maxim {max}",
+    "mustBeInteger": "Trebuie sa fie un numar intreg",
+    "mustBePositive": "Valoarea trebuie sa fie pozitiva",
+    "regexCodeFormat": "Doar litere mici, cifre si underscore",
+    "minParticipants": "Minim {min} participanti",
+    "maxParticipants": "Maxim {max} participanti",
+    "selectOrganization": "Selecteaza o organizatie",
+    "latitudeRange": "Latitudine intre {min} si {max}",
+    "longitudeRange": "Longitudine intre {min} si {max}",
+    "userIdsRequired": "Introdu cel putin un ID de utilizator",
+    "fields": {
+      "code": "Codul",
+      "title": "Titlul",
+      "name": "Numele",
+      "email": "Email-ul",
+      "password": "Parola",
+      "body": "Continutul",
+      "location": "Locatia",
+      "date": "Data",
+      "appName": "Numele aplicatiei",
+      "duration": "Durata"
+    }
+  },
+  "toast": {
+    "breeds": {
+      "createError": "Eroare la crearea rasei",
+      "updateError": "Eroare la actualizarea rasei",
+      "deleteError": "Eroare la stergerea rasei",
+      "loadError": "Eroare la incarcarea raselor"
+    },
+    "users": {
+      "suspended": "Utilizator suspendat",
+      "suspendError": "Eroare la suspendare",
+      "banned": "Utilizator banat",
+      "banError": "Eroare la banare",
+      "reactivated": "Utilizator reactivat",
+      "reactivateError": "Eroare la reactivare",
+      "loadError": "Eroare la incarcarea utilizatorilor"
+    },
+    "admins": {
+      "createError": "Eroare la crearea administratorului",
+      "roleUpdateError": "Eroare la actualizarea rolului",
+      "passwordResetError": "Eroare la resetarea parolei",
+      "toggleStatusError": "Eroare la schimbarea starii",
+      "loadError": "Eroare la incarcarea administratorilor"
+    },
+    "events": {
+      "createError": "Eroare la crearea evenimentului",
+      "cancelError": "Eroare la anularea evenimentului",
+      "participantRemoveError": "Eroare la eliminarea participantului",
+      "sponsorAddError": "Eroare la adaugarea sponsorului",
+      "sponsorRemoveError": "Eroare la eliminarea sponsorului",
+      "loadError": "Eroare la incarcarea evenimentelor"
+    },
+    "organizations": {
+      "verifyError": "Eroare la verificarea organizatiei",
+      "revokeError": "Eroare la revocarea verificarii"
+    },
+    "challenges": {
+      "createError": "Eroare la crearea provocarii",
+      "deleteError": "Eroare la stergerea provocarii"
+    },
+    "deletions": {
+      "cancelError": "Eroare la anularea stergerii",
+      "loadError": "Eroare la incarcarea stergerilor"
+    },
+    "aiFlags": {
+      "saved": "Flag {name} actualizat",
+      "saveError": "Eroare la salvare"
+    },
+    "aiModels": {
+      "promoted": "Modelul {version} promovat",
+      "promoteError": "Eroare la promovarea modelului"
+    },
+    "settings": {
+      "saveError": "Eroare la salvarea setarilor"
+    },
+    "moderation": {
+      "reportsLoadError": "Eroare la incarcarea raportarilor",
+      "storiesLoadError": "Eroare la incarcarea povestilor",
+      "feedLoadError": "Eroare la incarcarea postarilor",
+      "feedStatsError": "Eroare la incarcarea statisticilor",
+      "feedModerateError": "Eroare la moderarea postarii",
+      "contentLoadError": "Eroare la incarcarea continutului raportat",
+      "contentReviewError": "Eroare la revizuirea continutului"
+    },
+    "dogs": {
+      "loadError": "Eroare la incarcarea cainilor"
+    },
+    "safety": {
+      "sosLoadError": "Eroare la incarcarea alertelor SOS",
+      "contactsLoadError": "Eroare la incarcarea contactelor"
+    },
+    "auditLog": {
+      "loadError": "Eroare la incarcarea registrului"
+    }
+  }
+}

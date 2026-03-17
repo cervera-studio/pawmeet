@@ -47,6 +47,9 @@ importers:
       '@pawmeet/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@pawmeet/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@pawmeet/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -159,6 +162,9 @@ importers:
       '@pawmeet/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@pawmeet/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@pawmeet/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -401,6 +407,9 @@ importers:
       '@fontsource/instrument-serif':
         specifier: ^5.2.8
         version: 5.2.8
+      '@pawmeet/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@pawmeet/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -516,6 +525,15 @@ importers:
         specifier: ^5.9.0
         version: 5.9.3
 
+  packages/i18n:
+    devDependencies:
+      '@pawmeet/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
+
   packages/types:
     devDependencies:
       '@pawmeet/typescript-config':
@@ -573,6 +591,9 @@ importers:
 
   packages/utils:
     dependencies:
+      '@pawmeet/config':
+        specifier: workspace:*
+        version: link:../config
       '@pawmeet/types':
         specifier: workspace:*
         version: link:../types

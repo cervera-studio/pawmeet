@@ -1,0 +1,165 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "about": "Quiénes somos",
+    "blog": "Blog",
+    "contact": "Contacto",
+    "waitlist": "Lista de espera",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "changeLanguage": "Cambiar idioma",
+    "changeTheme": "Cambiar tema",
+    "skipToContent": "Ir al contenido principal",
+    "langLabel": "ES"
+  },
+  "hero": {
+    "eyebrow": "Lanzamiento 2027",
+    "headlinePart1": "Encuentra el compañero",
+    "headlinePart2": "de paseo",
+    "headlineHighlight": "perfecto",
+    "subtitle": "Conéctate con otros dueños de perros en tu zona. Organiza paseos y convierte cada salida en una aventura.",
+    "ctaPrimary": "Únete a la lista de espera",
+    "ctaSecondary": "Descubre más",
+    "ctaHref": "/es/waitlist",
+    "ctaSecondaryHref": "#como-funciona"
+  },
+  "features": {
+    "heading": "Todo lo que necesitas",
+    "description": "Funcionalidades pensadas para hacer de cada paseo una mejor experiencia.",
+    "comingSoonLabel": "Pronto",
+    "items": {
+      "smartMatch": {
+        "title": "Match inteligente",
+        "description": "Nuestro algoritmo encuentra perros compatibles por tamaño, energía y temperamento. Paseos sin estrés."
+      },
+      "interactiveMap": {
+        "title": "Mapa interactivo",
+        "description": "Visualiza rutas y puntos de encuentro en tu zona. Encuentra los mejores parques y senderos para perros."
+      },
+      "secureChat": {
+        "title": "Chat seguro",
+        "description": "Comunícate con otros dueños, comparte consejos y organiza paseos espontáneos en tu barrio."
+      },
+      "detailedProfiles": {
+        "title": "Perfiles detallados",
+        "description": "Cada perro tiene su perfil con fotos, preferencias e historial. Conoce a los compañeros de paseo antes de encontrarte."
+      },
+      "sharedCalendar": {
+        "title": "Calendario compartido",
+        "description": "Planifica los paseos con antelación y recibe notificaciones. No pierdas ninguna cita con tus amigos."
+      },
+      "routeTracking": {
+        "title": "Seguimiento de rutas",
+        "description": "Registra tus rutas favoritas, la distancia y el tiempo. Lleva un seguimiento de las aventuras de tu perro."
+      }
+    }
+  },
+  "steps": {
+    "heading": "Cómo funciona",
+    "description": "Tres simples pasos para empezar a pasear en compañía.",
+    "stepLabel": "Paso",
+    "sectionId": "como-funciona",
+    "items": {
+      "createProfile": {
+        "title": "Crea el perfil de tu perro",
+        "description": "Regístrate y añade a tu amigo de cuatro patas con fotos, raza, tamaño y sus preferencias de socialización."
+      },
+      "findCompanions": {
+        "title": "Encuentra el match perfecto",
+        "description": "Explora perros compatibles en tu zona. Nuestro algoritmo analiza tamaño, energía y comportamiento."
+      },
+      "walkTogether": {
+        "title": "Pasea junto",
+        "description": "Conoce nuevos amigos de dos y cuatro patas, comparte rutas y haz de cada salida un momento especial."
+      }
+    }
+  },
+  "downloadCta": {
+    "heading": "¿Listo para pasear?",
+    "description": "Descarga la app y únete a miles de dueños de perros que ya encontraron sus compañeros de paseo.",
+    "appStoreLabel": "Descargar en",
+    "googlePlayLabel": "Disponible en",
+    "comingSoon": "Disponible próximamente en iOS y Android."
+  },
+  "waitlist": {
+    "heading": "Únete a la lista de espera",
+    "description": "Sé de los primeros en probar PawMeet. Deja tu email y te avisaremos en el lanzamiento.",
+    "emailLabel": "Tu dirección de correo",
+    "emailPlaceholder": "Tu correo",
+    "submitButton": "Inscríbeme",
+    "loadingButton": "Inscribiendo...",
+    "successButton": "¡Inscrito!",
+    "successMessage": "Revisa tu correo para confirmar.",
+    "errorMessage": "Algo salió mal. Inténtalo de nuevo en breve.",
+    "noSpam": "Sin spam, prometido. Solo actualizaciones importantes.",
+    "pageHeading": "Únete a la lista de espera",
+    "pageDescription": "¡PawMeet está en camino! Regístrate para ser de los primeros en descubrir la app y obtener acceso anticipado exclusivo.",
+    "statsSubscribers": "Inscritos en la lista de espera",
+    "statsCities": "Ciudades cubiertas",
+    "statsLaunch": "Lanzamiento previsto"
+  },
+  "contact": {
+    "heading": "Contáctanos",
+    "description": "¿Tienes preguntas, sugerencias o quieres colaborar con nosotros? ¡Escríbenos!",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "emailLabel": "Correo",
+    "emailPlaceholder": "Tu correo",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "Escribe tu mensaje...",
+    "submitButton": "Enviar mensaje",
+    "loadingButton": "Enviando...",
+    "successHeading": "¡Mensaje enviado!",
+    "successMessage": "Gracias por escribirnos. Te responderemos lo antes posible.",
+    "errorMessage": "Algo salió mal. Inténtalo de nuevo en breve.",
+    "directEmail": "También puedes escribirnos directamente a"
+  },
+  "footer": {
+    "tagline": "La comunidad para quienes aman pasear con su perro. Encuentra compañeros de paseo compatibles en tu zona.",
+    "exploreHeading": "Explorar",
+    "legalHeading": "Legal",
+    "copyright": "PawMeet S.r.l.",
+    "vat": "P.IVA 12345678901",
+    "termsLabel": "Términos y Condiciones"
+  },
+  "meta": {
+    "homeTitle": "Pasea junto a tu perro",
+    "homeDescription": "PawMeet - Encuentra el compañero de paseo perfecto para tu perro. Conéctate con otros dueños en tu zona.",
+    "aboutTitle": "Quiénes somos",
+    "aboutDescription": "Descubre el equipo detrás de PawMeet y nuestra misión.",
+    "blogTitle": "Blog",
+    "blogDescription": "Consejos, guías e historias del mundo PawMeet.",
+    "contactTitle": "Contacto",
+    "contactDescription": "Contáctanos para cualquier pregunta o sugerencia sobre PawMeet.",
+    "waitlistTitle": "Lista de espera",
+    "waitlistDescription": "Únete a la lista de espera de PawMeet y sé de los primeros en probar la app.",
+    "privacyTitle": "Política de Privacidad",
+    "termsTitle": "Términos y Condiciones de Uso",
+    "cookieTitle": "Política de Cookies"
+  },
+  "about": {
+    "heading": "Quiénes somos",
+    "intro": "Somos un grupo de amantes de los perros que cree en el poder de los paseos compartidos.",
+    "missionHeading": "Nuestra misión",
+    "missionText": "PawMeet nace de la idea de que pasear con tu perro puede ser mucho más que una simple rutina diaria. Queremos crear conexiones reales entre personas a través del amor compartido por nuestros amigos de cuatro patas.",
+    "whyHeading": "Por qué PawMeet",
+    "whyText": "Cada día millones de dueños de perros salen a pasear. A menudo las mismas rutas, los mismos horarios, las mismas costumbres. PawMeet transforma esta rutina en una oportunidad para socializar, explorar nuevos caminos y dejar que nuestros perros se diviertan con nuevos compañeros de juego.",
+    "teamHeading": "El equipo",
+    "teamText": "Somos un pequeño equipo de desarrolladores, diseñadores y, sobre todo, dueños de perros. Cada funcionalidad que creamos nace de una necesidad real que hemos experimentado en primera persona."
+  },
+  "blog": {
+    "heading": "Blog",
+    "description": "Consejos, guías e historias para ti y tu amigo de cuatro patas.",
+    "emptyHeading": "Estamos preparando los primeros artículos",
+    "emptyText": "Pronto encontrarás guías sobre socialización canina, los mejores parques para perros y consejos para paseos seguros. ¡Mantente atento!",
+    "emptyCta": "Únete a la lista de espera"
+  },
+  "privacy": {
+    "heading": "Política de Privacidad",
+    "lastUpdated": "Última actualización: 11 de marzo de 2026",
+    "intro": "Esta política describe cómo <strong>PawMeet</strong> (app móvil y sitio web pawmeet.io) recopila, procesa y protege los datos personales de sus usuarios, conforme a los artículos 13 y 14 del Reglamento (UE) 2016/679 (GDPR) y al D.Lgs. 196/2003.",
+    "footer": "Política conforme al GDPR, al D.Lgs. 196/2003 y a las indicaciones del Garante para la protección de datos personales."
+  },
+  "terms": {},
+  "cookie": {}
+}

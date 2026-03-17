@@ -1,0 +1,40 @@
+{
+  "verification": {
+    "subject": "Tu código de verificación - PawMeet",
+    "heading": "Código de verificación PawMeet",
+    "body": "Usa el código a continuación para verificar tu correo:",
+    "expiry": "El código expira en 5 minutos.",
+    "ignore": "Si no creaste una cuenta, ignora este correo."
+  },
+  "passwordReset": {
+    "subject": "Código de restablecimiento de contraseña - PawMeet",
+    "heading": "Restablecimiento de contraseña PawMeet",
+    "body": "Usa el código a continuación para restablecer tu contraseña:",
+    "expiry": "El código expira en 5 minutos.",
+    "ignore": "Si no solicitaste un restablecimiento, ignora este correo."
+  },
+  "gdprExportReady": {
+    "subject": "Tu exportación de datos está lista - PawMeet",
+    "greeting": "Hola {displayName},",
+    "body": "Tu exportación de datos GDPR está lista para descargar.",
+    "cta": "Descarga tus datos",
+    "expiry": "Importante: el enlace expira en 48 horas.",
+    "legal": "La exportación contiene toda la información personal asociada a tu cuenta, según lo establecido por el GDPR (Art. 15 y Art. 20).",
+    "notRequested": "Si no solicitaste esta exportación, contáctanos en"
+  },
+  "gdprExportFailed": {
+    "subject": "Error en la exportación de datos - PawMeet",
+    "greeting": "Hola {displayName},",
+    "body": "Lamentablemente, ocurrió un error al generar tu exportación de datos.",
+    "retry": "Puedes volver a intentarlo desde la sección Configuración de la app. Si el problema persiste, contáctanos en"
+  },
+  "accountDeleted": {
+    "subject": "Tu cuenta PawMeet ha sido desactivada",
+    "greeting": "Hola {displayName},",
+    "body": "Confirmamos que tu cuenta PawMeet ha sido desactivada correctamente.",
+    "retention": "Tus datos personales serán eliminados permanentemente en un plazo de 30 días, según lo establecido por el GDPR (Art. 17).",
+    "undo": "Si cambias de opinión, puedes contactarnos en un plazo de 30 días en",
+    "undoSuffix": "para solicitar la restauración.",
+    "farewell": "Gracias por haber sido parte de la comunidad PawMeet."
+  }
+}

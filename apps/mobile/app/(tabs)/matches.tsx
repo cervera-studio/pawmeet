@@ -1,9 +1,14 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import { useCallback } from 'react';
+import type { ScoreBreakdown } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
+import { useCallback, useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ExplanationModal } from '@/components/ExplanationModal';
 import { MatchCard } from '@/components/MatchCard';
+import { useAnalyticsService } from '@/hooks/useAnalytics';
+import { api } from '@/lib/trpc';
 import type { EnrichedMatch } from './matches.view-model';
 import { useMatchesViewModel } from './matches.view-model';
 
@@ -62,6 +67,45 @@ const MATCH_CARD_HEIGHT = 84;
 
 export default function MatchesScreen() {
   const vm = useMatchesViewModel();
+  const analytics = useAnalyticsService();
+  const [explanationVisible, setExplanationVisible] = useState(false);
+  const [explanationLoading, setExplanationLoading] = useState(false);
+  const [explanationData, setExplanationData] = useState<{
+    overallScore: number;
+    breakdown: ScoreBreakdown | null;
+  }>({ overallScore: 0, breakdown: null });
+
+  const handleExplanationTap = useCallback(
+    async (matchId: string, compatibilityScore: number) => {
+      setExplanationData({ overallScore: compatibilityScore, breakdown: null });
+      setExplanationVisible(true);
+      setExplanationLoading(true);
+      analytics.track('match_explanation_viewed', {
+        source: 'match_card',
+        overallScore: compatibilityScore,
+      });
+      try {
+        const result = await api.matchingAi.matchExplanation.query({ matchId });
+        setExplanationData({
+          overallScore: result.overallScore,
+          breakdown: {
+            sizeScore: result.breakdown.size.score,
+            energyScore: result.breakdown.energy.score,
+            behaviorScore: result.breakdown.behavior.score,
+            walkScore: result.breakdown.walk.score,
+            distanceScore: result.breakdown.distance.score,
+            leashScore: result.breakdown.leash.score,
+            overallScore: result.overallScore,
+          },
+        });
+      } catch (e) {
+        logger.warn('MatchesScreen', 'Failed to fetch explanation', e);
+      } finally {
+        setExplanationLoading(false);
+      }
+    },
+    [analytics],
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: EnrichedMatch }) => (
@@ -73,10 +117,11 @@ export default function MatchesScreen() {
           matchedAt={String(item.createdAt)}
           compatibilityScore={item.compatibilityScore}
           myDogName={vm.hasMultipleDogs ? vm.dogNameById.get(item.dogId) : undefined}
+          onCompatibilityTap={() => handleExplanationTap(item.id, item.compatibilityScore ?? 0)}
         />
       </Pressable>
     ),
-    [vm.navigateToChat, vm.hasMultipleDogs, vm.dogNameById],
+    [vm.navigateToChat, vm.hasMultipleDogs, vm.dogNameById, handleExplanationTap],
   );
 
   const getItemLayout = useCallback(
@@ -147,6 +192,14 @@ export default function MatchesScreen() {
           ListEmptyComponent={<MatchesEmptyState onDiscover={vm.navigateToDiscover} />}
         />
       )}
+
+      <ExplanationModal
+        visible={explanationVisible}
+        onClose={() => setExplanationVisible(false)}
+        overallScore={explanationData.overallScore}
+        breakdown={explanationData.breakdown}
+        loading={explanationLoading}
+      />
     </SafeAreaView>
   );
 }

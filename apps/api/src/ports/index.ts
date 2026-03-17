@@ -4,6 +4,7 @@ export type { AnalyticsProvider, AnalyticsProviderEvent } from './analytics-prov
 export type { AnalyticsRepository } from './analytics-repository.js';
 export type { AuthService, TokenPair } from './auth-service.js';
 export type { BadgeRepository } from './badge-repository.js';
+export type { BioGenerationService } from './bio-generation-service.js';
 export type { BreedDetectionResult, BreedDetectionService } from './breed-detection-service.js';
 export type { Breed, BreedRepository } from './breed-repository.js';
 export type { ChatService } from './chat-service.js';

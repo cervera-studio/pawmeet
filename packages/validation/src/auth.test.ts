@@ -40,7 +40,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      expect(messages).toContain('Email non valida');
+      expect(messages).toContain('email_invalid');
     }
   });
 
@@ -51,7 +51,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      expect(messages).toContain('Minimo 8 caratteri');
+      expect(messages).toContain('password_min_length');
     }
   });
 
@@ -60,7 +60,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      expect(messages).toContain('Almeno una maiuscola');
+      expect(messages).toContain('password_uppercase_required');
     }
   });
 
@@ -69,7 +69,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      expect(messages).toContain('Almeno un numero');
+      expect(messages).toContain('password_digit_required');
     }
   });
 
@@ -113,7 +113,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      expect(messages).toContain('La data di nascita non può essere nel futuro');
+      expect(messages).toContain('date_of_birth_future');
     }
   });
 
@@ -126,7 +126,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      expect(messages).toContain('Devi avere almeno 14 anni per usare PawMeet');
+      expect(messages).toContain('date_of_birth_min_age');
     }
   });
 

@@ -164,3 +164,16 @@ function tryCreateToxicityService() {
 export const contentModerationService = tryCreateContentModerationService();
 export const breedDetectionService = tryCreateBreedDetectionService();
 export const toxicityService = tryCreateToxicityService();
+
+// ── Bio generation (optional — degrades gracefully if ANTHROPIC_API_KEY missing) ─
+
+function tryCreateBioGenerationService() {
+  if (!process.env.ANTHROPIC_API_KEY) return undefined;
+  const Anthropic = require('@anthropic-ai/sdk').default;
+  const { ClaudeBioGenerationService } = require('../infra/claude-bio-generation-service.js');
+  return new ClaudeBioGenerationService(
+    new Anthropic(),
+  ) as import('../ports/bio-generation-service.js').BioGenerationService;
+}
+
+export const bioGenerationService = tryCreateBioGenerationService();

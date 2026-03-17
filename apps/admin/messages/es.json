@@ -1,0 +1,846 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados.",
+    "noData": "No hay datos disponibles",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "details": "Detalles",
+    "search": "Buscar...",
+    "unknown": "Desconocido",
+    "saving": "Guardando...",
+    "saveChanges": "Guardar cambios",
+    "yes": "Sí",
+    "no": "No",
+    "delete": "Eliminar",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "never": "Nunca"
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "defaultMessage": "Error al cargar la página",
+    "retry": "Reintentar"
+  },
+  "metadata": {
+    "description": "Panel de administración PawMeet"
+  },
+  "auth": {
+    "title": "PawMeet Admin",
+    "subtitle": "Inicia sesión en el panel de administración",
+    "emailLabel": "Correo electrónico",
+    "passwordLabel": "Contraseña",
+    "loginButton": "Iniciar sesión",
+    "loggingIn": "Iniciando sesión...",
+    "logout": "Cerrar sesión",
+    "errors": {
+      "invalidCredentials": "Correo electrónico o contraseña no válidos",
+      "accountDisabled": "Cuenta desactivada. Contacta a un administrador.",
+      "serverError": "Error del servidor. Inténtalo de nuevo más tarde.",
+      "generic": "Error al iniciar sesión"
+    }
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "users": "Usuarios",
+    "moderation": "Moderación",
+    "moderationFeed": "Feed",
+    "moderationStories": "Historias",
+    "moderationPhotos": "Fotos",
+    "moderationContent": "Contenidos",
+    "moderationReports": "Reportes",
+    "dogs": "Perros",
+    "breeds": "Razas",
+    "events": "Eventos",
+    "organizations": "Organizaciones",
+    "safety": "Seguridad",
+    "safetySos": "Alertas SOS",
+    "safetyContacts": "Contactos de emergencia",
+    "accountDeletions": "Eliminaciones",
+    "settings": "Configuración",
+    "settingsGeneral": "General",
+    "settingsAdmins": "Usuarios Admin",
+    "notifications": "Notificaciones",
+    "auditLog": "Registro de auditoría",
+    "aiMatching": "AI Matching",
+    "aiMatchingAbTests": "Tests A/B",
+    "aiMatchingPerformance": "Rendimiento",
+    "aiMatchingFlags": "Feature Flags",
+    "challenges": "Desafíos",
+    "fitness": "Fitness"
+  },
+  "header": {
+    "searchPlaceholder": "Buscar usuarios, perros, reportes...",
+    "lightTheme": "Tema claro",
+    "darkTheme": "Tema oscuro",
+    "notifications": "Notificaciones"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Resumen de las métricas principales",
+    "totalUsers": "Usuarios totales",
+    "registeredDogs": "Perros registrados",
+    "activeMatches": "Matches activos",
+    "pendingPhotos": "Fotos pendientes",
+    "pendingReports": "Reportes pendientes",
+    "totalMatches": "Matches totales",
+    "dauToday": "DAU (Hoy)",
+    "registrationsToday": "Registros hoy",
+    "matchesToday": "Matches hoy",
+    "eventsLast24h": "Eventos últimas 24h",
+    "totalEvents": "Eventos totales",
+    "analyticsRealtime": "Analytics (Tiempo real)",
+    "chartRegistrations": "Registros de usuarios (últimos 30 días)",
+    "chartDailyMatches": "Matches diarios (últimos 30 días)",
+    "chartDau": "DAU — Usuarios activos diarios (últimos 30 días)",
+    "registrationsLabel": "Registros",
+    "matchLabel": "Matches",
+    "dauLabel": "DAU"
+  },
+  "table": {
+    "totalResults": "{total} resultados totales",
+    "noResults": "Sin resultados",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "Página {current} de {total}"
+  },
+  "status": {
+    "user": {
+      "active": "Activo",
+      "suspended": "Suspendido",
+      "banned": "Baneado"
+    },
+    "report": {
+      "pending": "Pendiente",
+      "resolved": "Resuelto",
+      "dismissed": "Archivado"
+    }
+  },
+  "users": {
+    "title": "Usuarios",
+    "subtitle": "Gestiona los usuarios de la plataforma",
+    "searchPlaceholder": "Buscar usuarios...",
+    "columns": {
+      "name": "Nombre",
+      "email": "Correo",
+      "status": "Estado",
+      "dogs": "Perros",
+      "followers": "Seguidores",
+      "following": "Siguiendo",
+      "registeredAt": "Registrado el"
+    },
+    "detail": {
+      "provider": "Proveedor",
+      "lastLogin": "Último acceso",
+      "reportsReceived": "Reportes recibidos",
+      "totalMatches": "Matches totales",
+      "dogsCount": "Perros ({count})",
+      "noDogs": "Ningún perro registrado",
+      "breed": "Raza",
+      "quickActions": "Acciones rápidas",
+      "information": "Información",
+      "name": "Nombre",
+      "email": "Correo",
+      "registeredAt": "Registrado el",
+      "followers": "Seguidores",
+      "following": "Siguiendo",
+      "viewReports": "Ver reportes",
+      "viewPhotos": "Ver fotos"
+    }
+  },
+  "dogs": {
+    "title": "Perros",
+    "subtitle": "Todos los perros registrados en la plataforma",
+    "searchPlaceholder": "Buscar por nombre, raza o propietario...",
+    "columns": {
+      "name": "Nombre",
+      "breed": "Raza",
+      "owner": "Propietario",
+      "size": "Tamaño",
+      "status": "Estado",
+      "addedAt": "Agregado el"
+    },
+    "sizes": {
+      "small": "Pequeño",
+      "medium": "Mediano",
+      "large": "Grande"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Configura el panel de administración",
+    "saved": "Configuración guardada",
+    "saveError": "Error al guardar la configuración",
+    "notImplemented": "Funcionalidad aún no implementada",
+    "general": {
+      "title": "Configuración general",
+      "subtitle": "Configura los ajustes básicos de la plataforma",
+      "appName": "Nombre de la app",
+      "supportEmail": "Correo de soporte"
+    },
+    "moderation": {
+      "title": "Moderación",
+      "subtitle": "Configura las reglas de moderación automática",
+      "photoThreshold": "Umbral de aprobación automática de fotos (confianza %)",
+      "maxReports": "Máx. reportes antes de suspensión"
+    },
+    "matching": {
+      "title": "Configuración de matching",
+      "description": "Configura los pesos utilizados por el algoritmo de matching",
+      "size": "Peso tamaño",
+      "energy": "Peso energía",
+      "behavior": "Peso comportamiento",
+      "walk": "Peso preferencias de paseo",
+      "distance": "Peso distancia",
+      "leash": "Peso correa",
+      "sum": "Suma total",
+      "validationError": "Los pesos deben sumar 1.0"
+    },
+    "dangerZone": {
+      "title": "Zona peligrosa",
+      "subtitle": "Acciones irreversibles",
+      "clearCache": "Vaciar caché",
+      "clearCacheDesc": "Invalidar toda la caché del sistema",
+      "clearButton": "Vaciar"
+    }
+  },
+  "reports": {
+    "title": "Reportes",
+    "subtitle": "Gestiona los reportes de usuarios",
+    "tabs": {
+      "all": "Todos",
+      "pending": "Pendientes",
+      "resolved": "Resueltos",
+      "dismissed": "Archivados"
+    },
+    "reasons": {
+      "inappropriate_behavior": "Comportamiento inapropiado",
+      "fake_profile": "Perfil falso",
+      "harassment": "Acoso",
+      "spam": "Spam",
+      "other": "Otro"
+    },
+    "actions": {
+      "manage": "Gestionar",
+      "processing": "Procesando...",
+      "dismiss": "Archivar",
+      "warn": "Advertir usuario",
+      "suspend": "Suspender usuario",
+      "ban": "Banear usuario",
+      "completed": "Acción completada",
+      "error": "Error al realizar la acción"
+    },
+    "columns": {
+      "reporter": "Reportante",
+      "reported": "Reportado",
+      "reason": "Motivo",
+      "status": "Estado",
+      "action": "Acción",
+      "date": "Fecha"
+    }
+  },
+  "content": {
+    "title": "Moderación de contenidos",
+    "subtitle": "Gestiona los reportes de contenido del feed",
+    "noPending": "No hay reportes pendientes",
+    "reasons": {
+      "inappropriate": "Contenido inapropiado",
+      "spam": "Spam",
+      "harassment": "Acoso",
+      "violence": "Violencia",
+      "other": "Otro"
+    },
+    "types": {
+      "post": "Publicación",
+      "comment": "Comentario",
+      "story": "Historia"
+    },
+    "contentId": "ID de contenido",
+    "reporter": "Reportante",
+    "dismiss": "Archivar",
+    "review": "Revisar",
+    "dismissed": "Reporte archivado",
+    "reviewed": "Reporte revisado",
+    "loadMore": "Cargar más"
+  },
+  "photos": {
+    "title": "Moderación de fotos",
+    "subtitle": "{count} fotos pendientes de revisión",
+    "approveAll": "Aprobar todas",
+    "noPending": "No hay fotos pendientes de moderación",
+    "photoOf": "Foto de {name}",
+    "photo": "Foto",
+    "types": {
+      "profile": "Perfil",
+      "dog": "Perro"
+    },
+    "actions": {
+      "approve": "Aprobar",
+      "reject": "Rechazar"
+    },
+    "toast": {
+      "approved": "Foto aprobada",
+      "approveError": "Error al aprobar la foto",
+      "rejected": "Foto rechazada",
+      "rejectError": "Error al rechazar la foto",
+      "allApproved": "Todas las fotos aprobadas",
+      "allApproveError": "Error al aprobar las fotos"
+    }
+  },
+  "stories": {
+    "title": "Gestión de historias",
+    "subtitle": "Visualiza y modera las historias de los usuarios",
+    "expired": "Expirada",
+    "types": {
+      "image": "Imagen",
+      "video": "Video"
+    },
+    "noStories": "No se encontraron historias",
+    "unknownUser": "Usuario desconocido",
+    "deleteAction": "Eliminar",
+    "toast": {
+      "deleted": "Historia eliminada",
+      "deleteError": "Error al eliminar la historia"
+    },
+    "count": "{count, plural, one {# historia} other {# historias}}",
+    "views": "visualizaciones"
+  },
+  "feed": {
+    "title": "Gestión del feed",
+    "subtitle": "Modera las publicaciones del feed y monitorea las estadísticas",
+    "statuses": {
+      "pending": "Pendiente",
+      "approved": "Aprobado",
+      "rejected": "Rechazado"
+    },
+    "tabs": {
+      "all": "Todos",
+      "pending": "Pendientes",
+      "approved": "Aprobados",
+      "rejected": "Rechazados"
+    },
+    "stats": {
+      "totalPosts": "Publicaciones totales",
+      "pending": "Pendientes",
+      "rejected": "Rechazados",
+      "stories": "Historias",
+      "reports": "Reportes"
+    },
+    "searchPlaceholder": "Buscar por autor...",
+    "resultCount": "{count, plural, one {# resultado} other {# resultados}}",
+    "noPostsFound": "No se encontraron publicaciones",
+    "noCaption": "Sin descripción",
+    "unknownUser": "Usuario desconocido",
+    "deleted": "Eliminado",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "postApproved": "Publicación aprobada",
+    "postRejected": "Publicación rechazada",
+    "reportCount": "{count, plural, one {# reporte} other {# reportes}}"
+  },
+  "organizations": {
+    "title": "Organizaciones",
+    "subtitle": "Gestión de organizaciones verificadas y miembros",
+    "searchPlaceholder": "Buscar por nombre o slug...",
+    "allTypes": "Todos los tipos",
+    "types": {
+      "pawmeet_team": "Equipo PawMeet",
+      "association": "Asociación",
+      "educator": "Educador",
+      "brand": "Marca"
+    },
+    "columns": {
+      "name": "Nombre",
+      "slug": "Slug",
+      "type": "Tipo",
+      "status": "Estado",
+      "members": "Miembros",
+      "createdAt": "Creada el"
+    },
+    "verified": "Verificada",
+    "notVerified": "No verificada"
+  },
+  "events": {
+    "title": "Eventos",
+    "subtitle": "Gestión de eventos de grupo en la plataforma",
+    "searchPlaceholder": "Buscar por título...",
+    "allStatuses": "Todos los estados",
+    "allCategories": "Todas las categorías",
+    "categories": {
+      "walk": "Paseo",
+      "meetup": "Encuentro",
+      "training": "Entrenamiento"
+    },
+    "statuses": {
+      "scheduled": "Programado",
+      "in_progress": "En curso",
+      "completed": "Completado",
+      "cancelled": "Cancelado",
+      "template": "Plantilla"
+    },
+    "visibility": {
+      "public": "Público",
+      "friends_only": "Solo amigos",
+      "invite_only": "Por invitación"
+    },
+    "columns": {
+      "title": "Título",
+      "category": "Categoría",
+      "status": "Estado",
+      "visibility": "Visibilidad",
+      "date": "Fecha",
+      "creator": "Creador",
+      "participants": "Participantes",
+      "pending": "pendientes",
+      "recurring": "Recurrente",
+      "approval": "Aprobación"
+    }
+  },
+  "safety": {
+    "sos": {
+      "title": "Alertas SOS y Check-in",
+      "subtitle": "Registro de alertas SOS, alertas automáticas y check-ins de seguridad",
+      "autoAlert": "Alerta automática",
+      "allTypes": "Todos los tipos",
+      "types": {
+        "sos": "SOS",
+        "auto_alert": "Alertas automáticas",
+        "check_in": "Check-in"
+      },
+      "columns": {
+        "type": "Tipo",
+        "user": "Usuario",
+        "walk": "Paseo",
+        "walkStatus": "Estado del paseo",
+        "location": "Ubicación",
+        "date": "Fecha"
+      },
+      "walkStatuses": {
+        "pending": "Pendiente",
+        "accepted": "Aceptado",
+        "rejected": "Rechazado",
+        "cancelled": "Cancelado",
+        "completed": "Completado"
+      }
+    },
+    "contacts": {
+      "title": "Contactos de emergencia",
+      "subtitle": "Contactos de emergencia registrados por los usuarios",
+      "searchPlaceholder": "Buscar por nombre de contacto o usuario...",
+      "columns": {
+        "owner": "Propietario",
+        "contactName": "Nombre del contacto",
+        "phone": "Teléfono",
+        "relationship": "Relación",
+        "addedAt": "Agregado el"
+      }
+    }
+  },
+  "accountDeletions": {
+    "title": "Eliminaciones de cuenta",
+    "subtitle": "Cuentas en proceso de eliminación (período de gracia de 30 días)",
+    "daysRemaining": "{days}d restantes",
+    "columns": {
+      "user": "Usuario",
+      "registeredAt": "Registrado el",
+      "scheduledDeletion": "Eliminación programada",
+      "timeRemaining": "Tiempo restante",
+      "cancelDeletion": "Cancelar eliminación"
+    }
+  },
+  "auditLog": {
+    "title": "Registro de auditoría",
+    "subtitle": "Registro de todas las acciones administrativas",
+    "searchPlaceholder": "Buscar por acción...",
+    "allResources": "Todos los recursos",
+    "columns": {
+      "admin": "Admin",
+      "action": "Acción",
+      "resource": "Recurso",
+      "resourceId": "ID Recurso",
+      "changes": "Cambios",
+      "date": "Fecha"
+    },
+    "viewChanges": "Ver detalles",
+    "noChanges": "No hay cambios registrados",
+    "before": "Antes",
+    "after": "Después",
+    "resourceTypes": {
+      "user": "Usuario",
+      "dog": "Perro",
+      "photo": "Foto",
+      "report": "Reporte",
+      "post": "Publicación",
+      "story": "Historia",
+      "event": "Evento",
+      "organization": "Organización",
+      "sponsor": "Patrocinador",
+      "settings": "Configuración",
+      "deletion": "Eliminación"
+    }
+  },
+  "breeds": {
+    "title": "Razas",
+    "subtitle": "Gestiona las razas caninas en la plataforma",
+    "searchPlaceholder": "Buscar por nombre...",
+    "allGroups": "Todos los grupos",
+    "createButton": "Agregar raza",
+    "columns": {
+      "name": "Nombre",
+      "code": "Código",
+      "group": "Grupo",
+      "sizeCategory": "Categoría de tamaño",
+      "avgWeightKg": "Peso promedio (kg)",
+      "energy": "Energía",
+      "playfulness": "Juguetón",
+      "trainability": "Adiestrabilidad",
+      "barking": "Ladrido",
+      "goodWithOtherDogs": "Con otros perros",
+      "goodWithChildren": "Con niños",
+      "goodWithStrangers": "Con extraños",
+      "protectiveness": "Protección",
+      "shedding": "Muda de pelo",
+      "grooming": "Aseo",
+      "actions": "Acciones"
+    },
+    "scores": {
+      "title": "Puntuaciones de comportamiento",
+      "noData": "Sin datos"
+    },
+    "sizes": {
+      "toy": "Toy",
+      "piccola": "Pequeño",
+      "media": "Mediano",
+      "grande": "Grande",
+      "gigante": "Gigante"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "createDialog": {
+      "title": "Agregar raza",
+      "description": "Agrega una nueva raza canina a la plataforma.",
+      "codePlaceholder": "ej. golden_retriever",
+      "submit": "Crear"
+    },
+    "editDialog": {
+      "title": "Editar raza",
+      "description": "Editar la raza {code}"
+    },
+    "deleteDialog": {
+      "title": "Eliminar raza",
+      "description": "¿Estás seguro de que deseas eliminar la raza {code}? Esta acción no se puede deshacer.",
+      "confirm": "Eliminar"
+    }
+  },
+  "notifications": {
+    "title": "Notificaciones push",
+    "subtitle": "Envía notificaciones push y visualiza las estadísticas",
+    "stats": {
+      "totalUsers": "Usuarios totales",
+      "usersWithToken": "Usuarios con token push",
+      "prefMatches": "Notificaciones de matches",
+      "prefMessages": "Notificaciones de mensajes",
+      "prefReminders": "Notificaciones de recordatorios",
+      "prefFeed": "Notificaciones del feed"
+    },
+    "broadcast": {
+      "broadcastTitle": "Broadcast",
+      "broadcastDescription": "Envía una notificación a todos los usuarios con token push",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Título de la notificación",
+      "bodyLabel": "Cuerpo",
+      "bodyPlaceholder": "Cuerpo de la notificación",
+      "sendButton": "Enviar",
+      "confirmTitle": "Confirmar broadcast",
+      "confirmDescription": "La notificación se enviará a {count} usuarios. ¿Continuar?",
+      "successMessage": "Notificación enviada a {count} usuarios",
+      "sendError": "Error al enviar la notificación broadcast"
+    },
+    "targeted": {
+      "targetedTitle": "Dirigida",
+      "targetedDescription": "Envía una notificación a usuarios específicos",
+      "userIdsLabel": "IDs de usuarios",
+      "userIdsPlaceholder": "Ingresa los IDs de usuario, separados por coma o uno por línea",
+      "sendButton": "Enviar",
+      "successMessage": "Enviada a {sentCount} usuarios, {skippedCount} omitidos",
+      "sendError": "Error al enviar la notificación dirigida"
+    },
+    "common": {
+      "cancel": "Cancelar"
+    }
+  },
+  "aiMatching": {
+    "abTests": {
+      "title": "Tests A/B — AI Matching",
+      "subtitle": "Comparación de experimentos ML vs matching basado en reglas",
+      "startedOn": "Iniciado el {date}",
+      "statusRunning": "En curso",
+      "statusStopped": "Detenido",
+      "groupControl": "Grupo de control",
+      "groupTreatment": "Grupo de tratamiento",
+      "totalUsers": "Usuarios totales",
+      "metricsTitle": "Métricas comparativas",
+      "metricsSubtitle": "Comparación AI (tratamiento) vs Basado en reglas (control)",
+      "columnMetric": "Métrica",
+      "columnControl": "Control",
+      "columnTreatment": "Tratamiento (AI)",
+      "columnLift": "Lift %",
+      "columnPValue": "p-value",
+      "metricMatchRate": "Tasa de match",
+      "metricAcceptRate": "Tasa de aceptación",
+      "metricAvgScore": "Puntuación media",
+      "metricWalkCompletion": "Completar paseos",
+      "chartMatchRate": "Tasa de match en el tiempo",
+      "chartAcceptRate": "Tasa de aceptación en el tiempo",
+      "chartPlaceholder": "Gráfico placeholder — Recharts próximamente"
+    },
+    "performance": {
+      "title": "Rendimiento del modelo AI",
+      "subtitle": "Métricas de calidad del modelo de matching",
+      "kpiPredictions": "Predicciones totales",
+      "kpiMatches": "Matches generados",
+      "kpiAccuracy": "Precisión",
+      "kpiAvgScore": "Puntuación media",
+      "kpiActiveModel": "Modelo activo",
+      "registeredModels": "Modelos registrados",
+      "chartCalibration": "Curva de calibración",
+      "chartWeights": "Distribución de pesos de características",
+      "chartTimeline": "Rendimiento en el tiempo",
+      "chartPlaceholder": "Gráfico placeholder — Recharts próximamente"
+    },
+    "flags": {
+      "title": "Feature Flags — AI Matching",
+      "subtitle": "Gestión de feature flags para el sistema de matching AI",
+      "tableTitle": "Flags activos",
+      "columnName": "Nombre",
+      "columnDescription": "Descripción",
+      "columnType": "Tipo",
+      "columnStatus": "Estado",
+      "columnSplit": "Split / Valor",
+      "enabled": "Activo",
+      "disabled": "Inactivo",
+      "flagMlMatching": "Habilitar matching ML",
+      "flagScoringStrategy": "Estrategia de puntuación activa",
+      "flagAbTest": "Experimento A/B test ML matching",
+      "flagConfidenceThreshold": "Umbral mínimo de confianza",
+      "emptyState": "No hay feature flags configurados"
+    }
+  },
+  "adminUsers": {
+    "title": "Usuarios admin",
+    "subtitle": "Gestiona las cuentas de administrador y los permisos",
+    "searchPlaceholder": "Buscar por nombre o correo...",
+    "allRoles": "Todos los roles",
+    "createButton": "Crear admin",
+    "columns": {
+      "displayName": "Nombre",
+      "email": "Correo",
+      "role": "Rol",
+      "status": "Estado",
+      "lastLoginAt": "Último acceso",
+      "createdAt": "Creado el",
+      "actions": "Acciones"
+    },
+    "roles": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "moderator": "Moderador",
+      "viewer": "Visualizador"
+    },
+    "statuses": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "actions": {
+      "editRole": "Editar rol",
+      "activate": "Activar",
+      "deactivate": "Desactivar",
+      "resetPassword": "Restablecer contraseña"
+    },
+    "createDialog": {
+      "title": "Crear usuario admin",
+      "description": "Agrega un nuevo administrador a la plataforma. Se enviará una contraseña temporal por correo.",
+      "nameLabel": "Nombre visible",
+      "namePlaceholder": "Ingresa el nombre",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "Ingresa el correo electrónico",
+      "passwordLabel": "Contraseña temporal",
+      "passwordPlaceholder": "Ingresa la contraseña temporal",
+      "roleLabel": "Rol",
+      "submit": "Crear"
+    },
+    "editRoleDialog": {
+      "title": "Editar rol",
+      "description": "Cambiar el rol de {name}",
+      "roleLabel": "Nuevo rol"
+    },
+    "resetPasswordDialog": {
+      "title": "Restablecer contraseña",
+      "description": "Establece una nueva contraseña para {name}.",
+      "passwordLabel": "Nueva contraseña",
+      "passwordPlaceholder": "Ingresa la nueva contraseña",
+      "confirm": "Restablecer contraseña"
+    }
+  },
+  "challenges": {
+    "title": "Gestión de desafíos",
+    "subtitle": "Crea y gestiona los desafíos semanales para los usuarios",
+    "createButton": "Crear desafío",
+    "columns": {
+      "type": "Tipo",
+      "title": "Título",
+      "target": "Objetivo",
+      "xpReward": "Recompensa XP",
+      "startsAt": "Inicio",
+      "endsAt": "Fin",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "types": {
+      "walk_count": "Paseos",
+      "walk_distance_km": "Distancia (km)",
+      "new_matches": "Nuevos matches",
+      "group_events_joined": "Eventos de grupo"
+    },
+    "statuses": {
+      "active": "Activo",
+      "expired": "Expirado",
+      "upcoming": "Próximo"
+    },
+    "actions": {
+      "delete": "Eliminar"
+    },
+    "createDialog": {
+      "title": "Crear desafío",
+      "description": "Agrega un nuevo desafío para los usuarios de la plataforma.",
+      "titlePlaceholder": "Ingresa el título del desafío",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Ingresa la descripción del desafío",
+      "submit": "Crear"
+    },
+    "deleteDialog": {
+      "title": "Eliminar desafío",
+      "description": "¿Estás seguro de que deseas eliminar el desafío \"{title}\"? Esta acción no se puede deshacer.",
+      "confirm": "Eliminar"
+    }
+  },
+  "fitness": {
+    "title": "Estadísticas de fitness",
+    "subtitle": "Resumen de la actividad de paseos en la plataforma",
+    "stats": {
+      "totalWalks": "Paseos totales",
+      "totalDistanceKm": "Distancia total",
+      "avgDistanceKm": "Distancia media",
+      "topWalkers": "Top 10 caminantes",
+      "user": "Usuario",
+      "distanceKm": "Distancia (km)",
+      "unknownUser": "Usuario desconocido",
+      "noData": "No hay datos disponibles"
+    }
+  },
+  "validation": {
+    "required": "{field} es obligatorio",
+    "email": "Ingresa un correo electrónico válido",
+    "minChars": "Mínimo {min} caracteres",
+    "maxChars": "Máximo {max} caracteres",
+    "minValue": "Mínimo {min}",
+    "maxValue": "Máximo {max}",
+    "mustBeInteger": "Debe ser un número entero",
+    "mustBePositive": "El valor debe ser positivo",
+    "regexCodeFormat": "Solo letras minúsculas, números y guiones bajos",
+    "minParticipants": "Mínimo {min} participantes",
+    "maxParticipants": "Máximo {max} participantes",
+    "selectOrganization": "Selecciona una organización",
+    "latitudeRange": "Latitud entre {min} y {max}",
+    "longitudeRange": "Longitud entre {min} y {max}",
+    "userIdsRequired": "Ingresa al menos un ID de usuario",
+    "fields": {
+      "code": "El código",
+      "title": "El título",
+      "name": "El nombre",
+      "email": "El correo",
+      "password": "La contraseña",
+      "body": "El cuerpo",
+      "location": "La ubicación",
+      "date": "La fecha",
+      "appName": "El nombre de la app",
+      "duration": "La duración"
+    }
+  },
+  "toast": {
+    "breeds": {
+      "createError": "Error al crear la raza",
+      "updateError": "Error al actualizar la raza",
+      "deleteError": "Error al eliminar la raza",
+      "loadError": "Error al cargar las razas"
+    },
+    "users": {
+      "suspended": "Usuario suspendido",
+      "suspendError": "Error al suspender",
+      "banned": "Usuario baneado",
+      "banError": "Error al banear",
+      "reactivated": "Usuario reactivado",
+      "reactivateError": "Error al reactivar",
+      "loadError": "Error al cargar los usuarios"
+    },
+    "admins": {
+      "createError": "Error al crear el administrador",
+      "roleUpdateError": "Error al actualizar el rol",
+      "passwordResetError": "Error al restablecer la contraseña",
+      "toggleStatusError": "Error al cambiar el estado",
+      "loadError": "Error al cargar los administradores"
+    },
+    "events": {
+      "createError": "Error al crear el evento",
+      "cancelError": "Error al cancelar el evento",
+      "participantRemoveError": "Error al eliminar el participante",
+      "sponsorAddError": "Error al agregar el patrocinador",
+      "sponsorRemoveError": "Error al eliminar el patrocinador",
+      "loadError": "Error al cargar los eventos"
+    },
+    "organizations": {
+      "verifyError": "Error al verificar la organización",
+      "revokeError": "Error al revocar la verificación"
+    },
+    "challenges": {
+      "createError": "Error al crear el desafío",
+      "deleteError": "Error al eliminar el desafío"
+    },
+    "deletions": {
+      "cancelError": "Error al cancelar la eliminación",
+      "loadError": "Error al cargar las eliminaciones"
+    },
+    "aiFlags": {
+      "saved": "Flag {name} actualizado",
+      "saveError": "Error al guardar"
+    },
+    "aiModels": {
+      "promoted": "Modelo {version} promovido",
+      "promoteError": "Error al promover el modelo"
+    },
+    "settings": {
+      "saveError": "Error al guardar la configuración"
+    },
+    "moderation": {
+      "reportsLoadError": "Error al cargar los reportes",
+      "storiesLoadError": "Error al cargar las historias",
+      "feedLoadError": "Error al cargar las publicaciones",
+      "feedStatsError": "Error al cargar las estadísticas",
+      "feedModerateError": "Error al moderar la publicación",
+      "contentLoadError": "Error al cargar los contenidos reportados",
+      "contentReviewError": "Error al revisar el contenido"
+    },
+    "dogs": {
+      "loadError": "Error al cargar los perros"
+    },
+    "safety": {
+      "sosLoadError": "Error al cargar las alertas SOS",
+      "contactsLoadError": "Error al cargar los contactos"
+    },
+    "auditLog": {
+      "loadError": "Error al cargar el registro de auditoría"
+    }
+  }
+}

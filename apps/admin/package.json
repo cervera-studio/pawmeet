@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@pawmeet/api-client": "workspace:*",
     "@pawmeet/config": "workspace:*",
+    "@pawmeet/i18n": "workspace:*",
     "@pawmeet/design-tokens": "workspace:*",
     "@pawmeet/types": "workspace:*",
     "@pawmeet/validation": "workspace:*",

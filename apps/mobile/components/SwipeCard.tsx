@@ -1,6 +1,7 @@
-import { formatDistance } from '@pawmeet/utils';
+import type { ScoreBreakdown } from '@pawmeet/types';
+import { formatDistance, getTopReasons } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
-import { Dimensions, Text, View } from 'react-native';
+import { Dimensions, Pressable, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -25,6 +26,7 @@ export interface SwipeCardDog {
   compatibilityScore: number;
   ownerName: string;
   imageUrl: string | null;
+  scoreBreakdown?: ScoreBreakdown;
 }
 
 interface SwipeCardProps {
@@ -32,9 +34,16 @@ interface SwipeCardProps {
   onSwipeRight: () => void;
   onSwipeLeft: () => void;
   onSwipeUp: () => void;
+  onExplanationTap?: () => void;
 }
 
-export function SwipeCard({ dog, onSwipeRight, onSwipeLeft, onSwipeUp }: SwipeCardProps) {
+export function SwipeCard({
+  dog,
+  onSwipeRight,
+  onSwipeLeft,
+  onSwipeUp,
+  onExplanationTap,
+}: SwipeCardProps) {
   const router = useRouter();
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -43,6 +52,7 @@ export function SwipeCard({ dog, onSwipeRight, onSwipeLeft, onSwipeUp }: SwipeCa
   const distanceLabel = formatDistance(dog.distanceKm);
 
   const compatPercent = Math.round(dog.compatibilityScore * 100);
+  const topReasons = dog.scoreBreakdown ? getTopReasons(dog.scoreBreakdown) : [];
 
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
@@ -155,9 +165,14 @@ export function SwipeCard({ dog, onSwipeRight, onSwipeLeft, onSwipeUp }: SwipeCa
               <View className="rounded-full bg-white/20 px-3 py-1">
                 <Text className="text-sm font-medium text-white">{distanceLabel}</Text>
               </View>
-              <View className="rounded-full bg-primary/80 px-3 py-1">
-                <Text className="text-sm font-medium text-white">{compatPercent}%</Text>
-              </View>
+              <Pressable onPress={onExplanationTap} className="items-end gap-0.5">
+                <View className="rounded-full bg-primary/80 px-3 py-1">
+                  <Text className="text-sm font-medium text-white">{compatPercent}%</Text>
+                </View>
+                {topReasons.length > 0 && (
+                  <Text className="text-xs text-white/70">{topReasons.join(' · ')}</Text>
+                )}
+              </Pressable>
             </View>
           </View>
         </View>

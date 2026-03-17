@@ -141,10 +141,86 @@ export function useNewDogViewModel() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [generatingBio, setGeneratingBio] = useState(false);
 
   const setField = useCallback(<K extends keyof DogFormState>(field: K, value: DogFormState[K]) => {
     dispatch({ type: 'SET_FIELD', field, value: value as DogFormState[keyof DogFormState] });
   }, []);
+
+  const generateBio = useCallback(async () => {
+    if (
+      !state.name ||
+      !state.breed ||
+      !state.size ||
+      !state.gender ||
+      !state.energyLevel ||
+      !state.behaviorWithDogs ||
+      !state.behaviorWithPeople ||
+      !state.leashBehavior ||
+      state.walkPrefTime.length === 0 ||
+      state.walkPrefTerrain.length === 0
+    ) {
+      return;
+    }
+
+    setGeneratingBio(true);
+    try {
+      const { bio } = await api.dogs.generateBio.mutate({
+        name: state.name,
+        breed: state.breed,
+        breedSecondary: state.breedSecondary || undefined,
+        size: state.size as 'toy' | 'piccola' | 'media' | 'grande' | 'gigante',
+        gender: state.gender as 'maschio' | 'femmina',
+        energyLevel: state.energyLevel as 'bassa' | 'media' | 'alta' | 'molto_alta',
+        behaviorWithDogs: state.behaviorWithDogs as
+          | 'molto_socievole'
+          | 'socievole'
+          | 'selettivo'
+          | 'reattivo',
+        behaviorWithPeople: state.behaviorWithPeople as
+          | 'molto_socievole'
+          | 'socievole'
+          | 'timido'
+          | 'diffidente',
+        leashBehavior: state.leashBehavior as
+          | 'eccellente'
+          | 'buono'
+          | 'in_addestramento'
+          | 'difficile',
+        walkPrefTime: state.walkPrefTime as (
+          | 'mattina_presto'
+          | 'mattina'
+          | 'pomeriggio'
+          | 'sera'
+          | 'sera_tardi'
+        )[],
+        walkPrefTerrain: state.walkPrefTerrain as (
+          | 'urbano'
+          | 'parco'
+          | 'campagna'
+          | 'spiaggia'
+          | 'montagna'
+        )[],
+      });
+      dispatch({ type: 'SET_FIELD', field: 'bio', value: bio });
+    } catch (e) {
+      setApiError(e instanceof Error ? e.message : 'Errore durante la generazione della bio');
+    } finally {
+      setGeneratingBio(false);
+    }
+  }, [state]);
+
+  const canGenerateBio =
+    !!state.name &&
+    !!state.breed &&
+    !!state.size &&
+    !!state.gender &&
+    !!state.energyLevel &&
+    !!state.behaviorWithDogs &&
+    !!state.behaviorWithPeople &&
+    !!state.leashBehavior &&
+    state.walkPrefTime.length > 0 &&
+    state.walkPrefTerrain.length > 0;
 
   const buildFormData = useCallback(
     () => ({
@@ -231,5 +307,8 @@ export function useNewDogViewModel() {
     apiError,
     loading,
     handleSubmit,
+    generatingBio,
+    generateBio,
+    canGenerateBio,
   } as const;
 }

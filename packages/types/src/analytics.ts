@@ -53,6 +53,7 @@ export interface AnalyticsEventMap {
     isNeutered: boolean;
   };
   dog_profile_updated: { fieldsChanged: string[] };
+  dog_bio_generated: { breed: string; size: string };
   dog_photo_uploaded: { position: number; fileSizeKb: number };
 
   // Matching
@@ -245,6 +246,9 @@ export interface AnalyticsEventMap {
     topN: number;
     latencyMs: number;
   };
+
+  // Match Explanation
+  match_explanation_viewed: { source: 'swipe_card' | 'match_card'; overallScore: number };
 
   // Rising Compatibility
   rising_compatibility_notified: { risingCount: number };

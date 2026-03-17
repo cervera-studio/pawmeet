@@ -10,7 +10,7 @@ const releaseVersion = process.env.VERCEL_GIT_COMMIT_SHA
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@pawmeet/types', '@pawmeet/validation'],
+  transpilePackages: ['@pawmeet/types', '@pawmeet/validation', '@pawmeet/i18n'],
   env: {
     NEXT_PUBLIC_SENTRY_RELEASE: releaseVersion,
   },

@@ -4,13 +4,14 @@ import { createConfirmDogPhoto } from '../use-cases/confirm-dog-photo.js';
 import { createCreateDog } from '../use-cases/create-dog.js';
 import { createDeleteDog } from '../use-cases/delete-dog.js';
 import { createDeleteDogPhoto } from '../use-cases/delete-dog-photo.js';
+import { createGenerateDogBio } from '../use-cases/generate-dog-bio.js';
 import { createGetDog } from '../use-cases/get-dog.js';
 import { createListUserDogs } from '../use-cases/list-user-dogs.js';
 import { createReorderDogPhotos } from '../use-cases/reorder-dog-photos.js';
 import { createSearchBreeds } from '../use-cases/search-breeds.js';
 import { createUpdateDog } from '../use-cases/update-dog.js';
 import { createUploadDogPhotoUrl } from '../use-cases/upload-dog-photo-url.js';
-import { breedRepo, dogRepo, storage } from './services.js';
+import { bioGenerationService, breedRepo, dogRepo, storage } from './services.js';
 
 export const dogDeps = {
   searchBreeds: createSearchBreeds({ breedRepo }),
@@ -23,4 +24,5 @@ export const dogDeps = {
   confirmDogPhoto: createConfirmDogPhoto({ dogRepo, storage }),
   deleteDogPhoto: createDeleteDogPhoto({ dogRepo, storage }),
   reorderDogPhotos: createReorderDogPhotos({ dogRepo }),
+  generateDogBio: createGenerateDogBio({ bioGenerationService }),
 };

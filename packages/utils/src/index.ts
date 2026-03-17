@@ -4,4 +4,5 @@ export * from './format';
 export * from './geo';
 export * from './hashtag';
 export * from './logger';
+export * from './match-explanation';
 export * from './matching';

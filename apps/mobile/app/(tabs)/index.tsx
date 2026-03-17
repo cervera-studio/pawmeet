@@ -6,8 +6,10 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogSelector } from '@/components/DogSelector';
+import { ExplanationModal } from '@/components/ExplanationModal';
 import { MatchCelebration } from '@/components/MatchCelebration';
 import { SwipeCard } from '@/components/SwipeCard';
+import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useDiscoveryViewModel } from './index.view-model';
 
 // ── Filter configuration ────────────────────────────────────────────────────
@@ -223,6 +225,8 @@ function FilterModal({
 
 export default function DiscoveryScreen() {
   const vm = useDiscoveryViewModel();
+  const analytics = useAnalyticsService();
+  const [explanationVisible, setExplanationVisible] = useState(false);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
@@ -300,10 +304,18 @@ export default function DiscoveryScreen() {
               compatibilityScore: vm.currentProfile.compatibilityScore,
               ownerName: vm.currentProfile.dog.ownerId,
               imageUrl: null,
+              scoreBreakdown: vm.currentProfile.scoreBreakdown,
             }}
             onSwipeRight={vm.handleSwipeRight}
             onSwipeLeft={vm.handleSwipeLeft}
             onSwipeUp={vm.handleSuperLike}
+            onExplanationTap={() => {
+              setExplanationVisible(true);
+              analytics.track('match_explanation_viewed', {
+                source: 'swipe_card',
+                overallScore: vm.currentProfile?.compatibilityScore ?? 0,
+              });
+            }}
           />
         ) : (
           <View className="items-center">
@@ -367,6 +379,14 @@ export default function DiscoveryScreen() {
         filters={vm.filters}
         onApply={vm.handleApplyFilters}
         onClose={vm.closeFilterModal}
+      />
+
+      {/* Explanation modal */}
+      <ExplanationModal
+        visible={explanationVisible}
+        onClose={() => setExplanationVisible(false)}
+        overallScore={vm.currentProfile?.compatibilityScore ?? 0}
+        breakdown={vm.currentProfile?.scoreBreakdown ?? null}
       />
     </SafeAreaView>
   );

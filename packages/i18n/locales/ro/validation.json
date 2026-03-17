@@ -1,0 +1,20 @@
+{
+  "password_min_length": "Minim 8 caractere",
+  "password_uppercase_required": "Cel puțin o literă mare",
+  "password_digit_required": "Cel puțin o cifră",
+  "email_invalid": "Adresă de email invalidă",
+  "date_of_birth_required": "Data nașterii este obligatorie",
+  "date_of_birth_future": "Data nașterii nu poate fi în viitor",
+  "date_of_birth_min_age": "Trebuie să ai cel puțin {minAge} ani pentru a folosi PawMeet",
+  "social_nonce_required": "Nonce obligatoriu pentru autentificarea Google",
+  "otp_format": "Cod din 8 cifre",
+  "time_format": "Format HH:MM",
+  "delete_account_password_required": "Parola este necesară pentru a confirma ștergerea",
+  "reactivate_account_password_required": "Parola este necesară pentru a reactiva contul",
+  "latitude_out_of_range": "Latitudine în afara intervalului",
+  "longitude_out_of_range": "Longitudine în afara intervalului",
+  "score_min_zero": "Scorul trebuie să fie >= 0",
+  "score_max_one": "Scorul trebuie să fie <= 1",
+  "weights_must_sum_to_one": "Ponderile trebuie să fie egale cu 1",
+  "slug_format": "Doar litere mici, cifre și cratime"
+}

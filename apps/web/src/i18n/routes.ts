@@ -2,14 +2,14 @@ import type { Locale } from './locales';
 
 /** Maps canonical (Italian) paths to their localized equivalents */
 export const routeMap: Record<string, Record<Locale, string>> = {
-  '/': { it: '/', en: '/en' },
-  '/chi-siamo': { it: '/chi-siamo', en: '/en/about' },
-  '/blog': { it: '/blog', en: '/en/blog' },
-  '/contatti': { it: '/contatti', en: '/en/contact' },
-  '/waitlist': { it: '/waitlist', en: '/en/waitlist' },
-  '/privacy': { it: '/privacy', en: '/en/privacy' },
-  '/terms': { it: '/terms', en: '/en/terms' },
-  '/cookie': { it: '/cookie', en: '/en/cookie' },
+  '/': { it: '/', en: '/en', es: '/es', ro: '/ro' },
+  '/chi-siamo': { it: '/chi-siamo', en: '/en/about', es: '/es/about', ro: '/ro/about' },
+  '/blog': { it: '/blog', en: '/en/blog', es: '/es/blog', ro: '/ro/blog' },
+  '/contatti': { it: '/contatti', en: '/en/contact', es: '/es/contact', ro: '/ro/contact' },
+  '/waitlist': { it: '/waitlist', en: '/en/waitlist', es: '/es/waitlist', ro: '/ro/waitlist' },
+  '/privacy': { it: '/privacy', en: '/en/privacy', es: '/es/privacy', ro: '/ro/privacy' },
+  '/terms': { it: '/terms', en: '/en/terms', es: '/es/terms', ro: '/ro/terms' },
+  '/cookie': { it: '/cookie', en: '/en/cookie', es: '/es/cookie', ro: '/ro/cookie' },
 };
 
 /** Reverse lookup: given any localized path, find the canonical key */

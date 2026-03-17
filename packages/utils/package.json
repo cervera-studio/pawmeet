@@ -12,6 +12,7 @@
     "lint": "biome check src/"
   },
   "dependencies": {
+    "@pawmeet/config": "workspace:*",
     "@pawmeet/types": "workspace:*"
   },
   "devDependencies": {

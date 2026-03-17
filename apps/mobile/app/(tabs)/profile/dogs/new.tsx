@@ -49,10 +49,16 @@ function Step1BasicInfo({
   state,
   setField,
   errors,
+  generatingBio,
+  canGenerateBio,
+  onGenerateBio,
 }: {
   state: ReturnType<typeof useNewDogViewModel>['state'];
   setField: ReturnType<typeof useNewDogViewModel>['setField'];
   errors: Record<string, string>;
+  generatingBio: boolean;
+  canGenerateBio: boolean;
+  onGenerateBio: () => void;
 }) {
   return (
     <View className="gap-4">
@@ -152,13 +158,40 @@ function Step1BasicInfo({
         <FieldError message={errors.isNeutered} />
       </View>
 
-      <Input
-        placeholder="Bio (opzionale, max 500 caratteri)"
-        value={state.bio}
-        onChangeText={(v) => setField('bio', v)}
-        multiline
-        numberOfLines={3}
-      />
+      <View>
+        <Input
+          placeholder="Bio (opzionale, max 500 caratteri)"
+          value={state.bio}
+          onChangeText={(v) => setField('bio', v)}
+          multiline
+          numberOfLines={3}
+        />
+        <Pressable
+          onPress={onGenerateBio}
+          disabled={generatingBio || !canGenerateBio}
+          className={`mt-2 flex-row items-center justify-center rounded-full border px-4 py-2 ${
+            generatingBio || !canGenerateBio
+              ? 'border-gray-200 dark:border-[#48484A]'
+              : 'border-primary'
+          }`}
+        >
+          <Text
+            className={`text-sm font-medium ${
+              generatingBio || !canGenerateBio
+                ? 'text-gray-400 dark:text-neutral-500'
+                : 'text-primary'
+            }`}
+          >
+            {generatingBio ? 'Generazione...' : 'Genera bio con AI'}
+          </Text>
+        </Pressable>
+        {!canGenerateBio && (
+          <Text className="mt-1 px-1 text-xs text-gray-400 dark:text-neutral-500">
+            Completa tutti i campi obbligatori (inclusi temperamento e passeggiate) per generare la
+            bio
+          </Text>
+        )}
+      </View>
     </View>
   );
 }
@@ -332,8 +365,20 @@ function Step4Photos() {
 // -- Main screen --
 
 export default function NewDogScreen() {
-  const { state, setField, step, nextStep, prevStep, errors, apiError, loading, handleSubmit } =
-    useNewDogViewModel();
+  const {
+    state,
+    setField,
+    step,
+    nextStep,
+    prevStep,
+    errors,
+    apiError,
+    loading,
+    handleSubmit,
+    generatingBio,
+    generateBio,
+    canGenerateBio,
+  } = useNewDogViewModel();
 
   return (
     <>
@@ -354,7 +399,16 @@ export default function NewDogScreen() {
             </View>
           ) : null}
 
-          {step === 0 && <Step1BasicInfo state={state} setField={setField} errors={errors} />}
+          {step === 0 && (
+            <Step1BasicInfo
+              state={state}
+              setField={setField}
+              errors={errors}
+              generatingBio={generatingBio}
+              canGenerateBio={canGenerateBio}
+              onGenerateBio={generateBio}
+            />
+          )}
           {step === 1 && <Step2Personality state={state} setField={setField} errors={errors} />}
           {step === 2 && <Step3WalkPrefs state={state} setField={setField} errors={errors} />}
           {step === 3 && <Step4Photos />}

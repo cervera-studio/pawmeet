@@ -1,0 +1,18 @@
+{
+  "loading": "Se încarcă...",
+  "save": "Salvează",
+  "cancel": "Anulează",
+  "delete": "Șterge",
+  "confirm": "Confirmă",
+  "search": "Caută...",
+  "yes": "Da",
+  "no": "Nu",
+  "back": "Înapoi",
+  "next": "Următorul",
+  "retry": "Reîncearcă",
+  "noResults": "Nu s-au găsit rezultate.",
+  "noData": "Nu sunt date disponibile",
+  "unknown": "Necunoscut",
+  "error": "Eroare",
+  "success": "Operațiune finalizată"
+}

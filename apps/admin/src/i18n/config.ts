@@ -1,8 +1,6 @@
-export const locales = ['it', 'en'] as const;
-export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'it';
-
-export const localeNames: Record<Locale, string> = {
-  it: 'Italiano',
-  en: 'English',
-};
+export {
+  DEFAULT_LOCALE as defaultLocale,
+  LOCALE_CODES as locales,
+  LOCALES as localeNames,
+  type Locale,
+} from '@pawmeet/i18n';

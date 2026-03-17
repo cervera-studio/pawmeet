@@ -2,6 +2,7 @@ import type { RouterOutput } from '@pawmeet/api-client';
 import type { DiscoveryFilters } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { cache } from '@/lib/storage';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
@@ -16,7 +17,10 @@ const SUGGESTIONS_CACHE_KEY = 'cache:suggestions';
  * Re-fetches suggestions whenever selectedDogId changes.
  */
 export function useMatching() {
+  const analytics = useAnalyticsService();
   const dogId = useDogsStore((s) => s.selectedDogId);
+  const swipeCountRef = useRef(0);
+  const cardViewStartRef = useRef<number>(Date.now());
   const cacheKey = dogId ? `${SUGGESTIONS_CACHE_KEY}:${dogId}` : SUGGESTIONS_CACHE_KEY;
 
   // Hydrate from cache on init (stale-while-revalidate)
@@ -56,20 +60,62 @@ export function useMatching() {
       });
       setSuggestions(data);
       setCurrentIndex(0);
+      swipeCountRef.current = 0;
       cache.set(cacheKey, data);
+
+      // Track match feed loaded
+      const avgScore =
+        data.length > 0
+          ? data.reduce(
+              (sum, s) =>
+                sum + (((s as Record<string, unknown>).compatibilityScore as number) ?? 0),
+              0,
+            ) / data.length
+          : 0;
+      analytics.track('match_feed_loaded', {
+        cardsAvailable: data.length,
+        avgCompatibilityScore: Math.round(avgScore * 100) / 100,
+      });
     } catch (e) {
       logger.warn('useMatching', 'Failed to fetch suggestions', e);
     } finally {
       setIsLoading(false);
     }
-  }, [dogId, cacheKey, filters]);
+  }, [dogId, cacheKey, filters, analytics]);
 
   const advanceCard = useCallback(() => {
-    setCurrentIndex((prev) => prev + 1);
-  }, []);
+    swipeCountRef.current += 1;
+    cardViewStartRef.current = Date.now();
+    setCurrentIndex((prev) => {
+      const next = prev + 1;
+      if (next >= suggestions.length) {
+        analytics.track('match_feed_exhausted', {
+          totalSwipesSession: swipeCountRef.current,
+          searchRadiusKm: (filters.maxDistanceKm as number) ?? 50,
+        });
+      }
+      return next;
+    });
+  }, [suggestions.length, filters, analytics]);
+
+  const trackSwipe = useCallback(
+    (direction: 'right' | 'left') => {
+      const profile = currentProfile as Record<string, unknown> | null;
+      analytics.track('match_swipe_performed', {
+        direction,
+        compatibilityScore: (profile?.compatibilityScore as number) ?? 0,
+        distanceKm: (profile?.distanceKm as number) ?? 0,
+        viewDurationMs: Date.now() - cardViewStartRef.current,
+        sizePair: (profile?.sizePair as string) ?? 'unknown',
+        energyPair: (profile?.energyPair as string) ?? 'unknown',
+      });
+    },
+    [currentProfile, analytics],
+  );
 
   const swipeRight = useCallback(
     async (targetDogId: string) => {
+      trackSwipe('right');
       try {
         const result = await api.matches.like.mutate({
           dogId: dogId ?? '',
@@ -83,11 +129,12 @@ export function useMatching() {
       }
       advanceCard();
     },
-    [advanceCard, dogId],
+    [advanceCard, dogId, trackSwipe],
   );
 
   const swipeLeft = useCallback(
     async (targetDogId: string) => {
+      trackSwipe('left');
       try {
         await api.matches.pass.mutate({ dogId: dogId ?? '', targetDogId });
       } catch (e) {
@@ -95,7 +142,7 @@ export function useMatching() {
       }
       advanceCard();
     },
-    [advanceCard, dogId],
+    [advanceCard, dogId, trackSwipe],
   );
 
   const superLike = useCallback(

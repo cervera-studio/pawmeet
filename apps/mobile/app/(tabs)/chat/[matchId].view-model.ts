@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FlatList } from 'react-native';
+import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useChat } from '@/hooks/useChat';
 import { useLocation } from '@/hooks/useLocation';
 import { useWalks } from '@/hooks/useWalks';
@@ -22,6 +23,8 @@ export function useChatConversationViewModel() {
   }, [matchId]);
 
   const validMatchId = matchId && isValidUUID(matchId) ? matchId : undefined;
+  const analytics = useAnalyticsService();
+  const chatOpenTrackedRef = useRef(false);
 
   const {
     messages,
@@ -46,7 +49,16 @@ export function useChatConversationViewModel() {
   useEffect(() => {
     fetchMessages();
     markAsRead();
-  }, [fetchMessages, markAsRead]);
+
+    // Track chat_opened once per mount
+    if (!chatOpenTrackedRef.current && validMatchId) {
+      chatOpenTrackedRef.current = true;
+      analytics.track('chat_opened', {
+        matchAgeDays: 0, // Would need match creation date for accuracy
+        isFirstOpen: messages.length === 0,
+      });
+    }
+  }, [fetchMessages, markAsRead, validMatchId, analytics, messages.length]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {

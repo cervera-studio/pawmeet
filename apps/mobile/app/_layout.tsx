@@ -6,8 +6,8 @@ import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useMemo, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ConsentModal } from '@/components/ConsentModal';
@@ -122,6 +122,47 @@ function CertificatePinMonitor() {
   return null;
 }
 
+/** Tracks app_opened and app_backgrounded lifecycle events. */
+function AppLifecycleTracker() {
+  const analyticsService = useMemo(() => container.resolve(ANALYTICS_SERVICE), []);
+  const sessionStartRef = useRef(Date.now());
+  const screenCountRef = useRef(0);
+  const lastOpenRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    // Track initial app_opened
+    analyticsService.track('app_opened', {
+      hoursSinceLastOpen: 0,
+      isNotificationDriven: false,
+    });
+
+    const sub = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        const now = Date.now();
+        const hoursSinceLastOpen = lastOpenRef.current
+          ? (now - lastOpenRef.current) / (1000 * 60 * 60)
+          : 0;
+        lastOpenRef.current = now;
+        sessionStartRef.current = now;
+        screenCountRef.current = 0;
+        analyticsService.track('app_opened', {
+          hoursSinceLastOpen: Math.round(hoursSinceLastOpen * 10) / 10,
+          isNotificationDriven: false,
+        });
+      } else if (nextState === 'background') {
+        analyticsService.track('app_backgrounded', {
+          sessionDurationMs: Date.now() - sessionStartRef.current,
+          screenCount: screenCountRef.current,
+        });
+      }
+    });
+
+    return () => sub.remove();
+  }, [analyticsService]);
+
+  return null;
+}
+
 /** Initializes the network monitor and sync engine for offline-first support. */
 function OfflineFirstManager() {
   useEffect(() => {
@@ -198,6 +239,7 @@ function RootLayout() {
           <CertificatePinMonitor />
           <DeviceIntegrityMonitor />
           <OfflineFirstManager />
+          <AppLifecycleTracker />
           <AuthHydrator />
           {isAuthenticated && <PushNotificationRegistration />}
           {isAuthenticated && <WebSocketManager />}

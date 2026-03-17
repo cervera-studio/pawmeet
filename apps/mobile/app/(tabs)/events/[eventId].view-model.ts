@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
+import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useGroupEvents } from '@/hooks/useGroupEvents';
 import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
@@ -23,6 +24,7 @@ export function useEventDetailViewModel() {
   const [event, setEvent] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const analytics = useAnalyticsService();
 
   const fetchEvent = useCallback(async () => {
     if (!eventId) return;
@@ -61,10 +63,18 @@ export function useEventDetailViewModel() {
     try {
       const result = await api.groupEvents.listSponsors.query({ eventId });
       setSponsors(result as Sponsor[]);
+      // Track sponsor impressions
+      for (const sponsor of result as Sponsor[]) {
+        analytics.track('event_sponsor_viewed', {
+          sponsorTier: sponsor.tier,
+          placement:
+            sponsor.tier === 'title' ? 'header' : sponsor.tier === 'partner' ? 'footer' : 'body',
+        });
+      }
     } catch (e) {
       logger.warn('EventDetail', 'Failed to load sponsors', e);
     }
-  }, [eventId, isOfficial]);
+  }, [eventId, isOfficial, analytics]);
 
   useEffect(() => {
     void loadSponsors();

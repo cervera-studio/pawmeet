@@ -47,6 +47,7 @@ export const useConsentStore = create<ConsentStoreState>()(
  */
 export function initConsentSubscription(service: AnalyticsService): void {
   let prevAnalytics = useConsentStore.getState().consents.analytics;
+  let prevConsents = { ...useConsentStore.getState().consents };
 
   useConsentStore.subscribe((state) => {
     const current = state.consents.analytics;
@@ -57,6 +58,26 @@ export function initConsentSubscription(service: AnalyticsService): void {
       } else {
         service.optOut();
       }
+    }
+
+    // Track consent changes (only if analytics is enabled)
+    const c = state.consents;
+    const changed =
+      c.analytics !== prevConsents.analytics ||
+      c.abTesting !== prevConsents.abTesting ||
+      c.errorTracking !== prevConsents.errorTracking ||
+      c.marketing !== prevConsents.marketing ||
+      c.aiTraining !== prevConsents.aiTraining;
+
+    if (changed) {
+      prevConsents = { ...c };
+      service.track('privacy_consent_updated', {
+        analytics: c.analytics,
+        abTesting: c.abTesting,
+        errorTracking: c.errorTracking,
+        marketing: c.marketing,
+        aiTraining: c.aiTraining,
+      });
     }
   });
 }

@@ -2,6 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { container } from 'tsyringe';
+import { useAnalyticsService } from '@/hooks/useAnalytics';
 import type { FollowUser } from '@/repositories/interfaces/follow-repository';
 import { FOLLOW_REPOSITORY } from '@/repositories/tokens';
 
@@ -9,33 +10,41 @@ const followRepo = container.resolve(FOLLOW_REPOSITORY);
 
 export function useSearchUsersViewModel() {
   const router = useRouter();
+  const analytics = useAnalyticsService();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<FollowUser[]>([]);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const search = useCallback((text: string) => {
-    setQuery(text);
+  const search = useCallback(
+    (text: string) => {
+      setQuery(text);
 
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    if (text.length < 2) {
-      setResults([]);
-      return;
-    }
-
-    debounceRef.current = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const data = await followRepo.searchUsers(text);
-        setResults(data);
-      } catch (e) {
-        logger.warn('SearchUsers', 'Failed to search', e);
-      } finally {
-        setLoading(false);
+      if (text.length < 2) {
+        setResults([]);
+        return;
       }
-    }, 300);
-  }, []);
+
+      debounceRef.current = setTimeout(async () => {
+        setLoading(true);
+        try {
+          const data = await followRepo.searchUsers(text);
+          setResults(data);
+          analytics.track('social_user_searched', {
+            resultCount: data.length,
+            queryLength: text.length,
+          });
+        } catch (e) {
+          logger.warn('SearchUsers', 'Failed to search', e);
+        } finally {
+          setLoading(false);
+        }
+      }, 300);
+    },
+    [analytics],
+  );
 
   const navigateToUser = useCallback(
     (user: FollowUser) => {

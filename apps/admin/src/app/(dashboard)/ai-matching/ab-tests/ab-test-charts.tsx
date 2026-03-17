@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useIsDark } from '@/hooks/use-is-dark';
-import { getChartColors } from '@/lib/constants';
+import { FONT_SIZE, getChartColors } from '@/lib/constants';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 
 interface TimeSeriesEntry {
@@ -83,8 +83,8 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
           <ResponsiveContainer width="100%" height={256}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={formatPercent} domain={[0, 'auto']} />
+              <XAxis dataKey="date" tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatDateAxis} />
+              <YAxis tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatPercent} domain={[0, 'auto']} />
               <Tooltip labelFormatter={formatTooltipDate} formatter={formatPercent} />
               <Legend />
               <Line
@@ -117,8 +117,8 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
           <ResponsiveContainer width="100%" height={256}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={formatPercent} domain={[0, 'auto']} />
+              <XAxis dataKey="date" tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatDateAxis} />
+              <YAxis tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatPercent} domain={[0, 'auto']} />
               <Tooltip labelFormatter={formatTooltipDate} formatter={formatPercent} />
               <Legend />
               <Line

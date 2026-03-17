@@ -16,7 +16,7 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useIsDark } from '@/hooks/use-is-dark';
-import { getChartColors } from '@/lib/constants';
+import { FONT_SIZE, getChartColors } from '@/lib/constants';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 import type { TimeSeriesPoint } from '@/repositories';
 
@@ -56,10 +56,10 @@ export function DashboardCharts({
                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 11, fill: colors.text }}
+                  tick={{ fontSize: FONT_SIZE.sm, fill: colors.text }}
                   tickFormatter={formatDateAxis}
                 />
-                <YAxis tick={{ fontSize: 11, fill: colors.text }} allowDecimals={false} />
+                <YAxis tick={{ fontSize: FONT_SIZE.sm, fill: colors.text }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
                 <Area
                   type="monotone"
@@ -90,10 +90,10 @@ export function DashboardCharts({
                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 11, fill: colors.text }}
+                  tick={{ fontSize: FONT_SIZE.sm, fill: colors.text }}
                   tickFormatter={formatDateAxis}
                 />
-                <YAxis tick={{ fontSize: 11, fill: colors.text }} allowDecimals={false} />
+                <YAxis tick={{ fontSize: FONT_SIZE.sm, fill: colors.text }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
                 <Bar
                   dataKey="count"
@@ -122,10 +122,10 @@ export function DashboardCharts({
                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 11, fill: colors.text }}
+                  tick={{ fontSize: FONT_SIZE.sm, fill: colors.text }}
                   tickFormatter={formatDateAxis}
                 />
-                <YAxis tick={{ fontSize: 11, fill: colors.text }} allowDecimals={false} />
+                <YAxis tick={{ fontSize: FONT_SIZE.sm, fill: colors.text }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
                 <Line
                   type="monotone"

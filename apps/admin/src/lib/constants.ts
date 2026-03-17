@@ -10,6 +10,23 @@ export const TIMING = {
   DEBOUNCE_DELAY_MS: 300,
 } as const;
 
+// ── Typography (from @pawmeet/design-tokens, 4px grid) ───────────────────────
+
+export const FONT_SIZE = {
+  /** 10px — chart bucket labels, tiny captions */
+  xs: 10,
+  /** 12px — chart axis ticks, small labels */
+  sm: 12,
+  /** 14px — body text */
+  md: 14,
+  /** 16px — headings, body-lg */
+  base: 16,
+  /** 20px — heading-md */
+  lg: 20,
+  /** 24px — heading-lg */
+  xl: 24,
+} as const;
+
 // ── Chart colors ──────────────────────────────────────────────────────────────
 
 export const CHART_COLORS = {

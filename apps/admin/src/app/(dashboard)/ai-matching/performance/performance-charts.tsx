@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useIsDark } from '@/hooks/use-is-dark';
-import { getChartColors } from '@/lib/constants';
+import { FONT_SIZE, getChartColors } from '@/lib/constants';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -93,8 +93,8 @@ function CalibrationChart({ data }: { data: ScoreBucket[] | null }) {
           <ResponsiveContainer width="100%" height={256}>
             <ComposedChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis dataKey="bucket" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 11 }} unit="%" />
+              <XAxis dataKey="bucket" tick={{ fontSize: FONT_SIZE.xs }} />
+              <YAxis tick={{ fontSize: FONT_SIZE.sm }} unit="%" />
               <Tooltip />
               <Bar
                 dataKey="observedMatchRate"
@@ -126,8 +126,8 @@ function WeightDistributionChart({ data }: { data: WeightDimension[] | null }) {
           <ResponsiveContainer width="100%" height={256}>
             <BarChart data={data} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis type="number" tick={{ fontSize: 11 }} unit="%" domain={[0, 'auto']} />
-              <YAxis dataKey="dimension" type="category" tick={{ fontSize: 11 }} width={100} />
+              <XAxis type="number" tick={{ fontSize: FONT_SIZE.sm }} unit="%" domain={[0, 'auto']} />
+              <YAxis dataKey="dimension" type="category" tick={{ fontSize: FONT_SIZE.sm }} width={100} />
               <Tooltip formatter={(v: unknown) => `${Number(v).toFixed(1)}%`} />
               <Bar
                 dataKey="avgWeight"
@@ -157,14 +157,14 @@ function PerformanceTimeSeries({ data }: { data: TimeSeriesPoint[] }) {
           <ResponsiveContainer width="100%" height={256}>
             <ComposedChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
+              <XAxis dataKey="date" tick={{ fontSize: FONT_SIZE.sm }} tickFormatter={formatDateAxis} />
               <YAxis
                 yAxisId="left"
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: FONT_SIZE.sm }}
                 tickFormatter={formatPercent}
                 domain={[0, 1]}
               />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: FONT_SIZE.sm }} />
               <Tooltip labelFormatter={formatTooltipDate} />
               <Legend />
               <Line

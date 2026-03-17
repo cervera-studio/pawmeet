@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { zValidator } from '@hono/zod-validator';
 import { compare, hash } from 'bcryptjs';
 import { Hono } from 'hono';
@@ -289,7 +290,13 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
       }
 
       const codeHash = await hashToken(code);
-      if (codeHash !== storedHash) {
+      // Use constant-time comparison to prevent timing attacks on hash values
+      const codeBuffer = Buffer.from(codeHash, 'hex');
+      const storedBuffer = Buffer.from(storedHash, 'hex');
+      const hashesMatch =
+        codeBuffer.length === storedBuffer.length &&
+        crypto.timingSafeEqual(codeBuffer, storedBuffer);
+      if (!hashesMatch) {
         logSecurityEvent({
           event: SECURITY_EVENT.PasswordResetFailed,
           email,

@@ -75,6 +75,12 @@ export class OnnxModelLoader {
   }
 
   private async loadModel(version: string): Promise<void> {
+    // Validate version format to prevent path traversal (e.g., ../../etc/passwd)
+    if (!/^[a-zA-Z0-9._-]+$/.test(version)) {
+      logger.error('onnx-model-loader', `Invalid model version format: ${version}`);
+      return;
+    }
+
     const modelDir = path.join(MODEL_DIR, version);
     const modelPath = path.join(modelDir, 'model.onnx');
 

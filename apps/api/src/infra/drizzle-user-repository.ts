@@ -178,8 +178,9 @@ export class DrizzleUserRepository implements UserRepository {
       displayName: r.displayName,
       avatarUrl: r.avatarUrl,
       distanceKm: r.distanceKm,
-      latitude: r.latitude ?? 0,
-      longitude: r.longitude ?? 0,
+      // Round to ~100m precision (2 decimals) to protect user privacy
+      approximateLatitude: Math.round((r.latitude ?? 0) * 100) / 100,
+      approximateLongitude: Math.round((r.longitude ?? 0) * 100) / 100,
       dogs: dogsByOwner.get(r.id) ?? [],
     }));
   }

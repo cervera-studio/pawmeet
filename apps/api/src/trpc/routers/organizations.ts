@@ -8,6 +8,7 @@ import {
 } from '@pawmeet/validation';
 import { TRPCError } from '@trpc/server';
 import type { organizationDeps } from '../../container/index.js';
+import { AdminRole, requireRole } from '../../lib/admin-permissions.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 function createAdminGuard() {
@@ -23,23 +24,20 @@ export function createOrganizationsRouter(deps: typeof organizationDeps) {
   const adminProcedure = createAdminGuard();
 
   return router({
-    create: adminProcedure
-      .input(createOrganizationSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.createOrganization(ctx.userId, input)),
-      ),
+    create: adminProcedure.input(createOrganizationSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Admin);
+      return unwrapResult(await deps.createOrganization(ctx.userId, input));
+    }),
 
-    verify: adminProcedure
-      .input(verifyOrganizationSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.verifyOrganization(ctx.userId, input.organizationId)),
-      ),
+    verify: adminProcedure.input(verifyOrganizationSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.Admin);
+      return unwrapResult(await deps.verifyOrganization(ctx.userId, input.organizationId));
+    }),
 
-    revoke: adminProcedure
-      .input(verifyOrganizationSchema)
-      .mutation(async ({ input }) =>
-        unwrapResult(await deps.revokeOrganization(input.organizationId)),
-      ),
+    revoke: adminProcedure.input(verifyOrganizationSchema).mutation(async ({ ctx, input }) => {
+      requireRole(ctx.adminRole, AdminRole.SuperAdmin);
+      return unwrapResult(await deps.revokeOrganization(input.organizationId));
+    }),
 
     get: protectedProcedure
       .input(getOrganizationSchema)

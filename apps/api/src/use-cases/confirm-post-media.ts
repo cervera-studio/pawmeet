@@ -20,7 +20,10 @@ export function createConfirmPostMedia({ feedRepo, storage }: Deps) {
       return fail(new AppError('POST_NOT_FOUND', 'Post non trovato', 404));
     }
 
-    if (!key.startsWith(`posts/${postId}/`)) {
+    // Strict key validation: must be exactly posts/{postId}/{filename}
+    // Prevents path traversal (../) and cross-post media hijacking
+    const KEY_PATTERN = /^posts\/[0-9a-f-]+\/[a-zA-Z0-9_.-]+$/;
+    if (!key.startsWith(`posts/${postId}/`) || !KEY_PATTERN.test(key)) {
       return fail(new AppError('INVALID_MEDIA_KEY', 'Chiave media non valida', 403));
     }
 

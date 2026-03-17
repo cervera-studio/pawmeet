@@ -67,7 +67,7 @@ export async function POST() {
   // Refresh role indicator if user data is returned
   if (data.user?.role) {
     cookieStore.set('admin_role', data.user.role, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',

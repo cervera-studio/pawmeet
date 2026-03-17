@@ -19,11 +19,12 @@ export class PerspectiveToxicityService implements ToxicityDetectionService {
   }
 
   async analyzeText(text: string, language = 'it'): Promise<ToxicityResult> {
-    const url = `${PERSPECTIVE_API_URL}?key=${this.apiKey}`;
-
-    const response = await fetch(url, {
+    const response = await fetch(PERSPECTIVE_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': this.apiKey,
+      },
       body: JSON.stringify({
         comment: { text },
         languages: [language],

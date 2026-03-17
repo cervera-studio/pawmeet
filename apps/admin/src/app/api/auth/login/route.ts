@@ -53,9 +53,10 @@ export async function POST(request: Request) {
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
 
-  // Role indicator (non-HttpOnly, for middleware RBAC — real enforcement is server-side)
+  // Role indicator (HttpOnly — prevents XSS from reading/modifying role)
+  // Middleware reads this via server-side cookies(), real enforcement is server-side
   cookieStore.set('admin_role', data.user.role, {
-    httpOnly: false,
+    httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',

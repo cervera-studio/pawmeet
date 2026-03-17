@@ -6,6 +6,7 @@ import {
   index,
   pgTable,
   timestamp,
+  unique,
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
@@ -32,6 +33,12 @@ export const matches = pgTable(
       'matches_compatibility_score_range',
       sql`${table.compatibilityScore} >= 0 AND ${table.compatibilityScore} <= 1`,
     ),
+    // Prevent duplicate matches: normalize pair as (LEAST, GREATEST) to catch both orderings
+    unique('uq_matches_dog_pair').on(table.dogAId, table.dogBId),
+    check(
+      'matches_dog_pair_ordered',
+      sql`${table.dogAId} < ${table.dogBId}`,
+    ),
   ],
 );
 
@@ -48,5 +55,9 @@ export const swipes = pgTable(
     direction: varchar('direction', { length: 5 }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [check('swipes_direction_valid', sql`${table.direction} IN ('like', 'pass')`)],
+  (table) => [
+    check('swipes_direction_valid', sql`${table.direction} IN ('like', 'pass')`),
+    // Prevent duplicate swipes: one swipe per pair
+    unique('uq_swipes_pair').on(table.swiperDogId, table.swipedDogId),
+  ],
 );

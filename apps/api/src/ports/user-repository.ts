@@ -13,8 +13,10 @@ export interface NearbyUser {
   displayName: string;
   avatarUrl: string | null;
   distanceKm: number;
-  latitude: number;
-  longitude: number;
+  /** Approximate latitude rounded to ~100m precision (2 decimals) for map display. */
+  approximateLatitude: number;
+  /** Approximate longitude rounded to ~100m precision (2 decimals) for map display. */
+  approximateLongitude: number;
   dogs: {
     id: string;
     name: string;

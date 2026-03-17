@@ -39,7 +39,9 @@ export function createRegisterUser(deps: Deps) {
     // Check if email already exists
     const existing = await userRepo.findByEmail(email);
     if (existing) {
-      return fail(new AppError('AUTH_EMAIL_TAKEN', 'Email già registrata', 409));
+      return fail(
+        new AppError('AUTH_EMAIL_TAKEN', 'Registrazione non riuscita. Riprova o accedi.', 409),
+      );
     }
 
     // Hash password and create user

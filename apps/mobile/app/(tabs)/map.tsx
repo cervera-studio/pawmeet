@@ -182,8 +182,8 @@ export default function MapScreen() {
           <Marker
             key={user.id}
             coordinate={{
-              latitude: user.latitude,
-              longitude: user.longitude,
+              latitude: user.approximateLatitude,
+              longitude: user.approximateLongitude,
             }}
             onPress={() => vm.handleMarkerPress(user)}
           >

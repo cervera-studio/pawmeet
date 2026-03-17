@@ -103,7 +103,7 @@ export const removeContentReactionSchema = z.object({
 });
 
 export const searchByHashtagSchema = z.object({
-  hashtag: z.string().min(1).max(100),
+  hashtag: z.string().min(2).max(100),
   cursor: z.string().optional(),
   limit: z.number().int().min(1).max(50).default(20),
 });

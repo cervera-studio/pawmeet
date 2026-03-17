@@ -68,9 +68,13 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
     // Check for reciprocal like
     const reciprocal = await matchRepo.findReciprocalLike(targetDogId, dogId);
     if (reciprocal) {
+      // Normalize pair order (dogAId < dogBId) to satisfy the unique constraint
+      const [normalizedA, normalizedB] =
+        dogId < targetDogId ? [dogId, targetDogId] : [targetDogId, dogId];
+
       const match = await matchRepo.create({
-        dogAId: dogId,
-        dogBId: targetDogId,
+        dogAId: normalizedA,
+        dogBId: normalizedB,
         compatibilityScore: 0, // will be recalculated
       });
 

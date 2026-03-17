@@ -30,6 +30,12 @@ function extractToken(request: IncomingMessage): string | null {
   return null;
 }
 
+/** Allowed origins for WebSocket connections (same as CORS). */
+const ALLOWED_WS_ORIGINS =
+  process.env.NODE_ENV === 'production'
+    ? ['https://pawmeet.io', 'https://den.pawmeet.io']
+    : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:4321'];
+
 /** Handle HTTP → WebSocket upgrade with JWT authentication */
 export async function handleUpgrade(
   wss: WebSocketServer,
@@ -40,6 +46,15 @@ export async function handleUpgrade(
   // Only handle /ws path
   const url = new URL(request.url || '', `http://${request.headers.host}`);
   if (url.pathname !== '/ws') {
+    socket.destroy();
+    return;
+  }
+
+  // Validate Origin header to prevent cross-origin WebSocket hijacking.
+  // Mobile clients don't send Origin, so allow missing header.
+  const origin = request.headers.origin;
+  if (origin && !ALLOWED_WS_ORIGINS.includes(origin)) {
+    logger.warn('WebSocket', `Rejected connection from unauthorized origin: ${origin}`);
     socket.destroy();
     return;
   }

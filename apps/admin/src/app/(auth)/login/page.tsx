@@ -22,26 +22,29 @@ export default function LoginPage() {
 
   if (vm.isAuthLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-50">
+      <div className="flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950">
         <div className="text-neutral-500">{tc('loading')}</div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50">
-      <div className="w-full max-w-sm space-y-6 rounded-lg border border-neutral-200 bg-white p-8 shadow-md">
+    <div className="flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950">
+      <div className="w-full max-w-sm space-y-6 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 shadow-md">
         <div className="text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-800 text-white font-bold text-lg">
             PM
           </div>
-          <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
-          <p className="mt-1 text-sm text-neutral-500">{t('subtitle')}</p>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{t('title')}</h1>
+          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('subtitle')}</p>
         </div>
 
         <form onSubmit={vm.handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('emailLabel')}
             </label>
             <Input
@@ -57,7 +60,10 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-neutral-700">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
               {t('passwordLabel')}
             </label>
             <Input
@@ -73,7 +79,7 @@ export default function LoginPage() {
           </div>
 
           {vm.error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+            <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-600 dark:text-red-400">
               {t(`errors.${vm.error}` as Parameters<typeof t>[0])}
             </div>
           )}

@@ -13,12 +13,14 @@ export default function DashboardError({
 
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-      <h2 className="text-xl font-semibold text-neutral-900">{t('title')}</h2>
-      <p className="text-neutral-500">{error.message || t('defaultMessage')}</p>
+      <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-50">{t('title')}</h2>
+      <p className="text-neutral-500 dark:text-neutral-400">
+        {error.message || t('defaultMessage')}
+      </p>
       <button
         type="button"
         onClick={reset}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm text-white hover:bg-neutral-700"
+        className="rounded-md bg-neutral-900 px-4 py-2 text-sm text-white hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
       >
         {t('retry')}
       </button>

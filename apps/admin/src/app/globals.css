@@ -150,16 +150,15 @@
     --color-surface: #1C1C1E;
     --color-surface-elevated: #2C2C2E;
 
-    --color-neutral-50: #1C1C1E;
-    --color-neutral-100: #2C2C2E;
-    --color-neutral-200: #38383A;
-    --color-neutral-300: #48484A;
-    --color-neutral-500: #8E8E93;
-    --color-neutral-700: #D1D1D6;
-    --color-neutral-900: #F5F5F7;
-
     --color-primary-50: #0D2F23;
     --color-secondary-50: #2A2418;
+
+    /* Semantic — dark-optimized (matches @pawmeet/design-tokens darkColors) */
+    --color-success: #30D158;
+    --color-error: #FF453A;
+    --color-warning: #FFD60A;
+    --color-warning-text: #FFD60A;
+    --color-info: #0A84FF;
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.30);
     --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.40);

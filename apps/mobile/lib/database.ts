@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import * as SQLite from 'expo-sqlite';
 
 const DB_NAME = 'pawmeet.db';
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 let db: SQLite.SQLiteDatabase | null = null;
 
@@ -69,6 +69,66 @@ async function runMigrations(database: SQLite.SQLiteDatabase): Promise<void> {
       CREATE INDEX IF NOT EXISTS idx_cached_feed_created ON cached_feed(created_at DESC);
 
       PRAGMA user_version = 1;
+    `);
+  }
+
+  if (currentVersion < 2) {
+    await database.execAsync(`
+      CREATE TABLE IF NOT EXISTS cached_group_conversations (
+        id TEXT PRIMARY KEY,
+        data TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS cached_group_messages (
+        id TEXT PRIMARY KEY,
+        event_id TEXT NOT NULL,
+        data TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_cached_group_messages_event ON cached_group_messages(event_id);
+
+      CREATE TABLE IF NOT EXISTS cached_events (
+        id TEXT PRIMARY KEY,
+        data TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS cached_walks (
+        id TEXT PRIMARY KEY,
+        data TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS cached_badges (
+        id TEXT PRIMARY KEY,
+        dog_id TEXT NOT NULL,
+        data TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_cached_badges_dog ON cached_badges(dog_id);
+
+      CREATE TABLE IF NOT EXISTS cached_gamification (
+        key TEXT PRIMARY KEY,
+        data TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS cached_follows (
+        key TEXT PRIMARY KEY,
+        data TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS cached_match_suggestions (
+        dog_id TEXT PRIMARY KEY,
+        data TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      PRAGMA user_version = 2;
     `);
   }
 }

@@ -62,6 +62,46 @@ export function createTrpcMutationExecutor(api: ApiClient) {
       };
       return api.feed.removeReaction.mutate({ contentType, contentId, emoji });
     },
+
+    // Group chat mutations
+    'groupChat.sendMessage': (p) => {
+      const { eventId, content } = p as { eventId: string; content: string };
+      return api.groupChat.sendMessage.mutate({ eventId, content });
+    },
+    'groupChat.markMessagesRead': (p) => {
+      const { eventId } = p as { eventId: string };
+      return api.groupChat.markMessagesRead.mutate({ eventId });
+    },
+
+    // Group event mutations
+    'groupEvents.join': (p) => {
+      const { eventId, dogId } = p as { eventId: string; dogId: string };
+      return api.groupEvents.join.mutate({ eventId, dogId });
+    },
+    'groupEvents.leave': (p) => {
+      const { eventId } = p as { eventId: string };
+      return api.groupEvents.leave.mutate({ eventId });
+    },
+
+    // Walk mutations
+    'walks.respond': (p) => {
+      const { walkId, accept } = p as { walkId: string; accept: boolean };
+      return api.walks.respond.mutate({ walkId, accept });
+    },
+    'walks.cancel': (p) => {
+      const { walkId } = p as { walkId: string };
+      return api.walks.cancel.mutate({ walkId });
+    },
+
+    // Follow mutations
+    'follows.follow': (p) => {
+      const { userId } = p as { userId: string };
+      return api.follows.follow.mutate({ targetUserId: userId });
+    },
+    'follows.unfollow': (p) => {
+      const { userId } = p as { userId: string };
+      return api.follows.unfollow.mutate({ targetUserId: userId });
+    },
   };
 
   return async (endpoint: string, payload: unknown): Promise<void> => {

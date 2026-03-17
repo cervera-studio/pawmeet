@@ -6,6 +6,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useGroupEvents } from '@/hooks/useGroupEvents';
+import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 import { useDogsStore } from '@/stores/dogs';
 
@@ -41,6 +42,33 @@ export function useEventDetailViewModel() {
   }, [fetchEvent]);
 
   const isOrganizer = event?.createdBy === userId;
+  const eventRecord = event as unknown as Record<string, unknown> | null;
+  const isOfficial = eventRecord?.isOfficial === true;
+  const coverImageUrl = (eventRecord?.coverImageUrl as string) ?? null;
+  const organizationName = (eventRecord?.organizationName as string) ?? null;
+
+  // Load sponsors for official events
+  interface Sponsor {
+    id: string;
+    tier: 'title' | 'gold' | 'silver' | 'partner';
+    organizationName: string;
+    organizationLogoUrl: string | null;
+  }
+  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+
+  const loadSponsors = useCallback(async () => {
+    if (!eventId || !isOfficial) return;
+    try {
+      const result = await api.groupEvents.listSponsors.query({ eventId });
+      setSponsors(result as Sponsor[]);
+    } catch (e) {
+      logger.warn('EventDetail', 'Failed to load sponsors', e);
+    }
+  }, [eventId, isOfficial]);
+
+  useEffect(() => {
+    void loadSponsors();
+  }, [loadSponsors]);
 
   const isParticipant =
     event?.participants?.some((p) => p.userId === userId && p.status === 'accepted') ?? false;
@@ -131,6 +159,10 @@ export function useEventDetailViewModel() {
     actionLoading,
     isOrganizer,
     isParticipant,
+    isOfficial,
+    coverImageUrl,
+    organizationName,
+    sponsors,
     canJoin,
     canLeave,
     canCancel,

@@ -5,6 +5,7 @@ import { GROUP_EVENT_STATUS } from '@pawmeet/types';
 import { memo, useCallback } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FeaturedEventsCarousel } from '@/components/FeaturedEventsCarousel';
 import type { NearbyEvent } from './index.view-model';
 import { useEventDiscoveryViewModel } from './index.view-model';
 
@@ -262,6 +263,13 @@ export default function EventDiscoveryScreen() {
           )}
           initialNumToRender={8}
           maxToRenderPerBatch={6}
+          ListHeaderComponent={
+            <FeaturedEventsCarousel
+              events={vm.featuredEvents}
+              onEventPress={vm.navigateToEvent}
+              onCalendarPress={vm.navigateToCalendar}
+            />
+          }
           ListEmptyComponent={<EventsEmptyState />}
         />
       )}

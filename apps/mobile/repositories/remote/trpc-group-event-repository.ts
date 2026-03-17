@@ -10,6 +10,9 @@ export function createTrpcGroupEventRepository(api: ApiClient): GroupEventReposi
     async listNearby(params: NearbyEventsParams) {
       return api.groupEvents.listNearby.query(params);
     },
+    async listFeatured(page = 1, pageSize = 10) {
+      return api.groupEvents.listFeatured.query({ page, pageSize });
+    },
     async getById(eventId) {
       return api.groupEvents.get.query({ eventId });
     },

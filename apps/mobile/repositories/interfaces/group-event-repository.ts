@@ -32,8 +32,14 @@ export interface NearbyEventWithStatus extends Serialized<GroupEvent> {
   myStatus?: ParticipantStatus | null;
 }
 
+export interface FeaturedEvent extends Serialized<GroupEvent> {
+  organizationName?: string | null;
+  participantCount?: number;
+}
+
 export interface GroupEventRepository {
   listNearby(params: NearbyEventsParams): Promise<NearbyEventWithStatus[]>;
+  listFeatured(page?: number, pageSize?: number): Promise<FeaturedEvent[]>;
   getById(eventId: string): Promise<Serialized<GroupEventWithParticipants>>;
   create(input: CreateGroupEventInput): Promise<Serialized<GroupEvent>>;
   join(eventId: string, dogId: string): Promise<void>;

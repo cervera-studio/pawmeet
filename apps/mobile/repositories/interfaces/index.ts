@@ -24,6 +24,7 @@ export type { GamificationRepository } from './gamification-repository';
 export type { GroupChatRepository, GroupConversation } from './group-chat-repository';
 export type {
   CreateGroupEventInput,
+  FeaturedEvent,
   GroupEventRepository,
   NearbyEventsParams,
   NearbyEventWithStatus,

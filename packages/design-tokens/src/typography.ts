@@ -12,6 +12,10 @@ export const fontWeights = {
   bold: '700',
 } as const;
 
+/**
+ * Type scale on a 4px baseline grid.
+ * All fontSize and lineHeight values are multiples of 4 (or 2 for ≤12px).
+ */
 export const typography = {
   displayLarge: {
     fontSize: 32,
@@ -38,43 +42,43 @@ export const typography = {
     letterSpacing: -0.1,
   },
   headingSmall: {
-    fontSize: 17,
+    fontSize: 16,
     lineHeight: 24,
     fontWeight: fontWeights.semibold,
     letterSpacing: 0,
   },
   bodyLarge: {
-    fontSize: 17,
+    fontSize: 16,
     lineHeight: 24,
     fontWeight: fontWeights.regular,
     letterSpacing: 0,
   },
   bodyMedium: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 20,
     fontWeight: fontWeights.regular,
     letterSpacing: 0,
   },
   bodySmall: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 12,
+    lineHeight: 16,
     fontWeight: fontWeights.regular,
     letterSpacing: 0,
   },
   labelLarge: {
-    fontSize: 17,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 20,
     fontWeight: fontWeights.semibold,
     letterSpacing: 0,
   },
   labelMedium: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 12,
+    lineHeight: 16,
     fontWeight: fontWeights.semibold,
     letterSpacing: 0.1,
   },
   labelSmall: {
-    fontSize: 11,
+    fontSize: 10,
     lineHeight: 16,
     fontWeight: fontWeights.semibold,
     letterSpacing: 0.2,

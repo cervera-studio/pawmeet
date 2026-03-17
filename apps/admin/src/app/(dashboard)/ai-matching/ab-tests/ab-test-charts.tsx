@@ -12,7 +12,8 @@ import {
   YAxis,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CHART_COLORS } from '@/lib/constants';
+import { useIsDark } from '@/hooks/use-is-dark';
+import { getChartColors } from '@/lib/constants';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 
 interface TimeSeriesEntry {
@@ -39,6 +40,7 @@ const AI_COLOR = '#3B82F6';
 const CONTROL_COLOR = '#9CA3AF';
 
 export function AbTestCharts({ data }: AbTestChartsProps) {
+  const chartColors = getChartColors(useIsDark());
   const chartData = useMemo(() => {
     const byDate = new Map<
       string,
@@ -80,7 +82,7 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
         <CardContent>
           <ResponsiveContainer width="100%" height={256}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
               <YAxis tick={{ fontSize: 11 }} tickFormatter={formatPercent} domain={[0, 'auto']} />
               <Tooltip labelFormatter={formatTooltipDate} formatter={formatPercent} />
@@ -114,7 +116,7 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
         <CardContent>
           <ResponsiveContainer width="100%" height={256}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
               <YAxis tick={{ fontSize: 11 }} tickFormatter={formatPercent} domain={[0, 'auto']} />
               <Tooltip labelFormatter={formatTooltipDate} formatter={formatPercent} />

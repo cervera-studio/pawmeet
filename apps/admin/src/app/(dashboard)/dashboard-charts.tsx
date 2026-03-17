@@ -15,7 +15,8 @@ import {
   YAxis,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CHART_COLORS } from '@/lib/constants';
+import { useIsDark } from '@/hooks/use-is-dark';
+import { getChartColors } from '@/lib/constants';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 import type { TimeSeriesPoint } from '@/repositories';
 
@@ -36,6 +37,7 @@ export function DashboardCharts({
 }: DashboardChartsProps) {
   const t = useTranslations('dashboard');
   const tc = useTranslations('common');
+  const colors = getChartColors(useIsDark());
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -51,16 +53,20 @@ export function DashboardCharts({
           ) : (
             <ResponsiveContainer width="100%" height={256}>
               <AreaChart data={userRegistrations}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
-                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 11, fill: colors.text }}
+                  tickFormatter={formatDateAxis}
+                />
+                <YAxis tick={{ fontSize: 11, fill: colors.text }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
                 <Area
                   type="monotone"
                   dataKey="count"
                   name={t('registrationsLabel')}
-                  stroke={CHART_COLORS.registrations.stroke}
-                  fill={CHART_COLORS.registrations.fill}
+                  stroke={colors.registrations.stroke}
+                  fill={colors.registrations.fill}
                   fillOpacity={0.15}
                 />
               </AreaChart>
@@ -81,14 +87,18 @@ export function DashboardCharts({
           ) : (
             <ResponsiveContainer width="100%" height={256}>
               <BarChart data={dailyMatches}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
-                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 11, fill: colors.text }}
+                  tickFormatter={formatDateAxis}
+                />
+                <YAxis tick={{ fontSize: 11, fill: colors.text }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
                 <Bar
                   dataKey="count"
                   name={t('matchLabel')}
-                  fill={CHART_COLORS.matches}
+                  fill={colors.matches}
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -109,15 +119,19 @@ export function DashboardCharts({
           ) : (
             <ResponsiveContainer width="100%" height={256}>
               <LineChart data={dauTimeSeries}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
-                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 11, fill: colors.text }}
+                  tickFormatter={formatDateAxis}
+                />
+                <YAxis tick={{ fontSize: 11, fill: colors.text }} allowDecimals={false} />
                 <Tooltip labelFormatter={formatDateTooltip} />
                 <Line
                   type="monotone"
                   dataKey="count"
                   name={t('dauLabel')}
-                  stroke={CHART_COLORS.dau}
+                  stroke={colors.dau}
                   strokeWidth={2}
                   dot={false}
                 />

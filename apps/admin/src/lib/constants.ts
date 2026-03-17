@@ -13,11 +13,28 @@ export const TIMING = {
 // ── Chart colors ──────────────────────────────────────────────────────────────
 
 export const CHART_COLORS = {
-  grid: '#e5e5e5',
-  registrations: { stroke: '#065F46', fill: '#059669' },
-  matches: '#C9A84C',
-  dau: '#10B981',
+  light: {
+    grid: '#e5e5e5',
+    text: '#4A4A5A',
+    tooltipBg: '#ffffff',
+    registrations: { stroke: '#065F46', fill: '#059669' },
+    matches: '#C9A84C',
+    dau: '#10B981',
+  },
+  dark: {
+    grid: '#48484A',
+    text: '#D1D1D6',
+    tooltipBg: '#2C2C2E',
+    registrations: { stroke: '#6EE7B7', fill: '#10B981' },
+    matches: '#F0D84E',
+    dau: '#34D399',
+  },
 } as const;
+
+/** Get the chart color set for the current theme. */
+export function getChartColors(isDark: boolean) {
+  return isDark ? CHART_COLORS.dark : CHART_COLORS.light;
+}
 
 // ── Event constraints ─────────────────────────────────────────────────────────
 

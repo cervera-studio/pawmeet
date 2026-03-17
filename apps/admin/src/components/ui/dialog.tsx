@@ -35,7 +35,7 @@ const DialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
     <div
       ref={ref}
       className={cn(
-        'relative z-50 w-full max-w-lg rounded-lg border border-neutral-200 bg-white p-6 shadow-lg',
+        'relative z-50 w-full max-w-lg rounded-lg border border-neutral-200 bg-white p-6 shadow-lg dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-50',
         className,
       )}
       {...props}
@@ -62,7 +62,9 @@ function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingEl
 }
 
 function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('text-sm text-neutral-500', className)} {...props} />;
+  return (
+    <p className={cn('text-sm text-neutral-500 dark:text-neutral-400', className)} {...props} />
+  );
 }
 
 function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

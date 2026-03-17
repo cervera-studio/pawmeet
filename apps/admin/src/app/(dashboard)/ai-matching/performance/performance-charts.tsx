@@ -13,7 +13,8 @@ import {
   YAxis,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CHART_COLORS } from '@/lib/constants';
+import { useIsDark } from '@/hooks/use-is-dark';
+import { getChartColors } from '@/lib/constants';
 import { formatDateAxis, formatDateShort } from '@/lib/formatters';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -41,6 +42,21 @@ export interface PerformanceChartsProps {
   timeSeries: TimeSeriesPoint[];
 }
 
+// ── Labels (Italian) — move to i18n when available ───────────────────────────
+
+const CHART_LABELS = {
+  calibrationTitle: 'Calibrazione modello',
+  calibrationEmpty: 'Nessun dato di calibrazione disponibile.',
+  observedRate: 'Tasso osservato',
+  weightTitle: 'Distribuzione pesi',
+  weightEmpty: 'Nessun dato sui pesi disponibile.',
+  avgWeight: 'Peso medio',
+  timeSeriesTitle: 'Andamento prestazioni',
+  timeSeriesEmpty: 'Nessun dato storico disponibile.',
+  avgScore: 'Score medio',
+  predictions: 'Predizioni',
+} as const;
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const AI_COLOR = '#3B82F6';
@@ -64,24 +80,25 @@ function EmptyState({ message }: { message: string }) {
 // ── Charts ───────────────────────────────────────────────────────────────────
 
 function CalibrationChart({ data }: { data: ScoreBucket[] | null }) {
+  const chartColors = getChartColors(useIsDark());
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Calibrazione modello</CardTitle>
+        <CardTitle className="text-base">{CHART_LABELS.calibrationTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         {!data || data.length === 0 ? (
-          <EmptyState message="Nessun dato di calibrazione disponibile." />
+          <EmptyState message={CHART_LABELS.calibrationEmpty} />
         ) : (
           <ResponsiveContainer width="100%" height={256}>
             <ComposedChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
               <XAxis dataKey="bucket" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 11 }} unit="%" />
               <Tooltip />
               <Bar
                 dataKey="observedMatchRate"
-                name="Tasso osservato"
+                name={CHART_LABELS.observedRate}
                 fill={AI_COLOR}
                 radius={[4, 4, 0, 0]}
                 fillOpacity={0.7}
@@ -96,22 +113,28 @@ function CalibrationChart({ data }: { data: ScoreBucket[] | null }) {
 }
 
 function WeightDistributionChart({ data }: { data: WeightDimension[] | null }) {
+  const chartColors = getChartColors(useIsDark());
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Distribuzione pesi</CardTitle>
+        <CardTitle className="text-base">{CHART_LABELS.weightTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         {!data || data.length === 0 ? (
-          <EmptyState message="Nessun dato sui pesi disponibile." />
+          <EmptyState message={CHART_LABELS.weightEmpty} />
         ) : (
           <ResponsiveContainer width="100%" height={256}>
             <BarChart data={data} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
               <XAxis type="number" tick={{ fontSize: 11 }} unit="%" domain={[0, 'auto']} />
               <YAxis dataKey="dimension" type="category" tick={{ fontSize: 11 }} width={100} />
               <Tooltip formatter={(v: unknown) => `${Number(v).toFixed(1)}%`} />
-              <Bar dataKey="avgWeight" name="Peso medio" fill={AI_COLOR} radius={[0, 4, 4, 0]} />
+              <Bar
+                dataKey="avgWeight"
+                name={CHART_LABELS.avgWeight}
+                fill={AI_COLOR}
+                radius={[0, 4, 4, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -121,18 +144,19 @@ function WeightDistributionChart({ data }: { data: WeightDimension[] | null }) {
 }
 
 function PerformanceTimeSeries({ data }: { data: TimeSeriesPoint[] }) {
+  const chartColors = getChartColors(useIsDark());
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Andamento prestazioni</CardTitle>
+        <CardTitle className="text-base">{CHART_LABELS.timeSeriesTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
-          <EmptyState message="Nessun dato storico disponibile." />
+          <EmptyState message={CHART_LABELS.timeSeriesEmpty} />
         ) : (
           <ResponsiveContainer width="100%" height={256}>
             <ComposedChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDateAxis} />
               <YAxis
                 yAxisId="left"
@@ -147,7 +171,7 @@ function PerformanceTimeSeries({ data }: { data: TimeSeriesPoint[] }) {
                 yAxisId="left"
                 type="monotone"
                 dataKey="avgOverallScore"
-                name="Score medio"
+                name={CHART_LABELS.avgScore}
                 stroke={AI_COLOR}
                 strokeWidth={2}
                 dot={false}
@@ -155,7 +179,7 @@ function PerformanceTimeSeries({ data }: { data: TimeSeriesPoint[] }) {
               <Bar
                 yAxisId="right"
                 dataKey="totalPredictions"
-                name="Predizioni"
+                name={CHART_LABELS.predictions}
                 fill="#10B981"
                 fillOpacity={0.4}
                 radius={[4, 4, 0, 0]}

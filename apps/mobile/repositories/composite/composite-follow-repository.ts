@@ -1,4 +1,3 @@
-import { logger } from '@pawmeet/utils';
 import type { FollowRepository, LocalCache, NetworkState, SyncQueue } from '../interfaces';
 
 interface Deps {

@@ -56,8 +56,42 @@
   --color-warning-text: #B45309;
   --color-info: #007AFF;
 
-  /* Typography */
+  /* Typography — mapped from @pawmeet/design-tokens */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Font sizes (with matching line-heights via Tailwind shorthand) */
+  --text-display-lg: 2rem;           /* 32px */
+  --text-display-lg--line-height: 2.5rem;    /* 40px */
+  --text-display-md: 1.75rem;        /* 28px */
+  --text-display-md--line-height: 2.25rem;   /* 36px */
+  --text-heading-lg: 1.5rem;         /* 24px */
+  --text-heading-lg--line-height: 2rem;      /* 32px */
+  --text-heading-md: 1.25rem;        /* 20px */
+  --text-heading-md--line-height: 1.75rem;   /* 28px */
+  --text-heading-sm: 1.0625rem;      /* 17px */
+  --text-heading-sm--line-height: 1.5rem;    /* 24px */
+  --text-body-lg: 1.0625rem;         /* 17px */
+  --text-body-lg--line-height: 1.5rem;       /* 24px */
+  --text-body-md: 0.9375rem;         /* 15px */
+  --text-body-md--line-height: 1.375rem;     /* 22px */
+  --text-body-sm: 0.8125rem;         /* 13px */
+  --text-body-sm--line-height: 1.125rem;     /* 18px */
+  --text-label-lg: 1.0625rem;        /* 17px */
+  --text-label-lg--line-height: 1.375rem;    /* 22px */
+  --text-label-md: 0.8125rem;        /* 13px */
+  --text-label-md--line-height: 1.125rem;    /* 18px */
+  --text-label-sm: 0.6875rem;        /* 11px */
+  --text-label-sm--line-height: 1rem;        /* 16px */
+
+  /* Font weights */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Letter spacing */
+  --tracking-tight: -0.025em;    /* display/heading-lg */
+  --tracking-normal: 0;          /* body/heading-sm */
+  --tracking-wide: 0.012em;      /* label-sm */
 
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);

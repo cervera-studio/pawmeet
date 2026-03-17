@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+  type AnyPgColumn,
   boolean,
   check,
   doublePrecision,
@@ -34,7 +35,7 @@ export const groupEvents = pgTable(
     status: varchar('status', { length: 15 }).notNull().default('scheduled'),
     recurrenceRule: varchar('recurrence_rule', { length: 255 }),
     recurrenceEnd: timestamp('recurrence_end', { withTimezone: true }),
-    parentEventId: uuid('parent_event_id').references((): any => groupEvents.id, {
+    parentEventId: uuid('parent_event_id').references((): AnyPgColumn => groupEvents.id, {
       onDelete: 'set null',
     }),
     category: varchar('category', { length: 20 }).notNull().default('walk'),

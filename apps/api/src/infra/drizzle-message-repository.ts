@@ -39,7 +39,16 @@ export class DrizzleMessageRepository implements MessageRepository {
 
     const lastMessageByMatch = new Map<string, ChatMessage>();
     for (const row of lastMessagesRows) {
-      lastMessageByMatch.set(row.matchId, row as unknown as ChatMessage);
+      lastMessageByMatch.set(row.matchId, {
+        id: row.id,
+        matchId: row.matchId,
+        senderId: row.senderId,
+        content: row.content,
+        mediaUrl: row.mediaUrl,
+        status: row.status as ChatMessage['status'],
+        isDeleted: row.isDeleted,
+        createdAt: row.createdAt,
+      } satisfies ChatMessage);
     }
 
     // Batch-fetch unread counts for all matches

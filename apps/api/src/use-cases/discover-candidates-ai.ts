@@ -4,7 +4,6 @@ import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { calculateDistance } from '@pawmeet/utils';
 import type { ScoringStrategy } from '../domain/scoring-strategy.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
-import { redis } from '../lib/redis.js';
 import type { EmbeddingRepository } from '../ports/embedding-repository.js';
 import type {
   DogRepository,
@@ -12,6 +11,7 @@ import type {
   MatchRepository,
   UserRepository,
 } from '../ports/index.js';
+import type { RecommendationCacheRepository } from '../ports/recommendation-cache-repository.js';
 
 type Deps = {
   dogRepo: DogRepository;
@@ -21,6 +21,7 @@ type Deps = {
   ruleBasedStrategy: ScoringStrategy;
   mlStrategy: ScoringStrategy;
   embeddingRepo: EmbeddingRepository;
+  recommendationCacheRepo: RecommendationCacheRepository;
 };
 
 // ── Filter helpers ──────────────────────────────────────────────────────────
@@ -76,6 +77,7 @@ export function createDiscoverCandidatesAi({
   ruleBasedStrategy,
   mlStrategy,
   embeddingRepo,
+  recommendationCacheRepo,
 }: Deps) {
   return async (
     userId: string,
@@ -172,8 +174,7 @@ export function createDiscoverCandidatesAi({
     let suggestions: Suggestion[] = scored;
 
     if (scored.length < effectiveLimit) {
-      const recsKey = `ml:recs:${userId}`;
-      const rawRecs = await redis.zrange<string[]>(recsKey, 0, effectiveLimit - 1, { rev: true });
+      const rawRecs = await recommendationCacheRepo.getTopRecommendations(userId, effectiveLimit);
 
       const scoredDogIds = new Set(scored.map((s) => s.dog.id));
       const candidateMap = new Map(candidates.map((c) => [c.dog.id, c]));

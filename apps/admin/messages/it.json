@@ -555,7 +555,8 @@
       "sendButton": "Invia",
       "confirmTitle": "Conferma broadcast",
       "confirmDescription": "La notifica verrà inviata a {count} utenti. Continuare?",
-      "successMessage": "Notifica inviata a {count} utenti"
+      "successMessage": "Notifica inviata a {count} utenti",
+      "sendError": "Errore durante l'invio della notifica broadcast"
     },
     "targeted": {
       "targetedTitle": "Mirata",
@@ -563,7 +564,8 @@
       "userIdsLabel": "ID Utenti",
       "userIdsPlaceholder": "Inserisci gli ID utente, separati da virgola o uno per riga",
       "sendButton": "Invia",
-      "successMessage": "Inviata a {sentCount} utenti, {skippedCount} saltati"
+      "successMessage": "Inviata a {sentCount} utenti, {skippedCount} saltati",
+      "sendError": "Errore durante l'invio della notifica mirata"
     },
     "common": {
       "cancel": "Annulla"
@@ -601,6 +603,8 @@
       "kpiMatches": "Match Generati",
       "kpiAccuracy": "Accuratezza",
       "kpiAvgScore": "Score Medio",
+      "kpiActiveModel": "Modello attivo",
+      "registeredModels": "Modelli registrati",
       "chartCalibration": "Curva di calibrazione",
       "chartWeights": "Distribuzione pesi features",
       "chartTimeline": "Andamento performance nel tempo",

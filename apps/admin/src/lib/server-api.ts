@@ -36,5 +36,6 @@ export async function serverFetch<T>(path: string, options: RequestInit = {}): P
     throw new Error(`API Error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json() as Promise<T>;
+  const data: unknown = await response.json();
+  return data as T;
 }

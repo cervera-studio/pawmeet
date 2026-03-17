@@ -17,7 +17,8 @@ export async function updateSettings(
     await api.admin.updateSettings.mutate(data);
     revalidatePath('/settings');
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error('[updateSettings]', error);
     return { success: false, error: 'Errore durante il salvataggio' };
   }
 }

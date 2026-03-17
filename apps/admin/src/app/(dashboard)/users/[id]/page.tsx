@@ -39,9 +39,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
             {(user.displayName ?? '?').charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-neutral-900">
-              {user.displayName}
-            </h1>
+            <h1 className="text-2xl font-bold text-neutral-900">{user.displayName}</h1>
             <p className="text-neutral-500">{user.email}</p>
           </div>
         </div>
@@ -90,9 +88,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
                 {user.dogs.map((dog) => (
                   <div key={dog.id} className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-neutral-900">
-                        {dog.name}
-                      </p>
+                      <p className="text-sm font-medium text-neutral-900">{dog.name}</p>
                       <p className="text-xs text-neutral-500">{dog.breed}</p>
                     </div>
                     <Badge variant={dog.isActive ? 'success' : 'outline'}>

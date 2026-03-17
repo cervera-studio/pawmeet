@@ -10,12 +10,19 @@ import {
   hasMinRole,
   requireRole,
 } from '../../lib/admin-permissions.js';
+import { toAuditChanges } from '../../lib/audit-helpers.js';
+import { paginate } from '../../lib/pagination.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import type { GamificationRepository } from '../../ports/gamification-repository.js';
-import { protectedProcedure, router } from '../trpc.js';
+import { protectedProcedure, router, unwrapResult } from '../trpc.js';
+import { createAddEventSponsor } from '../../use-cases/admin/add-event-sponsor.js';
+import { createCreateAdminUser } from '../../use-cases/admin/create-admin-user.js';
+import { createResolveContentReport } from '../../use-cases/admin/resolve-content-report.js';
+import { createUpdateAdminRole } from '../../use-cases/admin/update-admin-role.js';
+import { validateMatchWeights } from '../../use-cases/admin/validate-match-weights.js';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 
@@ -42,7 +49,13 @@ function createAdminProcedure() {
       throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
     }
 
-    return next({ ctx: { ...ctx, userId: ctx.userId, adminRole: ctx.adminRole } });
+    return next({
+      ctx: {
+        ...ctx,
+        userId: ctx.userId,
+        adminRole: ctx.adminRole as AdminRoleValue,
+      },
+    });
   });
 }
 
@@ -225,6 +238,12 @@ export function createAdminRouter(deps: AdminRouterDeps) {
   const adminProcedure = createAdminProcedure();
   const { adminDataRepo, auditLogRepo, gamificationRepo } = deps;
 
+  // ── Use cases ───────────────────────────────────────────────────────────────
+  const resolveContentReport = createResolveContentReport({ adminDataRepo });
+  const addEventSponsor = createAddEventSponsor({ adminDataRepo });
+  const createAdminUserUc = createCreateAdminUser({ adminDataRepo });
+  const updateAdminRoleUc = createUpdateAdminRole({ adminDataRepo });
+
   return router({
     // ── Dashboard stats ──────────────────────────────────────────────────────
     getStats: adminProcedure.query(async () => {
@@ -254,25 +273,13 @@ export function createAdminRouter(deps: AdminRouterDeps) {
     // ── Audit log ──────────────────────────────────────────────────────────
     listAuditLog: adminProcedure.input(listAuditLogSchema).query(async ({ input }) => {
       const result = await adminDataRepo.listAuditLog(input);
-      return {
-        data: result.data,
-        total: result.total,
-        page: input.page,
-        pageSize: input.pageSize,
-        totalPages: Math.ceil(result.total / input.pageSize),
-      };
+      return paginate(result, input);
     }),
 
     // ── Dogs management ──────────────────────────────────────────────────────
     listDogs: adminProcedure.input(listDogsSchema).query(async ({ input }) => {
       const result = await adminDataRepo.listDogs(input);
-      return {
-        data: result.data,
-        total: result.total,
-        page: input.page,
-        pageSize: input.pageSize,
-        totalPages: Math.ceil(result.total / input.pageSize),
-      };
+      return paginate(result, input);
     }),
 
     getDog: adminProcedure.input(getDogSchema).query(async ({ input }) => {
@@ -291,46 +298,37 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       const userRows = await adminDataRepo.getReportUserInfos(userIds);
       const userMap = new Map(userRows.map((u) => [u.id, u]));
 
-      return {
-        data: items.map((r) => ({
-          ...r,
-          reporterName: userMap.get(r.reporterId)?.displayName ?? 'Utente sconosciuto',
-          reporterEmail: maskEmail(userMap.get(r.reporterId)?.email),
-          reportedName: userMap.get(r.reportedUserId)?.displayName ?? 'Utente sconosciuto',
-          reportedEmail: maskEmail(userMap.get(r.reportedUserId)?.email),
-        })),
-        total,
-        page: input.page,
-        pageSize: input.pageSize,
-        totalPages: Math.ceil(total / input.pageSize),
-      };
+      return paginate(
+        {
+          data: items.map((r) => ({
+            ...r,
+            reporterName: userMap.get(r.reporterId)?.displayName ?? 'Utente sconosciuto',
+            reporterEmail: maskEmail(userMap.get(r.reporterId)?.email),
+            reportedName: userMap.get(r.reportedUserId)?.displayName ?? 'Utente sconosciuto',
+            reportedEmail: maskEmail(userMap.get(r.reportedUserId)?.email),
+          })),
+          total,
+        },
+        input,
+      );
     }),
 
     resolveReport: adminProcedure.input(resolveReportSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.Moderator);
 
-      const report = await adminDataRepo.findReportById(input.id);
-      if (!report) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Report not found' });
-      }
-
-      if (report.status !== 'pending') {
-        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Report already resolved' });
-      }
-
-      const newStatus = input.action === 'dismiss' ? 'dismissed' : 'resolved';
-      await adminDataRepo.resolveReport(input.id, newStatus, ctx.userId, input.action);
-
-      if (input.action === 'suspend' || input.action === 'ban') {
-        await adminDataRepo.deactivateUser(report.reportedUserId);
-      }
+      const result = await resolveContentReport({
+        reportId: input.id,
+        action: input.action,
+        adminId: ctx.userId,
+      });
+      const data = unwrapResult(result);
 
       void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: `report.${input.action}`,
         resourceType: RESOURCE_TYPE.report,
         resourceId: input.id,
-        changes: { before: { status: 'pending' }, after: { status: newStatus } },
+        changes: { before: { status: 'pending' }, after: { status: data.newStatus } },
       });
 
       trackEvent('admin_report_resolved', ctx.userId, {
@@ -354,18 +352,18 @@ export function createAdminRouter(deps: AdminRouterDeps) {
 
       const reportCountMap = new Map(result.reportCounts.map((r) => [r.contentId, r.count]));
 
-      return {
-        data: result.posts.map((p) => ({
-          ...p,
-          authorEmail: maskEmail(p.authorEmail),
-          media: mediaByPost.get(p.id) ?? [],
-          reportCount: reportCountMap.get(p.id) ?? 0,
-        })),
-        total: result.total,
-        page: input.page,
-        pageSize: input.pageSize,
-        totalPages: Math.ceil(result.total / input.pageSize),
-      };
+      return paginate(
+        {
+          data: result.posts.map((p) => ({
+            ...p,
+            authorEmail: maskEmail(p.authorEmail),
+            media: mediaByPost.get(p.id) ?? [],
+            reportCount: reportCountMap.get(p.id) ?? 0,
+          })),
+          total: result.total,
+        },
+        input,
+      );
     }),
 
     updatePostModeration: adminProcedure
@@ -407,13 +405,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       )
       .query(async ({ input }) => {
         const result = await adminDataRepo.listStories(input);
-        return {
-          data: result.data,
-          total: result.total,
-          page: input.page,
-          pageSize: input.pageSize,
-          totalPages: Math.ceil(result.total / input.pageSize),
-        };
+        return paginate(result, input);
       }),
 
     deleteStory: adminProcedure
@@ -454,29 +446,29 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         countMap.set(row.eventId, entry);
       }
 
-      return {
-        data: items.map((e) => ({
-          id: e.id,
-          title: e.title,
-          category: e.category,
-          visibility: e.visibility,
-          status: e.status,
-          scheduledAt: e.scheduledAt,
-          location: e.location,
-          maxParticipants: e.maxParticipants,
-          requiresApproval: e.requiresApproval,
-          createdAt: e.createdAt,
-          creatorId: e.creatorId,
-          creatorName: e.creatorName,
-          participantCount: countMap.get(e.id)?.participants ?? 0,
-          pendingCount: countMap.get(e.id)?.pending ?? 0,
-          isRecurring: e.recurrenceRule != null || e.parentEventId != null,
-        })),
-        total,
-        page: input.page,
-        pageSize: input.pageSize,
-        totalPages: Math.ceil(total / input.pageSize),
-      };
+      return paginate(
+        {
+          data: items.map((e) => ({
+            id: e.id,
+            title: e.title,
+            category: e.category,
+            visibility: e.visibility,
+            status: e.status,
+            scheduledAt: e.scheduledAt,
+            location: e.location,
+            maxParticipants: e.maxParticipants,
+            requiresApproval: e.requiresApproval,
+            createdAt: e.createdAt,
+            creatorId: e.creatorId,
+            creatorName: e.creatorName,
+            participantCount: countMap.get(e.id)?.participants ?? 0,
+            pendingCount: countMap.get(e.id)?.pending ?? 0,
+            isRecurring: e.recurrenceRule != null || e.parentEventId != null,
+          })),
+          total,
+        },
+        input,
+      );
     }),
 
     getGroupEvent: adminProcedure.input(getGroupEventSchema).query(async ({ input }) => {
@@ -564,16 +556,16 @@ export function createAdminRouter(deps: AdminRouterDeps) {
 
         const memberCountMap = new Map(memberCounts.map((m) => [m.organizationId, m.count]));
 
-        return {
-          data: items.map((o) => ({
-            ...o,
-            memberCount: memberCountMap.get(o.id) ?? 0,
-          })),
-          total,
-          page: input.page,
-          pageSize: input.pageSize,
-          totalPages: Math.ceil(total / input.pageSize),
-        };
+        return paginate(
+          {
+            data: items.map((o) => ({
+              ...o,
+              memberCount: memberCountMap.get(o.id) ?? 0,
+            })),
+            total,
+          },
+          input,
+        );
       }),
 
     getOrganization: adminProcedure
@@ -709,38 +701,8 @@ export function createAdminRouter(deps: AdminRouterDeps) {
     addEventSponsor: adminProcedure.input(addSponsorSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.Admin);
 
-      const event = await adminDataRepo.findGroupEventById(input.eventId);
-      if (!event) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
-      }
-
-      const org = await adminDataRepo.findOrganizationById(input.organizationId);
-      if (!org) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
-      }
-      if (!org.isVerified || !org.isActive) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Organization must be verified and active',
-        });
-      }
-
-      const tierLimits: Record<string, number> = { title: 1, gold: 2, silver: 5 };
-      const limit = tierLimits[input.tier];
-      if (limit !== undefined) {
-        const currentCount = await adminDataRepo.countEventSponsorsByTier(
-          input.eventId,
-          input.tier,
-        );
-        if (currentCount >= limit) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: `Tier limit reached (max ${limit} for ${input.tier})`,
-          });
-        }
-      }
-
-      const sponsor = await adminDataRepo.addEventSponsor(input);
+      const result = await addEventSponsor(input);
+      const sponsor = unwrapResult(result);
 
       void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
@@ -792,22 +754,22 @@ export function createAdminRouter(deps: AdminRouterDeps) {
 
         const dogCountMap = new Map(dogCounts.map((d) => [d.ownerId, d.count]));
 
-        return {
-          data: items.map((u) => ({
-            id: u.id,
-            name: u.name,
-            email: u.email,
-            status: u.isActive ? 'active' : 'suspended',
-            dogsCount: dogCountMap.get(u.id) ?? 0,
-            followersCount: u.followersCount,
-            followingCount: u.followingCount,
-            createdAt: u.createdAt,
-          })),
-          total,
-          page: input.page,
-          pageSize: input.pageSize,
-          totalPages: Math.ceil(total / input.pageSize),
-        };
+        return paginate(
+          {
+            data: items.map((u) => ({
+              id: u.id,
+              name: u.name,
+              email: u.email,
+              status: u.isActive ? 'active' : 'suspended',
+              dogsCount: dogCountMap.get(u.id) ?? 0,
+              followersCount: u.followersCount,
+              followingCount: u.followingCount,
+              createdAt: u.createdAt,
+            })),
+            total,
+          },
+          input,
+        );
       }),
 
     getUser: adminProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ input }) => {
@@ -1001,28 +963,28 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       )
       .query(async ({ input }) => {
         const result = await adminDataRepo.listPendingDeletions(input);
-        return {
-          data: result.data.map((u) => ({
-            id: u.id,
-            displayName: u.displayName,
-            email: maskEmail(u.email),
-            createdAt: u.createdAt,
-            deletionScheduledAt: u.deletionScheduledAt,
-            daysRemaining: u.deletionScheduledAt
-              ? Math.max(
-                  0,
-                  Math.ceil(
-                    (new Date(u.deletionScheduledAt).getTime() - Date.now()) /
-                      (1000 * 60 * 60 * 24),
-                  ),
-                )
-              : 0,
-          })),
-          total: result.total,
-          page: input.page,
-          pageSize: input.pageSize,
-          totalPages: Math.ceil(result.total / input.pageSize),
-        };
+        return paginate(
+          {
+            data: result.data.map((u) => ({
+              id: u.id,
+              displayName: u.displayName,
+              email: maskEmail(u.email),
+              createdAt: u.createdAt,
+              deletionScheduledAt: u.deletionScheduledAt,
+              daysRemaining: u.deletionScheduledAt
+                ? Math.max(
+                    0,
+                    Math.ceil(
+                      (new Date(u.deletionScheduledAt).getTime() - Date.now()) /
+                        (1000 * 60 * 60 * 24),
+                    ),
+                  )
+                : 0,
+            })),
+            total: result.total,
+          },
+          input,
+        );
       }),
 
     cancelDeletion: adminProcedure
@@ -1059,13 +1021,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       )
       .query(async ({ input }) => {
         const result = await adminDataRepo.listSosAlerts(input);
-        return {
-          data: result.data,
-          total: result.total,
-          page: input.page,
-          pageSize: input.pageSize,
-          totalPages: Math.ceil(result.total / input.pageSize),
-        };
+        return paginate(result, input);
       }),
 
     listEmergencyContacts: adminProcedure
@@ -1078,16 +1034,16 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       )
       .query(async ({ input }) => {
         const result = await adminDataRepo.listEmergencyContacts(input);
-        return {
-          data: result.data.map((item) => ({
-            ...item,
-            phone: maskPhone(item.phone),
-          })),
-          total: result.total,
-          page: input.page,
-          pageSize: input.pageSize,
-          totalPages: Math.ceil(result.total / input.pageSize),
-        };
+        return paginate(
+          {
+            data: result.data.map((item) => ({
+              ...item,
+              phone: maskPhone(item.phone),
+            })),
+            total: result.total,
+          },
+          input,
+        );
       }),
 
     // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────
@@ -1109,27 +1065,13 @@ export function createAdminRouter(deps: AdminRouterDeps) {
     updateSettings: adminProcedure.input(updateSettingsSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.SuperAdmin);
 
-      const weightSize = input.matchWeightSize ?? DEFAULT_WEIGHTS.size;
-      const weightEnergy = input.matchWeightEnergy ?? DEFAULT_WEIGHTS.energy;
-      const weightBehavior = input.matchWeightBehavior ?? DEFAULT_WEIGHTS.behavior;
-      const weightWalk = input.matchWeightWalk ?? DEFAULT_WEIGHTS.walk;
-      const weightDistance = input.matchWeightDistance ?? DEFAULT_WEIGHTS.distance;
-      const weightLeash = input.matchWeightLeash ?? DEFAULT_WEIGHTS.leash;
-
-      const weightsSum =
-        weightSize + weightEnergy + weightBehavior + weightWalk + weightDistance + weightLeash;
-      if (Math.abs(weightsSum - 1.0) > 0.01) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: `Matching weights must sum to 1.0 (current sum: ${weightsSum.toFixed(4)})`,
-        });
-      }
+      const weights = unwrapResult(validateMatchWeights(input));
 
       void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
         action: 'settings.update',
         resourceType: RESOURCE_TYPE.settings,
-        changes: { after: input as unknown as Record<string, unknown> },
+        changes: { after: toAuditChanges(input) },
       });
 
       trackEvent('admin_settings_updated', ctx.userId, {
@@ -1141,12 +1083,12 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         supportEmail: input.supportEmail ?? 'support@pawmeet.io',
         photoConfidenceThreshold: input.photoConfidenceThreshold ?? 95,
         maxReportsBeforeSuspension: input.maxReportsBeforeSuspension ?? 5,
-        matchWeightSize: weightSize,
-        matchWeightEnergy: weightEnergy,
-        matchWeightBehavior: weightBehavior,
-        matchWeightWalk: weightWalk,
-        matchWeightDistance: weightDistance,
-        matchWeightLeash: weightLeash,
+        matchWeightSize: weights.size,
+        matchWeightEnergy: weights.energy,
+        matchWeightBehavior: weights.behavior,
+        matchWeightWalk: weights.walk,
+        matchWeightDistance: weights.distance,
+        matchWeightLeash: weights.leash,
       };
     }),
 
@@ -1156,13 +1098,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       requireRole(ctx.adminRole, AdminRole.Admin);
 
       const result = await adminDataRepo.listAdminUsers(input);
-      return {
-        data: result.data,
-        total: result.total,
-        page: input.page,
-        pageSize: input.pageSize,
-        totalPages: Math.ceil(result.total / input.pageSize),
-      };
+      return paginate(result, input);
     }),
 
     createAdminUser: adminProcedure
@@ -1170,36 +1106,14 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.SuperAdmin);
 
-        if (!hasMinRole(ctx.adminRole, input.role)) {
-          throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'Cannot create a user with a role higher than your own',
-          });
-        }
-
-        const existing = await adminDataRepo.findAdminUserByEmail(input.email);
-        if (existing) {
-          throw new TRPCError({
-            code: 'CONFLICT',
-            message: 'An admin user with this email already exists',
-          });
-        }
-
-        const passwordHash = await hash(input.temporaryPassword, 10);
-
-        const created = await adminDataRepo.createAdminUser({
+        const result = await createAdminUserUc({
           email: input.email,
           displayName: input.displayName,
           role: input.role,
-          passwordHash,
+          temporaryPassword: input.temporaryPassword,
+          callerRole: ctx.adminRole,
         });
-
-        if (!created) {
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to create admin',
-          });
-        }
+        const created = unwrapResult(result);
 
         void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
@@ -1223,36 +1137,13 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.SuperAdmin);
 
-        if (input.adminId === ctx.userId) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Cannot change your own role',
-          });
-        }
-
-        if (!hasMinRole(ctx.adminRole, input.newRole)) {
-          throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'Cannot set a role higher than your own',
-          });
-        }
-
-        const target = await adminDataRepo.findAdminUserById(input.adminId);
-        if (!target) {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
-        }
-
-        if (hasMinRole(target.role, ctx.adminRole as AdminRoleValue)) {
-          throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'Cannot modify a user with equal or higher role',
-          });
-        }
-
-        const updated = await adminDataRepo.updateAdminRole(input.adminId, input.newRole);
-        if (!updated) {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
-        }
+        const result = await updateAdminRoleUc({
+          adminId: input.adminId,
+          newRole: input.newRole,
+          callerUserId: ctx.userId,
+          callerRole: ctx.adminRole,
+        });
+        const updated = unwrapResult(result);
 
         void logAdminAction(auditLogRepo, {
           adminId: ctx.userId,
@@ -1260,12 +1151,12 @@ export function createAdminRouter(deps: AdminRouterDeps) {
           resourceType: RESOURCE_TYPE.admin,
           resourceId: input.adminId,
           changes: {
-            before: { role: target.role },
+            before: { role: updated.previousRole },
             after: { role: input.newRole },
           },
         });
 
-        return updated;
+        return { id: updated.id, email: updated.email, displayName: updated.displayName, role: updated.role };
       }),
 
     toggleAdminActive: adminProcedure
@@ -1330,7 +1221,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
         }
 
-        if (hasMinRole(target.role, ctx.adminRole as AdminRoleValue)) {
+        if (hasMinRole(target.role, ctx.adminRole)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Cannot reset password for a user with equal or higher role',
@@ -1356,13 +1247,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
       requireRole(ctx.adminRole, AdminRole.Moderator);
 
       const result = await adminDataRepo.listBreeds(input);
-      return {
-        data: result.data,
-        total: result.total,
-        page: input.page,
-        pageSize: input.pageSize,
-        totalPages: Math.ceil(result.total / input.pageSize),
-      };
+      return paginate(result, input);
     }),
 
     createBreed: adminProcedure.input(createBreedSchema).mutation(async ({ ctx, input }) => {
@@ -1375,7 +1260,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         action: 'create_breed',
         resourceType: RESOURCE_TYPE.breed,
         resourceId: String((created as { id?: number }).id),
-        changes: { after: input as unknown as Record<string, unknown> },
+        changes: { after: toAuditChanges(input) },
       });
 
       return created;
@@ -1409,8 +1294,8 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         resourceType: RESOURCE_TYPE.breed,
         resourceId: String(id),
         changes: {
-          before: existing as unknown as Record<string, unknown>,
-          after: updated as unknown as Record<string, unknown>,
+          before: toAuditChanges(existing),
+          ...(updated ? { after: toAuditChanges(updated) } : {}),
         },
       });
 
@@ -1441,7 +1326,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         action: 'delete_breed',
         resourceType: RESOURCE_TYPE.breed,
         resourceId: String(input.id),
-        changes: { before: existing as unknown as Record<string, unknown> },
+        changes: { before: toAuditChanges(existing) },
       });
 
       return { success: true };
@@ -1566,13 +1451,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         const offset = (input.page - 1) * input.pageSize;
         const result = await gamificationRepo.listAllChallenges(input.pageSize, offset);
 
-        return {
-          data: result.data,
-          total: result.total,
-          page: input.page,
-          pageSize: input.pageSize,
-          totalPages: Math.ceil(result.total / input.pageSize),
-        };
+        return paginate(result, input);
       }),
 
     createChallenge: adminProcedure

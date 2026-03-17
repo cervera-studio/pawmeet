@@ -1,6 +1,7 @@
 // Match domain: discovery, likes, passes, AI matching
 
 import { RuleBasedStrategy } from '../domain/scoring-strategy.js';
+import { createRedisRecommendationCacheRepository } from '../infra/redis-recommendation-cache-repository.js';
 import { MLScoringStrategy } from '../infra/ml-scoring-strategy.js';
 import { OnnxModelLoader } from '../infra/onnx-model-loader.js';
 import { createDiscoverCandidates } from '../use-cases/discover-candidates.js';
@@ -32,6 +33,7 @@ import {
 const ruleBasedStrategy = new RuleBasedStrategy(matchingAiRepo);
 export const onnxModelLoader = new OnnxModelLoader();
 const mlStrategy = new MLScoringStrategy(onnxModelLoader, ruleBasedStrategy);
+const recommendationCacheRepo = createRedisRecommendationCacheRepository();
 
 export const matchDeps = {
   listMatches: createListMatches({ dogRepo, matchRepo, userRepo }),
@@ -64,6 +66,7 @@ export const matchingAiDeps = {
     ruleBasedStrategy,
     mlStrategy,
     embeddingRepo,
+    recommendationCacheRepo,
   }),
   getMatchExplanation: createGetMatchExplanation({ matchRepo, dogRepo, userRepo }),
   // Repositories exposed for presence-based queries in the router

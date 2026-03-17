@@ -555,7 +555,8 @@
       "sendButton": "Send",
       "confirmTitle": "Confirm broadcast",
       "confirmDescription": "This will send the notification to {count} users. Continue?",
-      "successMessage": "Notification sent to {count} users"
+      "successMessage": "Notification sent to {count} users",
+      "sendError": "Error sending broadcast notification"
     },
     "targeted": {
       "targetedTitle": "Targeted",
@@ -563,7 +564,8 @@
       "userIdsLabel": "User IDs",
       "userIdsPlaceholder": "Enter user IDs, comma-separated or one per line",
       "sendButton": "Send",
-      "successMessage": "Sent to {sentCount} users, {skippedCount} skipped"
+      "successMessage": "Sent to {sentCount} users, {skippedCount} skipped",
+      "sendError": "Error sending targeted notification"
     },
     "common": {
       "cancel": "Cancel"
@@ -601,6 +603,8 @@
       "kpiMatches": "Matches Generated",
       "kpiAccuracy": "Accuracy",
       "kpiAvgScore": "Average Score",
+      "kpiActiveModel": "Active model",
+      "registeredModels": "Registered models",
       "chartCalibration": "Calibration curve",
       "chartWeights": "Feature weights distribution",
       "chartTimeline": "Performance over time",

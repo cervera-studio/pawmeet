@@ -1,4 +1,5 @@
 import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -47,7 +48,7 @@ export function createLeaveGroupEvent({ groupEventRepo, notificationService }: D
             body: `Sei stato promosso dalla lista d'attesa per "${event.title}"`,
           })
           .catch((err) => {
-            console.error('[leave-group-event] Failed to send notification:', err);
+            logger.error('leave-group-event', 'Failed to send notification', err);
           });
       }
     }

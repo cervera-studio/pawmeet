@@ -86,18 +86,14 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-neutral-900">
-              {organization.name}
-            </h1>
+            <h1 className="text-2xl font-bold text-neutral-900">{organization.name}</h1>
             {organization.isVerified ? (
               <Badge variant="success">Verificata</Badge>
             ) : (
               <Badge variant="secondary">Non verificata</Badge>
             )}
           </div>
-          <p className="mt-1 font-mono text-sm text-neutral-500">
-            {organization.slug}
-          </p>
+          <p className="mt-1 font-mono text-sm text-neutral-500">{organization.slug}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => router.push('/organizations')}>
@@ -119,9 +115,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">
-              Tipo
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Tipo</CardTitle>
           </CardHeader>
           <CardContent>
             <Badge variant="outline">{typeLabels[organization.type] ?? organization.type}</Badge>
@@ -130,9 +124,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">
-              Membri
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Membri</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">{organization.members.length}</p>
@@ -141,9 +133,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">
-              Creata il
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Creata il</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">{formatDateTime(organization.createdAt)}</p>
@@ -152,9 +142,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">
-              Verifica
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Verifica</CardTitle>
           </CardHeader>
           <CardContent>
             {organization.isVerified && organization.verifiedAt ? (
@@ -219,9 +207,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
                       {member.userName ?? 'Sconosciuto'}
                     </a>
                     {member.userEmail && (
-                      <p className="text-xs text-neutral-500">
-                        {member.userEmail}
-                      </p>
+                      <p className="text-xs text-neutral-500">{member.userEmail}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-2">

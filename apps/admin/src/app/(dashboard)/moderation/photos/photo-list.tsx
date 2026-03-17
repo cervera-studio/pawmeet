@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { PendingPhoto } from '@/repositories';
 import { approveAllPhotos, approvePhoto, rejectPhoto } from './actions';
@@ -23,8 +24,8 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
       await approvePhoto(photoId);
       setPhotos((prev) => prev.filter((p) => p.id !== photoId));
       toast.success(t('toast.approved'));
-    } catch {
-      toast.error(t('toast.approveError'));
+    } catch (error) {
+      toast.error(handleError(error, t('toast.approveError')));
     }
   }
 
@@ -33,8 +34,8 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
       await rejectPhoto(photoId);
       setPhotos((prev) => prev.filter((p) => p.id !== photoId));
       toast.success(t('toast.rejected'));
-    } catch {
-      toast.error(t('toast.rejectError'));
+    } catch (error) {
+      toast.error(handleError(error, t('toast.rejectError')));
     }
   }
 
@@ -43,8 +44,8 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
       await approveAllPhotos();
       setPhotos([]);
       toast.success(t('toast.allApproved'));
-    } catch {
-      toast.error(t('toast.allApproveError'));
+    } catch (error) {
+      toast.error(handleError(error, t('toast.allApproveError')));
     }
   }
 

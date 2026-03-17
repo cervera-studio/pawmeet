@@ -325,7 +325,15 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
       .orderBy(groupEventParticipants.joinedAt);
 
     return rows.map((r) => ({
-      participant: r.participant as unknown as GroupEventParticipant,
+      participant: {
+        id: r.participant.id,
+        eventId: r.participant.eventId,
+        userId: r.participant.userId,
+        dogId: r.participant.dogId,
+        status: r.participant.status as GroupEventParticipant['status'],
+        isOrganizer: r.participant.isOrganizer,
+        joinedAt: r.participant.joinedAt,
+      } satisfies GroupEventParticipant,
       displayName: r.displayName,
       avatarUrl: r.avatarUrl,
       dogName: r.dogName,
@@ -353,7 +361,15 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
       .set({ status: 'accepted' })
       .where(eq(groupEventParticipants.id, waitlisted.id));
 
-    return { ...waitlisted, status: 'accepted' } as GroupEventParticipant;
+    return {
+      id: waitlisted.id,
+      eventId: waitlisted.eventId,
+      userId: waitlisted.userId,
+      dogId: waitlisted.dogId,
+      status: 'accepted' as const,
+      isOrganizer: waitlisted.isOrganizer,
+      joinedAt: waitlisted.joinedAt,
+    } satisfies GroupEventParticipant;
   }
 
   async findParticipantStatuses(
@@ -374,7 +390,15 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
 
     const map = new Map<string, GroupEventParticipant>();
     for (const row of rows) {
-      map.set(row.eventId, row as unknown as GroupEventParticipant);
+      map.set(row.eventId, {
+        id: row.id,
+        eventId: row.eventId,
+        userId: row.userId,
+        dogId: row.dogId,
+        status: row.status as GroupEventParticipant['status'],
+        isOrganizer: row.isOrganizer,
+        joinedAt: row.joinedAt,
+      } satisfies GroupEventParticipant);
     }
     return map;
   }

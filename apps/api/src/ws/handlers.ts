@@ -1,8 +1,18 @@
-import { WS_EVENT, type WsMessage } from '@pawmeet/types';
+import { WS_EVENT } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { WebSocket } from 'ws';
+import { z } from 'zod';
 import { getRooms, sendToRoom } from './registry.js';
+
+const wsMessageSchema = z.object({
+  type: z.string(),
+  payload: z.record(z.string(), z.unknown()),
+});
+
+const typingPayloadSchema = z.object({
+  matchId: z.string().uuid(),
+});
 
 // ── Redis-backed rate limiter for WebSocket messages ──────────────────────────
 let _wsLimiter: Ratelimit | null = null;
@@ -32,21 +42,21 @@ async function isWsRateLimited(userId: string): Promise<boolean> {
 }
 
 /** Parse and validate an incoming WebSocket message */
-export function parseWsMessage(data: string): WsMessage | null {
+export function parseWsMessage(data: string): { type: string; payload: Record<string, unknown> } | null {
   try {
-    const parsed = JSON.parse(data);
-    if (typeof parsed.type === 'string' && parsed.payload) {
-      return parsed as WsMessage;
-    }
-    return null;
-  } catch (e) {
-    logger.warn('WebSocket', 'Failed to parse incoming message', e);
+    return wsMessageSchema.parse(JSON.parse(data));
+  } catch {
+    logger.warn('WebSocket', 'Failed to parse incoming message', null);
     return null;
   }
 }
 
 /** Handle typing start/stop events by relaying to room peers (only if user is in the room) */
-export function handleTyping(userId: string, matchId: string, type: WsMessage['type']) {
+export function handleTyping(
+  userId: string,
+  matchId: string,
+  type: typeof WS_EVENT.TYPING_START | typeof WS_EVENT.TYPING_STOP,
+) {
   const room = getRooms().get(matchId);
   if (!room?.has(userId)) return;
   sendToRoom(matchId, { type, payload: { userId, matchId } }, userId);
@@ -66,19 +76,14 @@ export async function handleMessage(userId: string, ws: WebSocket, data: string)
     return;
   }
 
-  switch (message.type) {
-    case WS_EVENT.TYPING_START:
-    case WS_EVENT.TYPING_STOP: {
-      const matchId = message.payload.matchId as string;
-      if (matchId) {
-        handleTyping(userId, matchId, message.type);
-      }
-      break;
+  const { type } = message;
+  if (type === WS_EVENT.TYPING_START || type === WS_EVENT.TYPING_STOP) {
+    const result = typingPayloadSchema.safeParse(message.payload);
+    if (result.success) {
+      handleTyping(userId, result.data.matchId, type);
     }
-    default:
-      // Other message types are handled via REST API
-      break;
   }
+  // Other message types are handled via REST API
 }
 
 /** Broadcast online/offline status to all rooms the user belongs to */

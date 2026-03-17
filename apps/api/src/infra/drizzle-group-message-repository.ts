@@ -128,7 +128,15 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
 
     const lastMessageByEvent = new Map<string, GroupChatMessage>();
     for (const row of lastMessagesRows) {
-      lastMessageByEvent.set(row.eventId, row as unknown as GroupChatMessage);
+      lastMessageByEvent.set(row.eventId, {
+        id: row.id,
+        eventId: row.eventId,
+        senderId: row.senderId,
+        content: row.content,
+        mediaUrl: row.mediaUrl,
+        isDeleted: row.isDeleted,
+        createdAt: row.createdAt,
+      } satisfies GroupChatMessage);
     }
 
     // Batch-fetch read records for all active events for this user

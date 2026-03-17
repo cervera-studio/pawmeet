@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
-import { cancelGroupEvent, removeParticipant } from '../actions';
+import { cancelGroupEvent } from '../actions';
+import { EventParticipants } from './event-participants';
 import { SponsorsSection } from './sponsors-section';
 
 const categoryLabels: Record<string, string> = {
@@ -32,17 +33,6 @@ const statusConfig: Record<
   completed: { label: 'Completato', variant: 'outline' },
   cancelled: { label: 'Annullato', variant: 'destructive' },
   template: { label: 'Template', variant: 'secondary' },
-};
-
-const participantStatusConfig: Record<
-  string,
-  { label: string; variant: 'success' | 'warning' | 'destructive' | 'outline' | 'secondary' }
-> = {
-  pending: { label: 'In attesa', variant: 'warning' },
-  accepted: { label: 'Accettato', variant: 'success' },
-  declined: { label: 'Rifiutato', variant: 'outline' },
-  removed: { label: 'Rimosso', variant: 'destructive' },
-  cancelled: { label: 'Annullato', variant: 'secondary' },
 };
 
 interface EventSponsorData {
@@ -99,7 +89,6 @@ interface EventDetailProps {
 export function EventDetail({ event, initialSponsors }: EventDetailProps) {
   const router = useRouter();
   const [isCancelling, setIsCancelling] = useState(false);
-  const [removingId, setRemovingId] = useState<string | null>(null);
 
   const status = statusConfig[event.status] ?? { label: event.status, variant: 'outline' as const };
   const canCancel = event.status === 'scheduled' || event.status === 'in_progress';
@@ -117,35 +106,13 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
     }
   }
 
-  async function handleRemoveParticipant(participantId: string) {
-    if (!confirm('Rimuovere questo partecipante?')) return;
-    setRemovingId(participantId);
-    try {
-      await removeParticipant(participantId, event.id);
-      router.refresh();
-    } catch (error) {
-      toast.error(handleError(error, 'Errore durante la rimozione del partecipante'));
-    } finally {
-      setRemovingId(null);
-    }
-  }
-
-  const activeParticipants = event.participants.filter(
-    (p) => p.status === 'accepted' || p.status === 'pending',
-  );
-  const inactiveParticipants = event.participants.filter(
-    (p) => p.status !== 'accepted' && p.status !== 'pending',
-  );
-
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-neutral-900">
-              {event.title}
-            </h1>
+            <h1 className="text-2xl font-bold text-neutral-900">{event.title}</h1>
             <Badge variant={status.variant}>{status.label}</Badge>
             {event.isRecurring && <Badge variant="secondary">Ricorrente</Badge>}
           </div>
@@ -172,9 +139,7 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">
-              Categoria
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Categoria</CardTitle>
           </CardHeader>
           <CardContent>
             <Badge variant="outline">{categoryLabels[event.category] ?? event.category}</Badge>
@@ -183,23 +148,17 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">
-              Data e ora
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Data e ora</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">{formatDateTime(event.scheduledAt)}</p>
-            <p className="text-xs text-neutral-500">
-              {event.durationMin} minuti
-            </p>
+            <p className="text-xs text-neutral-500">{event.durationMin} minuti</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">
-              Partecipanti
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Partecipanti</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">
@@ -215,18 +174,14 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">
-              Visibilità
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Visibilità</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">
               {visibilityLabels[event.visibility] ?? event.visibility}
             </p>
             {event.requiresApproval && (
-              <p className="text-xs text-neutral-500">
-                Richiede approvazione
-              </p>
+              <p className="text-xs text-neutral-500">Richiede approvazione</p>
             )}
           </CardContent>
         </Card>
@@ -287,96 +242,11 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
       </Card>
 
       {/* Participants */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Partecipanti ({activeParticipants.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {activeParticipants.length === 0 ? (
-            <p className="text-sm text-neutral-500">Nessun partecipante</p>
-          ) : (
-            <div className="divide-y divide-neutral-100">
-              {activeParticipants.map((p) => {
-                const pStatus = participantStatusConfig[p.status] ?? {
-                  label: p.status,
-                  variant: 'outline' as const,
-                };
-                return (
-                  <div key={p.id} className="flex items-center justify-between py-3">
-                    <div className="flex items-center gap-3">
-                      <div>
-                        <a
-                          href={`/users/${p.userId}`}
-                          className="text-sm font-medium text-primary-600 hover:underline"
-                        >
-                          {p.userName ?? 'Sconosciuto'}
-                        </a>
-                        <p className="text-xs text-neutral-500">
-                          con {p.dogName ?? 'cane sconosciuto'}
-                          {p.isOrganizer && ' — Organizzatore'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={pStatus.variant}>{pStatus.label}</Badge>
-                      <span className="text-xs text-neutral-500">
-                        {p.joinedAt ? formatDateTime(p.joinedAt) : '-'}
-                      </span>
-                      {!p.isOrganizer && (p.status === 'accepted' || p.status === 'pending') && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveParticipant(p.id)}
-                          disabled={removingId === p.id}
-                        >
-                          Rimuovi
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Inactive participants */}
-      {inactiveParticipants.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-neutral-500">
-              Partecipanti passati ({inactiveParticipants.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="divide-y divide-neutral-100">
-              {inactiveParticipants.map((p) => {
-                const pStatus = participantStatusConfig[p.status] ?? {
-                  label: p.status,
-                  variant: 'outline' as const,
-                };
-                return (
-                  <div key={p.id} className="flex items-center justify-between py-3">
-                    <div>
-                      <a
-                        href={`/users/${p.userId}`}
-                        className="text-sm font-medium text-primary-600 hover:underline"
-                      >
-                        {p.userName ?? 'Sconosciuto'}
-                      </a>
-                      <p className="text-xs text-neutral-500">
-                        con {p.dogName ?? 'cane sconosciuto'}
-                      </p>
-                    </div>
-                    <Badge variant={pStatus.variant}>{pStatus.label}</Badge>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <EventParticipants
+        eventId={event.id}
+        participants={event.participants}
+        onParticipantRemoved={() => router.refresh()}
+      />
 
       {/* Sponsors */}
       <Card>

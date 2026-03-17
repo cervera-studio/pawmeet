@@ -34,8 +34,7 @@ export function UsersTable({ initialData }: UsersTableProps) {
         accessorKey: 'status',
         header: t('columns.status'),
         cell: ({ row }) => {
-          const status = row.getValue('status') as string;
-          return <StatusBadge status={status} type="user" />;
+          return <StatusBadge status={row.original.status} type="user" />;
         },
       },
       {
@@ -53,7 +52,7 @@ export function UsersTable({ initialData }: UsersTableProps) {
       {
         accessorKey: 'createdAt',
         header: t('columns.registeredAt'),
-        cell: ({ row }) => formatDate(row.getValue('createdAt')),
+        cell: ({ row }) => formatDate(row.original.createdAt),
       },
       {
         id: 'actions',

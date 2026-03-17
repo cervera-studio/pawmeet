@@ -56,11 +56,7 @@ export function DeletionsTable({ initialData, pageSize }: DeletionsTableProps) {
       {
         accessorKey: 'email',
         header: 'Email',
-        cell: ({ row }) => (
-          <span className="text-sm text-neutral-500">
-            {row.original.email}
-          </span>
-        ),
+        cell: ({ row }) => <span className="text-sm text-neutral-500">{row.original.email}</span>,
       },
       {
         accessorKey: 'createdAt',

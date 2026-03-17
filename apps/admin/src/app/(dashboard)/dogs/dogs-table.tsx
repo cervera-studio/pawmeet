@@ -63,15 +63,12 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
         accessorKey: 'size',
         header: t('columns.size'),
         cell: ({ row }) => {
-          const size = row.getValue('size') as string;
-          const label =
-            (
-              {
-                small: t('sizes.small'),
-                medium: t('sizes.medium'),
-                large: t('sizes.large'),
-              } as Record<string, string>
-            )[size] ?? size;
+          const sizeLabels: Record<string, string> = {
+            small: t('sizes.small'),
+            medium: t('sizes.medium'),
+            large: t('sizes.large'),
+          };
+          const label = sizeLabels[row.original.size] ?? row.original.size;
           return <Badge variant="outline">{label}</Badge>;
         },
       },
@@ -79,7 +76,7 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
         accessorKey: 'isActive',
         header: t('columns.status'),
         cell: ({ row }) =>
-          row.getValue('isActive') ? (
+          row.original.isActive ? (
             <Badge variant="success">{tc('active')}</Badge>
           ) : (
             <Badge variant="outline">{tc('inactive')}</Badge>
@@ -88,7 +85,7 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
       {
         accessorKey: 'createdAt',
         header: t('columns.addedAt'),
-        cell: ({ row }) => formatDate(row.getValue('createdAt')),
+        cell: ({ row }) => formatDate(row.original.createdAt),
       },
     ],
     [t, tc],

@@ -22,13 +22,13 @@ export default async function PerformancePage() {
     getTranslations('aiMatching.performance'),
   ]);
 
-  const activeModel = registry.models.find((m: { isActive: boolean }) => m.isActive);
+  const activeModel = registry.models.find((m) => m.isActive);
 
   const kpis = [
     { title: t('kpiPredictions'), value: fmtCount(performance.overview?.totalPredictions) },
     { title: t('kpiMatches'), value: fmtCount(performance.overview?.totalMatches) },
     { title: t('kpiAvgScore'), value: fmtPct(performance.overview?.avgOverallScore) },
-    { title: 'Modello attivo', value: activeModel?.version ?? '\u2014' },
+    { title: t('kpiActiveModel'), value: activeModel?.version ?? '\u2014' },
   ];
 
   return (
@@ -43,14 +43,10 @@ export default async function PerformancePage() {
         {kpis.map((kpi) => (
           <Card key={kpi.title}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-neutral-500">
-                {kpi.title}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-neutral-500">{kpi.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-neutral-900">
-                {kpi.value}
-              </div>
+              <div className="text-2xl font-bold text-neutral-900">{kpi.value}</div>
             </CardContent>
           </Card>
         ))}
@@ -58,30 +54,18 @@ export default async function PerformancePage() {
 
       {/* Charts */}
       <LazyPerformanceCharts
-        scoreBuckets={
-          performance.scoreBuckets as unknown as Parameters<
-            typeof LazyPerformanceCharts
-          >[0]['scoreBuckets']
-        }
-        weightDistribution={
-          performance.weightDistribution as unknown as Parameters<
-            typeof LazyPerformanceCharts
-          >[0]['weightDistribution']
-        }
+        scoreBuckets={performance.scoreBuckets}
+        weightDistribution={performance.weightDistribution}
         timeSeries={performance.timeSeries}
       />
 
       {/* Model Registry */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Modelli registrati</CardTitle>
+          <CardTitle className="text-base">{t('registeredModels')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <ModelRegistryTable
-            models={
-              registry.models as unknown as Parameters<typeof ModelRegistryTable>[0]['models']
-            }
-          />
+          <ModelRegistryTable models={registry.models} />
         </CardContent>
       </Card>
     </div>

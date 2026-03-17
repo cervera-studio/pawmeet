@@ -1,9 +1,33 @@
+// ── Gamification types ──────────────────────────────────────────────────────
+// Canonical const objects and types live in @pawmeet/config.
+// Here we define interface-level types that stay in sync.
+// Use `string` for fields that may have values not yet in the const objects
+// (e.g., new XP actions added in config before types is updated).
+
+/** XP action — kept as string to stay compatible with @pawmeet/config XP_ACTION values */
+export type XpAction = string;
+
+/** User level — kept as string to stay compatible with @pawmeet/config USER_LEVEL values */
+export type XpLevel = string;
+
+/** Leaderboard type */
+export type LeaderboardType = string;
+
+/** Challenge type */
+export type ChallengeType = string;
+
+/** Streak type */
+export type StreakType = string;
+
+/** Achievement type */
+export type AchievementType = string;
+
 // ── XP ──────────────────────────────────────────────────────────────────────
 
 export interface XpTransaction {
   id: string;
   userId: string;
-  action: string;
+  action: XpAction;
   points: number;
   metadata: Record<string, unknown> | null;
   createdAt: Date;
@@ -11,7 +35,7 @@ export interface XpTransaction {
 
 export interface XpSummary {
   totalXp: number;
-  level: string;
+  level: XpLevel;
   xpToNextLevel: number | null;
 }
 
@@ -22,11 +46,11 @@ export interface LeaderboardEntry {
   displayName: string;
   totalXp: number;
   rank: number;
-  level: string;
+  level: XpLevel;
 }
 
 export interface LeaderboardParams {
-  type: string;
+  type: LeaderboardType;
   limit?: number;
 }
 
@@ -34,7 +58,7 @@ export interface LeaderboardParams {
 
 export interface Challenge {
   id: string;
-  type: string;
+  type: ChallengeType;
   title: string;
   description: string;
   targetValue: number;
@@ -63,7 +87,7 @@ export interface ChallengeWithProgress extends Challenge {
 export interface Streak {
   id: string;
   userId: string;
-  type: string;
+  type: StreakType;
   currentLength: number;
   longestLength: number;
   lastActivityDate: Date;
@@ -76,6 +100,6 @@ export interface Streak {
 export interface Achievement {
   id: string;
   userId: string;
-  type: string;
+  type: AchievementType;
   unlockedAt: Date;
 }

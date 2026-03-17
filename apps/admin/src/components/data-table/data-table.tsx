@@ -118,9 +118,7 @@ export function DataTable<TData, TValue>({
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex items-center justify-center">
                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-700 border-t-transparent" />
-                    <span className="ml-2 text-neutral-500">
-                      {tc('loading')}
-                    </span>
+                    <span className="ml-2 text-neutral-500">{tc('loading')}</span>
                   </div>
                 </TableCell>
               </TableRow>
@@ -136,10 +134,7 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-neutral-500"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center text-neutral-500">
                   {tc('noResults')}
                 </TableCell>
               </TableRow>

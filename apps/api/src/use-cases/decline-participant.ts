@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -42,7 +43,7 @@ export function createDeclineParticipant({ groupEventRepo, notificationService }
         data: { eventId: event.id, type: 'event_request_declined' },
       })
       .catch((err) => {
-        console.error('[decline-participant] Failed to send notification:', err);
+        logger.error('decline-participant', 'Failed to send notification', err);
       });
 
     return succeed(undefined);

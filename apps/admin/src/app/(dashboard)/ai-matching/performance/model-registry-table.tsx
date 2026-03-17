@@ -21,7 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { handleError } from '@/lib/error-handler';
 import { formatDateShort } from '@/lib/formatters';
+import type { ModelEntry } from './actions';
 import { promoteModel } from './actions';
 
 interface ModelMetrics {
@@ -29,18 +31,27 @@ interface ModelMetrics {
   auc_roc?: number | null;
 }
 
-interface Model {
-  id: string;
-  version: string;
-  trainingSamplesCount: number | null;
-  metrics: unknown;
-  isActive: boolean;
-  promotedAt: string | Date | null;
-  createdAt: string | Date;
-}
+// Centralized UI labels (Italian) — move to i18n when available
+const LABELS = {
+  noModels: 'Nessun modello registrato.',
+  version: 'Versione',
+  samples: 'Campioni',
+  status: 'Stato',
+  promotedAt: 'Promosso il',
+  active: 'Attivo',
+  inactive: 'Inattivo',
+  promote: 'Promuovi',
+  promoting: 'Promozione...',
+  confirmTitle: 'Conferma promozione',
+  confirmDescription: (version: string) =>
+    `Vuoi promuovere il modello ${version} in produzione? Il modello attuale verrà disattivato.`,
+  cancel: 'Annulla',
+  promoted: (version: string) => `Modello ${version} promosso`,
+  promoteError: 'Errore durante la promozione del modello',
+} as const;
 
 interface ModelRegistryTableProps {
-  models: Model[];
+  models: ModelEntry[];
 }
 
 export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
@@ -52,19 +63,17 @@ export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
     startTransition(async () => {
       try {
         await promoteModel(version);
-        toast.success(`Modello ${version} promosso`);
+        toast.success(LABELS.promoted(version));
         setConfirmVersion(null);
         router.refresh();
-      } catch {
-        toast.error('Errore durante la promozione del modello');
+      } catch (error) {
+        toast.error(handleError(error, LABELS.promoteError));
       }
     });
   }
 
   if (models.length === 0) {
-    return (
-      <p className="text-sm text-neutral-500">Nessun modello registrato.</p>
-    );
+    return <p className="text-sm text-neutral-500">{LABELS.noModels}</p>;
   }
 
   return (
@@ -72,12 +81,12 @@ export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Versione</TableHead>
-            <TableHead>Campioni</TableHead>
+            <TableHead>{LABELS.version}</TableHead>
+            <TableHead>{LABELS.samples}</TableHead>
             <TableHead>RMSE</TableHead>
             <TableHead>AUC-ROC</TableHead>
-            <TableHead>Stato</TableHead>
-            <TableHead>Promosso il</TableHead>
+            <TableHead>{LABELS.status}</TableHead>
+            <TableHead>{LABELS.promotedAt}</TableHead>
             <TableHead />
           </TableRow>
         </TableHeader>
@@ -92,9 +101,9 @@ export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
                 <TableCell>{metrics?.auc_roc?.toFixed(4) ?? '\u2014'}</TableCell>
                 <TableCell>
                   {model.isActive ? (
-                    <Badge variant="success">Attivo</Badge>
+                    <Badge variant="success">{LABELS.active}</Badge>
                   ) : (
-                    <Badge variant="secondary">Inattivo</Badge>
+                    <Badge variant="secondary">{LABELS.inactive}</Badge>
                   )}
                 </TableCell>
                 <TableCell>
@@ -107,7 +116,7 @@ export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
                       size="sm"
                       onClick={() => setConfirmVersion(model.version)}
                     >
-                      Promuovi
+                      {LABELS.promote}
                     </Button>
                   )}
                 </TableCell>
@@ -120,21 +129,20 @@ export function ModelRegistryTable({ models }: ModelRegistryTableProps) {
       <Dialog open={confirmVersion !== null} onOpenChange={() => setConfirmVersion(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Conferma promozione</DialogTitle>
+            <DialogTitle>{LABELS.confirmTitle}</DialogTitle>
             <DialogDescription>
-              Vuoi promuovere il modello <span className="font-mono">{confirmVersion}</span> in
-              produzione? Il modello attuale verrà disattivato.
+              {confirmVersion ? LABELS.confirmDescription(confirmVersion) : ''}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmVersion(null)} disabled={isPending}>
-              Annulla
+              {LABELS.cancel}
             </Button>
             <Button
               onClick={() => confirmVersion && handlePromote(confirmVersion)}
               disabled={isPending}
             >
-              {isPending ? 'Promozione...' : 'Promuovi'}
+              {isPending ? LABELS.promoting : LABELS.promote}
             </Button>
           </DialogFooter>
         </DialogContent>

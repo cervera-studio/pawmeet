@@ -23,7 +23,8 @@ export async function fetchGroupEvent(id: string) {
   const api = await getServerTrpcClient();
   try {
     return await api.admin.getGroupEvent.query({ id });
-  } catch {
+  } catch (error) {
+    console.error('[fetchGroupEvent]', error);
     return null;
   }
 }

@@ -438,9 +438,26 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
         : [];
 
     return {
-      posts: items as unknown as AdminFeedPostsResult['posts'],
+      posts: items.map((p) => ({
+        id: p.id,
+        caption: p.caption,
+        moderationStatus: p.moderationStatus,
+        likesCount: p.likesCount,
+        commentsCount: p.commentsCount,
+        isDeleted: p.isDeleted,
+        createdAt: p.createdAt,
+        authorId: p.authorId,
+        authorName: p.authorName ?? null,
+        authorEmail: p.authorEmail ?? null,
+      })) satisfies AdminFeedPostsResult['posts'],
       total: totalRow?.value ?? 0,
-      media: media as unknown as AdminFeedPostsResult['media'],
+      media: media.map((m) => ({
+        id: m.id,
+        postId: m.postId,
+        url: m.url,
+        mediaType: m.mediaType,
+        thumbnailUrl: m.thumbnailUrl,
+      })) satisfies AdminFeedPostsResult['media'],
       reportCounts: reportCounts.map((r) => ({ contentId: r.contentId, count: r.count })),
     };
   }

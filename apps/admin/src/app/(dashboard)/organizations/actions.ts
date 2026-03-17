@@ -23,7 +23,8 @@ export async function fetchOrganization(id: string) {
   const api = await getServerTrpcClient();
   try {
     return await api.admin.getOrganization.query({ id });
-  } catch {
+  } catch (error) {
+    console.error('[fetchOrganization]', error);
     return null;
   }
 }

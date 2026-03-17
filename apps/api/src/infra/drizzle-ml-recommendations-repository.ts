@@ -43,7 +43,34 @@ export class DrizzleMlRecommendationsRepository implements MlRecommendationsRepo
       .from(dogProfiles)
       .where(and(eq(dogProfiles.ownerId, userId), eq(dogProfiles.isActive, true)));
 
-    return userDogs as unknown as NearbyCandidateRow[];
+    return userDogs.map((d) => ({
+      id: d.id,
+      ownerId: d.ownerId,
+      name: d.name,
+      birthDate: d.birthDate,
+      breed: d.breed,
+      breedSecondary: d.breedSecondary,
+      size: d.size,
+      weightKg: d.weightKg,
+      gender: d.gender,
+      isNeutered: d.isNeutered,
+      energyLevel: d.energyLevel,
+      behaviorWithDogs: d.behaviorWithDogs,
+      behaviorWithPeople: d.behaviorWithPeople,
+      leashBehavior: d.leashBehavior,
+      recallReliability: d.recallReliability,
+      bio: d.bio,
+      walkPrefTime: d.walkPrefTime,
+      walkPrefDurationMin: d.walkPrefDurationMin,
+      walkPrefDurationMax: d.walkPrefDurationMax,
+      walkPrefTerrain: d.walkPrefTerrain,
+      isActive: d.isActive,
+      createdAt: d.createdAt,
+      updatedAt: d.updatedAt,
+      ownerLatitude: null,
+      ownerLongitude: null,
+      distanceKm: 0,
+    })) satisfies NearbyCandidateRow[];
   }
 
   async getBlockedUserIds(userId: string): Promise<string[]> {

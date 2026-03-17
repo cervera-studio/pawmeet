@@ -1,5 +1,6 @@
 import { XP_POINTS } from '@pawmeet/config';
 import { isSuccess } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import {
   approveParticipantSchema,
   cancelGroupEventSchema,
@@ -57,10 +58,10 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
               userId: ctx.userId,
               title: 'Livello su!',
               body: `Sei diventato ${res.data.summary.level}!`,
-            }).catch((e) => console.warn('Gamification error:', e));
+            }).catch((e) => logger.warn('gamification', 'Side effect failed', e));
           }
         })
-        .catch((e) => console.warn('Gamification error:', e));
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
       trackEvent('gamification_xp_awarded', ctx.userId, {
         amount: XP_POINTS.group_event_created,
         source: 'group_event_created',
@@ -104,16 +105,16 @@ export function createGroupEventsRouter(deps: typeof groupEventDeps) {
               userId: ctx.userId,
               title: 'Livello su!',
               body: `Sei diventato ${res.data.summary.level}!`,
-            }).catch((e) => console.warn('Gamification error:', e));
+            }).catch((e) => logger.warn('gamification', 'Side effect failed', e));
           }
         })
-        .catch((e) => console.warn('Gamification error:', e));
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
       void deps
         .updateChallengeProgress(ctx.userId, 'group_events_joined', 1)
-        .catch((e) => console.warn('Gamification error:', e));
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
       void deps
         .checkAndUnlockAchievements(ctx.userId)
-        .catch((e) => console.warn('Gamification error:', e));
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
       trackEvent('gamification_xp_awarded', ctx.userId, {
         amount: XP_POINTS.group_event_joined,
         source: 'group_event_joined',

@@ -1,3 +1,4 @@
+import type { S3Client } from '@aws-sdk/client-s3';
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -32,7 +33,7 @@ export const MAX_VIDEO_FILE_SIZE = 100 * 1024 * 1024;
 const PRESIGNED_EXPIRY = 600;
 
 /** Lazy-load the R2 client to avoid env-var checks at import time */
-async function getR2() {
+async function getR2(): Promise<S3Client> {
   const { r2 } = await import('./r2.js');
   return r2;
 }
@@ -98,7 +99,7 @@ export async function generatePresignedUploadUrl(
     ContentType: contentType,
   });
 
-  return getSignedUrl(r2 as any, command, { expiresIn: PRESIGNED_EXPIRY });
+  return getSignedUrl(r2, command, { expiresIn: PRESIGNED_EXPIRY });
 }
 
 /**
@@ -118,7 +119,7 @@ export async function generateUploadUrl(
     ContentType: contentType,
   });
 
-  const uploadUrl = await getSignedUrl(r2 as any, command, { expiresIn: PRESIGNED_EXPIRY });
+  const uploadUrl = await getSignedUrl(r2, command, { expiresIn: PRESIGNED_EXPIRY });
   return { uploadUrl, key };
 }
 
@@ -133,7 +134,7 @@ export async function generateReadUrl(key: string): Promise<string> {
     Key: key,
   });
 
-  return getSignedUrl(r2 as any, command, { expiresIn: PRESIGNED_EXPIRY });
+  return getSignedUrl(r2, command, { expiresIn: PRESIGNED_EXPIRY });
 }
 
 /**
@@ -190,7 +191,7 @@ export async function generatePresignedDownloadUrl(
     ResponseContentDisposition: `inline; filename="${filename}"`,
     ResponseContentType: contentType,
   });
-  return getSignedUrl(r2 as any, command, { expiresIn: expiresInSeconds });
+  return getSignedUrl(r2, command, { expiresIn: expiresInSeconds });
 }
 
 /**

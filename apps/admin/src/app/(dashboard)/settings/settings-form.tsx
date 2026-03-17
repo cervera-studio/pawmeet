@@ -113,10 +113,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <CardContent>
           <form onSubmit={generalForm.handleSubmit(handleSaveGeneral)} className="space-y-4">
             <div className="space-y-2">
-              <label
-                htmlFor="app-name"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="app-name" className="text-sm font-medium text-neutral-700">
                 {t('general.appName')}
               </label>
               <Input id="app-name" {...generalForm.register('appName')} />
@@ -127,10 +124,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="support-email"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="support-email" className="text-sm font-medium text-neutral-700">
                 {t('general.supportEmail')}
               </label>
               <Input id="support-email" {...generalForm.register('supportEmail')} />
@@ -155,10 +149,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <CardContent>
           <form onSubmit={moderationForm.handleSubmit(handleSaveModeration)} className="space-y-4">
             <div className="space-y-2">
-              <label
-                htmlFor="photo-confidence"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="photo-confidence" className="text-sm font-medium text-neutral-700">
                 {t('moderation.photoThreshold')}
               </label>
               <Input
@@ -175,10 +166,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="max-reports"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="max-reports" className="text-sm font-medium text-neutral-700">
                 {t('moderation.maxReports')}
               </label>
               <Input
@@ -208,10 +196,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <CardContent>
           <form onSubmit={matchingForm.handleSubmit(handleSaveMatching)} className="space-y-4">
             <div className="space-y-2">
-              <label
-                htmlFor="match-size"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="match-size" className="text-sm font-medium text-neutral-700">
                 {t('matching.size')}
               </label>
               <Input
@@ -229,10 +214,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="match-energy"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="match-energy" className="text-sm font-medium text-neutral-700">
                 {t('matching.energy')}
               </label>
               <Input
@@ -250,10 +232,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="match-behavior"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="match-behavior" className="text-sm font-medium text-neutral-700">
                 {t('matching.behavior')}
               </label>
               <Input
@@ -271,10 +250,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="match-walk"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="match-walk" className="text-sm font-medium text-neutral-700">
                 {t('matching.walk')}
               </label>
               <Input
@@ -292,10 +268,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="match-distance"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="match-distance" className="text-sm font-medium text-neutral-700">
                 {t('matching.distance')}
               </label>
               <Input
@@ -313,10 +286,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="match-leash"
-                className="text-sm font-medium text-neutral-700"
-              >
+              <label htmlFor="match-leash" className="text-sm font-medium text-neutral-700">
                 {t('matching.leash')}
               </label>
               <Input
@@ -357,12 +327,8 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-neutral-900">
-                {t('dangerZone.clearCache')}
-              </p>
-              <p className="text-xs text-neutral-500">
-                {t('dangerZone.clearCacheDesc')}
-              </p>
+              <p className="text-sm font-medium text-neutral-900">{t('dangerZone.clearCache')}</p>
+              <p className="text-xs text-neutral-500">{t('dangerZone.clearCacheDesc')}</p>
             </div>
             <Button variant="destructive" size="sm" onClick={handleClearCache}>
               {t('dangerZone.clearButton')}

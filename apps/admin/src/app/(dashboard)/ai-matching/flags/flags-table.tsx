@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { handleError } from '@/lib/error-handler';
 import { updateFlag } from './actions';
 import { EditFlagDialog } from './edit-flag-dialog';
 
@@ -54,8 +55,8 @@ export function FlagsTable({ flags, columns, labels }: FlagsTableProps) {
         toast.success(`Flag ${name} aggiornato`);
         setDialogOpen(false);
         router.refresh();
-      } catch {
-        toast.error('Errore durante il salvataggio');
+      } catch (error) {
+        toast.error(handleError(error, 'Errore durante il salvataggio'));
       }
     });
   }
@@ -80,9 +81,7 @@ export function FlagsTable({ flags, columns, labels }: FlagsTableProps) {
                   {flag.enabled ? labels.enabled : labels.disabled}
                 </Badge>
               </TableCell>
-              <TableCell className="text-sm text-neutral-500">
-                {flag.splitPercent}%
-              </TableCell>
+              <TableCell className="text-sm text-neutral-500">{flag.splitPercent}%</TableCell>
               <TableCell>
                 <Button variant="outline" size="sm" onClick={() => handleEdit(flag)}>
                   {labels.edit}

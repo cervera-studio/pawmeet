@@ -7,6 +7,7 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import type {
   DogRepository,
   FollowRepository,
@@ -112,7 +113,7 @@ export function createRequestJoinEvent({
         data: { eventId: event.id, type: 'event_join_request' },
       })
       .catch((err) => {
-        console.error('[request-join-event] Failed to send notification:', err);
+        logger.error('request-join-event', 'Failed to send notification', err);
       });
 
     return succeed({ participant, participantNumber: count + 1 });

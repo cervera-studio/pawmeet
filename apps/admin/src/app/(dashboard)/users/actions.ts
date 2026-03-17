@@ -12,7 +12,8 @@ export async function suspendUser(userId: string): Promise<{ success: boolean; e
     revalidatePath(`/users/${userId}`);
     revalidatePath('/users');
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error('[suspendUser]', error);
     return { success: false, error: 'Errore durante la sospensione' };
   }
 }
@@ -24,7 +25,8 @@ export async function banUser(userId: string): Promise<{ success: boolean; error
     revalidatePath(`/users/${userId}`);
     revalidatePath('/users');
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error('[banUser]', error);
     return { success: false, error: 'Errore durante il ban' };
   }
 }
@@ -38,7 +40,8 @@ export async function reactivateUser(
     revalidatePath(`/users/${userId}`);
     revalidatePath('/users');
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error('[reactivateUser]', error);
     return { success: false, error: 'Errore durante la riattivazione' };
   }
 }
@@ -47,7 +50,8 @@ export async function fetchUser(id: string) {
   const api = await getServerTrpcClient();
   try {
     return await api.admin.getUser.query({ id });
-  } catch {
+  } catch (error) {
+    console.error('[fetchUser]', error);
     return null;
   }
 }

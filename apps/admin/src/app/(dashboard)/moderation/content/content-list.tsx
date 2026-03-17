@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
+import { translateDynamic } from '@/lib/utils';
 import type { ContentReport, ContentReportPage, ReviewAction } from '@/repositories';
 import { fetchPendingContent, reviewContent } from './actions';
 
@@ -81,14 +82,10 @@ export function ContentList({ initialData }: ContentListProps) {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                      {t.has(`types.${report.contentType}`)
-                        ? t(`types.${report.contentType}` as 'types.post')
-                        : report.contentType}
+                      {translateDynamic(t, 'types', report.contentType)}
                     </Badge>
                     <Badge variant="secondary">
-                      {t.has(`reasons.${report.reason}`)
-                        ? t(`reasons.${report.reason}` as 'reasons.spam')
-                        : report.reason}
+                      {translateDynamic(t, 'reasons', report.reason)}
                     </Badge>
                   </div>
                   <p className="text-sm text-neutral-500">

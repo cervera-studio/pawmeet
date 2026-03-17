@@ -46,9 +46,7 @@ export function OrganizationsTable({ initialData, pageSize }: OrganizationsTable
         accessorKey: 'slug',
         header: t('columns.slug'),
         cell: ({ row }) => (
-          <span className="font-mono text-sm text-neutral-500">
-            {row.original.slug}
-          </span>
+          <span className="font-mono text-sm text-neutral-500">{row.original.slug}</span>
         ),
       },
       {

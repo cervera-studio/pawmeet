@@ -1,9 +1,9 @@
-import { TRPCError } from '@trpc/server';
 import { describe, expect, it } from 'vitest';
 import {
   assertTransition,
   canTransitionTo,
   getValidTransitions,
+  InvalidTransitionError,
 } from './group-event-state-machine.js';
 
 describe('group-event-state-machine', () => {
@@ -53,16 +53,16 @@ describe('group-event-state-machine', () => {
       expect(() => assertTransition('in_progress', 'completed')).not.toThrow();
     });
 
-    it('throws TRPCError with PRECONDITION_FAILED for invalid transitions', () => {
-      expect(() => assertTransition('in_progress', 'cancelled')).toThrow(TRPCError);
+    it('throws InvalidTransitionError for invalid transitions', () => {
+      expect(() => assertTransition('in_progress', 'cancelled')).toThrow(InvalidTransitionError);
 
       try {
         assertTransition('completed', 'cancelled');
       } catch (err) {
-        expect(err).toBeInstanceOf(TRPCError);
-        expect((err as TRPCError).code).toBe('PRECONDITION_FAILED');
-        expect((err as TRPCError).message).toContain('completed');
-        expect((err as TRPCError).message).toContain('cancelled');
+        expect(err).toBeInstanceOf(InvalidTransitionError);
+        expect((err as InvalidTransitionError).code).toBe('INVALID_STATUS_TRANSITION');
+        expect((err as InvalidTransitionError).message).toContain('completed');
+        expect((err as InvalidTransitionError).message).toContain('cancelled');
       }
     });
   });

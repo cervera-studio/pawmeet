@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { handleError } from '@/lib/error-handler';
 import {
   type BroadcastNotificationFormValues,
   broadcastNotificationSchema,
@@ -96,8 +97,8 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
       setResult({ sentCount: res.sentCount });
       toast.success(t('broadcast.successMessage', { count: res.sentCount }));
       form.reset();
-    } catch {
-      toast.error('Error sending broadcast notification');
+    } catch (error) {
+      toast.error(handleError(error, t('broadcast.sendError')));
     } finally {
       setIsSending(false);
     }
@@ -111,10 +112,7 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <label
-            htmlFor="broadcast-title"
-            className="text-sm font-medium text-neutral-700"
-          >
+          <label htmlFor="broadcast-title" className="text-sm font-medium text-neutral-700">
             {t('broadcast.titleLabel')}
           </label>
           <Input
@@ -126,16 +124,11 @@ function BroadcastForm({ usersWithToken }: { usersWithToken: number }) {
           {form.formState.errors.title ? (
             <p className="text-xs text-red-600">{form.formState.errors.title.message}</p>
           ) : (
-            <p className="text-xs text-neutral-500">
-              {titleValue.length}/100
-            </p>
+            <p className="text-xs text-neutral-500">{titleValue.length}/100</p>
           )}
         </div>
         <div className="space-y-2">
-          <label
-            htmlFor="broadcast-body"
-            className="text-sm font-medium text-neutral-700"
-          >
+          <label htmlFor="broadcast-body" className="text-sm font-medium text-neutral-700">
             {t('broadcast.bodyLabel')}
           </label>
           <textarea
@@ -225,8 +218,8 @@ function TargetedForm() {
         }),
       );
       form.reset();
-    } catch {
-      toast.error('Error sending targeted notification');
+    } catch (error) {
+      toast.error(handleError(error, t('targeted.sendError')));
     } finally {
       setIsSending(false);
     }
@@ -241,10 +234,7 @@ function TargetedForm() {
       <CardContent>
         <form onSubmit={form.handleSubmit(handleSend)} className="space-y-4">
           <div className="space-y-2">
-            <label
-              htmlFor="targeted-title"
-              className="text-sm font-medium text-neutral-700"
-            >
+            <label htmlFor="targeted-title" className="text-sm font-medium text-neutral-700">
               {t('broadcast.titleLabel')}
             </label>
             <Input
@@ -256,16 +246,11 @@ function TargetedForm() {
             {form.formState.errors.title ? (
               <p className="text-xs text-red-600">{form.formState.errors.title.message}</p>
             ) : (
-              <p className="text-xs text-neutral-500">
-                {titleValue.length}/100
-              </p>
+              <p className="text-xs text-neutral-500">{titleValue.length}/100</p>
             )}
           </div>
           <div className="space-y-2">
-            <label
-              htmlFor="targeted-body"
-              className="text-sm font-medium text-neutral-700"
-            >
+            <label htmlFor="targeted-body" className="text-sm font-medium text-neutral-700">
               {t('broadcast.bodyLabel')}
             </label>
             <textarea
@@ -279,16 +264,11 @@ function TargetedForm() {
             {form.formState.errors.body ? (
               <p className="text-xs text-red-600">{form.formState.errors.body.message}</p>
             ) : (
-              <p className="text-xs text-neutral-500">
-                {bodyValue.length}/500
-              </p>
+              <p className="text-xs text-neutral-500">{bodyValue.length}/500</p>
             )}
           </div>
           <div className="space-y-2">
-            <label
-              htmlFor="targeted-user-ids"
-              className="text-sm font-medium text-neutral-700"
-            >
+            <label htmlFor="targeted-user-ids" className="text-sm font-medium text-neutral-700">
               {t('targeted.userIdsLabel')}
             </label>
             <textarea

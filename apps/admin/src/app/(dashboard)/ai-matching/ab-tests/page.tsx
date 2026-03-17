@@ -101,16 +101,12 @@ export default async function AbTestsPage() {
               <p className="text-lg font-semibold text-neutral-900">50%</p>
             </div>
             <div>
-              <p className="text-sm text-neutral-500">
-                {t('groupTreatment')}
-              </p>
+              <p className="text-sm text-neutral-500">{t('groupTreatment')}</p>
               <p className="text-lg font-semibold text-neutral-900">50%</p>
             </div>
             <div>
               <p className="text-sm text-neutral-500">{t('totalUsers')}</p>
-              <p className="text-lg font-semibold text-neutral-900">
-                {formatNumber(totalUsers)}
-              </p>
+              <p className="text-lg font-semibold text-neutral-900">{formatNumber(totalUsers)}</p>
             </div>
           </div>
         </CardContent>

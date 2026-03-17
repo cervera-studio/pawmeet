@@ -17,6 +17,7 @@ import {
 import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDate } from '@/lib/formatters';
+import { translateDynamic } from '@/lib/utils';
 import type { AdminReportListItem, ReportStatus, ResolveAction } from '@/repositories';
 import { fetchReports as fetchReportsAction, resolveReport } from './actions';
 
@@ -52,7 +53,7 @@ function ReportActions({
   if (status !== 'pending') {
     return (
       <span className="text-xs text-neutral-500">
-        {tStatus(`report.${status}` as Parameters<typeof tStatus>[0])}
+        {translateDynamic(tStatus, 'report', status)}
       </span>
     );
   }
@@ -63,8 +64,8 @@ function ReportActions({
       await resolveReport(reportId, action);
       toast.success(t('actions.completed'));
       onResolved();
-    } catch {
-      toast.error(t('actions.error'));
+    } catch (error) {
+      toast.error(handleError(error, t('actions.error')));
     } finally {
       setIsPending(false);
     }
@@ -178,27 +179,25 @@ export function ReportsList({ initialData }: ReportsListProps) {
       accessorKey: 'reason',
       header: t('columns.reason'),
       cell: ({ row }) => {
-        const reason = row.getValue('reason') as string;
-        return t.has(`reasons.${reason}`) ? t(`reasons.${reason}` as 'reasons.spam') : reason;
+        return translateDynamic(t, 'reasons', row.original.reason);
       },
     },
     {
       accessorKey: 'status',
       header: t('columns.status'),
       cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        return <StatusBadge status={status} type="report" />;
+        return <StatusBadge status={row.original.status} type="report" />;
       },
     },
     {
       accessorKey: 'resolvedAction',
       header: t('columns.action'),
       cell: ({ row }) => {
-        const action = row.getValue('resolvedAction') as string | null;
+        const action = row.original.resolvedAction;
         if (!action) return <span className="text-neutral-500">-</span>;
         return (
           <span className="text-sm">
-            {t.has(`actions.${action}`) ? t(`actions.${action}` as 'actions.dismiss') : action}
+            {translateDynamic(t, 'actions', action)}
           </span>
         );
       },
@@ -206,7 +205,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
     {
       accessorKey: 'createdAt',
       header: t('columns.date'),
-      cell: ({ row }) => formatDate(row.getValue('createdAt')),
+      cell: ({ row }) => formatDate(row.original.createdAt),
     },
     {
       id: 'actions',

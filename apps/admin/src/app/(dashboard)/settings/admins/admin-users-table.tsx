@@ -1,36 +1,28 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
-import { DialogForm } from '@/components/dialog-form';
-import { FormField } from '@/components/form-field';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
-import { type CreateAdminUserFormValues, createAdminUserSchema } from '@/lib/schemas/admin-user';
-import { createAdminUser, resetAdminPassword, toggleAdminActive, updateAdminRole } from './actions';
+import { toggleAdminActive } from './actions';
+import { CreateAdminDialog } from './create-admin-dialog';
+import { EditRoleDialog } from './edit-role-dialog';
 import {
   type AdminUser,
   type AdminUsersData,
   ROLES,
   type Role,
+  buildRoleLabels,
+  isValidRole,
   useAdminUsersViewModel,
 } from './page.view-model';
+import { ResetPasswordDialog } from './reset-password-dialog';
 
 function getRoleBadgeVariant(role: string) {
   switch (role) {
@@ -64,54 +56,6 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
-  const [editRole, setEditRole] = useState<Role>('viewer');
-  const [resetPwd, setResetPwd] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const createForm = useForm<CreateAdminUserFormValues>({
-    resolver: zodResolver(createAdminUserSchema),
-    defaultValues: {
-      email: '',
-      displayName: '',
-      temporaryPassword: '',
-      role: 'viewer',
-    },
-  });
-
-  async function handleCreate(data: CreateAdminUserFormValues) {
-    setIsSubmitting(true);
-    try {
-      await createAdminUser({
-        email: data.email,
-        displayName: data.displayName,
-        role: data.role,
-        temporaryPassword: data.temporaryPassword,
-      });
-      setCreateDialogOpen(false);
-      createForm.reset();
-      void vm.refetch();
-    } catch (error) {
-      toast.error(handleError(error, "Errore durante la creazione dell'amministratore"));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  async function handleUpdateRole() {
-    if (!selectedUser) return;
-    setIsSubmitting(true);
-    try {
-      await updateAdminRole({ adminId: selectedUser.id, newRole: editRole });
-      setEditRoleDialogOpen(false);
-      setSelectedUser(null);
-      void vm.refetch();
-    } catch (error) {
-      toast.error(handleError(error, "Errore durante l'aggiornamento del ruolo"));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
   const handleToggleActive = useCallback(
     async (user: AdminUser) => {
       try {
@@ -124,24 +68,8 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
     [vm],
   );
 
-  async function handleResetPassword() {
-    if (!selectedUser) return;
-    setIsSubmitting(true);
-    try {
-      await resetAdminPassword({ adminId: selectedUser.id, newPassword: resetPwd });
-      setResetPasswordDialogOpen(false);
-      setSelectedUser(null);
-      setResetPwd('');
-    } catch (error) {
-      toast.error(handleError(error, 'Errore durante il reset della password'));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
   const openEditRoleDialog = useCallback((user: AdminUser) => {
     setSelectedUser(user);
-    setEditRole(user.role as Role);
     setEditRoleDialogOpen(true);
   }, []);
 
@@ -149,6 +77,8 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
     setSelectedUser(user);
     setResetPasswordDialogOpen(true);
   }, []);
+
+  const roleLabels = buildRoleLabels(t);
 
   const columns: ColumnDef<AdminUser>[] = useMemo(
     () => [
@@ -160,23 +90,16 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
       {
         accessorKey: 'email',
         header: t('columns.email'),
-        cell: ({ row }) => (
-          <span className="text-sm text-neutral-500">
-            {row.original.email}
-          </span>
-        ),
+        cell: ({ row }) => <span className="text-sm text-neutral-500">{row.original.email}</span>,
       },
       {
         accessorKey: 'role',
         header: t('columns.role'),
         cell: ({ row }) => {
           const role = row.original.role;
-          const key = `roles.${role}` as
-            | 'roles.super_admin'
-            | 'roles.admin'
-            | 'roles.moderator'
-            | 'roles.viewer';
-          return <Badge variant={getRoleBadgeVariant(role)}>{t(key)}</Badge>;
+          return (
+            <Badge variant={getRoleBadgeVariant(role)}>{(isValidRole(role) ? roleLabels[role] : role)}</Badge>
+          );
         },
       },
       {
@@ -196,8 +119,7 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         header: t('columns.lastLoginAt'),
         cell: ({ row }) => {
           const value = row.original.lastLoginAt;
-          if (!value)
-            return <span className="text-neutral-500">{tc('never')}</span>;
+          if (!value) return <span className="text-neutral-500">{tc('never')}</span>;
           return formatDateTime(value);
         },
       },
@@ -228,31 +150,8 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         ),
       },
     ],
-    [t, tc, handleToggleActive, openEditRoleDialog, openResetPasswordDialog],
+    [t, tc, roleLabels, handleToggleActive, openEditRoleDialog, openResetPasswordDialog],
   );
-
-  function renderRoleSelect(id: string, value: Role, onChange: (r: Role) => void) {
-    return (
-      <select
-        id={id}
-        className="w-full rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
-        value={value}
-        onChange={(e) => onChange(e.target.value as Role)}
-      >
-        {ROLES.map((role) => (
-          <option key={role} value={role}>
-            {t(
-              `roles.${role}` as
-                | 'roles.super_admin'
-                | 'roles.admin'
-                | 'roles.moderator'
-                | 'roles.viewer',
-            )}
-          </option>
-        ))}
-      </select>
-    );
-  }
 
   return (
     <>
@@ -269,19 +168,13 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
             value={vm.roleFilter ?? ''}
             onChange={(e) => {
               const v = e.target.value;
-              vm.setRoleFilter((ROLES as readonly string[]).includes(v) ? (v as Role) : undefined);
+              vm.setRoleFilter(isValidRole(v) ? v : undefined);
             }}
           >
             <option value="">{t('allRoles')}</option>
             {ROLES.map((role) => (
               <option key={role} value={role}>
-                {t(
-                  `roles.${role}` as
-                    | 'roles.super_admin'
-                    | 'roles.admin'
-                    | 'roles.moderator'
-                    | 'roles.viewer',
-                )}
+                {roleLabels[role]}
               </option>
             ))}
           </select>
@@ -299,143 +192,25 @@ export function AdminUsersTable({ initialData, pageSize }: AdminUsersTableProps)
         onPaginationChange={vm.setPagination}
       />
 
-      {/* Create Admin Dialog */}
-      <DialogForm
+      <CreateAdminDialog
         open={createDialogOpen}
-        onClose={() => setCreateDialogOpen(false)}
-        title={t('createDialog.title')}
-        description={t('createDialog.description')}
-        isSubmitting={isSubmitting}
-        onSubmit={createForm.handleSubmit(handleCreate)}
-        submitLabel={t('createDialog.submit')}
-      >
-        <div className="space-y-4 py-4">
-          <FormField
-            label={t('createDialog.nameLabel')}
-            name="create-name"
-            error={createForm.formState.errors.displayName?.message}
-          >
-            <Input
-              id="create-name"
-              {...createForm.register('displayName')}
-              placeholder={t('createDialog.namePlaceholder')}
-            />
-          </FormField>
-          <FormField
-            label={t('createDialog.emailLabel')}
-            name="create-email"
-            error={createForm.formState.errors.email?.message}
-          >
-            <Input
-              id="create-email"
-              type="email"
-              {...createForm.register('email')}
-              placeholder={t('createDialog.emailPlaceholder')}
-            />
-          </FormField>
-          <FormField
-            label={t('createDialog.passwordLabel')}
-            name="create-password"
-            error={createForm.formState.errors.temporaryPassword?.message}
-          >
-            <Input
-              id="create-password"
-              type="password"
-              {...createForm.register('temporaryPassword')}
-              placeholder={t('createDialog.passwordPlaceholder')}
-            />
-          </FormField>
-          <FormField
-            label={t('createDialog.roleLabel')}
-            name="create-role"
-            error={createForm.formState.errors.role?.message}
-          >
-            <select
-              id="create-role"
-              className="w-full rounded-md border border-neutral-200 bg-surface px-3 py-2 text-sm"
-              {...createForm.register('role')}
-            >
-              {ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {t(
-                    `roles.${role}` as
-                      | 'roles.super_admin'
-                      | 'roles.admin'
-                      | 'roles.moderator'
-                      | 'roles.viewer',
-                  )}
-                </option>
-              ))}
-            </select>
-          </FormField>
-        </div>
-      </DialogForm>
+        onOpenChange={setCreateDialogOpen}
+        onCreated={() => void vm.refetch()}
+      />
 
-      {/* Edit Role Dialog */}
-      <Dialog open={editRoleDialogOpen} onOpenChange={setEditRoleDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('editRoleDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('editRoleDialog.description', { name: selectedUser?.displayName ?? '' })}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="edit-role">
-                {t('editRoleDialog.roleLabel')}
-              </label>
-              {renderRoleSelect('edit-role', editRole, setEditRole)}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditRoleDialogOpen(false)}>
-              {tc('cancel')}
-            </Button>
-            <Button onClick={handleUpdateRole} disabled={isSubmitting}>
-              {isSubmitting ? tc('saving') : tc('saveChanges')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditRoleDialog
+        open={editRoleDialogOpen}
+        onOpenChange={setEditRoleDialogOpen}
+        user={selectedUser}
+        onUpdated={() => void vm.refetch()}
+      />
 
-      {/* Reset Password Dialog */}
-      <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('resetPasswordDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('resetPasswordDialog.description', { name: selectedUser?.displayName ?? '' })}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="reset-password">
-                {t('resetPasswordDialog.passwordLabel')}
-              </label>
-              <Input
-                id="reset-password"
-                type="password"
-                value={resetPwd}
-                onChange={(e) => setResetPwd(e.target.value)}
-                placeholder={t('resetPasswordDialog.passwordPlaceholder')}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setResetPasswordDialogOpen(false)}>
-              {tc('cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleResetPassword}
-              disabled={isSubmitting || !resetPwd}
-            >
-              {isSubmitting ? tc('saving') : t('resetPasswordDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ResetPasswordDialog
+        open={resetPasswordDialogOpen}
+        onOpenChange={setResetPasswordDialogOpen}
+        user={selectedUser}
+        onReset={() => void vm.refetch()}
+      />
     </>
   );
 }

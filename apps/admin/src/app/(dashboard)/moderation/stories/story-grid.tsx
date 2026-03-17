@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
+import { translateDynamic } from '@/lib/utils';
 import type { AdminStory, AdminStoryPage } from '@/repositories';
 import { deleteStory as deleteStoryAction, fetchStories as fetchStoriesAction } from './actions';
 
@@ -79,9 +80,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
     <>
       {/* Summary */}
       <div className="flex items-center gap-3">
-        <span className="text-sm text-neutral-500">
-          {t('count', { count: total })}
-        </span>
+        <span className="text-sm text-neutral-500">{t('count', { count: total })}</span>
       </div>
 
       {/* Stories grid */}
@@ -135,9 +134,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                         {story.authorName ?? t('unknownUser')}
                       </span>
                       <Badge variant="outline">
-                        {t.has(`types.${story.mediaType}`)
-                          ? t(`types.${story.mediaType}` as 'types.image')
-                          : story.mediaType}
+                        {translateDynamic(t, 'types', story.mediaType)}
                       </Badge>
                     </div>
 

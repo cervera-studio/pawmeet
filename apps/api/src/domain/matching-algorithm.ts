@@ -1,4 +1,4 @@
-import type { BehaviorWithDogs, DogProfile, DogSize, EnergyLevel } from '@pawmeet/types';
+import type { DogProfile } from '@pawmeet/types';
 import {
   calculateBehaviorScore,
   calculateDistanceScore,
@@ -70,15 +70,9 @@ export interface MatchingAlgorithm {
 export function createMatchingAlgorithm(): MatchingAlgorithm {
   return {
     calculate(dogA, dogB, distanceKm, weights) {
-      const size = calculateSizeScore(dogA.size as DogSize, dogB.size as DogSize);
-      const energy = calculateEnergyScore(
-        dogA.energyLevel as EnergyLevel,
-        dogB.energyLevel as EnergyLevel,
-      );
-      const behavior = calculateBehaviorScore(
-        dogA.behaviorWithDogs as BehaviorWithDogs,
-        dogB.behaviorWithDogs as BehaviorWithDogs,
-      );
+      const size = calculateSizeScore(dogA.size, dogB.size);
+      const energy = calculateEnergyScore(dogA.energyLevel, dogB.energyLevel);
+      const behavior = calculateBehaviorScore(dogA.behaviorWithDogs, dogB.behaviorWithDogs);
       const walk = calculateWalkScore(dogA, dogB);
       const distance = calculateDistanceScore(distanceKm);
       const leash = calculateLeashScore(dogA.leashBehavior, dogB.leashBehavior);

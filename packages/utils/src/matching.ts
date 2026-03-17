@@ -35,6 +35,9 @@ export function calculateBehaviorScore(a: BehaviorWithDogs, b: BehaviorWithDogs)
   return BEHAVIOR_MATRIX[a][b];
 }
 
+/** Exponential decay constant for distance scoring (higher = steeper penalty) */
+const DISTANCE_DECAY_RATE = 0.15;
+
 export function calculateDistanceScore(distanceKm: number): number {
-  return Math.exp(-0.15 * distanceKm);
+  return Math.exp(-DISTANCE_DECAY_RATE * distanceKm);
 }

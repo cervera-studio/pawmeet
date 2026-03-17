@@ -22,9 +22,7 @@ export default async function FlagsPage() {
         </CardHeader>
         <CardContent>
           {flags.length === 0 ? (
-            <p className="text-sm text-neutral-500">
-              Nessun flag configurato.
-            </p>
+            <p className="text-sm text-neutral-500">Nessun flag configurato.</p>
           ) : (
             <FlagsTable
               flags={flags}

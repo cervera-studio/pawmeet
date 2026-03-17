@@ -1,4 +1,5 @@
 import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { canTransitionTo } from '../domain/group-event-state-machine.js';
 import type { GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
@@ -43,7 +44,7 @@ export function createCancelGroupEvent({ groupEventRepo, notificationService }: 
           body: `L'evento "${event.title}" è stato annullato dall'organizzatore`,
         })
         .catch((err) => {
-          console.error('[cancel-group-event] Failed to send notification:', err);
+          logger.error('cancel-group-event', 'Failed to send notification', err);
         });
     }
 

@@ -21,9 +21,7 @@ function ScoreBar({ value }: { value: number | null }) {
       {[1, 2, 3, 4, 5].map((n) => (
         <div
           key={n}
-          className={`h-2 w-2 rounded-sm ${
-            n <= value ? 'bg-primary' : 'bg-neutral-200'
-          }`}
+          className={`h-2 w-2 rounded-sm ${n <= value ? 'bg-primary' : 'bg-neutral-200'}`}
         />
       ))}
     </div>

@@ -9,11 +9,26 @@ const MODEL_DIR = '/tmp/ml-models';
 const R2_BUCKET = process.env.R2_BUCKET || 'pawmeet';
 const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
+interface OnnxTensor {
+  data: number[];
+}
+
+interface OnnxInferenceSession {
+  run(feeds: Record<string, unknown>): Promise<Record<string, OnnxTensor>>;
+}
+
+interface OnnxRuntime {
+  Tensor: new (type: string, data: Float32Array, dims: number[]) => unknown;
+  InferenceSession: {
+    create(path: string): Promise<OnnxInferenceSession>;
+  };
+}
+
 export class OnnxModelLoader {
-  private session: any | null = null; // onnxruntime.InferenceSession
+  private session: OnnxInferenceSession | null = null;
   private currentVersion: string | null = null;
   private pollTimer: NodeJS.Timeout | null = null;
-  private ort: any | null = null; // onnxruntime-node module
+  private ort: OnnxRuntime | null = null;
 
   async initialize(): Promise<void> {
     // Try to load onnxruntime-node (optional dependency — installed only in production)
@@ -55,9 +70,11 @@ export class OnnxModelLoader {
     const results = await this.session.run({ input: inputTensor });
 
     // LightGBM ONNX models output a tensor named 'variable' or 'output_label'
-    const outputKey = Object.keys(results)[0] as string;
-    const output = results[outputKey] as { data: number[] };
-    return output.data[0] as number;
+    const outputKey = Object.keys(results)[0];
+    if (!outputKey) throw new Error('Model produced no output');
+    const output = results[outputKey];
+    if (!output) throw new Error('Model output tensor missing');
+    return output.data[0] ?? 0;
   }
 
   private async loadActiveModel(): Promise<void> {
@@ -92,6 +109,7 @@ export class OnnxModelLoader {
 
     // Load into ONNX Runtime
     try {
+      if (!this.ort) return;
       const newSession = await this.ort.InferenceSession.create(modelPath);
       this.session = newSession;
       this.currentVersion = version;

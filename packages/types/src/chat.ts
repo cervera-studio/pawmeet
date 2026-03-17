@@ -49,7 +49,15 @@ export const WS_EVENT = {
 
 export type WsEvent = (typeof WS_EVENT)[keyof typeof WS_EVENT];
 
-export interface WsMessage {
-  type: WsEvent;
-  payload: Record<string, unknown>;
-}
+export type WsMessage =
+  | { type: typeof WS_EVENT.NEW_MESSAGE; payload: { matchId: string; message: ChatMessage } }
+  | { type: typeof WS_EVENT.MESSAGE_READ; payload: { matchId: string; messageIds: string[] } }
+  | { type: typeof WS_EVENT.TYPING_START; payload: { userId: string; matchId: string } }
+  | { type: typeof WS_EVENT.TYPING_STOP; payload: { userId: string; matchId: string } }
+  | { type: typeof WS_EVENT.ONLINE_STATUS; payload: { userId: string; online: boolean } }
+  | { type: typeof WS_EVENT.ERROR; payload: { error: string } }
+  | { type: typeof WS_EVENT.MESSAGE_REACTION; payload: { matchId: string; messageId: string; emoji: ReactionEmoji; userId: string } }
+  | { type: typeof WS_EVENT.FEED_NEW_POST; payload: { postId: string; authorId: string } }
+  | { type: typeof WS_EVENT.FEED_POST_LIKED; payload: { postId: string; likerName: string } }
+  | { type: typeof WS_EVENT.FEED_POST_COMMENTED; payload: { postId: string; commenterName: string } }
+  | { type: typeof WS_EVENT.FEED_NEW_STORY; payload: { authorId: string } };

@@ -14,9 +14,7 @@ export default function DashboardError({
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
       <h2 className="text-xl font-semibold text-neutral-900">{t('title')}</h2>
-      <p className="text-neutral-500">
-        {error.message || t('defaultMessage')}
-      </p>
+      <p className="text-neutral-500">{error.message || t('defaultMessage')}</p>
       <button
         type="button"
         onClick={reset}

@@ -57,9 +57,7 @@ function ChangesDetail({
         <div className="absolute right-0 top-8 z-50 w-96 rounded-md border border-neutral-200 bg-surface p-4 shadow-lg">
           {before && (
             <div className="mb-3">
-              <p className="mb-1 text-xs font-semibold text-neutral-500">
-                {beforeLabel}
-              </p>
+              <p className="mb-1 text-xs font-semibold text-neutral-500">{beforeLabel}</p>
               <pre className="max-h-40 overflow-auto rounded bg-neutral-50 p-2 text-xs">
                 {JSON.stringify(before, null, 2)}
               </pre>
@@ -67,9 +65,7 @@ function ChangesDetail({
           )}
           {after && (
             <div>
-              <p className="mb-1 text-xs font-semibold text-neutral-500">
-                {afterLabel}
-              </p>
+              <p className="mb-1 text-xs font-semibold text-neutral-500">{afterLabel}</p>
               <pre className="max-h-40 overflow-auto rounded bg-neutral-50 p-2 text-xs">
                 {JSON.stringify(after, null, 2)}
               </pre>
@@ -104,9 +100,7 @@ export function AuditLogTable({ initialData, pageSize }: AuditLogTableProps) {
           <div>
             <span className="font-medium">{row.original.adminName}</span>
             <br />
-            <span className="text-sm text-neutral-500">
-              {row.original.adminEmail}
-            </span>
+            <span className="text-sm text-neutral-500">{row.original.adminEmail}</span>
           </div>
         ),
       },

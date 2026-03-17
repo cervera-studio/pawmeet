@@ -25,13 +25,13 @@ export const DOG_SIZE_CATEGORY = {
 export type DogSizeCategory = (typeof DOG_SIZE_CATEGORY)[keyof typeof DOG_SIZE_CATEGORY];
 
 /** Recommended daily walk minutes by dog size */
-export const BREED_ACTIVITY_GOALS: Record<DogSizeCategory, number> = {
+export const BREED_ACTIVITY_GOALS = {
   [DOG_SIZE_CATEGORY.TOY]: 30,
   [DOG_SIZE_CATEGORY.SMALL]: 45,
   [DOG_SIZE_CATEGORY.MEDIUM]: 60,
   [DOG_SIZE_CATEGORY.LARGE]: 75,
   [DOG_SIZE_CATEGORY.GIANT]: 60,
-} as const;
+} as const satisfies Record<DogSizeCategory, number>;
 
 // ── Health Data Sync ─────────────────────────────────────────────────────────
 

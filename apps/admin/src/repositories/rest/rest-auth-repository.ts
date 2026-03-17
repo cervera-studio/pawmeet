@@ -23,7 +23,8 @@ export function createRestAuthRepository(): AuthRepository {
         throw new Error(error.error ?? 'Login failed');
       }
 
-      return response.json() as Promise<AuthResponse>;
+      const data: unknown = await response.json();
+      return data as AuthResponse;
     },
 
     async refresh(): Promise<AuthResponse> {
@@ -36,7 +37,8 @@ export function createRestAuthRepository(): AuthRepository {
         throw new Error('Refresh failed');
       }
 
-      return response.json() as Promise<{ token: string; user: AdminUser }>;
+      const data: unknown = await response.json();
+      return data as AuthResponse;
     },
 
     async logout(): Promise<void> {

@@ -47,13 +47,13 @@ export function createFitnessRouter(deps: typeof fitnessDeps) {
       // Gamification: challenge progress + achievements (fire and forget)
       void deps
         .updateChallengeProgress(ctx.userId, 'walk_count', 1)
-        .catch((e) => console.warn('Gamification error:', e));
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
       void deps
         .updateChallengeProgress(ctx.userId, 'walk_distance_km', result.track.distanceKm ?? 0)
-        .catch((e) => console.warn('Gamification error:', e));
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
       void deps
         .checkAndUnlockAchievements(ctx.userId)
-        .catch((e) => console.warn('Gamification error:', e));
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
 
       // Update daily walk streak (fire and forget)
       void deps
@@ -66,7 +66,7 @@ export function createFitnessRouter(deps: typeof fitnessDeps) {
             });
           }
         })
-        .catch((e) => console.warn('Streak update error:', e));
+        .catch((e) => logger.warn('gamification', 'Streak update failed', e));
       trackEvent('gamification_xp_awarded', ctx.userId, {
         amount: XP_POINTS.walk_tracked,
         source: 'walk_tracked',

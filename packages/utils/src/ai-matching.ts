@@ -9,6 +9,24 @@ export interface MatchingWeights {
   leash: number;
 }
 
+/** Minimum swipes before user-learned weights are blended in */
+const DEFAULT_MIN_SWIPES = 15;
+
+/** Maximum influence of learned weights over defaults (0–1) */
+const DEFAULT_MAX_BLEND = 0.6;
+
+/** Number of swipes at which confidence reaches 100% */
+const FULL_CONFIDENCE_SAMPLE_SIZE = 50;
+
+/** Fallback average score for dimensions with no pass data */
+const DEFAULT_PASS_AVERAGE = 0.5;
+
+/** Minimum importance floor to prevent zero-weight dimensions */
+const MIN_IMPORTANCE_FLOOR = 0.01;
+
+/** Bonus multiplier applied to like averages when computing importance */
+const LIKE_AVERAGE_BONUS = 0.3;
+
 /** Default weights matching the rule-based algorithm */
 const DEFAULTS: MatchingWeights = {
   size: 0.25,
@@ -27,15 +45,15 @@ const DEFAULTS: MatchingWeights = {
  */
 export function blendWeights(
   userPrefs: UserMatchingPreferences | null,
-  minSwipes = 15,
-  maxBlend = 0.6,
+  minSwipes = DEFAULT_MIN_SWIPES,
+  maxBlend = DEFAULT_MAX_BLEND,
 ): MatchingWeights {
   if (!userPrefs || userPrefs.sampleSize < minSwipes) {
     return { ...DEFAULTS };
   }
 
   // Confidence increases with sample size, caps at 1.0 at 50 swipes
-  const sampleConfidence = Math.min(userPrefs.sampleSize / 50, 1);
+  const sampleConfidence = Math.min(userPrefs.sampleSize / FULL_CONFIDENCE_SAMPLE_SIZE, 1);
   const blend = maxBlend * sampleConfidence;
 
   const learned: MatchingWeights = {
@@ -131,11 +149,11 @@ export function learnWeightsFromSwipes(
     const key = scoreKeys[dim];
     const likeAvg = likes.reduce((sum, s) => sum + s[key], 0) / likes.length;
     const passAvg =
-      passes.length > 0 ? passes.reduce((sum, s) => sum + s[key], 0) / passes.length : 0.5;
+      passes.length > 0 ? passes.reduce((sum, s) => sum + s[key], 0) / passes.length : DEFAULT_PASS_AVERAGE;
 
     // Higher difference = user cares more about this dimension
     // Also consider absolute like average (user prefers high scores here)
-    importance[dim] = Math.max(0.01, likeAvg - passAvg + likeAvg * 0.3);
+    importance[dim] = Math.max(MIN_IMPORTANCE_FLOOR, likeAvg - passAvg + likeAvg * LIKE_AVERAGE_BONUS);
   }
 
   return normalizeWeights({

@@ -1,4 +1,5 @@
 import { XP_POINTS } from '@pawmeet/config';
+import { logger } from '@pawmeet/utils';
 import { submitFeedbackSchema } from '@pawmeet/validation';
 import { z } from 'zod';
 import type { feedbackDeps } from '../../container/index.js';
@@ -32,7 +33,7 @@ export function createFeedbackRouter(deps: typeof feedbackDeps) {
       // Gamification: XP for feedback (fire and forget)
       void deps
         .awardXp(ctx.userId, 'feedback_given')
-        .catch((e) => console.warn('Gamification error:', e));
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
       trackEvent('gamification_xp_awarded', ctx.userId, {
         amount: XP_POINTS.feedback_given,
         source: 'feedback_given',

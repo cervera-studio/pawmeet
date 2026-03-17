@@ -131,7 +131,7 @@ export const matchInteractions = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     interactionType: varchar('interaction_type', { length: 30 }).notNull(),
-    metadata: jsonb('metadata'),
+    metadata: jsonb('metadata').$type<Record<string, unknown>>(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
@@ -187,7 +187,7 @@ export const mlTrainingSamples = pgTable(
     dogBId: uuid('dog_b_id')
       .notNull()
       .references(() => dogProfiles.id, { onDelete: 'cascade' }),
-    featureVector: jsonb('feature_vector').notNull(),
+    featureVector: jsonb('feature_vector').notNull().$type<Record<string, unknown> | number[]>(),
     outcomeLabel: doublePrecision('outcome_label').notNull(),
     labelVersion: integer('label_version').notNull().default(1),
     maturedAt: timestamp('matured_at', { withTimezone: true }).notNull(),
@@ -212,9 +212,9 @@ export const mlModelRegistry = pgTable(
     version: varchar('version', { length: 50 }).notNull().unique(),
     r2Path: varchar('r2_path', { length: 500 }).notNull(),
     trainingSamplesCount: integer('training_samples_count').notNull(),
-    metrics: jsonb('metrics'),
-    featureSchema: jsonb('feature_schema'),
-    hyperparameters: jsonb('hyperparameters'),
+    metrics: jsonb('metrics').$type<{ auc: number; precision: number; recall: number; f1?: number }>(),
+    featureSchema: jsonb('feature_schema').$type<string[]>(),
+    hyperparameters: jsonb('hyperparameters').$type<Record<string, string | number | boolean>>(),
     isActive: boolean('is_active').notNull().default(false),
     promotedAt: timestamp('promoted_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -262,9 +262,9 @@ export const modelPerformanceDaily = pgTable(
     totalPredictions: integer('total_predictions').notNull().default(0),
     totalMatches: integer('total_matches').notNull().default(0),
     avgOverallScore: doublePrecision('avg_overall_score'),
-    scoreBuckets: jsonb('score_buckets'),
-    weightDistribution: jsonb('weight_distribution'),
-    successRateDistribution: jsonb('success_rate_distribution'),
+    scoreBuckets: jsonb('score_buckets').$type<Record<string, unknown>>(),
+    weightDistribution: jsonb('weight_distribution').$type<Record<string, unknown>>(),
+    successRateDistribution: jsonb('success_rate_distribution').$type<Record<string, unknown>>(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex('model_performance_daily_snapshot_date_idx').on(table.snapshotDate)],

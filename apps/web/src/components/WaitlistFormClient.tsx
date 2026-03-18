@@ -88,7 +88,7 @@ export default function WaitlistFormClient({ strings }: Props) {
           <motion.button
             type="submit"
             disabled={state === 'loading' || state === 'success'}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-primary text-white font-semibold text-[15px] disabled:opacity-70 flex items-center justify-center gap-2 min-w-[140px]"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-primary text-white font-semibold text-[15px] disabled:opacity-70 flex items-center justify-center gap-2 min-w-35"
             whileHover={state === 'idle' ? { scale: 0.98 } : {}}
             whileTap={state === 'idle' ? { scale: 0.95 } : {}}
           >
@@ -154,7 +154,7 @@ export default function WaitlistFormClient({ strings }: Props) {
         </AnimatePresence>
 
         {state !== 'success' && state !== 'error' && (
-          <p className="mt-4 text-[13px] text-neutral-500">{strings.noSpam}</p>
+          <p className="mt-4 text-[13px] text-neutral-700">{strings.noSpam}</p>
         )}
       </div>
     </section>

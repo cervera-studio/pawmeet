@@ -35,7 +35,7 @@ export default function HowItWorksClient({ strings }: Props) {
         {/* Timeline */}
         <div className="relative">
           {/* Connector line — desktop only */}
-          <div className="hidden md:block absolute top-12 left-[calc(16.67%-1px)] right-[calc(16.67%-1px)] h-[2px] bg-neutral-200" />
+          <div className="hidden md:block absolute top-12 left-[calc(16.67%-1px)] right-[calc(16.67%-1px)] h-0.5 bg-neutral-200" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
             {steps.map((step, i) => {
@@ -69,7 +69,7 @@ export default function HowItWorksClient({ strings }: Props) {
                   <h3 className="text-[20px] font-semibold text-neutral-900 mb-3">
                     {stepStrings.title}
                   </h3>
-                  <p className="text-[15px] leading-relaxed text-neutral-600 max-w-xs mx-auto">
+                  <p className="text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-500 max-w-xs mx-auto">
                     {stepStrings.description}
                   </p>
                 </motion.div>

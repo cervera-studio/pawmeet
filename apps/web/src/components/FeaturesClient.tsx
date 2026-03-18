@@ -92,7 +92,7 @@ export default function FeaturesClient({ strings }: Props) {
                 <h3 className="text-[17px] font-semibold text-neutral-900 mb-2">
                   {featureStrings.title}
                 </h3>
-                <p className="text-[15px] leading-relaxed text-neutral-600">
+                <p className="text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-500">
                   {featureStrings.description}
                 </p>
               </motion.div>

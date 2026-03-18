@@ -111,9 +111,8 @@ export function StoryViewer({ stories, author, onView, onClose }: StoryViewerPro
       <View className="absolute left-0 right-0 top-12 z-10 flex-row gap-1 px-2">
         {stories.map((story, i) => (
           <View key={story.id} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/30">
-            {i < currentIndex ? (
-              <View className="h-full w-full bg-white" />
-            ) : i === currentIndex ? (
+            {i < currentIndex ? <View className="h-full w-full bg-white" /> : null}
+            {i === currentIndex ? (
               <Animated.View
                 className="h-full bg-white"
                 style={{

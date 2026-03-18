@@ -151,10 +151,10 @@ export default function MatchesScreen() {
             <View className="flex-row gap-2">
               <Pressable
                 onPress={() => vm.setFilterDogId(null)}
-                className={`rounded-full px-4 py-2 ${!vm.filterDogId ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'}`}
+                className={`rounded-full px-4 py-2 ${vm.filterDogId ? 'bg-gray-100 dark:bg-[#38383A]' : 'bg-primary'}`}
               >
                 <Text
-                  className={`text-sm font-medium ${!vm.filterDogId ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'}`}
+                  className={`text-sm font-medium ${vm.filterDogId ? 'text-gray-700 dark:text-[#D1D1D6]' : 'text-white'}`}
                 >
                   {t('common.all')}
                 </Text>

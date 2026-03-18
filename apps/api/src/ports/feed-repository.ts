@@ -1,5 +1,8 @@
 import type {
+  ContentReaction,
+  ContentType,
   FeedItem,
+  Hashtag,
   Post,
   PostComment,
   PostLike,
@@ -75,6 +78,22 @@ export interface FeedRepository {
   removeTags(tagIds: string[]): Promise<void>;
   getResolvedTags(postId: string): Promise<ResolvedPostTag[]>;
   findTagById(id: string): Promise<PostTag | null>;
+
+  addReaction(
+    contentType: ContentType,
+    contentId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<ContentReaction>;
+  removeReaction(
+    contentType: ContentType,
+    contentId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<void>;
+
+  searchPostsByHashtag(hashtag: string, cursor: string | null, limit: number): Promise<FeedPage>;
+  getTrendingHashtags(limit: number): Promise<Hashtag[]>;
 
   getConnectedUserIds(userId: string): Promise<string[]>;
 }

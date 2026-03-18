@@ -35,7 +35,8 @@ export default function MatchingInsightsScreen() {
           <View className="items-center justify-center py-20">
             <ActivityIndicator size="large" color="#065F46" />
           </View>
-        ) : vm.insights ? (
+        ) : null}
+        {!vm.loading && vm.insights ? (
           <View className="gap-4 pb-6">
             {/* Stats overview */}
             <View className="rounded-xl bg-emerald-50 p-4">
@@ -98,13 +99,11 @@ export default function MatchingInsightsScreen() {
                         {time.nearbyActiveUsers} utenti attivi
                       </Text>
                       <View
-                        className={`h-3 w-3 rounded-full ${
-                          time.score > 0.7
-                            ? 'bg-emerald-500'
-                            : time.score > 0.4
-                              ? 'bg-amber-400'
-                              : 'bg-zinc-300'
-                        }`}
+                        className={`h-3 w-3 rounded-full ${(() => {
+                          if (time.score > 0.7) return 'bg-emerald-500';
+                          if (time.score > 0.4) return 'bg-amber-400';
+                          return 'bg-zinc-300';
+                        })()}`}
                       />
                     </View>
                   </View>
@@ -121,7 +120,8 @@ export default function MatchingInsightsScreen() {
               </View>
             )}
           </View>
-        ) : (
+        ) : null}
+        {vm.loading || vm.insights ? null : (
           <View className="items-center justify-center py-20">
             <Text className="text-zinc-500 dark:text-neutral-500">Nessun dato disponibile</Text>
             <Text className="text-sm text-zinc-400 dark:text-neutral-500 mt-1">

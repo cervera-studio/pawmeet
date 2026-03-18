@@ -13,7 +13,7 @@ export function createRemoveOrganizationMember({ organizationRepo, organizationA
     input: { organizationId: string; userId: string },
   ): Promise<Result<{ success: true }>> => {
     const actorMember = await organizationRepo.findMember(input.organizationId, actorUserId);
-    if (!actorMember || !organizationAuthorizer.canManageMembers(actorMember.role)) {
+    if (!(actorMember && organizationAuthorizer.canManageMembers(actorMember.role))) {
       return fail(
         new AppError('ORG_NOT_AUTHORIZED', 'Non hai i permessi per rimuovere membri', 403),
       );

@@ -39,7 +39,7 @@ export function createGetEventRecap({ groupEventRepo, userRepo }: Deps) {
       (p) => p.userId === userId && p.status === 'accepted',
     );
     const isCreator = event.createdBy === userId;
-    if (!isParticipant && !isCreator) {
+    if (!(isParticipant || isCreator)) {
       return fail(new AppError('NOT_PARTICIPANT', 'Non sei un partecipante di questo evento', 403));
     }
 

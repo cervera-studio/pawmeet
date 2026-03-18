@@ -119,7 +119,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
 
       const admin = await adminUserRepo.findByEmail(body.email);
 
-      if (!admin || !admin.isActive) {
+      if (!admin?.isActive) {
         await incrementFailedAttempts(redis, body.email);
         return c.json({ error: 'Credenziali non valide' }, 401);
       }
@@ -177,7 +177,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
 
         const admin = await adminUserRepo.findById(payload.sub);
 
-        if (!admin || !admin.isActive) {
+        if (!admin?.isActive) {
           return c.json({ error: 'Unauthorized' }, 401);
         }
 
@@ -204,7 +204,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
 
         const admin = await adminUserRepo.findById(payload.sub);
 
-        if (!admin || !admin.isActive) {
+        if (!admin?.isActive) {
           return c.json({ error: 'Unauthorized' }, 401);
         }
 
@@ -306,7 +306,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
       }
 
       const admin = await adminUserRepo.findByEmail(email);
-      if (!admin || !admin.isActive) {
+      if (!admin?.isActive) {
         return c.json({ error: 'Codice non valido o scaduto' }, 400);
       }
 

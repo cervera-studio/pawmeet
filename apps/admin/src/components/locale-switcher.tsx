@@ -11,7 +11,6 @@ export function LocaleSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   function onChange(newLocale: string) {
-    // biome-ignore lint/suspicious/noDocumentCookie: simple cookie set for locale preference
     document.cookie = `locale=${newLocale};path=/;max-age=31536000`;
     startTransition(() => {
       router.refresh();

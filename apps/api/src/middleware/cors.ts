@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { cors } from 'hono/cors';
 
 const PRODUCTION_ORIGINS = [

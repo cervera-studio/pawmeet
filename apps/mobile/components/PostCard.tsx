@@ -52,7 +52,7 @@ function formatTimeAgo(date: Date | string): string {
   const d = new Date(date);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
-  const diffMin = Math.floor(diffMs / 60000);
+  const diffMin = Math.floor(diffMs / 60_000);
 
   if (diffMin < 1) return 'Ora';
   if (diffMin < 60) return `${diffMin}m`;

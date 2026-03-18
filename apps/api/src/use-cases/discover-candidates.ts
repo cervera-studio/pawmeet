@@ -35,20 +35,32 @@ function hasOverlap(a: readonly string[], b: readonly string[]): boolean {
 }
 
 function matchesFilters(dog: DogProfile, filters: DiscoveryFilters): boolean {
-  if (filters.size?.length && !filters.size.includes(dog.size)) return false;
-  if (filters.energyLevel?.length && !filters.energyLevel.includes(dog.energyLevel)) return false;
-  if (filters.gender?.length && !filters.gender.includes(dog.gender)) return false;
+  if (filters.size && filters.size.length > 0 && !filters.size.includes(dog.size)) return false;
   if (
-    filters.behaviorWithDogs?.length &&
+    filters.energyLevel &&
+    filters.energyLevel.length > 0 &&
+    !filters.energyLevel.includes(dog.energyLevel)
+  )
+    return false;
+  if (filters.gender && filters.gender.length > 0 && !filters.gender.includes(dog.gender))
+    return false;
+  if (
+    filters.behaviorWithDogs &&
+    filters.behaviorWithDogs.length > 0 &&
     !filters.behaviorWithDogs.includes(dog.behaviorWithDogs)
   ) {
     return false;
   }
-  if (filters.walkPrefTime?.length && !hasOverlap(filters.walkPrefTime, dog.walkPrefTime)) {
+  if (
+    filters.walkPrefTime &&
+    filters.walkPrefTime.length > 0 &&
+    !hasOverlap(filters.walkPrefTime, dog.walkPrefTime)
+  ) {
     return false;
   }
   if (
-    filters.walkPrefTerrain?.length &&
+    filters.walkPrefTerrain &&
+    filters.walkPrefTerrain.length > 0 &&
     !hasOverlap(filters.walkPrefTerrain, dog.walkPrefTerrain)
   ) {
     return false;
@@ -75,7 +87,7 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
 
     // Get current user's location
     const user = await userRepo.findById(userId);
-    if (!user || !hasLocation(user)) {
+    if (!(user && hasLocation(user))) {
       return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
     }
 

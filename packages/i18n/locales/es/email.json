@@ -28,6 +28,15 @@
     "body": "Lamentablemente, ocurrió un error al generar tu exportación de datos.",
     "retry": "Puedes volver a intentarlo desde la sección Configuración de la app. Si el problema persiste, contáctanos en"
   },
+  "adminInvite": {
+    "subject": "Has sido invitado como administrador - PawMeet",
+    "heading": "Bienvenido al panel de administración PawMeet",
+    "body": "Has sido invitado como administrador en la plataforma PawMeet. Usa las credenciales a continuación para acceder al panel de control.",
+    "temporaryPasswordLabel": "Contraseña temporal:",
+    "changePasswordNote": "Se te pedirá cambiar la contraseña en el primer inicio de sesión.",
+    "cta": "Ir al panel de administración",
+    "ignore": "Si no esperabas esta invitación, ignora este correo."
+  },
   "accountDeleted": {
     "subject": "Tu cuenta PawMeet ha sido desactivada",
     "greeting": "Hola {displayName},",

@@ -25,7 +25,6 @@ export function sanitizeContent(text: string): string {
   return (
     text
       // Remove null bytes and non-printable control chars (except newlines/tabs)
-      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentional — stripping dangerous control chars is the point
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
       // Decode HTML entities repeatedly to handle double-encoding (e.g. &amp;lt; → &lt; → <)
       .replace(/&#x([0-9a-f]+);?/gi, (_, hex) => String.fromCodePoint(Number.parseInt(hex, 16)))

@@ -1,4 +1,5 @@
 import type { IncomingMessage } from 'node:http';
+import process from 'node:process';
 import type { Duplex } from 'node:stream';
 import { logger } from '@pawmeet/utils';
 import type { WebSocketServer } from 'ws';

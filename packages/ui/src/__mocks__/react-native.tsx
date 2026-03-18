@@ -23,19 +23,18 @@ function pickEventHandlers(props: Record<string, unknown>) {
 }
 
 function createMockComponent(name: string) {
-  const component = React.forwardRef((props: Record<string, unknown>, ref: React.Ref<unknown>) => {
-    const {
-      children,
-      testID,
-      style,
-      accessibilityRole,
-      accessibilityLabel,
-      accessibilityState,
-      activeOpacity,
-      source,
-      ...rest
-    } = props;
-
+  function component({
+    children,
+    testID,
+    style,
+    accessibilityRole,
+    accessibilityLabel,
+    accessibilityState,
+    activeOpacity,
+    source,
+    ref,
+    ...rest
+  }: Record<string, unknown> & { ref?: React.Ref<unknown> }) {
     const flatStyle = Array.isArray(style)
       ? Object.assign({}, ...style.filter(Boolean))
       : (style ?? {});
@@ -59,7 +58,7 @@ function createMockComponent(name: string) {
       },
       children,
     );
-  });
+  }
   component.displayName = name;
   return component;
 }

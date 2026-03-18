@@ -61,9 +61,8 @@ export default function TrackingScreen() {
 
         {/* Action buttons */}
         <View className="items-center pb-8">
-          {vm.loading ? (
-            <ActivityIndicator size="large" color="#065F46" />
-          ) : vm.isTracking ? (
+          {vm.loading ? <ActivityIndicator size="large" color="#065F46" /> : null}
+          {!vm.loading && vm.isTracking ? (
             <View className="items-center gap-4">
               <View className="flex-row items-center gap-6">
                 {/* SOS button */}
@@ -88,7 +87,8 @@ export default function TrackingScreen() {
                 </Pressable>
               </View>
             </View>
-          ) : (
+          ) : null}
+          {vm.loading || vm.isTracking ? null : (
             <Pressable
               onPress={vm.handleStart}
               className="h-24 w-24 items-center justify-center rounded-full bg-emerald-700 shadow-lg"

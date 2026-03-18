@@ -12,7 +12,9 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { dogProfiles, matches, users } from './index';
+import { dogProfiles } from './dogs';
+import { matches } from './matches';
+import { users } from './users';
 
 export const swipeScoreLogs = pgTable(
   'swipe_score_logs',

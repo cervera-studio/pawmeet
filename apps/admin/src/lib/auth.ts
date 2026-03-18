@@ -1,3 +1,5 @@
+import process from 'node:process';
+
 export const AdminRole = {
   SuperAdmin: 'super_admin',
   Admin: 'admin',
@@ -15,13 +17,42 @@ export interface AdminUser {
   avatarUrl?: string;
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+
 /**
- * Get the current admin user from cookies/session.
- * TODO: Implement actual auth logic (JWT decode, session check, etc.)
+ * Get the current admin user by verifying the access token against the API.
+ * Returns `null` if no token is present or the token is expired/invalid.
  */
 export async function getCurrentUser(): Promise<AdminUser | null> {
-  // Placeholder: in production, decode JWT from cookies
-  return null;
+  const { cookies } = await import('next/headers');
+  const cookieStore = await cookies();
+  const token = cookieStore.get('admin_access_token')?.value;
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${baseUrl}/admin/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data: { id: string; email: string; name: string; role: AdminRole } =
+      await response.json();
+
+    return {
+      id: data.id,
+      email: data.email,
+      name: data.name,
+      role: data.role,
+    };
+  } catch {
+    return null;
+  }
 }
 
 /**

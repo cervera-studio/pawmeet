@@ -6,7 +6,7 @@ import { createUpdateLocation } from './update-location.js';
 describe('updateLocation', () => {
   it('updates location and returns coordinates with timestamp', async () => {
     const userRepo = buildUserRepo({
-      update: vi.fn().mockResolvedValue({} as any),
+      update: vi.fn().mockResolvedValue({} as unknown),
     });
     const updateLocation = createUpdateLocation({ userRepo });
 

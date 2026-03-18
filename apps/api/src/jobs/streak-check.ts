@@ -1,3 +1,4 @@
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { trackEvent } from '../lib/track-event.js';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
@@ -28,7 +29,7 @@ export function createStreakCheckWorker(deps: StreakCheckDeps): Worker {
         });
       }
 
-      console.log(`[streak-check] Broke ${staleStreaks.length} stale streaks`);
+      logger.info('StreakCheck', `Broke ${staleStreaks.length} stale streaks`);
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );

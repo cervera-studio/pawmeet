@@ -46,10 +46,10 @@ export function usePostDetailViewModel() {
       if (!postId) return;
       const data = await fetchComments(postId, cursor);
       if (data) {
-        if (!cursor) {
-          setComments(data.comments);
-        } else {
+        if (cursor) {
           setComments((prev) => [...prev, ...data.comments]);
+        } else {
+          setComments(data.comments);
         }
         setCommentsCursor(data.nextCursor);
       }
@@ -63,7 +63,7 @@ export function usePostDetailViewModel() {
   }, [fetchPost, loadComments]);
 
   const handleLike = useCallback(async () => {
-    if (!postId || !post) return;
+    if (!(postId && post)) return;
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const result = await likePost(postId);
     if (result) {
@@ -80,7 +80,7 @@ export function usePostDetailViewModel() {
   }, [postId, post, likePost]);
 
   const handleSubmitComment = useCallback(async () => {
-    if (!postId || !commentText.trim()) return;
+    if (!(postId && commentText.trim())) return;
     setSubmitting(true);
     try {
       const parentId = replyingTo?.commentId ?? null;

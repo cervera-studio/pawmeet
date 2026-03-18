@@ -76,16 +76,16 @@ export const ChatBubble = memo(function ChatBubble({
   return (
     <View className={`mb-2 max-w-[80%] ${isMine ? 'self-end' : 'self-start'}`}>
       {/* Location card */}
-      {location ? (
-        <LocationCard location={location} isMine={isMine} />
-      ) : mediaUrl ? (
+      {location ? <LocationCard location={location} isMine={isMine} /> : null}
+      {!location && mediaUrl ? (
         /* Image message */
         <View
           className={`overflow-hidden rounded-2xl ${isMine ? 'rounded-br-sm' : 'rounded-bl-sm'}`}
         >
           <Image source={{ uri: mediaUrl }} className="h-48 w-64 rounded-2xl" resizeMode="cover" />
         </View>
-      ) : (
+      ) : null}
+      {location || mediaUrl ? null : (
         /* Text message */
         <View
           className={`rounded-2xl px-4 py-3 ${

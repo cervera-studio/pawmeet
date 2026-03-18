@@ -29,7 +29,9 @@ export function usePushNotifications() {
     registerForPushNotifications();
 
     // Reset badge count when the app is opened
-    Notifications.setBadgeCountAsync(0).catch(() => {});
+    Notifications.setBadgeCountAsync(0).catch(() => {
+      /* fire-and-forget */
+    });
 
     // Listen for incoming notifications (app in foreground)
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
@@ -39,7 +41,9 @@ export function usePushNotifications() {
     // Listen for notification taps (navigate to relevant screen)
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
       // Clear badge on tap
-      Notifications.setBadgeCountAsync(0).catch(() => {});
+      Notifications.setBadgeCountAsync(0).catch(() => {
+        /* fire-and-forget */
+      });
 
       const data = response.notification.request.content.data;
 

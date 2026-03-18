@@ -1,3 +1,4 @@
+import process from 'node:process';
 import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
@@ -12,6 +13,110 @@ const CONVERSATIONS_CACHE_KEY = 'cache:conversations';
 
 type Conversation = RouterOutput['chat']['listConversations']['conversations'][number];
 type Message = RouterOutput['chat']['getMessages']['messages'][number];
+
+const MAX_UPLOAD_RETRIES = 3;
+
+/** Upload an image with exponential-backoff retry. Returns the media URL. */
+async function uploadImage(
+  matchId: string,
+  imageUri: string,
+  token: string | null,
+): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', {
+    uri: imageUri,
+    type: 'image/jpeg',
+    name: 'chat-image.jpg',
+  } as unknown as Blob);
+
+  let uploadResponse: Response | null = null;
+
+  for (let attempt = 0; attempt < MAX_UPLOAD_RETRIES; attempt++) {
+    try {
+      uploadResponse = await fetch(`${API_URL}/api/chat/${matchId}/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (uploadResponse.ok) break;
+
+      // Don't retry on client errors (4xx) except 429 (rate limit)
+      if (
+        uploadResponse.status >= 400 &&
+        uploadResponse.status < 500 &&
+        uploadResponse.status !== 429
+      ) {
+        throw new Error(`Upload failed: ${uploadResponse.status}`);
+      }
+    } catch (e) {
+      // Network error — retry unless it's the last attempt
+      if (attempt === MAX_UPLOAD_RETRIES - 1) throw e;
+    }
+
+    // Exponential backoff: 1s, 2s, 4s
+    const backoff = 1000 * 2 ** attempt;
+    await new Promise((resolve) => setTimeout(resolve, backoff));
+    logger.debug('useChat', `Retrying upload (attempt ${attempt + 2}/${MAX_UPLOAD_RETRIES})`);
+  }
+
+  if (!uploadResponse?.ok) {
+    throw new Error(
+      `Upload failed after ${MAX_UPLOAD_RETRIES} attempts: ${uploadResponse?.status}`,
+    );
+  }
+
+  const body: unknown = await uploadResponse.json();
+
+  // Validate response shape
+  if (
+    !body ||
+    typeof body !== 'object' ||
+    !('mediaUrl' in body) ||
+    typeof (body as Record<string, unknown>).mediaUrl !== 'string'
+  ) {
+    throw new Error('Upload response missing mediaUrl');
+  }
+
+  return (body as { mediaUrl: string }).mediaUrl;
+}
+
+/** Send a tRPC chat message and broadcast it over WebSocket. */
+async function sendChatMessage(
+  matchId: string,
+  content: string,
+  mediaUrl?: string,
+): Promise<Message> {
+  const { message: msg } = await api.chat.sendMessage.mutate({
+    matchId,
+    content,
+    mediaUrl,
+  });
+  getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));
+  return msg;
+}
+
+/** Build a location-sharing message content string with coordinate rounding. */
+function buildLocationContent(latitude: number, longitude: number, label?: string): string {
+  const roundedLat = Math.round(latitude * 200) / 200;
+  const roundedLng = Math.round(longitude * 200) / 200;
+  return JSON.stringify({
+    type: 'location',
+    latitude: roundedLat,
+    longitude: roundedLng,
+    label,
+  });
+}
+
+/** Send a typing indicator over WebSocket. */
+function emitTypingIndicator(matchId: string, typing: boolean): void {
+  getSharedWs()?.send(
+    JSON.stringify({
+      type: typing ? 'typing_start' : 'typing_stop',
+      payload: { matchId },
+    }),
+  );
+}
 
 export function useChat(matchId?: string) {
   const [connected, setConnected] = useState(false);
@@ -48,7 +153,7 @@ export function useChat(matchId?: string) {
               ? {
                   ...c,
                   lastMessage: msg,
-                  unreadCount: msg.senderId !== userId ? c.unreadCount + 1 : c.unreadCount,
+                  unreadCount: msg.senderId === userId ? c.unreadCount : c.unreadCount + 1,
                 }
               : c,
           ),
@@ -101,12 +206,10 @@ export function useChat(matchId?: string) {
   // Send text message
   const sendMessage = useCallback(
     async (content: string) => {
-      if (!matchId || !content.trim()) return;
+      if (!(matchId && content.trim())) return;
       try {
-        const { message: msg } = await api.chat.sendMessage.mutate({ matchId, content });
+        const msg = await sendChatMessage(matchId, content);
         setMessages((prev) => [...prev, msg]);
-        // Also send via WS for real-time
-        getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));
       } catch (e) {
         logger.warn('useChat', 'Failed to send message', e);
       }
@@ -119,73 +222,9 @@ export function useChat(matchId?: string) {
     async (imageUri: string) => {
       if (!matchId) return;
       try {
-        // Upload image first (tRPC doesn't handle file uploads)
-        const formData = new FormData();
-        formData.append('file', {
-          uri: imageUri,
-          type: 'image/jpeg',
-          name: 'chat-image.jpg',
-        } as unknown as Blob);
-
-        // Retry with exponential backoff (max 3 attempts)
-        const MAX_RETRIES = 3;
-        let uploadResponse: Response | null = null;
-
-        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-          try {
-            uploadResponse = await fetch(`${API_URL}/api/chat/${matchId}/upload`, {
-              method: 'POST',
-              headers: { Authorization: `Bearer ${token}` },
-              body: formData,
-            });
-
-            if (uploadResponse.ok) break;
-
-            // Don't retry on client errors (4xx) except 429 (rate limit)
-            if (
-              uploadResponse.status >= 400 &&
-              uploadResponse.status < 500 &&
-              uploadResponse.status !== 429
-            ) {
-              throw new Error(`Upload failed: ${uploadResponse.status}`);
-            }
-          } catch (e) {
-            // Network error — retry unless it's the last attempt
-            if (attempt === MAX_RETRIES - 1) throw e;
-          }
-
-          // Exponential backoff: 1s, 2s, 4s
-          const backoff = 1_000 * 2 ** attempt;
-          await new Promise((resolve) => setTimeout(resolve, backoff));
-          logger.debug('useChat', `Retrying upload (attempt ${attempt + 2}/${MAX_RETRIES})`);
-        }
-
-        if (!uploadResponse?.ok) {
-          throw new Error(`Upload failed after ${MAX_RETRIES} attempts: ${uploadResponse?.status}`);
-        }
-
-        const body: unknown = await uploadResponse.json();
-
-        // Validate response shape
-        if (
-          !body ||
-          typeof body !== 'object' ||
-          !('mediaUrl' in body) ||
-          typeof (body as Record<string, unknown>).mediaUrl !== 'string'
-        ) {
-          throw new Error('Upload response missing mediaUrl');
-        }
-
-        const { mediaUrl } = body as { mediaUrl: string };
-
-        // Send message with media URL via tRPC
-        const { message: msg } = await api.chat.sendMessage.mutate({
-          matchId,
-          content: '',
-          mediaUrl,
-        });
+        const mediaUrl = await uploadImage(matchId, imageUri, token);
+        const msg = await sendChatMessage(matchId, '', mediaUrl);
         setMessages((prev) => [...prev, msg]);
-        getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));
       } catch (e) {
         logger.error('useChat', 'Failed to send image', e);
       }
@@ -198,17 +237,9 @@ export function useChat(matchId?: string) {
     async (latitude: number, longitude: number, label?: string) => {
       if (!matchId) return;
       try {
-        const roundedLat = Math.round(latitude * 200) / 200;
-        const roundedLng = Math.round(longitude * 200) / 200;
-        const content = JSON.stringify({
-          type: 'location',
-          latitude: roundedLat,
-          longitude: roundedLng,
-          label,
-        });
-        const { message: msg } = await api.chat.sendMessage.mutate({ matchId, content });
+        const content = buildLocationContent(latitude, longitude, label);
+        const msg = await sendChatMessage(matchId, content);
         setMessages((prev) => [...prev, msg]);
-        getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));
       } catch (e) {
         logger.warn('useChat', 'Failed to send location', e);
       }
@@ -220,12 +251,7 @@ export function useChat(matchId?: string) {
   const sendTyping = useCallback(
     (typing: boolean) => {
       if (!matchId) return;
-      getSharedWs()?.send(
-        JSON.stringify({
-          type: typing ? 'typing_start' : 'typing_stop',
-          payload: { matchId },
-        }),
-      );
+      emitTypingIndicator(matchId, typing);
     },
     [matchId],
   );

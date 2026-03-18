@@ -9,6 +9,187 @@ import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
 
+// -- Query helpers for getConversationsForUser --
+
+async function fetchUserParticipations(db: NeonHttpDatabase, userId: string) {
+  return db
+    .select({ eventId: groupEventParticipants.eventId })
+    .from(groupEventParticipants)
+    .where(
+      and(eq(groupEventParticipants.userId, userId), eq(groupEventParticipants.status, 'accepted')),
+    );
+}
+
+async function fetchActiveEvents(db: NeonHttpDatabase, eventIds: string[]) {
+  const rows = await db
+    .select({ id: groupEvents.id, title: groupEvents.title })
+    .from(groupEvents)
+    .where(and(inArray(groupEvents.id, eventIds), ne(groupEvents.status, 'cancelled')));
+
+  const eventById = new Map<string, { title: string }>();
+  const activeEventIds: string[] = [];
+  for (const event of rows) {
+    eventById.set(event.id, { title: event.title });
+    activeEventIds.push(event.id);
+  }
+  return { eventById, activeEventIds };
+}
+
+async function fetchParticipantCounts(db: NeonHttpDatabase, activeEventIds: string[]) {
+  const rows = await db
+    .select({
+      eventId: groupEventParticipants.eventId,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(groupEventParticipants)
+    .where(
+      and(
+        inArray(groupEventParticipants.eventId, activeEventIds),
+        eq(groupEventParticipants.status, 'accepted'),
+      ),
+    )
+    .groupBy(groupEventParticipants.eventId);
+
+  const map = new Map<string, number>();
+  for (const row of rows) {
+    map.set(row.eventId, row.count);
+  }
+  return map;
+}
+
+async function fetchLastMessages(db: NeonHttpDatabase, activeEventIds: string[]) {
+  const rows = await db
+    .selectDistinctOn([groupMessages.eventId])
+    .from(groupMessages)
+    .where(and(inArray(groupMessages.eventId, activeEventIds), eq(groupMessages.isDeleted, false)))
+    .orderBy(groupMessages.eventId, desc(groupMessages.createdAt));
+
+  const map = new Map<string, GroupChatMessage>();
+  for (const row of rows) {
+    map.set(row.eventId, {
+      id: row.id,
+      eventId: row.eventId,
+      senderId: row.senderId,
+      content: row.content,
+      mediaUrl: row.mediaUrl,
+      isDeleted: row.isDeleted,
+      createdAt: row.createdAt,
+    } satisfies GroupChatMessage);
+  }
+  return map;
+}
+
+async function fetchReadRecords(db: NeonHttpDatabase, activeEventIds: string[], userId: string) {
+  const rows = await db
+    .select({
+      eventId: groupMessageReads.eventId,
+      lastReadAt: groupMessageReads.lastReadAt,
+    })
+    .from(groupMessageReads)
+    .where(
+      and(inArray(groupMessageReads.eventId, activeEventIds), eq(groupMessageReads.userId, userId)),
+    );
+
+  const map = new Map<string, Date>();
+  for (const row of rows) {
+    map.set(row.eventId, row.lastReadAt);
+  }
+  return map;
+}
+
+async function fetchUnreadCounts(
+  db: NeonHttpDatabase,
+  activeEventIds: string[],
+  userId: string,
+  lastReadByEvent: Map<string, Date>,
+) {
+  const eventsWithRead = activeEventIds.filter((id) => lastReadByEvent.has(id));
+  const eventsWithoutRead = activeEventIds.filter((id) => !lastReadByEvent.has(id));
+  const unreadByEvent = new Map<string, number>();
+
+  if (eventsWithoutRead.length > 0) {
+    const rows = await db
+      .select({
+        eventId: groupMessages.eventId,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(groupMessages)
+      .where(
+        and(
+          inArray(groupMessages.eventId, eventsWithoutRead),
+          eq(groupMessages.isDeleted, false),
+          sql`${groupMessages.senderId} != ${userId}`,
+        ),
+      )
+      .groupBy(groupMessages.eventId);
+
+    for (const row of rows) {
+      unreadByEvent.set(row.eventId, row.count);
+    }
+  }
+
+  if (eventsWithRead.length > 0) {
+    const rows = await db
+      .select({
+        eventId: groupMessages.eventId,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(groupMessages)
+      .where(
+        and(
+          inArray(groupMessages.eventId, eventsWithRead),
+          eq(groupMessages.isDeleted, false),
+          sql`${groupMessages.senderId} != ${userId}`,
+          sql`${groupMessages.createdAt} > (
+              SELECT ${groupMessageReads.lastReadAt}
+              FROM ${groupMessageReads}
+              WHERE ${groupMessageReads.eventId} = ${groupMessages.eventId}
+                AND ${groupMessageReads.userId} = ${userId}
+            )`,
+        ),
+      )
+      .groupBy(groupMessages.eventId);
+
+    for (const row of rows) {
+      unreadByEvent.set(row.eventId, row.count);
+    }
+  }
+
+  return unreadByEvent;
+}
+
+function assembleConversations(
+  activeEventIds: string[],
+  eventById: Map<string, { title: string }>,
+  participantCountByEvent: Map<string, number>,
+  lastMessageByEvent: Map<string, GroupChatMessage>,
+  unreadByEvent: Map<string, number>,
+): GroupConversationSummary[] {
+  const conversations: GroupConversationSummary[] = [];
+  for (const eventId of activeEventIds) {
+    const event = eventById.get(eventId);
+    if (!event) continue;
+
+    conversations.push({
+      eventId,
+      eventTitle: event.title,
+      participantCount: participantCountByEvent.get(eventId) ?? 0,
+      lastMessage: lastMessageByEvent.get(eventId) ?? null,
+      unreadCount: unreadByEvent.get(eventId) ?? 0,
+    });
+  }
+
+  conversations.sort((a, b) => {
+    const aTime = a.lastMessage?.createdAt?.getTime() ?? 0;
+    const bTime = b.lastMessage?.createdAt?.getTime() ?? 0;
+    return bTime - aTime;
+  });
+
+  return conversations;
+}
+
+// -- Repository --
+
 export class DrizzleGroupMessageRepository implements GroupMessageRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
@@ -57,7 +238,7 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
 
     const hasMore = rows.length > limit;
     const messageList = hasMore ? rows.slice(0, limit) : rows;
-    const nextCursor = hasMore ? (messageList[messageList.length - 1]?.id ?? null) : null;
+    const nextCursor = hasMore ? (messageList.at(-1)?.id ?? null) : null;
 
     return {
       messages: rowsAs<GroupChatMessage>(messageList),
@@ -67,183 +248,28 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
   }
 
   async getConversationsForUser(userId: string): Promise<GroupConversationSummary[]> {
-    // Find events where user is an accepted participant
-    const participations = await this.db
-      .select({ eventId: groupEventParticipants.eventId })
-      .from(groupEventParticipants)
-      .where(
-        and(
-          eq(groupEventParticipants.userId, userId),
-          eq(groupEventParticipants.status, 'accepted'),
-        ),
-      );
-
+    const participations = await fetchUserParticipations(this.db, userId);
     if (participations.length === 0) return [];
 
     const eventIds = participations.map((p) => p.eventId);
+    const { eventById, activeEventIds } = await fetchActiveEvents(this.db, eventIds);
+    if (activeEventIds.length === 0) return [];
 
-    // Batch-fetch event details for all eventIds (exclude cancelled)
-    const eventsRows = await this.db
-      .select({ id: groupEvents.id, title: groupEvents.title })
-      .from(groupEvents)
-      .where(and(inArray(groupEvents.id, eventIds), ne(groupEvents.status, 'cancelled')));
+    const [participantCountByEvent, lastMessageByEvent, lastReadByEvent] = await Promise.all([
+      fetchParticipantCounts(this.db, activeEventIds),
+      fetchLastMessages(this.db, activeEventIds),
+      fetchReadRecords(this.db, activeEventIds, userId),
+    ]);
 
-    if (eventsRows.length === 0) return [];
+    const unreadByEvent = await fetchUnreadCounts(this.db, activeEventIds, userId, lastReadByEvent);
 
-    const eventById = new Map<string, { title: string }>();
-    const activeEventIds: string[] = [];
-    for (const event of eventsRows) {
-      eventById.set(event.id, { title: event.title });
-      activeEventIds.push(event.id);
-    }
-
-    // Batch-fetch participant counts for all active events
-    const participantCountRows = await this.db
-      .select({
-        eventId: groupEventParticipants.eventId,
-        count: sql<number>`count(*)::int`,
-      })
-      .from(groupEventParticipants)
-      .where(
-        and(
-          inArray(groupEventParticipants.eventId, activeEventIds),
-          eq(groupEventParticipants.status, 'accepted'),
-        ),
-      )
-      .groupBy(groupEventParticipants.eventId);
-
-    const participantCountByEvent = new Map<string, number>();
-    for (const row of participantCountRows) {
-      participantCountByEvent.set(row.eventId, row.count);
-    }
-
-    // DISTINCT ON to get only the last message per event (instead of fetching ALL messages)
-    const lastMessagesRows = await this.db
-      .selectDistinctOn([groupMessages.eventId])
-      .from(groupMessages)
-      .where(
-        and(inArray(groupMessages.eventId, activeEventIds), eq(groupMessages.isDeleted, false)),
-      )
-      .orderBy(groupMessages.eventId, desc(groupMessages.createdAt));
-
-    const lastMessageByEvent = new Map<string, GroupChatMessage>();
-    for (const row of lastMessagesRows) {
-      lastMessageByEvent.set(row.eventId, {
-        id: row.id,
-        eventId: row.eventId,
-        senderId: row.senderId,
-        content: row.content,
-        mediaUrl: row.mediaUrl,
-        isDeleted: row.isDeleted,
-        createdAt: row.createdAt,
-      } satisfies GroupChatMessage);
-    }
-
-    // Batch-fetch read records for all active events for this user
-    const readRows = await this.db
-      .select({
-        eventId: groupMessageReads.eventId,
-        lastReadAt: groupMessageReads.lastReadAt,
-      })
-      .from(groupMessageReads)
-      .where(
-        and(
-          inArray(groupMessageReads.eventId, activeEventIds),
-          eq(groupMessageReads.userId, userId),
-        ),
-      );
-
-    const lastReadByEvent = new Map<string, Date>();
-    for (const row of readRows) {
-      lastReadByEvent.set(row.eventId, row.lastReadAt);
-    }
-
-    // Batch-fetch unread counts for all active events
-    // We need per-event counts of messages not sent by userId, not deleted,
-    // and created after the user's last read timestamp (if any)
-    // Split into two groups: events with a read record and events without
-    const eventsWithRead = activeEventIds.filter((id) => lastReadByEvent.has(id));
-    const eventsWithoutRead = activeEventIds.filter((id) => !lastReadByEvent.has(id));
-
-    const unreadByEvent = new Map<string, number>();
-
-    // For events without a read record, count all non-self messages
-    if (eventsWithoutRead.length > 0) {
-      const unreadNoReadRows = await this.db
-        .select({
-          eventId: groupMessages.eventId,
-          count: sql<number>`count(*)::int`,
-        })
-        .from(groupMessages)
-        .where(
-          and(
-            inArray(groupMessages.eventId, eventsWithoutRead),
-            eq(groupMessages.isDeleted, false),
-            sql`${groupMessages.senderId} != ${userId}`,
-          ),
-        )
-        .groupBy(groupMessages.eventId);
-
-      for (const row of unreadNoReadRows) {
-        unreadByEvent.set(row.eventId, row.count);
-      }
-    }
-
-    // For events with a read record, count messages after lastReadAt
-    // We do individual conditions per event since each has a different timestamp
-    // But we can still batch into a single query using CASE/UNION or raw SQL
-    if (eventsWithRead.length > 0) {
-      // Build a single query with OR conditions per event
-      const unreadWithReadRows = await this.db
-        .select({
-          eventId: groupMessages.eventId,
-          count: sql<number>`count(*)::int`,
-        })
-        .from(groupMessages)
-        .where(
-          and(
-            inArray(groupMessages.eventId, eventsWithRead),
-            eq(groupMessages.isDeleted, false),
-            sql`${groupMessages.senderId} != ${userId}`,
-            // Filter: only messages after the user's lastReadAt for that event
-            // Use a subquery approach: createdAt > the user's lastReadAt for that event
-            sql`${groupMessages.createdAt} > (
-              SELECT ${groupMessageReads.lastReadAt}
-              FROM ${groupMessageReads}
-              WHERE ${groupMessageReads.eventId} = ${groupMessages.eventId}
-                AND ${groupMessageReads.userId} = ${userId}
-            )`,
-          ),
-        )
-        .groupBy(groupMessages.eventId);
-
-      for (const row of unreadWithReadRows) {
-        unreadByEvent.set(row.eventId, row.count);
-      }
-    }
-
-    // Assemble results
-    const conversations: GroupConversationSummary[] = [];
-    for (const eventId of activeEventIds) {
-      const event = eventById.get(eventId);
-      if (!event) continue;
-
-      conversations.push({
-        eventId,
-        eventTitle: event.title,
-        participantCount: participantCountByEvent.get(eventId) ?? 0,
-        lastMessage: lastMessageByEvent.get(eventId) ?? null,
-        unreadCount: unreadByEvent.get(eventId) ?? 0,
-      });
-    }
-
-    conversations.sort((a, b) => {
-      const aTime = a.lastMessage?.createdAt?.getTime() ?? 0;
-      const bTime = b.lastMessage?.createdAt?.getTime() ?? 0;
-      return bTime - aTime;
-    });
-
-    return conversations;
+    return assembleConversations(
+      activeEventIds,
+      eventById,
+      participantCountByEvent,
+      lastMessageByEvent,
+      unreadByEvent,
+    );
   }
 
   async markAsRead(eventId: string, userId: string): Promise<void> {

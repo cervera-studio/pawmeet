@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { logger } from '@pawmeet/utils';
 import type {
   BreedDetectionResult,

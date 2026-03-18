@@ -38,7 +38,7 @@ export function createAddEventSponsor({
       return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
     }
 
-    if (!org.isVerified || !org.isActive) {
+    if (!(org.isVerified && org.isActive)) {
       return fail(
         new AppError('ORG_NOT_VERIFIED', "L'organizzazione deve essere verificata e attiva", 400),
       );

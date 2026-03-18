@@ -160,8 +160,7 @@ describe('createDogSchema', () => {
   // -- breedSecondary --
 
   it('accepts undefined breedSecondary', () => {
-    const input = buildCreateDogInput();
-    delete (input as Record<string, unknown>).breedSecondary;
+    const { breedSecondary: _, ...input } = buildCreateDogInput() as Record<string, unknown>;
     expect(createDogSchema.safeParse(input).success).toBe(true);
   });
 

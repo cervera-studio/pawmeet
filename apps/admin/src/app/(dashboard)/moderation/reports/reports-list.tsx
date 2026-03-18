@@ -121,7 +121,7 @@ export function ReportsList({ initialData }: ReportsListProps) {
     statusOverride?: ReportStatus | undefined,
   ) {
     const pag = paginationOverride ?? pagination;
-    const status = statusOverride !== undefined ? statusOverride : statusFilter;
+    const status = statusOverride === undefined ? statusFilter : statusOverride;
     setIsLoading(true);
     try {
       const result = await fetchReportsAction({

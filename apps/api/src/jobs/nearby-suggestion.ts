@@ -37,7 +37,7 @@ export function createNearbySuggestionWorker(deps: NearbySuggestionDeps) {
       );
 
       for (const user of activeUsers) {
-        if (!user.latitude || !user.longitude) continue;
+        if (!(user.latitude && user.longitude)) continue;
 
         // Check cooldown — only send once per 24h per user
         const cooldownKey = `${COOLDOWN_KEY_PREFIX}${user.id}`;

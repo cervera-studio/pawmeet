@@ -283,30 +283,20 @@ export default function DiscoveryScreen() {
               <Text className="font-semibold text-white">{t('discovery.addDogButton')}</Text>
             </Pressable>
           </View>
-        ) : !vm.coordinates ? (
-          <View className="items-center px-8">
-            <Text className="text-5xl">📍</Text>
-            <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-              {t('discovery.locationRequired')}
-            </Text>
-            <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
-              {t('discovery.locationDescription')}
-            </Text>
-            <Pressable
-              onPress={vm.getCurrentLocation}
-              className="mt-6 rounded-2xl bg-primary px-8 py-3"
-            >
-              <Text className="font-semibold text-white">{t('discovery.enableLocation')}</Text>
-            </Pressable>
-          </View>
-        ) : vm.isLoading ? (
+        ) : null}
+        {vm.dogs.length > 0 && vm.coordinates && vm.isLoading ? (
           <View className="items-center">
             <ActivityIndicator size="large" color="#065F46" />
             <Text className="mt-4 text-gray-400 dark:text-neutral-500">
               {t('discovery.searchingDogs')}
             </Text>
           </View>
-        ) : vm.currentProfile && vm.hasMore ? (
+        ) : null}
+        {vm.dogs.length > 0 &&
+        vm.coordinates &&
+        !vm.isLoading &&
+        vm.currentProfile &&
+        vm.hasMore ? (
           <SwipeCard
             dog={{
               dogId: vm.currentProfile.dog.id,
@@ -330,7 +320,11 @@ export default function DiscoveryScreen() {
               });
             }}
           />
-        ) : (
+        ) : null}
+        {vm.dogs.length > 0 &&
+        vm.coordinates &&
+        !vm.isLoading &&
+        !(vm.currentProfile && vm.hasMore) ? (
           <View className="items-center">
             <Text className="text-5xl">🐕</Text>
             <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
@@ -346,7 +340,24 @@ export default function DiscoveryScreen() {
               <Text className="font-semibold text-white">{t('discovery.refresh')}</Text>
             </Pressable>
           </View>
-        )}
+        ) : null}
+        {vm.dogs.length > 0 && !vm.coordinates ? (
+          <View className="items-center px-8">
+            <Text className="text-5xl">📍</Text>
+            <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
+              {t('discovery.locationRequired')}
+            </Text>
+            <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
+              {t('discovery.locationDescription')}
+            </Text>
+            <Pressable
+              onPress={vm.getCurrentLocation}
+              className="mt-6 rounded-2xl bg-primary px-8 py-3"
+            >
+              <Text className="font-semibold text-white">{t('discovery.enableLocation')}</Text>
+            </Pressable>
+          </View>
+        ) : null}
       </View>
 
       {/* Action buttons */}

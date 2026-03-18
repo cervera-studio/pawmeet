@@ -50,7 +50,7 @@ export function createGetMatchExplanation({ matchRepo, dogRepo, userRepo }: Deps
 
     const dogA = await dogRepo.findById(match.dogAId);
     const dogB = await dogRepo.findById(match.dogBId);
-    if (!dogA || !dogB) {
+    if (!(dogA && dogB)) {
       return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
     }
 

@@ -1,4 +1,4 @@
-import type { UserMatchingPreferences } from '@pawmeet/types';
+import type { SwipeScoreLog, UserMatchingPreferences } from '@pawmeet/types';
 import { type Result, succeed } from '@pawmeet/types';
 import { computeSuccessRate, learnWeightsFromSwipes } from '@pawmeet/utils';
 import type { DogRepository, MatchingAiRepository, MatchRepository } from '../ports/index.js';
@@ -30,7 +30,7 @@ export function createLearnUserPreferences({ matchingAiRepo, matchRepo, dogRepo 
     }
 
     // Collect swipe score logs across all user's dogs
-    const allLogs = [];
+    const allLogs: SwipeScoreLog[] = [];
     for (const dog of dogs) {
       const { logs } = await matchingAiRepo.findSwipeScoreLogsByDog(dog.id, { limit: 200 });
       allLogs.push(...logs);

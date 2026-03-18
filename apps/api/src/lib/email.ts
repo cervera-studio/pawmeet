@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@pawmeet/i18n';
 import emailEn from '@pawmeet/i18n/locales/en/email.json' with { type: 'json' };
 import emailEs from '@pawmeet/i18n/locales/es/email.json' with { type: 'json' };
@@ -6,6 +7,7 @@ import emailRo from '@pawmeet/i18n/locales/ro/email.json' with { type: 'json' };
 import { Resend } from 'resend';
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'PawMeet <noreply@pawmeet.io>';
+const ADMIN_LOGIN_URL = process.env.ADMIN_URL || 'https://admin.pawmeet.io';
 const PRIVACY_EMAIL = 'privacy@pawmeet.io';
 
 type EmailMessages = typeof emailIt;
@@ -151,6 +153,34 @@ export async function sendGdprExportFailed(
       <h2>${t.greeting.replace('{displayName}', displayName)}</h2>
       <p>${t.body}</p>
       <p>${t.retry} <a href="mailto:${PRIVACY_EMAIL}">${PRIVACY_EMAIL}</a>.</p>
+    `,
+  });
+}
+
+/**
+ * Send admin invite email with temporary password and login link.
+ */
+export async function sendAdminInvite(
+  email: string,
+  temporaryPassword: string,
+  locale?: string,
+): Promise<void> {
+  const t = getEmailMessages(locale).adminInvite;
+  const loginUrl = `${ADMIN_LOGIN_URL}/login`;
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: t.subject,
+    html: `
+      <h2>${t.heading}</h2>
+      <p>${t.body}</p>
+      <p><strong>${t.temporaryPasswordLabel}</strong></p>
+      <p style="font-size: 24px; font-weight: bold; letter-spacing: 4px; text-align: center; padding: 12px 0; background-color: #f3f4f6; border-radius: 8px;">${temporaryPassword}</p>
+      <p>${t.changePasswordNote}</p>
+      <p style="text-align: center; padding: 16px 0;">
+        <a href="${loginUrl}" style="background-color: #065F46; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">${t.cta}</a>
+      </p>
+      <p>${t.ignore}</p>
     `,
   });
 }

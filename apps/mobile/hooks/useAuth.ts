@@ -1,9 +1,11 @@
 import { logger } from '@pawmeet/utils';
 import { useCallback } from 'react';
 import { container } from 'tsyringe';
+import { closeDatabase } from '@/lib/database';
 import { storage } from '@/lib/storage';
 import type { AuthResult } from '@/repositories/interfaces/auth-repository';
 import { ANALYTICS_SERVICE, AUTH_REPOSITORY } from '@/repositories/tokens';
+import { stopSyncEngine } from '@/services/sync-engine';
 import type { AuthUser } from '@/stores/auth';
 import { useAuthStore } from '@/stores/auth';
 import { useConsentStore } from '@/stores/consent';
@@ -91,6 +93,14 @@ export function useAuth() {
     } catch (e) {
       logger.warn('useAuth', 'Server logout failed, continuing local logout', e);
     }
+
+    try {
+      stopSyncEngine();
+      await closeDatabase();
+    } catch (e) {
+      logger.warn('useAuth', 'Database close failed on logout', e);
+    }
+
     await storage.clear();
     storeLogout();
   }, [storeLogout]);

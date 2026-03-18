@@ -1,5 +1,6 @@
 'use server';
 
+import { logger } from '@pawmeet/utils';
 import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
 import { getServerTrpcClient } from '@/lib/server-api';
@@ -19,7 +20,7 @@ export async function updateSettings(
     revalidatePath('/settings');
     return { success: true };
   } catch (error) {
-    console.error('[updateSettings]', error);
+    logger.error('AdminSettings', 'updateSettings failed', error);
     const tt = await getTranslations('toast');
     return { success: false, error: tt('settings.saveError') };
   }

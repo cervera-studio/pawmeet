@@ -1,3 +1,4 @@
+import process from 'node:process';
 import type { S3Client } from '@aws-sdk/client-s3';
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -179,7 +180,7 @@ export async function generatePresignedDownloadUrl(
   expiresInSeconds = 900,
 ): Promise<string> {
   const contentType = inferContentType(key);
-  if (!contentType || !ALLOWED_DOWNLOAD_TYPES.has(contentType)) {
+  if (!(contentType && ALLOWED_DOWNLOAD_TYPES.has(contentType))) {
     throw new Error(`Unsupported file type for download: ${key}`);
   }
 

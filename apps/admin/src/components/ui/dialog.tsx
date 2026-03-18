@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
 interface DialogProps {
@@ -14,7 +14,6 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
 
   return (
     <div className="fixed inset-0 z-50">
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: backdrop overlay needs click-to-dismiss */}
       <div
         role="presentation"
         className="fixed inset-0 bg-black/80"
@@ -30,8 +29,13 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   );
 }
 
-const DialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, children, ...props }, ref) => (
+function DialogContent({
+  className,
+  children,
+  ref,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
+  return (
     <div
       ref={ref}
       className={cn(
@@ -42,8 +46,8 @@ const DialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
     >
       {children}
     </div>
-  ),
-);
+  );
+}
 DialogContent.displayName = 'DialogContent';
 
 function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

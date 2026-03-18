@@ -41,7 +41,7 @@ export function createCreateOfficialEvent({ organizationRepo, groupEventRepo, do
 
     // Verify the organization is verified
     const org = await organizationRepo.findById(input.organizationId);
-    if (!org || !org.isVerified || !org.isActive) {
+    if (!(org?.isVerified && org.isActive)) {
       return fail(
         new AppError('ORG_NOT_VERIFIED', "L'organizzazione non è verificata o non è attiva", 403),
       );

@@ -32,20 +32,32 @@ function hasOverlap(a: readonly string[], b: readonly string[]): boolean {
 }
 
 function matchesFilters(dog: DogProfile, filters: DiscoveryFilters): boolean {
-  if (filters.size?.length && !filters.size.includes(dog.size)) return false;
-  if (filters.energyLevel?.length && !filters.energyLevel.includes(dog.energyLevel)) return false;
-  if (filters.gender?.length && !filters.gender.includes(dog.gender)) return false;
+  if (filters.size && filters.size.length > 0 && !filters.size.includes(dog.size)) return false;
   if (
-    filters.behaviorWithDogs?.length &&
+    filters.energyLevel &&
+    filters.energyLevel.length > 0 &&
+    !filters.energyLevel.includes(dog.energyLevel)
+  )
+    return false;
+  if (filters.gender && filters.gender.length > 0 && !filters.gender.includes(dog.gender))
+    return false;
+  if (
+    filters.behaviorWithDogs &&
+    filters.behaviorWithDogs.length > 0 &&
     !filters.behaviorWithDogs.includes(dog.behaviorWithDogs)
   ) {
     return false;
   }
-  if (filters.walkPrefTime?.length && !hasOverlap(filters.walkPrefTime, dog.walkPrefTime)) {
+  if (
+    filters.walkPrefTime &&
+    filters.walkPrefTime.length > 0 &&
+    !hasOverlap(filters.walkPrefTime, dog.walkPrefTime)
+  ) {
     return false;
   }
   if (
-    filters.walkPrefTerrain?.length &&
+    filters.walkPrefTerrain &&
+    filters.walkPrefTerrain.length > 0 &&
     !hasOverlap(filters.walkPrefTerrain, dog.walkPrefTerrain)
   ) {
     return false;
@@ -69,6 +81,81 @@ type Suggestion = {
   };
 };
 
+type CandidateList = Awaited<ReturnType<MatchRepository['findCandidateDogs']>>;
+
+async function fetchCandidatesWithVector(
+  embeddingRepo: EmbeddingRepository,
+  matchRepo: MatchRepository,
+  dogId: string,
+  userId: string,
+  effectiveLimit: number,
+  swipedIds: Set<string>,
+): Promise<CandidateList> {
+  const dogEmbedding = await embeddingRepo.findByDogId(dogId);
+  if (!dogEmbedding) {
+    return matchRepo.findCandidateDogs(userId);
+  }
+
+  const nearest = await embeddingRepo.findNearestDogIds(
+    dogEmbedding.embedding,
+    effectiveLimit * 3,
+    userId,
+    [...swipedIds],
+  );
+  const nearestIds = new Set(nearest.map((n) => n.dogId));
+  const allCandidates = await matchRepo.findCandidateDogs(userId);
+  return allCandidates.filter((c) => nearestIds.has(c.dog.id));
+}
+
+function buildBackfill(
+  rawRecs: string[],
+  scored: Suggestion[],
+  candidates: CandidateList,
+  swipedIds: Set<string>,
+  filters: DiscoveryFilters | undefined,
+  userLat: number,
+  userLon: number,
+  radiusKm: number,
+  effectiveLimit: number,
+): Suggestion[] {
+  const scoredDogIds = new Set(scored.map((s) => s.dog.id));
+  const candidateMap = new Map(candidates.map((c) => [c.dog.id, c]));
+
+  const backfill: Suggestion[] = [];
+  for (const recDogId of rawRecs) {
+    if (scoredDogIds.has(recDogId) || swipedIds.has(recDogId)) continue;
+    const c = candidateMap.get(recDogId);
+    if (!(c && hasOwnerLocation(c))) continue;
+    if (filters && !matchesFilters(c.dog, filters)) continue;
+
+    const distanceKm = calculateDistance(userLat, userLon, c.ownerLat, c.ownerLon);
+    if (distanceKm > radiusKm) continue;
+
+    backfill.push({
+      dog: c.dog,
+      distanceKm: Math.round(distanceKm * 10) / 10,
+      compatibilityScore: 0,
+    });
+
+    if (scored.length + backfill.length >= effectiveLimit) break;
+  }
+  return backfill;
+}
+
+function diversityInterleave(suggestions: Suggestion[]): void {
+  for (let i = 1; i < suggestions.length - 1; i++) {
+    const curr = suggestions[i];
+    const prev = suggestions[i - 1];
+    if (curr && prev && curr.dog.size === prev.dog.size) {
+      const next = suggestions.findIndex((s, j) => j > i && s.dog.size !== curr.dog.size);
+      if (next !== -1) {
+        suggestions[i] = suggestions[next]!;
+        suggestions[next] = curr;
+      }
+    }
+  }
+}
+
 export function createDiscoverCandidatesAi({
   dogRepo,
   matchRepo,
@@ -87,52 +174,36 @@ export function createDiscoverCandidatesAi({
   ): Promise<Result<{ suggestions: Suggestion[]; variant: string }>> => {
     const effectiveLimit = limit ?? 20;
 
-    // Verify ownership
     const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!myDog) {
       return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
     }
 
-    // Get current user's location
     const user = await userRepo.findById(userId);
-    if (!user || !hasLocation(user)) {
+    if (!(user && hasLocation(user))) {
       return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
     }
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
-    // Check Statsig feature gates for AI matching and vector pre-filtering
     const useAi = await experimentService.checkGate(userId, STATSIG_GATE.AI_MATCHING);
     const useVector = await experimentService.checkGate(userId, STATSIG_GATE.VECTOR_MATCHING);
     const variantBase = useAi ? 'ai_enhanced' : 'rule_based';
     const variant = useVector ? `vector_${variantBase}` : variantBase;
     const strategy = useAi ? mlStrategy : ruleBasedStrategy;
 
-    // Get already-swiped dog IDs
     const swipedIds = new Set(await matchRepo.findSwipedDogIds(dogId));
 
-    // Get candidate dogs — vector pre-filtering narrows the pool, standard loads all
-    let candidates: Awaited<ReturnType<typeof matchRepo.findCandidateDogs>>;
-    if (useVector) {
-      const dogEmbedding = await embeddingRepo.findByDogId(dogId);
-      if (dogEmbedding) {
-        // Vector pre-filter: get top-N nearest, then load full profiles via standard repo
-        const nearest = await embeddingRepo.findNearestDogIds(
-          dogEmbedding.embedding,
-          effectiveLimit * 3,
+    const candidates = useVector
+      ? await fetchCandidatesWithVector(
+          embeddingRepo,
+          matchRepo,
+          dogId,
           userId,
-          [...swipedIds],
-        );
-        const nearestIds = new Set(nearest.map((n) => n.dogId));
-        const allCandidates = await matchRepo.findCandidateDogs(userId);
-        candidates = allCandidates.filter((c) => nearestIds.has(c.dog.id));
-      } else {
-        // No embedding yet — fall back to standard path (embedding generated async by worker)
-        candidates = await matchRepo.findCandidateDogs(userId);
-      }
-    } else {
-      candidates = await matchRepo.findCandidateDogs(userId);
-    }
+          effectiveLimit,
+          swipedIds,
+        )
+      : await matchRepo.findCandidateDogs(userId);
 
     // Apply filters, score, and rank
     const scoredPromises = candidates.flatMap((c) => {
@@ -146,7 +217,6 @@ export function createDiscoverCandidatesAi({
       return [
         strategy.score(myDog, c.dog, distanceKm, userId).then((result) => {
           if (result.overallScore < COMPATIBILITY_THRESHOLD) return null;
-
           return {
             dog: c.dog,
             distanceKm: Math.round(distanceKm * 10) / 10,
@@ -170,50 +240,25 @@ export function createDiscoverCandidatesAi({
       .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
       .slice(0, effectiveLimit);
 
-    // ── Backfill with precomputed recommendations ───────────────────────────
     let suggestions: Suggestion[] = scored;
 
     if (scored.length < effectiveLimit) {
       const rawRecs = await recommendationCacheRepo.getTopRecommendations(userId, effectiveLimit);
-
-      const scoredDogIds = new Set(scored.map((s) => s.dog.id));
-      const candidateMap = new Map(candidates.map((c) => [c.dog.id, c]));
-
-      const backfill: Suggestion[] = [];
-      for (const recDogId of rawRecs) {
-        if (scoredDogIds.has(recDogId) || swipedIds.has(recDogId)) continue;
-        const c = candidateMap.get(recDogId);
-        if (!c || !hasOwnerLocation(c)) continue;
-        if (filters && !matchesFilters(c.dog, filters)) continue;
-
-        const distanceKm = calculateDistance(user.latitude, user.longitude, c.ownerLat, c.ownerLon);
-        if (distanceKm > radiusKm) continue;
-
-        backfill.push({
-          dog: c.dog,
-          distanceKm: Math.round(distanceKm * 10) / 10,
-          compatibilityScore: 0,
-        });
-
-        if (scored.length + backfill.length >= effectiveLimit) break;
-      }
-
+      const backfill = buildBackfill(
+        rawRecs,
+        scored,
+        candidates,
+        swipedIds,
+        filters,
+        user.latitude,
+        user.longitude,
+        radiusKm,
+        effectiveLimit,
+      );
       suggestions = [...scored, ...backfill];
     }
 
-    // ── Diversity interleave: avoid consecutive same-size dogs ───────────────
-    for (let i = 1; i < suggestions.length - 1; i++) {
-      const curr = suggestions[i];
-      const prev = suggestions[i - 1];
-      if (curr && prev && curr.dog.size === prev.dog.size) {
-        const next = suggestions.findIndex((s, j) => j > i && s.dog.size !== curr.dog.size);
-        if (next !== -1) {
-          // biome-ignore lint/style/noNonNullAssertion: findIndex guarantees valid index
-          suggestions[i] = suggestions[next]!;
-          suggestions[next] = curr;
-        }
-      }
-    }
+    diversityInterleave(suggestions);
 
     return succeed({ suggestions, variant });
   };

@@ -1,5 +1,5 @@
 import { experimentMetricsSnapshots, mlModelRegistry, modelPerformanceDaily } from '@pawmeet/db';
-import { and, asc, desc, eq, gte, lte } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, lte, type SQL } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   AdminAiMatchingRepository,
@@ -33,7 +33,7 @@ export class DrizzleAdminAiMatchingRepository implements AdminAiMatchingReposito
   }
 
   async getModelPerformance(dateFrom?: Date, dateTo?: Date): Promise<ModelPerformanceRow[]> {
-    const conditions = [];
+    const conditions: (SQL | undefined)[] = [];
 
     if (dateFrom) {
       conditions.push(gte(modelPerformanceDaily.snapshotDate, dateFrom));

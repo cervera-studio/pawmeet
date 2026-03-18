@@ -1,3 +1,4 @@
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { BadgeRepository } from '../ports/badge-repository.js';
 import type {
@@ -30,10 +31,10 @@ export function createEventStatusWorker(deps: Deps): Worker {
   );
 
   worker.on('completed', (_job) => {
-    console.log('[event-status] Status check completed');
+    logger.info('EventStatus', 'Status check completed');
   });
   worker.on('failed', (_job, err) => {
-    console.error('[event-status] Status check failed:', err.message);
+    logger.error('EventStatus', 'Status check failed', err.message);
   });
 
   return worker;

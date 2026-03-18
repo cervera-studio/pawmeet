@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { challenges } from '../schema/gamification';
@@ -15,7 +16,7 @@ async function seed() {
   const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const oneMonthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-  console.log('Seeding default challenges...');
+  console.log('[Seed] Seeding default challenges...');
 
   await db
     .insert(challenges)
@@ -59,10 +60,10 @@ async function seed() {
     ])
     .onConflictDoNothing();
 
-  console.log('Done. Default challenges seeded.');
+  console.log('[Seed] Done. Default challenges seeded.');
 }
 
 seed().catch((err) => {
-  console.error('Seed failed:', err);
+  console.error('[Seed] Seed failed', err);
   process.exit(1);
 });

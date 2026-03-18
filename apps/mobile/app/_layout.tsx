@@ -1,6 +1,8 @@
 import '../global.css';
 import '@/lib/i18n';
 
+import process from 'node:process';
+import { logger } from '@pawmeet/utils';
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';
 import Constants from 'expo-constants';
@@ -59,7 +61,7 @@ Sentry.init({
       event.user = { id: event.user.id };
     }
     if (event.request) {
-      delete event.request.headers;
+      event.request.headers = undefined;
     }
     return event;
   },
@@ -102,7 +104,7 @@ const STATSIG_CLIENT_KEY = process.env.EXPO_PUBLIC_STATSIG_CLIENT_KEY ?? '';
 /** Pseudonymize userId for third-party services (GDPR compliance) */
 async function hashUserId(userId: string): Promise<string> {
   const hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, userId);
-  return `anon_${hash.substring(0, 16)}`;
+  return `anon_${hash.slice(0, 16)}`;
 }
 
 /** Validates certificate pins are initialized and checks expiry on startup. */
@@ -188,7 +190,7 @@ function DeviceIntegrityMonitor() {
     checkDeviceIntegrity().then((result) => {
       if (result.isCompromised) {
         const message = `Device integrity check failed: ${result.reasons.join(', ')}`;
-        console.warn('[DeviceIntegrity]', message);
+        logger.warn('DeviceIntegrity', message);
         Sentry.captureMessage(message, 'warning');
       }
     });

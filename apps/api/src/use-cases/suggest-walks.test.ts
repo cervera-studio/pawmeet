@@ -102,7 +102,8 @@ describe('createSuggestWalks', () => {
     if (!isSuccess(result)) return;
 
     expect(result.data.suggestions.length).toBeGreaterThan(0);
-    const suggestion = result.data.suggestions[0]!;
+    const suggestion = result.data.suggestions[0];
+    if (!suggestion) return;
     expect(suggestion.score).toBeGreaterThan(0);
     expect(suggestion.nearbyCompatibleDogs.length).toBeGreaterThan(0);
     expect(suggestion.terrainSuggestion).toBeTruthy();

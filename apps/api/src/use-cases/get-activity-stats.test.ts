@@ -6,7 +6,7 @@ import { createGetActivityStats } from './get-activity-stats.js';
 describe('createGetActivityStats', () => {
   it('returns weekly summary for a given date', async () => {
     const weeklySummary = {
-      totalSteps: 35000,
+      totalSteps: 35_000,
       totalDistanceKm: 25,
       totalDurationMin: 300,
       totalWalks: 7,
@@ -24,14 +24,14 @@ describe('createGetActivityStats', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.summary.totalSteps).toBe(35000);
+    expect(result.data.summary.totalSteps).toBe(35_000);
     // 2026-03-10 is a Tuesday, so week start (Monday) = 2026-03-09
     expect(activityRepo.getWeeklySummary).toHaveBeenCalledWith('user-1', '2026-03-09');
   });
 
   it('returns monthly summary for a given date', async () => {
     const monthlySummary = {
-      totalSteps: 150000,
+      totalSteps: 150_000,
       totalDistanceKm: 100,
       totalDurationMin: 1200,
       totalWalks: 30,

@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { breeds } from '../schema/breeds';
@@ -12,7 +13,7 @@ async function seed() {
   const sql = neon(DATABASE_URL);
   const db = drizzle(sql);
 
-  console.log(`Seeding ${breedsData.length} breeds...`);
+  console.log(`[Seed] Seeding ${breedsData.length} breeds...`);
 
   // Insert in batches of 50
   const batchSize = 50;
@@ -40,14 +41,14 @@ async function seed() {
       )
       .onConflictDoNothing();
     console.log(
-      `  Inserted batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(breedsData.length / batchSize)}`,
+      `[Seed] Inserted batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(breedsData.length / batchSize)}`,
     );
   }
 
-  console.log('Done seeding breeds.');
+  console.log('[Seed] Done seeding breeds.');
 }
 
 seed().catch((err) => {
-  console.error('Seed failed:', err);
+  console.error('[Seed] Seed failed', err);
   process.exit(1);
 });

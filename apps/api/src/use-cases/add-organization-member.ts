@@ -32,7 +32,7 @@ export function createAddOrganizationMember({ organizationRepo, organizationAuth
 
     // Check that the actor is an owner or admin of the org
     const actorMember = await organizationRepo.findMember(input.organizationId, actorUserId);
-    if (!actorMember || !organizationAuthorizer.canManageMembers(actorMember.role)) {
+    if (!(actorMember && organizationAuthorizer.canManageMembers(actorMember.role))) {
       return fail(
         new AppError('ORG_NOT_AUTHORIZED', 'Non hai i permessi per aggiungere membri', 403),
       );

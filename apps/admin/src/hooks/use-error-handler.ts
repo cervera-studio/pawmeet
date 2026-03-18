@@ -23,7 +23,7 @@ export function useErrorHandler<T = void>(fallbackMessage: string): UseErrorHand
       } catch (error) {
         const message = handleError(error, fallbackMessage);
         toast.error(message);
-        return undefined;
+        return;
       } finally {
         setIsLoading(false);
       }

@@ -19,7 +19,7 @@ export function createFindNearby({ userRepo, followRepo }: Deps) {
     opts: FindNearbyOpts,
   ): Promise<Result<{ users: NearbyUser[]; radius: number; total: number }>> => {
     const user = await userRepo.findById(userId);
-    if (!user?.latitude || !user?.longitude) {
+    if (!(user?.latitude && user?.longitude)) {
       return fail(
         new AppError(
           'LOCATION_NOT_SET',

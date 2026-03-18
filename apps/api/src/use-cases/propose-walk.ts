@@ -45,14 +45,14 @@ export function createProposeWalk({
   > => {
     // Validate match exists and is active
     const match = await matchRepo.findById(input.matchId);
-    if (!match || !match.isActive) {
+    if (!match?.isActive) {
       return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
     }
 
     // Verify user is a participant in this match
     const userDogs = await dogRepo.findByOwner(userId, true);
     const dogIds = new Set(userDogs.map((d) => d.id));
-    if (!dogIds.has(match.dogAId) && !dogIds.has(match.dogBId)) {
+    if (!(dogIds.has(match.dogAId) || dogIds.has(match.dogBId))) {
       return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
     }
 

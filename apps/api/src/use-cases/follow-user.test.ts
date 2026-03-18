@@ -135,7 +135,9 @@ describe('followUser', () => {
 
     expect(isSuccess(result)).toBe(true);
     // Allow microtask queue to flush for fire-and-forget
-    await vi.advanceTimersToNextTimerAsync().catch(() => {});
+    await vi.advanceTimersToNextTimerAsync().catch(() => {
+      /* noop */
+    });
     expect(notificationService.send).toHaveBeenCalledWith({
       userId: 'user-2',
       title: 'Nuovo follower!',

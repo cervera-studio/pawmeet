@@ -1,4 +1,5 @@
 import { createHmac } from 'node:crypto';
+import process from 'node:process';
 
 /** One-way hash of userId to prevent sending raw UUIDs to third-party services. */
 export function pseudonymizeUserId(userId: string): string {

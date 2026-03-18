@@ -169,6 +169,9 @@ export interface AnalyticsEventMap {
   feed_comment_deleted: { commentAgeHours: number };
   feed_post_tagged: { tagCount: number };
   feed_tag_removed: Record<string, never>;
+  feed_reaction_added: { contentType: 'post' | 'comment' | 'story'; emoji: string };
+  feed_reaction_removed: { contentType: 'post' | 'comment' | 'story'; emoji: string };
+  feed_hashtag_searched: { hashtag: string; resultCount: number };
   feed_walk_album_created: { walkId: string };
 
   // App

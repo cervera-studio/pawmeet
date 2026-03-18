@@ -1,3 +1,5 @@
+import process from 'node:process';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { Resend } from 'resend';
 import type { EmailJobData } from './queue.js';
@@ -10,7 +12,7 @@ export function createEmailWorker() {
     QUEUE_NAMES.EMAIL,
     async (job) => {
       const { to, subject, html } = job.data;
-      console.log(`[email] Sending to ${to}: ${subject}`);
+      logger.info('SendEmail', `Sending to ${to}: ${subject}`);
 
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({ from: FROM_EMAIL, to, subject, html });
@@ -19,11 +21,11 @@ export function createEmailWorker() {
   );
 
   worker.on('completed', (job) => {
-    console.log(`[email] Job ${job.id} completed`);
+    logger.info('SendEmail', `Job ${job.id} completed`);
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`[email] Job ${job?.id} failed:`, err.message);
+    logger.error('SendEmail', `Job ${job?.id} failed`, err.message);
   });
 
   return worker;

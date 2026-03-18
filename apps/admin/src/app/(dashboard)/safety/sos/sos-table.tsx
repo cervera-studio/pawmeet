@@ -33,12 +33,14 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
           const type = row.original.type;
           const variant = typeVariants[type] ?? ('secondary' as const);
           const typeKey = type as 'sos' | 'auto_alert' | 'check_in';
-          const label =
-            type === 'auto_alert'
-              ? t('autoAlert')
-              : type === 'checkin'
-                ? t('types.check_in')
-                : (t(`types.${typeKey}`) ?? type);
+          let label: string;
+          if (type === 'auto_alert') {
+            label = t('autoAlert');
+          } else if (type === 'checkin') {
+            label = t('types.check_in');
+          } else {
+            label = t(`types.${typeKey}`) ?? type;
+          }
           return <Badge variant={variant}>{label}</Badge>;
         },
       },
@@ -82,7 +84,7 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
         header: t('columns.location'),
         cell: ({ row }) => {
           const { latitude, longitude } = row.original;
-          if (!latitude || !longitude) return '-';
+          if (!(latitude && longitude)) return '-';
           return (
             <span className="font-mono text-sm text-neutral-500">
               {latitude}, {longitude}

@@ -202,7 +202,7 @@ function HealthConnectCard() {
   const { isAvailable, isConnected, loading, connect, disconnect, syncNow, lastSyncDate } =
     useHealthConnect();
 
-  if (!isAvailable && !isConnected) return null;
+  if (!(isAvailable || isConnected)) return null;
 
   const title = Platform.OS === 'ios' ? 'Connetti Apple Salute' : 'Connetti Health Connect';
 

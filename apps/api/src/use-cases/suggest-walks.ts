@@ -47,6 +47,100 @@ function walkTimeBucketToHourRange(bucket: WalkTimeBucket): { start: number; end
   }
 }
 
+// ── Helper types ────────────────────────────────────────────────────────────
+
+type CandidateEntry = Awaited<ReturnType<MatchRepository['findCandidateDogs']>>[number];
+type ActivityWindow = Awaited<
+  ReturnType<MatchingAiRepository['findActivityWindowsByUser']>
+>[number];
+
+type WindowResult = {
+  window: ActivityWindow;
+  dogs: WalkSuggestionDog[];
+  avgCompatibility: number;
+  terrainSuggestion: string;
+  estimatedDurationMin: number;
+};
+
+// ── Extracted helpers ───────────────────────────────────────────────────────
+
+async function findCompatibleDogsForWindow(
+  candidates: CandidateEntry[],
+  nearbyUserIds: Set<string>,
+  myDog: {
+    walkPrefTerrain: readonly string[];
+    walkPrefDurationMin: number;
+    walkPrefDurationMax: number;
+  } & Parameters<typeof calculateCompatibilityScoreWithBreakdown>[0],
+  user: { latitude: number; longitude: number },
+  userId: string,
+  followRepo: FollowRepository,
+): Promise<{ compatibleDogs: WalkSuggestionDog[]; terrainCounts: Map<WalkTerrain, number> }> {
+  const compatibleDogs: WalkSuggestionDog[] = [];
+  const terrainCounts = new Map<WalkTerrain, number>();
+
+  for (const c of candidates) {
+    if (!hasOwnerLocation(c)) continue;
+    if (!nearbyUserIds.has(c.dog.ownerId)) continue;
+
+    const distanceKm = calculateDistance(user.latitude, user.longitude, c.ownerLat, c.ownerLon);
+    const breakdown = calculateCompatibilityScoreWithBreakdown(myDog, c.dog, distanceKm);
+    if (breakdown.overallScore < COMPATIBILITY_THRESHOLD) continue;
+
+    const blocked = await followRepo.isBlockedEitherWay(userId, c.dog.ownerId);
+    if (blocked) continue;
+
+    compatibleDogs.push({
+      dogId: c.dog.id,
+      dogName: c.dog.name,
+      breed: c.dog.breed,
+      compatibilityScore: breakdown.overallScore,
+      distanceKm: Math.round(distanceKm * 10) / 10,
+    });
+
+    for (const terrain of c.dog.walkPrefTerrain) {
+      if (myDog.walkPrefTerrain.includes(terrain)) {
+        terrainCounts.set(terrain, (terrainCounts.get(terrain) ?? 0) + 1);
+      }
+    }
+  }
+
+  return { compatibleDogs, terrainCounts };
+}
+
+function pickTopTerrain(terrainCounts: Map<WalkTerrain, number>, fallback: string): string {
+  let terrainSuggestion = fallback;
+  let maxTerrainCount = 0;
+  for (const [terrain, count] of terrainCounts) {
+    if (count > maxTerrainCount) {
+      maxTerrainCount = count;
+      terrainSuggestion = terrain;
+    }
+  }
+  return terrainSuggestion;
+}
+
+function estimateDuration(
+  candidates: CandidateEntry[],
+  compatibleDogIds: Set<string>,
+  myDog: { walkPrefDurationMin: number; walkPrefDurationMax: number },
+): number {
+  let durationSum = 0;
+  let durationCount = 0;
+  for (const c of candidates) {
+    if (!compatibleDogIds.has(c.dog.id)) continue;
+    const overlapMin = Math.max(myDog.walkPrefDurationMin, c.dog.walkPrefDurationMin);
+    const overlapMax = Math.min(myDog.walkPrefDurationMax, c.dog.walkPrefDurationMax);
+    if (overlapMax >= overlapMin) {
+      durationSum += (overlapMin + overlapMax) / 2;
+      durationCount++;
+    }
+  }
+  return durationCount > 0
+    ? Math.round(durationSum / durationCount)
+    : Math.round((myDog.walkPrefDurationMin + myDog.walkPrefDurationMax) / 2);
+}
+
 // ── Use case factory ────────────────────────────────────────────────────────
 
 export function createSuggestWalks({
@@ -63,49 +157,33 @@ export function createSuggestWalks({
   ): Promise<Result<{ suggestions: WalkSuggestion[] }>> => {
     const effectiveLimit = limit ?? 3;
 
-    // 1. Verify dog ownership
     const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!myDog) {
       return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
     }
 
-    // 2. Get user location
     const user = await userRepo.findById(userId);
-    if (!user || !hasLocation(user)) {
+    if (!(user && hasLocation(user))) {
       return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
     }
 
-    // 3. Get user activity windows
     const activityWindows = await matchingAiRepo.findActivityWindowsByUser(userId);
     if (activityWindows.length === 0) {
       return succeed({ suggestions: [] });
     }
 
-    // 4. Filter windows to those matching dog's walkPrefTime
     const dogWalkTimes = new Set(myDog.walkPrefTime);
-    const qualifyingWindows = activityWindows.filter((w) => {
-      const bucket = hourToWalkTime(w.hourOfDay);
-      return dogWalkTimes.has(bucket);
-    });
-
+    const qualifyingWindows = activityWindows.filter((w) =>
+      dogWalkTimes.has(hourToWalkTime(w.hourOfDay)),
+    );
     if (qualifyingWindows.length === 0) {
       return succeed({ suggestions: [] });
     }
 
-    // 5. Get all candidate dogs once
     const candidates = await matchRepo.findCandidateDogs(userId);
-
-    // 6. For each qualifying window, find nearby compatible dogs
-    const rawSuggestions: Array<{
-      window: (typeof qualifyingWindows)[number];
-      dogs: WalkSuggestionDog[];
-      avgCompatibility: number;
-      terrainSuggestion: string;
-      estimatedDurationMin: number;
-    }> = [];
+    const rawSuggestions: WindowResult[] = [];
 
     for (const window of qualifyingWindows) {
-      // Get nearby active users for this time slot
       const nearbyActive = await matchingAiRepo.findNearbyActivityWindows(
         userId,
         window.dayOfWeek,
@@ -113,68 +191,19 @@ export function createSuggestWalks({
       );
       const nearbyUserIds = new Set(nearbyActive.map((n) => n.userId));
 
-      // Filter candidates to those whose owner is nearby and active
-      const compatibleDogs: WalkSuggestionDog[] = [];
-      const terrainCounts = new Map<WalkTerrain, number>();
-
-      for (const c of candidates) {
-        if (!hasOwnerLocation(c)) continue;
-        if (!nearbyUserIds.has(c.dog.ownerId)) continue;
-
-        const distanceKm = calculateDistance(user.latitude, user.longitude, c.ownerLat, c.ownerLon);
-
-        const breakdown = calculateCompatibilityScoreWithBreakdown(myDog, c.dog, distanceKm);
-        if (breakdown.overallScore < COMPATIBILITY_THRESHOLD) continue;
-
-        // Check blocked
-        const blocked = await followRepo.isBlockedEitherWay(userId, c.dog.ownerId);
-        if (blocked) continue;
-
-        compatibleDogs.push({
-          dogId: c.dog.id,
-          dogName: c.dog.name,
-          breed: c.dog.breed,
-          compatibilityScore: breakdown.overallScore,
-          distanceKm: Math.round(distanceKm * 10) / 10,
-        });
-
-        // Count terrain overlaps for suggestion
-        for (const terrain of c.dog.walkPrefTerrain) {
-          if (myDog.walkPrefTerrain.includes(terrain)) {
-            terrainCounts.set(terrain, (terrainCounts.get(terrain) ?? 0) + 1);
-          }
-        }
-      }
-
+      const { compatibleDogs, terrainCounts } = await findCompatibleDogsForWindow(
+        candidates,
+        nearbyUserIds,
+        myDog,
+        user,
+        userId,
+        followRepo,
+      );
       if (compatibleDogs.length === 0) continue;
 
-      // Terrain suggestion: most common overlap, fallback to dog's first terrain
-      let terrainSuggestion = myDog.walkPrefTerrain[0] ?? 'parco';
-      let maxTerrainCount = 0;
-      for (const [terrain, count] of terrainCounts) {
-        if (count > maxTerrainCount) {
-          maxTerrainCount = count;
-          terrainSuggestion = terrain;
-        }
-      }
-
-      // Estimated duration: midpoint of overlapping duration ranges
-      let durationSum = 0;
-      let durationCount = 0;
-      for (const c of candidates) {
-        if (!compatibleDogs.some((d) => d.dogId === c.dog.id)) continue;
-        const overlapMin = Math.max(myDog.walkPrefDurationMin, c.dog.walkPrefDurationMin);
-        const overlapMax = Math.min(myDog.walkPrefDurationMax, c.dog.walkPrefDurationMax);
-        if (overlapMax >= overlapMin) {
-          durationSum += (overlapMin + overlapMax) / 2;
-          durationCount++;
-        }
-      }
-      const estimatedDurationMin =
-        durationCount > 0
-          ? Math.round(durationSum / durationCount)
-          : Math.round((myDog.walkPrefDurationMin + myDog.walkPrefDurationMax) / 2);
-
+      const terrainSuggestion = pickTopTerrain(terrainCounts, myDog.walkPrefTerrain[0] ?? 'parco');
+      const compatibleDogIds = new Set(compatibleDogs.map((d) => d.dogId));
+      const estimatedDurationMin = estimateDuration(candidates, compatibleDogIds, myDog);
       const avgCompatibility =
         compatibleDogs.reduce((sum, d) => sum + d.compatibilityScore, 0) / compatibleDogs.length;
 
@@ -187,7 +216,6 @@ export function createSuggestWalks({
       });
     }
 
-    // 7. Sort by composite score (window score 0.4 + avg compatibility 0.6)
     const maxActivityCount = Math.max(...rawSuggestions.map((s) => s.window.activityCount), 1);
     const scored = rawSuggestions
       .map((s) => {

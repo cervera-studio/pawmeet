@@ -1,9 +1,11 @@
 import type { Config } from 'tailwindcss';
 
+const nativewindPreset = require('nativewind/preset');
+
 export default {
   darkMode: 'class',
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
-  presets: [require('nativewind/preset')],
+  presets: [nativewindPreset],
   theme: {
     extend: {
       colors: {

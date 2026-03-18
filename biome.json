@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.8/schema.json",
   "assist": {
     "enabled": true,
     "actions": {
@@ -20,14 +20,87 @@
       "recommended": true,
       "correctness": {
         "noUnusedVariables": "warn",
-        "noUnusedImports": "warn"
+        "noUnusedImports": "warn",
+        "noNestedComponentDefinitions": "error",
+        "useExhaustiveDependencies": "warn",
+        "useHookAtTopLevel": "error",
+        "useJsxKeyInIterable": "error",
+        "noGlobalDirnameFilename": "warn",
+        "noProcessGlobal": "warn",
+        "noPrivateImports": "warn"
       },
       "style": {
         "useImportType": "error",
-        "noNonNullAssertion": "warn"
+        "noNonNullAssertion": "warn",
+        "noEnum": "error",
+        "noProcessEnv": "warn",
+        "noNamespace": "error",
+        "noParameterAssign": "warn",
+        "noNestedTernary": "warn",
+        "noUselessElse": "warn",
+        "noYodaExpression": "warn",
+        "noSubstr": "error",
+        "noInferrableTypes": "warn",
+        "useConsistentBuiltinInstantiation": "warn",
+        "useDefaultParameterLast": "warn",
+        "useForOf": "warn",
+        "useCollapsedElseIf": "warn",
+        "useCollapsedIf": "warn",
+        "useSelfClosingElements": "warn",
+        "useShorthandAssign": "warn",
+        "useThrowNewError": "error",
+        "useThrowOnlyError": "error",
+        "useExplicitLengthCheck": "warn",
+        "useAtIndex": "warn",
+        "useTrimStartEnd": "warn",
+        "useConsistentArrayType": "warn",
+        "useNumericSeparators": "warn",
+        "noNegationElse": "warn"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "warn",
+          "options": { "maxAllowedComplexity": 25 }
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "warn",
+          "options": { "maxLines": 150 }
+        },
+        "noExcessiveNestedTestSuites": "warn",
+        "noForEach": "warn",
+        "noUselessCatchBinding": "warn",
+        "noUselessStringConcat": "warn",
+        "noUselessUndefined": "warn",
+        "useSimplifiedLogicExpression": "warn"
+      },
+      "performance": {
+        "noDelete": "warn"
+      },
+      "security": {
+        "noSecrets": {
+          "level": "error",
+          "options": { "entropyThreshold": 70 }
+        }
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "warn",
+        "noConsole": "warn",
+        "noEvolvingTypes": "warn",
+        "noImportCycles": "error",
+        "noUnusedExpressions": "error",
+        "noVar": "error",
+        "noFocusedTests": "error",
+        "noSkippedTests": "warn",
+        "noDuplicateTestHooks": "error",
+        "noExportsInTest": "error",
+        "noMisplacedAssertion": "error",
+        "useErrorMessage": "warn",
+        "noReactForwardRef": "warn",
+        "noConstantBinaryExpressions": "error",
+        "noDeprecatedImports": "warn",
+        "noDuplicateDependencies": "error",
+        "useNumberToFixedDigitsArgument": "warn",
+        "noEmptyBlockStatements": "warn"
       }
     }
   },
@@ -38,6 +111,171 @@
       "trailingCommas": "all"
     }
   },
+  "overrides": [
+    {
+      "includes": [
+        "packages/utils/src/logger.ts",
+        "**/seeds/*",
+        "**/migrations/*",
+        "packages/db/src/migrate.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/api/src/use-cases/login-user.ts"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/admin/src/components/ui/dialog.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noStaticElementInteractions": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/admin/src/components/locale-switcher.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noDocumentCookie": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/admin/src/lib/utils.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/api/src/lib/sanitize.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noControlCharactersInRegex": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/api/src/use-cases/discover-candidates-ai.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off",
+            "useExplicitLengthCheck": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/api/src/use-cases/discover-candidates.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useExplicitLengthCheck": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/mobile/components/SwipeCard.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noDeprecatedImports": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/admin/src/app/(dashboard)/moderation/stories/story-grid.tsx",
+        "apps/admin/src/app/(dashboard)/moderation/feed/feed-list.tsx",
+        "apps/admin/src/app/(dashboard)/moderation/photos/photo-list.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noImgElement": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/api/src/trpc/routers/admin.ts",
+        "apps/api/src/trpc/routers/feed.ts",
+        "apps/api/src/trpc/routers/group-events.ts",
+        "apps/api/src/trpc/routers/admin-ai-matching.ts",
+        "apps/api/src/use-cases/export-user-data.ts",
+        "apps/api/src/routes/admin-auth.ts"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/mobile/plugins/*.js"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": {
+              "level": "warn",
+              "options": { "maxLines": 2000 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/seeds/*"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": {
+              "level": "warn",
+              "options": { "maxLines": 2000 }
+            }
+          }
+        }
+      }
+    }
+  ],
   "files": {
     "includes": [
       "**/*.ts",

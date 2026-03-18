@@ -58,9 +58,11 @@ export default function WalkAlbumScreen() {
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#065F46" />
         </View>
-      ) : !vm.album?.posts || vm.album.posts.length === 0 ? (
+      ) : null}
+      {!vm.loading && (!vm.album?.posts || vm.album.posts.length === 0) ? (
         <AlbumEmptyState />
-      ) : (
+      ) : null}
+      {!vm.loading && vm.album?.posts && vm.album.posts.length > 0 ? (
         <FlatList
           data={vm.album.posts.flatMap((post) =>
             post.media.map((m) => ({ ...m, postId: post.id })),
@@ -72,7 +74,7 @@ export default function WalkAlbumScreen() {
           onRefresh={vm.refresh}
           refreshing={vm.loading}
         />
-      )}
+      ) : null}
 
       {vm.album?.album ? (
         <View className="border-t border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-3">

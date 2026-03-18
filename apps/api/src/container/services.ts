@@ -105,6 +105,7 @@ export const emergencyContactRepo = new DrizzleEmergencyContactRepository(db);
 
 // ── Embedding (pgvector) ─────────────────────────────────────────────────────
 
+import process from 'node:process';
 import { DrizzleEmbeddingRepository } from '../infra/drizzle-embedding-repository.js';
 import { LocalEmbeddingService } from '../infra/embedding-service.js';
 
@@ -142,56 +143,58 @@ export const analyticsProviders: AnalyticsProvider[] = process.env.POSTHOG_API_K
 
 // ── Anthropic client (shared, optional) ──────────────────────────────────────
 
-function tryCreateAnthropicClient() {
-  if (!process.env.ANTHROPIC_API_KEY) return undefined;
-  const Anthropic = require('@anthropic-ai/sdk').default;
+async function tryCreateAnthropicClient() {
+  if (!process.env.ANTHROPIC_API_KEY) return;
+  const { default: Anthropic } = await import('@anthropic-ai/sdk');
   return new Anthropic() as import('@anthropic-ai/sdk').default;
 }
 
-const anthropicClient = tryCreateAnthropicClient();
+const anthropicClient = await tryCreateAnthropicClient();
 
 // ── AI services (optional — degrade gracefully if env vars missing) ──────────
 
-function tryCreateContentModerationService() {
-  if (!anthropicClient) return undefined;
-  const {
-    ClaudeContentModerationService,
-  } = require('../infra/claude-content-moderation-service.js');
+async function tryCreateContentModerationService() {
+  if (!anthropicClient) return;
+  const { ClaudeContentModerationService } = await import(
+    '../infra/claude-content-moderation-service.js'
+  );
   return new ClaudeContentModerationService(anthropicClient);
 }
 
-function tryCreateBioGenerationService() {
-  if (!anthropicClient) return undefined;
-  const { ClaudeBioGenerationService } = require('../infra/claude-bio-generation-service.js');
+async function tryCreateBioGenerationService() {
+  if (!anthropicClient) return;
+  const { ClaudeBioGenerationService } = await import('../infra/claude-bio-generation-service.js');
   return new ClaudeBioGenerationService(
     anthropicClient,
   ) as import('../ports/bio-generation-service.js').BioGenerationService;
 }
 
-function tryCreateDogPhotoAnalysisService() {
-  if (!anthropicClient) return undefined;
-  const {
-    ClaudeDogPhotoAnalysisService,
-  } = require('../infra/claude-dog-photo-analysis-service.js');
+async function tryCreateDogPhotoAnalysisService() {
+  if (!anthropicClient) return;
+  const { ClaudeDogPhotoAnalysisService } = await import(
+    '../infra/claude-dog-photo-analysis-service.js'
+  );
   return new ClaudeDogPhotoAnalysisService(
     anthropicClient,
   ) as import('../ports/dog-photo-analysis-service.js').DogPhotoAnalysisService;
 }
 
-function tryCreateBreedDetectionService() {
-  if (!process.env.GOOGLE_VISION_API_KEY) return undefined;
-  const { GoogleBreedDetectionService } = require('../infra/google-breed-detection-service.js');
+async function tryCreateBreedDetectionService() {
+  if (!process.env.GOOGLE_VISION_API_KEY) return;
+  const { GoogleBreedDetectionService } = await import(
+    '../infra/google-breed-detection-service.js'
+  );
   return new GoogleBreedDetectionService();
 }
 
-function tryCreateToxicityService() {
-  if (!process.env.PERSPECTIVE_API_KEY) return undefined;
-  const { PerspectiveToxicityService } = require('../infra/perspective-toxicity-service.js');
+async function tryCreateToxicityService() {
+  if (!process.env.PERSPECTIVE_API_KEY) return;
+  const { PerspectiveToxicityService } = await import('../infra/perspective-toxicity-service.js');
   return new PerspectiveToxicityService();
 }
 
-export const contentModerationService = tryCreateContentModerationService();
-export const breedDetectionService = tryCreateBreedDetectionService();
-export const toxicityService = tryCreateToxicityService();
-export const bioGenerationService = tryCreateBioGenerationService();
-export const dogPhotoAnalysisService = tryCreateDogPhotoAnalysisService();
+export const contentModerationService = await tryCreateContentModerationService();
+export const breedDetectionService = await tryCreateBreedDetectionService();
+export const toxicityService = await tryCreateToxicityService();
+export const bioGenerationService = await tryCreateBioGenerationService();
+export const dogPhotoAnalysisService = await tryCreateDogPhotoAnalysisService();

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import type { WebSocket } from 'ws';
 import {
   getConnections,
   getRooms,
@@ -19,7 +20,9 @@ function createMockWs(readyState = 1 /* OPEN */) {
     OPEN: 1,
     send: (data: string) => sent.push(data),
     sent,
-    on: () => {},
+    on: () => {
+      /* noop */
+    },
   };
 }
 
@@ -88,7 +91,7 @@ describe('WebSocket chat utilities', () => {
       expect(isUserOnline('user-a')).toBe(false);
 
       const ws = createMockWs();
-      getConnections().set('user-a', new Set([ws as any]));
+      getConnections().set('user-a', new Set([ws as unknown as WebSocket]));
 
       expect(isUserOnline('user-a')).toBe(true);
     });
@@ -98,7 +101,10 @@ describe('WebSocket chat utilities', () => {
     it('sends data to all user connections', () => {
       const ws1 = createMockWs();
       const ws2 = createMockWs();
-      getConnections().set('user-a', new Set([ws1 as any, ws2 as any]));
+      getConnections().set(
+        'user-a',
+        new Set([ws1 as unknown as WebSocket, ws2 as unknown as WebSocket]),
+      );
 
       sendToUser('user-a', { type: WS_EVENT.NEW_MESSAGE, payload: { text: 'hi' } });
 
@@ -112,7 +118,7 @@ describe('WebSocket chat utilities', () => {
 
     it('skips closed connections', () => {
       const ws = createMockWs(3 /* CLOSED */);
-      getConnections().set('user-a', new Set([ws as any]));
+      getConnections().set('user-a', new Set([ws as unknown as WebSocket]));
 
       sendToUser('user-a', { type: WS_EVENT.NEW_MESSAGE, payload: {} });
 
@@ -129,8 +135,8 @@ describe('WebSocket chat utilities', () => {
     it('sends to all room participants', () => {
       const wsA = createMockWs();
       const wsB = createMockWs();
-      getConnections().set('user-a', new Set([wsA as any]));
-      getConnections().set('user-b', new Set([wsB as any]));
+      getConnections().set('user-a', new Set([wsA as unknown as WebSocket]));
+      getConnections().set('user-b', new Set([wsB as unknown as WebSocket]));
 
       joinRoom('match-1', 'user-a');
       joinRoom('match-1', 'user-b');
@@ -144,8 +150,8 @@ describe('WebSocket chat utilities', () => {
     it('excludes specified user', () => {
       const wsA = createMockWs();
       const wsB = createMockWs();
-      getConnections().set('user-a', new Set([wsA as any]));
-      getConnections().set('user-b', new Set([wsB as any]));
+      getConnections().set('user-a', new Set([wsA as unknown as WebSocket]));
+      getConnections().set('user-b', new Set([wsB as unknown as WebSocket]));
 
       joinRoom('match-1', 'user-a');
       joinRoom('match-1', 'user-b');

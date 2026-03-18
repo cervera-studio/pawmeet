@@ -1,4 +1,3 @@
-import { logger } from '@pawmeet/utils';
 import type {
   CreateGroupEventInput,
   FeaturedEvent,

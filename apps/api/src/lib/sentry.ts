@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { logger } from '@pawmeet/utils';
 import * as Sentry from '@sentry/node';
 
@@ -87,12 +88,12 @@ export function initSentry() {
       // Strip user context entirely for full GDPR anonymity.
       // Even a pseudonymized id could theoretically be correlated;
       // removing event.user makes all error reports fully anonymous.
-      delete event.user;
+      event.user = undefined;
 
       // Strip IP address
       if (event.request) {
-        delete event.request.headers;
-        delete (event.request as Record<string, unknown>).env;
+        event.request.headers = undefined;
+        (event.request as Record<string, unknown>).env = undefined;
       }
 
       return event;

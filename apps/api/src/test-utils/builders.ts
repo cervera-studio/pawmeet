@@ -642,7 +642,7 @@ export function buildEmailService(overrides: Partial<EmailService> = {}): EmailS
     sendGdprExportReady: vi.fn().mockResolvedValue(undefined),
     sendGdprExportFailed: vi.fn().mockResolvedValue(undefined),
     ...overrides,
-  };
+  } as EmailService;
 }
 
 export function buildTokenRepo(overrides: Partial<TokenRepository> = {}): TokenRepository {
@@ -816,7 +816,7 @@ export function buildFeedRepo(overrides: Partial<FeedRepository> = {}): FeedRepo
     findTagById: vi.fn().mockResolvedValue(null),
     getConnectedUserIds: vi.fn().mockResolvedValue([]),
     ...overrides,
-  };
+  } as FeedRepository;
 }
 
 export function buildStoryRepo(overrides: Partial<StoryRepository> = {}): StoryRepository {

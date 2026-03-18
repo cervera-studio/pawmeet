@@ -23,7 +23,7 @@ export function createConfirmPostMedia({ feedRepo, storage }: Deps) {
     // Strict key validation: must be exactly posts/{postId}/{filename}
     // Prevents path traversal (../) and cross-post media hijacking
     const KEY_PATTERN = /^posts\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/;
-    if (!key.startsWith(`posts/${postId}/`) || !KEY_PATTERN.test(key)) {
+    if (!(key.startsWith(`posts/${postId}/`) && KEY_PATTERN.test(key))) {
       return fail(new AppError('INVALID_MEDIA_KEY', 'Chiave media non valida', 403));
     }
 

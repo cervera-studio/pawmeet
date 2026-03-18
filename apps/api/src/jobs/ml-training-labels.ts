@@ -1,6 +1,6 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import type { MlTrainingRepository } from '../ports/ml-training-repository.js';
+import type { MatureMatchRow, MlTrainingRepository } from '../ports/ml-training-repository.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
 
 interface MlTrainingLabelsDeps {
@@ -21,6 +21,46 @@ interface MlTrainingLabelsDeps {
  *
  * Idempotent: skips matches that already have a row in ml_training_samples.
  */
+
+function computeOutcomeLabel(row: MatureMatchRow, now: Date, sevenDaysMs: number): number {
+  let label = 0.0;
+
+  if (row.has_first_message) label += 0.15;
+  if (row.has_reply_within_24h) label += 0.15;
+  if (row.has_walk_proposed) label += 0.2;
+  if (row.has_walk_completed) label += 0.3;
+  if (row.avg_feedback_rating != null) label += 0.2 * (row.avg_feedback_rating / 5);
+
+  const matchAge = now.getTime() - new Date(row.match_created_at).getTime();
+  const unmatchedEarly = !row.is_active && matchAge < sevenDaysMs;
+  if (unmatchedEarly) label -= 0.3;
+
+  return Math.max(-0.3, Math.min(1.0, label));
+}
+
+function computeTrainingSample(row: MatureMatchRow, now: Date, sevenDaysMs: number, cutoff: Date) {
+  const label = computeOutcomeLabel(row, now, sevenDaysMs);
+
+  return {
+    matchId: row.match_id,
+    dogAId: row.dog_a_id,
+    dogBId: row.dog_b_id,
+    featureVector: {
+      compatibilityScore: row.compatibility_score,
+      sizeScore: row.size_score ?? null,
+      energyScore: row.energy_score ?? null,
+      behaviorScore: row.behavior_score ?? null,
+      walkScore: row.walk_score ?? null,
+      distanceScore: row.distance_score ?? null,
+      leashScore: row.leash_score ?? null,
+      overallScore: row.overall_score ?? null,
+    },
+    outcomeLabel: Math.round(label * 1000) / 1000,
+    labelVersion: 1,
+    maturedAt: cutoff,
+  };
+}
+
 export function createMlTrainingLabelsWorker(deps: MlTrainingLabelsDeps) {
   const { mlTrainingRepo } = deps;
 
@@ -42,50 +82,7 @@ export function createMlTrainingLabelsWorker(deps: MlTrainingLabelsDeps) {
       const now = new Date();
       const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
 
-      const samples = rows.map((row) => {
-        // Compute outcome label
-        let label = 0.0;
-
-        if (row.has_first_message) label += 0.15;
-        if (row.has_reply_within_24h) label += 0.15;
-        if (row.has_walk_proposed) label += 0.2;
-        if (row.has_walk_completed) label += 0.3;
-
-        if (row.avg_feedback_rating != null) {
-          label += 0.2 * (row.avg_feedback_rating / 5);
-        }
-
-        // Penalty: unmatched within 7 days
-        const matchAge = now.getTime() - new Date(row.match_created_at).getTime();
-        if (!row.is_active && matchAge < sevenDaysMs) {
-          label -= 0.3;
-        }
-
-        // Clamp to valid range
-        label = Math.max(-0.3, Math.min(1.0, label));
-
-        // Build feature vector from swipe score logs + match compatibility
-        const featureVector = {
-          compatibilityScore: row.compatibility_score,
-          sizeScore: row.size_score ?? null,
-          energyScore: row.energy_score ?? null,
-          behaviorScore: row.behavior_score ?? null,
-          walkScore: row.walk_score ?? null,
-          distanceScore: row.distance_score ?? null,
-          leashScore: row.leash_score ?? null,
-          overallScore: row.overall_score ?? null,
-        };
-
-        return {
-          matchId: row.match_id,
-          dogAId: row.dog_a_id,
-          dogBId: row.dog_b_id,
-          featureVector,
-          outcomeLabel: Math.round(label * 1000) / 1000,
-          labelVersion: 1,
-          maturedAt: cutoff,
-        };
-      });
+      const samples = rows.map((row) => computeTrainingSample(row, now, sevenDaysMs, cutoff));
 
       // Batch insert
       await mlTrainingRepo.insertTrainingSamples(samples);

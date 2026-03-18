@@ -17,6 +17,5 @@ export function translateDynamic(
   value: string,
 ): string {
   const key = `${prefix}.${value}`;
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic i18n key lookup requires cast
   return t.has(key) ? (t as any)(key) : value;
 }

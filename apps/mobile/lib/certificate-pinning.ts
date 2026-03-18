@@ -30,6 +30,8 @@
  * reminder 30 days before expiry. If both pins become invalid, the app will
  * refuse all API connections until an update is deployed.
  */
+import { logger } from '@pawmeet/utils';
+
 export const PINNED_DOMAINS = {
   'api.pawmeet.io': {
     // Pin the public key hash, not the certificate itself,
@@ -113,7 +115,7 @@ export function validatePinsInitialized(): void {
         'Run scripts/extract-cert-pins.sh to extract hashes.';
 
       if (__DEV__) {
-        console.warn(message);
+        logger.warn('CertificatePinning', message);
       } else {
         throw new Error(message);
       }
@@ -141,124 +143,4 @@ export function getExpiringPins(): PinnedDomain[] {
   }
 
   return expiring;
-}
-
-/**
- * Get domains with certificates expiring within a given number of days.
- * Use in CI or scheduled health checks to ensure pins are rotated before expiry.
- *
- * @param daysThreshold - Number of days to check. Defaults to each domain's alertDaysBeforeExpiry.
- * @returns Array of objects with domain, daysUntilExpiry, and expiryDate.
- */
-export function getPinRotationReport(): Array<{
-  domain: PinnedDomain;
-  daysUntilExpiry: number;
-  expiryDate: Date;
-  lastRotated: Date;
-  isPlaceholder: boolean;
-}> {
-  const now = new Date();
-
-  return Object.entries(PIN_METADATA).map(([domain, meta]) => {
-    const daysUntilExpiry = Math.floor(
-      (meta.primaryExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-    );
-    const config = PINNED_DOMAINS[domain as PinnedDomain];
-    const isPlaceholder = config.pins.some((pin) => PLACEHOLDER_PATTERN.test(pin));
-
-    return {
-      domain: domain as PinnedDomain,
-      daysUntilExpiry,
-      expiryDate: meta.primaryExpiry,
-      lastRotated: meta.lastRotated,
-      isPlaceholder,
-    };
-  });
-}
-
-/**
- * Validate that a domain is in the pinning allowlist.
- * Use this to guard network requests in development/testing.
- */
-export function isPinnedDomain(hostname: string): boolean {
-  return hostname in PINNED_DOMAINS;
-}
-
-/**
- * Get the SPKI pins for a given domain.
- * Returns undefined if the domain is not pinned.
- */
-export function getPinsForDomain(domain: string): readonly string[] | undefined {
-  const config = PINNED_DOMAINS[domain as PinnedDomain];
-  return config?.pins;
-}
-
-// ---------------------------------------------------------------------------
-// Network Security Configuration (Android)
-// ---------------------------------------------------------------------------
-
-/**
- * Generates the Android Network Security Config XML content.
- * This is used by the Expo config plugin to write the XML file and reference
- * it in AndroidManifest.xml.
- *
- * @see https://developer.android.com/privacy-and-security/security-config
- */
-export function generateNetworkSecurityConfig(): string {
-  const domainEntries = Object.entries(PINNED_DOMAINS)
-    .map(([domain, config]) => {
-      const pinElements = config.pins
-        .map((pin) => {
-          const hash = pin.replace('sha256/', '');
-          return `            <pin digest="SHA-256">${hash}</pin>`;
-        })
-        .join('\n');
-
-      return `        <domain-config>
-            <domain includeSubdomains="${config.includeSubdomains}">${domain}</domain>
-            <pin-set>
-${pinElements}
-            </pin-set>
-        </domain-config>`;
-    })
-    .join('\n');
-
-  return `<?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
-    <base-config cleartextTrafficPermitted="false">
-        <trust-anchors>
-            <certificates src="system" />
-        </trust-anchors>
-    </base-config>
-${domainEntries}
-</network-security-config>`;
-}
-
-// ---------------------------------------------------------------------------
-// iOS ATS (App Transport Security) pin format
-// ---------------------------------------------------------------------------
-
-/**
- * Generates the iOS Info.plist pinning entries for NSAppTransportSecurity.
- * iOS uses NSPinnedDomains (available since iOS 14) for native SSL pinning.
- *
- * @see https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity
- */
-export function generateIOSPinningConfig(): Record<string, unknown> {
-  const pinnedDomains: Record<string, unknown> = {};
-
-  for (const [domain, config] of Object.entries(PINNED_DOMAINS)) {
-    const publicKeyHashes = config.pins.map((pin) => pin.replace('sha256/', ''));
-
-    pinnedDomains[domain] = {
-      NSIncludesSubdomains: config.includeSubdomains,
-      NSPinnedLeafIdentities: publicKeyHashes.map((hash) => ({
-        'SPKI-SHA256-BASE64': hash,
-      })),
-    };
-  }
-
-  return {
-    NSPinnedDomains: pinnedDomains,
-  };
 }

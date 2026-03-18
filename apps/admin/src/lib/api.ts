@@ -11,6 +11,8 @@
  * the corresponding calls to server actions using `getServerTrpcClient()` and
  * remove them from this client. Once all endpoints are migrated, this file can be deleted.
  */
+import process from 'node:process';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 interface RequestOptions extends Omit<RequestInit, 'body'> {
@@ -36,11 +38,11 @@ class ApiClient {
   ): string {
     const url = new URL(`${this.baseUrl}${path}`);
     if (params) {
-      Object.entries(params).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(params)) {
         if (value !== undefined) {
           url.searchParams.set(key, String(value));
         }
-      });
+      }
     }
     return url.toString();
   }

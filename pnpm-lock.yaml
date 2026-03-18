@@ -50,6 +50,9 @@ importers:
       '@pawmeet/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@pawmeet/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       '@pawmeet/validation':
         specifier: workspace:*
         version: link:../../packages/validation

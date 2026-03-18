@@ -1,4 +1,5 @@
 import { logger } from '@pawmeet/utils';
+import { Platform } from 'react-native';
 import { mmkv } from '@/lib/storage';
 import { api } from '@/lib/trpc';
 import type { HealthService } from './health-service';
@@ -38,7 +39,7 @@ export function createHealthSyncService(healthService: HealthService): HealthSyn
         ]);
 
         const date = now.toISOString().slice(0, 10);
-        const isIOS = require('react-native').Platform.OS === 'ios';
+        const isIOS = Platform.OS === 'ios';
         await api.fitness.syncHealthData.mutate({
           entries: [
             {

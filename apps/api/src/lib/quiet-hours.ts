@@ -9,7 +9,7 @@ export function isInQuietHours(
     timezone?: string | null;
   } | null,
 ): boolean {
-  if (!prefs?.quietHoursStart || !prefs?.quietHoursEnd) return false;
+  if (!(prefs?.quietHoursStart && prefs?.quietHoursEnd)) return false;
 
   const tz = prefs.timezone || 'Europe/Rome';
 

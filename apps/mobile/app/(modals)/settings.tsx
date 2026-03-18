@@ -1,3 +1,4 @@
+import process from 'node:process';
 import type { ConsentState } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';

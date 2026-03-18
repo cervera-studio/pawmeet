@@ -1,5 +1,6 @@
 import 'server-only';
 
+import process from 'node:process';
 import { type ApiClient, createApiClient } from '@pawmeet/api-client';
 import { cookies } from 'next/headers';
 

@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const t = useTranslations('common');
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!(isLoading || isAuthenticated)) {
       router.push('/login');
     }
   }, [isLoading, isAuthenticated, router]);

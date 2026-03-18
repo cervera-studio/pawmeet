@@ -42,7 +42,9 @@ function persistNonce(nonce: string): void {
 function consumePersistedNonce(): string | null {
   const nonce = SecureStore.getItem(NONCE_KEY);
   if (nonce) {
-    SecureStore.deleteItemAsync(NONCE_KEY).catch(() => {});
+    SecureStore.deleteItemAsync(NONCE_KEY).catch(() => {
+      /* fire-and-forget */
+    });
   }
   return nonce;
 }

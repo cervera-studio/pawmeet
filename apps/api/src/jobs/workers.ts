@@ -1,3 +1,5 @@
+import process from 'node:process';
+import { logger } from '@pawmeet/utils';
 import {
   analyticsAggregationDeps,
   analyticsProviders,
@@ -121,7 +123,7 @@ export async function startWorkers() {
 
   // Handle graceful shutdown
   const shutdown = async () => {
-    console.log('[workers] Shutting down...');
+    logger.info('Workers', 'Shutting down...');
     // Close workers first, then flush analytics providers
     await Promise.all([
       photoWorker.close(),
@@ -152,7 +154,7 @@ export async function startWorkers() {
     ]);
     // Flush analytics providers after workers stop to prevent event loss on deploys
     await Promise.allSettled(analyticsProviders.map((p) => p.shutdown()));
-    console.log('[workers] All workers stopped');
+    logger.info('Workers', 'All workers stopped');
   };
 
   process.on('SIGTERM', shutdown);

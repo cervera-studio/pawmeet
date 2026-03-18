@@ -23,11 +23,11 @@ describe('createOfficialEvent', () => {
       findMember: vi
         .fn()
         .mockResolvedValue(
-          overrides.member !== undefined ? overrides.member : buildOrganizationMember(),
+          overrides.member === undefined ? buildOrganizationMember() : overrides.member,
         ),
       findById: vi
         .fn()
-        .mockResolvedValue(overrides.org !== undefined ? overrides.org : buildOrganization()),
+        .mockResolvedValue(overrides.org === undefined ? buildOrganization() : overrides.org),
     });
 
     const groupEventRepo = buildGroupEventRepo({
@@ -39,7 +39,7 @@ describe('createOfficialEvent', () => {
     const dogRepo = buildDogRepo({
       findByIdAndOwner: vi
         .fn()
-        .mockResolvedValue(overrides.dog !== undefined ? overrides.dog : buildDog()),
+        .mockResolvedValue(overrides.dog === undefined ? buildDog() : overrides.dog),
     });
 
     const createEvent = createCreateOfficialEvent({

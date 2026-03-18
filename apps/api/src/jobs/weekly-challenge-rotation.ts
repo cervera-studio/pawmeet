@@ -1,3 +1,4 @@
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import { createCreateWeeklyChallenges } from '../use-cases/create-weekly-challenges.js';
@@ -15,8 +16,9 @@ export function createWeeklyChallengeRotationWorker(deps: Deps): Worker {
     async () => {
       const result = await createWeeklyChallenges();
       if (result.success) {
-        console.log(
-          `[weekly-challenges] Created ${result.data.challenges.length} challenges for the upcoming week`,
+        logger.info(
+          'WeeklyChallenges',
+          `Created ${result.data.challenges.length} challenges for the upcoming week`,
         );
       }
     },
@@ -24,10 +26,10 @@ export function createWeeklyChallengeRotationWorker(deps: Deps): Worker {
   );
 
   worker.on('completed', () => {
-    console.log('[weekly-challenges] Weekly challenge rotation completed');
+    logger.info('WeeklyChallenges', 'Weekly challenge rotation completed');
   });
   worker.on('failed', (_job, err) => {
-    console.error('[weekly-challenges] Weekly challenge rotation failed:', err.message);
+    logger.error('WeeklyChallenges', 'Weekly challenge rotation failed', err.message);
   });
 
   return worker;

@@ -21,7 +21,20 @@ import {
   walkSafetyCheckins,
   walks,
 } from '@pawmeet/db';
-import { and, asc, count, desc, eq, gte, ilike, inArray, isNotNull, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  isNotNull,
+  or,
+  type SQL,
+  sql,
+} from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   AdminBreedItem,
@@ -159,7 +172,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     const { page, pageSize, adminId, resourceType, action, from, to, search } = filters;
     const offset = (page - 1) * pageSize;
 
-    const conditions = [];
+    const conditions: (SQL | undefined)[] = [];
     if (adminId) conditions.push(eq(adminAuditLog.adminId, adminId));
     if (resourceType) conditions.push(eq(adminAuditLog.resourceType, resourceType));
     if (action) conditions.push(ilike(adminAuditLog.action, `%${action}%`));
@@ -371,7 +384,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     const { page, pageSize, status, search } = input;
     const offset = (page - 1) * pageSize;
 
-    const conditions = [];
+    const conditions: (SQL | undefined)[] = [];
     if (status) conditions.push(eq(posts.moderationStatus, status));
     if (search) conditions.push(ilike(users.displayName, `%${search}%`));
 
@@ -568,7 +581,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     const { page, pageSize, search, status, category } = input;
     const offset = (page - 1) * pageSize;
 
-    const conditions = [];
+    const conditions: (SQL | undefined)[] = [];
     if (search) conditions.push(ilike(groupEvents.title, `%${search}%`));
     if (status) conditions.push(eq(groupEvents.status, status));
     if (category) conditions.push(eq(groupEvents.category, category));
@@ -763,7 +776,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     const { page, pageSize, search, type } = input;
     const offset = (page - 1) * pageSize;
 
-    const conditions = [];
+    const conditions: (SQL | undefined)[] = [];
     if (search) {
       conditions.push(
         or(ilike(organizations.name, `%${search}%`), ilike(organizations.slug, `%${search}%`)),
@@ -951,8 +964,11 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
       ? or(ilike(users.displayName, `%${search}%`), ilike(users.email, `%${search}%`))
       : undefined;
 
-    const sortColumn =
-      sortBy === 'name' ? users.displayName : sortBy === 'email' ? users.email : users.createdAt;
+    const sortColumn = (() => {
+      if (sortBy === 'name') return users.displayName;
+      if (sortBy === 'email') return users.email;
+      return users.createdAt;
+    })();
     const orderFn = sortOrder === 'asc' ? sql`${sortColumn} asc` : desc(sortColumn);
 
     const [items, [totalRow]] = await Promise.all([
@@ -1199,7 +1215,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     const { page, pageSize, search, role } = input;
     const offset = (page - 1) * pageSize;
 
-    const conditions = [];
+    const conditions: (SQL | undefined)[] = [];
     if (search) {
       conditions.push(
         or(ilike(adminUsers.email, `%${search}%`), ilike(adminUsers.displayName, `%${search}%`)),
@@ -1338,7 +1354,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     const { page, pageSize, search, group } = input;
     const offset = (page - 1) * pageSize;
 
-    const conditions = [];
+    const conditions: (SQL | undefined)[] = [];
     if (search) {
       conditions.push(ilike(breeds.code, `%${search}%`));
     }

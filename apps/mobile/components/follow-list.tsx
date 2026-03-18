@@ -85,7 +85,7 @@ const UserRow = memo(function UserRow({
           <Text className="text-xs text-gray-400 dark:text-neutral-500">Ti segue</Text>
         ) : null}
       </View>
-      {!isCurrentUser ? <FollowButton userId={user.id} size="sm" /> : null}
+      {isCurrentUser ? null : <FollowButton userId={user.id} size="sm" />}
     </Pressable>
   );
 });

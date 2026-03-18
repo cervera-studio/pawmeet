@@ -40,7 +40,7 @@ export function createLoginUser(deps: Deps) {
     // Find user by email
     const user = await userRepo.findByEmail(email);
 
-    if (!user || !user.passwordHash) {
+    if (!user?.passwordHash) {
       // Constant-time: run bcrypt even when user doesn't exist to prevent timing attacks
       await authService.verifyPassword(password, DUMMY_HASH);
       logger.warn('LoginUser', 'Login failed: user not found');

@@ -15,8 +15,10 @@ const makeBreakdown = (overrides: Partial<ScoreBreakdown> = {}): ScoreBreakdown 
 
 function findByKey(items: ReturnType<typeof getExplanationItems>, key: string) {
   const item = items.find((i) => i.key === key);
-  expect(item).toBeDefined();
-  return item as NonNullable<typeof item>;
+  if (!item) {
+    throw new Error(`Expected item with key "${key}" to be defined`);
+  }
+  return item;
 }
 
 describe('getExplanationItems', () => {

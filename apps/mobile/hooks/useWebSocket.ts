@@ -1,3 +1,4 @@
+import process from 'node:process';
 import type { WsMessage } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useEffect, useRef, useState } from 'react';
@@ -6,7 +7,7 @@ import { useAuthStore } from '@/stores/auth';
 
 function getWsUrl(): string {
   const url = process.env.EXPO_PUBLIC_WS_URL;
-  if (!url && !__DEV__) {
+  if (!(url || __DEV__)) {
     throw new Error('EXPO_PUBLIC_WS_URL is required in production');
   }
   return url ?? 'ws://localhost:3000/ws';
@@ -22,7 +23,7 @@ let sharedToken: string | null = null;
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 let reconnectAttempt = 0;
 const MAX_RECONNECT_DELAY = 30_000;
-const BASE_DELAY = 1_000;
+const BASE_DELAY = 1000;
 
 function getReconnectDelay(): number {
   const delay = Math.min(BASE_DELAY * 2 ** reconnectAttempt, MAX_RECONNECT_DELAY);
@@ -152,11 +153,9 @@ export function useWebSocketManager() {
 
     // Reconnect when app comes to foreground
     const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active' && token) {
-        if (!sharedWs || sharedWs.readyState !== WebSocket.OPEN) {
-          reconnectAttempt = 0;
-          connect(token);
-        }
+      if (state === 'active' && token && (!sharedWs || sharedWs.readyState !== WebSocket.OPEN)) {
+        reconnectAttempt = 0;
+        connect(token);
       }
     });
 

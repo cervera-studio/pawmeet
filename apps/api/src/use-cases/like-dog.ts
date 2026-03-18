@@ -28,6 +28,39 @@ type Deps = {
   notificationService: NotificationService;
 };
 
+async function notifyMatchRecipient(
+  notificationService: NotificationService,
+  userRepo: UserRepository,
+  targetDog: { ownerId: string; name: string },
+  matchId: string,
+): Promise<void> {
+  const recipient = await userRepo.findById(targetDog.ownerId);
+  if (!recipient) return;
+  if (recipient.notificationPrefs?.matches === false) return;
+
+  notificationService
+    .send({
+      userId: targetDog.ownerId,
+      title: 'Hai un nuovo match! \u{1F415}',
+      body: `Il tuo cane ${targetDog.name} ha un nuovo compagno di passeggiata!`,
+      data: { matchId, type: 'new_match' },
+    })
+    .catch((err) => logger.error('likeDog', 'Failed to enqueue match notification', err));
+}
+
+async function computeOwnerDistance(
+  userRepo: UserRepository,
+  userId: string,
+  targetOwnerId: string,
+): Promise<number | undefined> {
+  const [myUser, otherUser] = await Promise.all([
+    userRepo.findById(userId),
+    userRepo.findById(targetOwnerId),
+  ]);
+  if (!(myUser && hasLocation(myUser) && otherUser && hasLocation(otherUser))) return;
+  return haversineKm(myUser.latitude, myUser.longitude, otherUser.latitude, otherUser.longitude);
+}
+
 export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }: Deps) {
   return async (
     userId: string,
@@ -42,82 +75,55 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
       distanceKm?: number;
     }>
   > => {
-    // Verify ownership
     const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!myDog) {
       return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
     }
 
-    // Check daily swipe limit
     const limitResult = await checkDailySwipeLimit(matchRepo, dogId);
     if (limitResult) return limitResult;
 
-    // Check if already swiped
     const existing = await matchRepo.findSwipe(dogId, targetDogId);
     if (existing) {
       return fail(new AppError('ALREADY_SWIPED', 'Già votato per questo profilo', 409));
     }
 
-    // Record the swipe
     await matchRepo.createSwipe({
       swiperDogId: dogId,
       swipedDogId: targetDogId,
       direction: 'like',
     });
 
-    // Check for reciprocal like
     const reciprocal = await matchRepo.findReciprocalLike(targetDogId, dogId);
-    if (reciprocal) {
-      // Normalize pair order (dogAId < dogBId) to satisfy the unique constraint
-      const [normalizedA, normalizedB] =
-        dogId < targetDogId ? [dogId, targetDogId] : [targetDogId, dogId];
-
-      const match = await matchRepo.create({
-        dogAId: normalizedA,
-        dogBId: normalizedB,
-        compatibilityScore: 0, // will be recalculated
-      });
-
-      // Notify the other dog's owner about the match (if they opted in)
-      const targetDog = await dogRepo.findById(targetDogId);
-      const recipient = targetDog ? await userRepo.findById(targetDog.ownerId) : null;
-
-      if (targetDog && recipient) {
-        const wantsMatchNotifs = recipient.notificationPrefs?.matches !== false;
-
-        if (wantsMatchNotifs) {
-          notificationService
-            .send({
-              userId: targetDog.ownerId,
-              title: 'Hai un nuovo match! \u{1F415}',
-              body: `Il tuo cane ${targetDog.name} ha un nuovo compagno di passeggiata!`,
-              data: { matchId: match.id, type: 'new_match' },
-            })
-            .catch((err) => logger.error('likeDog', 'Failed to enqueue match notification', err));
-        }
-      }
-
-      // Compute distance between owners if both have locations
-      let distanceKm: number | undefined;
-      const myUser = await userRepo.findById(userId);
-      if (myUser && hasLocation(myUser) && recipient && hasLocation(recipient)) {
-        distanceKm = haversineKm(
-          myUser.latitude,
-          myUser.longitude,
-          recipient.latitude,
-          recipient.longitude,
-        );
-      }
-
-      return succeed({
-        match,
-        isMatch: true,
-        sizePair: targetDog ? `${myDog.size}-${targetDog.size}` : undefined,
-        energyPair: targetDog ? `${myDog.energyLevel}-${targetDog.energyLevel}` : undefined,
-        distanceKm,
-      });
+    if (!reciprocal) {
+      return succeed({ isMatch: false });
     }
 
-    return succeed({ isMatch: false });
+    // Normalize pair order (dogAId < dogBId) to satisfy the unique constraint
+    const [normalizedA, normalizedB] =
+      dogId < targetDogId ? [dogId, targetDogId] : [targetDogId, dogId];
+
+    const match = await matchRepo.create({
+      dogAId: normalizedA,
+      dogBId: normalizedB,
+      compatibilityScore: 0,
+    });
+
+    const targetDog = await dogRepo.findById(targetDogId);
+    if (targetDog) {
+      await notifyMatchRecipient(notificationService, userRepo, targetDog, match.id);
+    }
+
+    const distanceKm = targetDog
+      ? await computeOwnerDistance(userRepo, userId, targetDog.ownerId)
+      : undefined;
+
+    return succeed({
+      match,
+      isMatch: true,
+      sizePair: targetDog ? `${myDog.size}-${targetDog.size}` : undefined,
+      energyPair: targetDog ? `${myDog.energyLevel}-${targetDog.energyLevel}` : undefined,
+      distanceKm,
+    });
   };
 }

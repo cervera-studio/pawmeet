@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { logger } from '@pawmeet/utils';
 import { z } from 'zod';

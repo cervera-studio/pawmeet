@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
 interface DropdownMenuProps {
@@ -11,16 +11,21 @@ function DropdownMenu({ children }: DropdownMenuProps) {
   return <div className="relative inline-block text-left">{children}</div>;
 }
 
-const DropdownMenuTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
-  <button ref={ref} className={cn('outline-none', className)} {...props} />
-));
+function DropdownMenuTrigger({
+  className,
+  ref,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { ref?: React.Ref<HTMLButtonElement> }) {
+  return <button ref={ref} className={cn('outline-none', className)} {...props} />;
+}
 DropdownMenuTrigger.displayName = 'DropdownMenuTrigger';
 
-const DropdownMenuContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+function DropdownMenuContent({
+  className,
+  ref,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
+  return (
     <div
       ref={ref}
       className={cn(
@@ -29,12 +34,16 @@ const DropdownMenuContent = React.forwardRef<HTMLDivElement, React.HTMLAttribute
       )}
       {...props}
     />
-  ),
-);
+  );
+}
 DropdownMenuContent.displayName = 'DropdownMenuContent';
 
-const DropdownMenuItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+function DropdownMenuItem({
+  className,
+  ref,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
+  return (
     <div
       ref={ref}
       className={cn(
@@ -43,8 +52,8 @@ const DropdownMenuItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<H
       )}
       {...props}
     />
-  ),
-);
+  );
+}
 DropdownMenuItem.displayName = 'DropdownMenuItem';
 
 function DropdownMenuSeparator({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

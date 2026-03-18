@@ -9,7 +9,7 @@ type Deps = {
 export function createGetDog({ dogRepo }: Deps) {
   return async (dogId: string): Promise<Result<{ dog: DogProfile; photos: DogPhoto[] }>> => {
     const dog = await dogRepo.findById(dogId);
-    if (!dog || !dog.isActive) {
+    if (!dog?.isActive) {
       return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
     }
 

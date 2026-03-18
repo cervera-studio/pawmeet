@@ -24,7 +24,7 @@ export function createEmbeddingGenerationWorker(deps: EmbeddingGenerationDeps) {
       const { dogId } = job.data as { dogId: string; trigger: string };
 
       const dog = await dogRepo.findById(dogId);
-      if (!dog || !dog.isActive) {
+      if (!dog?.isActive) {
         logger.debug('embedding-generation', `Dog ${dogId} not found or inactive, skipping`);
         return;
       }

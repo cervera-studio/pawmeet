@@ -1,6 +1,9 @@
 import {
+  contentReactions,
   dogProfiles,
+  hashtags,
   postComments,
+  postHashtags,
   postLikes,
   postMedia,
   posts,
@@ -8,7 +11,10 @@ import {
   users,
 } from '@pawmeet/db';
 import type {
+  ContentReaction,
+  ContentType,
   FeedItem,
+  Hashtag,
   Post,
   PostComment,
   PostLike,
@@ -34,7 +40,7 @@ function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
   try {
     const decoded = Buffer.from(cursor, 'base64').toString('utf-8');
     const [iso, id] = decoded.split('|');
-    if (!iso || !id) return null;
+    if (!(iso && id)) return null;
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return null;
     return { createdAt: date, id };
@@ -189,7 +195,7 @@ export class DrizzleFeedRepository implements FeedRepository {
       isLikedByMe: likedPostIds.has(row.post.id),
     }));
 
-    const lastRow = pageRows[pageRows.length - 1];
+    const lastRow = pageRows.at(-1);
     const nextCursor =
       hasMore && lastRow ? encodeCursor(lastRow.post.createdAt, lastRow.post.id) : null;
 
@@ -274,7 +280,7 @@ export class DrizzleFeedRepository implements FeedRepository {
       isLikedByMe: likedPostIds.has(row.post.id),
     }));
 
-    const lastRow = pageRows[pageRows.length - 1];
+    const lastRow = pageRows.at(-1);
     const nextCursor =
       hasMore && lastRow ? encodeCursor(lastRow.post.createdAt, lastRow.post.id) : null;
 
@@ -450,7 +456,7 @@ export class DrizzleFeedRepository implements FeedRepository {
       repliesByParent.set(pid, list);
     }
 
-    const allRows = [];
+    const allRows: typeof parentRows = [];
     for (const parent of pageParents) {
       allRows.push(parent);
       const replies = repliesByParent.get(parent.comment.id);
@@ -466,7 +472,7 @@ export class DrizzleFeedRepository implements FeedRepository {
       },
     }));
 
-    const lastParent = pageParents[pageParents.length - 1];
+    const lastParent = pageParents.at(-1);
     const nextCursor =
       hasMore && lastParent
         ? encodeCursor(lastParent.comment.createdAt, lastParent.comment.id)
@@ -555,6 +561,134 @@ export class DrizzleFeedRepository implements FeedRepository {
       tagsByPost.set(r.postId, list);
     }
     return tagsByPost;
+  }
+
+  async addReaction(
+    contentType: ContentType,
+    contentId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<ContentReaction> {
+    const rows = await this.db
+      .insert(contentReactions)
+      .values({ contentType, contentId, userId, emoji })
+      .returning();
+    return rows[0] as ContentReaction;
+  }
+
+  async removeReaction(
+    contentType: ContentType,
+    contentId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<void> {
+    await this.db
+      .delete(contentReactions)
+      .where(
+        and(
+          eq(contentReactions.contentType, contentType),
+          eq(contentReactions.contentId, contentId),
+          eq(contentReactions.userId, userId),
+          eq(contentReactions.emoji, emoji),
+        ),
+      );
+  }
+
+  async searchPostsByHashtag(
+    hashtag: string,
+    cursor: string | null,
+    limit: number,
+  ): Promise<FeedPage> {
+    const normalized = hashtag.toLowerCase();
+
+    const [hashtagRow] = await this.db
+      .select()
+      .from(hashtags)
+      .where(eq(hashtags.name, normalized))
+      .limit(1);
+
+    if (!hashtagRow) {
+      return { items: [], nextCursor: null };
+    }
+
+    const baseWhere = and(
+      eq(postHashtags.hashtagId, hashtagRow.id),
+      eq(posts.isDeleted, false),
+      eq(posts.moderationStatus, 'approved'),
+    );
+
+    let cursorWhere = baseWhere;
+    if (cursor) {
+      const parsed = decodeCursor(cursor);
+      if (parsed) {
+        cursorWhere = and(
+          baseWhere,
+          or(
+            lt(posts.createdAt, parsed.createdAt),
+            and(eq(posts.createdAt, parsed.createdAt), lt(posts.id, parsed.id)),
+          ),
+        );
+      }
+    }
+
+    const rows = await this.db
+      .select({
+        post: posts,
+        authorId: users.id,
+        displayName: users.displayName,
+        avatarUrl: users.avatarUrl,
+      })
+      .from(postHashtags)
+      .innerJoin(posts, eq(postHashtags.postId, posts.id))
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .where(cursorWhere)
+      .orderBy(desc(posts.createdAt), desc(posts.id))
+      .limit(limit + 1);
+
+    const hasMore = rows.length > limit;
+    const pageRows = hasMore ? rows.slice(0, limit) : rows;
+
+    const postIds = pageRows.map((r) => r.post.id);
+    const allMedia =
+      postIds.length > 0
+        ? await this.db.select().from(postMedia).where(inArray(postMedia.postId, postIds))
+        : [];
+
+    const mediaByPost = new Map<string, PostMedia[]>();
+    for (const m of allMedia) {
+      const list = mediaByPost.get(m.postId) ?? [];
+      list.push(m as PostMedia);
+      mediaByPost.set(m.postId, list);
+    }
+
+    const tagsByPost = await this.getResolvedTagsForPosts(postIds);
+
+    const items: FeedItem[] = pageRows.map((row) => ({
+      ...(row.post as Post),
+      media: (mediaByPost.get(row.post.id) ?? []).sort((a, b) => a.position - b.position),
+      author: {
+        id: row.authorId,
+        displayName: row.displayName,
+        avatarUrl: row.avatarUrl,
+      },
+      tags: tagsByPost.get(row.post.id) ?? [],
+      isLikedByMe: false,
+    }));
+
+    const lastRow = pageRows.at(-1);
+    const nextCursor =
+      hasMore && lastRow ? encodeCursor(lastRow.post.createdAt, lastRow.post.id) : null;
+
+    return { items, nextCursor };
+  }
+
+  async getTrendingHashtags(limit: number): Promise<Hashtag[]> {
+    const rows = await this.db
+      .select()
+      .from(hashtags)
+      .orderBy(desc(hashtags.usageCount))
+      .limit(limit);
+    return rows as Hashtag[];
   }
 
   async getConnectedUserIds(userId: string): Promise<string[]> {

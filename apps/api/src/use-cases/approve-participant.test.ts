@@ -15,18 +15,18 @@ describe('approveParticipant', () => {
     } = {},
   ) {
     const event =
-      overrides.event !== undefined
-        ? overrides.event
-        : buildGroupEvent({ createdBy: 'host-1', requiresApproval: true });
+      overrides.event === undefined
+        ? buildGroupEvent({ createdBy: 'host-1', requiresApproval: true })
+        : overrides.event;
 
     const groupEventRepo = buildGroupEventRepo({
       findById: vi.fn().mockResolvedValue(event),
       findParticipant: vi
         .fn()
         .mockResolvedValue(
-          overrides.participant !== undefined
-            ? overrides.participant
-            : { status: 'pending', userId: 'user-2', eventId: 'event-1' },
+          overrides.participant === undefined
+            ? { status: 'pending', userId: 'user-2', eventId: 'event-1' }
+            : overrides.participant,
         ),
     });
     const notificationService = buildNotificationService();

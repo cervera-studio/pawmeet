@@ -21,11 +21,11 @@ export function Input({ label, error, testID, onFocus, onBlur, ...rest }: InputP
     onBlur?.(e);
   };
 
-  const borderStyle = error
-    ? styles.borderError
-    : focused
-      ? styles.borderFocus
-      : styles.borderDefault;
+  const borderStyle = (() => {
+    if (error) return styles.borderError;
+    if (focused) return styles.borderFocus;
+    return styles.borderDefault;
+  })();
 
   return (
     <View testID={testID} style={styles.wrapper}>

@@ -26,9 +26,7 @@ export type {
   ListGroupEventsParams,
 } from './group-event-repository';
 export type {
-  AdminOrganizationDetail,
   AdminOrganizationListItem,
-  AdminOrganizationMember,
   ListOrganizationsParams,
 } from './organization-repository';
 export type {

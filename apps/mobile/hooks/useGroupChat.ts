@@ -56,7 +56,7 @@ export function useGroupChat(eventId?: string) {
 
   const sendMessage = useCallback(
     async (content: string) => {
-      if (!eventId || !content.trim()) return;
+      if (!(eventId && content.trim())) return;
       try {
         const { message } = await api.groupChat.sendMessage.mutate({
           eventId,
@@ -82,7 +82,7 @@ export function useGroupChat(eventId?: string) {
   }, [eventId]);
 
   const loadMore = useCallback(async () => {
-    if (!hasMore || !nextCursor || loadingMessages) return;
+    if (!(hasMore && nextCursor) || loadingMessages) return;
     await fetchMessages(nextCursor);
   }, [hasMore, nextCursor, loadingMessages, fetchMessages]);
 

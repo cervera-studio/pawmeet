@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { neon } from '@neondatabase/serverless';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/neon-http';
@@ -21,7 +22,7 @@ async function seed() {
     .limit(5);
 
   if (allUsers.length < 2) {
-    console.log('Not enough users found. Seed some users first.');
+    console.log('[Seed] Not enough users found. Seed some users first.');
     return;
   }
 
@@ -39,7 +40,7 @@ async function seed() {
 
   const usersWithDogs = userDogs.filter((u) => u.dogId !== null);
   if (usersWithDogs.length < 2) {
-    console.log('Not enough users with dogs. Seed some dogs first.');
+    console.log('[Seed] Not enough users with dogs. Seed some dogs first.');
     return;
   }
 
@@ -48,8 +49,8 @@ async function seed() {
 
   const organizer1 = usersWithDogs[0];
   const organizer2 = usersWithDogs[1];
-  if (!organizer1 || !organizer2) {
-    console.log('Not enough users with dogs.');
+  if (!(organizer1 && organizer2)) {
+    console.log('[Seed] Not enough users with dogs.');
     return;
   }
 
@@ -108,7 +109,7 @@ async function seed() {
     },
   ];
 
-  console.log(`Seeding ${events.length} group events...`);
+  console.log(`[Seed] Seeding ${events.length} group events...`);
 
   for (const eventData of events) {
     const rows = await db.insert(groupEvents).values(eventData).returning();
@@ -146,13 +147,13 @@ async function seed() {
       }
     }
 
-    console.log(`  Created: ${eventData.title} (${eventData.status})`);
+    console.log(`[Seed] Created: ${eventData.title} (${eventData.status})`);
   }
 
-  console.log('Done seeding group events.');
+  console.log('[Seed] Done seeding group events.');
 }
 
 seed().catch((err) => {
-  console.error('Seed failed:', err);
+  console.error('[Seed] Seed failed', err);
   process.exit(1);
 });

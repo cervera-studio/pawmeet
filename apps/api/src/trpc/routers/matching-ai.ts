@@ -93,7 +93,7 @@ export function createMatchingAiRouter(deps: typeof matchingAiDeps) {
 
     getNearbyActiveCount: protectedProcedure
       .input(getNearbyActiveCountSchema)
-      .query(async ({ ctx, input }) => {
+      .query(async ({ ctx, input: _input }) => {
         const userDogs = await deps.dogRepo.findByOwner(ctx.userId, true);
         const dogIds = userDogs.map((d) => d.id);
         if (dogIds.length === 0) return { activeCount: 0, totalMatches: 0 };

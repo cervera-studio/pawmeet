@@ -14,14 +14,14 @@ export function createUnmatch({ dogRepo, matchRepo, messageRepo }: Deps) {
   ): Promise<Result<{ message: string; matchAgeDays: number; messageCount: number }>> => {
     // Find the match
     const match = await matchRepo.findById(matchId);
-    if (!match || !match.isActive) {
+    if (!match?.isActive) {
       return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
     }
 
     // Verify the user owns one of the dogs in the match
     const userDogs = await dogRepo.findByOwner(userId, true);
     const dogIds = new Set(userDogs.map((d) => d.id));
-    if (!dogIds.has(match.dogAId) && !dogIds.has(match.dogBId)) {
+    if (!(dogIds.has(match.dogAId) || dogIds.has(match.dogBId))) {
       return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
     }
 

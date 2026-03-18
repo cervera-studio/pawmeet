@@ -11,7 +11,7 @@ type Deps = {
 export function createGetPublicDogProfile({ dogRepo, userRepo }: Deps) {
   return async (dogId: string): Promise<Result<PublicDogProfile>> => {
     const dog = await dogRepo.findById(dogId);
-    if (!dog || !dog.isActive) {
+    if (!dog?.isActive) {
       return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
     }
 

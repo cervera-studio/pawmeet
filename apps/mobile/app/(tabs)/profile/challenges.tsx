@@ -78,10 +78,10 @@ function ChallengeCard({ challenge }: { challenge: ChallengeWithProgress }) {
         </View>
       </View>
 
-      {!isCompleted ? (
-        <ChallengeProgressBar progress={challenge.progress} target={challenge.targetValue} />
-      ) : (
+      {isCompleted ? (
         <Text className="mt-2 text-xs text-green-600 dark:text-green-400">Completata!</Text>
+      ) : (
+        <ChallengeProgressBar progress={challenge.progress} target={challenge.targetValue} />
       )}
     </View>
   );

@@ -97,7 +97,14 @@ export function createAdminAiMatchingRouter(deps: AdminAiMatchingRouterDeps) {
 
         for (const row of rows) {
           const existing = variantMap.get(row.variant);
-          if (!existing) {
+          if (existing) {
+            existing.totalUsers += row.userCount;
+            existing.totalDiscoveries += row.totalDiscoveries;
+            existing.totalLikes += row.totalLikes;
+            existing.totalMatches += row.totalMatches;
+            existing.totalWalksCompleted += row.totalWalksCompleted;
+            existing.totalMessages += row.totalMessages;
+          } else {
             variantMap.set(row.variant, {
               variant: row.variant,
               totalUsers: row.userCount,
@@ -109,13 +116,6 @@ export function createAdminAiMatchingRouter(deps: AdminAiMatchingRouterDeps) {
               avgCompatibilityScore: row.avgCompatibilityScore,
               avgMatchRate: row.avgMatchRate,
             });
-          } else {
-            existing.totalUsers += row.userCount;
-            existing.totalDiscoveries += row.totalDiscoveries;
-            existing.totalLikes += row.totalLikes;
-            existing.totalMatches += row.totalMatches;
-            existing.totalWalksCompleted += row.totalWalksCompleted;
-            existing.totalMessages += row.totalMessages;
           }
         }
 

@@ -98,11 +98,13 @@ export function StoryGrid({ initialData }: StoryGridProps) {
             </Card>
           ))}
         </div>
-      ) : stories.length === 0 ? (
+      ) : null}
+      {!isLoading && stories.length === 0 ? (
         <Card className="p-12 text-center">
           <p className="text-lg text-neutral-500">{t('noStories')}</p>
         </Card>
-      ) : (
+      ) : null}
+      {!isLoading && stories.length > 0 ? (
         <>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {stories.map((story) => {
@@ -119,7 +121,6 @@ export function StoryGrid({ initialData }: StoryGridProps) {
                         preload="metadata"
                       />
                     ) : (
-                      // biome-ignore lint/performance/noImgElement: external URLs
                       <img src={story.mediaUrl} alt="" className="h-full w-full object-cover" />
                     )}
                     <div className="absolute left-2 top-2">
@@ -189,7 +190,7 @@ export function StoryGrid({ initialData }: StoryGridProps) {
             </div>
           ) : null}
         </>
-      )}
+      ) : null}
     </>
   );
 }

@@ -52,7 +52,7 @@ export function createMlOptimalTimesWorker(deps: MlOptimalTimesDeps) {
         if (activeUsers.length === 0) break;
 
         for (const user of activeUsers) {
-          if (!user.latitude || !user.longitude) continue;
+          if (!(user.latitude && user.longitude)) continue;
 
           try {
             await computeOptimalTimesForUser(mlOptimalTimesRepo, user);
@@ -103,10 +103,12 @@ async function computeOptimalTimesForUser(
   if (ownWindows.length === 0) return;
 
   // 2. Find nearby users' aggregated activity windows via PostGIS
+  if (user.latitude === null || user.longitude === null) return;
+
   const nearbyActivity = await mlOptimalTimesRepo.getNearbyActivityWindows(
     user.id,
-    user.latitude!,
-    user.longitude!,
+    user.latitude,
+    user.longitude,
     user.searchRadiusKm,
   );
 
@@ -146,7 +148,7 @@ async function computeOptimalTimesForUser(
   const maxScore = Math.max(...heatmap.map((h) => h.score));
   if (maxScore > 0) {
     for (const h of heatmap) {
-      h.score = h.score / maxScore;
+      h.score /= maxScore;
     }
   }
 

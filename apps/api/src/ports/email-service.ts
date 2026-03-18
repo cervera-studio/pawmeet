@@ -13,4 +13,5 @@ export interface EmailService {
     locale?: string,
   ): Promise<void>;
   sendGdprExportFailed(email: string, displayName: string, locale?: string): Promise<void>;
+  sendAdminInvite(email: string, temporaryPassword: string, locale?: string): Promise<void>;
 }

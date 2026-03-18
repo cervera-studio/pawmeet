@@ -1,6 +1,7 @@
 'use server';
 
 import type { PaginatedResult } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
 import { getServerTrpcClient } from '@/lib/server-api';
@@ -14,7 +15,7 @@ export async function suspendUser(userId: string): Promise<{ success: boolean; e
     revalidatePath('/users');
     return { success: true };
   } catch (error) {
-    console.error('[suspendUser]', error);
+    logger.error('AdminUsers', 'suspendUser failed', error);
     const tt = await getTranslations('toast');
     return { success: false, error: tt('users.suspendError') };
   }
@@ -28,7 +29,7 @@ export async function banUser(userId: string): Promise<{ success: boolean; error
     revalidatePath('/users');
     return { success: true };
   } catch (error) {
-    console.error('[banUser]', error);
+    logger.error('AdminUsers', 'banUser failed', error);
     const tt = await getTranslations('toast');
     return { success: false, error: tt('users.banError') };
   }
@@ -44,7 +45,7 @@ export async function reactivateUser(
     revalidatePath('/users');
     return { success: true };
   } catch (error) {
-    console.error('[reactivateUser]', error);
+    logger.error('AdminUsers', 'reactivateUser failed', error);
     const tt = await getTranslations('toast');
     return { success: false, error: tt('users.reactivateError') };
   }
@@ -55,7 +56,7 @@ export async function fetchUser(id: string) {
   try {
     return await api.admin.getUser.query({ id });
   } catch (error) {
-    console.error('[fetchUser]', error);
+    logger.error('AdminUsers', 'fetchUser failed', error);
     return null;
   }
 }

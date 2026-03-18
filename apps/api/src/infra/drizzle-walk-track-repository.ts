@@ -12,7 +12,7 @@ function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
   try {
     const decoded = Buffer.from(cursor, 'base64').toString('utf-8');
     const [iso, id] = decoded.split('|');
-    if (!iso || !id) return null;
+    if (!(iso && id)) return null;
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return null;
     return { createdAt: date, id };
@@ -121,7 +121,7 @@ export class DrizzleWalkTrackRepository implements WalkTrackRepository {
     const hasMore = rows.length > limit;
     const pageRows = hasMore ? rows.slice(0, limit) : rows;
 
-    const lastRow = pageRows[pageRows.length - 1];
+    const lastRow = pageRows.at(-1);
     const nextCursor =
       hasMore && lastRow ? encodeCursor(lastRow.createdAt as Date, lastRow.id) : null;
 

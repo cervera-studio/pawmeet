@@ -12,10 +12,7 @@ export class EmailAdminNotificationService implements AdminNotificationService {
     return this.emailService.sendPasswordResetOtp(email, code);
   }
 
-  async sendAdminInvite(_email: string, _temporaryPassword: string): Promise<void> {
-    // TODO: implement admin invite email template
-    // For now this is a no-op — admin users are created with a temporary password
-    // communicated out-of-band. When an invite template is added to lib/email.ts,
-    // wire it here.
+  async sendAdminInvite(email: string, temporaryPassword: string): Promise<void> {
+    return this.emailService.sendAdminInvite(email, temporaryPassword);
   }
 }

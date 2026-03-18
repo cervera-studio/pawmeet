@@ -46,6 +46,64 @@ interface Deps {
  *
  * Hard-deletion of DB rows happens after 30 days via data-cleanup worker (GDPR grace period).
  */
+async function verifyPassword(
+  authService: AuthService,
+  userId: string,
+  email: string,
+  password: string,
+  passwordHash: string,
+): Promise<Result<DeleteAccountOutput> | null> {
+  const valid = await authService.verifyPassword(password, passwordHash);
+  if (valid) return null;
+
+  logSecurityEvent({
+    event: SECURITY_EVENT.LoginFailed,
+    userId,
+    email,
+    metadata: { reason: 'delete_account_wrong_password' },
+  });
+  return fail(new AppError('INVALID_PASSWORD', 'Password non valida', 401));
+}
+
+async function deleteR2Object(storage: StorageService, url: string, label: string): Promise<void> {
+  try {
+    const key = storage.extractKeyFromUrl(url);
+    await storage.deleteObject(key);
+  } catch (err) {
+    logger.warn('DeleteAccount', `Failed to delete ${label} from R2`, err);
+  }
+}
+
+async function deleteAllDogPhotos(
+  dogRepo: DogRepository,
+  storage: StorageService,
+  dogs: { id: string }[],
+): Promise<void> {
+  for (const dog of dogs) {
+    const photos = await dogRepo.findPhotos(dog.id);
+    for (const photo of photos) {
+      await deleteR2Object(storage, photo.url, `dog photo ${photo.id}`);
+    }
+  }
+}
+
+async function deleteAllPostMedia(
+  feedRepo: FeedRepository,
+  storage: StorageService,
+  userId: string,
+): Promise<void> {
+  const userPosts = await feedRepo.getUserPosts(userId, userId, null, 1000);
+  for (const post of userPosts.items) {
+    const media = await feedRepo.findMediaByPost(post.id);
+    for (const m of media) {
+      await deleteR2Object(storage, m.url, `post media ${m.id}`);
+      if (m.thumbnailUrl) {
+        await deleteR2Object(storage, m.thumbnailUrl, `post media thumbnail ${m.id}`);
+      }
+    }
+  }
+}
+
 export function createDeleteAccount(deps: Deps) {
   return async (userId: string, password: string): Promise<Result<DeleteAccountOutput>> => {
     const {
@@ -68,16 +126,14 @@ export function createDeleteAccount(deps: Deps) {
     // Re-auth gate: verify password before proceeding
     // Social-only accounts (no password) skip this check
     if (user.passwordHash) {
-      const valid = await authService.verifyPassword(password, user.passwordHash);
-      if (!valid) {
-        logSecurityEvent({
-          event: SECURITY_EVENT.LoginFailed,
-          userId,
-          email: user.email,
-          metadata: { reason: 'delete_account_wrong_password' },
-        });
-        return fail(new AppError('INVALID_PASSWORD', 'Password non valida', 401));
-      }
+      const passwordError = await verifyPassword(
+        authService,
+        userId,
+        user.email,
+        password,
+        user.passwordHash,
+      );
+      if (passwordError) return passwordError;
     }
 
     // Compute account metadata before deletion (for analytics)
@@ -86,58 +142,21 @@ export function createDeleteAccount(deps: Deps) {
     );
 
     // --- Phase 1: Delete all R2 objects ---
-
-    // 1a. Delete avatar
     if (user.avatarUrl) {
-      try {
-        const key = storage.extractKeyFromUrl(user.avatarUrl);
-        await storage.deleteObject(key);
-      } catch (err) {
-        logger.warn('DeleteAccount', 'Failed to delete avatar from R2', err);
-      }
+      await deleteR2Object(storage, user.avatarUrl, 'avatar');
     }
 
-    // 1b. Count active matches before deletion (for analytics)
     const dogs = await dogRepo.findByOwner(userId, false);
     const dogIds = dogs.map((d) => d.id);
     const activeMatches = dogIds.length > 0 ? await matchRepo.findActiveByDogIds(dogIds) : [];
     const matchCount = activeMatches.length;
 
-    // 1c. Delete all dog photos
-    for (const dog of dogs) {
-      const photos = await dogRepo.findPhotos(dog.id);
-      for (const photo of photos) {
-        try {
-          const key = storage.extractKeyFromUrl(photo.url);
-          await storage.deleteObject(key);
-        } catch (err) {
-          logger.warn('DeleteAccount', `Failed to delete dog photo ${photo.id} from R2`, err);
-        }
-      }
-    }
+    await deleteAllDogPhotos(dogRepo, storage, dogs);
+    await deleteAllPostMedia(feedRepo, storage, userId);
 
-    // 1c. Delete all post media
-    const userPosts = await feedRepo.getUserPosts(userId, userId, null, 1000);
-    for (const post of userPosts.items) {
-      const media = await feedRepo.findMediaByPost(post.id);
-      for (const m of media) {
-        try {
-          const key = storage.extractKeyFromUrl(m.url);
-          await storage.deleteObject(key);
-          if (m.thumbnailUrl) {
-            const thumbKey = storage.extractKeyFromUrl(m.thumbnailUrl);
-            await storage.deleteObject(thumbKey);
-          }
-        } catch (err) {
-          logger.warn('DeleteAccount', `Failed to delete post media ${m.id} from R2`, err);
-        }
-      }
-    }
-
-    // 1d. Story media is handled by story-cleanup worker (CASCADE will delete DB rows,
+    // Story media is handled by story-cleanup worker (CASCADE will delete DB rows,
     // but we should clean R2 proactively for stories still active)
     // Stories have CASCADE on authorId, so they'll be deleted in hard-delete phase.
-    // Active story media URLs are cleaned here to avoid orphaned R2 objects.
 
     // --- Phase 2: Anonymize analytics immediately (don't wait 30 days) ---
     try {
@@ -147,7 +166,9 @@ export function createDeleteAccount(deps: Deps) {
     }
 
     // Fire-and-forget: delete person records from external analytics providers
-    Promise.allSettled(deps.analyticsProviders.map((p) => p.deletePerson(userId))).catch(() => {});
+    Promise.allSettled(deps.analyticsProviders.map((p) => p.deletePerson(userId))).catch(() => {
+      /* fire-and-forget */
+    });
 
     // --- Phase 3: Deactivate account ---
     const deletionDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -155,15 +176,11 @@ export function createDeleteAccount(deps: Deps) {
       isActive: false,
       deletionScheduledAt: deletionDate,
       avatarUrl: null,
-      // Scrub location data immediately
       latitude: null,
       longitude: null,
     });
 
-    // Clear push token
     await userRepo.updatePushToken(userId, null);
-
-    // Revoke all refresh tokens (force logout on all devices)
     await tokenRepo.revokeAllUserRefreshTokens(userId);
 
     // --- Phase 4: Send confirmation email ---

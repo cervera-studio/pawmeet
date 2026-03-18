@@ -1,3 +1,4 @@
+import { logger } from '@pawmeet/utils';
 import * as SecureStore from 'expo-secure-store';
 import { createMMKV } from 'react-native-mmkv';
 import type { StateStorage } from 'zustand/middleware';
@@ -69,7 +70,7 @@ export const storage = {
       await SecureStore.setItemAsync(TOKEN_KEY, token);
     } catch {
       // Fallback silenzioso in dev
-      console.warn('SecureStore non disponibile');
+      logger.warn('Storage', 'SecureStore non disponibile');
     }
   },
 
@@ -77,7 +78,7 @@ export const storage = {
     try {
       await SecureStore.deleteItemAsync(TOKEN_KEY);
     } catch {
-      console.warn('SecureStore non disponibile');
+      logger.warn('Storage', 'SecureStore non disponibile');
     }
   },
 
@@ -93,7 +94,7 @@ export const storage = {
     try {
       await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, token);
     } catch {
-      console.warn('SecureStore non disponibile');
+      logger.warn('Storage', 'SecureStore non disponibile');
     }
   },
 
@@ -101,7 +102,7 @@ export const storage = {
     try {
       await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
     } catch {
-      console.warn('SecureStore non disponibile');
+      logger.warn('Storage', 'SecureStore non disponibile');
     }
   },
 

@@ -4,7 +4,7 @@ import NetInfo, { type NetInfoState } from '@react-native-community/netinfo';
 type NetworkListener = (isConnected: boolean) => void;
 
 const listeners = new Set<NetworkListener>();
-let currentState: boolean = true;
+let currentState = true;
 let unsubscribe: (() => void) | null = null;
 
 /**

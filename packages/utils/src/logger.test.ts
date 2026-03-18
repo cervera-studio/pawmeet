@@ -2,7 +2,9 @@ import { logger } from './logger';
 
 beforeEach(() => {
   logger.setLevel('info');
-  logger.onError(() => {});
+  logger.onError(() => {
+    /* noop */
+  });
   vi.restoreAllMocks();
 });
 
@@ -20,8 +22,12 @@ describe('logger', () => {
 
   describe('level filtering', () => {
     it('logs warn and error at info level', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+        /* noop */
+      });
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
 
       logger.warn('tag', 'warning');
       logger.error('tag', 'error');
@@ -31,7 +37,9 @@ describe('logger', () => {
     });
 
     it('suppresses debug at info level', () => {
-      const debugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
+      const debugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {
+        /* noop */
+      });
 
       logger.debug('tag', 'should not appear');
 
@@ -40,7 +48,9 @@ describe('logger', () => {
 
     it('shows debug when level is debug', () => {
       logger.setLevel('debug');
-      const debugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
+      const debugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {
+        /* noop */
+      });
 
       logger.debug('tag', 'visible');
 
@@ -49,8 +59,12 @@ describe('logger', () => {
 
     it('suppresses everything at silent level', () => {
       logger.setLevel('silent');
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+        /* noop */
+      });
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
 
       logger.warn('tag', 'nope');
       logger.error('tag', 'nope');
@@ -61,8 +75,12 @@ describe('logger', () => {
 
     it('only shows error at error level', () => {
       logger.setLevel('error');
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+        /* noop */
+      });
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
 
       logger.warn('tag', 'suppressed');
       logger.error('tag', 'visible');
@@ -74,7 +92,9 @@ describe('logger', () => {
 
   describe('output format', () => {
     it('prefixes with [tag]', () => {
-      const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+      const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {
+        /* noop */
+      });
 
       logger.info('MyHook', 'something happened');
 
@@ -82,7 +102,9 @@ describe('logger', () => {
     });
 
     it('includes data when provided', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+        /* noop */
+      });
 
       logger.warn('api', 'request failed', { status: 500 });
 
@@ -90,7 +112,9 @@ describe('logger', () => {
     });
 
     it('omits data argument when not provided', () => {
-      const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+      const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {
+        /* noop */
+      });
 
       logger.info('tag', 'no data');
 
@@ -100,7 +124,9 @@ describe('logger', () => {
 
   describe('onError hook', () => {
     it('calls hook on logger.error', () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
       const hook = vi.fn();
       logger.onError(hook);
 
@@ -110,7 +136,9 @@ describe('logger', () => {
     });
 
     it('calls hook on logger.warn', () => {
-      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.spyOn(console, 'warn').mockImplementation(() => {
+        /* noop */
+      });
       const hook = vi.fn();
       logger.onError(hook);
 
@@ -131,8 +159,12 @@ describe('logger', () => {
 
     it('does not call hook on info or debug', () => {
       logger.setLevel('debug');
-      vi.spyOn(console, 'debug').mockImplementation(() => {});
-      vi.spyOn(console, 'info').mockImplementation(() => {});
+      vi.spyOn(console, 'debug').mockImplementation(() => {
+        /* noop */
+      });
+      vi.spyOn(console, 'info').mockImplementation(() => {
+        /* noop */
+      });
       const hook = vi.fn();
       logger.onError(hook);
 

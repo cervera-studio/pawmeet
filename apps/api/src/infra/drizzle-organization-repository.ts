@@ -1,6 +1,6 @@
 import { organizationMembers, organizations } from '@pawmeet/db';
 import type { Organization, OrganizationMember, OrganizationMemberRole } from '@pawmeet/types';
-import { and, count, eq, ilike, or } from 'drizzle-orm';
+import { and, count, eq, ilike, or, type SQL } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   CreateOrganizationInput,
@@ -31,7 +31,7 @@ export class DrizzleOrganizationRepository implements OrganizationRepository {
     const { page, pageSize, search, type } = query;
     const offset = (page - 1) * pageSize;
 
-    const conditions = [];
+    const conditions: (SQL | undefined)[] = [];
     if (search) {
       conditions.push(
         or(ilike(organizations.name, `%${search}%`), ilike(organizations.slug, `%${search}%`)),

@@ -66,7 +66,7 @@ const SuggestionCard = memo(function SuggestionCard({
   suggestion: WalkSuggestion;
 }) {
   const { t } = useTranslation();
-  const dayLabel = t(DAY_KEYS[suggestion.timeSlot.dayOfWeek] ?? DAY_KEYS[0]!);
+  const dayLabel = t(DAY_KEYS[suggestion.timeSlot.dayOfWeek] ?? DAY_KEYS[0]);
   const timeRange = `${String(suggestion.timeSlot.hourStart).padStart(2, '0')}:00–${String(suggestion.timeSlot.hourEnd).padStart(2, '0')}:00`;
   const terrainLabel = t(
     `discovery.filters.terrainOptions.${suggestion.terrainSuggestion}` as never,
@@ -174,19 +174,8 @@ export default function WalkSuggestionsScreen() {
       </View>
 
       {/* Content */}
-      {!vm.hasDogs ? (
-        <View className="flex-1 items-center justify-center py-20">
-          <Text className="text-5xl">{'\u{1F415}'}</Text>
-          <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-            {t('walks.suggestions.noDog')}
-          </Text>
-          <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
-            {t('walks.suggestions.noDogDescription')}
-          </Text>
-        </View>
-      ) : vm.isInitialLoad ? (
-        <SuggestionsLoadingSkeleton />
-      ) : (
+      {vm.hasDogs && vm.isInitialLoad ? <SuggestionsLoadingSkeleton /> : null}
+      {vm.hasDogs && !vm.isInitialLoad ? (
         <FlatList
           data={vm.suggestions}
           keyExtractor={(_, index) => `suggestion-${index}`}
@@ -197,6 +186,17 @@ export default function WalkSuggestionsScreen() {
           initialNumToRender={5}
           ListEmptyComponent={<SuggestionsEmptyState />}
         />
+      ) : null}
+      {vm.hasDogs ? null : (
+        <View className="flex-1 items-center justify-center py-20">
+          <Text className="text-5xl">{'\u{1F415}'}</Text>
+          <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
+            {t('walks.suggestions.noDog')}
+          </Text>
+          <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
+            {t('walks.suggestions.noDogDescription')}
+          </Text>
+        </View>
       )}
     </SafeAreaView>
   );

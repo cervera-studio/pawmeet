@@ -38,7 +38,7 @@ export class MLScoringStrategy implements ScoringStrategy {
         redis.get<Record<string, number>>(`ml:features:dog:${dogB.id}`),
       ]);
 
-      if (!dogAFeatures || !dogBFeatures) {
+      if (!(dogAFeatures && dogBFeatures)) {
         return this.ruleBasedFallback.score(dogA, dogB, distanceKm, userId);
       }
 

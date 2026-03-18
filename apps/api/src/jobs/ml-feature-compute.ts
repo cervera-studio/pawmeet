@@ -58,6 +58,84 @@ interface MlFeatureComputeDeps {
  * storing them in Redis for fast access during scoring.
  * Scheduled every 4 hours via repeatable job.
  */
+async function computeDogFeatures(mlFeatureRepo: MlFeatureRepository): Promise<number> {
+  let dogOffset = 0;
+  let totalDogs = 0;
+
+  while (true) {
+    const dogs = await mlFeatureRepo.getActiveDogsBatch(DB_BATCH_SIZE, dogOffset);
+    if (dogs.length === 0) break;
+
+    const entries = dogs.map((dog) => {
+      const features: DogFeatures = {
+        ageMonths: computeAgeMonths(dog.birthDate),
+        isNeutered: dog.isNeutered,
+        size: dog.size,
+        energyLevel: dog.energyLevel,
+        behaviorWithDogs: dog.behaviorWithDogs,
+        leashBehavior: dog.leashBehavior,
+        walkPrefTime: dog.walkPrefTime,
+        walkPrefDurationMin: dog.walkPrefDurationMin,
+        walkPrefDurationMax: dog.walkPrefDurationMax,
+        walkPrefTerrain: dog.walkPrefTerrain,
+      };
+      return { key: `ml:features:dog:${dog.id}`, value: JSON.stringify(features) };
+    });
+
+    await writeFeaturesInBatches(entries);
+    totalDogs += dogs.length;
+    dogOffset += DB_BATCH_SIZE;
+    if (dogs.length < DB_BATCH_SIZE) break;
+  }
+
+  return totalDogs;
+}
+
+async function computeUserFeaturesForBatch(
+  mlFeatureRepo: MlFeatureRepository,
+  users: { id: string }[],
+): Promise<Array<{ key: string; value: string }>> {
+  const entries: Array<{ key: string; value: string }> = [];
+
+  for (const user of users) {
+    const swipeStats = await mlFeatureRepo.getUserSwipeStats(user.id);
+    const likeRate = swipeStats.total > 0 ? swipeStats.likes / swipeStats.total : 0;
+    const matchPrefs = await mlFeatureRepo.getUserMatchPrefs(user.id);
+    const avgMessages = await mlFeatureRepo.getUserAvgMessages(user.id);
+    const walkStats = await mlFeatureRepo.getUserWalkStats(user.id);
+
+    const features: UserFeatures = {
+      likeRate,
+      matchSuccessRate: matchPrefs?.successRate ?? 0,
+      avgChatMessages: avgMessages,
+      walkCompletionRate: walkStats.total > 0 ? walkStats.completed / walkStats.total : 0,
+      sampleSize: matchPrefs?.sampleSize ?? 0,
+    };
+
+    entries.push({ key: `ml:features:user:${user.id}`, value: JSON.stringify(features) });
+  }
+
+  return entries;
+}
+
+async function computeUserFeatures(mlFeatureRepo: MlFeatureRepository): Promise<number> {
+  let userOffset = 0;
+  let totalUsers = 0;
+
+  while (true) {
+    const activeUsers = await mlFeatureRepo.getActiveUserIdsBatch(DB_BATCH_SIZE, userOffset);
+    if (activeUsers.length === 0) break;
+
+    const entries = await computeUserFeaturesForBatch(mlFeatureRepo, activeUsers);
+    await writeFeaturesInBatches(entries);
+    totalUsers += activeUsers.length;
+    userOffset += DB_BATCH_SIZE;
+    if (activeUsers.length < DB_BATCH_SIZE) break;
+  }
+
+  return totalUsers;
+}
+
 export function createMlFeatureComputeWorker(deps: MlFeatureComputeDeps) {
   const { mlFeatureRepo } = deps;
 
@@ -66,92 +144,8 @@ export function createMlFeatureComputeWorker(deps: MlFeatureComputeDeps) {
     async () => {
       logger.info('ml-feature-compute', 'Starting ML feature precomputation');
 
-      // ── Dog features ────────────────────────────────────────────────────
-
-      let dogOffset = 0;
-      let totalDogs = 0;
-
-      while (true) {
-        const dogs = await mlFeatureRepo.getActiveDogsBatch(DB_BATCH_SIZE, dogOffset);
-
-        if (dogs.length === 0) break;
-
-        const entries = dogs.map((dog) => {
-          const features: DogFeatures = {
-            ageMonths: computeAgeMonths(dog.birthDate),
-            isNeutered: dog.isNeutered,
-            size: dog.size,
-            energyLevel: dog.energyLevel,
-            behaviorWithDogs: dog.behaviorWithDogs,
-            leashBehavior: dog.leashBehavior,
-            walkPrefTime: dog.walkPrefTime,
-            walkPrefDurationMin: dog.walkPrefDurationMin,
-            walkPrefDurationMax: dog.walkPrefDurationMax,
-            walkPrefTerrain: dog.walkPrefTerrain,
-          };
-          return {
-            key: `ml:features:dog:${dog.id}`,
-            value: JSON.stringify(features),
-          };
-        });
-
-        await writeFeaturesInBatches(entries);
-        totalDogs += dogs.length;
-        dogOffset += DB_BATCH_SIZE;
-
-        if (dogs.length < DB_BATCH_SIZE) break;
-      }
-
-      // ── User features ───────────────────────────────────────────────────
-
-      let userOffset = 0;
-      let totalUsers = 0;
-
-      while (true) {
-        const activeUsers = await mlFeatureRepo.getActiveUserIdsBatch(DB_BATCH_SIZE, userOffset);
-
-        if (activeUsers.length === 0) break;
-
-        const entries: Array<{ key: string; value: string }> = [];
-
-        for (const user of activeUsers) {
-          // Like rate: likes / total swipes (via swipe_score_logs through user's dogs)
-          const swipeStats = await mlFeatureRepo.getUserSwipeStats(user.id);
-
-          const totalSwipes = swipeStats.total;
-          const likeRate = totalSwipes > 0 ? swipeStats.likes / totalSwipes : 0;
-
-          // Match success rate and sample size from user_matching_preferences
-          const matchPrefs = await mlFeatureRepo.getUserMatchPrefs(user.id);
-
-          // Avg chat messages per match
-          const avgMessages = await mlFeatureRepo.getUserAvgMessages(user.id);
-
-          // Walk completion rate: completed / total proposed
-          const walkStats = await mlFeatureRepo.getUserWalkStats(user.id);
-
-          const totalWalks = walkStats.total;
-
-          const features: UserFeatures = {
-            likeRate,
-            matchSuccessRate: matchPrefs?.successRate ?? 0,
-            avgChatMessages: avgMessages,
-            walkCompletionRate: totalWalks > 0 ? walkStats.completed / totalWalks : 0,
-            sampleSize: matchPrefs?.sampleSize ?? 0,
-          };
-
-          entries.push({
-            key: `ml:features:user:${user.id}`,
-            value: JSON.stringify(features),
-          });
-        }
-
-        await writeFeaturesInBatches(entries);
-        totalUsers += activeUsers.length;
-        userOffset += DB_BATCH_SIZE;
-
-        if (activeUsers.length < DB_BATCH_SIZE) break;
-      }
+      const totalDogs = await computeDogFeatures(mlFeatureRepo);
+      const totalUsers = await computeUserFeatures(mlFeatureRepo);
 
       logger.info(
         'ml-feature-compute',

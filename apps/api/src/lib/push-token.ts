@@ -25,6 +25,7 @@
  */
 
 import { createHmac } from 'node:crypto';
+import process from 'node:process';
 
 const salt = process.env.PUSH_TOKEN_SALT;
 

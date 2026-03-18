@@ -61,16 +61,17 @@ export function useEventDetailViewModel() {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
 
   const loadSponsors = useCallback(async () => {
-    if (!eventId || !isOfficial) return;
+    if (!(eventId && isOfficial)) return;
     try {
       const result = await api.groupEvents.listSponsors.query({ eventId });
       setSponsors(result as Sponsor[]);
       // Track sponsor impressions
       for (const sponsor of result as Sponsor[]) {
+        const tierPlacement = sponsor.tier === 'partner' ? 'footer' : 'body';
+        const placement = sponsor.tier === 'title' ? 'header' : tierPlacement;
         analytics.track('event_sponsor_viewed', {
           sponsorTier: sponsor.tier,
-          placement:
-            sponsor.tier === 'title' ? 'header' : sponsor.tier === 'partner' ? 'footer' : 'body',
+          placement,
         });
       }
     } catch (e) {
@@ -96,7 +97,7 @@ export function useEventDetailViewModel() {
   const canCancel = event?.status === GROUP_EVENT_STATUS.SCHEDULED && isOrganizer;
 
   const handleJoin = useCallback(async () => {
-    if (!eventId || !selectedDogId) {
+    if (!(eventId && selectedDogId)) {
       Alert.alert(t('common.error'), t('events.detail.selectDogError'));
       return;
     }

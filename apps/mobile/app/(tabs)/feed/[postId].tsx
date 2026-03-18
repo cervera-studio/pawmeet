@@ -55,7 +55,7 @@ const CommentRow = memo(function CommentRow({
           <Text className="text-xs text-gray-400 dark:text-neutral-500">
             {formatDate(comment.createdAt)}
           </Text>
-          {!isReply ? (
+          {isReply ? null : (
             <>
               <Pressable onPress={() => onReply(comment.id, comment.author.displayName)}>
                 <Text className="text-xs font-medium text-emerald-700">Rispondi</Text>
@@ -66,7 +66,7 @@ const CommentRow = memo(function CommentRow({
                 </Text>
               </Pressable>
             </>
-          ) : null}
+          )}
         </View>
       </View>
     </View>

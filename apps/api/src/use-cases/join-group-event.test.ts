@@ -32,7 +32,7 @@ function setup(
     areFriends?: boolean;
   } = {},
 ) {
-  const event = overrides.event !== undefined ? overrides.event : buildGroupEvent();
+  const event = overrides.event === undefined ? buildGroupEvent() : overrides.event;
 
   const groupEventRepo = buildGroupEventRepo({
     findById: vi.fn().mockResolvedValue(event),

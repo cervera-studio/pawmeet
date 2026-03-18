@@ -26,11 +26,11 @@ function XpProgressBar({ currentXp, xpToNext }: { currentXp: number; xpToNext: n
     <View className="mt-3">
       <View className="flex-row justify-between mb-1">
         <Text className="text-xs text-neutral-500 dark:text-neutral-500">{currentXp} XP</Text>
-        {xpToNext != null ? (
+        {xpToNext == null ? null : (
           <Text className="text-xs text-neutral-500 dark:text-neutral-500">
             {currentXp + xpToNext} XP
           </Text>
-        ) : null}
+        )}
       </View>
       <View className="h-3 rounded-full bg-neutral-200 dark:bg-[#48484A] overflow-hidden">
         <View
@@ -38,13 +38,13 @@ function XpProgressBar({ currentXp, xpToNext }: { currentXp: number; xpToNext: n
           style={{ width: `${Math.round(clampedProgress * 100)}%` }}
         />
       </View>
-      {xpToNext != null ? (
-        <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-500 text-center">
-          {xpToNext} XP al prossimo livello
-        </Text>
-      ) : (
+      {xpToNext == null ? (
         <Text className="mt-1 text-xs text-primary text-center font-medium">
           Livello massimo raggiunto!
+        </Text>
+      ) : (
+        <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-500 text-center">
+          {xpToNext} XP al prossimo livello
         </Text>
       )}
     </View>

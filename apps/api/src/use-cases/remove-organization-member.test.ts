@@ -9,9 +9,9 @@ describe('removeOrganizationMember', () => {
     overrides: { actorMember?: ReturnType<typeof buildOrganizationMember> | null } = {},
   ) {
     const actorMember =
-      overrides.actorMember !== undefined
-        ? overrides.actorMember
-        : buildOrganizationMember({ role: 'owner', userId: 'actor-1' });
+      overrides.actorMember === undefined
+        ? buildOrganizationMember({ role: 'owner', userId: 'actor-1' })
+        : overrides.actorMember;
 
     const organizationRepo = buildOrganizationRepo({
       findMember: vi.fn().mockImplementation((_orgId: string, userId: string) => {

@@ -31,7 +31,7 @@ export function createAddEventSponsor({ adminDataRepo }: Deps) {
     if (!org) {
       return fail(new AppError('ORG_NOT_FOUND', 'Organization not found', 404));
     }
-    if (!org.isVerified || !org.isActive) {
+    if (!(org.isVerified && org.isActive)) {
       return fail(
         new AppError('ORG_NOT_ELIGIBLE', 'Organization must be verified and active', 400),
       );

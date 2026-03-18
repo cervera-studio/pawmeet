@@ -117,7 +117,7 @@ ${domainEntries}
 
 function withAndroidCertificatePinning(config) {
   // Step 1: Write the network_security_config.xml file
-  config = withDangerousMod(config, [
+  let updatedConfig = withDangerousMod(config, [
     'android',
     async (modConfig) => {
       const resXmlDir = path.join(
@@ -140,7 +140,7 @@ function withAndroidCertificatePinning(config) {
   ]);
 
   // Step 2: Reference it in AndroidManifest.xml
-  config = withAndroidManifest(config, (modConfig) => {
+  updatedConfig = withAndroidManifest(updatedConfig, (modConfig) => {
     const mainApplication = modConfig.modResults.manifest.application?.[0];
     if (mainApplication) {
       mainApplication.$['android:networkSecurityConfig'] = '@xml/network_security_config';
@@ -148,7 +148,7 @@ function withAndroidCertificatePinning(config) {
     return modConfig;
   });
 
-  return config;
+  return updatedConfig;
 }
 
 // ---------------------------------------------------------------------------
@@ -158,9 +158,9 @@ function withAndroidCertificatePinning(config) {
 /** @type {import('expo/config-plugins').ConfigPlugin} */
 const withCertificatePinning = (config) => {
   validatePinsForBuild();
-  config = withIOSCertificatePinning(config);
-  config = withAndroidCertificatePinning(config);
-  return config;
+  let updatedConfig = withIOSCertificatePinning(config);
+  updatedConfig = withAndroidCertificatePinning(updatedConfig);
+  return updatedConfig;
 };
 
 module.exports = withCertificatePinning;

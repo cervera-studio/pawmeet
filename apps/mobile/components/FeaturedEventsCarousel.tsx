@@ -68,9 +68,9 @@ const FeaturedCard = memo(function FeaturedCard({
           <Text className="text-sm text-white/80" numberOfLines={1}>
             {event.location}
           </Text>
-          {event.participantCount != null ? (
+          {event.participantCount == null ? null : (
             <Text className="text-xs text-white/70">{event.participantCount} partecipanti</Text>
-          ) : null}
+          )}
         </View>
         {event.organizationName ? (
           <Text className="text-xs text-white/60 mt-0.5">{event.organizationName}</Text>

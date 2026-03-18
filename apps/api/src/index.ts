@@ -1,5 +1,6 @@
 import { serve } from '@hono/node-server';
 import { trpcServer } from '@hono/trpc-server';
+import { logger as appLogger } from '@pawmeet/utils';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { adminDeps, experimentService, onnxModelLoader } from './container/index.js';
@@ -13,9 +14,9 @@ import { securityHeadersMiddleware } from './middleware/security-headers.js';
 // Initialize Sentry before anything else
 initSentry();
 
+import process from 'node:process';
 import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { analytics } from './routes/analytics.js';
-import { routes } from './routes/index.js';
 import { appRouter } from './trpc/root.js';
 import { createContext } from './trpc/trpc.js';
 import { setupWebSocket } from './ws/chat.js';
@@ -40,7 +41,7 @@ function redactConnectionStrings(message: string): string {
 app.onError((err, c) => {
   const errorId = crypto.randomUUID().slice(0, 8);
   const safeMessage = redactConnectionStrings(err.message);
-  console.error(`[ERROR:${errorId}] ${c.req.method} ${c.req.url}:`, safeMessage);
+  appLogger.error('API', `[ERROR:${errorId}] ${c.req.method} ${c.req.url}: ${safeMessage}`);
 
   Sentry.withScope((scope) => {
     scope.setTag('errorId', errorId);
@@ -64,9 +65,6 @@ app.notFound((c) => {
 
 // tRPC endpoint — typed API for mobile and admin clients
 app.use('/trpc/*', trpcServer({ router: appRouter, createContext }));
-
-// REST API — kept for backwards compatibility (to be removed)
-app.route('/api', routes);
 
 // Analytics batch endpoint — raw Hono POST (not tRPC) for minimal overhead
 app.route('/api/events', analytics);
@@ -107,15 +105,15 @@ const port = Number(process.env.PORT) || 3000;
 
 // Initialize Statsig for A/B testing and feature flags
 experimentService.initialize().then(() => {
-  console.log('Statsig experiment service ready');
+  appLogger.info('API', 'Statsig experiment service ready');
 });
 
 // Initialize ONNX model loader for ML scoring (degrades gracefully if unavailable)
 onnxModelLoader.initialize().then(() => {
-  console.log(`ONNX model loader ready (model loaded: ${onnxModelLoader.isReady()})`);
+  appLogger.info('API', `ONNX model loader ready (model loaded: ${onnxModelLoader.isReady()})`);
 });
 
-console.log(`PawMeet API running on port ${port}`);
+appLogger.info('API', `PawMeet API running on port ${port}`);
 
 const server = serve({ fetch: app.fetch, port, hostname: '0.0.0.0' });
 
@@ -126,7 +124,7 @@ setupWebSocket(server);
 if (process.env.NODE_ENV === 'production') {
   import('./jobs/workers.js').then(({ startWorkers }) => {
     startWorkers();
-    console.log('BullMQ workers started');
+    appLogger.info('API', 'BullMQ workers started');
   });
 }
 

@@ -15,8 +15,12 @@ export const AuthContext = createContext<AuthContextValue>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  login: async () => {},
-  logout: () => {},
+  login: async () => {
+    /* noop */
+  },
+  logout: () => {
+    /* noop */
+  },
 });
 
 export function useAuthContext() {

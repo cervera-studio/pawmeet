@@ -119,7 +119,8 @@ export default function EventCalendarScreen() {
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#065F46" />
           </View>
-        ) : dayGroups.length === 0 ? (
+        ) : null}
+        {!loading && dayGroups.length === 0 ? (
           <View className="flex-1 items-center justify-center py-20">
             <Text className="text-5xl">{'📅'}</Text>
             <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
@@ -129,7 +130,8 @@ export default function EventCalendarScreen() {
               in {formatMonthYear(currentMonth)}
             </Text>
           </View>
-        ) : (
+        ) : null}
+        {!loading && dayGroups.length > 0 ? (
           <FlatList
             data={dayGroups}
             keyExtractor={(item) => item.dateKey}
@@ -166,7 +168,7 @@ export default function EventCalendarScreen() {
               </View>
             )}
           />
-        )}
+        ) : null}
       </SafeAreaView>
     </>
   );

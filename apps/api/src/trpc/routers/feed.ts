@@ -134,7 +134,9 @@ export function createFeedRouter(deps: typeof feedDeps) {
           postId: input.postId,
           authorId: ctx.userId,
           content: input.content,
-        }).catch(() => {});
+        }).catch(() => {
+          /* fire-and-forget */
+        });
         return { comment: result.comment };
       }),
 
@@ -221,30 +223,26 @@ export function createFeedRouter(deps: typeof feedDeps) {
 
     // ── Reactions ──────────────────────────────────────────────────────────
 
-    addReaction: protectedProcedure
-      .input(addContentReactionSchema)
-      .mutation(async ({ ctx, input }) =>
-        // TODO: wire to use case once infra is implemented
-        ({ added: true }),
-      ),
+    addReaction: protectedProcedure.input(addContentReactionSchema).mutation(async (_opts) =>
+      // TODO: wire to use case once infra is implemented
+      ({ added: true }),
+    ),
 
-    removeReaction: protectedProcedure
-      .input(removeContentReactionSchema)
-      .mutation(async ({ ctx, input }) =>
-        // TODO: wire to use case once infra is implemented
-        ({ removed: true }),
-      ),
+    removeReaction: protectedProcedure.input(removeContentReactionSchema).mutation(async (_opts) =>
+      // TODO: wire to use case once infra is implemented
+      ({ removed: true }),
+    ),
 
     // ── Hashtags ──────────────────────────────────────────────────────────
 
-    searchByHashtag: protectedProcedure.input(searchByHashtagSchema).query(async ({ input }) =>
+    searchByHashtag: protectedProcedure.input(searchByHashtagSchema).query(async (_opts) =>
       // TODO: wire to repository once infra is implemented
-      ({ items: [] as any[], nextCursor: null }),
+      ({ items: [] as unknown[], nextCursor: null }),
     ),
 
-    trendingHashtags: protectedProcedure.input(trendingHashtagsSchema).query(async ({ input }) =>
+    trendingHashtags: protectedProcedure.input(trendingHashtagsSchema).query(async (_opts) =>
       // TODO: wire to repository once infra is implemented
-      ({ hashtags: [] as any[] }),
+      ({ hashtags: [] as unknown[] }),
     ),
 
     // ── Walk albums ─────────────────────────────────────────────────────────

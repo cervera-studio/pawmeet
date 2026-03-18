@@ -28,7 +28,7 @@ export class PostHogAnalyticsProvider implements AnalyticsProvider {
     this.projectId = projectId;
   }
 
-  async capture(events: ReadonlyArray<AnalyticsProviderEvent>): Promise<void> {
+  async capture(events: readonly AnalyticsProviderEvent[]): Promise<void> {
     for (const event of events) {
       this.client.capture({
         distinctId: event.distinctId,
@@ -43,7 +43,7 @@ export class PostHogAnalyticsProvider implements AnalyticsProvider {
   }
 
   async deletePerson(userId: string): Promise<void> {
-    if (!this.personalApiKey || !this.projectId) {
+    if (!(this.personalApiKey && this.projectId)) {
       logger.warn(
         'PostHogAnalyticsProvider',
         'Cannot delete person: POSTHOG_PERSONAL_API_KEY or POSTHOG_PROJECT_ID not configured',

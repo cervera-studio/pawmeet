@@ -1,8 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import process from 'node:process';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { logger } from '@pawmeet/utils';
-
 import { redis } from '../lib/redis.js';
 
 const MODEL_DIR = '/tmp/ml-models';
@@ -59,7 +59,7 @@ export class OnnxModelLoader {
   }
 
   async predict(features: number[]): Promise<number> {
-    if (!this.session || !this.ort) {
+    if (!(this.session && this.ort)) {
       throw new Error('Model not loaded');
     }
 

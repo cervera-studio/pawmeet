@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
@@ -33,6 +34,78 @@ interface ContentModerationWorkerDeps {
   contentModerationService?: ContentModerationService;
 }
 
+async function verifyOrReject(
+  feedRepo: FeedRepository,
+  mediaId: string,
+  url: string,
+): Promise<{ exists: boolean; contentLength: number } | null> {
+  try {
+    return await verifyMediaInR2(url);
+  } catch {
+    logger.error('ContentModeration', `Media not found in R2: ${url}`);
+    await feedRepo.updateMediaModerationStatus(mediaId, 'rejected');
+    return null;
+  }
+}
+
+async function moderateWithAi(
+  contentModerationService: ContentModerationService | undefined,
+  mediaType: string,
+  url: string,
+): Promise<'approved' | 'rejected'> {
+  if (!contentModerationService) {
+    logger.warn('ContentModeration', 'No content moderation service configured, auto-approving');
+    return 'approved';
+  }
+
+  if (mediaType !== 'photo') return 'approved';
+
+  try {
+    const result = await contentModerationService.analyzeImage(url);
+    if (result.safe) return 'approved';
+
+    const flagged = result.categories
+      .filter((c) => c.confidence > 0.7)
+      .map((c) => c.name)
+      .join(', ');
+    logger.warn('ContentModeration', `Media rejected by AI: ${flagged}`);
+    return 'rejected';
+  } catch (err) {
+    logger.error('ContentModeration', 'AI moderation failed, falling back to approved', err);
+    return 'approved';
+  }
+}
+
+async function checkAllMediaApproved(feedRepo: FeedRepository, postId: string): Promise<void> {
+  const allMedia = await feedRepo.findMediaByPost(postId);
+  const allApproved = allMedia.every((m) => m.moderationStatus === 'approved');
+  if (!allApproved) return;
+
+  const post = await feedRepo.findPostById(postId);
+  if (post && post.moderationStatus === 'pending') {
+    // Post auto-approved when all media pass moderation
+  }
+}
+
+async function notifyRejection(
+  feedRepo: FeedRepository,
+  notificationService: NotificationService,
+  postId: string,
+): Promise<void> {
+  const post = await feedRepo.findPostById(postId);
+  if (!post) return;
+
+  await notificationService
+    .send({
+      userId: post.authorId,
+      title: 'Contenuto rifiutato',
+      body: 'Uno dei tuoi contenuti non rispetta le linee guida.',
+    })
+    .catch((err) => {
+      logger.error('ContentModeration', 'Failed to send notification', err);
+    });
+}
+
 export function createContentModerationWorker(deps: ContentModerationWorkerDeps) {
   const { feedRepo, notificationService, contentModerationService } = deps;
 
@@ -43,18 +116,14 @@ export function createContentModerationWorker(deps: ContentModerationWorkerDeps)
       logger.info('ContentModeration', `Processing ${mediaType} ${mediaId}: ${url}`);
 
       // Step 1: Verify media exists in R2
-      let mediaMeta: { exists: boolean; contentLength: number };
-      try {
-        mediaMeta = await verifyMediaInR2(url);
-      } catch {
-        logger.error('ContentModeration', `Media not found in R2: ${url}`);
-        await feedRepo.updateMediaModerationStatus(mediaId, 'rejected');
-        return;
-      }
+      const mediaMeta = await verifyOrReject(feedRepo, mediaId, url);
+      if (!mediaMeta) return;
 
       // Step 2: Check file size
-      const maxSize = mediaType === 'video' ? MAX_VIDEO_FILE_SIZE : MAX_FILE_SIZE;
-      if (mediaMeta.contentLength > maxSize || mediaMeta.contentLength === 0) {
+      const hasInvalidSize =
+        mediaMeta.contentLength === 0 ||
+        mediaMeta.contentLength > (mediaType === 'video' ? MAX_VIDEO_FILE_SIZE : MAX_FILE_SIZE);
+      if (hasInvalidSize) {
         logger.warn(
           'ContentModeration',
           `Media invalid size (${mediaMeta.contentLength} bytes): ${url}`,
@@ -64,55 +133,15 @@ export function createContentModerationWorker(deps: ContentModerationWorkerDeps)
       }
 
       // Step 3: AI content moderation (photos only — video support can be added later)
-      let status: 'approved' | 'rejected' = 'approved';
-      if (contentModerationService && mediaType === 'photo') {
-        try {
-          const result = await contentModerationService.analyzeImage(url);
-          status = result.safe ? 'approved' : 'rejected';
-          if (!result.safe) {
-            const flagged = result.categories
-              .filter((c) => c.confidence > 0.7)
-              .map((c) => c.name)
-              .join(', ');
-            logger.warn('ContentModeration', `Media rejected by AI: ${flagged}`);
-          }
-        } catch (err) {
-          logger.error('ContentModeration', 'AI moderation failed, falling back to approved', err);
-        }
-      } else if (!contentModerationService) {
-        logger.warn(
-          'ContentModeration',
-          'No content moderation service configured, auto-approving',
-        );
-      }
-
+      const status = await moderateWithAi(contentModerationService, mediaType, url);
       await feedRepo.updateMediaModerationStatus(mediaId, status);
 
-      // If all media for this post are approved, approve the post
       if (status === 'approved') {
-        const allMedia = await feedRepo.findMediaByPost(postId);
-        const allApproved = allMedia.every((m) => m.moderationStatus === 'approved');
-        if (allApproved) {
-          const post = await feedRepo.findPostById(postId);
-          if (post && post.moderationStatus === 'pending') {
-            // Post auto-approved when all media pass moderation
-          }
-        }
+        await checkAllMediaApproved(feedRepo, postId);
       }
 
       if (status === 'rejected') {
-        const post = await feedRepo.findPostById(postId);
-        if (post) {
-          await notificationService
-            .send({
-              userId: post.authorId,
-              title: 'Contenuto rifiutato',
-              body: 'Uno dei tuoi contenuti non rispetta le linee guida.',
-            })
-            .catch((err) => {
-              logger.error('ContentModeration', 'Failed to send notification', err);
-            });
-        }
+        await notifyRejection(feedRepo, notificationService, postId);
       }
     },
     { connection: getRedisConnection(), concurrency: 5 },

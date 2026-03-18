@@ -28,8 +28,9 @@ export const useDogsStore = create<DogsState>()(
       setDogs: (dogs) =>
         set((state) => {
           // Auto-select first dog if none is selected or current selection is invalid
-          const needsAutoSelect =
-            !state.selectedDogId || !dogs.some((d) => d.id === state.selectedDogId);
+          const needsAutoSelect = !(
+            state.selectedDogId && dogs.some((d) => d.id === state.selectedDogId)
+          );
           return {
             dogs,
             ...(needsAutoSelect && dogs.length > 0 ? { selectedDogId: dogs[0]?.id ?? null } : {}),

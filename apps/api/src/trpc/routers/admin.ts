@@ -15,6 +15,7 @@ import { paginate } from '../../lib/pagination.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
+import type { AdminNotificationService } from '../../ports/admin-notification-service.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import type { GamificationRepository } from '../../ports/gamification-repository.js';
 import { createAddEventSponsor } from '../../use-cases/admin/add-event-sponsor.js';
@@ -30,7 +31,7 @@ import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 function maskEmail(email: string | null | undefined): string {
   if (!email) return '';
   const [local, domain] = email.split('@');
-  if (!local || !domain) return '***';
+  if (!(local && domain)) return '***';
   return `${local[0]}***@${domain}`;
 }
 
@@ -228,6 +229,7 @@ const resetAdminPasswordSchema = z.object({
 
 interface AdminRouterDeps {
   adminDataRepo: AdminDataRepository;
+  adminNotificationService: AdminNotificationService;
   auditLogRepo: AuditLogRepository;
   gamificationRepo?: GamificationRepository;
 }
@@ -236,7 +238,7 @@ interface AdminRouterDeps {
 
 export function createAdminRouter(deps: AdminRouterDeps) {
   const adminProcedure = createAdminProcedure();
-  const { adminDataRepo, auditLogRepo, gamificationRepo } = deps;
+  const { adminDataRepo, adminNotificationService, auditLogRepo, gamificationRepo } = deps;
 
   // ── Use cases ───────────────────────────────────────────────────────────────
   const resolveContentReport = createResolveContentReport({ adminDataRepo });
@@ -645,7 +647,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         if (!org) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
         }
-        if (!org.isVerified || !org.isActive) {
+        if (!(org.isVerified && org.isActive)) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
             message: 'Organization must be verified and active',
@@ -1128,6 +1130,9 @@ export function createAdminRouter(deps: AdminRouterDeps) {
             },
           },
         });
+
+        // Fire-and-forget: send invite email with temporary password
+        void adminNotificationService.sendAdminInvite(input.email, input.temporaryPassword);
 
         return created;
       }),

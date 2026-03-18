@@ -32,7 +32,7 @@ export class DrizzleMoodLogRepository implements MoodLogRepository {
     const rows = rowsAs<MoodLog>(await query);
     const hasMore = rows.length > limit;
     const logs = hasMore ? rows.slice(0, limit) : rows;
-    const nextCursor = hasMore ? (logs[logs.length - 1]?.id ?? null) : null;
+    const nextCursor = hasMore ? (logs.at(-1)?.id ?? null) : null;
 
     return { logs, nextCursor };
   }

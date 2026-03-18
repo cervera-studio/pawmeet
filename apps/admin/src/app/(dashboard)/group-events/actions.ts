@@ -1,6 +1,7 @@
 'use server';
 
 import type { PaginatedResult } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { revalidatePath } from 'next/cache';
 import { getServerTrpcClient } from '@/lib/server-api';
 import type { AdminGroupEventListItem, ListGroupEventsParams } from '@/repositories/interfaces';
@@ -24,7 +25,7 @@ export async function fetchGroupEvent(id: string) {
   try {
     return await api.admin.getGroupEvent.query({ id });
   } catch (error) {
-    console.error('[fetchGroupEvent]', error);
+    logger.error('AdminGroupEvents', 'fetchGroupEvent failed', error);
     return null;
   }
 }

@@ -36,7 +36,7 @@ export function useReportViewModel() {
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = useCallback(async () => {
-    if (!selectedReason || !contentType || !contentId) return;
+    if (!(selectedReason && contentType && contentId)) return;
 
     setSubmitting(true);
     try {

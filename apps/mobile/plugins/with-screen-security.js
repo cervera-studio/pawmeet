@@ -60,9 +60,9 @@ function withIOSScreenSecurity(config) {
 
 /** @type {import('expo/config-plugins').ConfigPlugin} */
 const withScreenSecurity = (config) => {
-  config = withAndroidScreenSecurity(config);
-  config = withIOSScreenSecurity(config);
-  return config;
+  let updatedConfig = withAndroidScreenSecurity(config);
+  updatedConfig = withIOSScreenSecurity(updatedConfig);
+  return updatedConfig;
 };
 
 module.exports = withScreenSecurity;

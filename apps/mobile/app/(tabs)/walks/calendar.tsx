@@ -109,15 +109,18 @@ const CalendarDay = memo(function CalendarDay({
   walkStatuses: string[];
   onPress: () => void;
 }) {
-  const bgClass = isSelected ? 'bg-emerald-700' : isToday ? 'bg-emerald-100' : '';
+  const bgClass = (() => {
+    if (isSelected) return 'bg-emerald-700';
+    if (isToday) return 'bg-emerald-100';
+    return '';
+  })();
 
-  const textClass = isSelected
-    ? 'text-white font-bold'
-    : isToday
-      ? 'text-emerald-800 font-bold'
-      : isCurrentMonth
-        ? 'text-gray-900 dark:text-[#F5F5F7]'
-        : 'text-gray-300 dark:text-[#48484A]';
+  const textClass = (() => {
+    if (isSelected) return 'text-white font-bold';
+    if (isToday) return 'text-emerald-800 font-bold';
+    if (isCurrentMonth) return 'text-gray-900 dark:text-[#F5F5F7]';
+    return 'text-gray-300 dark:text-[#48484A]';
+  })();
 
   // Show up to 3 status dots — keyed by position (1-based) to satisfy noArrayIndexKey
   const dots = walkStatuses.slice(0, 3).map((status, pos) => ({ key: pos + 1, status }));

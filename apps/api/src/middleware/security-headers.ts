@@ -1,3 +1,4 @@
+import process from 'node:process';
 import type { MiddlewareHandler } from 'hono';
 
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || '';

@@ -31,7 +31,15 @@ describe('EmptyState', () => {
   });
 
   it('does not render an action button when actionLabel is missing', () => {
-    render(<EmptyState title="No results" onAction={() => {}} testID="empty" />);
+    render(
+      <EmptyState
+        title="No results"
+        onAction={() => {
+          /* noop */
+        }}
+        testID="empty"
+      />,
+    );
     expect(screen.queryByTestId('empty-action')).toBeNull();
   });
 

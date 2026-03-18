@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { migrate } from 'drizzle-orm/neon-http/migrator';
@@ -32,7 +33,7 @@ if (process.argv[1]?.endsWith('migrate.ts') || process.argv[1]?.endsWith('migrat
       process.exit(0);
     })
     .catch((err) => {
-      console.error('Migration failed:', err);
+      console.error('Migration failed', err);
       process.exit(1);
     });
 }

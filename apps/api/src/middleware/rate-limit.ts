@@ -13,7 +13,7 @@ async function getRedis() {
 
 let _authLimiter: Ratelimit | null = null;
 let _apiLimiter: Ratelimit | null = null;
-let _sensitiveLimiter: Ratelimit | null = null;
+
 let _passwordResetLimiter: Ratelimit | null = null;
 
 async function getAuthLimiter(): Promise<Ratelimit> {
@@ -36,17 +36,6 @@ async function getApiLimiter(): Promise<Ratelimit> {
     });
   }
   return _apiLimiter;
-}
-
-async function getSensitiveLimiter(): Promise<Ratelimit> {
-  if (!_sensitiveLimiter) {
-    _sensitiveLimiter = new Ratelimit({
-      redis: await getRedis(),
-      limiter: Ratelimit.slidingWindow(30, '1m'),
-      prefix: 'rl:sensitive',
-    });
-  }
-  return _sensitiveLimiter;
 }
 
 function getClientIp(c: Parameters<MiddlewareHandler>[0]): string {
@@ -79,9 +68,6 @@ export const authRateLimitMiddleware = createRateLimitMiddleware(getAuthLimiter)
 
 /** Rate limit for general API: 100 requests per minute */
 export const rateLimitMiddleware = createRateLimitMiddleware(getApiLimiter);
-
-/** Rate limit for sensitive operations: 30 requests per minute */
-export const sensitiveRateLimitMiddleware = createRateLimitMiddleware(getSensitiveLimiter);
 
 async function getPasswordResetLimiter(): Promise<Ratelimit> {
   if (!_passwordResetLimiter) {

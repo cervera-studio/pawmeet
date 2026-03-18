@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { createApiClient } from '@pawmeet/api-client';
 import { api } from '@/lib/api';
 import { getAccessToken } from '@/lib/auth-store';

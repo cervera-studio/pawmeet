@@ -22,7 +22,7 @@ export function createAddPostTags({ feedRepo }: Deps) {
     }
 
     // Validate every tag has at least one target
-    const hasInvalid = tags.some((t) => !t.taggedUserId && !t.taggedDogId);
+    const hasInvalid = tags.some((t) => !(t.taggedUserId || t.taggedDogId));
     if (hasInvalid) {
       return fail(new AppError('INVALID_TAGS', 'Ogni tag deve avere un utente o un cane', 400));
     }

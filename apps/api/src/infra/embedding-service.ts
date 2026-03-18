@@ -99,7 +99,7 @@ export class LocalEmbeddingService implements EmbeddingService {
     features.push(...multiHot(dog.walkPrefTerrain, TERRAINS));
 
     // Age normalized (1 dim) — range 0 to 20 years
-    const ageYears = (Date.now() - new Date(dog.birthDate).getTime()) / (365.25 * 86400000);
+    const ageYears = (Date.now() - new Date(dog.birthDate).getTime()) / (365.25 * 86_400_000);
     features.push(normalize(Math.min(ageYears, 20), 0, 20));
 
     // Total structured features: 5+4+4+4+4+2+3+1+1+2+4+6+1 = 41 dims

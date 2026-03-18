@@ -31,7 +31,7 @@ async function doRefresh(apiUrl: string, callbacks: AuthRefreshCallbacks): Promi
         result?: { data?: { json?: { accessToken?: string; refreshToken?: string } } };
       };
       const result = data.result?.data?.json;
-      if (!result?.accessToken || !result?.refreshToken) return false;
+      if (!(result?.accessToken && result?.refreshToken)) return false;
 
       await callbacks.onTokensRefreshed(result.accessToken, result.refreshToken);
       return true;

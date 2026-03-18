@@ -213,11 +213,11 @@ export default function ProfileScreen() {
                 }}
               />
             </View>
-            {vm.xpSummary.xpToNextLevel != null ? (
+            {vm.xpSummary.xpToNextLevel == null ? null : (
               <Text className="mt-1 text-xs text-gray-500 dark:text-neutral-500">
                 {t('profile.xpToNextLevel', { count: vm.xpSummary.xpToNextLevel })}
               </Text>
-            ) : null}
+            )}
           </Pressable>
         ) : null}
 

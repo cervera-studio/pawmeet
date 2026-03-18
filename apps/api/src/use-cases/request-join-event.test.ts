@@ -1,4 +1,9 @@
-import { isFailure, isSuccess } from '@pawmeet/types';
+import {
+  type GroupEventParticipant,
+  type GroupEventVisibility,
+  isFailure,
+  isSuccess,
+} from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildDog,
@@ -24,13 +29,13 @@ describe('requestJoinEvent', () => {
     } = {},
   ) {
     const event =
-      overrides.event !== undefined
-        ? overrides.event
-        : buildGroupEvent({
+      overrides.event === undefined
+        ? buildGroupEvent({
             createdBy: 'host-1',
             requiresApproval: overrides.requiresApproval ?? false,
-            visibility: (overrides.visibility as any) ?? 'public',
-          });
+            visibility: (overrides.visibility as GroupEventVisibility) ?? 'public',
+          })
+        : overrides.event;
 
     const groupEventRepo = buildGroupEventRepo({
       findById: vi.fn().mockResolvedValue(event),
@@ -120,7 +125,7 @@ describe('requestJoinEvent', () => {
 
   it('fails when already joined', async () => {
     const { requestJoin } = setup({
-      existingParticipant: { status: 'accepted' } as any,
+      existingParticipant: { status: 'accepted' } as GroupEventParticipant,
     });
 
     const result = await requestJoin('user-2', { eventId: 'event-1', dogId: 'dog-2' });

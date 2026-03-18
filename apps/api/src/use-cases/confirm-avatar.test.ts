@@ -8,7 +8,7 @@ describe('confirmAvatar', () => {
     const user = buildUser();
     const userRepo = buildUserRepo({
       findById: vi.fn().mockResolvedValue(user),
-      update: vi.fn().mockResolvedValue({} as any),
+      update: vi.fn().mockResolvedValue({} as unknown),
     });
     const storage = buildStorageService({
       getPublicUrl: vi.fn().mockReturnValue('https://cdn.example.com/avatars/user-1/new.jpg'),
@@ -31,7 +31,7 @@ describe('confirmAvatar', () => {
     const user = buildUser({ avatarUrl: 'https://cdn.example.com/avatars/user-1/old.jpg' });
     const userRepo = buildUserRepo({
       findById: vi.fn().mockResolvedValue(user),
-      update: vi.fn().mockResolvedValue({} as any),
+      update: vi.fn().mockResolvedValue({} as unknown),
     });
     const storage = buildStorageService({
       getPublicUrl: vi.fn().mockReturnValue('https://cdn.example.com/avatars/user-1/new.jpg'),
@@ -64,7 +64,7 @@ describe('confirmAvatar', () => {
     const user = buildUser({ avatarUrl: 'https://cdn.example.com/avatars/user-1/old.jpg' });
     const userRepo = buildUserRepo({
       findById: vi.fn().mockResolvedValue(user),
-      update: vi.fn().mockResolvedValue({} as any),
+      update: vi.fn().mockResolvedValue({} as unknown),
     });
     const storage = buildStorageService({
       deleteObject: vi.fn().mockRejectedValue(new Error('not found')),

@@ -86,7 +86,7 @@ export function createGdprExportWorker(deps: GdprExportWorkerDeps) {
     logger.error('GdprExport', `Job ${job?.id} failed`, err);
 
     if (job?.data) {
-      const { userId, email, displayName, exportId, locale } = job.data;
+      const { userId, email, displayName, exportId } = job.data;
 
       // Mark as failed in DB
       await gdprExportRepo.updateExportStatus(exportId, 'failed', {

@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { S3Client } from '@aws-sdk/client-s3';
 
 const R2_ENDPOINT = process.env.R2_ENDPOINT;

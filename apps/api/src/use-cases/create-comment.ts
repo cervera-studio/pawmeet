@@ -16,6 +16,65 @@ type Deps = {
   feedRealtime: FeedRealtimeService;
 };
 
+async function notifyPostAuthor(
+  services: Pick<Deps, 'feedRealtime' | 'notificationService' | 'userRepo'>,
+  ctx: {
+    postId: string;
+    postAuthorId: string;
+    userId: string;
+    commenterName: string;
+    commentId: string;
+    preview: string;
+  },
+): Promise<void> {
+  if (ctx.postAuthorId === ctx.userId) return;
+
+  services.feedRealtime.notifyPostCommented(ctx.postAuthorId, ctx.postId, ctx.commenterName);
+
+  const recipient = await services.userRepo.findById(ctx.postAuthorId);
+  if (recipient?.notificationPrefs?.feed === false) return;
+
+  services.notificationService
+    .send({
+      userId: ctx.postAuthorId,
+      title: `${ctx.commenterName} ha commentato`,
+      body: ctx.preview,
+      data: { postId: ctx.postId, commentId: ctx.commentId, type: 'post_comment' },
+    })
+    .catch((err) => logger.error('createComment', 'Failed to enqueue comment notification', err));
+}
+
+async function notifyParentCommentAuthor(
+  services: Pick<Deps, 'notificationService' | 'userRepo'>,
+  ctx: {
+    parentComment: PostComment | null;
+    userId: string;
+    postAuthorId: string;
+    postId: string;
+    commenterName: string;
+    commentId: string;
+    preview: string;
+  },
+): Promise<void> {
+  if (!ctx.parentComment) return;
+
+  const isOwnReply = ctx.parentComment.authorId === ctx.userId;
+  const alreadyNotifiedAsPostAuthor = ctx.parentComment.authorId === ctx.postAuthorId;
+  if (isOwnReply || alreadyNotifiedAsPostAuthor) return;
+
+  const parentAuthor = await services.userRepo.findById(ctx.parentComment.authorId);
+  if (parentAuthor?.notificationPrefs?.feed === false) return;
+
+  services.notificationService
+    .send({
+      userId: ctx.parentComment.authorId,
+      title: `${ctx.commenterName} ha risposto al tuo commento`,
+      body: ctx.preview,
+      data: { postId: ctx.postId, commentId: ctx.commentId, type: 'comment_reply' },
+    })
+    .catch((err) => logger.error('createComment', 'Failed to enqueue reply notification', err));
+}
+
 export function createCreateComment({
   feedRepo,
   userRepo,
@@ -63,54 +122,35 @@ export function createCreateComment({
     });
 
     // Fetch commenter name once for all notifications
-    const commenter =
-      post.authorId !== userId || parentComment ? await userRepo.findById(userId) : null;
+    const needsCommenterLookup = post.authorId !== userId || parentComment;
+    const commenter = needsCommenterLookup ? await userRepo.findById(userId) : null;
     const commenterName = commenter?.displayName ?? 'Qualcuno';
+    const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
 
-    // Notify the post author (unless they commented on their own post)
-    if (post.authorId !== userId) {
-      // Real-time WebSocket event
-      feedRealtime.notifyPostCommented(post.authorId, postId, commenterName);
+    await notifyPostAuthor(
+      { feedRealtime, notificationService, userRepo },
+      {
+        postId,
+        postAuthorId: post.authorId,
+        userId,
+        commenterName,
+        commentId: comment.id,
+        preview,
+      },
+    );
 
-      const recipient = await userRepo.findById(post.authorId);
-      if (recipient?.notificationPrefs?.feed !== false) {
-        const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
-
-        notificationService
-          .send({
-            userId: post.authorId,
-            title: `${commenterName} ha commentato`,
-            body: preview,
-            data: { postId, commentId: comment.id, type: 'post_comment' },
-          })
-          .catch((err) =>
-            logger.error('createComment', 'Failed to enqueue comment notification', err),
-          );
-      }
-    }
-
-    // If replying, also notify the parent comment author (if different from post author and commenter)
-    if (
-      parentComment &&
-      parentComment.authorId !== userId &&
-      parentComment.authorId !== post.authorId
-    ) {
-      const parentAuthor = await userRepo.findById(parentComment.authorId);
-      if (parentAuthor?.notificationPrefs?.feed !== false) {
-        const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
-
-        notificationService
-          .send({
-            userId: parentComment.authorId,
-            title: `${commenterName} ha risposto al tuo commento`,
-            body: preview,
-            data: { postId, commentId: comment.id, type: 'comment_reply' },
-          })
-          .catch((err) =>
-            logger.error('createComment', 'Failed to enqueue reply notification', err),
-          );
-      }
-    }
+    await notifyParentCommentAuthor(
+      { notificationService, userRepo },
+      {
+        parentComment,
+        userId,
+        postAuthorId: post.authorId,
+        postId,
+        commenterName,
+        commentId: comment.id,
+        preview,
+      },
+    );
 
     const postAgeHours = Math.floor(
       (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60),

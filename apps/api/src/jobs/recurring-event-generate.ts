@@ -1,5 +1,6 @@
 import { GROUP_EVENT_OCCURRENCES_AHEAD } from '@pawmeet/config';
 import { GROUP_EVENT_STATUS } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { RRule } from 'rrule';
 import type { GroupEventRecurrenceRepository, GroupEventRepository } from '../ports/index.js';
@@ -20,10 +21,10 @@ export function createRecurringEventWorker(deps: Deps): Worker {
   );
 
   worker.on('completed', () => {
-    console.log('[recurring-event] Occurrence generation completed');
+    logger.info('RecurringEvent', 'Occurrence generation completed');
   });
   worker.on('failed', (_job, err) => {
-    console.error('[recurring-event] Occurrence generation failed:', err.message);
+    logger.error('RecurringEvent', 'Occurrence generation failed', err.message);
   });
 
   return worker;
@@ -37,7 +38,7 @@ async function generateOccurrences({ groupEventRepo }: Deps): Promise<void> {
     // If recurrenceEnd has passed, complete the template
     if (template.recurrenceEnd && template.recurrenceEnd <= now) {
       await groupEventRepo.updateStatus(template.id, GROUP_EVENT_STATUS.COMPLETED);
-      console.log(`[recurring-event] Template ${template.id} completed (recurrenceEnd passed)`);
+      logger.info('RecurringEvent', `Template ${template.id} completed (recurrenceEnd passed)`);
       continue;
     }
 
@@ -54,8 +55,7 @@ async function generateOccurrences({ groupEventRepo }: Deps): Promise<void> {
     const needed = GROUP_EVENT_OCCURRENCES_AHEAD - futureOccurrences.length;
 
     // Determine start date for new occurrences
-    const lastOccurrence =
-      occurrences.length > 0 ? (occurrences[occurrences.length - 1]?.scheduledAt ?? now) : now;
+    const lastOccurrence = occurrences.length > 0 ? (occurrences.at(-1)?.scheduledAt ?? now) : now;
 
     const afterDate = new Date(Math.max(lastOccurrence.getTime(), now.getTime()));
 
@@ -94,12 +94,13 @@ async function generateOccurrences({ groupEventRepo }: Deps): Promise<void> {
       }
 
       if (newDates.length > 0) {
-        console.log(
-          `[recurring-event] Generated ${newDates.length} occurrences for template ${template.id}`,
+        logger.info(
+          'RecurringEvent',
+          `Generated ${newDates.length} occurrences for template ${template.id}`,
         );
       }
     } catch (err) {
-      console.error(`[recurring-event] Failed to parse RRULE for template ${template.id}:`, err);
+      logger.error('RecurringEvent', `Failed to parse RRULE for template ${template.id}`, err);
     }
   }
 }

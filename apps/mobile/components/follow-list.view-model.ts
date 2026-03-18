@@ -65,7 +65,7 @@ export function useFollowListViewModel(mode: ListMode, userId: string) {
   }, [nextCursor, loading, fetchPage]);
 
   const isInitialLoad = loading && users.length === 0 && !refreshing;
-  const isEmpty = !loading && !refreshing && users.length === 0;
+  const isEmpty = !(loading || refreshing) && users.length === 0;
 
   return {
     users,

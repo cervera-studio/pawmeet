@@ -34,7 +34,7 @@ export function useProposeWalkViewModel(
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (!date || !time) {
+    if (!(date && time)) {
       Alert.alert('Errore', 'Inserisci data e ora');
       return;
     }

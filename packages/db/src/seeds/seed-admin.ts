@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { neon } from '@neondatabase/serverless';
 import { hash } from 'bcryptjs';
 import { drizzle } from 'drizzle-orm/neon-http';
@@ -14,7 +15,7 @@ async function seed() {
 
   const passwordHash = await hash('Admin123!', 12);
 
-  console.log('Seeding super_admin user...');
+  console.log('[Seed] Seeding super_admin user...');
 
   await db
     .insert(adminUsers)
@@ -27,10 +28,10 @@ async function seed() {
     })
     .onConflictDoNothing();
 
-  console.log('Done. Admin user created: admin@pawmeet.io');
+  console.log('[Seed] Done. Admin user created: admin@pawmeet.io');
 }
 
 seed().catch((err) => {
-  console.error('Seed failed:', err);
+  console.error('[Seed] Seed failed', err);
   process.exit(1);
 });

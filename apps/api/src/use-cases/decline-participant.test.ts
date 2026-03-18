@@ -1,4 +1,4 @@
-import { isFailure, isSuccess } from '@pawmeet/types';
+import { type GroupEventParticipant, isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildGroupEvent,
@@ -16,9 +16,9 @@ describe('declineParticipant', () => {
       findParticipant: vi
         .fn()
         .mockResolvedValue(
-          overrides.participant !== undefined
-            ? overrides.participant
-            : { status: 'pending', userId: 'user-2', eventId: 'event-1' },
+          overrides.participant === undefined
+            ? { status: 'pending', userId: 'user-2', eventId: 'event-1' }
+            : overrides.participant,
         ),
     });
     const notificationService = buildNotificationService();
@@ -54,7 +54,7 @@ describe('declineParticipant', () => {
   });
 
   it('fails if no pending request', async () => {
-    const { decline } = setup({ participant: { status: 'accepted' } as any });
+    const { decline } = setup({ participant: { status: 'accepted' } as GroupEventParticipant });
 
     const result = await decline('host-1', 'event-1', 'user-2');
 

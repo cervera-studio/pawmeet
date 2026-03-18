@@ -1,5 +1,6 @@
 import {
   sendAccountDeletedConfirmation,
+  sendAdminInvite,
   sendGdprExportFailed,
   sendGdprExportReady,
   sendPasswordResetOtp,
@@ -35,5 +36,9 @@ export class ResendEmailService implements EmailService {
 
   async sendGdprExportFailed(email: string, displayName: string, locale?: string): Promise<void> {
     return sendGdprExportFailed(email, displayName, locale);
+  }
+
+  async sendAdminInvite(email: string, temporaryPassword: string, locale?: string): Promise<void> {
+    return sendAdminInvite(email, temporaryPassword, locale);
   }
 }

@@ -1,6 +1,7 @@
 'use server';
 
 import type { PaginatedResult } from '@pawmeet/types';
+import { logger } from '@pawmeet/utils';
 import { revalidatePath } from 'next/cache';
 import { getServerTrpcClient } from '@/lib/server-api';
 import type { AdminOrganizationListItem, ListOrganizationsParams } from '@/repositories/interfaces';
@@ -24,7 +25,7 @@ export async function fetchOrganization(id: string) {
   try {
     return await api.admin.getOrganization.query({ id });
   } catch (error) {
-    console.error('[fetchOrganization]', error);
+    logger.error('AdminOrganizations', 'fetchOrganization failed', error);
     return null;
   }
 }

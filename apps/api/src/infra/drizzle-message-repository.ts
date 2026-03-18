@@ -161,7 +161,7 @@ export class DrizzleMessageRepository implements MessageRepository {
 
     const hasMore = rows.length > limit;
     const messageList = hasMore ? rows.slice(0, limit) : rows;
-    const nextCursor = hasMore ? (messageList[messageList.length - 1]?.id ?? null) : null;
+    const nextCursor = hasMore ? (messageList.at(-1)?.id ?? null) : null;
 
     return {
       messages: rowsAs<ChatMessage>(messageList),

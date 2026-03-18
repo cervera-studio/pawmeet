@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 

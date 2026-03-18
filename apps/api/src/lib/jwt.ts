@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { jwtVerify, SignJWT } from 'jose';
 
 function requireEnv(name: string): Uint8Array {

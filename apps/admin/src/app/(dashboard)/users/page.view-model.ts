@@ -8,6 +8,10 @@ import { handleError } from '@/lib/error-handler';
 import type { AdminUserListItem } from '@/repositories';
 import { fetchUsers as fetchUsersAction } from './actions';
 
+function getOrderDirection(isDesc: boolean): 'desc' | 'asc' {
+  return isDesc ? 'desc' : 'asc';
+}
+
 export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem>) {
   const tt = useTranslations('toast');
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -29,7 +33,7 @@ export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem
         pageSize: table.pageSize,
         search: globalFilter || undefined,
         sortBy: firstSort?.id,
-        sortOrder: firstSort ? (firstSort.desc ? 'desc' : 'asc') : undefined,
+        sortOrder: firstSort ? getOrderDirection(firstSort.desc) : undefined,
       });
       setResult(data);
     } catch (error) {

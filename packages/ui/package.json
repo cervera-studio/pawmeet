@@ -13,7 +13,6 @@
   "dependencies": {
     "@pawmeet/design-tokens": "workspace:*",
     "nativewind": "^4.2.3",
-    "react-native": "*",
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {

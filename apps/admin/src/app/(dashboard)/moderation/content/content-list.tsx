@@ -71,11 +71,13 @@ export function ContentList({ initialData }: ContentListProps) {
             </Card>
           ))}
         </div>
-      ) : reports.length === 0 ? (
+      ) : null}
+      {!isLoading && reports.length === 0 ? (
         <Card className="p-12 text-center">
           <p className="text-lg text-neutral-500">{t('noPending')}</p>
         </Card>
-      ) : (
+      ) : null}
+      {!isLoading && reports.length > 0 ? (
         <div className="space-y-4">
           {reports.map((report) => (
             <Card key={report.id} className="p-4">
@@ -139,7 +141,7 @@ export function ContentList({ initialData }: ContentListProps) {
             </div>
           ) : null}
         </div>
-      )}
+      ) : null}
     </>
   );
 }

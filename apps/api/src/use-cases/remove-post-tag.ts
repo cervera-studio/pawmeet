@@ -20,7 +20,7 @@ export function createRemovePostTag({ feedRepo }: Deps) {
     // Author or tagged user can remove a tag
     const isAuthor = post.authorId === userId;
     const isTaggedUser = tag.taggedUserId === userId;
-    if (!isAuthor && !isTaggedUser) {
+    if (!(isAuthor || isTaggedUser)) {
       return fail(new AppError('FORBIDDEN', 'Non puoi rimuovere questo tag', 403));
     }
 

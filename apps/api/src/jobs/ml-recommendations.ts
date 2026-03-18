@@ -45,7 +45,7 @@ export function createMlRecommendationsWorker(deps: MlRecommendationsDeps) {
         if (activeUsers.length === 0) break;
 
         for (const user of activeUsers) {
-          if (!user.latitude || !user.longitude) continue;
+          if (!(user.latitude && user.longitude)) continue;
 
           try {
             await computeRecommendationsForUser(mlRecommendationsRepo, user, strategy);
@@ -102,10 +102,12 @@ async function computeRecommendationsForUser(
   const swipedDogIds = new Set(await mlRecommendationsRepo.getSwipedDogIds(userDogIds));
 
   // 4. Find nearby candidate dogs (PostGIS)
+  if (user.latitude === null || user.longitude === null) return;
+
   const nearbyDogs = await mlRecommendationsRepo.getNearbyDogsWithDistance(
     user.id,
-    user.latitude!,
-    user.longitude!,
+    user.latitude,
+    user.longitude,
     user.searchRadiusKm,
   );
 

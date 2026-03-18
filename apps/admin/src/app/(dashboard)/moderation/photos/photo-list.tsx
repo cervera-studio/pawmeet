@@ -76,7 +76,6 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
           {photos.map((photo) => (
             <Card key={photo.id} className="overflow-hidden">
               {photo.imageUrl ? (
-                // biome-ignore lint/performance/noImgElement: external user-uploaded URLs
                 <img
                   src={photo.imageUrl}
                   alt={t('photoOf', { name: photo.userName ?? '' })}

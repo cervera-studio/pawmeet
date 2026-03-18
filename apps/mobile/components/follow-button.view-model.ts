@@ -44,13 +44,12 @@ export function useFollowButtonViewModel(userId: string) {
     }
   }, [userId, isFollowing, loading]);
 
-  const state: FollowState = loading
-    ? 'loading'
-    : isFollowing
-      ? 'following'
-      : isFollowingMe
-        ? 'follows_you'
-        : 'idle';
+  const state: FollowState = (() => {
+    if (loading) return 'loading';
+    if (isFollowing) return 'following';
+    if (isFollowingMe) return 'follows_you';
+    return 'idle';
+  })();
 
   return {
     state,

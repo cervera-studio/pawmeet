@@ -5,6 +5,7 @@
  * Usage: DATABASE_URL=xxx npx tsx packages/db/src/seeds/backfill-breed-scores.ts
  */
 
+import process from 'node:process';
 import { neon } from '@neondatabase/serverless';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/neon-http';
@@ -21,7 +22,7 @@ async function backfill() {
   const db = drizzle(sql);
 
   const withScores = breedsData.filter((b) => b.energy !== null);
-  console.log(`Backfilling scores for ${withScores.length} breeds...`);
+  console.log(`[Seed] Backfilling scores for ${withScores.length} breeds...`);
 
   let updated = 0;
   for (const b of withScores) {
@@ -43,14 +44,14 @@ async function backfill() {
     updated++;
 
     if (updated % 50 === 0) {
-      console.log(`  Updated ${updated}/${withScores.length}...`);
+      console.log(`[Seed] Updated ${updated}/${withScores.length}...`);
     }
   }
 
-  console.log(`Done! Updated ${updated} breeds with behavioral scores.`);
+  console.log(`[Seed] Done! Updated ${updated} breeds with behavioral scores.`);
 }
 
 backfill().catch((err) => {
-  console.error('Backfill failed:', err);
+  console.error('[Seed] Backfill failed', err);
   process.exit(1);
 });

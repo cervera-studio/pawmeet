@@ -1,6 +1,7 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { calculateDistance, logger } from '@pawmeet/utils';
 import * as Location from 'expo-location';
+import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { api } from '@/lib/trpc';
@@ -16,65 +17,115 @@ interface TrackingState {
   points: Array<{ latitude: number; longitude: number }>;
 }
 
+interface PointBufferEntry {
+  latitude: number;
+  longitude: number;
+  altitude: number | null;
+  timestamp: string;
+  speedKmh: number | null;
+  position: number;
+}
+
 const FLUSH_INTERVAL_MS = 10_000;
 
-export function useWalkTracking() {
-  const [state, setState] = useState<TrackingState>({
-    isTracking: false,
-    track: null,
-    elapsedSeconds: 0,
-    distanceKm: 0,
-    currentSpeed: 0,
-    points: [],
+const INITIAL_TRACKING_STATE: TrackingState = {
+  isTracking: false,
+  track: null,
+  elapsedSeconds: 0,
+  distanceKm: 0,
+  currentSpeed: 0,
+  points: [],
+};
+
+/** Flush buffered GPS points to the API. Re-queues points on failure. */
+async function flushPointBuffer(
+  trackId: string | null,
+  pointBuffer: MutableRefObject<PointBufferEntry[]>,
+): Promise<void> {
+  if (!trackId || pointBuffer.current.length === 0) return;
+
+  const points = [...pointBuffer.current];
+  pointBuffer.current = [];
+
+  try {
+    await api.fitness.addPoints.mutate({ trackId, points });
+  } catch (e) {
+    // Re-add points on failure
+    pointBuffer.current = [...points, ...pointBuffer.current];
+    logger.warn('useWalkTracking', 'Failed to flush points', e);
+  }
+}
+
+/** Handle an incoming GPS location update: buffer the point and update tracking state. */
+function handleLocationUpdate(
+  location: Location.LocationObject,
+  pointBuffer: MutableRefObject<PointBufferEntry[]>,
+  positionCounter: MutableRefObject<number>,
+  setState: React.Dispatch<React.SetStateAction<TrackingState>>,
+): void {
+  const { latitude, longitude, altitude, speed } = location.coords;
+  const speedKmh = speed != null && speed >= 0 ? speed * 3.6 : null;
+
+  pointBuffer.current.push({
+    latitude,
+    longitude,
+    altitude: altitude ?? null,
+    timestamp: new Date(location.timestamp).toISOString(),
+    speedKmh,
+    position: positionCounter.current,
   });
+  positionCounter.current += 1;
+
+  setState((prev) => {
+    const prevPoints = prev.points;
+    let addedDistance = 0;
+    const last = prevPoints.at(-1);
+    if (last) {
+      addedDistance = calculateDistance(last.latitude, last.longitude, latitude, longitude);
+    }
+    return {
+      ...prev,
+      distanceKm: prev.distanceKm + addedDistance,
+      currentSpeed: speedKmh ?? prev.currentSpeed,
+      points: [...prevPoints, { latitude, longitude }],
+    };
+  });
+}
+
+/** Clear all active subscriptions and intervals. */
+function cleanupResources(
+  locationSubRef: MutableRefObject<Location.LocationSubscription | null>,
+  timerRef: MutableRefObject<ReturnType<typeof setInterval> | null>,
+  flushTimerRef: MutableRefObject<ReturnType<typeof setInterval> | null>,
+): void {
+  if (locationSubRef.current) {
+    locationSubRef.current.remove();
+    locationSubRef.current = null;
+  }
+  if (timerRef.current) {
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+  }
+  if (flushTimerRef.current) {
+    clearInterval(flushTimerRef.current);
+    flushTimerRef.current = null;
+  }
+}
+
+export function useWalkTracking() {
+  const [state, setState] = useState<TrackingState>(INITIAL_TRACKING_STATE);
   const [loading, setLoading] = useState(false);
 
   const locationSubRef = useRef<Location.LocationSubscription | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const flushTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pointBuffer = useRef<
-    Array<{
-      latitude: number;
-      longitude: number;
-      altitude: number | null;
-      timestamp: string;
-      speedKmh: number | null;
-      position: number;
-    }>
-  >([]);
+  const pointBuffer = useRef<PointBufferEntry[]>([]);
   const positionCounter = useRef(0);
   const trackIdRef = useRef<string | null>(null);
 
-  const flushPoints = useCallback(async () => {
-    const trackId = trackIdRef.current;
-    if (!trackId || pointBuffer.current.length === 0) return;
+  const flushPoints = useCallback(() => flushPointBuffer(trackIdRef.current, pointBuffer), []);
 
-    const points = [...pointBuffer.current];
-    pointBuffer.current = [];
-
-    try {
-      await api.fitness.addPoints.mutate({ trackId, points });
-    } catch (e) {
-      // Re-add points on failure
-      pointBuffer.current = [...points, ...pointBuffer.current];
-      logger.warn('useWalkTracking', 'Failed to flush points', e);
-    }
-  }, []);
-
-  const cleanup = useCallback(() => {
-    if (locationSubRef.current) {
-      locationSubRef.current.remove();
-      locationSubRef.current = null;
-    }
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    if (flushTimerRef.current) {
-      clearInterval(flushTimerRef.current);
-      flushTimerRef.current = null;
-    }
-  }, []);
+  const cleanup = useCallback(() => cleanupResources(locationSubRef, timerRef, flushTimerRef), []);
 
   const startTracking = useCallback(
     async (walkId?: string | null) => {
@@ -107,40 +158,7 @@ export function useWalkTracking() {
             distanceInterval: 5,
             timeInterval: 3000,
           },
-          (location) => {
-            const { latitude, longitude, altitude, speed } = location.coords;
-            const speedKmh = speed != null && speed >= 0 ? speed * 3.6 : null;
-
-            pointBuffer.current.push({
-              latitude,
-              longitude,
-              altitude: altitude ?? null,
-              timestamp: new Date(location.timestamp).toISOString(),
-              speedKmh,
-              position: positionCounter.current,
-            });
-            positionCounter.current += 1;
-
-            setState((prev) => {
-              const prevPoints = prev.points;
-              let addedDistance = 0;
-              const last = prevPoints[prevPoints.length - 1];
-              if (last) {
-                addedDistance = calculateDistance(
-                  last.latitude,
-                  last.longitude,
-                  latitude,
-                  longitude,
-                );
-              }
-              return {
-                ...prev,
-                distanceKm: prev.distanceKm + addedDistance,
-                currentSpeed: speedKmh ?? prev.currentSpeed,
-                points: [...prevPoints, { latitude, longitude }],
-              };
-            });
-          },
+          (location) => handleLocationUpdate(location, pointBuffer, positionCounter, setState),
         );
 
         // Elapsed time counter
@@ -177,14 +195,7 @@ export function useWalkTracking() {
       });
 
       trackIdRef.current = null;
-      setState({
-        isTracking: false,
-        track: null,
-        elapsedSeconds: 0,
-        distanceKm: 0,
-        currentSpeed: 0,
-        points: [],
-      });
+      setState(INITIAL_TRACKING_STATE);
 
       return result.track;
     } catch (e) {

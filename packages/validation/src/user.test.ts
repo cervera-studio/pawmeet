@@ -75,8 +75,7 @@ describe('updateUserProfileSchema', () => {
   });
 
   it('accepts undefined for avatarUrl (optional)', () => {
-    const input = buildUpdateUserProfileInput();
-    delete (input as Record<string, unknown>).avatarUrl;
+    const { avatarUrl: _, ...input } = buildUpdateUserProfileInput() as Record<string, unknown>;
     expect(updateUserProfileSchema.safeParse(input).success).toBe(true);
   });
 

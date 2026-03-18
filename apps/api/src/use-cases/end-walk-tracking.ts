@@ -54,7 +54,7 @@ export function createEndWalkTracking({ walkTrackRepo, awardXp }: Deps) {
     }
 
     const firstPoint = points[0];
-    const lastPoint = points[points.length - 1];
+    const lastPoint = points.at(-1);
     let durationMinutes = 0;
 
     if (firstPoint && lastPoint) {

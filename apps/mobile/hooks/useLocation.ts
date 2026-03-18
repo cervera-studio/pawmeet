@@ -46,7 +46,7 @@ export function useLocation() {
       }
 
       return granted;
-    } catch (_err) {
+    } catch {
       setError('Errore nel richiedere i permessi di posizione');
       return false;
     }
@@ -81,7 +81,7 @@ export function useLocation() {
         .catch((e) => logger.warn('useLocation', 'Failed to sync location to server', e));
 
       return coords;
-    } catch (_err) {
+    } catch {
       setError('Errore nel recuperare la posizione');
       return null;
     } finally {

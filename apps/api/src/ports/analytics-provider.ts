@@ -3,7 +3,7 @@ export interface AnalyticsProvider {
   readonly name: string;
 
   /** Forward a batch of events to the external provider. */
-  capture(events: ReadonlyArray<AnalyticsProviderEvent>): Promise<void>;
+  capture(events: readonly AnalyticsProviderEvent[]): Promise<void>;
 
   /** GDPR: delete person record by raw userId. Implementation handles pseudonymization. */
   deletePerson(userId: string): Promise<void>;

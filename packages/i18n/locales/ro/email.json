@@ -28,6 +28,15 @@
     "body": "Din păcate, a apărut o eroare la generarea exportului de date.",
     "retry": "Poți încerca din nou din secțiunea Setări a aplicației. Dacă problema persistă, contactează-ne la"
   },
+  "adminInvite": {
+    "subject": "Ai fost invitat ca administrator - PawMeet",
+    "heading": "Bine ai venit in panoul de administrare PawMeet",
+    "body": "Ai fost invitat ca administrator pe platforma PawMeet. Foloseste credentialele de mai jos pentru a te conecta la panoul de control.",
+    "temporaryPasswordLabel": "Parola temporara:",
+    "changePasswordNote": "Ti se va cere sa schimbi parola la prima conectare.",
+    "cta": "Acceseaza panoul de administrare",
+    "ignore": "Daca nu te asteptai la aceasta invitatie, ignora acest email."
+  },
   "accountDeleted": {
     "subject": "Contul tău PawMeet a fost dezactivat",
     "greeting": "Bună {displayName},",

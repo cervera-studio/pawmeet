@@ -6,7 +6,7 @@ import { createVerifyOrganization } from './verify-organization.js';
 describe('verifyOrganization', () => {
   function setup(overrides: { org?: ReturnType<typeof buildOrganization> | null } = {}) {
     const org =
-      overrides.org !== undefined ? overrides.org : buildOrganization({ isVerified: false });
+      overrides.org === undefined ? buildOrganization({ isVerified: false }) : overrides.org;
     const organizationRepo = buildOrganizationRepo({
       findById: vi.fn().mockResolvedValue(org),
     });

@@ -1,3 +1,4 @@
+import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { StorageService } from '../ports/storage-service.js';
 import type { StoryRepository } from '../ports/story-repository.js';
@@ -14,7 +15,7 @@ export function createStoryCleanupWorker(deps: StoryCleanupDeps) {
   const worker = new Worker(
     QUEUE_NAMES.STORY_CLEANUP,
     async () => {
-      console.log('[story-cleanup] Running expired story cleanup...');
+      logger.info('StoryCleanup', 'Running expired story cleanup...');
 
       const { deletedCount, mediaUrls } = await storyRepo.deleteExpiredStories();
 
@@ -24,21 +25,21 @@ export function createStoryCleanupWorker(deps: StoryCleanupDeps) {
           const key = storage.extractKeyFromUrl(url);
           await storage.deleteObject(key);
         } catch (err) {
-          console.error(`[story-cleanup] Failed to delete R2 object: ${url}`, err);
+          logger.error('StoryCleanup', `Failed to delete R2 object: ${url}`, err);
         }
       }
 
-      console.log(`[story-cleanup] Deleted ${deletedCount} expired stories`);
+      logger.info('StoryCleanup', `Deleted ${deletedCount} expired stories`);
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );
 
   worker.on('completed', (job) => {
-    console.log(`[story-cleanup] Job ${job.id} completed`);
+    logger.info('StoryCleanup', `Job ${job.id} completed`);
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`[story-cleanup] Job ${job?.id} failed:`, err.message);
+    logger.error('StoryCleanup', `Job ${job?.id} failed`, err.message);
   });
 
   return worker;

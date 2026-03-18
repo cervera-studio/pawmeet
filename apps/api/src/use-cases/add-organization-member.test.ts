@@ -16,9 +16,9 @@ describe('addOrganizationMember', () => {
     } = {},
   ) {
     const actorMember =
-      overrides.actorMember !== undefined
-        ? overrides.actorMember
-        : buildOrganizationMember({ role: 'owner', userId: 'actor-1' });
+      overrides.actorMember === undefined
+        ? buildOrganizationMember({ role: 'owner', userId: 'actor-1' })
+        : overrides.actorMember;
 
     const organizationRepo = buildOrganizationRepo({
       findById: vi.fn().mockResolvedValue(buildOrganization()),

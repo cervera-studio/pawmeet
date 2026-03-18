@@ -71,7 +71,7 @@ function ChangesDetail({
               </pre>
             </div>
           )}
-          {!before && !after && (
+          {!(before || after) && (
             <pre className="max-h-40 overflow-auto rounded bg-neutral-50 p-2 text-xs">
               {JSON.stringify(changes, null, 2)}
             </pre>

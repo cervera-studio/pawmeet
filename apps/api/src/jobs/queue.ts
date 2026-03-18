@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { Queue } from 'bullmq';
 
 /** BullMQ Redis connection config — uses standard Redis (not Upstash REST) */
@@ -505,7 +506,7 @@ export function getMlTrainingQueue(): Queue {
       connection: getRedisConnection(),
       defaultJobOptions: {
         attempts: 2,
-        backoff: { type: 'exponential', delay: 30000 },
+        backoff: { type: 'exponential', delay: 30_000 },
         removeOnComplete: 10,
         removeOnFail: 50,
       },

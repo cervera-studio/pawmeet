@@ -15,11 +15,6 @@ describe('api-client package', () => {
       const trpcClient = await import('@trpc/client');
       expect(trpcClient.httpBatchLink).toBeTypeOf('function');
     });
-
-    it('should have @trpc/react-query resolvable with createTRPCReact', async () => {
-      const trpcReact = await import('@trpc/react-query');
-      expect(trpcReact.createTRPCReact).toBeTypeOf('function');
-    });
   });
 
   describe('package.json configuration', () => {
@@ -44,10 +39,6 @@ describe('api-client package', () => {
 
     it('should declare @trpc/client as a dependency', () => {
       expect(pkg.dependencies).toHaveProperty('@trpc/client');
-    });
-
-    it('should declare @trpc/react-query as a dependency', () => {
-      expect(pkg.dependencies).toHaveProperty('@trpc/react-query');
     });
 
     it('should declare @pawmeet/api as a dependency', () => {

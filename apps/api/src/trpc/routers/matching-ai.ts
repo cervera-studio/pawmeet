@@ -7,8 +7,10 @@ import {
   logSwipeScoreSchema,
   recordActivityWindowSchema,
   recordMatchInteractionSchema,
+  suggestWalksSchema,
 } from '@pawmeet/validation';
 import type { matchingAiDeps } from '../../container/index.js';
+import { trackEvent } from '../../lib/track-event.js';
 import { countActiveUsers } from '../../lib/user-presence.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
@@ -79,6 +81,15 @@ export function createMatchingAiRouter(deps: typeof matchingAiDeps) {
       .query(async ({ ctx, input }) =>
         unwrapResult(await deps.getMatchExplanation(ctx.userId, input.matchId)),
       ),
+
+    suggestWalks: protectedProcedure.input(suggestWalksSchema).query(async ({ ctx, input }) => {
+      const result = unwrapResult(await deps.suggestWalks(ctx.userId, input.dogId, input.limit));
+      trackEvent('walk_suggestions_viewed', ctx.userId, {
+        suggestionCount: result.suggestions.length,
+        topScore: result.suggestions[0]?.score ?? 0,
+      });
+      return result;
+    }),
 
     getNearbyActiveCount: protectedProcedure
       .input(getNearbyActiveCountSchema)

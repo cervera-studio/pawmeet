@@ -1,23 +1,23 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import { calculateDistance } from '@pawmeet/utils';
 import {
+  calculateBehaviorScore,
+  calculateDistance,
+  calculateDistanceScore,
+  calculateEnergyScore,
+  calculateSizeScore,
+} from '@pawmeet/utils';
+import {
+  calculateLeashScore,
+  calculateWalkScore,
   WEIGHT_BEHAVIOR,
   WEIGHT_DISTANCE,
   WEIGHT_ENERGY,
   WEIGHT_LEASH,
   WEIGHT_SIZE,
   WEIGHT_WALK,
-  calculateLeashScore,
-  calculateWalkScore,
 } from '../domain/compatibility-scoring.js';
 import { hasLocation } from '../domain/type-guards.js';
 import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
-import {
-  calculateBehaviorScore,
-  calculateDistanceScore,
-  calculateEnergyScore,
-  calculateSizeScore,
-} from '@pawmeet/utils';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 

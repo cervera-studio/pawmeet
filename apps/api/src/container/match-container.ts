@@ -16,6 +16,7 @@ import { createLogSwipeScores } from '../use-cases/log-swipe-scores.js';
 import { createPassDog } from '../use-cases/pass-dog.js';
 import { createRecordActivityWindow } from '../use-cases/record-activity-window.js';
 import { createRecordMatchInteraction } from '../use-cases/record-match-interaction.js';
+import { createSuggestWalks } from '../use-cases/suggest-walks.js';
 import { createUnmatch } from '../use-cases/unmatch.js';
 import { gamificationDeps as _gamificationDeps, awardXp } from './gamification-container.js';
 import {
@@ -69,6 +70,7 @@ export const matchingAiDeps = {
     recommendationCacheRepo,
   }),
   getMatchExplanation: createGetMatchExplanation({ matchRepo, dogRepo, userRepo }),
+  suggestWalks: createSuggestWalks({ dogRepo, matchRepo, userRepo, followRepo, matchingAiRepo }),
   // Repositories exposed for presence-based queries in the router
   dogRepo,
   matchRepo,

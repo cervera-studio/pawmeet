@@ -160,6 +160,28 @@
       "cancelButton": "Cancel walk",
       "cancelError": "Unable to cancel the walk"
     },
+    "suggestions": {
+      "button": "Suggestions",
+      "title": "Suggested times",
+      "forDog": "For {{name}}",
+      "terrain": "Terrain",
+      "duration": "~{{minutes}} min",
+      "compatibleDogs": "Compatible dogs nearby",
+      "empty": "No suggestions",
+      "emptyDescription": "Not enough data to suggest times yet. Keep using the app to improve suggestions!",
+      "noDog": "Add a dog",
+      "noDogDescription": "Add your first dog to receive personalized suggestions.",
+      "fetchError": "Unable to load suggestions",
+      "days": {
+        "sun": "Sunday",
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday"
+      }
+    },
     "tracking": {
       "title": "Track walk",
       "backButton": "Walks",

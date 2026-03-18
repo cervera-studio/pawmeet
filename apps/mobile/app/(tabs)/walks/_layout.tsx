@@ -5,6 +5,7 @@ export default function WalksLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="calendar" />
+      <Stack.Screen name="suggestions" />
       <Stack.Screen
         name="tracking"
         options={{

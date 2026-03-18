@@ -160,6 +160,28 @@
       "cancelButton": "Anulează plimbarea",
       "cancelError": "Plimbarea nu a putut fi anulată"
     },
+    "suggestions": {
+      "button": "Sugestii",
+      "title": "Ore sugerate",
+      "forDog": "Pentru {{name}}",
+      "terrain": "Teren",
+      "duration": "~{{minutes}} min",
+      "compatibleDogs": "Câini compatibili în apropiere",
+      "empty": "Nicio sugestie",
+      "emptyDescription": "Nu sunt suficiente date pentru a sugera ore. Continuă să folosești aplicația pentru a îmbunătăți sugestiile!",
+      "noDog": "Adaugă un câine",
+      "noDogDescription": "Adaugă primul tău câine pentru a primi sugestii personalizate.",
+      "fetchError": "Sugestiile nu au putut fi încărcate",
+      "days": {
+        "sun": "Duminică",
+        "mon": "Luni",
+        "tue": "Marți",
+        "wed": "Miercuri",
+        "thu": "Joi",
+        "fri": "Vineri",
+        "sat": "Sâmbătă"
+      }
+    },
     "tracking": {
       "title": "Urmărește plimbarea",
       "backButton": "Plimbări",

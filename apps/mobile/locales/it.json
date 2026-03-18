@@ -160,6 +160,28 @@
       "cancelButton": "Annulla passeggiata",
       "cancelError": "Impossibile annullare la passeggiata"
     },
+    "suggestions": {
+      "button": "Suggerimenti",
+      "title": "Orari consigliati",
+      "forDog": "Per {{name}}",
+      "terrain": "Terreno",
+      "duration": "~{{minutes}} min",
+      "compatibleDogs": "Cani compatibili nelle vicinanze",
+      "empty": "Nessun suggerimento",
+      "emptyDescription": "Non ci sono abbastanza dati per suggerire orari. Continua a usare l'app per migliorare i suggerimenti!",
+      "noDog": "Aggiungi un cane",
+      "noDogDescription": "Aggiungi il tuo primo cane per ricevere suggerimenti personalizzati.",
+      "fetchError": "Impossibile caricare i suggerimenti",
+      "days": {
+        "sun": "Domenica",
+        "mon": "Lunedì",
+        "tue": "Martedì",
+        "wed": "Mercoledì",
+        "thu": "Giovedì",
+        "fri": "Venerdì",
+        "sat": "Sabato"
+      }
+    },
     "tracking": {
       "title": "Traccia passeggiata",
       "backButton": "Passeggiate",

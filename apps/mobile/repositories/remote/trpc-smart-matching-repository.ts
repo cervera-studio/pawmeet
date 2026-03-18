@@ -9,6 +9,9 @@ export function createTrpcSmartMatchingRepository(api: ApiClient): SmartMatching
     async getOptimalTimes(dogId) {
       return api.matchingAi.optimalTimes.query({ dogId });
     },
+    async suggestWalks(dogId, limit) {
+      return api.matchingAi.suggestWalks.query({ dogId, limit });
+    },
     async recordActivity(dayOfWeek, hourOfDay) {
       await api.matchingAi.recordActivity.mutate({ dayOfWeek, hourOfDay });
     },

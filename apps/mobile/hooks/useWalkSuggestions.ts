@@ -1,10 +1,12 @@
-import type { RouterOutput } from '@pawmeet/api-client';
+import type { WalkSuggestion } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
-import { api } from '@/lib/trpc';
+import { container } from '@/repositories/container';
+import { SMART_MATCHING_REPOSITORY } from '@/repositories/tokens';
 
-type SuggestWalksResult = RouterOutput['matchingAi']['suggestWalks'];
-export type WalkSuggestion = SuggestWalksResult['suggestions'][number];
+export type { WalkSuggestion };
+
+const repo = container.resolve(SMART_MATCHING_REPOSITORY);
 
 export function useWalkSuggestions() {
   const [suggestions, setSuggestions] = useState<WalkSuggestion[]>([]);
@@ -13,7 +15,7 @@ export function useWalkSuggestions() {
   const fetchSuggestions = useCallback(async (dogId: string, limit?: number) => {
     setLoading(true);
     try {
-      const result = await api.matchingAi.suggestWalks.query({ dogId, limit });
+      const result = await repo.suggestWalks(dogId, limit);
       setSuggestions(result.suggestions);
     } catch (e) {
       logger.warn('useWalkSuggestions', 'Failed to fetch walk suggestions', e);

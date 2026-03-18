@@ -1,4 +1,9 @@
-import type { MatchingInsights, OptimalTimeWindow, Serialized } from '@pawmeet/types';
+import type {
+  MatchingInsights,
+  OptimalTimeWindow,
+  Serialized,
+  WalkSuggestion,
+} from '@pawmeet/types';
 
 export interface SwipeScores {
   sizeScore: number;
@@ -13,6 +18,7 @@ export interface SwipeScores {
 export interface SmartMatchingRepository {
   getInsights(dogId: string): Promise<{ insights: Serialized<MatchingInsights> }>;
   getOptimalTimes(dogId: string): Promise<{ windows: Serialized<OptimalTimeWindow>[] }>;
+  suggestWalks(dogId: string, limit?: number): Promise<{ suggestions: WalkSuggestion[] }>;
   recordActivity(dayOfWeek: number, hourOfDay: number): Promise<void>;
   logSwipeScores(
     dogId: string,

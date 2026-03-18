@@ -11,6 +11,7 @@ interface Deps {
     email: string;
     displayName: string;
     exportId: string;
+    locale?: string;
   }) => Promise<unknown>;
 }
 
@@ -48,6 +49,7 @@ export function createRequestDataExport(deps: Deps) {
       email: user.email,
       displayName: user.displayName,
       exportId: exportRecord.id,
+      locale: user.locale,
     });
 
     return succeed({ message: "Export in corso. Riceverai un'email quando sarà pronto." });

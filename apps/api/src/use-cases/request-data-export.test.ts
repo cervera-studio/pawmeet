@@ -98,6 +98,7 @@ describe('requestDataExport', () => {
       email: 'mario@example.com',
       displayName: 'Mario Rossi',
       exportId: 'export-1',
+      locale: 'it',
     });
   });
 

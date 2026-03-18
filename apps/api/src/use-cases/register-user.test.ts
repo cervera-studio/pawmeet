@@ -125,6 +125,6 @@ describe('createRegisterUser', () => {
 
     await registerUser(input);
 
-    expect(deps.emailService.sendVerificationOtp).toHaveBeenCalledWith('new@example.com', '123456');
+    expect(deps.emailService.sendVerificationOtp).toHaveBeenCalledWith('new@example.com', '123456', undefined);
   });
 });

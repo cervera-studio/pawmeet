@@ -15,6 +15,7 @@ export interface RegisterInput {
   password: string;
   displayName: string;
   dateOfBirth: Date;
+  locale?: string;
 }
 
 export interface RegisterOutput {
@@ -33,7 +34,7 @@ interface Deps {
 export function createRegisterUser(deps: Deps) {
   return async (input: RegisterInput): Promise<Result<RegisterOutput>> => {
     const { userRepo, tokenRepo, authService, emailService } = deps;
-    const { password, displayName, dateOfBirth } = input;
+    const { password, displayName, dateOfBirth, locale } = input;
     const email = input.email.toLowerCase().trim();
 
     // Check if email already exists
@@ -52,6 +53,7 @@ export function createRegisterUser(deps: Deps) {
       passwordHash,
       authProvider: 'email',
       dateOfBirth,
+      locale,
     });
 
     // Send verification OTP
@@ -65,7 +67,7 @@ export function createRegisterUser(deps: Deps) {
     });
     // Fire-and-forget: don't block registration on email delivery
     emailService
-      .sendVerificationOtp(email, otp)
+      .sendVerificationOtp(email, otp, locale)
       .catch((e) => logger.warn('RegisterUser', 'Failed to send verification OTP', e));
 
     // Generate auth tokens

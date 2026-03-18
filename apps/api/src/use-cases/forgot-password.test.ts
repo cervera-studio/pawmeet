@@ -58,6 +58,7 @@ describe('createForgotPassword', () => {
     expect(deps.emailService.sendPasswordResetOtp).toHaveBeenCalledWith(
       'test@example.com',
       '789012',
+      'it',
     );
   });
 

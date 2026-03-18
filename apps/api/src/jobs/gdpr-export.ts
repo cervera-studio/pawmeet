@@ -27,7 +27,7 @@ export function createGdprExportWorker(deps: GdprExportWorkerDeps) {
   const worker = new Worker<GdprExportJobData>(
     QUEUE_NAMES.GDPR_EXPORT,
     async (job) => {
-      const { userId, email, displayName, exportId } = job.data;
+      const { userId, email, displayName, exportId, locale } = job.data;
       logger.info('GdprExport', `Starting export for user ${userId}`, { exportId });
 
       // Mark as processing
@@ -62,7 +62,7 @@ export function createGdprExportWorker(deps: GdprExportWorkerDeps) {
       });
 
       // Send email with download link
-      await emailService.sendGdprExportReady(email, displayName, downloadUrl);
+      await emailService.sendGdprExportReady(email, displayName, downloadUrl, locale);
 
       logSecurityEvent({
         event: SECURITY_EVENT.GdprExportCompleted,
@@ -86,7 +86,7 @@ export function createGdprExportWorker(deps: GdprExportWorkerDeps) {
     logger.error('GdprExport', `Job ${job?.id} failed`, err);
 
     if (job?.data) {
-      const { userId, email, displayName, exportId } = job.data;
+      const { userId, email, displayName, exportId, locale } = job.data;
 
       // Mark as failed in DB
       await gdprExportRepo.updateExportStatus(exportId, 'failed', {
@@ -94,7 +94,7 @@ export function createGdprExportWorker(deps: GdprExportWorkerDeps) {
       });
 
       // Notify user
-      await emailService.sendGdprExportFailed(email, displayName);
+      await emailService.sendGdprExportFailed(email, displayName, job.data.locale);
 
       logSecurityEvent({
         event: SECURITY_EVENT.GdprExportFailed,

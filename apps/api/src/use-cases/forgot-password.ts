@@ -46,7 +46,7 @@ export function createForgotPassword(deps: Deps) {
 
       // Fire-and-forget
       emailService
-        .sendPasswordResetOtp(email, otp)
+        .sendPasswordResetOtp(email, otp, user.locale)
         .catch((e) => logger.warn('ForgotPassword', 'Failed to send password reset OTP', e));
     }
 

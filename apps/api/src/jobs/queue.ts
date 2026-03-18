@@ -397,6 +397,7 @@ export interface GdprExportJobData {
   email: string;
   displayName: string;
   exportId: string;
+  locale?: string;
 }
 
 let _gdprExportQueue: Queue | null = null;

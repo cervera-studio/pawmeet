@@ -102,6 +102,7 @@ describe('createGdprExportWorker', () => {
       'user@example.com',
       'Mario Rossi',
       expect.any(String),
+      undefined,
     );
   });
 

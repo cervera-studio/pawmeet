@@ -79,6 +79,7 @@ export function buildUser(overrides: Partial<User> = {}): User {
     locationUpdatedAt: new Date('2026-03-01'),
     searchRadiusKm: 50,
     emailVerified: true,
+    locale: 'it',
     pushToken: null,
     notificationPrefs: { matches: true, messages: true, reminders: true, feed: true, nearby: true },
     dateOfBirth: new Date('1995-06-15'),

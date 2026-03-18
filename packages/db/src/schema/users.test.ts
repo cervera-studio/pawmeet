@@ -25,6 +25,7 @@ describe('users table', () => {
         'searchRadiusKm',
         'notificationPrefs',
         'isActive',
+        'locale',
         'pushToken',
         'createdAt',
         'lastLoginAt',
@@ -34,7 +35,7 @@ describe('users table', () => {
         'followingCount',
       ]),
     );
-    expect(columnNames).toHaveLength(20);
+    expect(columnNames).toHaveLength(21);
   });
 
   describe('id column', () => {

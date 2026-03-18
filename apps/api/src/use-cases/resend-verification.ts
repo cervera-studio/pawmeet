@@ -42,7 +42,7 @@ export function createResendVerification(deps: Deps) {
       expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_OTP_EXPIRY_MS),
     });
 
-    await emailService.sendVerificationOtp(email, otp);
+    await emailService.sendVerificationOtp(email, otp, user.locale);
 
     return succeed({ message: "Se l'email esiste, riceverai un codice di verifica" });
   };

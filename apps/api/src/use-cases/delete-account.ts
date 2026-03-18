@@ -168,7 +168,7 @@ export function createDeleteAccount(deps: Deps) {
 
     // --- Phase 4: Send confirmation email ---
     try {
-      await emailService.sendAccountDeletedConfirmation(user.email, user.displayName);
+      await emailService.sendAccountDeletedConfirmation(user.email, user.displayName, user.locale);
     } catch (err) {
       logger.warn('DeleteAccount', 'Failed to send deletion confirmation email', err);
     }

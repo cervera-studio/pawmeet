@@ -26,6 +26,7 @@ export interface User {
   locationUpdatedAt: Date | null;
   searchRadiusKm: number;
   emailVerified: boolean;
+  locale: string;
   pushToken: string | null;
   notificationPrefs: NotificationPrefs;
   isActive: boolean;

@@ -58,6 +58,7 @@ describe('createResendVerification', () => {
     expect(deps.emailService.sendVerificationOtp).toHaveBeenCalledWith(
       'test@example.com',
       '654321',
+      'it',
     );
   });
 

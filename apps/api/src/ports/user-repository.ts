@@ -6,6 +6,7 @@ export interface CreateUserInput {
   passwordHash?: string | null;
   authProvider?: string;
   dateOfBirth?: Date | null;
+  locale?: string;
 }
 
 export interface NearbyUser {

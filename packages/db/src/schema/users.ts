@@ -48,6 +48,7 @@ export const users = pgTable(
         nearby: true,
       }),
     dateOfBirth: date('date_of_birth', { mode: 'date' }),
+    locale: varchar('locale', { length: 5 }).notNull().default('it'),
     pushToken: text('push_token'),
     lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
     deletionScheduledAt: timestamp('deletion_scheduled_at', { withTimezone: true }),

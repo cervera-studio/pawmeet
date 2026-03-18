@@ -50,10 +50,10 @@ export interface FeedRepository {
     contentType: 'post' | 'comment' | 'story',
     contentId: string,
     emoji: string,
-  ): Promise<{ added: boolean }>;
+  ): Promise<void>;
   removeReaction(
     contentType: 'post' | 'comment' | 'story',
     contentId: string,
     emoji: string,
-  ): Promise<{ removed: boolean }>;
+  ): Promise<void>;
 }

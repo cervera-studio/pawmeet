@@ -240,6 +240,23 @@
       }
     },
     {
+      "includes": [
+        "apps/admin/sentry.edge.config.ts",
+        "apps/admin/sentry.server.config.ts",
+        "apps/admin/instrumentation.ts"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noProcessGlobal": "off"
+          },
+          "style": {
+            "noProcessEnv": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["apps/mobile/plugins/*.js"],
       "linter": {
         "rules": {

@@ -12,9 +12,7 @@
   },
   "dependencies": {
     "@pawmeet/api": "workspace:*",
-    "@tanstack/react-query": "^5.80.0",
-    "@trpc/client": "^11.12.0",
-    "@trpc/react-query": "^11.12.0"
+    "@trpc/client": "^11.12.0"
   },
   "devDependencies": {
     "@pawmeet/typescript-config": "workspace:*",

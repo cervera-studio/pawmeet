@@ -13,9 +13,7 @@ export function createOfficialEventFormSchema(t: ValidationTranslationFn) {
       .string()
       .min(3, t('minChars', { min: 3 }))
       .max(TITLE_MAX, t('maxChars', { max: TITLE_MAX })),
-    description: z
-      .string()
-      .max(DESCRIPTION_MAX, t('maxChars', { max: DESCRIPTION_MAX })),
+    description: z.string().max(DESCRIPTION_MAX, t('maxChars', { max: DESCRIPTION_MAX })),
     scheduledAt: z.string().min(1, t('required', { field: t('fields.date') })),
     durationMin: z
       .number()

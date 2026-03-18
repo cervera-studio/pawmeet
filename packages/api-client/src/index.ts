@@ -1,6 +1,5 @@
 import type { AppRouter } from '@pawmeet/api/trpc';
 import { createTRPCClient, httpBatchLink, type TRPCLink } from '@trpc/client';
-import { createTRPCReact } from '@trpc/react-query';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 export type { AuthRefreshCallbacks } from './auth-refresh-link';
@@ -14,7 +13,7 @@ export type RouterOutput = inferRouterOutputs<AppRouter>;
 export type RouterInput = inferRouterInputs<AppRouter>;
 
 /**
- * Vanilla tRPC client for non-React environments (React Native, scripts).
+ * Vanilla tRPC client for all environments (React Native, Next.js server actions, scripts).
  * Provides full type inference from the API router.
  *
  * @example
@@ -44,35 +43,3 @@ export function createApiClient(
 }
 
 export type ApiClient = ReturnType<typeof createApiClient>;
-
-/**
- * React tRPC hooks for Next.js / React Query environments.
- * Use with `trpc.Provider` wrapping your app.
- *
- * @example
- * ```tsx
- * // In providers.tsx
- * import { trpc, createTRPCClientConfig } from '@pawmeet/api-client';
- * const trpcClient = trpc.createClient(createTRPCClientConfig('http://localhost:3000', getToken));
- *
- * // In components
- * const { data } = trpc.dogs.list.useQuery();
- * const mutation = trpc.auth.login.useMutation();
- * ```
- */
-export const trpc = createTRPCReact<AppRouter>();
-
-/** Create tRPC client configuration for React Query integration. */
-export function createTRPCClientConfig(baseUrl: string, getToken?: () => string | null) {
-  return {
-    links: [
-      httpBatchLink({
-        url: `${baseUrl}/trpc`,
-        headers: () => {
-          const token = getToken?.();
-          return token ? { Authorization: `Bearer ${token}` } : {};
-        },
-      }),
-    ],
-  };
-}

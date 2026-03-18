@@ -1,9 +1,9 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["ES2022"],
+    "lib": ["ES2024"],
     "module": "ESNext",
-    "target": "ES2022",
+    "target": "ES2024",
     "outDir": "./dist",
     "types": ["node"]
   }

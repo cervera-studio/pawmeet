@@ -26,7 +26,6 @@
   "devDependencies": {
     "@pawmeet/typescript-config": "workspace:*",
     "@pawmeet/vitest-config": "workspace:*",
-    "@types/bcryptjs": "^3.0.0",
     "drizzle-kit": "^0.31.10",
     "typescript": "^5.9.0"
   }

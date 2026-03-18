@@ -8,11 +8,8 @@
  * - /admin/moderation/photos — photo moderation (approve, reject, approve-all)
  *
  * When admin-specific tRPC procedures are added to the API router, migrate
- * the corresponding calls to use `trpc` hooks from `@/lib/trpc` and remove
- * them from this client. Once all endpoints are migrated, this file can be deleted.
- *
- * For tRPC-based calls (auth, dogs, users, matches, chat), use:
- *   import { trpc } from '@/lib/trpc';
+ * the corresponding calls to server actions using `getServerTrpcClient()` and
+ * remove them from this client. Once all endpoints are migrated, this file can be deleted.
  */
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 

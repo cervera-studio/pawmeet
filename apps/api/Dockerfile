@@ -1,5 +1,5 @@
 # ── Stage 1: Base ─────────────────────────────────────────────
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 RUN corepack enable && corepack prepare pnpm@10.6.0 --activate
 RUN apk add --no-cache libc6-compat
 
@@ -55,7 +55,7 @@ RUN pnpm turbo build --filter=@pawmeet/api...
 
 # ── Stage 4: Runner ──────────────────────────────────────────
 # Use Debian-based image (not Alpine) — onnxruntime-node requires glibc
-FROM node:22-slim AS runner
+FROM node:24-slim AS runner
 RUN corepack enable && corepack prepare pnpm@10.6.0 --activate
 RUN apt-get update && apt-get install -y --no-install-recommends dumb-init && rm -rf /var/lib/apt/lists/*
 WORKDIR /app

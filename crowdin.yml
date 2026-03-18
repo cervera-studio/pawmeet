@@ -2,8 +2,8 @@
 # To switch translation tools, replace this file with the new tool's config
 # pointing to the same JSON file paths. Zero code changes required.
 #
-# Source language: Italian (it)
-# Target languages: English (en), Spanish (es), Romanian (ro)
+# Source language: English (en)
+# Target languages: Italian (it), Spanish (es), Romanian (ro)
 
 project_id_env: CROWDIN_PROJECT_ID
 api_token_env: CROWDIN_API_TOKEN
@@ -12,25 +12,25 @@ preserve_hierarchy: true
 
 files:
   # Admin app (Next.js backoffice)
-  - source: /apps/admin/messages/it.json
+  - source: /apps/admin/messages/en.json
     translation: /apps/admin/messages/%two_letters_code%.json
 
   # Web app (Astro landing page)
-  - source: /apps/web/src/i18n/it.json
+  - source: /apps/web/src/i18n/en.json
     translation: /apps/web/src/i18n/%two_letters_code%.json
 
   # Mobile app (Expo)
-  - source: /apps/mobile/locales/it.json
+  - source: /apps/mobile/locales/en.json
     translation: /apps/mobile/locales/%two_letters_code%.json
 
   # Shared — common strings (validation, generic labels)
-  - source: /packages/i18n/locales/it/common.json
+  - source: /packages/i18n/locales/en/common.json
     translation: /packages/i18n/locales/%two_letters_code%/common.json
 
   # Shared — validation error messages
-  - source: /packages/i18n/locales/it/validation.json
+  - source: /packages/i18n/locales/en/validation.json
     translation: /packages/i18n/locales/%two_letters_code%/validation.json
 
   # Shared — email templates
-  - source: /packages/i18n/locales/it/email.json
+  - source: /packages/i18n/locales/en/email.json
     translation: /packages/i18n/locales/%two_letters_code%/email.json

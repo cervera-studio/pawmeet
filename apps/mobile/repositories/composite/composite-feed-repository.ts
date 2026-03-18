@@ -145,8 +145,11 @@ export function createCompositeFeedRepository(deps: CompositeFeedDeps): FeedRepo
       contentType: 'post' | 'comment' | 'story',
       contentId: string,
       emoji: string,
-    ): Promise<{ added: boolean }> {
-      if (network.isOnline()) return remote.addReaction(contentType, contentId, emoji);
+    ): Promise<void> {
+      if (network.isOnline()) {
+        await remote.addReaction(contentType, contentId, emoji);
+        return;
+      }
 
       await syncQueue.enqueue({
         entityType: 'reaction',
@@ -154,15 +157,17 @@ export function createCompositeFeedRepository(deps: CompositeFeedDeps): FeedRepo
         endpoint: 'feed.addReaction',
         payload: { contentType, contentId, emoji },
       });
-      return { added: true };
     },
 
     async removeReaction(
       contentType: 'post' | 'comment' | 'story',
       contentId: string,
       emoji: string,
-    ): Promise<{ removed: boolean }> {
-      if (network.isOnline()) return remote.removeReaction(contentType, contentId, emoji);
+    ): Promise<void> {
+      if (network.isOnline()) {
+        await remote.removeReaction(contentType, contentId, emoji);
+        return;
+      }
 
       await syncQueue.enqueue({
         entityType: 'reaction',
@@ -170,7 +175,6 @@ export function createCompositeFeedRepository(deps: CompositeFeedDeps): FeedRepo
         endpoint: 'feed.removeReaction',
         payload: { contentType, contentId, emoji },
       });
-      return { removed: true };
     },
   };
 }

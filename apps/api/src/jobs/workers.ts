@@ -4,6 +4,7 @@ import {
   analyticsAggregationDeps,
   analyticsProviders,
   analyticsWorkerDeps,
+  contentModerationWorkerDeps,
   dataCleanupDeps,
   embeddingGenerationDeps,
   eventStatusDeps,
@@ -26,12 +27,11 @@ import {
   walkReminderDeps,
   walkSafetyAlertDeps,
   weeklyChallengeRotationDeps,
-  contentModerationWorkerDeps,
 } from '../container/index.js';
 import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
-import { createDataCleanupWorker } from './data-cleanup.js';
 import { createContentModerationWorker } from './content-moderation.js';
+import { createDataCleanupWorker } from './data-cleanup.js';
 import { createEmbeddingGenerationWorker } from './embedding-generation.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
 import { createExperimentGuardrailsWorker } from './experiment-guardrails.js';

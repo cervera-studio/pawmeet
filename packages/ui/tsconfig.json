@@ -1,9 +1,0 @@
-{
-  "extends": "@pawmeet/typescript-config/tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "jsx": "react-native"
-  },
-  "include": ["src"],
-  "exclude": ["**/*.test.ts", "**/*.test.tsx", "src/__mocks__"]
-}

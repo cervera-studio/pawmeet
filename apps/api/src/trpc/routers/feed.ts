@@ -223,27 +223,49 @@ export function createFeedRouter(deps: typeof feedDeps) {
 
     // ── Reactions ──────────────────────────────────────────────────────────
 
-    addReaction: protectedProcedure.input(addContentReactionSchema).mutation(async (_opts) =>
-      // TODO: wire to use case once infra is implemented
-      ({ added: true }),
-    ),
+    addReaction: protectedProcedure
+      .input(addContentReactionSchema)
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
+          await deps.addContentReaction(input.contentType, input.contentId, ctx.userId, input.emoji),
+        );
+        trackEvent('feed_reaction_added', ctx.userId, {
+          contentType: input.contentType,
+          emoji: input.emoji,
+        });
+        return result;
+      }),
 
-    removeReaction: protectedProcedure.input(removeContentReactionSchema).mutation(async (_opts) =>
-      // TODO: wire to use case once infra is implemented
-      ({ removed: true }),
-    ),
+    removeReaction: protectedProcedure
+      .input(removeContentReactionSchema)
+      .mutation(async ({ ctx, input }) => {
+        unwrapResult(
+          await deps.removeContentReaction(
+            input.contentType,
+            input.contentId,
+            ctx.userId,
+            input.emoji,
+          ),
+        );
+        trackEvent('feed_reaction_removed', ctx.userId, {
+          contentType: input.contentType,
+          emoji: input.emoji,
+        });
+      }),
 
     // ── Hashtags ──────────────────────────────────────────────────────────
 
-    searchByHashtag: protectedProcedure.input(searchByHashtagSchema).query(async (_opts) =>
-      // TODO: wire to repository once infra is implemented
-      ({ items: [] as unknown[], nextCursor: null }),
-    ),
+    searchByHashtag: protectedProcedure
+      .input(searchByHashtagSchema)
+      .query(async ({ input }) =>
+        unwrapResult(await deps.searchByHashtag(input.hashtag, input.cursor ?? null, input.limit)),
+      ),
 
-    trendingHashtags: protectedProcedure.input(trendingHashtagsSchema).query(async (_opts) =>
-      // TODO: wire to repository once infra is implemented
-      ({ hashtags: [] as unknown[] }),
-    ),
+    trendingHashtags: protectedProcedure
+      .input(trendingHashtagsSchema)
+      .query(async ({ input }) =>
+        unwrapResult(await deps.getTrendingHashtags(input.limit)),
+      ),
 
     // ── Walk albums ─────────────────────────────────────────────────────────
 

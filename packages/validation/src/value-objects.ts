@@ -15,6 +15,14 @@ export const emailSchema = z
 
 export type Email = z.output<typeof emailSchema>;
 
+export function parseEmail(value: string): Email {
+  return emailSchema.parse(value);
+}
+
+export function safeParseEmail(value: string) {
+  return emailSchema.safeParse(value);
+}
+
 // ── Coordinates ──────────────────────────────────────────────────────────────
 
 /**
@@ -30,6 +38,14 @@ export const coordinatesSchema = z
 
 export type Coordinates = z.output<typeof coordinatesSchema>;
 
+export function parseCoordinates(latitude: number, longitude: number): Coordinates {
+  return coordinatesSchema.parse({ latitude, longitude });
+}
+
+export function safeParseCoordinates(latitude: number, longitude: number) {
+  return coordinatesSchema.safeParse({ latitude, longitude });
+}
+
 // ── CompatibilityScore ───────────────────────────────────────────────────────
 
 /**
@@ -42,6 +58,10 @@ export const compatibilityScoreSchema = z
   .brand<'CompatibilityScore'>();
 
 export type CompatibilityScore = z.output<typeof compatibilityScoreSchema>;
+
+export function parseCompatibilityScore(value: number): CompatibilityScore {
+  return compatibilityScoreSchema.parse(value);
+}
 
 // ── MatchWeights ─────────────────────────────────────────────────────────────
 

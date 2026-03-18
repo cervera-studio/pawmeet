@@ -22,7 +22,6 @@ export default function WaitlistFormClient({ strings }: Props) {
     setErrorMessage('');
 
     try {
-      // TODO: replace with actual API endpoint
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

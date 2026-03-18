@@ -39,7 +39,7 @@ export default function HeroClient({ strings }: Props) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="font-display text-[clamp(2.75rem,7vw,5.5rem)] leading-[1.05] tracking-[-0.02em] text-neutral-900"
+            className="font-serif text-[clamp(2.75rem,7vw,5.5rem)] leading-[1.05] tracking-[-0.02em] text-neutral-900"
           >
             {strings.headlinePart1}
             <br className="hidden sm:block" /> {strings.headlinePart2}{' '}

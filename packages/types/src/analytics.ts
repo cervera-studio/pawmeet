@@ -254,6 +254,14 @@ export interface AnalyticsEventMap {
   // Walk Suggestions
   walk_suggestions_viewed: { suggestionCount: number; topScore: number };
 
+  // Walk Mood
+  mood_log_submitted: {
+    rating: number;
+    tagCount: number;
+    hasNotes: boolean;
+    source: 'post_walk' | 'manual';
+  };
+
   // Rising Compatibility
   rising_compatibility_notified: { risingCount: number };
 

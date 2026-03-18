@@ -31,6 +31,7 @@ export type {
 } from './group-event-repository';
 export type { LikeResult, MatchRepository, MatchSuggestion } from './match-repository';
 export type { MediaContentType, MediaRepository, UploadResult } from './media-repository';
+export type { MoodLogRepository } from './mood-log-repository';
 export type {
   CheckinInput,
   EmergencyContact,

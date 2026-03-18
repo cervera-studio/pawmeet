@@ -821,5 +821,35 @@
     "bioGenerationError": "Error al generar la bio",
     "createError": "Error al crear",
     "addPhotos": "Añade fotos"
+  },
+
+  "moodLog": {
+    "title": "Estado del perro",
+    "ratingLabel": "¿Cómo estuvo tu perro durante el paseo?",
+    "ratingRequired": "Selecciona una valoración",
+    "ratingValues": {
+      "1": "Terrible",
+      "2": "Malo",
+      "3": "Normal",
+      "4": "Bueno",
+      "5": "Excelente"
+    },
+    "tagsLabel": "Etiquetas rápidas (opcional)",
+    "tags": {
+      "socialization_ok": "Socialización OK",
+      "socialization_ko": "Socialización KO",
+      "pulled_on_leash": "Tiró de la correa",
+      "calm": "Tranquilo",
+      "anxious": "Ansioso",
+      "playful": "Juguetón",
+      "reactive": "Reactivo",
+      "tired": "Cansado",
+      "energetic": "Enérgico"
+    },
+    "notesLabel": "Notas (opcional)",
+    "notesPlaceholder": "¿Cómo se comportó tu perro?",
+    "submit": "Guardar estado",
+    "submitting": "Guardando...",
+    "submitError": "No se pudo guardar el estado. Inténtalo de nuevo."
   }
 }

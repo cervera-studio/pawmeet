@@ -821,5 +821,35 @@
     "bioGenerationError": "Error during bio generation",
     "createError": "Error during creation",
     "addPhotos": "Add photos"
+  },
+
+  "moodLog": {
+    "title": "Dog mood",
+    "ratingLabel": "How was your dog during the walk?",
+    "ratingRequired": "Please select a rating",
+    "ratingValues": {
+      "1": "Terrible",
+      "2": "Poor",
+      "3": "Average",
+      "4": "Good",
+      "5": "Excellent"
+    },
+    "tagsLabel": "Quick tags (optional)",
+    "tags": {
+      "socialization_ok": "Socialization OK",
+      "socialization_ko": "Socialization KO",
+      "pulled_on_leash": "Pulled on leash",
+      "calm": "Calm",
+      "anxious": "Anxious",
+      "playful": "Playful",
+      "reactive": "Reactive",
+      "tired": "Tired",
+      "energetic": "Energetic"
+    },
+    "notesLabel": "Notes (optional)",
+    "notesPlaceholder": "How did your dog behave?",
+    "submit": "Save mood",
+    "submitting": "Saving...",
+    "submitError": "Unable to save mood. Please try again."
   }
 }

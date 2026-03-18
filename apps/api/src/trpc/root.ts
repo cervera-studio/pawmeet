@@ -17,6 +17,7 @@ import {
   groupEventDeps,
   matchDeps,
   matchingAiDeps,
+  moodLogDeps,
   organizationDeps,
   userDeps,
   walkDeps,
@@ -38,6 +39,7 @@ import { createGroupChatRouter } from './routers/group-chat.js';
 import { createGroupEventsRouter } from './routers/group-events.js';
 import { createMatchesRouter } from './routers/matches.js';
 import { createMatchingAiRouter } from './routers/matching-ai.js';
+import { createMoodLogRouter } from './routers/mood-logs.js';
 import { createOrganizationsRouter } from './routers/organizations.js';
 import { createSafetyRouter } from './routers/safety.js';
 import { createUsersRouter } from './routers/users.js';
@@ -52,6 +54,7 @@ export const appRouter = router({
   users: createUsersRouter(userDeps),
   matches: createMatchesRouter(matchDeps),
   matchingAi: createMatchingAiRouter(matchingAiDeps),
+  moodLogs: createMoodLogRouter(moodLogDeps),
   chat: createChatRouter(chatDeps),
   admin: createAdminRouter(adminDeps),
   adminAiMatching: createAdminAiMatchingRouter(adminAiMatchingDeps),

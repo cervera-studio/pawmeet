@@ -1,6 +1,8 @@
 import { Stack } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MoodLogModal } from '@/components/MoodLogModal';
+import { useDogsStore } from '@/stores/dogs';
 import { useTrackingViewModel } from './tracking.view-model';
 
 function StatBox({ label, value }: { label: string; value: string }) {
@@ -14,6 +16,9 @@ function StatBox({ label, value }: { label: string; value: string }) {
 
 export default function TrackingScreen() {
   const vm = useTrackingViewModel();
+  const selectedDogId = useDogsStore((s) => s.selectedDogId);
+  const dogs = useDogsStore((s) => s.dogs);
+  const activeDogId = selectedDogId ?? dogs[0]?.id ?? null;
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
@@ -97,6 +102,15 @@ export default function TrackingScreen() {
           </Text>
         </View>
       </View>
+      {vm.completedTrackId && activeDogId && (
+        <MoodLogModal
+          visible
+          dogId={activeDogId}
+          trackId={vm.completedTrackId}
+          onClose={vm.handleMoodLogDone}
+          onSubmit={vm.handleMoodLogDone}
+        />
+      )}
     </SafeAreaView>
   );
 }

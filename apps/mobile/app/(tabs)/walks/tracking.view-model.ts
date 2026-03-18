@@ -13,6 +13,7 @@ export function useTrackingViewModel() {
   const router = useRouter();
   const tracking = useWalkTracking();
   const [sosLoading, setSosLoading] = useState(false);
+  const [completedTrackId, setCompletedTrackId] = useState<string | null>(null);
   const safetyRepo = useMemo(() => container.resolve(SAFETY_REPOSITORY), []);
 
   const handleStart = useCallback(async () => {
@@ -34,14 +35,14 @@ export function useTrackingViewModel() {
           const result = await tracking.stopTracking();
           if (result) {
             void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            router.back();
+            setCompletedTrackId(result.id);
           } else {
             Alert.alert(i18n.t('common.error'), i18n.t('walks.tracking.stopError'));
           }
         },
       },
     ]);
-  }, [tracking, router]);
+  }, [tracking]);
 
   const handleSos = useCallback(() => {
     Alert.alert(i18n.t('walks.tracking.sosTitle'), i18n.t('walks.tracking.sosMessage'), [
@@ -78,6 +79,11 @@ export function useTrackingViewModel() {
     ]);
   }, [tracking.track, safetyRepo]);
 
+  const handleMoodLogDone = useCallback(() => {
+    setCompletedTrackId(null);
+    router.back();
+  }, [router]);
+
   const formatElapsed = useCallback((seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -100,8 +106,10 @@ export function useTrackingViewModel() {
         ? `${Math.round(tracking.distanceKm * 1000)} m`
         : `${tracking.distanceKm.toFixed(2)} km`,
     formattedSpeed: `${tracking.currentSpeed.toFixed(1)} km/h`,
+    completedTrackId,
     handleStart,
     handleStop,
     handleSos,
+    handleMoodLogDone,
   };
 }

@@ -821,5 +821,35 @@
     "bioGenerationError": "Errore durante la generazione della bio",
     "createError": "Errore durante la creazione",
     "addPhotos": "Aggiungi delle foto"
+  },
+
+  "moodLog": {
+    "title": "Umore del cane",
+    "ratingLabel": "Com'era il tuo cane durante la passeggiata?",
+    "ratingRequired": "Seleziona una valutazione",
+    "ratingValues": {
+      "1": "Pessimo",
+      "2": "Scarso",
+      "3": "Nella media",
+      "4": "Buono",
+      "5": "Ottimo"
+    },
+    "tagsLabel": "Tag rapidi (opzionale)",
+    "tags": {
+      "socialization_ok": "Socializzazione OK",
+      "socialization_ko": "Socializzazione KO",
+      "pulled_on_leash": "Tirato al guinzaglio",
+      "calm": "Calmo",
+      "anxious": "Ansioso",
+      "playful": "Giocoso",
+      "reactive": "Reattivo",
+      "tired": "Stanco",
+      "energetic": "Energico"
+    },
+    "notesLabel": "Note (opzionale)",
+    "notesPlaceholder": "Come si è comportato il tuo cane?",
+    "submit": "Salva umore",
+    "submitting": "Salvataggio...",
+    "submitError": "Impossibile salvare l'umore. Riprova."
   }
 }

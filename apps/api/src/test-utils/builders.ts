@@ -14,6 +14,7 @@ import {
   type GroupChatMessage,
   type GroupEvent,
   type Match,
+  type MoodLog,
   type Post,
   type PostComment,
   type PostMedia,
@@ -62,6 +63,7 @@ import type {
   WalkTrackRepository,
 } from '../ports/index.js';
 import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';
+import type { MoodLogRepository } from '../ports/mood-log-repository.js';
 import type { OrganizationRepository } from '../ports/organization-repository.js';
 
 // ── Entity builders ──────────────────────────────────────────────────────────
@@ -1117,6 +1119,35 @@ export function buildEventSponsorRepo(
     findByEvent: vi.fn().mockResolvedValue([]),
     findByEventWithOrg: vi.fn().mockResolvedValue([]),
     countByEventAndTier: vi.fn().mockResolvedValue(0),
+    ...overrides,
+  };
+}
+
+// ── Mood log builders ────────────────────────────────────────────────────────
+
+export function buildMoodLog(overrides: Partial<MoodLog> = {}): MoodLog {
+  return {
+    id: 'mood-log-1',
+    dogId: 'dog-1',
+    trackId: 'track-1',
+    userId: 'user-1',
+    rating: 4,
+    tags: ['calm', 'socialization_ok'],
+    notes: null,
+    createdAt: new Date('2026-03-15'),
+    ...overrides,
+  };
+}
+
+export function buildMoodLogRepo(overrides: Partial<MoodLogRepository> = {}): MoodLogRepository {
+  return {
+    create: vi
+      .fn()
+      .mockImplementation((input) =>
+        Promise.resolve({ id: 'mood-log-1', createdAt: new Date(), ...input }),
+      ),
+    findByDog: vi.fn().mockResolvedValue({ logs: [], nextCursor: null }),
+    findByTrack: vi.fn().mockResolvedValue(null),
     ...overrides,
   };
 }

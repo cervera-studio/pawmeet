@@ -6,3 +6,4 @@ export * from './feed';
 export * from './gamification';
 export * from './health';
 export * from './matching-ai';
+export * from './mood';

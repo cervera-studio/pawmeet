@@ -13,6 +13,7 @@ import type {
   GroupEventRepository,
   MatchRepository,
   MediaRepository,
+  MoodLogRepository,
   SafetyRepository,
   SmartMatchingRepository,
   UserRepository,
@@ -51,4 +52,5 @@ export const GAMIFICATION_REPOSITORY = Symbol(
   'GamificationRepository',
 ) as InjectionToken<GamificationRepository>;
 export const SAFETY_REPOSITORY = Symbol('SafetyRepository') as InjectionToken<SafetyRepository>;
+export const MOOD_LOG_REPOSITORY = Symbol('MoodLogRepository') as InjectionToken<MoodLogRepository>;
 export const ANALYTICS_SERVICE = Symbol('AnalyticsService') as InjectionToken<AnalyticsService>;

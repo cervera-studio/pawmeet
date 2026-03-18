@@ -9,6 +9,7 @@ import { createGetDogHealthGoal } from '../use-cases/get-dog-health-goal.js';
 import { createGetDogRating } from '../use-cases/get-dog-rating.js';
 import { createGetUserTracks } from '../use-cases/get-user-tracks.js';
 import { createGetWalkTrack } from '../use-cases/get-walk-track.js';
+import { createListDogMoodLogs } from '../use-cases/list-dog-mood-logs.js';
 import { createListUpcomingWalks } from '../use-cases/list-upcoming-walks.js';
 import { createListWalkFeedback } from '../use-cases/list-walk-feedback.js';
 import { createListWalksByMatch } from '../use-cases/list-walks-by-match.js';
@@ -16,6 +17,7 @@ import { createProposeWalk } from '../use-cases/propose-walk.js';
 import { createRespondToWalk } from '../use-cases/respond-to-walk.js';
 import { createStartWalkTracking } from '../use-cases/start-walk-tracking.js';
 import { createSubmitFeedback } from '../use-cases/submit-feedback.js';
+import { createSubmitMoodLog } from '../use-cases/submit-mood-log.js';
 import { createSyncHealthData } from '../use-cases/sync-health-data.js';
 import { gamificationDeps as _gamificationDeps, awardXp } from './gamification-container.js';
 import {
@@ -24,6 +26,7 @@ import {
   feedbackRepo,
   matchRepo,
   messageRepo,
+  moodLogRepo,
   notificationService,
   userRepo,
   walkAlbumRepo,
@@ -74,6 +77,12 @@ export const fitnessDeps = {
   updateChallengeProgress: _gamificationDeps.updateChallengeProgress,
   checkAndUnlockAchievements: _gamificationDeps.checkAndUnlockAchievements,
   updateStreak: _gamificationDeps.updateStreak,
+};
+
+export const moodLogDeps = {
+  submitMoodLog: createSubmitMoodLog({ moodLogRepo, walkTrackRepo, dogRepo }),
+  listDogMoodLogs: createListDogMoodLogs({ moodLogRepo, dogRepo }),
+  awardXp,
 };
 
 export const walkAlbumDeps = {

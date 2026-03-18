@@ -821,5 +821,35 @@
     "bioGenerationError": "Eroare la generarea bio-ului",
     "createError": "Eroare la creare",
     "addPhotos": "Adaugă fotografii"
+  },
+
+  "moodLog": {
+    "title": "Starea câinelui",
+    "ratingLabel": "Cum a fost câinele tău în timpul plimbării?",
+    "ratingRequired": "Selectează o evaluare",
+    "ratingValues": {
+      "1": "Groaznic",
+      "2": "Slab",
+      "3": "Mediu",
+      "4": "Bun",
+      "5": "Excelent"
+    },
+    "tagsLabel": "Etichete rapide (opțional)",
+    "tags": {
+      "socialization_ok": "Socializare OK",
+      "socialization_ko": "Socializare KO",
+      "pulled_on_leash": "A tras de lesă",
+      "calm": "Calm",
+      "anxious": "Anxios",
+      "playful": "Jucăuș",
+      "reactive": "Reactiv",
+      "tired": "Obosit",
+      "energetic": "Energic"
+    },
+    "notesLabel": "Note (opțional)",
+    "notesPlaceholder": "Cum s-a comportat câinele tău?",
+    "submit": "Salvează starea",
+    "submitting": "Se salvează...",
+    "submitError": "Starea nu a putut fi salvată. Încearcă din nou."
   }
 }

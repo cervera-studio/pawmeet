@@ -14,7 +14,13 @@ export { organizationDeps } from './organization-container.js';
 export { emergencyContactDeps } from './safety-container.js';
 export { analyticsProviders, experimentService } from './services.js';
 export { consentDeps, userDeps } from './user-container.js';
-export { feedbackDeps, fitnessDeps, walkAlbumDeps, walkDeps } from './walk-container.js';
+export {
+  feedbackDeps,
+  fitnessDeps,
+  moodLogDeps,
+  walkAlbumDeps,
+  walkDeps,
+} from './walk-container.js';
 export {
   analyticsAggregationDeps,
   analyticsWorkerDeps,

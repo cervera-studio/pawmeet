@@ -18,6 +18,7 @@ export * from './group-events';
 export * from './group-messages';
 export * from './matches';
 export * from './matching-ai';
+export * from './mood-logs';
 export * from './notifications';
 export * from './organizations';
 export * from './refresh-tokens';

@@ -34,6 +34,7 @@ import { DrizzleMlFeatureRepository } from '../infra/drizzle-ml-feature-reposito
 import { DrizzleMlOptimalTimesRepository } from '../infra/drizzle-ml-optimal-times-repository.js';
 import { DrizzleMlRecommendationsRepository } from '../infra/drizzle-ml-recommendations-repository.js';
 import { DrizzleMlTrainingRepository } from '../infra/drizzle-ml-training-repository.js';
+import { DrizzleMoodLogRepository } from '../infra/drizzle-mood-log-repository.js';
 import { DrizzleNearbyJobRepository } from '../infra/drizzle-nearby-job-repository.js';
 import { DrizzleOrganizationRepository } from '../infra/drizzle-organization-repository.js';
 import { DrizzleRisingCompatibilityRepository } from '../infra/drizzle-rising-compatibility-repository.js';
@@ -96,6 +97,7 @@ export const walkAlbumRepo = new DrizzleWalkAlbumRepository(db);
 export const walkTrackRepo = new DrizzleWalkTrackRepository(db);
 export const activityRepo = new DrizzleActivityRepository(db);
 export const matchingAiRepo = new DrizzleMatchingAiRepository(db);
+export const moodLogRepo = new DrizzleMoodLogRepository(db);
 export const organizationRepo = new DrizzleOrganizationRepository(db);
 export const eventSponsorRepo = new DrizzleEventSponsorRepository(db);
 export const gdprExportRepo = new DrizzleGdprExportRepository(db);

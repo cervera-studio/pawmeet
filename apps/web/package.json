@@ -13,6 +13,7 @@
     "a11y": "pa11y-ci --config .pa11yci.json"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.1.2",
     "@astrojs/react": "^5.0.0",
     "@astrojs/sitemap": "^3.0.0",
     "@fontsource-variable/inter": "^5.2.8",

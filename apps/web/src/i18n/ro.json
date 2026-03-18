@@ -161,5 +161,25 @@
     "footer": "Politică conformă cu GDPR, D.Lgs. 196/2003 și indicațiile Autorității pentru protecția datelor personale."
   },
   "terms": {},
-  "cookie": {}
+  "cookie": {},
+  "dogProfile": {
+    "title": "{name} — Profil pe PawMeet",
+    "description": "Descoperă-l pe {name}, {breed} pe PawMeet",
+    "owner": "Proprietar",
+    "size": "Mărime",
+    "energy": "Energie",
+    "behavior": "Sociabilitate",
+    "gender": "Sex",
+    "bio": "Bio",
+    "photos": "Fotografii",
+    "age": "Vârstă",
+    "years": "ani",
+    "months": "luni",
+    "weight": "Greutate",
+    "kg": "kg",
+    "cta": "Descarcă PawMeet pentru a-l cunoaște pe {name}",
+    "ctaButton": "Înscrie-te pe lista de așteptare",
+    "notFound": "Profil negăsit",
+    "notFoundText": "Profilul pe care îl cauți nu există sau nu mai este disponibil."
+  }
 }

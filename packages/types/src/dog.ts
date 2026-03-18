@@ -53,3 +53,19 @@ export interface DogPhoto {
   moderationStatus: 'pending' | 'approved' | 'rejected';
   uploadedAt: Date;
 }
+
+export interface PublicDogProfile {
+  id: string;
+  name: string;
+  breed: string;
+  breedSecondary: string | null;
+  size: DogSize;
+  weightKg: number;
+  gender: Gender;
+  energyLevel: EnergyLevel;
+  behaviorWithDogs: BehaviorWithDogs;
+  bio: string | null;
+  ageMonths: number;
+  ownerFirstName: string;
+  photos: Pick<DogPhoto, 'url' | 'position' | 'isPrimary'>[];
+}

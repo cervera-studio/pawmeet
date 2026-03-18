@@ -161,5 +161,25 @@
     "footer": "Policy compliant with GDPR, Italian Legislative Decree 196/2003, and the guidelines of the Italian Data Protection Authority."
   },
   "terms": {},
-  "cookie": {}
+  "cookie": {},
+  "dogProfile": {
+    "title": "{name} — Profile on PawMeet",
+    "description": "Discover {name}, {breed} on PawMeet",
+    "owner": "Owner",
+    "size": "Size",
+    "energy": "Energy",
+    "behavior": "Sociability",
+    "gender": "Gender",
+    "bio": "Bio",
+    "photos": "Photos",
+    "age": "Age",
+    "years": "years",
+    "months": "months",
+    "weight": "Weight",
+    "kg": "kg",
+    "cta": "Download PawMeet to meet {name}",
+    "ctaButton": "Join the waitlist",
+    "notFound": "Profile not found",
+    "notFoundText": "The profile you are looking for does not exist or is no longer available."
+  }
 }

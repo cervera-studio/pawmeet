@@ -161,5 +161,25 @@
     "footer": "Informativa conforme al GDPR, al D.Lgs. 196/2003 e alle indicazioni del Garante per la protezione dei dati personali."
   },
   "terms": {},
-  "cookie": {}
+  "cookie": {},
+  "dogProfile": {
+    "title": "{name} — Profilo su PawMeet",
+    "description": "Scopri {name}, {breed} su PawMeet",
+    "owner": "Proprietario",
+    "size": "Taglia",
+    "energy": "Energia",
+    "behavior": "Socialità",
+    "gender": "Sesso",
+    "bio": "Bio",
+    "photos": "Foto",
+    "age": "Età",
+    "years": "anni",
+    "months": "mesi",
+    "weight": "Peso",
+    "kg": "kg",
+    "cta": "Scarica PawMeet per conoscere {name}",
+    "ctaButton": "Unisciti alla waitlist",
+    "notFound": "Profilo non trovato",
+    "notFoundText": "Il profilo che stai cercando non esiste o non è più disponibile."
+  }
 }

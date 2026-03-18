@@ -10,6 +10,7 @@ export const routeMap: Record<string, Record<Locale, string>> = {
   '/privacy': { it: '/privacy', en: '/en/privacy', es: '/es/privacy', ro: '/ro/privacy' },
   '/terms': { it: '/terms', en: '/en/terms', es: '/es/terms', ro: '/ro/terms' },
   '/cookie': { it: '/cookie', en: '/en/cookie', es: '/es/cookie', ro: '/ro/cookie' },
+  '/dog': { it: '/dog', en: '/en/dog', es: '/es/dog', ro: '/ro/dog' },
 };
 
 /** Reverse lookup: given any localized path, find the canonical key */

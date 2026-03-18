@@ -7,6 +7,7 @@ import { createDeleteDog } from '../use-cases/delete-dog.js';
 import { createDeleteDogPhoto } from '../use-cases/delete-dog-photo.js';
 import { createGenerateDogBio } from '../use-cases/generate-dog-bio.js';
 import { createGetDog } from '../use-cases/get-dog.js';
+import { createGetPublicDogProfile } from '../use-cases/get-public-dog-profile.js';
 import { createListUserDogs } from '../use-cases/list-user-dogs.js';
 import { createReorderDogPhotos } from '../use-cases/reorder-dog-photos.js';
 import { createSearchBreeds } from '../use-cases/search-breeds.js';
@@ -18,6 +19,7 @@ import {
   dogPhotoAnalysisService,
   dogRepo,
   storage,
+  userRepo,
 } from './services.js';
 
 export const dogDeps = {
@@ -33,4 +35,5 @@ export const dogDeps = {
   reorderDogPhotos: createReorderDogPhotos({ dogRepo }),
   generateDogBio: createGenerateDogBio({ bioGenerationService }),
   analyzeDogPhoto: createAnalyzeDogPhoto({ dogPhotoAnalysisService }),
+  getPublicDogProfile: createGetPublicDogProfile({ dogRepo, userRepo }),
 };

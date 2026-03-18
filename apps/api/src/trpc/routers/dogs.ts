@@ -64,6 +64,10 @@ export function createDogsRouter(deps: typeof dogDeps) {
       .input(breedsSearchSchema)
       .query(async ({ input }) => unwrapResult(await deps.searchBreeds(input.q))),
 
+    getPublicProfile: publicProcedure
+      .input(z.object({ id: z.string().uuid() }))
+      .query(async ({ input }) => unwrapResult(await deps.getPublicDogProfile(input.id))),
+
     list: protectedProcedure.query(async ({ ctx }) =>
       unwrapResult(await deps.listUserDogs(ctx.userId)),
     ),

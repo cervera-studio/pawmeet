@@ -51,6 +51,11 @@ export const getNearbyActiveCountSchema = z.object({
   dogId: z.string().uuid(),
 });
 
+export const suggestWalksSchema = z.object({
+  dogId: z.string().uuid(),
+  limit: z.number().int().min(1).max(5).optional(),
+});
+
 export type LogSwipeScoreInput = z.infer<typeof logSwipeScoreSchema>;
 export type RecordMatchInteractionInput = z.infer<typeof recordMatchInteractionSchema>;
 export type RecordActivityWindowInput = z.infer<typeof recordActivityWindowSchema>;

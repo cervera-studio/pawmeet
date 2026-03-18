@@ -251,6 +251,9 @@ export interface AnalyticsEventMap {
   // Match Explanation
   match_explanation_viewed: { source: 'swipe_card' | 'match_card'; overallScore: number };
 
+  // Walk Suggestions
+  walk_suggestions_viewed: { suggestionCount: number; topScore: number };
+
   // Rising Compatibility
   rising_compatibility_notified: { risingCount: number };
 

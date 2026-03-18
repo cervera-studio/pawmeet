@@ -68,6 +68,24 @@ export interface OptimalTimeWindow {
   nearbyActiveUsers: number;
 }
 
+/** A compatible dog within a walk suggestion */
+export interface WalkSuggestionDog {
+  dogId: string;
+  dogName: string;
+  breed: string;
+  compatibilityScore: number;
+  distanceKm: number;
+}
+
+/** A suggested walk time slot with nearby compatible dogs */
+export interface WalkSuggestion {
+  timeSlot: { dayOfWeek: number; hourStart: number; hourEnd: number };
+  score: number;
+  terrainSuggestion: string;
+  nearbyCompatibleDogs: WalkSuggestionDog[];
+  estimatedDurationMin: number;
+}
+
 /** Matching insights for a user */
 export interface MatchingInsights {
   totalSwipes: number;

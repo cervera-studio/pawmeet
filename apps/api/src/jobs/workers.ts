@@ -26,10 +26,12 @@ import {
   walkReminderDeps,
   walkSafetyAlertDeps,
   weeklyChallengeRotationDeps,
+  contentModerationWorkerDeps,
 } from '../container/index.js';
 import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createDataCleanupWorker } from './data-cleanup.js';
+import { createContentModerationWorker } from './content-moderation.js';
 import { createEmbeddingGenerationWorker } from './embedding-generation.js';
 import { createEventStatusWorker, scheduleEventStatusCheck } from './event-status.js';
 import { createExperimentGuardrailsWorker } from './experiment-guardrails.js';
@@ -96,6 +98,7 @@ export async function startWorkers() {
   const experimentGuardrailsWorker = createExperimentGuardrailsWorker(experimentGuardrailsDeps);
   const weeklyChallengeWorker = createWeeklyChallengeRotationWorker(weeklyChallengeRotationDeps);
   const streakCheckWorker = createStreakCheckWorker(streakCheckDeps);
+  const contentModerationWorker = createContentModerationWorker(contentModerationWorkerDeps);
   const embeddingGenerationWorker = createEmbeddingGenerationWorker(embeddingGenerationDeps);
   const messageToxicityWorker = messageToxicityDeps
     ? createMessageToxicityWorker(messageToxicityDeps)
@@ -149,6 +152,7 @@ export async function startWorkers() {
       experimentGuardrailsWorker.close(),
       weeklyChallengeWorker.close(),
       streakCheckWorker.close(),
+      contentModerationWorker.close(),
       embeddingGenerationWorker.close(),
       ...(messageToxicityWorker ? [messageToxicityWorker.close()] : []),
     ]);

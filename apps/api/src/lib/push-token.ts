@@ -1,5 +1,5 @@
 /**
- * Push token hashing utilities.
+ * Push token utilities.
  *
  * NOTE: Expo Push Notifications require the UNHASHED token to deliver
  * notifications (the token is an opaque address used by APNs/FCM).
@@ -23,25 +23,3 @@
  * - The token itself is not a credential — it can only be used to SEND
  *   notifications to the device, not to read data.
  */
-
-import { createHmac } from 'node:crypto';
-import process from 'node:process';
-
-const salt = process.env.PUSH_TOKEN_SALT;
-
-/**
- * Hash a push token for identification/comparison purposes.
- * Use this when you need to check if a token has changed without
- * comparing raw values (e.g., deduplication, audit logs).
- *
- * Do NOT use the hash as a replacement for the raw token when
- * sending push notifications — Expo requires the original token.
- */
-export function hashPushToken(token: string): string {
-  if (!salt && process.env.NODE_ENV === 'production') {
-    throw new Error('PUSH_TOKEN_SALT is required in production');
-  }
-  return createHmac('sha256', salt ?? 'dev-salt')
-    .update(token)
-    .digest('hex');
-}

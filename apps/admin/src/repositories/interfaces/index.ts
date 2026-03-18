@@ -19,10 +19,7 @@ export type {
   FeedStats,
 } from './feed-admin-repository';
 export type {
-  AdminEventParticipant,
-  AdminGroupEventDetail,
   AdminGroupEventListItem,
-  AdminGroupEventRepository,
   ListGroupEventsParams,
 } from './group-event-repository';
 export type {

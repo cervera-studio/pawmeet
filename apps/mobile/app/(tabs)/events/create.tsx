@@ -1,4 +1,5 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -69,6 +70,7 @@ function formatDateTime(date: Date): string {
 // ── Screen ───────────────────────────────────────────────────────────────────
 
 export default function CreateEventScreen() {
+  const { t } = useTranslation();
   const vm = useCreateEventViewModel();
 
   return (
@@ -85,12 +87,12 @@ export default function CreateEventScreen() {
           {/* Title */}
           <View className="mb-4">
             <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Titolo *
+              {t('events.create.titleLabel')}
             </Text>
             <TextInput
               value={vm.title}
               onChangeText={vm.setTitle}
-              placeholder="Es. Passeggiata al parco"
+              placeholder={t('events.create.titlePlaceholder')}
               className="rounded-xl border border-gray-200 dark:border-[#38383A] bg-gray-50 dark:bg-[#2C2C2E] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={100}
@@ -100,12 +102,12 @@ export default function CreateEventScreen() {
           {/* Description */}
           <View className="mb-4">
             <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Descrizione
+              {t('events.create.descriptionLabel')}
             </Text>
             <TextInput
               value={vm.description}
               onChangeText={vm.setDescription}
-              placeholder="Aggiungi una descrizione..."
+              placeholder={t('events.create.descriptionPlaceholder')}
               className="rounded-xl border border-gray-200 dark:border-[#38383A] bg-gray-50 dark:bg-[#2C2C2E] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               multiline
@@ -118,12 +120,12 @@ export default function CreateEventScreen() {
           {/* Location */}
           <View className="mb-4">
             <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Luogo *
+              {t('events.create.locationLabel')}
             </Text>
             <TextInput
               value={vm.location}
               onChangeText={vm.setLocation}
-              placeholder="Es. Parco Sempione, Milano"
+              placeholder={t('events.create.locationPlaceholder')}
               className="rounded-xl border border-gray-200 dark:border-[#38383A] bg-gray-50 dark:bg-[#2C2C2E] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={200}
@@ -133,7 +135,7 @@ export default function CreateEventScreen() {
           {/* Date picker */}
           <View className="mb-4">
             <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Data e ora *
+              {t('events.create.dateLabel')}
             </Text>
             <Pressable
               onPress={vm.toggleDatePicker}
@@ -157,7 +159,7 @@ export default function CreateEventScreen() {
 
           {/* Duration stepper */}
           <Stepper
-            label="Durata"
+            label={t('events.create.durationLabel')}
             value={vm.durationMin}
             suffix="min"
             onIncrement={vm.incrementDuration}
@@ -166,7 +168,7 @@ export default function CreateEventScreen() {
 
           {/* Max participants stepper */}
           <Stepper
-            label="Partecipanti massimi"
+            label={t('events.create.maxParticipantsLabel')}
             value={vm.maxParticipants}
             suffix=""
             onIncrement={vm.incrementParticipants}
@@ -187,7 +189,7 @@ export default function CreateEventScreen() {
               <Text
                 className={`font-semibold ${vm.isValid ? 'text-white' : 'text-gray-400 dark:text-neutral-500'}`}
               >
-                Crea evento
+                {t('events.create.submitButton')}
               </Text>
             )}
           </Pressable>

@@ -1,1 +1,803 @@
-{}
+{
+  "common": {
+    "error": "Error",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "save": "Save",
+    "send": "Send",
+    "retry": "Retry",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "ok": "OK",
+    "no": "No",
+    "yes": "Yes",
+    "all": "All",
+    "loading": "Loading...",
+    "sending": "Sending...",
+    "deleting": "Deleting...",
+    "publishing": "Publishing...",
+    "or": "or",
+    "add": "Add",
+    "report": "Report",
+    "block": "Block",
+    "unblock": "Unblock",
+    "approve": "Approve",
+    "decline": "Decline",
+    "accept": "Accept",
+    "publish": "Publish",
+    "change": "Change",
+    "reply": "Reply",
+    "submit": "Submit",
+    "go": "GO",
+    "user": "User",
+    "photo": "Photo",
+    "video": "Video",
+    "position": "Location",
+    "now": "Now",
+    "minuteAgo": "{{count}} min ago",
+    "hourAgo": "{{count}}h ago",
+    "dayAgo": "{{count}}d ago",
+    "timeNow": "Now",
+    "actionFailed": "Unable to complete the action. Please try again.",
+    "genericError": "Unexpected error",
+    "fileTooLarge": "File too large",
+    "fileTooLargeMessage": "The photo cannot exceed 5 MB.",
+    "permissionRequired": "Permission required",
+    "galleryPermission": "Allow access to the gallery to upload a photo.",
+    "uploadPhotoError": "Unable to upload the photo. Please try again.",
+    "uploadAvatarError": "Unable to upload the profile picture. Please try again."
+  },
+
+  "tabs": {
+    "discover": "Discover",
+    "map": "Map",
+    "feed": "Feed",
+    "match": "Match",
+    "chat": "Chat",
+    "events": "Events",
+    "walks": "Walks",
+    "profile": "Profile"
+  },
+
+  "modals": {
+    "dogDetail": "Dog Detail",
+    "settings": "Settings",
+    "report": "Report",
+    "blocked": "Blocked users",
+    "searchUsers": "Search users",
+    "userProfile": "Profile",
+    "storyViewers": "Views",
+    "newStory": "New story",
+    "ageGate": "Age verification"
+  },
+
+  "discovery": {
+    "title": "Discover",
+    "subtitle": "Dogs nearby",
+    "addYourDog": "Add your dog",
+    "addDogDescription": "To start discovering compatible dogs, add your first dog.",
+    "addDogButton": "Add dog",
+    "locationRequired": "Location required",
+    "locationDescription": "Enable location to discover dogs nearby.",
+    "enableLocation": "Enable location",
+    "searchingDogs": "Searching for compatible dogs...",
+    "noMoreProfiles": "No more profiles",
+    "noMoreProfilesDescription": "You've seen all the dogs nearby. Try again later!",
+    "refresh": "Refresh",
+    "filters": {
+      "title": "Filters",
+      "reset": "Reset",
+      "apply": "Apply filters",
+      "size": "Size",
+      "energy": "Energy",
+      "gender": "Gender",
+      "behavior": "Behavior",
+      "schedule": "Schedule",
+      "terrain": "Terrain",
+      "maxDistance": "Maximum distance"
+    },
+    "sizeOptions": {
+      "toy": "Toy",
+      "piccola": "Small",
+      "media": "Medium",
+      "grande": "Large",
+      "gigante": "Giant"
+    },
+    "energyOptions": {
+      "bassa": "Low",
+      "media": "Medium",
+      "alta": "High",
+      "molto_alta": "Very high"
+    },
+    "genderOptions": {
+      "maschio": "Male",
+      "femmina": "Female"
+    },
+    "behaviorOptions": {
+      "molto_socievole": "Very friendly",
+      "socievole": "Friendly",
+      "selettivo": "Selective",
+      "reattivo": "Reactive"
+    },
+    "scheduleOptions": {
+      "mattina_presto": "Early morning",
+      "mattina": "Morning",
+      "pomeriggio": "Afternoon",
+      "sera": "Evening",
+      "sera_tardi": "Late evening"
+    },
+    "terrainOptions": {
+      "urbano": "Urban",
+      "parco": "Park",
+      "campagna": "Countryside",
+      "spiaggia": "Beach",
+      "montagna": "Mountain"
+    }
+  },
+
+  "walks": {
+    "title": "Walks",
+    "calendar": "Calendar",
+    "track": "Track",
+    "noWalks": "No walks scheduled",
+    "noWalksDescription": "Propose a walk from the chat with one of your matches!",
+    "leaveFeedback": "Leave feedback",
+    "status": {
+      "pending": "Pending",
+      "accepted": "Confirmed",
+      "declined": "Declined",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "alerts": {
+      "acceptError": "Unable to accept the walk",
+      "declineError": "Unable to decline the walk",
+      "cancelTitle": "Cancel walk",
+      "cancelMessage": "Are you sure you want to cancel this walk?",
+      "cancelButton": "Cancel walk",
+      "cancelError": "Unable to cancel the walk"
+    },
+    "tracking": {
+      "title": "Track walk",
+      "backButton": "Walks",
+      "inProgress": "In progress",
+      "readyToGo": "Ready to go",
+      "distance": "Distance",
+      "speed": "Speed",
+      "gpsPoints": "{{count}} GPS points recorded",
+      "tapToStop": "Tap to stop",
+      "tapToStart": "Tap to start",
+      "startError": "Unable to start tracking. Check your location permissions.",
+      "stopTitle": "End walk",
+      "stopMessage": "Do you want to end tracking the walk?",
+      "continueButton": "Continue",
+      "stopButton": "End",
+      "stopError": "Unable to end tracking",
+      "sosTitle": "SOS — Emergency",
+      "sosMessage": "Send an alert to your walking companion with your current location?",
+      "sosSend": "Send SOS",
+      "sosSent": "SOS sent",
+      "sosSentMessage": "Your companion has been notified.",
+      "sosError": "Unable to send SOS. Please try again.",
+      "sosNoWalk": "No active walk to send SOS."
+    },
+    "propose": {
+      "title": "Propose walk",
+      "dateLabel": "Date (YYYY-MM-DD) *",
+      "timeLabel": "Time (HH:MM) *",
+      "durationLabel": "Duration",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g. Walk in the park",
+      "locationLabel": "Location",
+      "locationPlaceholder": "E.g. Central Park, New York",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "E.g. Meet at the main entrance",
+      "submitButton": "Propose",
+      "dateTimeRequired": "Enter date and time",
+      "dateTimeInvalid": "Invalid date or time. Use the format YYYY-MM-DD and HH:MM",
+      "dateInFuture": "The date must be in the future",
+      "proposeError": "Unable to propose the walk"
+    },
+    "feedback": {
+      "title": "Walk feedback",
+      "question": "How did the walk go?",
+      "commentLabel": "Comment (optional)",
+      "commentPlaceholder": "Tell us how it went...",
+      "submitButton": "Submit feedback",
+      "ratingRequired": "Select a rating",
+      "submitError": "Unable to submit feedback. Please try again.",
+      "ratings": {
+        "1": "Terrible",
+        "2": "Poor",
+        "3": "Average",
+        "4": "Good",
+        "5": "Excellent"
+      }
+    }
+  },
+
+  "feed": {
+    "title": "Feed",
+    "noPostsYet": "No posts yet",
+    "noPostsDescription": "Start following other owners or publish your first post!",
+    "newPostsAvailable": "New posts available",
+    "postTitle": "Post",
+    "backButton": "Feed",
+    "walkAlbum": "Walk album",
+    "noPhotosInAlbum": "No photos in this album",
+    "create": {
+      "title": "New post",
+      "captionPlaceholder": "Write a caption...",
+      "addMedia": "Add",
+      "includeLocation": "Include location",
+      "tagsSelected": "{{count}} tags selected",
+      "tagPrompt": "Tag people or dogs",
+      "uploadProgress": "Uploading {{current}}/{{total}}...",
+      "selectMediaError": "Select at least one photo or video",
+      "createError": "Unable to create the post",
+      "uploadMediaFailed": "Media upload failed"
+    },
+    "comments": {
+      "title": "Comments",
+      "noComments": "No comments yet",
+      "writePlaceholder": "Write a comment...",
+      "replyPlaceholder": "Write a reply...",
+      "replyTo": "Reply to",
+      "sendButton": "Send"
+    },
+    "actions": {
+      "deletePost": "Delete post",
+      "deletePostConfirm": "Are you sure you want to delete this post?"
+    },
+    "story": {
+      "title": "New story",
+      "publishError": "Unable to publish the story",
+      "tapToSelect": "Tap to select",
+      "noViews": "No views",
+      "noViewsDescription": "No one has seen this story yet."
+    }
+  },
+
+  "profile": {
+    "title": "Profile",
+    "defaultName": "User",
+    "changePhoto": "Tap the photo to change it",
+    "follower": "Follower",
+    "following": "Following",
+    "friends": "Friends",
+    "friendsSubtitle": "Mutual",
+    "searchUsersPrompt": "Search users to follow",
+    "myDogs": "My dogs",
+    "addDog": "+ Add",
+    "noDogs": "You haven't added any dogs yet.",
+    "addYourDog": "Add your dog",
+    "active": "Active",
+    "activate": "Activate",
+    "xpToNextLevel": "{{count}} XP to next level",
+    "menu": {
+      "gamification": "Gamification",
+      "activity": "Activity and Stats",
+      "matchingInsights": "Match Insights",
+      "settings": "Settings",
+      "privacy": "Privacy and Security",
+      "blocked": "Blocked users",
+      "help": "Help and Support",
+      "logout": "Log out"
+    },
+    "dogDetail": {
+      "backButton": "Profile",
+      "loading": "Loading...",
+      "error": "Error",
+      "notFound": "Dog not found",
+      "invalidId": "Invalid dog ID",
+      "crossbreed": "Crossbreed with {{breed}}",
+      "neutered": "Neutered",
+      "notNeutered": "Not neutered",
+      "deactivated": "Profile deactivated",
+      "reviewSingular": "review",
+      "reviewPlural": "reviews",
+      "badges": "Badges",
+      "noBadges": "No badges yet",
+      "bio": "Bio",
+      "infoSize": "Size",
+      "infoWeight": "Weight",
+      "infoEnergy": "Energy",
+      "temperament": "Temperament",
+      "withDogs": "With dogs",
+      "withPeople": "With people",
+      "leash": "Leash",
+      "recall": "Recall",
+      "walkPrefs": "Walk preferences",
+      "walkSchedule": "Schedule",
+      "walkTerrain": "Terrain",
+      "walkDuration": "Duration",
+      "durationFormat": "{{min}} - {{max}} minutes",
+      "photos": "Photos",
+      "photosCount": "Photos ({{current}}/{{max}})",
+      "photoLongPress": "Long press a photo to delete it",
+      "photoReview": "Under review",
+      "photoRejected": "Rejected",
+      "deletePhoto": "Delete photo",
+      "deletePhotoConfirm": "Are you sure you want to delete this photo?",
+      "deletePhotoError": "Unable to delete the photo. Please try again.",
+      "deactivateProfile": "Deactivate profile",
+      "activateProfile": "Activate profile",
+      "deleteProfile": "Delete dog profile",
+      "addPhotos": "Add photos"
+    },
+    "activity": {
+      "title": "Activity",
+      "week": "Week",
+      "month": "Month",
+      "selectDog": "Select dog",
+      "totalDistance": "Total distance",
+      "walks": "Walks"
+    },
+    "matchingInsights": {
+      "title": "Match Insights",
+      "overview": "Overview",
+      "totalSwipes": "Total swipes",
+      "likesGiven": "Likes given",
+      "matchCount": "Match",
+      "matchRate": "Match rate",
+      "preferences": "Your preferences",
+      "preferencesSubtitle": "How we evaluate compatibility for you",
+      "bestTimes": "Best times",
+      "bestTimesSubtitle": "When you're most likely to find walking companions",
+      "activeUsers": "{{count}} active users",
+      "algorithmAI": "AI powered",
+      "algorithmStandard": "Standard",
+      "algorithmLabel": "Algorithm",
+      "noData": "No data available",
+      "noDataHint": "Start swiping to see your stats"
+    },
+    "challenges": {
+      "title": "Challenges",
+      "backButton": "Gamification",
+      "completed": "Completed!",
+      "noChallenges": "No active challenges at the moment.\nCheck back soon for new challenges!"
+    },
+    "followList": {
+      "noFollowers": "No followers",
+      "noFollowersSubtitle": "When someone follows you, they will appear here.",
+      "notFollowing": "Not following anyone",
+      "notFollowingSubtitle": "Start following other owners to stay updated!",
+      "noFriends": "No friends yet",
+      "noFriendsSubtitle": "Friends are people you follow who also follow you back."
+    }
+  },
+
+  "events": {
+    "title": "Events",
+    "createButton": "Create event",
+    "noEvents": "No events nearby",
+    "noEventsDescription": "Create an event to organize a group walk!",
+    "maxParticipants": "Max {{count}} participants",
+    "detail": {
+      "title": "Event detail",
+      "backButton": "Events",
+      "notFound": "Event not found",
+      "fallbackTitle": "Event",
+      "official": "Official Event",
+      "verified": "Verified",
+      "organizer": "Organizer",
+      "participant": "Participant",
+      "enrolled": "You're enrolled",
+      "presentedBy": "Presented by",
+      "supportedBy": "Supported by",
+      "timeFormat": "At {{time}} - Duration {{duration}} min",
+      "participants": "Participants",
+      "participantsCount": "Participants ({{current}}/{{max}})",
+      "noParticipants": "No participants yet",
+      "organizerAbbrev": "Org.",
+      "chatButton": "Chat",
+      "joinButton": "Join",
+      "leaveButton": "Leave event",
+      "cancelButton": "Cancel event",
+      "selectDogError": "Select a dog from your profile before joining.",
+      "joinError": "Unable to join the event.",
+      "leaveTitle": "Leave event",
+      "leaveMessage": "Are you sure you want to leave this event?",
+      "leaveConfirm": "Leave",
+      "leaveError": "Unable to leave the event.",
+      "cancelTitle": "Cancel event",
+      "cancelMessage": "Are you sure you want to cancel this event?",
+      "cancelError": "Unable to cancel the event."
+    },
+    "requests": {
+      "title": "Requests",
+      "noRequests": "No pending requests",
+      "approveError": "Unable to approve the request.",
+      "declineTitle": "Decline request",
+      "declineMessage": "Are you sure you want to decline this request?",
+      "declineError": "Unable to decline the request."
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "rsvp": {
+      "accepted": "Enrolled",
+      "pending": "Pending",
+      "declined": "Declined"
+    },
+    "categories": {
+      "all": "All",
+      "walk": "Walk",
+      "meetup": "Meetup",
+      "training": "Training"
+    },
+    "create": {
+      "title": "New event",
+      "backButton": "Events",
+      "titleLabel": "Title *",
+      "titlePlaceholder": "E.g. Walk in the park",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Add a description...",
+      "locationLabel": "Location *",
+      "locationPlaceholder": "E.g. Central Park, New York",
+      "dateLabel": "Date and time *",
+      "durationLabel": "Duration",
+      "maxParticipantsLabel": "Maximum participants",
+      "submitButton": "Create event",
+      "selectDogError": "Select a dog from your profile before creating an event.",
+      "locationError": "Unable to get location. Enable geolocation.",
+      "createError": "Unable to create the event. Please try again."
+    },
+    "calendar": {
+      "title": "Events Calendar",
+      "backButton": "Events",
+      "noOfficialEvents": "No official events"
+    }
+  },
+
+  "matches": {
+    "title": "Your Matches",
+    "noMatches": "No matches yet",
+    "noMatchesDescription": "Keep exploring profiles to find walking companions!",
+    "discoverButton": "Discover dogs",
+    "celebration": {
+      "title": "Match!",
+      "compatible": "Your dogs are compatible!",
+      "startConversation": "Start a conversation to organize a walk together.",
+      "sendMessage": "Send a message",
+      "keepExploring": "Keep exploring"
+    },
+    "compatibility": "Compatibility",
+    "size": {
+      "name": "Size",
+      "tier1": "Similar size",
+      "tier2": "Compatible size",
+      "tier3": "Different size",
+      "tier4": "Very different size"
+    },
+    "energy": {
+      "name": "Energy",
+      "tier1": "Same energy",
+      "tier2": "Compatible energy",
+      "tier3": "Different energy",
+      "tier4": "Very different energy"
+    },
+    "behavior": {
+      "name": "Chemistry",
+      "tier1": "Great chemistry",
+      "tier2": "Good chemistry",
+      "tier3": "Fair chemistry",
+      "tier4": "Different temperaments"
+    },
+    "walk": {
+      "name": "Schedule and areas",
+      "tier1": "Same schedule and areas",
+      "tier2": "Similar schedule and areas",
+      "tier3": "Some schedule overlap",
+      "tier4": "Different schedule and areas"
+    },
+    "distance": {
+      "name": "Distance",
+      "tier1": "Very close",
+      "tier2": "Close",
+      "tier3": "Average distance",
+      "tier4": "A bit far"
+    },
+    "leash": {
+      "name": "Leash",
+      "tier1": "Same pace",
+      "tier2": "Good pace together",
+      "tier3": "Fair leash behavior",
+      "tier4": "Leash needs managing"
+    }
+  },
+
+  "chat": {
+    "title": "Chat",
+    "groupChat": "Group chat",
+    "backButton": "Chat",
+    "messagePlaceholder": "Write a message...",
+    "typing": "Typing...",
+    "emptyTitle": "Start the conversation!",
+    "emptyDescription": "Introduce yourself and organize a walk together.",
+    "groupEmptyTitle": "Group chat",
+    "groupEmptyDescription": "Write a message to coordinate the walk!",
+    "attachments": {
+      "photo": "Photo",
+      "location": "Location",
+      "walk": "Walk"
+    },
+    "location": {
+      "meetingPoint": "Meeting point",
+      "openMap": "Tap to open the map"
+    }
+  },
+
+  "auth": {
+    "welcome": {
+      "slide1Title": "Find walking companions",
+      "slide1Description": "Discover compatible dogs in your area for walks together.",
+      "slide2Title": "Make a match",
+      "slide2Description": "Swipe to find the perfect companion for your dog.",
+      "slide3Title": "Start walking",
+      "slide3Description": "Chat, plan, and head out for your first walk!",
+      "loginButton": "Log in",
+      "registerButton": "Sign up",
+      "nextButton": "Next",
+      "skipButton": "Skip"
+    },
+    "login": {
+      "title": "Welcome back!",
+      "subtitle": "Log in to continue",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Password",
+      "forgotPassword": "Forgot password?",
+      "loginButton": "Log in",
+      "loggingIn": "Logging in...",
+      "continueWithGoogle": "Continue with Google",
+      "continueWithApple": "Continue with Apple",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up",
+      "loginError": "Error during login",
+      "socialLoginError": "Error during social login",
+      "googleError": "Error with Google Sign In",
+      "appleError": "Error with Apple Sign In"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Join the PawMeet community",
+      "namePlaceholder": "Full name",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Password",
+      "confirmPasswordPlaceholder": "Confirm password",
+      "dateOfBirthPlaceholder": "Date of birth (YYYY-MM-DD)",
+      "registerButton": "Sign up",
+      "registering": "Signing up...",
+      "terms": "By signing up you agree to our Terms of Service and Privacy Policy",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "registerError": "Error during registration",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "ageGate": {
+      "title": "Age verification",
+      "description": "To continue using PawMeet, enter your date of birth. You must be at least {{age}} years old.",
+      "dateOfBirthPlaceholder": "Date of birth (YYYY-MM-DD)",
+      "submitButton": "Confirm",
+      "submitting": "Submitting...",
+      "invalidDate": "Invalid date"
+    }
+  },
+
+  "consent": {
+    "title": "Privacy and consent",
+    "description": "Choose which optional services to enable. You can change your preferences at any time from Settings.",
+    "analytics": {
+      "title": "Usage analytics",
+      "description": "Helps us understand how you use the app to improve it. Anonymous and aggregated data."
+    },
+    "abTesting": {
+      "title": "A/B experiments",
+      "description": "Participate in comparative tests to help us choose the best features. The base app configuration always works, even without this consent."
+    },
+    "errorTracking": {
+      "title": "Error reporting",
+      "description": "Sends detailed reports when something goes wrong. Without this consent, reports are still sent anonymously."
+    },
+    "aiTraining": {
+      "title": "AI training",
+      "description": "Help improve matching by training AI models on your dog's anonymized profile"
+    },
+    "marketing": {
+      "title": "Marketing communications",
+      "description": "Receive updates about news, events, and promotions via email."
+    },
+    "acceptSelected": "Accept selected",
+    "rejectAll": "Reject all",
+    "readPrivacyPolicy": "Read the full Privacy Policy",
+    "manageAll": "Manage all consents"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "privacySection": "Privacy and consent",
+    "analyticsTitle": "Usage analytics",
+    "analyticsDescription": "Anonymous data to improve the app",
+    "abTestingTitle": "A/B experiments",
+    "abTestingDescription": "Participate in comparative tests",
+    "errorTrackingTitle": "Error reporting",
+    "errorTrackingDescription": "Detailed reports (always anonymous without consent)",
+    "marketingTitle": "Marketing communications",
+    "marketingDescription": "News, events, and promotions via email",
+    "notifications": {
+      "title": "Notifications",
+      "newMatches": "New matches",
+      "newMatchesDescription": "Receive notifications for new matches",
+      "messages": "Messages",
+      "messagesDescription": "Receive notifications for new messages",
+      "walkReminders": "Walk reminders",
+      "walkRemindersDescription": "Receive reminders for scheduled walks",
+      "feedAndStories": "Feed and stories",
+      "feedAndStoriesDescription": "Receive notifications for likes, comments, and new stories",
+      "nearbyUsers": "Nearby users",
+      "nearbyUsersDescription": "Receive notifications when there are users near you"
+    },
+    "quietHours": {
+      "title": "Quiet hours",
+      "enable": "Enable quiet hours",
+      "description": "Disable notifications during certain hours",
+      "from": "From",
+      "to": "To"
+    },
+    "general": {
+      "title": "General",
+      "shareLocation": "Share location",
+      "darkMode": "Dark mode",
+      "searchRadius": "Search radius",
+      "language": "Language",
+      "italian": "Italian"
+    },
+    "legal": {
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "cookiePolicy": "Cookie Policy",
+      "appVersion": "App version"
+    },
+    "account": {
+      "title": "Account",
+      "logout": "Log out",
+      "deleteAccount": "Delete account",
+      "deletingAccount": "Deleting account...",
+      "deleteConfirmTitle": "Delete account",
+      "deleteConfirmMessage": "Are you sure? Your account will be deactivated immediately and data deleted within 30 days. This action cannot be undone.",
+      "deleteButton": "Delete",
+      "passwordConfirmTitle": "Confirm with password",
+      "passwordConfirmMessage": "Enter your password to confirm account deletion.",
+      "confirmDeletion": "Confirm deletion",
+      "deletedTitle": "Account deleted",
+      "deletedMessage": "Your account has been deactivated. You will receive a confirmation email.",
+      "invalidPassword": "Invalid password. Please try again.",
+      "deleteError": "Error during deletion. Please try again later."
+    }
+  },
+
+  "report": {
+    "title": "Report",
+    "subtitle": "Select the reason for the report",
+    "detailsPlaceholder": "Additional details (optional)",
+    "submitButton": "Submit report",
+    "submitting": "Submitting...",
+    "successTitle": "Thank you",
+    "successMessage": "Your report has been submitted.",
+    "error": "Unable to submit the report. Please try again.",
+    "reasons": {
+      "inappropriate": "Inappropriate content",
+      "harassment": "Harassing behavior",
+      "spam": "Spam",
+      "violence": "Violence",
+      "other": "Other"
+    }
+  },
+
+  "blocked": {
+    "title": "Blocked users",
+    "noBlocked": "No blocked users",
+    "noBlockedDescription": "Users you block will no longer be able to follow or contact you.",
+    "unblockTitle": "Unblock user",
+    "unblockMessage": "Do you want to unblock {{name}}?",
+    "unblockButton": "Unblock",
+    "unblockError": "Unable to unblock the user. Please try again."
+  },
+
+  "userProfile": {
+    "blockTitle": "Block user",
+    "blockMessage": "Do you want to block {{name}}?",
+    "blockButton": "Block",
+    "blockedTitle": "User blocked",
+    "blockedMessage": "You will no longer see this user.",
+    "blockError": "Unable to block the user. Please try again.",
+    "followError": "Unable to complete the action. Please try again."
+  },
+
+  "searchUsers": {
+    "placeholder": "Search users...",
+    "noResults": "No results",
+    "noResultsDescription": "Try searching with a different name."
+  },
+
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Try reloading the screen.",
+    "retryButton": "Retry"
+  },
+
+  "location": {
+    "permissionTitle": "Location required",
+    "permissionMessage": "PawMeet needs your location to show dogs nearby. Enable location in settings.",
+    "openSettings": "Open Settings",
+    "permissionError": "Error requesting location permissions",
+    "notGranted": "Location permission not granted",
+    "fetchError": "Error fetching location"
+  },
+
+  "badges": {
+    "firstMeeting": "First meeting",
+    "regularWalker": "Regular walker",
+    "superSocial": "Super friendly",
+    "friendlyDog": "Friendly dog",
+    "noBadges": "No badges yet"
+  },
+
+  "labels": {
+    "toy": "Toy",
+    "piccola": "Small",
+    "media": "Medium",
+    "grande": "Large",
+    "gigante": "Giant",
+    "bassa": "Low",
+    "alta": "High",
+    "molto_alta": "Very high",
+    "molto_socievole": "Very friendly",
+    "socievole": "Friendly",
+    "selettivo": "Selective",
+    "reattivo": "Reactive",
+    "timido": "Shy",
+    "diffidente": "Wary",
+    "eccellente": "Excellent",
+    "buono": "Good",
+    "in_addestramento": "In training",
+    "difficile": "Difficult",
+    "affidabile": "Reliable",
+    "parziale": "Partial",
+    "non_affidabile": "Unreliable",
+    "maschio": "Male",
+    "femmina": "Female",
+    "mattina_presto": "Early morning",
+    "mattina": "Morning",
+    "pomeriggio": "Afternoon",
+    "sera": "Evening",
+    "sera_tardi": "Late evening",
+    "urbano": "Urban",
+    "parco": "Park",
+    "campagna": "Countryside",
+    "spiaggia": "Beach",
+    "montagna": "Mountain"
+  },
+
+  "dogForm": {
+    "validation": {
+      "selectSize": "Select the size",
+      "selectGender": "Select the gender",
+      "selectEnergy": "Select the energy level",
+      "selectBehaviorDogs": "Select the behavior with other dogs",
+      "selectBehaviorPeople": "Select the behavior with people",
+      "selectLeash": "Select the leash behavior",
+      "selectSchedule": "Select at least one preferred schedule",
+      "selectTerrain": "Select at least one terrain type"
+    },
+    "bioGenerationError": "Error during bio generation",
+    "createError": "Error during creation",
+    "addPhotos": "Add photos"
+  }
+}

@@ -3,6 +3,7 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 import type { DiscoveryFilters } from '@pawmeet/types';
 import { formatDogAge } from '@pawmeet/utils';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogSelector } from '@/components/DogSelector';
@@ -20,66 +21,66 @@ type FilterSection<K extends keyof DiscoveryFilters> = {
   options: { value: string; label: string }[];
 };
 
-const FILTER_SECTIONS: FilterSection<keyof DiscoveryFilters>[] = [
+const getFilterSections = (t: (key: string) => string): FilterSection<keyof DiscoveryFilters>[] => [
   {
     key: 'size',
-    label: 'Taglia',
+    label: t('discovery.filters.size'),
     options: [
-      { value: 'toy', label: 'Toy' },
-      { value: 'piccola', label: 'Piccola' },
-      { value: 'media', label: 'Media' },
-      { value: 'grande', label: 'Grande' },
-      { value: 'gigante', label: 'Gigante' },
+      { value: 'toy', label: t('discovery.sizeOptions.toy') },
+      { value: 'piccola', label: t('discovery.sizeOptions.piccola') },
+      { value: 'media', label: t('discovery.sizeOptions.media') },
+      { value: 'grande', label: t('discovery.sizeOptions.grande') },
+      { value: 'gigante', label: t('discovery.sizeOptions.gigante') },
     ],
   },
   {
     key: 'energyLevel',
-    label: 'Energia',
+    label: t('discovery.filters.energy'),
     options: [
-      { value: 'bassa', label: 'Bassa' },
-      { value: 'media', label: 'Media' },
-      { value: 'alta', label: 'Alta' },
-      { value: 'molto_alta', label: 'Molto alta' },
+      { value: 'bassa', label: t('discovery.energyOptions.bassa') },
+      { value: 'media', label: t('discovery.energyOptions.media') },
+      { value: 'alta', label: t('discovery.energyOptions.alta') },
+      { value: 'molto_alta', label: t('discovery.energyOptions.molto_alta') },
     ],
   },
   {
     key: 'gender',
-    label: 'Genere',
+    label: t('discovery.filters.gender'),
     options: [
-      { value: 'maschio', label: 'Maschio' },
-      { value: 'femmina', label: 'Femmina' },
+      { value: 'maschio', label: t('discovery.genderOptions.maschio') },
+      { value: 'femmina', label: t('discovery.genderOptions.femmina') },
     ],
   },
   {
     key: 'behaviorWithDogs',
-    label: 'Comportamento',
+    label: t('discovery.filters.behavior'),
     options: [
-      { value: 'molto_socievole', label: 'Molto socievole' },
-      { value: 'socievole', label: 'Socievole' },
-      { value: 'selettivo', label: 'Selettivo' },
-      { value: 'reattivo', label: 'Reattivo' },
+      { value: 'molto_socievole', label: t('discovery.behaviorOptions.molto_socievole') },
+      { value: 'socievole', label: t('discovery.behaviorOptions.socievole') },
+      { value: 'selettivo', label: t('discovery.behaviorOptions.selettivo') },
+      { value: 'reattivo', label: t('discovery.behaviorOptions.reattivo') },
     ],
   },
   {
     key: 'walkPrefTime',
-    label: 'Orari',
+    label: t('discovery.filters.schedule'),
     options: [
-      { value: 'mattina_presto', label: 'Mattina presto' },
-      { value: 'mattina', label: 'Mattina' },
-      { value: 'pomeriggio', label: 'Pomeriggio' },
-      { value: 'sera', label: 'Sera' },
-      { value: 'sera_tardi', label: 'Sera tardi' },
+      { value: 'mattina_presto', label: t('discovery.scheduleOptions.mattina_presto') },
+      { value: 'mattina', label: t('discovery.scheduleOptions.mattina') },
+      { value: 'pomeriggio', label: t('discovery.scheduleOptions.pomeriggio') },
+      { value: 'sera', label: t('discovery.scheduleOptions.sera') },
+      { value: 'sera_tardi', label: t('discovery.scheduleOptions.sera_tardi') },
     ],
   },
   {
     key: 'walkPrefTerrain',
-    label: 'Terreno',
+    label: t('discovery.filters.terrain'),
     options: [
-      { value: 'urbano', label: 'Urbano' },
-      { value: 'parco', label: 'Parco' },
-      { value: 'campagna', label: 'Campagna' },
-      { value: 'spiaggia', label: 'Spiaggia' },
-      { value: 'montagna', label: 'Montagna' },
+      { value: 'urbano', label: t('discovery.terrainOptions.urbano') },
+      { value: 'parco', label: t('discovery.terrainOptions.parco') },
+      { value: 'campagna', label: t('discovery.terrainOptions.campagna') },
+      { value: 'spiaggia', label: t('discovery.terrainOptions.spiaggia') },
+      { value: 'montagna', label: t('discovery.terrainOptions.montagna') },
     ],
   },
 ];
@@ -124,12 +125,15 @@ function FilterModal({
   onApply: (f: DiscoveryFilters) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<DiscoveryFilters>(filters);
 
   // Sync draft when modal opens
   useEffect(() => {
     if (visible) setDraft(filters);
   }, [visible, filters]);
+
+  const filterSections = getFilterSections(t);
 
   const toggleValue = (key: keyof DiscoveryFilters, value: string) => {
     setDraft((prev) => {
@@ -158,14 +162,16 @@ function FilterModal({
           </View>
 
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">Filtri</Text>
+            <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+              {t('discovery.filters.title')}
+            </Text>
             <Pressable onPress={handleReset}>
-              <Text className="font-semibold text-primary">Resetta</Text>
+              <Text className="font-semibold text-primary">{t('discovery.filters.reset')}</Text>
             </Pressable>
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            {FILTER_SECTIONS.map((section) => (
+            {filterSections.map((section) => (
               <View key={section.key} className="mb-5">
                 <Text className="mb-2 text-sm font-semibold text-gray-600 dark:text-[#D1D1D6]">
                   {section.label}
@@ -191,7 +197,7 @@ function FilterModal({
             {/* Distance slider (discrete steps) */}
             <View className="mb-5">
               <Text className="mb-2 text-sm font-semibold text-gray-600 dark:text-[#D1D1D6]">
-                Distanza massima
+                {t('discovery.filters.maxDistance')}
                 {draft.maxDistanceKm ? ` — ${draft.maxDistanceKm} km` : ''}
               </Text>
               <View className="flex-row flex-wrap">
@@ -213,7 +219,9 @@ function FilterModal({
           </ScrollView>
 
           <Pressable onPress={handleApply} className="mt-2 rounded-2xl bg-primary py-4">
-            <Text className="text-center text-base font-bold text-white">Applica filtri</Text>
+            <Text className="text-center text-base font-bold text-white">
+              {t('discovery.filters.apply')}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -224,6 +232,7 @@ function FilterModal({
 // ── Discovery screen ────────────────────────────────────────────────────────
 
 export default function DiscoveryScreen() {
+  const { t } = useTranslation();
   const vm = useDiscoveryViewModel();
   const analytics = useAnalyticsService();
   const [explanationVisible, setExplanationVisible] = useState(false);
@@ -233,8 +242,12 @@ export default function DiscoveryScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-2">
         <View>
-          <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Scopri</Text>
-          <Text className="text-sm text-gray-500 dark:text-neutral-500">Cani nelle vicinanze</Text>
+          <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+            {t('discovery.title')}
+          </Text>
+          <Text className="text-sm text-gray-500 dark:text-neutral-500">
+            {t('discovery.subtitle')}
+          </Text>
         </View>
         <Pressable
           onPress={vm.openFilterModal}
@@ -258,39 +271,39 @@ export default function DiscoveryScreen() {
           <View className="items-center px-8">
             <Text className="text-5xl">{'\u{1F436}'}</Text>
             <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-              Aggiungi il tuo cane
+              {t('discovery.addYourDog')}
             </Text>
             <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
-              Per iniziare a scoprire cani compatibili, aggiungi il tuo primo cane.
+              {t('discovery.addDogDescription')}
             </Text>
             <Pressable
               onPress={vm.navigateToAddDog}
               className="mt-6 rounded-2xl bg-primary px-8 py-3"
             >
-              <Text className="font-semibold text-white">Aggiungi cane</Text>
+              <Text className="font-semibold text-white">{t('discovery.addDogButton')}</Text>
             </Pressable>
           </View>
         ) : !vm.coordinates ? (
           <View className="items-center px-8">
             <Text className="text-5xl">📍</Text>
             <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-              Posizione necessaria
+              {t('discovery.locationRequired')}
             </Text>
             <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
-              Abilita la posizione per scoprire cani nelle vicinanze.
+              {t('discovery.locationDescription')}
             </Text>
             <Pressable
               onPress={vm.getCurrentLocation}
               className="mt-6 rounded-2xl bg-primary px-8 py-3"
             >
-              <Text className="font-semibold text-white">Abilita posizione</Text>
+              <Text className="font-semibold text-white">{t('discovery.enableLocation')}</Text>
             </Pressable>
           </View>
         ) : vm.isLoading ? (
           <View className="items-center">
             <ActivityIndicator size="large" color="#065F46" />
             <Text className="mt-4 text-gray-400 dark:text-neutral-500">
-              Cerco cani compatibili...
+              {t('discovery.searchingDogs')}
             </Text>
           </View>
         ) : vm.currentProfile && vm.hasMore ? (
@@ -321,16 +334,16 @@ export default function DiscoveryScreen() {
           <View className="items-center">
             <Text className="text-5xl">🐕</Text>
             <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-              Nessun altro profilo
+              {t('discovery.noMoreProfiles')}
             </Text>
             <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
-              Hai visto tutti i cani nelle vicinanze. Riprova più tardi!
+              {t('discovery.noMoreProfilesDescription')}
             </Text>
             <Pressable
               onPress={vm.fetchSuggestions}
               className="mt-6 rounded-2xl bg-primary px-8 py-3"
             >
-              <Text className="font-semibold text-white">Aggiorna</Text>
+              <Text className="font-semibold text-white">{t('discovery.refresh')}</Text>
             </Pressable>
           </View>
         )}

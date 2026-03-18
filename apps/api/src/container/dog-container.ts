@@ -1,5 +1,6 @@
 // Dog domain: CRUD, photos, breeds
 
+import { createAnalyzeDogPhoto } from '../use-cases/analyze-dog-photo.js';
 import { createConfirmDogPhoto } from '../use-cases/confirm-dog-photo.js';
 import { createCreateDog } from '../use-cases/create-dog.js';
 import { createDeleteDog } from '../use-cases/delete-dog.js';
@@ -11,7 +12,13 @@ import { createReorderDogPhotos } from '../use-cases/reorder-dog-photos.js';
 import { createSearchBreeds } from '../use-cases/search-breeds.js';
 import { createUpdateDog } from '../use-cases/update-dog.js';
 import { createUploadDogPhotoUrl } from '../use-cases/upload-dog-photo-url.js';
-import { bioGenerationService, breedRepo, dogRepo, storage } from './services.js';
+import {
+  bioGenerationService,
+  breedRepo,
+  dogPhotoAnalysisService,
+  dogRepo,
+  storage,
+} from './services.js';
 
 export const dogDeps = {
   searchBreeds: createSearchBreeds({ breedRepo }),
@@ -25,4 +32,5 @@ export const dogDeps = {
   deleteDogPhoto: createDeleteDogPhoto({ dogRepo, storage }),
   reorderDogPhotos: createReorderDogPhotos({ dogRepo }),
   generateDogBio: createGenerateDogBio({ bioGenerationService }),
+  analyzeDogPhoto: createAnalyzeDogPhoto({ dogPhotoAnalysisService }),
 };

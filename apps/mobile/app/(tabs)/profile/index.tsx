@@ -1,6 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { MAX_DOGS_PER_USER } from '@pawmeet/config';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogProfileCard } from '@/components/DogProfileCard';
@@ -44,6 +45,7 @@ function ProfileLoadingSkeleton() {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const vm = useProfileViewModel();
 
   // Show skeleton while initial data is loading
@@ -62,7 +64,7 @@ export default function ProfileScreen() {
         <View className="mb-8 items-center">
           <Pressable onPress={vm.handleAvatarPress} disabled={vm.uploading} className="relative">
             <Avatar
-              name={vm.user?.displayName ?? 'Utente'}
+              name={vm.user?.displayName ?? t('profile.defaultName')}
               imageUrl={vm.user?.avatarUrl}
               size="lg"
             />
@@ -76,11 +78,11 @@ export default function ProfileScreen() {
             </View>
           </Pressable>
           <Text className="mt-3 text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-            {vm.user?.displayName ?? 'Utente'}
+            {vm.user?.displayName ?? t('profile.defaultName')}
           </Text>
           <Text className="text-sm text-gray-500 dark:text-neutral-500">{vm.user?.email}</Text>
           <Text className="mt-1 text-xs text-gray-400 dark:text-neutral-500">
-            Tocca la foto per cambiarla
+            {t('profile.changePhoto')}
           </Text>
 
           {/* Follow counts */}
@@ -89,17 +91,23 @@ export default function ProfileScreen() {
               <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">
                 {vm.followCounts.followers}
               </Text>
-              <Text className="text-xs text-gray-500 dark:text-neutral-500">Follower</Text>
+              <Text className="text-xs text-gray-500 dark:text-neutral-500">
+                {t('profile.follower')}
+              </Text>
             </Pressable>
             <Pressable onPress={vm.navigateToFollowing} className="items-center">
               <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">
                 {vm.followCounts.following}
               </Text>
-              <Text className="text-xs text-gray-500 dark:text-neutral-500">Seguiti</Text>
+              <Text className="text-xs text-gray-500 dark:text-neutral-500">
+                {t('profile.following')}
+              </Text>
             </Pressable>
             <Pressable onPress={vm.navigateToFriends} className="items-center">
-              <Text className="text-lg font-bold text-primary">Amici</Text>
-              <Text className="text-xs text-gray-500 dark:text-neutral-500">Reciproci</Text>
+              <Text className="text-lg font-bold text-primary">{t('profile.friends')}</Text>
+              <Text className="text-xs text-gray-500 dark:text-neutral-500">
+                {t('profile.friendsSubtitle')}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -110,7 +118,7 @@ export default function ProfileScreen() {
           className="mb-6 flex-row items-center justify-center gap-2 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] py-3"
         >
           <Text className="text-sm text-gray-500 dark:text-neutral-500">
-            Cerca utenti da seguire
+            {t('profile.searchUsersPrompt')}
           </Text>
         </Pressable>
 
@@ -118,11 +126,11 @@ export default function ProfileScreen() {
         <View className="mb-6">
           <View className="mb-3 flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-              I miei cani
+              {t('profile.myDogs')}
             </Text>
             {vm.dogs.length < MAX_DOGS_PER_USER && (
               <Pressable onPress={vm.navigateToAddDog}>
-                <Text className="text-sm font-medium text-primary">+ Aggiungi</Text>
+                <Text className="text-sm font-medium text-primary">{t('profile.addDog')}</Text>
               </Pressable>
             )}
           </View>
@@ -131,13 +139,13 @@ export default function ProfileScreen() {
             <View className="items-center rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-6">
               <Text className="text-4xl">{'\u{1F436}'}</Text>
               <Text className="mt-2 text-sm text-gray-500 dark:text-neutral-500 text-center">
-                Non hai ancora aggiunto nessun cane.
+                {t('profile.noDogs')}
               </Text>
               <Pressable
                 onPress={vm.navigateToAddDog}
                 className="mt-4 rounded-2xl bg-primary px-6 py-2.5"
               >
-                <Text className="font-semibold text-white">Aggiungi il tuo cane</Text>
+                <Text className="font-semibold text-white">{t('profile.addYourDog')}</Text>
               </Pressable>
             </View>
           ) : (
@@ -165,7 +173,7 @@ export default function ProfileScreen() {
                             isActive ? 'text-white' : 'text-gray-500 dark:text-neutral-500'
                           }`}
                         >
-                          {isActive ? 'Attivo' : 'Attiva'}
+                          {isActive ? t('profile.active') : t('profile.activate')}
                         </Text>
                       </Pressable>
                     )}
@@ -207,7 +215,7 @@ export default function ProfileScreen() {
             </View>
             {vm.xpSummary.xpToNextLevel != null ? (
               <Text className="mt-1 text-xs text-gray-500 dark:text-neutral-500">
-                {vm.xpSummary.xpToNextLevel} XP al prossimo livello
+                {t('profile.xpToNextLevel', { count: vm.xpSummary.xpToNextLevel })}
               </Text>
             ) : null}
           </Pressable>
@@ -219,7 +227,9 @@ export default function ProfileScreen() {
             onPress={vm.navigateToGamification}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Gamification</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              {t('profile.menu.gamification')}
+            </Text>
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
 
@@ -228,7 +238,7 @@ export default function ProfileScreen() {
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >
             <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              Attività e Statistiche
+              {t('profile.menu.activity')}
             </Text>
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
@@ -238,7 +248,7 @@ export default function ProfileScreen() {
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >
             <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              Statistiche Matching
+              {t('profile.menu.matchingInsights')}
             </Text>
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
@@ -247,12 +257,16 @@ export default function ProfileScreen() {
             onPress={vm.navigateToSettings}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Impostazioni</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              {t('profile.menu.settings')}
+            </Text>
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
 
           <Pressable className="flex-row items-center justify-between rounded-xl px-4 py-4">
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Privacy e Sicurezza</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              {t('profile.menu.privacy')}
+            </Text>
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
 
@@ -260,17 +274,21 @@ export default function ProfileScreen() {
             onPress={vm.navigateToBlocked}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Utenti bloccati</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              {t('profile.menu.blocked')}
+            </Text>
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
 
           <Pressable className="flex-row items-center justify-between rounded-xl px-4 py-4">
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Aiuto e Supporto</Text>
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              {t('profile.menu.help')}
+            </Text>
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
 
           <Pressable onPress={vm.logout} className="mt-4 items-center rounded-xl py-4">
-            <Text className="text-base font-medium text-red-500">Esci</Text>
+            <Text className="text-base font-medium text-red-500">{t('profile.menu.logout')}</Text>
           </Pressable>
         </View>
       </ScrollView>

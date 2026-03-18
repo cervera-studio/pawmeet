@@ -61,8 +61,6 @@ describe('createGetMatchExplanation', () => {
     for (const key of ['size', 'energy', 'behavior', 'walk', 'distance', 'leash'] as const) {
       expect(breakdown[key].score).toBeGreaterThanOrEqual(0);
       expect(breakdown[key].score).toBeLessThanOrEqual(1);
-      expect(typeof breakdown[key].label).toBe('string');
-      expect(breakdown[key].label).toBeTruthy();
     }
   });
 

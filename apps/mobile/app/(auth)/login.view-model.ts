@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
+import i18n from '@/lib/i18n';
 import {
   extractGoogleIdToken,
   type SocialAuthResult,
@@ -29,7 +30,7 @@ export function useLoginViewModel() {
       try {
         await socialLogin(result.provider, result.idToken, result.displayName);
       } catch (e) {
-        setApiError(e instanceof Error ? e.message : 'Errore durante il login social');
+        setApiError(e instanceof Error ? e.message : i18n.t('auth.login.socialLoginError'));
       } finally {
         setLoading(false);
       }
@@ -59,7 +60,7 @@ export function useLoginViewModel() {
     try {
       await login(email, password);
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : 'Errore durante il login');
+      setApiError(e instanceof Error ? e.message : i18n.t('auth.login.loginError'));
     } finally {
       setLoading(false);
     }
@@ -70,7 +71,7 @@ export function useLoginViewModel() {
     try {
       await google.promptAsync();
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : 'Errore con Google Sign In');
+      setApiError(e instanceof Error ? e.message : i18n.t('auth.login.googleError'));
     }
   }, [google]);
 
@@ -81,7 +82,7 @@ export function useLoginViewModel() {
     } catch (e) {
       const message = e instanceof Error ? e.message : '';
       if (message.includes('ERR_REQUEST_CANCELED')) return;
-      setApiError(message || 'Errore con Apple Sign In');
+      setApiError(message || i18n.t('auth.login.appleError'));
     }
   }, [handleSocialAuth]);
 

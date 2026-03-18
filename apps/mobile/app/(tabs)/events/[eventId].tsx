@@ -1,5 +1,6 @@
 import { GROUP_EVENT_STATUS } from '@pawmeet/types';
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Dimensions,
@@ -12,6 +13,7 @@ import {
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
+import i18n from '@/lib/i18n';
 import { useEventDetailViewModel } from './[eventId].view-model';
 import { useEventRequestsViewModel } from './requests.view-model';
 
@@ -38,13 +40,13 @@ function formatTime(date: Date | string): string {
 function statusLabel(status: string): string {
   switch (status) {
     case GROUP_EVENT_STATUS.SCHEDULED:
-      return 'Programmato';
+      return i18n.t('events.status.scheduled');
     case GROUP_EVENT_STATUS.IN_PROGRESS:
-      return 'In corso';
+      return i18n.t('events.status.inProgress');
     case GROUP_EVENT_STATUS.COMPLETED:
-      return 'Completato';
+      return i18n.t('events.status.completed');
     case GROUP_EVENT_STATUS.CANCELLED:
-      return 'Annullato';
+      return i18n.t('events.status.cancelled');
     default:
       return status;
   }
@@ -89,13 +91,14 @@ function EventDetailSkeleton() {
 // ── Pending Requests Section (organizer only) ────────────────────────────────
 
 function PendingRequestsSection({ eventId }: { eventId: string }) {
+  const { t } = useTranslation();
   const vm = useEventRequestsViewModel(eventId);
 
   if (vm.loading) {
     return (
       <View className="mt-6">
         <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3">
-          Richieste
+          {t('events.requests.title')}
         </Text>
         <ActivityIndicator size="small" color="#065F46" />
       </View>
@@ -106,10 +109,10 @@ function PendingRequestsSection({ eventId }: { eventId: string }) {
     return (
       <View className="mt-6">
         <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3">
-          Richieste
+          {t('events.requests.title')}
         </Text>
         <Text className="text-sm text-gray-400 dark:text-neutral-500">
-          Nessuna richiesta in attesa
+          {t('events.requests.noRequests')}
         </Text>
       </View>
     );
@@ -118,7 +121,7 @@ function PendingRequestsSection({ eventId }: { eventId: string }) {
   return (
     <View className="mt-6">
       <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3">
-        Richieste ({vm.requests.length})
+        {t('events.requests.title')} ({vm.requests.length})
       </Text>
       {vm.requests.map((request) => {
         const userId = request.participant.userId;
@@ -148,7 +151,7 @@ function PendingRequestsSection({ eventId }: { eventId: string }) {
                 {isProcessing ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
-                  <Text className="text-sm font-medium text-white">Approva</Text>
+                  <Text className="text-sm font-medium text-white">{t('common.approve')}</Text>
                 )}
               </Pressable>
               <Pressable
@@ -156,7 +159,9 @@ function PendingRequestsSection({ eventId }: { eventId: string }) {
                 disabled={isProcessing}
                 className="rounded-lg bg-red-100 dark:bg-red-900/30 px-3 py-2"
               >
-                <Text className="text-sm font-medium text-red-600 dark:text-red-400">Rifiuta</Text>
+                <Text className="text-sm font-medium text-red-600 dark:text-red-400">
+                  {t('common.decline')}
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -169,6 +174,7 @@ function PendingRequestsSection({ eventId }: { eventId: string }) {
 // ── Screen ───────────────────────────────────────────────────────────────────
 
 export default function EventDetailScreen() {
+  const { t } = useTranslation();
   const vm = useEventDetailViewModel();
 
   return (
@@ -176,8 +182,8 @@ export default function EventDetailScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: vm.event?.title ?? 'Evento',
-          headerBackTitle: 'Eventi',
+          title: vm.event?.title ?? t('events.detail.fallbackTitle'),
+          headerBackTitle: t('events.detail.backButton'),
         }}
       />
       <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
@@ -204,7 +210,9 @@ export default function EventDetailScreen() {
                 <View className="absolute bottom-4 left-4 right-4">
                   <View className="flex-row items-center gap-2 mb-2">
                     <View className="rounded-full bg-amber-500 px-2.5 py-1">
-                      <Text className="text-xs font-bold text-white">Evento Ufficiale</Text>
+                      <Text className="text-xs font-bold text-white">
+                        {t('events.detail.official')}
+                      </Text>
                     </View>
                     <View className={`rounded-full px-3 py-1 ${statusColor(vm.event.status)}`}>
                       <Text className="text-xs font-medium">{statusLabel(vm.event.status)}</Text>
@@ -228,12 +236,16 @@ export default function EventDetailScreen() {
                     </View>
                     {vm.isOrganizer && (
                       <View className="ml-2 rounded-full bg-primary/10 px-3 py-1">
-                        <Text className="text-xs font-medium text-primary">Organizzatore</Text>
+                        <Text className="text-xs font-medium text-primary">
+                          {t('events.detail.organizer')}
+                        </Text>
                       </View>
                     )}
                     {vm.isParticipant && !vm.isOrganizer && (
                       <View className="ml-2 rounded-full bg-green-100 px-3 py-1">
-                        <Text className="text-xs font-medium text-green-700">Partecipante</Text>
+                        <Text className="text-xs font-medium text-green-700">
+                          {t('events.detail.participant')}
+                        </Text>
                       </View>
                     )}
                   </View>
@@ -247,7 +259,9 @@ export default function EventDetailScreen() {
                   )}
                   {vm.isParticipant && !vm.isOrganizer && (
                     <View className="rounded-full bg-green-100 px-3 py-1">
-                      <Text className="text-xs font-medium text-green-700">Sei iscritto</Text>
+                      <Text className="text-xs font-medium text-green-700">
+                        {t('events.detail.enrolled')}
+                      </Text>
                     </View>
                   )}
                 </View>
@@ -266,7 +280,7 @@ export default function EventDetailScreen() {
                     <View className="flex-row items-center mt-0.5">
                       <View className="rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5">
                         <Text className="text-xs font-medium text-blue-700 dark:text-blue-300">
-                          Verificata
+                          {t('events.detail.verified')}
                         </Text>
                       </View>
                     </View>
@@ -283,7 +297,10 @@ export default function EventDetailScreen() {
                 </View>
                 <View className="flex-row items-center mb-2">
                   <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-                    Ore {formatTime(vm.event.scheduledAt)} - Durata {vm.event.durationMin} min
+                    {t('events.detail.timeFormat', {
+                      time: formatTime(vm.event.scheduledAt),
+                      duration: vm.event.durationMin,
+                    })}
                   </Text>
                 </View>
               </View>
@@ -339,7 +356,7 @@ export default function EventDetailScreen() {
                     .map((s) => (
                       <View key={s.id} className="items-center mb-4">
                         <Text className="text-xs text-gray-400 dark:text-neutral-500 mb-2">
-                          Presentato da
+                          {t('events.detail.presentedBy')}
                         </Text>
                         {s.organizationLogoUrl ? (
                           <Image
@@ -381,7 +398,7 @@ export default function EventDetailScreen() {
                   {vm.sponsors.filter((s) => s.tier === 'partner').length > 0 ? (
                     <View className="mt-4">
                       <Text className="text-xs text-gray-400 dark:text-neutral-500 mb-2">
-                        Con il supporto di
+                        {t('events.detail.supportedBy')}
                       </Text>
                       <View className="flex-row flex-wrap gap-2">
                         {vm.sponsors
@@ -405,7 +422,10 @@ export default function EventDetailScreen() {
               {/* Participants */}
               <View className="mt-6">
                 <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7] mb-3">
-                  Partecipanti ({vm.event.participantCount}/{vm.event.maxParticipants})
+                  {t('events.detail.participantsCount', {
+                    current: vm.event.participantCount,
+                    max: vm.event.maxParticipants,
+                  })}
                 </Text>
                 {vm.event.participants && vm.event.participants.length > 0 ? (
                   <View className="flex-row flex-wrap gap-3">
@@ -413,14 +433,14 @@ export default function EventDetailScreen() {
                       <View key={participant.id} className="items-center">
                         <Avatar name={participant.userId} size="md" />
                         <Text className="mt-1 text-xs text-gray-500 dark:text-neutral-500">
-                          {participant.isOrganizer ? 'Org.' : ''}
+                          {participant.isOrganizer ? t('events.detail.organizerAbbrev') : ''}
                         </Text>
                       </View>
                     ))}
                   </View>
                 ) : (
                   <Text className="text-sm text-gray-400 dark:text-neutral-500">
-                    Nessun partecipante ancora
+                    {t('events.detail.noParticipants')}
                   </Text>
                 )}
               </View>
@@ -438,7 +458,9 @@ export default function EventDetailScreen() {
                     onPress={vm.navigateToGroupChat}
                     className="items-center rounded-xl bg-primary py-4"
                   >
-                    <Text className="font-semibold text-white">Chatta</Text>
+                    <Text className="font-semibold text-white">
+                      {t('events.detail.chatButton')}
+                    </Text>
                   </Pressable>
                 )}
 
@@ -452,7 +474,9 @@ export default function EventDetailScreen() {
                     {vm.actionLoading ? (
                       <ActivityIndicator color="white" />
                     ) : (
-                      <Text className="font-semibold text-white">Partecipa</Text>
+                      <Text className="font-semibold text-white">
+                        {t('events.detail.joinButton')}
+                      </Text>
                     )}
                   </Pressable>
                 )}
@@ -465,7 +489,7 @@ export default function EventDetailScreen() {
                     className="items-center rounded-xl bg-gray-100 dark:bg-[#38383A] py-4"
                   >
                     <Text className="font-semibold text-gray-600 dark:text-[#D1D1D6]">
-                      Lascia evento
+                      {t('events.detail.leaveButton')}
                     </Text>
                   </Pressable>
                 )}
@@ -477,7 +501,9 @@ export default function EventDetailScreen() {
                     disabled={vm.actionLoading}
                     className="items-center rounded-xl bg-red-100 py-4"
                   >
-                    <Text className="font-semibold text-red-600">Annulla evento</Text>
+                    <Text className="font-semibold text-red-600">
+                      {t('events.detail.cancelButton')}
+                    </Text>
                   </Pressable>
                 )}
               </View>
@@ -485,7 +511,9 @@ export default function EventDetailScreen() {
           </ScrollView>
         ) : (
           <View className="flex-1 items-center justify-center">
-            <Text className="text-lg text-gray-400 dark:text-neutral-500">Evento non trovato</Text>
+            <Text className="text-lg text-gray-400 dark:text-neutral-500">
+              {t('events.detail.notFound')}
+            </Text>
           </View>
         )}
       </SafeAreaView>

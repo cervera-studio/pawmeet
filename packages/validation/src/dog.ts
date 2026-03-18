@@ -69,6 +69,13 @@ export const photoReorderSchema = z.object({
   photoIds: z.array(z.string().uuid()).min(1).max(MAX_PHOTOS_PER_DOG),
 });
 
+export const analyzeDogPhotoSchema = z.object({
+  imageBase64: z.string().min(100).max(7_200_000), // ~5MB base64
+  mimeType: z.enum(['image/jpeg', 'image/png', 'image/webp']),
+});
+
+export type AnalyzeDogPhotoInput = z.infer<typeof analyzeDogPhotoSchema>;
+
 export const generateDogBioSchema = z.object({
   name: z.string().min(2).max(50),
   breed: z.string().min(1).max(100),

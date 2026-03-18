@@ -2,6 +2,7 @@ import { registerSchema } from '@pawmeet/validation';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import i18n from '@/lib/i18n';
 import { zodToFieldErrors } from '@/lib/validation';
 
 export function useRegisterViewModel() {
@@ -22,7 +23,7 @@ export function useRegisterViewModel() {
 
     // Check password confirmation first
     if (password !== confirmPassword) {
-      setErrors({ confirmPassword: 'Le password non coincidono' });
+      setErrors({ confirmPassword: i18n.t('auth.register.passwordMismatch') });
       return;
     }
 
@@ -36,7 +37,7 @@ export function useRegisterViewModel() {
     try {
       await register(displayName, email, password, dateOfBirth);
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : 'Errore durante la registrazione');
+      setApiError(e instanceof Error ? e.message : i18n.t('auth.register.registerError'));
     } finally {
       setLoading(false);
     }

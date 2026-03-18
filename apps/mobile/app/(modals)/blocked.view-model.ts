@@ -2,6 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { container } from 'tsyringe';
+import i18n from '@/lib/i18n';
 import type { BlockedUser } from '@/repositories/interfaces/follow-repository';
 import { FOLLOW_REPOSITORY } from '@/repositories/tokens';
 
@@ -48,21 +49,25 @@ export function useBlockedViewModel() {
   }, [nextCursor, loading, fetchPage]);
 
   const handleUnblock = useCallback((userId: string, displayName: string) => {
-    Alert.alert('Sblocca utente', `Vuoi sbloccare ${displayName}?`, [
-      { text: 'Annulla', style: 'cancel' },
-      {
-        text: 'Sblocca',
-        onPress: async () => {
-          try {
-            await followRepo.unblock(userId);
-            setUsers((prev) => prev.filter((u) => u.id !== userId));
-          } catch (e) {
-            logger.warn('BlockedScreen', 'Failed to unblock user', e);
-            Alert.alert('Errore', "Impossibile sbloccare l'utente. Riprova.");
-          }
+    Alert.alert(
+      i18n.t('blocked.unblockTitle'),
+      i18n.t('blocked.unblockMessage', { name: displayName }),
+      [
+        { text: i18n.t('common.cancel'), style: 'cancel' },
+        {
+          text: i18n.t('blocked.unblockButton'),
+          onPress: async () => {
+            try {
+              await followRepo.unblock(userId);
+              setUsers((prev) => prev.filter((u) => u.id !== userId));
+            } catch (e) {
+              logger.warn('BlockedScreen', 'Failed to unblock user', e);
+              Alert.alert(i18n.t('common.error'), i18n.t('blocked.unblockError'));
+            }
+          },
         },
-      },
-    ]);
+      ],
+    );
   }, []);
 
   const isInitialLoad = loading && users.length === 0 && !refreshing;

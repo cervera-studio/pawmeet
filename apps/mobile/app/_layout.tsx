@@ -1,4 +1,5 @@
 import '../global.css';
+import '@/lib/i18n';
 
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';
@@ -7,6 +8,7 @@ import * as Crypto from 'expo-crypto';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AppState, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -196,6 +198,7 @@ function DeviceIntegrityMonitor() {
 }
 
 function RootLayout() {
+  const { t } = useTranslation();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const requiresAgeVerification = useAuthStore((s) => s.requiresAgeVerification);
   const userId = useAuthStore((s) => s.user?.id);
@@ -263,27 +266,27 @@ function RootLayout() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen
                 name="(modals)/dog-detail"
-                options={{ presentation: 'modal', title: 'Dettaglio Cane' }}
+                options={{ presentation: 'modal', title: t('modals.dogDetail') }}
               />
               <Stack.Screen
                 name="(modals)/settings"
-                options={{ presentation: 'modal', title: 'Impostazioni' }}
+                options={{ presentation: 'modal', title: t('modals.settings') }}
               />
               <Stack.Screen
                 name="(modals)/report"
-                options={{ presentation: 'modal', title: 'Segnala' }}
+                options={{ presentation: 'modal', title: t('modals.report') }}
               />
               <Stack.Screen
                 name="(modals)/blocked"
-                options={{ presentation: 'modal', title: 'Utenti bloccati' }}
+                options={{ presentation: 'modal', title: t('modals.blocked') }}
               />
               <Stack.Screen
                 name="(modals)/search-users"
-                options={{ presentation: 'modal', title: 'Cerca utenti' }}
+                options={{ presentation: 'modal', title: t('modals.searchUsers') }}
               />
               <Stack.Screen
                 name="(modals)/user-profile"
-                options={{ presentation: 'modal', title: 'Profilo' }}
+                options={{ presentation: 'modal', title: t('modals.userProfile') }}
               />
               <Stack.Screen
                 name="(modals)/story-viewer"
@@ -299,7 +302,7 @@ function RootLayout() {
               />
               <Stack.Screen
                 name="(modals)/story-viewers"
-                options={{ presentation: 'modal', title: 'Visualizzazioni' }}
+                options={{ presentation: 'modal', title: t('modals.storyViewers') }}
               />
               <Stack.Screen
                 name="(modals)/media-viewer"

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { container } from 'tsyringe';
 import { useAuth } from '@/hooks/useAuth';
+import i18n from '@/lib/i18n';
 import type { FollowStatus } from '@/repositories/interfaces/follow-repository';
 import { FOLLOW_REPOSITORY } from '@/repositories/tokens';
 
@@ -47,30 +48,34 @@ export function useUserProfileViewModel(userId: string) {
       }
     } catch (e) {
       logger.warn('UserProfile', 'Failed to toggle follow', e);
-      Alert.alert('Errore', "Impossibile completare l'azione. Riprova.");
+      Alert.alert(i18n.t('common.error'), i18n.t('userProfile.followError'));
     } finally {
       setActionLoading(false);
     }
   }, [userId, status.isFollowedByMe, actionLoading]);
 
   const handleBlock = useCallback(() => {
-    Alert.alert('Blocca utente', `Vuoi bloccare ${displayName || 'questo utente'}?`, [
-      { text: 'Annulla', style: 'cancel' },
-      {
-        text: 'Blocca',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await followRepo.block(userId);
-            Alert.alert('Utente bloccato', 'Non vedrai più questo utente.');
-            router.back();
-          } catch (e) {
-            logger.warn('UserProfile', 'Failed to block user', e);
-            Alert.alert('Errore', "Impossibile bloccare l'utente. Riprova.");
-          }
+    Alert.alert(
+      i18n.t('userProfile.blockTitle'),
+      i18n.t('userProfile.blockMessage', { name: displayName || i18n.t('common.user') }),
+      [
+        { text: i18n.t('common.cancel'), style: 'cancel' },
+        {
+          text: i18n.t('userProfile.blockButton'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await followRepo.block(userId);
+              Alert.alert(i18n.t('userProfile.blockedTitle'), i18n.t('userProfile.blockedMessage'));
+              router.back();
+            } catch (e) {
+              logger.warn('UserProfile', 'Failed to block user', e);
+              Alert.alert(i18n.t('common.error'), i18n.t('userProfile.blockError'));
+            }
+          },
         },
-      },
-    ]);
+      ],
+    );
   }, [userId, displayName, router]);
 
   const navigateToFollowers = useCallback(() => {

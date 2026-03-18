@@ -138,15 +138,42 @@ export const analyticsProviders: AnalyticsProvider[] = process.env.POSTHOG_API_K
     ]
   : [];
 
+// ── Anthropic client (shared, optional) ──────────────────────────────────────
+
+function tryCreateAnthropicClient() {
+  if (!process.env.ANTHROPIC_API_KEY) return undefined;
+  const Anthropic = require('@anthropic-ai/sdk').default;
+  return new Anthropic() as import('@anthropic-ai/sdk').default;
+}
+
+const anthropicClient = tryCreateAnthropicClient();
+
 // ── AI services (optional — degrade gracefully if env vars missing) ──────────
 
 function tryCreateContentModerationService() {
-  if (!process.env.ANTHROPIC_API_KEY) return undefined;
-  // Lazy import to avoid loading SDK when not configured
+  if (!anthropicClient) return undefined;
   const {
     ClaudeContentModerationService,
   } = require('../infra/claude-content-moderation-service.js');
-  return new ClaudeContentModerationService();
+  return new ClaudeContentModerationService(anthropicClient);
+}
+
+function tryCreateBioGenerationService() {
+  if (!anthropicClient) return undefined;
+  const { ClaudeBioGenerationService } = require('../infra/claude-bio-generation-service.js');
+  return new ClaudeBioGenerationService(
+    anthropicClient,
+  ) as import('../ports/bio-generation-service.js').BioGenerationService;
+}
+
+function tryCreateDogPhotoAnalysisService() {
+  if (!anthropicClient) return undefined;
+  const {
+    ClaudeDogPhotoAnalysisService,
+  } = require('../infra/claude-dog-photo-analysis-service.js');
+  return new ClaudeDogPhotoAnalysisService(
+    anthropicClient,
+  ) as import('../ports/dog-photo-analysis-service.js').DogPhotoAnalysisService;
 }
 
 function tryCreateBreedDetectionService() {
@@ -164,16 +191,5 @@ function tryCreateToxicityService() {
 export const contentModerationService = tryCreateContentModerationService();
 export const breedDetectionService = tryCreateBreedDetectionService();
 export const toxicityService = tryCreateToxicityService();
-
-// ── Bio generation (optional — degrades gracefully if ANTHROPIC_API_KEY missing) ─
-
-function tryCreateBioGenerationService() {
-  if (!process.env.ANTHROPIC_API_KEY) return undefined;
-  const Anthropic = require('@anthropic-ai/sdk').default;
-  const { ClaudeBioGenerationService } = require('../infra/claude-bio-generation-service.js');
-  return new ClaudeBioGenerationService(
-    new Anthropic(),
-  ) as import('../ports/bio-generation-service.js').BioGenerationService;
-}
-
 export const bioGenerationService = tryCreateBioGenerationService();
+export const dogPhotoAnalysisService = tryCreateDogPhotoAnalysisService();

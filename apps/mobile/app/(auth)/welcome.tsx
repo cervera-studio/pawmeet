@@ -1,27 +1,32 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 
-const slides = [
-  {
-    title: 'Trova compagni di passeggiata',
-    description: 'Scopri cani compatibili nella tua zona per passeggiate insieme.',
-  },
-  {
-    title: 'Fai match',
-    description: 'Swipa per trovare il compagno perfetto per il tuo cane.',
-  },
-  {
-    title: 'Inizia a camminare',
-    description: 'Chatta, organizza e parti per la vostra prima passeggiata!',
-  },
-];
-
 export default function WelcomeScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = useMemo(
+    () => [
+      {
+        title: t('auth.welcome.slide1Title'),
+        description: t('auth.welcome.slide1Description'),
+      },
+      {
+        title: t('auth.welcome.slide2Title'),
+        description: t('auth.welcome.slide2Description'),
+      },
+      {
+        title: t('auth.welcome.slide3Title'),
+        description: t('auth.welcome.slide3Description'),
+      },
+    ],
+    [t],
+  );
 
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
@@ -62,11 +67,14 @@ export default function WelcomeScreen() {
       <View className="px-8 pb-8">
         {isLastSlide ? (
           <>
-            <Button onPress={() => router.push('/(auth)/login')} label="Accedi" />
+            <Button
+              onPress={() => router.push('/(auth)/login')}
+              label={t('auth.welcome.loginButton')}
+            />
             <View className="mt-3">
               <Button
                 onPress={() => router.push('/(auth)/register')}
-                label="Registrati"
+                label={t('auth.welcome.registerButton')}
                 variant="outline"
               />
             </View>
@@ -74,14 +82,18 @@ export default function WelcomeScreen() {
         ) : (
           <>
             <Pressable onPress={handleNext} className="items-center rounded-2xl bg-primary py-4">
-              <Text className="text-lg font-semibold text-white">Avanti</Text>
+              <Text className="text-lg font-semibold text-white">
+                {t('auth.welcome.nextButton')}
+              </Text>
             </Pressable>
 
             <Pressable
               onPress={() => setCurrentSlide(slides.length - 1)}
               className="mt-4 items-center py-2"
             >
-              <Text className="text-base text-gray-500 dark:text-neutral-500">Salta</Text>
+              <Text className="text-base text-gray-500 dark:text-neutral-500">
+                {t('auth.welcome.skipButton')}
+              </Text>
             </Pressable>
           </>
         )}

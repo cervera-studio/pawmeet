@@ -1,5 +1,6 @@
 import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { useGroupEvents } from '@/hooks/useGroupEvents';
 
@@ -8,6 +9,7 @@ type PendingRequest = Awaited<
 >[number];
 
 export function useEventRequestsViewModel(eventId: string) {
+  const { t } = useTranslation();
   const { listPendingRequests, approveParticipant, declineParticipant } = useGroupEvents();
   const [requests, setRequests] = useState<PendingRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,20 +40,20 @@ export function useEventRequestsViewModel(eventId: string) {
         setRequests((prev) => prev.filter((r) => r.participant.userId !== userId));
       } catch (e) {
         logger.warn('EventRequests', 'Failed to approve', e);
-        Alert.alert('Errore', 'Impossibile approvare la richiesta.');
+        Alert.alert(t('common.error'), t('events.requests.approveError'));
       } finally {
         setProcessingId(null);
       }
     },
-    [eventId, approveParticipant],
+    [eventId, approveParticipant, t],
   );
 
   const handleDecline = useCallback(
     (userId: string) => {
-      Alert.alert('Rifiuta richiesta', 'Sei sicuro di voler rifiutare questa richiesta?', [
-        { text: 'No', style: 'cancel' },
+      Alert.alert(t('events.requests.declineTitle'), t('events.requests.declineMessage'), [
+        { text: t('common.no'), style: 'cancel' },
         {
-          text: 'Rifiuta',
+          text: t('common.decline'),
           style: 'destructive',
           onPress: async () => {
             setProcessingId(userId);
@@ -60,7 +62,7 @@ export function useEventRequestsViewModel(eventId: string) {
               setRequests((prev) => prev.filter((r) => r.participant.userId !== userId));
             } catch (e) {
               logger.warn('EventRequests', 'Failed to decline', e);
-              Alert.alert('Errore', 'Impossibile rifiutare la richiesta.');
+              Alert.alert(t('common.error'), t('events.requests.declineError'));
             } finally {
               setProcessingId(null);
             }
@@ -68,7 +70,7 @@ export function useEventRequestsViewModel(eventId: string) {
         },
       ]);
     },
-    [eventId, declineParticipant],
+    [eventId, declineParticipant, t],
   );
 
   return {

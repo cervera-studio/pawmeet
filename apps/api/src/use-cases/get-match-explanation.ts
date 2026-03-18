@@ -72,21 +72,13 @@ const WEIGHT_LEASH = 0.05;
 export interface MatchExplanation {
   overallScore: number;
   breakdown: {
-    size: { score: number; label: string };
-    energy: { score: number; label: string };
-    behavior: { score: number; label: string };
-    walk: { score: number; label: string };
-    distance: { score: number; label: string };
-    leash: { score: number; label: string };
+    size: { score: number };
+    energy: { score: number };
+    behavior: { score: number };
+    walk: { score: number };
+    distance: { score: number };
+    leash: { score: number };
   };
-}
-
-function getScoreLabel(score: number): string {
-  if (score >= 0.8) return 'Ottimo';
-  if (score >= 0.6) return 'Buono';
-  if (score >= 0.4) return 'Discreto';
-  if (score >= 0.2) return 'Basso';
-  return 'Molto basso';
 }
 
 // ── Use case factory ────────────────────────────────────────────────────────
@@ -148,21 +140,12 @@ export function createGetMatchExplanation({ matchRepo, dogRepo, userRepo }: Deps
     return succeed({
       overallScore: Math.round(overallScore * 100) / 100,
       breakdown: {
-        size: { score: Math.round(sizeScore * 100) / 100, label: getScoreLabel(sizeScore) },
-        energy: {
-          score: Math.round(energyScore * 100) / 100,
-          label: getScoreLabel(energyScore),
-        },
-        behavior: {
-          score: Math.round(behaviorScore * 100) / 100,
-          label: getScoreLabel(behaviorScore),
-        },
-        walk: { score: Math.round(walkScore * 100) / 100, label: getScoreLabel(walkScore) },
-        distance: {
-          score: Math.round(distanceScore * 100) / 100,
-          label: getScoreLabel(distanceScore),
-        },
-        leash: { score: Math.round(leashScore * 100) / 100, label: getScoreLabel(leashScore) },
+        size: { score: Math.round(sizeScore * 100) / 100 },
+        energy: { score: Math.round(energyScore * 100) / 100 },
+        behavior: { score: Math.round(behaviorScore * 100) / 100 },
+        walk: { score: Math.round(walkScore * 100) / 100 },
+        distance: { score: Math.round(distanceScore * 100) / 100 },
+        leash: { score: Math.round(leashScore * 100) / 100 },
       },
     });
   };

@@ -2,12 +2,14 @@ import { logger } from '@pawmeet/utils';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { useGroupEvents } from '@/hooks/useGroupEvents';
 import { useLocation } from '@/hooks/useLocation';
 import { useDogsStore } from '@/stores/dogs';
 
 export function useCreateEventViewModel() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { createEvent } = useGroupEvents();
   const { coordinates, getCurrentLocation } = useLocation();
@@ -55,7 +57,7 @@ export function useCreateEventViewModel() {
     if (!isValid) return;
 
     if (!selectedDogId) {
-      Alert.alert('Errore', 'Seleziona un cane dal profilo prima di creare un evento.');
+      Alert.alert(t('common.error'), t('events.create.selectDogError'));
       return;
     }
 
@@ -68,7 +70,7 @@ export function useCreateEventViewModel() {
       }
 
       if (!coords) {
-        Alert.alert('Errore', 'Impossibile ottenere la posizione. Abilita la geolocalizzazione.');
+        Alert.alert(t('common.error'), t('events.create.locationError'));
         setSubmitting(false);
         return;
       }
@@ -90,7 +92,7 @@ export function useCreateEventViewModel() {
       router.back();
     } catch (e) {
       logger.warn('CreateEvent', 'Failed to create event', e);
-      Alert.alert('Errore', "Impossibile creare l'evento. Riprova.");
+      Alert.alert(t('common.error'), t('events.create.createError'));
     } finally {
       setSubmitting(false);
     }
@@ -107,6 +109,7 @@ export function useCreateEventViewModel() {
     maxParticipants,
     createEvent,
     router,
+    t,
   ]);
 
   return {

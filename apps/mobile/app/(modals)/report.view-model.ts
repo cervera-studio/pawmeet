@@ -6,19 +6,22 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { useFeed } from '@/hooks/useFeed';
+import i18n from '@/lib/i18n';
 
 interface ReportReason {
   key: ContentReportReason;
   label: string;
 }
 
-const REASONS: ReportReason[] = [
-  { key: CONTENT_REPORT_REASON.INAPPROPRIATE, label: 'Contenuto inappropriato' },
-  { key: CONTENT_REPORT_REASON.HARASSMENT, label: 'Comportamento molesto' },
-  { key: CONTENT_REPORT_REASON.SPAM, label: 'Spam' },
-  { key: CONTENT_REPORT_REASON.VIOLENCE, label: 'Violenza' },
-  { key: CONTENT_REPORT_REASON.OTHER, label: 'Altro' },
-];
+function getReasons(): ReportReason[] {
+  return [
+    { key: CONTENT_REPORT_REASON.INAPPROPRIATE, label: i18n.t('report.reasons.inappropriate') },
+    { key: CONTENT_REPORT_REASON.HARASSMENT, label: i18n.t('report.reasons.harassment') },
+    { key: CONTENT_REPORT_REASON.SPAM, label: i18n.t('report.reasons.spam') },
+    { key: CONTENT_REPORT_REASON.VIOLENCE, label: i18n.t('report.reasons.violence') },
+    { key: CONTENT_REPORT_REASON.OTHER, label: i18n.t('report.reasons.other') },
+  ];
+}
 
 export function useReportViewModel() {
   const router = useRouter();
@@ -40,15 +43,15 @@ export function useReportViewModel() {
       const success = await reportContent(contentType, contentId, selectedReason);
       if (success) {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert('Grazie', 'La tua segnalazione è stata inviata.', [
-          { text: 'OK', onPress: () => router.back() },
+        Alert.alert(i18n.t('report.successTitle'), i18n.t('report.successMessage'), [
+          { text: i18n.t('common.ok'), onPress: () => router.back() },
         ]);
       } else {
-        Alert.alert('Errore', 'Impossibile inviare la segnalazione. Riprova.');
+        Alert.alert(i18n.t('common.error'), i18n.t('report.error'));
       }
     } catch (e) {
       logger.warn('ReportModal', 'Failed to submit report', e);
-      Alert.alert('Errore', 'Impossibile inviare la segnalazione. Riprova.');
+      Alert.alert(i18n.t('common.error'), i18n.t('report.error'));
     } finally {
       setSubmitting(false);
     }
@@ -57,7 +60,7 @@ export function useReportViewModel() {
   const canSubmit = Boolean(selectedReason) && !submitting;
 
   return {
-    reasons: REASONS,
+    reasons: getReasons(),
     selectedReason,
     setSelectedReason,
     description,

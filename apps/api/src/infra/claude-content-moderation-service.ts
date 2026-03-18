@@ -1,15 +1,11 @@
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
 import type {
   ContentModerationResult,
   ContentModerationService,
 } from '../ports/content-moderation-service.js';
 
 export class ClaudeContentModerationService implements ContentModerationService {
-  private client: Anthropic;
-
-  constructor() {
-    this.client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
-  }
+  constructor(private client: Anthropic) {}
 
   async analyzeImage(imageUrl: string): Promise<ContentModerationResult> {
     const response = await this.client.messages.create({

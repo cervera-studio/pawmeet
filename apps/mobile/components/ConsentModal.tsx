@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { useConsentModalViewModel } from './ConsentModal.view-model';
 
@@ -7,6 +8,7 @@ interface ConsentModalProps {
 }
 
 export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
+  const { t } = useTranslation();
   const vm = useConsentModalViewModel(onDismiss);
 
   return (
@@ -16,17 +18,18 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
         contentContainerClassName="px-6 py-8"
       >
         <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-          Privacy e consensi
+          {t('consent.title')}
         </Text>
         <Text className="mb-6 text-base text-gray-500 dark:text-neutral-500">
-          Scegli quali servizi opzionali attivare. Puoi modificare le tue preferenze in qualsiasi
-          momento dalle Impostazioni.
+          {t('consent.description')}
         </Text>
 
         {/* Analytics */}
         <View className="mb-4 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <View className="flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-gray-800">Analisi di utilizzo</Text>
+            <Text className="text-base font-semibold text-gray-800">
+              {t('consent.analytics.title')}
+            </Text>
             <Switch
               value={vm.analytics}
               onValueChange={(v) => vm.setConsent('analytics', v)}
@@ -34,14 +37,16 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
             />
           </View>
           <Text className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
-            Ci aiuta a capire come usi l'app per migliorarla. Dati anonimi e aggregati.
+            {t('consent.analytics.description')}
           </Text>
         </View>
 
         {/* A/B Testing (experiment logging, not remote config) */}
         <View className="mb-4 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <View className="flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-gray-800">Esperimenti A/B</Text>
+            <Text className="text-base font-semibold text-gray-800">
+              {t('consent.abTesting.title')}
+            </Text>
             <Switch
               value={vm.abTesting}
               onValueChange={(v) => vm.setConsent('abTesting', v)}
@@ -49,15 +54,16 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
             />
           </View>
           <Text className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
-            Partecipa a test comparativi per aiutarci a scegliere le funzionalità migliori. La
-            configurazione base dell'app funziona sempre, anche senza questo consenso.
+            {t('consent.abTesting.description')}
           </Text>
         </View>
 
         {/* Error Tracking — enriches Sentry reports with full context */}
         <View className="mb-4 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <View className="flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-gray-800">Segnalazione errori</Text>
+            <Text className="text-base font-semibold text-gray-800">
+              {t('consent.errorTracking.title')}
+            </Text>
             <Switch
               value={vm.errorTracking}
               onValueChange={(v) => vm.setConsent('errorTracking', v)}
@@ -65,15 +71,16 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
             />
           </View>
           <Text className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
-            Invia report dettagliati quando qualcosa non funziona. Senza questo consenso, le
-            segnalazioni sono comunque inviate in forma anonima.
+            {t('consent.errorTracking.description')}
           </Text>
         </View>
 
         {/* AI Training */}
         <View className="mb-4 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <View className="flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-gray-800">Addestramento AI</Text>
+            <Text className="text-base font-semibold text-gray-800">
+              {t('consent.aiTraining.title')}
+            </Text>
             <Switch
               value={vm.aiTraining}
               onValueChange={(v) => vm.setConsent('aiTraining', v)}
@@ -81,15 +88,16 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
             />
           </View>
           <Text className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
-            Aiuta a migliorare il matching addestrando modelli AI sul profilo anonimizzato del tuo
-            cane
+            {t('consent.aiTraining.description')}
           </Text>
         </View>
 
         {/* Marketing */}
         <View className="mb-6 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <View className="flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-gray-800">Comunicazioni marketing</Text>
+            <Text className="text-base font-semibold text-gray-800">
+              {t('consent.marketing.title')}
+            </Text>
             <Switch
               value={vm.marketing}
               onValueChange={(v) => vm.setConsent('marketing', v)}
@@ -97,7 +105,7 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
             />
           </View>
           <Text className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
-            Ricevi aggiornamenti su novità, eventi e promozioni via email.
+            {t('consent.marketing.description')}
           </Text>
         </View>
 
@@ -106,18 +114,18 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
           onPress={vm.acceptSelected}
           className="mb-3 items-center rounded-xl bg-primary px-6 py-4"
         >
-          <Text className="text-base font-semibold text-white">Accetta selezionati</Text>
+          <Text className="text-base font-semibold text-white">{t('consent.acceptSelected')}</Text>
         </Pressable>
 
         <Pressable onPress={vm.rejectAll} className="items-center rounded-xl px-6 py-4">
           <Text className="text-base font-medium text-gray-500 dark:text-neutral-500">
-            Rifiuta tutto
+            {t('consent.rejectAll')}
           </Text>
         </Pressable>
 
         <Pressable className="mt-4 items-center">
           <Text className="text-sm text-gray-400 dark:text-neutral-500 underline">
-            Leggi la Privacy Policy completa
+            {t('consent.readPrivacyPolicy')}
           </Text>
         </Pressable>
       </ScrollView>

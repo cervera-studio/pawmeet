@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { useWalks } from '@/hooks/useWalks';
+import i18n from '@/lib/i18n';
 import { useAuthStore } from '@/stores/auth';
 
 type Walk = RouterOutput['walks']['listUpcoming']['walks'][number];
@@ -40,7 +41,7 @@ export function useWalksViewModel() {
         await respondToWalk(walkId, true);
       } catch (e) {
         logger.warn('WalksScreen', 'Failed to accept walk', e);
-        Alert.alert('Errore', 'Impossibile accettare la passeggiata');
+        Alert.alert(i18n.t('common.error'), i18n.t('walks.alerts.acceptError'));
       }
     },
     [respondToWalk],
@@ -53,7 +54,7 @@ export function useWalksViewModel() {
         await respondToWalk(walkId, false);
       } catch (e) {
         logger.warn('WalksScreen', 'Failed to decline walk', e);
-        Alert.alert('Errore', 'Impossibile rifiutare la passeggiata');
+        Alert.alert(i18n.t('common.error'), i18n.t('walks.alerts.declineError'));
       }
     },
     [respondToWalk],
@@ -61,17 +62,17 @@ export function useWalksViewModel() {
 
   const handleCancel = useCallback(
     (walkId: string) => {
-      Alert.alert('Annulla passeggiata', 'Sei sicuro di voler annullare questa passeggiata?', [
-        { text: 'No', style: 'cancel' },
+      Alert.alert(i18n.t('walks.alerts.cancelTitle'), i18n.t('walks.alerts.cancelMessage'), [
+        { text: i18n.t('common.no'), style: 'cancel' },
         {
-          text: 'Annulla passeggiata',
+          text: i18n.t('walks.alerts.cancelButton'),
           style: 'destructive',
           onPress: async () => {
             try {
               await cancelWalk(walkId);
             } catch (e) {
               logger.warn('WalksScreen', 'Failed to cancel walk', e);
-              Alert.alert('Errore', 'Impossibile annullare la passeggiata');
+              Alert.alert(i18n.t('common.error'), i18n.t('walks.alerts.cancelError'));
             }
           },
         },

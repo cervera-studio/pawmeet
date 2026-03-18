@@ -1,17 +1,21 @@
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 import { useReportViewModel } from './report.view-model';
 
 export default function ReportModal() {
+  const { t } = useTranslation();
   const vm = useReportViewModel();
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <View className="flex-1 px-6 py-4">
-        <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Segnala</Text>
+        <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('report.title')}
+        </Text>
         <Text className="mb-6 text-base text-gray-500 dark:text-neutral-500">
-          Seleziona il motivo della segnalazione
+          {t('report.subtitle')}
         </Text>
 
         <View className="gap-2">
@@ -43,7 +47,7 @@ export default function ReportModal() {
 
         <TextInput
           className="mt-4 h-24 rounded-xl border border-gray-200 dark:border-[#38383A] p-4 text-base text-gray-900 dark:text-[#F5F5F7]"
-          placeholder="Dettagli aggiuntivi (opzionale)"
+          placeholder={t('report.detailsPlaceholder')}
           value={vm.description}
           onChangeText={vm.setDescription}
           multiline
@@ -54,7 +58,7 @@ export default function ReportModal() {
         <View className="mt-6">
           <Button
             onPress={vm.handleSubmit}
-            label={vm.submitting ? 'Invio in corso...' : 'Invia segnalazione'}
+            label={vm.submitting ? t('report.submitting') : t('report.submitButton')}
             disabled={!vm.canSubmit}
           />
         </View>

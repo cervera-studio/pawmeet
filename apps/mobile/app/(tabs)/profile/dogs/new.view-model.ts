@@ -1,7 +1,10 @@
 import { MAX_DOGS_PER_USER } from '@pawmeet/config';
 import { createDogSchema } from '@pawmeet/validation';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useCallback, useReducer, useState } from 'react';
+import { Alert } from 'react-native';
+import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { zodToFieldErrors } from '@/lib/validation';
 import { useDogsStore } from '@/stores/dogs';
@@ -84,23 +87,23 @@ function validateStep0(state: DogFormState): Record<string, string> {
   if (!state.weightKg || Number(state.weightKg) < 0.5) {
     errors.weightKg = 'Inserisci un peso valido (min 0.5 kg)';
   }
-  if (!state.size) errors.size = 'Seleziona la taglia';
-  if (!state.gender) errors.gender = 'Seleziona il sesso';
+  if (!state.size) errors.size = i18n.t('dogForm.validation.selectSize');
+  if (!state.gender) errors.gender = i18n.t('dogForm.validation.selectGender');
   if (state.isNeutered === null) errors.isNeutered = 'Indica se sterilizzato/a';
   return errors;
 }
 
 function validateStep1(state: DogFormState): Record<string, string> {
   const errors: Record<string, string> = {};
-  if (!state.energyLevel) errors.energyLevel = 'Seleziona il livello di energia';
+  if (!state.energyLevel) errors.energyLevel = i18n.t('dogForm.validation.selectEnergy');
   if (!state.behaviorWithDogs) {
-    errors.behaviorWithDogs = 'Seleziona il comportamento con altri cani';
+    errors.behaviorWithDogs = i18n.t('dogForm.validation.selectBehaviorDogs');
   }
   if (!state.behaviorWithPeople) {
-    errors.behaviorWithPeople = 'Seleziona il comportamento con le persone';
+    errors.behaviorWithPeople = i18n.t('dogForm.validation.selectBehaviorPeople');
   }
   if (!state.leashBehavior) {
-    errors.leashBehavior = 'Seleziona il comportamento al guinzaglio';
+    errors.leashBehavior = i18n.t('dogForm.validation.selectLeash');
   }
   return errors;
 }
@@ -108,10 +111,10 @@ function validateStep1(state: DogFormState): Record<string, string> {
 function validateStep2(state: DogFormState): Record<string, string> {
   const errors: Record<string, string> = {};
   if (state.walkPrefTime.length === 0) {
-    errors.walkPrefTime = 'Seleziona almeno un orario preferito';
+    errors.walkPrefTime = i18n.t('dogForm.validation.selectSchedule');
   }
   if (state.walkPrefTerrain.length === 0) {
-    errors.walkPrefTerrain = 'Seleziona almeno un tipo di terreno';
+    errors.walkPrefTerrain = i18n.t('dogForm.validation.selectTerrain');
   }
   const dMin = Number(state.walkPrefDurationMin);
   const dMax = Number(state.walkPrefDurationMax);
@@ -142,6 +145,7 @@ export function useNewDogViewModel() {
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
   const [generatingBio, setGeneratingBio] = useState(false);
+  const [analyzingPhoto, setAnalyzingPhoto] = useState(false);
 
   const setField = useCallback(<K extends keyof DogFormState>(field: K, value: DogFormState[K]) => {
     dispatch({ type: 'SET_FIELD', field, value: value as DogFormState[keyof DogFormState] });
@@ -204,7 +208,7 @@ export function useNewDogViewModel() {
       });
       dispatch({ type: 'SET_FIELD', field: 'bio', value: bio });
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : 'Errore durante la generazione della bio');
+      setApiError(e instanceof Error ? e.message : i18n.t('dogForm.bioGenerationError'));
     } finally {
       setGeneratingBio(false);
     }
@@ -221,6 +225,48 @@ export function useNewDogViewModel() {
     !!state.leashBehavior &&
     state.walkPrefTime.length > 0 &&
     state.walkPrefTerrain.length > 0;
+
+  const analyzePhoto = useCallback(async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permesso necessario',
+        "Consenti l'accesso alla galleria per analizzare la foto.",
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.6,
+      base64: true,
+    });
+
+    const asset = result.canceled ? undefined : result.assets?.[0];
+    const base64 = asset?.base64;
+    if (!asset || !base64) return;
+
+    const mimeType = asset.mimeType ?? 'image/jpeg';
+
+    setAnalyzingPhoto(true);
+    setApiError('');
+    try {
+      const { analysis } = await api.dogs.analyzePhoto.mutate({
+        imageBase64: base64,
+        mimeType: mimeType as 'image/jpeg' | 'image/png' | 'image/webp',
+      });
+
+      dispatch({ type: 'SET_FIELD', field: 'breed', value: analysis.breed });
+      dispatch({ type: 'SET_FIELD', field: 'size', value: analysis.size });
+      if (analysis.breedSecondary) {
+        dispatch({ type: 'SET_FIELD', field: 'breedSecondary', value: analysis.breedSecondary });
+      }
+    } catch (e) {
+      setApiError(e instanceof Error ? e.message : "Errore durante l'analisi della foto");
+    } finally {
+      setAnalyzingPhoto(false);
+    }
+  }, []);
 
   const buildFormData = useCallback(
     () => ({
@@ -291,7 +337,7 @@ export function useNewDogViewModel() {
       addDog(dog);
       router.back();
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : 'Errore durante la creazione');
+      setApiError(e instanceof Error ? e.message : i18n.t('dogForm.createError'));
     } finally {
       setLoading(false);
     }
@@ -310,5 +356,7 @@ export function useNewDogViewModel() {
     generatingBio,
     generateBio,
     canGenerateBio,
+    analyzingPhoto,
+    analyzePhoto,
   } as const;
 }

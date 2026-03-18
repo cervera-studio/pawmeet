@@ -10,6 +10,7 @@ import {
   WALK_TIME_OPTIONS,
 } from '@pawmeet/config';
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChipSelect } from '@/components/ChipSelect';
@@ -52,6 +53,8 @@ function Step1BasicInfo({
   generatingBio,
   canGenerateBio,
   onGenerateBio,
+  analyzingPhoto,
+  onAnalyzePhoto,
 }: {
   state: ReturnType<typeof useNewDogViewModel>['state'];
   setField: ReturnType<typeof useNewDogViewModel>['setField'];
@@ -59,12 +62,32 @@ function Step1BasicInfo({
   generatingBio: boolean;
   canGenerateBio: boolean;
   onGenerateBio: () => void;
+  analyzingPhoto: boolean;
+  onAnalyzePhoto: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <View className="gap-4">
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
         Come si chiama il tuo cane?
       </Text>
+
+      {/* Photo analysis CTA */}
+      <Pressable
+        onPress={onAnalyzePhoto}
+        disabled={analyzingPhoto}
+        className={`flex-row items-center justify-center rounded-2xl border-2 border-dashed py-4 ${
+          analyzingPhoto ? 'border-gray-200 dark:border-[#48484A]' : 'border-primary/40'
+        }`}
+      >
+        <Text
+          className={`text-sm font-medium ${
+            analyzingPhoto ? 'text-gray-400 dark:text-neutral-500' : 'text-primary'
+          }`}
+        >
+          {analyzingPhoto ? 'Analisi in corso...' : 'Analizza foto per pre-compilare'}
+        </Text>
+      </Pressable>
 
       <View>
         <Input placeholder="Nome" value={state.name} onChangeText={(v) => setField('name', v)} />
@@ -137,7 +160,7 @@ function Step1BasicInfo({
                 state.isNeutered === true ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'
               }`}
             >
-              Si
+              {t('common.yes')}
             </Text>
           </Pressable>
           <Pressable
@@ -151,7 +174,7 @@ function Step1BasicInfo({
                 state.isNeutered === false ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'
               }`}
             >
-              No
+              {t('common.no')}
             </Text>
           </Pressable>
         </View>
@@ -344,10 +367,11 @@ function Step3WalkPrefs({
 }
 
 function Step4Photos() {
+  const { t } = useTranslation();
   return (
     <View className="gap-4">
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-        Aggiungi delle foto
+        {t('dogForm.addPhotos')}
       </Text>
       <Text className="text-sm text-gray-500 dark:text-neutral-500">
         Potrai aggiungere foto dopo aver creato il profilo.
@@ -365,6 +389,7 @@ function Step4Photos() {
 // -- Main screen --
 
 export default function NewDogScreen() {
+  const { t } = useTranslation();
   const {
     state,
     setField,
@@ -378,6 +403,8 @@ export default function NewDogScreen() {
     generatingBio,
     generateBio,
     canGenerateBio,
+    analyzingPhoto,
+    analyzePhoto,
   } = useNewDogViewModel();
 
   return (
@@ -386,7 +413,7 @@ export default function NewDogScreen() {
         options={{
           headerShown: true,
           title: 'Nuovo cane',
-          headerBackTitle: 'Profilo',
+          headerBackTitle: t('profile.dogDetail.backButton'),
         }}
       />
       <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
@@ -407,6 +434,8 @@ export default function NewDogScreen() {
               generatingBio={generatingBio}
               canGenerateBio={canGenerateBio}
               onGenerateBio={generateBio}
+              analyzingPhoto={analyzingPhoto}
+              onAnalyzePhoto={analyzePhoto}
             />
           )}
           {step === 1 && <Step2Personality state={state} setField={setField} errors={errors} />}
@@ -416,7 +445,7 @@ export default function NewDogScreen() {
           {/* Navigation */}
           <View className="mt-8 gap-3">
             {step < STEPS.length - 1 ? (
-              <Button onPress={nextStep} label="Avanti" />
+              <Button onPress={nextStep} label={t('common.next')} />
             ) : (
               <Button
                 onPress={handleSubmit}
@@ -424,7 +453,7 @@ export default function NewDogScreen() {
                 disabled={loading}
               />
             )}
-            {step > 0 && <Button onPress={prevStep} label="Indietro" variant="outline" />}
+            {step > 0 && <Button onPress={prevStep} label={t('common.back')} variant="outline" />}
           </View>
         </ScrollView>
       </SafeAreaView>

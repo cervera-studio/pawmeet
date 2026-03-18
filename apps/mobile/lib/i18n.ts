@@ -1,0 +1,32 @@
+import { DEFAULT_LOCALE, isLocale, LOCALE_CODES } from '@pawmeet/i18n';
+import { getLocales } from 'expo-localization';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+import en from '@/locales/en.json';
+import es from '@/locales/es.json';
+import it from '@/locales/it.json';
+import ro from '@/locales/ro.json';
+
+/** Detect device locale, fallback to default */
+function getDeviceLocale(): string {
+  const deviceLocale = getLocales()[0]?.languageCode ?? undefined;
+  return isLocale(deviceLocale) ? deviceLocale : DEFAULT_LOCALE;
+}
+
+i18n.use(initReactI18next).init({
+  resources: {
+    it: { translation: it },
+    en: { translation: en },
+    es: { translation: es },
+    ro: { translation: ro },
+  },
+  lng: getDeviceLocale(),
+  fallbackLng: DEFAULT_LOCALE,
+  supportedLngs: LOCALE_CODES,
+  interpolation: {
+    escapeValue: false,
+  },
+});
+
+export default i18n;

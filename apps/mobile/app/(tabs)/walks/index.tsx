@@ -3,6 +3,7 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 import { WALK_STATUS } from '@pawmeet/types';
 import { useRouter } from 'expo-router';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeedbackModal } from '@/components/FeedbackModal';
@@ -23,22 +24,13 @@ function formatTime(date: Date | string): string {
   return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 }
 
-function statusLabel(status: string): string {
-  switch (status) {
-    case WALK_STATUS.PENDING:
-      return 'In attesa';
-    case WALK_STATUS.ACCEPTED:
-      return 'Confermata';
-    case WALK_STATUS.DECLINED:
-      return 'Rifiutata';
-    case WALK_STATUS.CANCELLED:
-      return 'Annullata';
-    case WALK_STATUS.COMPLETED:
-      return 'Completata';
-    default:
-      return status;
-  }
-}
+const STATUS_KEY_MAP: Record<string, string> = {
+  [WALK_STATUS.PENDING]: 'walks.status.pending',
+  [WALK_STATUS.ACCEPTED]: 'walks.status.accepted',
+  [WALK_STATUS.DECLINED]: 'walks.status.declined',
+  [WALK_STATUS.CANCELLED]: 'walks.status.cancelled',
+  [WALK_STATUS.COMPLETED]: 'walks.status.completed',
+};
 
 function statusColor(status: string): string {
   switch (status) {
@@ -102,10 +94,14 @@ const WalkCard = memo(function WalkCard({
   onCancel: () => void;
   onFeedback: () => void;
 }) {
+  const { t } = useTranslation();
   const isMine = walk.createdBy === userId;
   const isPending = walk.status === WALK_STATUS.PENDING;
   const isAccepted = walk.status === WALK_STATUS.ACCEPTED;
   const isCompleted = walk.status === WALK_STATUS.COMPLETED;
+
+  const statusKey = STATUS_KEY_MAP[walk.status];
+  const label = statusKey ? t(statusKey) : walk.status;
 
   return (
     <View className="mb-3 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm border border-gray-100 dark:border-[#38383A]">
@@ -121,7 +117,7 @@ const WalkCard = memo(function WalkCard({
         </View>
         <View className={`rounded-full px-3 py-1 ${statusColor(walk.status)}`}>
           <Text className="text-xs font-medium">
-            {isPending && isMine ? 'In attesa' : statusLabel(walk.status)}
+            {isPending && isMine ? t('walks.status.pending') : label}
           </Text>
         </View>
       </View>
@@ -148,10 +144,10 @@ const WalkCard = memo(function WalkCard({
             onPress={onAccept}
             className="flex-1 items-center rounded-xl bg-green-500 py-3"
           >
-            <Text className="font-semibold text-white">Accetta</Text>
+            <Text className="font-semibold text-white">{t('common.accept')}</Text>
           </Pressable>
           <Pressable onPress={onDecline} className="flex-1 items-center rounded-xl bg-red-100 py-3">
-            <Text className="font-semibold text-red-600">Rifiuta</Text>
+            <Text className="font-semibold text-red-600">{t('common.decline')}</Text>
           </Pressable>
         </View>
       )}
@@ -162,7 +158,9 @@ const WalkCard = memo(function WalkCard({
             onPress={onCancel}
             className="items-center rounded-xl bg-gray-100 dark:bg-[#38383A] py-3"
           >
-            <Text className="font-semibold text-gray-600 dark:text-[#D1D1D6]">Annulla</Text>
+            <Text className="font-semibold text-gray-600 dark:text-[#D1D1D6]">
+              {t('common.cancel')}
+            </Text>
           </Pressable>
         </View>
       )}
@@ -170,7 +168,7 @@ const WalkCard = memo(function WalkCard({
       {isCompleted && (
         <View className="mt-2">
           <Pressable onPress={onFeedback} className="items-center rounded-xl bg-primary py-3">
-            <Text className="font-semibold text-white">Lascia feedback</Text>
+            <Text className="font-semibold text-white">{t('walks.leaveFeedback')}</Text>
           </Pressable>
         </View>
       )}
@@ -183,14 +181,15 @@ WalkCard.displayName = 'WalkCard';
 // ── Empty state ──────────────────────────────────────────────────────────────
 
 function WalksEmptyState() {
+  const { t } = useTranslation();
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F5D3}'}</Text>
       <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-        Nessuna passeggiata in programma
+        {t('walks.noWalks')}
       </Text>
       <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
-        Proponi una passeggiata dalla chat con uno dei tuoi match!
+        {t('walks.noWalksDescription')}
       </Text>
     </View>
   );
@@ -201,25 +200,28 @@ function WalksEmptyState() {
 export default function WalksScreen() {
   const vm = useWalksViewModel();
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
       <View className="flex-row items-center justify-between border-b border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-4">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Passeggiate</Text>
+        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('walks.title')}
+        </Text>
         <View className="flex-row gap-2">
           <Pressable
             onPress={() => router.push('/(tabs)/walks/calendar')}
             className="rounded-full bg-gray-100 dark:bg-[#38383A] px-4 py-2"
           >
             <Text className="text-sm font-semibold text-gray-700 dark:text-[#D1D1D6]">
-              Calendario
+              {t('walks.calendar')}
             </Text>
           </Pressable>
           <Pressable
             onPress={() => router.push('/(tabs)/walks/tracking')}
             className="rounded-full bg-emerald-700 px-4 py-2"
           >
-            <Text className="text-sm font-semibold text-white">Traccia</Text>
+            <Text className="text-sm font-semibold text-white">{t('walks.track')}</Text>
           </Pressable>
         </View>
       </View>

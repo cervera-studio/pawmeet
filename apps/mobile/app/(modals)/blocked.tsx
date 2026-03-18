@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
@@ -26,13 +27,14 @@ function BlockedSkeleton() {
 // ── Empty State ──────────────────────────────────────────────────────────
 
 function EmptyBlocked() {
+  const { t } = useTranslation();
   return (
     <View className="flex-1 items-center justify-center px-8 pt-20">
       <Text className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-        Nessun utente bloccato
+        {t('blocked.noBlocked')}
       </Text>
       <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
-        Gli utenti che blocchi non potranno più seguirti o contattarti.
+        {t('blocked.noBlockedDescription')}
       </Text>
     </View>
   );
@@ -47,6 +49,7 @@ const BlockedUserRow = memo(function BlockedUserRow({
   user: BlockedUser;
   onUnblock: (userId: string, displayName: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
       <Avatar name={user.displayName} imageUrl={user.avatarUrl} size="sm" />
@@ -59,7 +62,7 @@ const BlockedUserRow = memo(function BlockedUserRow({
         onPress={() => onUnblock(user.id, user.displayName)}
         className="rounded-xl border border-red-300 px-4 py-1.5"
       >
-        <Text className="text-xs font-semibold text-red-500">Sblocca</Text>
+        <Text className="text-xs font-semibold text-red-500">{t('common.unblock')}</Text>
       </Pressable>
     </View>
   );

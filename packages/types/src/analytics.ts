@@ -54,6 +54,7 @@ export interface AnalyticsEventMap {
   };
   dog_profile_updated: { fieldsChanged: string[] };
   dog_bio_generated: { breed: string; size: string };
+  dog_photo_analyzed: { breed: string; size: string; confidence: number };
   dog_photo_uploaded: { position: number; fileSizeKb: number };
 
   // Matching

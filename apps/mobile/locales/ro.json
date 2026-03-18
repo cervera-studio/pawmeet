@@ -1,1 +1,803 @@
-{}
+{
+  "common": {
+    "error": "Eroare",
+    "cancel": "Anulează",
+    "confirm": "Confirmă",
+    "delete": "Șterge",
+    "save": "Salvează",
+    "send": "Trimite",
+    "retry": "Reîncearcă",
+    "close": "Închide",
+    "back": "Înapoi",
+    "next": "Înainte",
+    "skip": "Sari",
+    "ok": "OK",
+    "no": "Nu",
+    "yes": "Da",
+    "all": "Toate",
+    "loading": "Se încarcă...",
+    "sending": "Se trimite...",
+    "deleting": "Se șterge...",
+    "publishing": "Se publică...",
+    "or": "sau",
+    "add": "Adaugă",
+    "report": "Raportează",
+    "block": "Blochează",
+    "unblock": "Deblochează",
+    "approve": "Aprobă",
+    "decline": "Refuză",
+    "accept": "Acceptă",
+    "publish": "Publică",
+    "change": "Schimbă",
+    "reply": "Răspunde",
+    "submit": "Trimite",
+    "go": "DU-TE",
+    "user": "Utilizator",
+    "photo": "Foto",
+    "video": "Video",
+    "position": "Poziție",
+    "now": "Acum",
+    "minuteAgo": "acum {{count}} min",
+    "hourAgo": "acum {{count}}h",
+    "dayAgo": "acum {{count}}z",
+    "timeNow": "Acum",
+    "actionFailed": "Acțiunea nu a putut fi finalizată. Reîncearcă.",
+    "genericError": "Eroare neașteptată",
+    "fileTooLarge": "Fișier prea mare",
+    "fileTooLargeMessage": "Fotografia nu poate depăși 5 MB.",
+    "permissionRequired": "Permisiune necesară",
+    "galleryPermission": "Permite accesul la galerie pentru a încărca o fotografie.",
+    "uploadPhotoError": "Fotografia nu a putut fi încărcată. Reîncearcă.",
+    "uploadAvatarError": "Imaginea de profil nu a putut fi încărcată. Reîncearcă."
+  },
+
+  "tabs": {
+    "discover": "Descoperă",
+    "map": "Hartă",
+    "feed": "Feed",
+    "match": "Match",
+    "chat": "Chat",
+    "events": "Evenimente",
+    "walks": "Plimbări",
+    "profile": "Profil"
+  },
+
+  "modals": {
+    "dogDetail": "Detalii câine",
+    "settings": "Setări",
+    "report": "Raportează",
+    "blocked": "Utilizatori blocați",
+    "searchUsers": "Caută utilizatori",
+    "userProfile": "Profil",
+    "storyViewers": "Vizualizări",
+    "newStory": "Poveste nouă",
+    "ageGate": "Verificare vârstă"
+  },
+
+  "discovery": {
+    "title": "Descoperă",
+    "subtitle": "Câini din apropiere",
+    "addYourDog": "Adaugă câinele tău",
+    "addDogDescription": "Pentru a începe să descoperi câini compatibili, adaugă primul tău câine.",
+    "addDogButton": "Adaugă câine",
+    "locationRequired": "Locație necesară",
+    "locationDescription": "Activează locația pentru a descoperi câini din apropiere.",
+    "enableLocation": "Activează locația",
+    "searchingDogs": "Caut câini compatibili...",
+    "noMoreProfiles": "Niciun alt profil",
+    "noMoreProfilesDescription": "Ai văzut toți câinii din apropiere. Reîncearcă mai târziu!",
+    "refresh": "Actualizează",
+    "filters": {
+      "title": "Filtre",
+      "reset": "Resetează",
+      "apply": "Aplică filtre",
+      "size": "Mărime",
+      "energy": "Energie",
+      "gender": "Gen",
+      "behavior": "Comportament",
+      "schedule": "Program",
+      "terrain": "Teren",
+      "maxDistance": "Distanță maximă"
+    },
+    "sizeOptions": {
+      "toy": "Toy",
+      "piccola": "Mică",
+      "media": "Medie",
+      "grande": "Mare",
+      "gigante": "Gigant"
+    },
+    "energyOptions": {
+      "bassa": "Scăzută",
+      "media": "Medie",
+      "alta": "Ridicată",
+      "molto_alta": "Foarte ridicată"
+    },
+    "genderOptions": {
+      "maschio": "Mascul",
+      "femmina": "Femelă"
+    },
+    "behaviorOptions": {
+      "molto_socievole": "Foarte sociabil",
+      "socievole": "Sociabil",
+      "selettivo": "Selectiv",
+      "reattivo": "Reactiv"
+    },
+    "scheduleOptions": {
+      "mattina_presto": "Dimineața devreme",
+      "mattina": "Dimineața",
+      "pomeriggio": "După-amiaza",
+      "sera": "Seara",
+      "sera_tardi": "Seara târziu"
+    },
+    "terrainOptions": {
+      "urbano": "Urban",
+      "parco": "Parc",
+      "campagna": "Câmp",
+      "spiaggia": "Plajă",
+      "montagna": "Munte"
+    }
+  },
+
+  "walks": {
+    "title": "Plimbări",
+    "calendar": "Calendar",
+    "track": "Urmărește",
+    "noWalks": "Nicio plimbare programată",
+    "noWalksDescription": "Propune o plimbare din chat-ul cu unul dintre match-urile tale!",
+    "leaveFeedback": "Lasă feedback",
+    "status": {
+      "pending": "În așteptare",
+      "accepted": "Confirmată",
+      "declined": "Refuzată",
+      "cancelled": "Anulată",
+      "completed": "Finalizată"
+    },
+    "alerts": {
+      "acceptError": "Plimbarea nu a putut fi acceptată",
+      "declineError": "Plimbarea nu a putut fi refuzată",
+      "cancelTitle": "Anulează plimbarea",
+      "cancelMessage": "Ești sigur că vrei să anulezi această plimbare?",
+      "cancelButton": "Anulează plimbarea",
+      "cancelError": "Plimbarea nu a putut fi anulată"
+    },
+    "tracking": {
+      "title": "Urmărește plimbarea",
+      "backButton": "Plimbări",
+      "inProgress": "În desfășurare",
+      "readyToGo": "Gata de plecare",
+      "distance": "Distanță",
+      "speed": "Viteză",
+      "gpsPoints": "{{count}} puncte GPS înregistrate",
+      "tapToStop": "Atinge pentru a opri",
+      "tapToStart": "Atinge pentru a începe",
+      "startError": "Urmărirea nu a putut fi pornită. Verifică permisiunile de locație.",
+      "stopTitle": "Termină plimbarea",
+      "stopMessage": "Vrei să termini urmărirea plimbării?",
+      "continueButton": "Continuă",
+      "stopButton": "Termină",
+      "stopError": "Urmărirea nu a putut fi oprită",
+      "sosTitle": "SOS — Urgență",
+      "sosMessage": "Trimite o alarmă partenerului tău de plimbare cu locația ta actuală?",
+      "sosSend": "Trimite SOS",
+      "sosSent": "SOS trimis",
+      "sosSentMessage": "Partenerul tău a fost notificat.",
+      "sosError": "SOS nu a putut fi trimis. Reîncearcă.",
+      "sosNoWalk": "Nicio plimbare activă pentru a trimite SOS."
+    },
+    "propose": {
+      "title": "Propune plimbare",
+      "dateLabel": "Data (AAAA-LL-ZZ) *",
+      "timeLabel": "Ora (HH:MM) *",
+      "durationLabel": "Durată",
+      "titleLabel": "Titlu",
+      "titlePlaceholder": "Ex. Plimbare în parc",
+      "locationLabel": "Loc",
+      "locationPlaceholder": "Ex. Parcul Herăstrău, București",
+      "notesLabel": "Note",
+      "notesPlaceholder": "Ex. Ne vedem la intrarea principală",
+      "submitButton": "Propune",
+      "dateTimeRequired": "Introdu data și ora",
+      "dateTimeInvalid": "Data sau ora nu este validă. Folosește formatul AAAA-LL-ZZ și HH:MM",
+      "dateInFuture": "Data trebuie să fie în viitor",
+      "proposeError": "Plimbarea nu a putut fi propusă"
+    },
+    "feedback": {
+      "title": "Feedback plimbare",
+      "question": "Cum a fost plimbarea?",
+      "commentLabel": "Comentariu (opțional)",
+      "commentPlaceholder": "Povestește cum a fost...",
+      "submitButton": "Trimite feedback",
+      "ratingRequired": "Selectează o evaluare",
+      "submitError": "Feedback-ul nu a putut fi trimis. Reîncearcă.",
+      "ratings": {
+        "1": "Foarte proastă",
+        "2": "Slabă",
+        "3": "Medie",
+        "4": "Bună",
+        "5": "Excelentă"
+      }
+    }
+  },
+
+  "feed": {
+    "title": "Feed",
+    "noPostsYet": "Nicio postare încă",
+    "noPostsDescription": "Începe să urmărești alți proprietari sau publică prima ta postare!",
+    "newPostsAvailable": "Postări noi disponibile",
+    "postTitle": "Postare",
+    "backButton": "Feed",
+    "walkAlbum": "Album plimbare",
+    "noPhotosInAlbum": "Nicio fotografie în acest album",
+    "create": {
+      "title": "Postare nouă",
+      "captionPlaceholder": "Scrie o descriere...",
+      "addMedia": "Adaugă",
+      "includeLocation": "Include locația",
+      "tagsSelected": "{{count}} etichete selectate",
+      "tagPrompt": "Etichetează persoane sau câini",
+      "uploadProgress": "Se încarcă {{current}}/{{total}}...",
+      "selectMediaError": "Selectează cel puțin o fotografie sau un video",
+      "createError": "Postarea nu a putut fi creată",
+      "uploadMediaFailed": "Încărcarea media a eșuat"
+    },
+    "comments": {
+      "title": "Comentarii",
+      "noComments": "Niciun comentariu încă",
+      "writePlaceholder": "Scrie un comentariu...",
+      "replyPlaceholder": "Scrie un răspuns...",
+      "replyTo": "Răspunde la",
+      "sendButton": "Trimite"
+    },
+    "actions": {
+      "deletePost": "Șterge postarea",
+      "deletePostConfirm": "Ești sigur că vrei să ștergi această postare?"
+    },
+    "story": {
+      "title": "Poveste nouă",
+      "publishError": "Povestea nu a putut fi publicată",
+      "tapToSelect": "Atinge pentru a selecta",
+      "noViews": "Nicio vizualizare",
+      "noViewsDescription": "Nimeni nu a văzut încă această poveste."
+    }
+  },
+
+  "profile": {
+    "title": "Profil",
+    "defaultName": "Utilizator",
+    "changePhoto": "Atinge fotografia pentru a o schimba",
+    "follower": "Urmăritor",
+    "following": "Urmăriți",
+    "friends": "Prieteni",
+    "friendsSubtitle": "Reciproci",
+    "searchUsersPrompt": "Caută utilizatori de urmărit",
+    "myDogs": "Câinii mei",
+    "addDog": "+ Adaugă",
+    "noDogs": "Nu ai adăugat încă niciun câine.",
+    "addYourDog": "Adaugă câinele tău",
+    "active": "Activ",
+    "activate": "Activează",
+    "xpToNextLevel": "{{count}} XP până la nivelul următor",
+    "menu": {
+      "gamification": "Gamification",
+      "activity": "Activitate și Statistici",
+      "matchingInsights": "Statistici Matching",
+      "settings": "Setări",
+      "privacy": "Confidențialitate și Securitate",
+      "blocked": "Utilizatori blocați",
+      "help": "Ajutor și Asistență",
+      "logout": "Ieși"
+    },
+    "dogDetail": {
+      "backButton": "Profil",
+      "loading": "Se încarcă...",
+      "error": "Eroare",
+      "notFound": "Câinele nu a fost găsit",
+      "invalidId": "ID câine invalid",
+      "crossbreed": "Metis cu {{breed}}",
+      "neutered": "Sterilizat/ă",
+      "notNeutered": "Nesterilizat/ă",
+      "deactivated": "Profil dezactivat",
+      "reviewSingular": "recenzie",
+      "reviewPlural": "recenzii",
+      "badges": "Badge-uri",
+      "noBadges": "Niciun badge încă",
+      "bio": "Bio",
+      "infoSize": "Mărime",
+      "infoWeight": "Greutate",
+      "infoEnergy": "Energie",
+      "temperament": "Temperament",
+      "withDogs": "Cu câini",
+      "withPeople": "Cu oameni",
+      "leash": "Lesă",
+      "recall": "Rechemare",
+      "walkPrefs": "Preferințe plimbare",
+      "walkSchedule": "Program",
+      "walkTerrain": "Teren",
+      "walkDuration": "Durată",
+      "durationFormat": "{{min}} - {{max}} minute",
+      "photos": "Fotografii",
+      "photosCount": "Fotografii ({{current}}/{{max}})",
+      "photoLongPress": "Ține apăsat pe o fotografie pentru a o șterge",
+      "photoReview": "În revizuire",
+      "photoRejected": "Respinsă",
+      "deletePhoto": "Șterge fotografia",
+      "deletePhotoConfirm": "Ești sigur că vrei să ștergi această fotografie?",
+      "deletePhotoError": "Fotografia nu a putut fi ștearsă. Reîncearcă.",
+      "deactivateProfile": "Dezactivează profil",
+      "activateProfile": "Activează profil",
+      "deleteProfile": "Șterge profilul câinelui",
+      "addPhotos": "Adaugă fotografii"
+    },
+    "activity": {
+      "title": "Activitate",
+      "week": "Săptămână",
+      "month": "Lună",
+      "selectDog": "Selectează câinele",
+      "totalDistance": "Distanță totală",
+      "walks": "Plimbări"
+    },
+    "matchingInsights": {
+      "title": "Statistici Matching",
+      "overview": "Prezentare generală",
+      "totalSwipes": "Swipe-uri totale",
+      "likesGiven": "Like-uri date",
+      "matchCount": "Match",
+      "matchRate": "Rată match",
+      "preferences": "Preferințele tale",
+      "preferencesSubtitle": "Cum evaluăm compatibilitatea pentru tine",
+      "bestTimes": "Cele mai bune ore",
+      "bestTimesSubtitle": "Când este cel mai probabil să găsești parteneri de plimbare",
+      "activeUsers": "{{count}} utilizatori activi",
+      "algorithmAI": "AI îmbunătățit",
+      "algorithmStandard": "Standard",
+      "algorithmLabel": "Algoritm",
+      "noData": "Nicio dată disponibilă",
+      "noDataHint": "Începe să faci swipe pentru a vedea statisticile tale"
+    },
+    "challenges": {
+      "title": "Provocări",
+      "backButton": "Gamification",
+      "completed": "Finalizată!",
+      "noChallenges": "Nicio provocare activă momentan.\nRevino curând pentru provocări noi!"
+    },
+    "followList": {
+      "noFollowers": "Niciun urmăritor",
+      "noFollowersSubtitle": "Când cineva te va urmări, va apărea aici.",
+      "notFollowing": "Nu urmărești pe nimeni",
+      "notFollowingSubtitle": "Începe să urmărești alți proprietari pentru a fi la curent!",
+      "noFriends": "Niciun prieten încă",
+      "noFriendsSubtitle": "Prietenii sunt persoanele pe care le urmărești și care te urmăresc la rândul lor."
+    }
+  },
+
+  "events": {
+    "title": "Evenimente",
+    "createButton": "Creează eveniment",
+    "noEvents": "Niciun eveniment în apropiere",
+    "noEventsDescription": "Creează un eveniment pentru a organiza o plimbare de grup!",
+    "maxParticipants": "Max {{count}} participanți",
+    "detail": {
+      "title": "Detalii eveniment",
+      "backButton": "Evenimente",
+      "notFound": "Evenimentul nu a fost găsit",
+      "fallbackTitle": "Eveniment",
+      "official": "Eveniment Oficial",
+      "verified": "Verificat",
+      "organizer": "Organizator",
+      "participant": "Participant",
+      "enrolled": "Ești înscris",
+      "presentedBy": "Prezentat de",
+      "supportedBy": "Cu sprijinul",
+      "timeFormat": "Ora {{time}} - Durată {{duration}} min",
+      "participants": "Participanți",
+      "participantsCount": "Participanți ({{current}}/{{max}})",
+      "noParticipants": "Niciun participant încă",
+      "organizerAbbrev": "Org.",
+      "chatButton": "Chat",
+      "joinButton": "Participă",
+      "leaveButton": "Părăsește evenimentul",
+      "cancelButton": "Anulează evenimentul",
+      "selectDogError": "Selectează un câine din profil înainte de a participa.",
+      "joinError": "Nu s-a putut participa la eveniment.",
+      "leaveTitle": "Părăsește evenimentul",
+      "leaveMessage": "Ești sigur că vrei să părăsești acest eveniment?",
+      "leaveConfirm": "Părăsește",
+      "leaveError": "Evenimentul nu a putut fi părăsit.",
+      "cancelTitle": "Anulează evenimentul",
+      "cancelMessage": "Ești sigur că vrei să anulezi acest eveniment?",
+      "cancelError": "Evenimentul nu a putut fi anulat."
+    },
+    "requests": {
+      "title": "Cereri",
+      "noRequests": "Nicio cerere în așteptare",
+      "approveError": "Cererea nu a putut fi aprobată.",
+      "declineTitle": "Refuză cererea",
+      "declineMessage": "Ești sigur că vrei să refuzi această cerere?",
+      "declineError": "Cererea nu a putut fi refuzată."
+    },
+    "status": {
+      "scheduled": "Programat",
+      "inProgress": "În desfășurare",
+      "completed": "Finalizat",
+      "cancelled": "Anulat"
+    },
+    "rsvp": {
+      "accepted": "Înscris",
+      "pending": "În așteptare",
+      "declined": "Refuzat"
+    },
+    "categories": {
+      "all": "Toate",
+      "walk": "Plimbare",
+      "meetup": "Întâlnire",
+      "training": "Dresaj"
+    },
+    "create": {
+      "title": "Eveniment nou",
+      "backButton": "Evenimente",
+      "titleLabel": "Titlu *",
+      "titlePlaceholder": "Ex. Plimbare în parc",
+      "descriptionLabel": "Descriere",
+      "descriptionPlaceholder": "Adaugă o descriere...",
+      "locationLabel": "Loc *",
+      "locationPlaceholder": "Ex. Parcul Herăstrău, București",
+      "dateLabel": "Data și ora *",
+      "durationLabel": "Durată",
+      "maxParticipantsLabel": "Participanți maximi",
+      "submitButton": "Creează eveniment",
+      "selectDogError": "Selectează un câine din profil înainte de a crea un eveniment.",
+      "locationError": "Locația nu a putut fi obținută. Activează geolocalizarea.",
+      "createError": "Evenimentul nu a putut fi creat. Reîncearcă."
+    },
+    "calendar": {
+      "title": "Calendar Evenimente",
+      "backButton": "Evenimente",
+      "noOfficialEvents": "Niciun eveniment oficial"
+    }
+  },
+
+  "matches": {
+    "title": "Match-urile tale",
+    "noMatches": "Niciun match încă",
+    "noMatchesDescription": "Continuă să explorezi profiluri pentru a găsi parteneri de plimbare!",
+    "discoverButton": "Descoperă câini",
+    "celebration": {
+      "title": "Match!",
+      "compatible": "Câinii voștri sunt compatibili!",
+      "startConversation": "Începe o conversație pentru a organiza o plimbare împreună.",
+      "sendMessage": "Trimite un mesaj",
+      "keepExploring": "Continuă să explorezi"
+    },
+    "compatibility": "Compatibilitate",
+    "size": {
+      "name": "Mărime",
+      "tier1": "Mărime similară",
+      "tier2": "Mărime compatibilă",
+      "tier3": "Mărime diferită",
+      "tier4": "Mărime foarte diferită"
+    },
+    "energy": {
+      "name": "Energie",
+      "tier1": "Aceeași energie",
+      "tier2": "Energie compatibilă",
+      "tier3": "Energie diferită",
+      "tier4": "Energie foarte diferită"
+    },
+    "behavior": {
+      "name": "Înțelegere",
+      "tier1": "Înțelegere excelentă",
+      "tier2": "Înțelegere bună",
+      "tier3": "Înțelegere acceptabilă",
+      "tier4": "Caractere diferite"
+    },
+    "walk": {
+      "name": "Program și zone",
+      "tier1": "Același program și zone",
+      "tier2": "Program și zone similare",
+      "tier3": "Câteva ore în comun",
+      "tier4": "Program și zone diferite"
+    },
+    "distance": {
+      "name": "Distanță",
+      "tier1": "Foarte aproape",
+      "tier2": "Aproape",
+      "tier3": "Distanță medie",
+      "tier4": "Puțin departe"
+    },
+    "leash": {
+      "name": "Lesă",
+      "tier1": "Același pas",
+      "tier2": "Pas bun împreună",
+      "tier3": "Lesă acceptabilă",
+      "tier4": "Lesă de gestionat"
+    }
+  },
+
+  "chat": {
+    "title": "Chat",
+    "groupChat": "Chat de grup",
+    "backButton": "Chat",
+    "messagePlaceholder": "Scrie un mesaj...",
+    "typing": "Scrie...",
+    "emptyTitle": "Începe conversația!",
+    "emptyDescription": "Prezintă-te și organizează o plimbare împreună.",
+    "groupEmptyTitle": "Chat de grup",
+    "groupEmptyDescription": "Scrie un mesaj pentru a coordona plimbarea!",
+    "attachments": {
+      "photo": "Foto",
+      "location": "Poziție",
+      "walk": "Plimbare"
+    },
+    "location": {
+      "meetingPoint": "Punct de întâlnire",
+      "openMap": "Atinge pentru a deschide harta"
+    }
+  },
+
+  "auth": {
+    "welcome": {
+      "slide1Title": "Găsește parteneri de plimbare",
+      "slide1Description": "Descoperă câini compatibili în zona ta pentru plimbări împreună.",
+      "slide2Title": "Fă match",
+      "slide2Description": "Glisează pentru a găsi partenerul perfect pentru câinele tău.",
+      "slide3Title": "Începe să te plimbi",
+      "slide3Description": "Vorbește, organizează și pornește la prima voastră plimbare!",
+      "loginButton": "Autentifică-te",
+      "registerButton": "Înregistrează-te",
+      "nextButton": "Înainte",
+      "skipButton": "Sari"
+    },
+    "login": {
+      "title": "Bine ai revenit!",
+      "subtitle": "Autentifică-te pentru a continua",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Parolă",
+      "forgotPassword": "Ai uitat parola?",
+      "loginButton": "Autentifică-te",
+      "loggingIn": "Autentificare...",
+      "continueWithGoogle": "Continuă cu Google",
+      "continueWithApple": "Continuă cu Apple",
+      "noAccount": "Nu ai un cont?",
+      "registerLink": "Înregistrează-te",
+      "loginError": "Eroare la autentificare",
+      "socialLoginError": "Eroare la autentificarea social",
+      "googleError": "Eroare cu Google Sign In",
+      "appleError": "Eroare cu Apple Sign In"
+    },
+    "register": {
+      "title": "Creează cont",
+      "subtitle": "Alătură-te comunității PawMeet",
+      "namePlaceholder": "Nume complet",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Parolă",
+      "confirmPasswordPlaceholder": "Confirmă parola",
+      "dateOfBirthPlaceholder": "Data nașterii (AAAA-LL-ZZ)",
+      "registerButton": "Înregistrează-te",
+      "registering": "Înregistrare...",
+      "terms": "Prin înregistrare accepți Termenii și Condițiile și Politica de Confidențialitate",
+      "hasAccount": "Ai deja un cont?",
+      "loginLink": "Autentifică-te",
+      "registerError": "Eroare la înregistrare",
+      "passwordMismatch": "Parolele nu se potrivesc"
+    },
+    "ageGate": {
+      "title": "Verificare vârstă",
+      "description": "Pentru a continua să folosești PawMeet, introdu data ta de naștere. Trebuie să ai cel puțin {{age}} ani (D.Lgs. 101/2018).",
+      "dateOfBirthPlaceholder": "Data nașterii (AAAA-LL-ZZ)",
+      "submitButton": "Confirmă",
+      "submitting": "Se trimite...",
+      "invalidDate": "Dată invalidă"
+    }
+  },
+
+  "consent": {
+    "title": "Confidențialitate și consimțăminte",
+    "description": "Alege ce servicii opționale să activezi. Poți modifica preferințele oricând din Setări.",
+    "analytics": {
+      "title": "Analiză de utilizare",
+      "description": "Ne ajută să înțelegem cum folosești aplicația pentru a o îmbunătăți. Date anonime și agregate."
+    },
+    "abTesting": {
+      "title": "Experimente A/B",
+      "description": "Participă la teste comparative pentru a ne ajuta să alegem cele mai bune funcționalități. Configurația de bază a aplicației funcționează întotdeauna, chiar și fără acest consimțământ."
+    },
+    "errorTracking": {
+      "title": "Raportare erori",
+      "description": "Trimite rapoarte detaliate când ceva nu funcționează. Fără acest consimțământ, rapoartele sunt oricum trimise în formă anonimă."
+    },
+    "aiTraining": {
+      "title": "Antrenare AI",
+      "description": "Ajută la îmbunătățirea match-ului prin antrenarea modelelor AI pe profilul anonimizat al câinelui tău"
+    },
+    "marketing": {
+      "title": "Comunicări de marketing",
+      "description": "Primește actualizări despre noutăți, evenimente și promoții prin email."
+    },
+    "acceptSelected": "Acceptă selectate",
+    "rejectAll": "Refuză tot",
+    "readPrivacyPolicy": "Citește Politica de Confidențialitate completă",
+    "manageAll": "Gestionează toate consimțămintele"
+  },
+
+  "settings": {
+    "title": "Setări",
+    "privacySection": "Confidențialitate și consimțăminte",
+    "analyticsTitle": "Analiză de utilizare",
+    "analyticsDescription": "Date anonime pentru îmbunătățirea aplicației",
+    "abTestingTitle": "Experimente A/B",
+    "abTestingDescription": "Participă la teste comparative",
+    "errorTrackingTitle": "Raportare erori",
+    "errorTrackingDescription": "Rapoarte detaliate (întotdeauna anonime fără consimțământ)",
+    "marketingTitle": "Comunicări de marketing",
+    "marketingDescription": "Noutăți, evenimente și promoții prin email",
+    "notifications": {
+      "title": "Notificări",
+      "newMatches": "Match-uri noi",
+      "newMatchesDescription": "Primește notificări pentru match-uri noi",
+      "messages": "Mesaje",
+      "messagesDescription": "Primește notificări pentru mesaje noi",
+      "walkReminders": "Memento plimbări",
+      "walkRemindersDescription": "Primește memento-uri pentru plimbările programate",
+      "feedAndStories": "Feed și povești",
+      "feedAndStoriesDescription": "Primește notificări pentru like-uri, comentarii și povești noi",
+      "nearbyUsers": "Utilizatori din apropiere",
+      "nearbyUsersDescription": "Primește notificări când sunt utilizatori aproape de tine"
+    },
+    "quietHours": {
+      "title": "Ore de liniște",
+      "enable": "Activează orele de liniște",
+      "description": "Dezactivează notificările la anumite ore",
+      "from": "De la",
+      "to": "Până la"
+    },
+    "general": {
+      "title": "Generale",
+      "shareLocation": "Partajează locația",
+      "darkMode": "Temă întunecată",
+      "searchRadius": "Rază de căutare",
+      "language": "Limbă",
+      "italian": "Italiană"
+    },
+    "legal": {
+      "termsOfService": "Termeni și Condiții",
+      "privacyPolicy": "Politica de Confidențialitate",
+      "cookiePolicy": "Politica de Cookie-uri",
+      "appVersion": "Versiune aplicație"
+    },
+    "account": {
+      "title": "Cont",
+      "logout": "Ieși",
+      "deleteAccount": "Șterge contul",
+      "deletingAccount": "Ștergere în curs...",
+      "deleteConfirmTitle": "Șterge contul",
+      "deleteConfirmMessage": "Ești sigur? Contul tău va fi dezactivat imediat și datele vor fi șterse în 30 de zile. Această acțiune nu poate fi anulată.",
+      "deleteButton": "Șterge",
+      "passwordConfirmTitle": "Confirmă cu parola",
+      "passwordConfirmMessage": "Introdu parola pentru a confirma ștergerea contului.",
+      "confirmDeletion": "Confirmă ștergerea",
+      "deletedTitle": "Cont șters",
+      "deletedMessage": "Contul tău a fost dezactivat. Vei primi un email de confirmare.",
+      "invalidPassword": "Parolă invalidă. Reîncearcă.",
+      "deleteError": "Eroare la ștergere. Reîncearcă mai târziu."
+    }
+  },
+
+  "report": {
+    "title": "Raportează",
+    "subtitle": "Selectează motivul raportării",
+    "detailsPlaceholder": "Detalii suplimentare (opțional)",
+    "submitButton": "Trimite raportul",
+    "submitting": "Se trimite...",
+    "successTitle": "Mulțumim",
+    "successMessage": "Raportul tău a fost trimis.",
+    "error": "Raportul nu a putut fi trimis. Reîncearcă.",
+    "reasons": {
+      "inappropriate": "Conținut inadecvat",
+      "harassment": "Comportament de hărțuire",
+      "spam": "Spam",
+      "violence": "Violență",
+      "other": "Altele"
+    }
+  },
+
+  "blocked": {
+    "title": "Utilizatori blocați",
+    "noBlocked": "Niciun utilizator blocat",
+    "noBlockedDescription": "Utilizatorii pe care îi blochezi nu te vor mai putea urmări sau contacta.",
+    "unblockTitle": "Deblochează utilizatorul",
+    "unblockMessage": "Vrei să deblochezi pe {{name}}?",
+    "unblockButton": "Deblochează",
+    "unblockError": "Utilizatorul nu a putut fi deblocat. Reîncearcă."
+  },
+
+  "userProfile": {
+    "blockTitle": "Blochează utilizatorul",
+    "blockMessage": "Vrei să blochezi pe {{name}}?",
+    "blockButton": "Blochează",
+    "blockedTitle": "Utilizator blocat",
+    "blockedMessage": "Nu vei mai vedea acest utilizator.",
+    "blockError": "Utilizatorul nu a putut fi blocat. Reîncearcă.",
+    "followError": "Acțiunea nu a putut fi finalizată. Reîncearcă."
+  },
+
+  "searchUsers": {
+    "placeholder": "Caută utilizatori...",
+    "noResults": "Niciun rezultat",
+    "noResultsDescription": "Încearcă să cauți cu un alt nume."
+  },
+
+  "errorBoundary": {
+    "title": "Ceva nu a mers bine",
+    "description": "A apărut o eroare neașteptată. Încearcă să reîncarci ecranul.",
+    "retryButton": "Reîncearcă"
+  },
+
+  "location": {
+    "permissionTitle": "Locație necesară",
+    "permissionMessage": "PawMeet are nevoie de locația ta pentru a arăta câinii din apropiere. Activează locația din setări.",
+    "openSettings": "Deschide Setări",
+    "permissionError": "Eroare la solicitarea permisiunilor de locație",
+    "notGranted": "Permisiunea de locație nu a fost acordată",
+    "fetchError": "Eroare la obținerea locației"
+  },
+
+  "badges": {
+    "firstMeeting": "Prima întâlnire",
+    "regularWalker": "Plimbăreț regulat",
+    "superSocial": "Super sociabil",
+    "friendlyDog": "Câine prietenos",
+    "noBadges": "Niciun badge încă"
+  },
+
+  "labels": {
+    "toy": "Toy",
+    "piccola": "Mică",
+    "media": "Medie",
+    "grande": "Mare",
+    "gigante": "Gigant",
+    "bassa": "Scăzută",
+    "alta": "Ridicată",
+    "molto_alta": "Foarte ridicată",
+    "molto_socievole": "Foarte sociabil",
+    "socievole": "Sociabil",
+    "selettivo": "Selectiv",
+    "reattivo": "Reactiv",
+    "timido": "Timid",
+    "diffidente": "Neîncrezător",
+    "eccellente": "Excelent",
+    "buono": "Bun",
+    "in_addestramento": "În dresaj",
+    "difficile": "Dificil",
+    "affidabile": "De încredere",
+    "parziale": "Parțial",
+    "non_affidabile": "Nefiabil",
+    "maschio": "Mascul",
+    "femmina": "Femelă",
+    "mattina_presto": "Dimineața devreme",
+    "mattina": "Dimineața",
+    "pomeriggio": "După-amiaza",
+    "sera": "Seara",
+    "sera_tardi": "Seara târziu",
+    "urbano": "Urban",
+    "parco": "Parc",
+    "campagna": "Câmp",
+    "spiaggia": "Plajă",
+    "montagna": "Munte"
+  },
+
+  "dogForm": {
+    "validation": {
+      "selectSize": "Selectează mărimea",
+      "selectGender": "Selectează sexul",
+      "selectEnergy": "Selectează nivelul de energie",
+      "selectBehaviorDogs": "Selectează comportamentul cu alți câini",
+      "selectBehaviorPeople": "Selectează comportamentul cu oamenii",
+      "selectLeash": "Selectează comportamentul la lesă",
+      "selectSchedule": "Selectează cel puțin un program preferat",
+      "selectTerrain": "Selectează cel puțin un tip de teren"
+    },
+    "bioGenerationError": "Eroare la generarea bio-ului",
+    "createError": "Eroare la creare",
+    "addPhotos": "Adaugă fotografii"
+  }
+}

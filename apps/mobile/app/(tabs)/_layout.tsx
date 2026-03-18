@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Text, useColorScheme } from 'react-native';
 
 export default function TabLayout() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -24,56 +26,56 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Scopri',
+          title: t('tabs.discover'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>🐾</Text>,
         }}
       />
       <Tabs.Screen
         name="map"
         options={{
-          title: 'Mappa',
+          title: t('tabs.map'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>📍</Text>,
         }}
       />
       <Tabs.Screen
         name="feed"
         options={{
-          title: 'Feed',
+          title: t('tabs.feed'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>📸</Text>,
         }}
       />
       <Tabs.Screen
         name="matches"
         options={{
-          title: 'Match',
+          title: t('tabs.match'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>💛</Text>,
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
-          title: 'Chat',
+          title: t('tabs.chat'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>💬</Text>,
         }}
       />
       <Tabs.Screen
         name="events"
         options={{
-          title: 'Eventi',
+          title: t('tabs.events'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>📅</Text>,
         }}
       />
       <Tabs.Screen
         name="walks"
         options={{
-          title: 'Passeggiate',
+          title: t('tabs.walks'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>🗓️</Text>,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profilo',
+          title: t('tabs.profile'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>👤</Text>,
         }}
       />

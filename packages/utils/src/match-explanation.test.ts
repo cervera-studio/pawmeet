@@ -20,64 +20,68 @@ describe('getExplanationItems', () => {
   });
 
   it('sorts by weighted score descending', () => {
-    // size weight=0.25 with score 1.0 → weighted 0.25 (highest)
-    // leash weight=0.05 with score 1.0 → weighted 0.05 (lowest among perfect)
     const items = getExplanationItems(makeBreakdown({ sizeScore: 1.0, leashScore: 1.0 }));
     expect(items[0].key).toBe('size');
-    // leash should be last among equal-raw-score dimensions (lower weight)
     const leashIndex = items.findIndex((i) => i.key === 'leash');
     expect(leashIndex).toBe(items.length - 1);
   });
 
-  it('assigns correct label tier ≥0.8', () => {
+  it('returns i18n keys, not hardcoded strings', () => {
     const items = getExplanationItems(makeBreakdown({ sizeScore: 0.9 }));
     const size = items.find((i) => i.key === 'size')!;
-    expect(size.label).toBe('Taglia simile');
+    expect(size.nameKey).toBe('match.size.name');
+    expect(size.labelKey).toBe('match.size.tier1');
   });
 
-  it('assigns correct label tier ≥0.6', () => {
+  it('assigns tier1 for score ≥0.8', () => {
+    const items = getExplanationItems(makeBreakdown({ sizeScore: 0.9 }));
+    const size = items.find((i) => i.key === 'size')!;
+    expect(size.labelKey).toBe('match.size.tier1');
+  });
+
+  it('assigns tier2 for score ≥0.6', () => {
     const items = getExplanationItems(makeBreakdown({ energyScore: 0.7 }));
     const energy = items.find((i) => i.key === 'energy')!;
-    expect(energy.label).toBe('Energia compatibile');
+    expect(energy.labelKey).toBe('match.energy.tier2');
   });
 
-  it('assigns correct label tier ≥0.4', () => {
+  it('assigns tier3 for score ≥0.4', () => {
     const items = getExplanationItems(makeBreakdown({ behaviorScore: 0.5 }));
     const behavior = items.find((i) => i.key === 'behavior')!;
-    expect(behavior.label).toBe('Intesa discreta');
+    expect(behavior.labelKey).toBe('match.behavior.tier3');
   });
 
-  it('assigns correct label tier <0.4', () => {
+  it('assigns tier4 for score <0.4', () => {
     const items = getExplanationItems(makeBreakdown({ distanceScore: 0.2 }));
     const distance = items.find((i) => i.key === 'distance')!;
-    expect(distance.label).toBe("Un po' lontani");
+    expect(distance.labelKey).toBe('match.distance.tier4');
   });
 
   it('handles boundary at exactly 0.8', () => {
     const items = getExplanationItems(makeBreakdown({ walkScore: 0.8 }));
     const walk = items.find((i) => i.key === 'walk')!;
-    expect(walk.label).toBe('Stessi orari e zone');
+    expect(walk.labelKey).toBe('match.walk.tier1');
   });
 
   it('handles boundary at exactly 0.6', () => {
     const items = getExplanationItems(makeBreakdown({ leashScore: 0.6 }));
     const leash = items.find((i) => i.key === 'leash')!;
-    expect(leash.label).toBe('Buon passo insieme');
+    expect(leash.labelKey).toBe('match.leash.tier2');
   });
 
   it('handles boundary at exactly 0.4', () => {
     const items = getExplanationItems(makeBreakdown({ sizeScore: 0.4 }));
     const size = items.find((i) => i.key === 'size')!;
-    expect(size.label).toBe('Taglia diversa'); // 0.4 is ≥0.4, third tier
+    expect(size.labelKey).toBe('match.size.tier3');
   });
 });
 
 describe('getTopReasons', () => {
-  it('returns top 2 labels by default', () => {
+  it('returns top 2 label keys by default', () => {
     const reasons = getTopReasons(makeBreakdown({ sizeScore: 1.0, energyScore: 0.9 }));
     expect(reasons).toHaveLength(2);
-    expect(reasons[0]).toBe('Taglia simile');
-    expect(reasons[1]).toBe('Stessa energia');
+    expect(reasons[0]).toBe('match.size.tier1');
+    expect(reasons[1]).toBe('match.energy.tier1');
   });
 
   it('respects custom count', () => {

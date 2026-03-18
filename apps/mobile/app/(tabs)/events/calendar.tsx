@@ -1,5 +1,6 @@
 import { Stack, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { container } from '@/repositories/container';
@@ -38,7 +39,7 @@ function groupByDay(events: FeaturedEvent[]): DayGroup[] {
     if (!map.has(key)) {
       map.set(key, { label: formatDayLabel(d), events: [] });
     }
-    map.get(key)!.events.push(event);
+    map.get(key)?.events.push(event);
   }
 
   return Array.from(map.entries())
@@ -47,6 +48,7 @@ function groupByDay(events: FeaturedEvent[]): DayGroup[] {
 }
 
 export default function EventCalendarScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const repo = useMemo(() => container.resolve(GROUP_EVENT_REPOSITORY), []);
   const [allEvents, setAllEvents] = useState<FeaturedEvent[]>([]);
@@ -95,8 +97,8 @@ export default function EventCalendarScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Calendario Eventi',
-          headerBackTitle: 'Eventi',
+          title: t('events.calendar.title'),
+          headerBackTitle: t('events.calendar.backButton'),
         }}
       />
       <SafeAreaView edges={['bottom']} className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
@@ -121,7 +123,7 @@ export default function EventCalendarScreen() {
           <View className="flex-1 items-center justify-center py-20">
             <Text className="text-5xl">{'📅'}</Text>
             <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-              Nessun evento ufficiale
+              {t('events.calendar.noOfficialEvents')}
             </Text>
             <Text className="mt-2 text-sm text-gray-500 dark:text-neutral-500">
               in {formatMonthYear(currentMonth)}

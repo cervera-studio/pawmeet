@@ -1,6 +1,7 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { formatDogAge } from '@pawmeet/utils';
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BadgeDisplay } from '@/components/BadgeDisplay';
@@ -23,6 +24,7 @@ function InfoChip({ title, value }: { title: string; value: string }) {
 }
 
 function DogHeader({ dog, primaryPhotoUrl }: { dog: Dog; primaryPhotoUrl: string | undefined }) {
+  const { t } = useTranslation();
   return (
     <View className="items-center">
       <Avatar name={dog.name} imageUrl={primaryPhotoUrl} size="lg" />
@@ -30,17 +32,17 @@ function DogHeader({ dog, primaryPhotoUrl }: { dog: Dog; primaryPhotoUrl: string
       <Text className="text-base text-gray-500 dark:text-neutral-500">{dog.breed}</Text>
       {dog.breedSecondary ? (
         <Text className="text-sm text-gray-400 dark:text-neutral-500">
-          Incrocio con {dog.breedSecondary}
+          {t('profile.dogDetail.crossbreed', { breed: dog.breedSecondary })}
         </Text>
       ) : null}
       <Text className="text-sm text-gray-400 dark:text-neutral-500">
         {formatDogAge(new Date(dog.birthDate))} - {label(dog.gender)} -{' '}
-        {dog.isNeutered ? 'Sterilizzato/a' : 'Non sterilizzato/a'}
+        {dog.isNeutered ? t('profile.dogDetail.neutered') : t('profile.dogDetail.notNeutered')}
       </Text>
       {!dog.isActive && (
         <View className="mt-2 rounded-full bg-gray-200 dark:bg-[#48484A] px-3 py-1">
           <Text className="text-xs font-medium text-gray-600 dark:text-[#D1D1D6]">
-            Profilo disattivato
+            {t('profile.dogDetail.deactivated')}
           </Text>
         </View>
       )}
@@ -49,31 +51,36 @@ function DogHeader({ dog, primaryPhotoUrl }: { dog: Dog; primaryPhotoUrl: string
 }
 
 function DogInfoChips({ dog }: { dog: Dog }) {
+  const { t } = useTranslation();
   return (
     <View className="mt-4 flex-row gap-3">
-      <InfoChip title="Taglia" value={label(dog.size)} />
-      <InfoChip title="Peso" value={`${dog.weightKg} kg`} />
-      <InfoChip title="Energia" value={label(dog.energyLevel)} />
+      <InfoChip title={t('profile.dogDetail.infoSize')} value={label(dog.size)} />
+      <InfoChip title={t('profile.dogDetail.infoWeight')} value={`${dog.weightKg} kg`} />
+      <InfoChip title={t('profile.dogDetail.infoEnergy')} value={label(dog.energyLevel)} />
     </View>
   );
 }
 
 function DogTraits({ dog }: { dog: Dog }) {
+  const { t } = useTranslation();
   return (
     <>
       {/* Temperament */}
       <View className="mt-4 gap-3">
         <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
-          Temperamento
+          {t('profile.dogDetail.temperament')}
         </Text>
         <View className="flex-row gap-3">
-          <InfoChip title="Con cani" value={label(dog.behaviorWithDogs)} />
-          <InfoChip title="Con persone" value={label(dog.behaviorWithPeople)} />
+          <InfoChip title={t('profile.dogDetail.withDogs')} value={label(dog.behaviorWithDogs)} />
+          <InfoChip
+            title={t('profile.dogDetail.withPeople')}
+            value={label(dog.behaviorWithPeople)}
+          />
         </View>
         <View className="flex-row gap-3">
-          <InfoChip title="Guinzaglio" value={label(dog.leashBehavior)} />
+          <InfoChip title={t('profile.dogDetail.leash')} value={label(dog.leashBehavior)} />
           {dog.recallReliability ? (
-            <InfoChip title="Richiamo" value={label(dog.recallReliability)} />
+            <InfoChip title={t('profile.dogDetail.recall')} value={label(dog.recallReliability)} />
           ) : (
             <View className="flex-1" />
           )}
@@ -83,11 +90,11 @@ function DogTraits({ dog }: { dog: Dog }) {
       {/* Walk preferences */}
       <View className="mt-4 gap-3">
         <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
-          Preferenze passeggiata
+          {t('profile.dogDetail.walkPrefs')}
         </Text>
         <View className="rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-neutral-500">
-            Orari
+            {t('profile.dogDetail.walkSchedule')}
           </Text>
           <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
             {dog.walkPrefTime.map(label).join(', ')}
@@ -95,7 +102,7 @@ function DogTraits({ dog }: { dog: Dog }) {
         </View>
         <View className="rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-neutral-500">
-            Terreno
+            {t('profile.dogDetail.walkTerrain')}
           </Text>
           <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
             {dog.walkPrefTerrain.map(label).join(', ')}
@@ -103,10 +110,13 @@ function DogTraits({ dog }: { dog: Dog }) {
         </View>
         <View className="rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-neutral-500">
-            Durata
+            {t('profile.dogDetail.walkDuration')}
           </Text>
           <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-            {dog.walkPrefDurationMin} - {dog.walkPrefDurationMax} minuti
+            {t('profile.dogDetail.durationFormat', {
+              min: dog.walkPrefDurationMin,
+              max: dog.walkPrefDurationMax,
+            })}
           </Text>
         </View>
       </View>
@@ -127,10 +137,11 @@ function PhotoGallery({
   onUploadPhoto: () => void;
   onDeletePhoto: (photoId: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <View className="mt-4">
       <Text className="mb-2 text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
-        Foto ({photos.length}/{MAX_PHOTOS})
+        {t('profile.dogDetail.photosCount', { current: photos.length, max: MAX_PHOTOS })}
       </Text>
       <View className="flex-row flex-wrap gap-2">
         {photos.map((photo) => (
@@ -147,12 +158,16 @@ function PhotoGallery({
             )}
             {photo.moderationStatus === 'pending' && (
               <View className="absolute bottom-1 left-1 rounded-full bg-yellow-500 px-1.5 py-0.5">
-                <Text className="text-[10px] font-medium text-white">In revisione</Text>
+                <Text className="text-[10px] font-medium text-white">
+                  {t('profile.dogDetail.photoReview')}
+                </Text>
               </View>
             )}
             {photo.moderationStatus === 'rejected' && (
               <View className="absolute bottom-1 left-1 rounded-full bg-red-500 px-1.5 py-0.5">
-                <Text className="text-[10px] font-medium text-white">Rifiutata</Text>
+                <Text className="text-[10px] font-medium text-white">
+                  {t('profile.dogDetail.photoRejected')}
+                </Text>
               </View>
             )}
           </Pressable>
@@ -175,7 +190,7 @@ function PhotoGallery({
       </View>
       {photos.length > 0 && (
         <Text className="mt-1 text-xs text-gray-400 dark:text-neutral-500">
-          Tieni premuto su una foto per eliminarla
+          {t('profile.dogDetail.photoLongPress')}
         </Text>
       )}
     </View>
@@ -193,16 +208,21 @@ function DogActions({
   onToggleActive: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <View className="mt-8 gap-3 pb-4">
       <Button
         onPress={onToggleActive}
-        label={isActive ? 'Disattiva profilo' : 'Attiva profilo'}
+        label={
+          isActive
+            ? t('profile.dogDetail.deactivateProfile')
+            : t('profile.dogDetail.activateProfile')
+        }
         variant="outline"
       />
       <Pressable onPress={onDelete} disabled={deleting} className="items-center py-3">
         <Text className="text-base font-medium text-red-500">
-          {deleting ? 'Eliminazione...' : 'Elimina profilo cane'}
+          {deleting ? t('common.deleting') : t('profile.dogDetail.deleteProfile')}
         </Text>
       </Pressable>
     </View>
@@ -210,13 +230,18 @@ function DogActions({
 }
 
 export default function DogDetailScreen() {
+  const { t } = useTranslation();
   const vm = useDogDetailViewModel();
 
   if (vm.loading) {
     return (
       <>
         <Stack.Screen
-          options={{ headerShown: true, title: 'Caricamento...', headerBackTitle: 'Profilo' }}
+          options={{
+            headerShown: true,
+            title: t('profile.dogDetail.loading'),
+            headerBackTitle: t('profile.dogDetail.backButton'),
+          }}
         />
         <View className="flex-1 items-center justify-center bg-white">
           <ActivityIndicator size="large" color="#065F46" />
@@ -229,10 +254,16 @@ export default function DogDetailScreen() {
     return (
       <>
         <Stack.Screen
-          options={{ headerShown: true, title: 'Errore', headerBackTitle: 'Profilo' }}
+          options={{
+            headerShown: true,
+            title: t('profile.dogDetail.error'),
+            headerBackTitle: t('profile.dogDetail.backButton'),
+          }}
         />
         <View className="flex-1 items-center justify-center bg-white">
-          <Text className="text-gray-500 dark:text-neutral-500">Cane non trovato</Text>
+          <Text className="text-gray-500 dark:text-neutral-500">
+            {t('profile.dogDetail.notFound')}
+          </Text>
         </View>
       </>
     );
@@ -244,7 +275,7 @@ export default function DogDetailScreen() {
         options={{
           headerShown: true,
           title: vm.dog.name,
-          headerBackTitle: 'Profilo',
+          headerBackTitle: t('profile.dogDetail.backButton'),
         }}
       />
       <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
@@ -260,7 +291,11 @@ export default function DogDetailScreen() {
                 {vm.dogRating.average?.toFixed(1) ?? '-'}
               </Text>
               <Text className="text-sm text-gray-500 dark:text-neutral-500">
-                ({vm.dogRating.count} {vm.dogRating.count === 1 ? 'recensione' : 'recensioni'})
+                ({vm.dogRating.count}{' '}
+                {vm.dogRating.count === 1
+                  ? t('profile.dogDetail.reviewSingular')
+                  : t('profile.dogDetail.reviewPlural')}
+                )
               </Text>
             </View>
           )}
@@ -268,7 +303,7 @@ export default function DogDetailScreen() {
           {/* Badges */}
           <View className="mt-4">
             <Text className="mb-2 text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
-              Badge
+              {t('profile.dogDetail.badges')}
             </Text>
             <BadgeDisplay badges={vm.badges} />
           </View>
@@ -277,7 +312,7 @@ export default function DogDetailScreen() {
           {vm.dog.bio ? (
             <View className="mt-6 rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
               <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-neutral-500">
-                Bio
+                {t('profile.dogDetail.bio')}
               </Text>
               <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">{vm.dog.bio}</Text>
             </View>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { useLoginViewModel } from './login.view-model';
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const vm = useLoginViewModel();
 
   return (
@@ -15,10 +17,10 @@ export default function LoginScreen() {
       >
         <View className="flex-1 justify-center px-8">
           <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-            Bentornato!
+            {t('auth.login.title')}
           </Text>
           <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
-            Accedi per continuare
+            {t('auth.login.subtitle')}
           </Text>
 
           {vm.apiError ? (
@@ -28,7 +30,7 @@ export default function LoginScreen() {
           ) : null}
 
           <FormField
-            placeholder="Email"
+            placeholder={t('auth.login.emailPlaceholder')}
             value={vm.email}
             onChangeText={vm.setEmail}
             keyboardType="email-address"
@@ -37,7 +39,7 @@ export default function LoginScreen() {
           />
 
           <FormField
-            placeholder="Password"
+            placeholder={t('auth.login.passwordPlaceholder')}
             value={vm.password}
             onChangeText={vm.setPassword}
             secureTextEntry
@@ -46,19 +48,19 @@ export default function LoginScreen() {
           />
 
           <Pressable className="mb-8 self-end">
-            <Text className="text-sm text-primary">Password dimenticata?</Text>
+            <Text className="text-sm text-primary">{t('auth.login.forgotPassword')}</Text>
           </Pressable>
 
           <Button
             onPress={vm.handleLogin}
-            label={vm.loading ? 'Accesso...' : 'Accedi'}
+            label={vm.loading ? t('auth.login.loggingIn') : t('auth.login.loginButton')}
             disabled={vm.loading}
           />
 
           <View className="mt-8">
             <View className="mb-4 flex-row items-center">
               <View className="flex-1 border-b border-gray-200 dark:border-[#38383A]" />
-              <Text className="mx-4 text-gray-400 dark:text-neutral-500">oppure</Text>
+              <Text className="mx-4 text-gray-400 dark:text-neutral-500">{t('common.or')}</Text>
               <View className="flex-1 border-b border-gray-200 dark:border-[#38383A]" />
             </View>
 
@@ -68,7 +70,7 @@ export default function LoginScreen() {
               className="mb-3 flex-row items-center justify-center rounded-2xl border border-gray-200 dark:border-[#38383A] py-4"
             >
               <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
-                Continua con Google
+                {t('auth.login.continueWithGoogle')}
               </Text>
             </Pressable>
 
@@ -79,7 +81,7 @@ export default function LoginScreen() {
                 className="flex-row items-center justify-center rounded-2xl border border-gray-200 dark:border-[#38383A] py-4"
               >
                 <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
-                  Continua con Apple
+                  {t('auth.login.continueWithApple')}
                 </Text>
               </Pressable>
             ) : null}
@@ -89,7 +91,8 @@ export default function LoginScreen() {
         <View className="px-8 pb-8">
           <Pressable onPress={vm.navigateToRegister} className="items-center py-2">
             <Text className="text-base text-gray-500 dark:text-neutral-500">
-              Non hai un account? <Text className="font-semibold text-primary">Registrati</Text>
+              {t('auth.login.noAccount')}{' '}
+              <Text className="font-semibold text-primary">{t('auth.login.registerLink')}</Text>
             </Text>
           </Pressable>
         </View>

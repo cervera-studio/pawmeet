@@ -1,4 +1,5 @@
 import {
+  analyzeDogPhotoSchema,
   breedsSearchSchema,
   createDogSchema,
   generateDogBioSchema,
@@ -28,6 +29,20 @@ const photoDeleteSchema = z.object({
   dogId: z.string().uuid(),
   photoId: z.string().uuid(),
 });
+
+let _photoAnalysisRateLimiter: Ratelimit | null = null;
+
+async function getPhotoAnalysisRateLimiter(): Promise<Ratelimit> {
+  if (!_photoAnalysisRateLimiter) {
+    const { redis } = await import('../../lib/redis.js');
+    _photoAnalysisRateLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, '24h'),
+      prefix: 'rl:trpc:dog-photo-analysis',
+    });
+  }
+  return _photoAnalysisRateLimiter;
+}
 
 let _bioRateLimiter: Ratelimit | null = null;
 
@@ -118,7 +133,7 @@ export function createDogsRouter(deps: typeof dogDeps) {
       if (!success) {
         throw new (await import('@trpc/server')).TRPCError({
           code: 'TOO_MANY_REQUESTS',
-          message: 'Hai raggiunto il limite giornaliero di generazione bio. Riprova domani.',
+          message: 'Daily bio generation limit reached. Try again tomorrow.',
         });
       }
 
@@ -129,5 +144,26 @@ export function createDogsRouter(deps: typeof dogDeps) {
       });
       return result;
     }),
+
+    analyzePhoto: protectedProcedure
+      .input(analyzeDogPhotoSchema)
+      .mutation(async ({ ctx, input }) => {
+        const limiter = await getPhotoAnalysisRateLimiter();
+        const { success } = await limiter.limit(ctx.userId);
+        if (!success) {
+          throw new (await import('@trpc/server')).TRPCError({
+            code: 'TOO_MANY_REQUESTS',
+            message: 'Daily photo analysis limit reached. Try again tomorrow.',
+          });
+        }
+
+        const result = unwrapResult(await deps.analyzeDogPhoto(input.imageBase64, input.mimeType));
+        trackEvent('dog_photo_analyzed', ctx.userId, {
+          breed: result.analysis.breed,
+          size: result.analysis.size,
+          confidence: result.analysis.confidence,
+        });
+        return result;
+      }),
   });
 }

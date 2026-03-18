@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { useRegisterViewModel } from './register.view-model';
 
 export default function RegisterScreen() {
+  const { t } = useTranslation();
   const vm = useRegisterViewModel();
 
   return (
@@ -18,10 +20,10 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-            Crea account
+            {t('auth.register.title')}
           </Text>
           <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
-            Unisciti alla community PawMeet
+            {t('auth.register.subtitle')}
           </Text>
 
           {vm.apiError ? (
@@ -31,14 +33,14 @@ export default function RegisterScreen() {
           ) : null}
 
           <FormField
-            placeholder="Nome completo"
+            placeholder={t('auth.register.namePlaceholder')}
             value={vm.displayName}
             onChangeText={vm.setDisplayName}
             error={vm.errors.displayName}
           />
 
           <FormField
-            placeholder="Email"
+            placeholder={t('auth.register.emailPlaceholder')}
             value={vm.email}
             onChangeText={vm.setEmail}
             keyboardType="email-address"
@@ -47,7 +49,7 @@ export default function RegisterScreen() {
           />
 
           <FormField
-            placeholder="Password"
+            placeholder={t('auth.register.passwordPlaceholder')}
             value={vm.password}
             onChangeText={vm.setPassword}
             secureTextEntry
@@ -55,7 +57,7 @@ export default function RegisterScreen() {
           />
 
           <FormField
-            placeholder="Conferma password"
+            placeholder={t('auth.register.confirmPasswordPlaceholder')}
             value={vm.confirmPassword}
             onChangeText={vm.setConfirmPassword}
             secureTextEntry
@@ -63,7 +65,7 @@ export default function RegisterScreen() {
           />
 
           <FormField
-            placeholder="Data di nascita (AAAA-MM-GG)"
+            placeholder={t('auth.register.dateOfBirthPlaceholder')}
             value={vm.dateOfBirth}
             onChangeText={vm.setDateOfBirth}
             keyboardType="numbers-and-punctuation"
@@ -73,17 +75,18 @@ export default function RegisterScreen() {
 
           <Button
             onPress={vm.handleRegister}
-            label={vm.loading ? 'Registrazione...' : 'Registrati'}
+            label={vm.loading ? t('auth.register.registering') : t('auth.register.registerButton')}
             disabled={vm.loading}
           />
 
           <Text className="mt-4 text-center text-sm text-gray-400 dark:text-neutral-500">
-            Registrandoti accetti i nostri Termini di Servizio e la Privacy Policy
+            {t('auth.register.terms')}
           </Text>
 
           <Pressable onPress={vm.navigateToLogin} className="mt-6 items-center py-2">
             <Text className="text-base text-gray-500 dark:text-neutral-500">
-              Hai già un account? <Text className="font-semibold text-primary">Accedi</Text>
+              {t('auth.register.hasAccount')}{' '}
+              <Text className="font-semibold text-primary">{t('auth.register.loginLink')}</Text>
             </Text>
           </Pressable>
         </ScrollView>

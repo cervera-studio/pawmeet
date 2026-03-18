@@ -3,6 +3,7 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 import type { ScoreBreakdown } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ExplanationModal } from '@/components/ExplanationModal';
@@ -43,17 +44,18 @@ function MatchesLoadingSkeleton() {
 // ── Empty state ──────────────────────────────────────────────────────────────
 
 function MatchesEmptyState({ onDiscover }: { onDiscover: () => void }) {
+  const { t } = useTranslation();
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F415}'}</Text>
       <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-        Nessun match ancora
+        {t('matches.noMatches')}
       </Text>
       <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
-        Continua a esplorare profili per trovare compagni di passeggiata!
+        {t('matches.noMatchesDescription')}
       </Text>
       <Pressable onPress={onDiscover} className="mt-6 rounded-2xl bg-primary px-8 py-3">
-        <Text className="font-semibold text-white">Scopri cani</Text>
+        <Text className="font-semibold text-white">{t('matches.discoverButton')}</Text>
       </Pressable>
     </View>
   );
@@ -66,6 +68,7 @@ const MATCH_CARD_HEIGHT = 84;
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function MatchesScreen() {
+  const { t } = useTranslation();
   const vm = useMatchesViewModel();
   const analytics = useAnalyticsService();
   const [explanationVisible, setExplanationVisible] = useState(false);
@@ -136,7 +139,9 @@ export default function MatchesScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
       <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">I tuoi Match</Text>
+        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('matches.title')}
+        </Text>
       </View>
 
       {/* Dog filter chips (only for multi-dog users) */}
@@ -151,7 +156,7 @@ export default function MatchesScreen() {
                 <Text
                   className={`text-sm font-medium ${!vm.filterDogId ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'}`}
                 >
-                  Tutti
+                  {t('common.all')}
                 </Text>
               </Pressable>
               {vm.dogs.map((dog) => (

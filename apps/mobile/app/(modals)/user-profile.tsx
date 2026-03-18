@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FollowButton } from '@/components/follow-button';
@@ -12,6 +13,7 @@ export default function UserProfileScreen() {
     avatar?: string;
   }>();
 
+  const { t } = useTranslation();
   const vm = useUserProfileViewModel(userId);
 
   // Set display data from route params
@@ -29,10 +31,10 @@ export default function UserProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <View className="items-center px-4 pt-8">
-        <Avatar name={vm.displayName || 'Utente'} imageUrl={vm.avatarUrl} size="lg" />
+        <Avatar name={vm.displayName || t('common.user')} imageUrl={vm.avatarUrl} size="lg" />
 
         <Text className="mt-3 text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-          {vm.displayName || 'Utente'}
+          {vm.displayName || t('common.user')}
         </Text>
 
         {/* Follow status label */}
@@ -49,7 +51,7 @@ export default function UserProfileScreen() {
               onPress={vm.handleBlock}
               className="rounded-xl border border-red-300 px-5 py-2.5"
             >
-              <Text className="text-sm font-semibold text-red-500">Blocca</Text>
+              <Text className="text-sm font-semibold text-red-500">{t('common.block')}</Text>
             </Pressable>
           </View>
         )}

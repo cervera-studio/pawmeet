@@ -2,11 +2,13 @@ import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { useBadges } from '@/hooks/useBadges';
 import { useFeedback } from '@/hooks/useFeedback';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { isValidUUID } from '@/lib/deep-link-validation';
+import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
 
@@ -15,47 +17,15 @@ type DogPhoto = RouterOutput['dogs']['get']['photos'][number];
 
 export const MAX_PHOTOS = 6;
 
-export const LABEL_MAP: Record<string, string> = {
-  toy: 'Toy',
-  piccola: 'Piccola',
-  media: 'Media',
-  grande: 'Grande',
-  gigante: 'Gigante',
-  bassa: 'Bassa',
-  alta: 'Alta',
-  molto_alta: 'Molto alta',
-  molto_socievole: 'Molto socievole',
-  socievole: 'Socievole',
-  selettivo: 'Selettivo',
-  reattivo: 'Reattivo',
-  timido: 'Timido',
-  diffidente: 'Diffidente',
-  eccellente: 'Eccellente',
-  buono: 'Buono',
-  in_addestramento: 'In addestramento',
-  difficile: 'Difficile',
-  affidabile: 'Affidabile',
-  parziale: 'Parziale',
-  non_affidabile: 'Non affidabile',
-  maschio: 'Maschio',
-  femmina: 'Femmina',
-  mattina_presto: 'Mattina presto',
-  mattina: 'Mattina',
-  pomeriggio: 'Pomeriggio',
-  sera: 'Sera',
-  sera_tardi: 'Sera tardi',
-  urbano: 'Urbano',
-  parco: 'Parco',
-  campagna: 'Campagna',
-  spiaggia: 'Spiaggia',
-  montagna: 'Montagna',
-};
-
 export function label(value: string): string {
-  return LABEL_MAP[value] ?? value;
+  const key = `labels.${value}`;
+  const translated = i18n.t(key);
+  // If key not found, i18n returns the key itself — fall back to raw value
+  return translated === key ? value : translated;
 }
 
 export function useDogDetailViewModel() {
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ dogId: string }>();
   const router = useRouter();
   const [paramError, setParamError] = useState<string | null>(null);
@@ -63,9 +33,9 @@ export function useDogDetailViewModel() {
   // Validate deep link param
   useEffect(() => {
     if (params.dogId && !isValidUUID(params.dogId)) {
-      setParamError('ID cane non valido');
+      setParamError(t('profile.dogDetail.invalidId'));
     }
-  }, [params.dogId]);
+  }, [params.dogId, t]);
 
   const validDogId = params.dogId && isValidUUID(params.dogId) ? params.dogId : undefined;
 
@@ -110,10 +80,10 @@ export function useDogDetailViewModel() {
   const handleDeletePhoto = useCallback(
     (photoId: string) => {
       if (!dog) return;
-      Alert.alert('Elimina foto', 'Sei sicuro di voler eliminare questa foto?', [
-        { text: 'Annulla', style: 'cancel' },
+      Alert.alert(t('profile.dogDetail.deletePhoto'), t('profile.dogDetail.deletePhotoConfirm'), [
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Elimina',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             setDeletingPhotoId(photoId);
@@ -122,7 +92,7 @@ export function useDogDetailViewModel() {
               setPhotos((prev) => prev.filter((p) => p.id !== photoId));
             } catch (e) {
               logger.warn('DogDetail', 'Failed to delete photo', e);
-              Alert.alert('Errore', 'Impossibile eliminare la foto. Riprova.');
+              Alert.alert(t('common.error'), t('profile.dogDetail.deletePhotoError'));
             } finally {
               setDeletingPhotoId(null);
             }
@@ -130,7 +100,7 @@ export function useDogDetailViewModel() {
         },
       ]);
     },
-    [dog],
+    [dog, t],
   );
 
   const handleToggleActive = useCallback(async () => {

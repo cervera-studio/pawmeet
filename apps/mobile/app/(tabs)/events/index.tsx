@@ -2,10 +2,12 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 
 import type { GroupEventCategory } from '@pawmeet/types';
 import { GROUP_EVENT_STATUS } from '@pawmeet/types';
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeaturedEventsCarousel } from '@/components/FeaturedEventsCarousel';
+import i18n from '@/lib/i18n';
 import type { NearbyEvent } from './index.view-model';
 import { useEventDiscoveryViewModel } from './index.view-model';
 
@@ -28,13 +30,13 @@ function formatTime(date: Date | string): string {
 function statusLabel(status: string): string {
   switch (status) {
     case GROUP_EVENT_STATUS.SCHEDULED:
-      return 'Programmato';
+      return i18n.t('events.status.scheduled');
     case GROUP_EVENT_STATUS.IN_PROGRESS:
-      return 'In corso';
+      return i18n.t('events.status.inProgress');
     case GROUP_EVENT_STATUS.COMPLETED:
-      return 'Completato';
+      return i18n.t('events.status.completed');
     case GROUP_EVENT_STATUS.CANCELLED:
-      return 'Annullato';
+      return i18n.t('events.status.cancelled');
     default:
       return status;
   }
@@ -60,11 +62,11 @@ function statusColor(status: string): string {
 function rsvpLabel(status: string | null | undefined): string | null {
   switch (status) {
     case 'accepted':
-      return 'Iscritto';
+      return i18n.t('events.rsvp.accepted');
     case 'pending':
-      return 'In attesa';
+      return i18n.t('events.rsvp.pending');
     case 'declined':
-      return 'Rifiutato';
+      return i18n.t('events.rsvp.declined');
     default:
       return null;
   }
@@ -85,12 +87,14 @@ function rsvpColor(status: string | null | undefined): string {
 
 // ── Category filter ─────────────────────────────────────────────────────────
 
-const CATEGORY_OPTIONS: { value: GroupEventCategory | null; label: string }[] = [
-  { value: null, label: 'Tutti' },
-  { value: 'walk', label: 'Passeggiata' },
-  { value: 'meetup', label: 'Incontro' },
-  { value: 'training', label: 'Addestramento' },
-];
+function getCategoryOptions(): { value: GroupEventCategory | null; label: string }[] {
+  return [
+    { value: null, label: i18n.t('events.categories.all') },
+    { value: 'walk', label: i18n.t('events.categories.walk') },
+    { value: 'meetup', label: i18n.t('events.categories.meetup') },
+    { value: 'training', label: i18n.t('events.categories.training') },
+  ];
+}
 
 const CategoryFilterBar = memo(function CategoryFilterBar({
   selected,
@@ -99,13 +103,14 @@ const CategoryFilterBar = memo(function CategoryFilterBar({
   selected: GroupEventCategory | null;
   onSelect: (category: GroupEventCategory | null) => void;
 }) {
+  const categoryOptions = getCategoryOptions();
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerClassName="px-4 py-2 gap-2"
     >
-      {CATEGORY_OPTIONS.map((opt) => {
+      {categoryOptions.map((opt) => {
         const isActive = selected === opt.value;
         return (
           <Pressable
@@ -197,7 +202,7 @@ const EventCard = memo(function EventCard({
       {/* Info + RSVP status */}
       <View className="flex-row items-center justify-between mt-2">
         <Text className="text-sm text-gray-400 dark:text-neutral-500">
-          Max {event.maxParticipants} partecipanti
+          {i18n.t('events.maxParticipants', { count: event.maxParticipants })}
         </Text>
         <View className="flex-row items-center gap-2">
           {rsvpLabel((event as { myStatus?: string }).myStatus) ? (
@@ -223,14 +228,15 @@ EventCard.displayName = 'EventCard';
 // ── Empty state ──────────────────────────────────────────────────────────────
 
 function EventsEmptyState() {
+  const { t } = useTranslation();
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F4C5}'}</Text>
       <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-        Nessun evento nelle vicinanze
+        {t('events.noEvents')}
       </Text>
       <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
-        Crea un evento per organizzare una passeggiata di gruppo!
+        {t('events.noEventsDescription')}
       </Text>
     </View>
   );
@@ -239,12 +245,15 @@ function EventsEmptyState() {
 // ── Screen ───────────────────────────────────────────────────────────────────
 
 export default function EventDiscoveryScreen() {
+  const { t } = useTranslation();
   const vm = useEventDiscoveryViewModel();
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
       <View className="border-b border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-4">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Eventi</Text>
+        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('events.title')}
+        </Text>
       </View>
 
       <CategoryFilterBar selected={vm.category} onSelect={vm.setCategory} />

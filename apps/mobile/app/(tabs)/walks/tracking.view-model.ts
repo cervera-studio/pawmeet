@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useWalkTracking } from '@/hooks/useWalkTracking';
+import i18n from '@/lib/i18n';
 import { container } from '@/repositories/container';
 import { SAFETY_REPOSITORY } from '@/repositories/tokens';
 
@@ -19,18 +20,15 @@ export function useTrackingViewModel() {
     if (success) {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
-      Alert.alert(
-        'Errore',
-        'Impossibile avviare il tracciamento. Verifica i permessi di posizione.',
-      );
+      Alert.alert(i18n.t('common.error'), i18n.t('walks.tracking.startError'));
     }
   }, [tracking]);
 
   const handleStop = useCallback(async () => {
-    Alert.alert('Termina passeggiata', 'Vuoi terminare il tracciamento della passeggiata?', [
-      { text: 'Continua', style: 'cancel' },
+    Alert.alert(i18n.t('walks.tracking.stopTitle'), i18n.t('walks.tracking.stopMessage'), [
+      { text: i18n.t('walks.tracking.continueButton'), style: 'cancel' },
       {
-        text: 'Termina',
+        text: i18n.t('walks.tracking.stopButton'),
         style: 'destructive',
         onPress: async () => {
           const result = await tracking.stopTracking();
@@ -38,7 +36,7 @@ export function useTrackingViewModel() {
             void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             router.back();
           } else {
-            Alert.alert('Errore', 'Impossibile terminare il tracciamento');
+            Alert.alert(i18n.t('common.error'), i18n.t('walks.tracking.stopError'));
           }
         },
       },
@@ -46,42 +44,38 @@ export function useTrackingViewModel() {
   }, [tracking, router]);
 
   const handleSos = useCallback(() => {
-    Alert.alert(
-      'SOS — Emergenza',
-      'Invia un allarme al tuo compagno di passeggiata con la tua posizione attuale?',
-      [
-        { text: 'Annulla', style: 'cancel' },
-        {
-          text: 'Invia SOS',
-          style: 'destructive',
-          onPress: async () => {
-            setSosLoading(true);
-            try {
-              const walkId = (tracking.track as Record<string, unknown> | null)?.walkId as
-                | string
-                | undefined;
-              if (!walkId) {
-                Alert.alert('Errore', 'Nessuna passeggiata attiva per inviare SOS.');
-                return;
-              }
-              const location = await Location.getLastKnownPositionAsync();
-              await safetyRepo.sos({
-                walkId,
-                latitude: location?.coords.latitude,
-                longitude: location?.coords.longitude,
-              });
-              void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-              Alert.alert('SOS inviato', 'Il tuo compagno è stato avvisato.');
-            } catch (e) {
-              logger.warn('TrackingVM', 'SOS failed', e);
-              Alert.alert('Errore', "Impossibile inviare l'SOS. Riprova.");
-            } finally {
-              setSosLoading(false);
+    Alert.alert(i18n.t('walks.tracking.sosTitle'), i18n.t('walks.tracking.sosMessage'), [
+      { text: i18n.t('common.cancel'), style: 'cancel' },
+      {
+        text: i18n.t('walks.tracking.sosSend'),
+        style: 'destructive',
+        onPress: async () => {
+          setSosLoading(true);
+          try {
+            const walkId = (tracking.track as Record<string, unknown> | null)?.walkId as
+              | string
+              | undefined;
+            if (!walkId) {
+              Alert.alert(i18n.t('common.error'), i18n.t('walks.tracking.sosNoWalk'));
+              return;
             }
-          },
+            const location = await Location.getLastKnownPositionAsync();
+            await safetyRepo.sos({
+              walkId,
+              latitude: location?.coords.latitude,
+              longitude: location?.coords.longitude,
+            });
+            void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            Alert.alert(i18n.t('walks.tracking.sosSent'), i18n.t('walks.tracking.sosSentMessage'));
+          } catch (e) {
+            logger.warn('TrackingVM', 'SOS failed', e);
+            Alert.alert(i18n.t('common.error'), i18n.t('walks.tracking.sosError'));
+          } finally {
+            setSosLoading(false);
+          }
         },
-      ],
-    );
+      },
+    ]);
   }, [tracking.track, safetyRepo]);
 
   const formatElapsed = useCallback((seconds: number) => {

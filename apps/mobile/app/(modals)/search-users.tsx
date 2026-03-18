@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FollowButton } from '@/components/follow-button';
@@ -27,6 +28,7 @@ const UserRow = memo(function UserRow({
 });
 
 export default function SearchUsersScreen() {
+  const { t } = useTranslation();
   const vm = useSearchUsersViewModel();
 
   return (
@@ -34,7 +36,7 @@ export default function SearchUsersScreen() {
       {/* Search bar */}
       <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-3">
         <TextInput
-          placeholder="Cerca utenti..."
+          placeholder={t('searchUsers.placeholder')}
           value={vm.query}
           onChangeText={vm.search}
           autoFocus
@@ -57,10 +59,10 @@ export default function SearchUsersScreen() {
       {vm.isEmpty && (
         <View className="items-center px-8 pt-20">
           <Text className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-            Nessun risultato
+            {t('searchUsers.noResults')}
           </Text>
           <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
-            Prova a cercare con un nome diverso.
+            {t('searchUsers.noResultsDescription')}
           </Text>
         </View>
       )}

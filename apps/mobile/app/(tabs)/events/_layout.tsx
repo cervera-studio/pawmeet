@@ -1,6 +1,8 @@
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 export default function EventsLayout() {
+  const { t } = useTranslation();
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
@@ -8,16 +10,16 @@ export default function EventsLayout() {
         name="[eventId]"
         options={{
           headerShown: true,
-          title: 'Dettaglio evento',
-          headerBackTitle: 'Eventi',
+          title: t('events.detail.title'),
+          headerBackTitle: t('events.detail.backButton'),
         }}
       />
       <Stack.Screen
         name="create"
         options={{
           headerShown: true,
-          title: 'Nuovo evento',
-          headerBackTitle: 'Eventi',
+          title: t('events.create.title'),
+          headerBackTitle: t('events.create.backButton'),
           presentation: 'modal',
         }}
       />

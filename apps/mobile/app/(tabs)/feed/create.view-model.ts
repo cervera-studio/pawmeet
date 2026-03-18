@@ -3,6 +3,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { useLocation } from '@/hooks/useLocation';
 import { usePostUpload } from '@/hooks/usePostUpload';
@@ -22,6 +23,7 @@ export interface TagOption {
 }
 
 export function useCreatePostViewModel() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { coordinates, getCurrentLocation } = useLocation();
   const { uploading, progress, createPost, uploadMedia } = usePostUpload();
@@ -113,7 +115,7 @@ export function useCreatePostViewModel() {
 
   const handleSubmit = useCallback(async () => {
     if (selectedMedia.length === 0) {
-      Alert.alert('Errore', 'Seleziona almeno una foto o video');
+      Alert.alert(t('common.error'), t('feed.create.selectMediaError'));
       return;
     }
 
@@ -135,7 +137,7 @@ export function useCreatePostViewModel() {
     });
 
     if (!post) {
-      Alert.alert('Errore', 'Impossibile creare il post');
+      Alert.alert(t('common.error'), t('feed.create.createError'));
       return;
     }
 
@@ -160,7 +162,7 @@ export function useCreatePostViewModel() {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } else {
-      Alert.alert('Errore', 'Caricamento media fallito');
+      Alert.alert(t('common.error'), t('feed.create.uploadMediaFailed'));
     }
   }, [
     selectedMedia,
@@ -172,6 +174,7 @@ export function useCreatePostViewModel() {
     createPost,
     uploadMedia,
     router,
+    t,
   ]);
 
   const canSubmit = selectedMedia.length > 0 && !uploading;

@@ -70,7 +70,7 @@ export const rateLimitedPublicProcedure = t.procedure.use(async ({ ctx, next }) 
   if (!success) {
     throw new TRPCError({
       code: 'TOO_MANY_REQUESTS',
-      message: 'Troppe richieste, riprova più tardi',
+      message: 'Too many requests, please try again later',
     });
   }
 
@@ -118,7 +118,7 @@ export const gdprExportProtectedProcedure = t.procedure.use(async ({ ctx, next }
   if (!success) {
     throw new TRPCError({
       code: 'TOO_MANY_REQUESTS',
-      message: 'Hai raggiunto il limite di export giornaliero. Riprova tra 24 ore.',
+      message: 'Daily export limit reached. Try again in 24 hours.',
     });
   }
 

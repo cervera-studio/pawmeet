@@ -1,4 +1,5 @@
 import { MIN_USER_AGE } from '@pawmeet/config';
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { useAgeGateViewModel } from './age-gate.view-model';
 
 export default function AgeGateScreen() {
+  const { t } = useTranslation();
   const vm = useAgeGateViewModel();
 
   return (
@@ -19,11 +21,10 @@ export default function AgeGateScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-            Verifica età
+            {t('auth.ageGate.title')}
           </Text>
           <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
-            Per continuare a usare PawMeet, inserisci la tua data di nascita. Devi avere almeno{' '}
-            {MIN_USER_AGE} anni (D.Lgs. 101/2018).
+            {t('auth.ageGate.description', { age: MIN_USER_AGE })}
           </Text>
 
           {vm.error ? (
@@ -33,7 +34,7 @@ export default function AgeGateScreen() {
           ) : null}
 
           <FormField
-            placeholder="Data di nascita (AAAA-MM-GG)"
+            placeholder={t('auth.ageGate.dateOfBirthPlaceholder')}
             value={vm.dateOfBirth}
             onChangeText={vm.setDateOfBirth}
             keyboardType="numbers-and-punctuation"
@@ -43,7 +44,7 @@ export default function AgeGateScreen() {
 
           <Button
             onPress={vm.handleSubmit}
-            label={vm.loading ? 'Invio...' : 'Conferma'}
+            label={vm.loading ? t('auth.ageGate.submitting') : t('auth.ageGate.submitButton')}
             disabled={vm.loading}
           />
         </ScrollView>

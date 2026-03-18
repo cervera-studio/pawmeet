@@ -4,6 +4,7 @@ import { logger } from '@pawmeet/utils';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useGroupEvents } from '@/hooks/useGroupEvents';
@@ -16,6 +17,7 @@ type EventDetail = RouterOutput['groupEvents']['get'];
 export type { EventDetail };
 
 export function useEventDetailViewModel() {
+  const { t } = useTranslation();
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id) ?? '';
@@ -95,7 +97,7 @@ export function useEventDetailViewModel() {
 
   const handleJoin = useCallback(async () => {
     if (!eventId || !selectedDogId) {
-      Alert.alert('Errore', 'Seleziona un cane dal profilo prima di partecipare.');
+      Alert.alert(t('common.error'), t('events.detail.selectDogError'));
       return;
     }
     setActionLoading(true);
@@ -105,18 +107,18 @@ export function useEventDetailViewModel() {
       await fetchEvent();
     } catch (e) {
       logger.warn('EventDetail', 'Failed to join event', e);
-      Alert.alert('Errore', "Impossibile partecipare all'evento.");
+      Alert.alert(t('common.error'), t('events.detail.joinError'));
     } finally {
       setActionLoading(false);
     }
-  }, [eventId, selectedDogId, joinEvent, fetchEvent]);
+  }, [eventId, selectedDogId, joinEvent, fetchEvent, t]);
 
   const handleLeave = useCallback(async () => {
     if (!eventId) return;
-    Alert.alert('Lascia evento', 'Sei sicuro di voler abbandonare questo evento?', [
-      { text: 'No', style: 'cancel' },
+    Alert.alert(t('events.detail.leaveTitle'), t('events.detail.leaveMessage'), [
+      { text: t('common.no'), style: 'cancel' },
       {
-        text: 'Lascia',
+        text: t('events.detail.leaveConfirm'),
         style: 'destructive',
         onPress: async () => {
           setActionLoading(true);
@@ -125,21 +127,21 @@ export function useEventDetailViewModel() {
             await fetchEvent();
           } catch (e) {
             logger.warn('EventDetail', 'Failed to leave event', e);
-            Alert.alert('Errore', "Impossibile abbandonare l'evento.");
+            Alert.alert(t('common.error'), t('events.detail.leaveError'));
           } finally {
             setActionLoading(false);
           }
         },
       },
     ]);
-  }, [eventId, leaveEvent, fetchEvent]);
+  }, [eventId, leaveEvent, fetchEvent, t]);
 
   const handleCancel = useCallback(() => {
     if (!eventId) return;
-    Alert.alert('Annulla evento', 'Sei sicuro di voler annullare questo evento?', [
-      { text: 'No', style: 'cancel' },
+    Alert.alert(t('events.detail.cancelTitle'), t('events.detail.cancelMessage'), [
+      { text: t('common.no'), style: 'cancel' },
       {
-        text: 'Annulla evento',
+        text: t('events.detail.cancelButton'),
         style: 'destructive',
         onPress: async () => {
           setActionLoading(true);
@@ -148,14 +150,14 @@ export function useEventDetailViewModel() {
             await fetchEvent();
           } catch (e) {
             logger.warn('EventDetail', 'Failed to cancel event', e);
-            Alert.alert('Errore', "Impossibile annullare l'evento.");
+            Alert.alert(t('common.error'), t('events.detail.cancelError'));
           } finally {
             setActionLoading(false);
           }
         },
       },
     ]);
-  }, [eventId, cancelEvent, fetchEvent]);
+  }, [eventId, cancelEvent, fetchEvent, t]);
 
   const navigateToGroupChat = useCallback(() => {
     if (!eventId) return;

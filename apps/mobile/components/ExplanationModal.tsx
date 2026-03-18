@@ -1,5 +1,6 @@
 import type { ScoreBreakdown } from '@pawmeet/types';
 import { getExplanationItems } from '@pawmeet/utils';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native';
 
 interface ExplanationModalProps {
@@ -40,6 +41,7 @@ export function ExplanationModal({
   breakdown,
   loading,
 }: ExplanationModalProps) {
+  const { t } = useTranslation();
   const items = breakdown ? getExplanationItems(breakdown) : [];
   const overallPercent = Math.round(overallScore * 100);
 
@@ -55,7 +57,7 @@ export function ExplanationModal({
           {/* Header */}
           <View className="mb-6 flex-row items-center justify-between">
             <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-              Compatibilità
+              {t('match.compatibility')}
             </Text>
             <View className="rounded-full bg-primary/10 px-4 py-1.5">
               <Text className="text-lg font-bold text-primary">{overallPercent}%</Text>
@@ -72,9 +74,9 @@ export function ExplanationModal({
               {items.map((item) => (
                 <DimensionRow
                   key={item.key}
-                  name={item.name}
+                  name={t(item.nameKey)}
                   score={item.score}
-                  label={item.label}
+                  label={t(item.labelKey)}
                 />
               ))}
             </View>
@@ -86,7 +88,7 @@ export function ExplanationModal({
             className="mt-4 rounded-2xl bg-gray-100 dark:bg-[#38383A] py-3"
           >
             <Text className="text-center text-base font-semibold text-gray-700 dark:text-[#D1D1D6]">
-              Chiudi
+              {t('match.close')}
             </Text>
           </Pressable>
         </View>

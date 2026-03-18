@@ -1,6 +1,7 @@
 import type { ScoreBreakdown } from '@pawmeet/types';
 import { formatDistance, getTopReasons } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Dimensions, Pressable, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -45,6 +46,7 @@ export function SwipeCard({
   onExplanationTap,
 }: SwipeCardProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const cardScale = useSharedValue(1);
@@ -52,7 +54,8 @@ export function SwipeCard({
   const distanceLabel = formatDistance(dog.distanceKm);
 
   const compatPercent = Math.round(dog.compatibilityScore * 100);
-  const topReasons = dog.scoreBreakdown ? getTopReasons(dog.scoreBreakdown) : [];
+  const topReasonKeys = dog.scoreBreakdown ? getTopReasons(dog.scoreBreakdown) : [];
+  const topReasons = topReasonKeys.map((key) => t(key));
 
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {

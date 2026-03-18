@@ -159,7 +159,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Input
                 id="photo-confidence"
                 type="number"
-                {...moderationForm.register('photoConfidenceThreshold')}
+                {...moderationForm.register('photoConfidenceThreshold', { valueAsNumber: true })}
                 min={0}
                 max={100}
               />
@@ -176,7 +176,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Input
                 id="max-reports"
                 type="number"
-                {...moderationForm.register('maxReportsBeforeSuspension')}
+                {...moderationForm.register('maxReportsBeforeSuspension', { valueAsNumber: true })}
                 min={1}
               />
               {moderationForm.formState.errors.maxReportsBeforeSuspension && (
@@ -206,7 +206,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Input
                 id="match-size"
                 type="number"
-                {...matchingForm.register('matchWeightSize')}
+                {...matchingForm.register('matchWeightSize', { valueAsNumber: true })}
                 min={0}
                 max={1}
                 step={0.01}
@@ -224,7 +224,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Input
                 id="match-energy"
                 type="number"
-                {...matchingForm.register('matchWeightEnergy')}
+                {...matchingForm.register('matchWeightEnergy', { valueAsNumber: true })}
                 min={0}
                 max={1}
                 step={0.01}
@@ -242,7 +242,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Input
                 id="match-behavior"
                 type="number"
-                {...matchingForm.register('matchWeightBehavior')}
+                {...matchingForm.register('matchWeightBehavior', { valueAsNumber: true })}
                 min={0}
                 max={1}
                 step={0.01}
@@ -260,7 +260,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Input
                 id="match-walk"
                 type="number"
-                {...matchingForm.register('matchWeightWalk')}
+                {...matchingForm.register('matchWeightWalk', { valueAsNumber: true })}
                 min={0}
                 max={1}
                 step={0.01}
@@ -278,7 +278,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Input
                 id="match-distance"
                 type="number"
-                {...matchingForm.register('matchWeightDistance')}
+                {...matchingForm.register('matchWeightDistance', { valueAsNumber: true })}
                 min={0}
                 max={1}
                 step={0.01}
@@ -296,7 +296,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Input
                 id="match-leash"
                 type="number"
-                {...matchingForm.register('matchWeightLeash')}
+                {...matchingForm.register('matchWeightLeash', { valueAsNumber: true })}
                 min={0}
                 max={1}
                 step={0.01}

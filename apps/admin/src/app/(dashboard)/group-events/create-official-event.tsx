@@ -138,7 +138,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               <Input
                 id="official-duration"
                 type="number"
-                {...register('durationMin')}
+                {...register('durationMin', { valueAsNumber: true })}
                 min={15}
                 max={180}
               />
@@ -183,7 +183,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                 id="official-lat"
                 type="number"
                 step="any"
-                {...register('latitude')}
+                {...register('latitude', { valueAsNumber: true })}
                 placeholder="45.4773"
               />
               {errors.latitude && <p className="text-xs text-red-600">{errors.latitude.message}</p>}
@@ -197,7 +197,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
                 id="official-lng"
                 type="number"
                 step="any"
-                {...register('longitude')}
+                {...register('longitude', { valueAsNumber: true })}
                 placeholder="9.1815"
               />
               {errors.longitude && (
@@ -212,7 +212,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
               <Input
                 id="official-max"
                 type="number"
-                {...register('maxParticipants')}
+                {...register('maxParticipants', { valueAsNumber: true })}
                 min={2}
                 max={500}
               />

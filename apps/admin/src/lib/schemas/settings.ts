@@ -14,11 +14,11 @@ export type GeneralSettingsFormValues = z.infer<ReturnType<typeof createGeneralS
 
 export function createModerationSettingsSchema(t: ValidationTranslationFn) {
   return z.object({
-    photoConfidenceThreshold: z.coerce
+    photoConfidenceThreshold: z
       .number()
       .min(0, t('minValue', { min: 0 }))
       .max(100, t('maxValue', { max: 100 })),
-    maxReportsBeforeSuspension: z.coerce
+    maxReportsBeforeSuspension: z
       .number()
       .int(t('mustBeInteger'))
       .min(1, t('minValue', { min: 1 })),
@@ -31,27 +31,27 @@ export type ModerationSettingsFormValues = z.infer<
 
 export function createMatchingSettingsSchema(t: ValidationTranslationFn) {
   return z.object({
-    matchWeightSize: z.coerce
+    matchWeightSize: z
       .number()
       .min(0, t('minValue', { min: 0 }))
       .max(1, t('maxValue', { max: 1 })),
-    matchWeightEnergy: z.coerce
+    matchWeightEnergy: z
       .number()
       .min(0, t('minValue', { min: 0 }))
       .max(1, t('maxValue', { max: 1 })),
-    matchWeightBehavior: z.coerce
+    matchWeightBehavior: z
       .number()
       .min(0, t('minValue', { min: 0 }))
       .max(1, t('maxValue', { max: 1 })),
-    matchWeightWalk: z.coerce
+    matchWeightWalk: z
       .number()
       .min(0, t('minValue', { min: 0 }))
       .max(1, t('maxValue', { max: 1 })),
-    matchWeightDistance: z.coerce
+    matchWeightDistance: z
       .number()
       .min(0, t('minValue', { min: 0 }))
       .max(1, t('maxValue', { max: 1 })),
-    matchWeightLeash: z.coerce
+    matchWeightLeash: z
       .number()
       .min(0, t('minValue', { min: 0 }))
       .max(1, t('maxValue', { max: 1 })),

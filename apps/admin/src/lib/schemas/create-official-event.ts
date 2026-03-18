@@ -15,11 +15,9 @@ export function createOfficialEventFormSchema(t: ValidationTranslationFn) {
       .max(TITLE_MAX, t('maxChars', { max: TITLE_MAX })),
     description: z
       .string()
-      .max(DESCRIPTION_MAX, t('maxChars', { max: DESCRIPTION_MAX }))
-      .optional()
-      .default(''),
+      .max(DESCRIPTION_MAX, t('maxChars', { max: DESCRIPTION_MAX })),
     scheduledAt: z.string().min(1, t('required', { field: t('fields.date') })),
-    durationMin: z.coerce
+    durationMin: z
       .number()
       .int(t('mustBeInteger'))
       .min(EVENT.DURATION_MIN, t('minValue', { min: EVENT.DURATION_MIN }))
@@ -28,15 +26,15 @@ export function createOfficialEventFormSchema(t: ValidationTranslationFn) {
       .string()
       .min(1, t('required', { field: t('fields.location') }))
       .max(200, t('maxChars', { max: 200 })),
-    latitude: z.coerce
+    latitude: z
       .number()
       .min(-90, t('latitudeRange', { min: -90, max: 90 }))
       .max(90, t('latitudeRange', { min: -90, max: 90 })),
-    longitude: z.coerce
+    longitude: z
       .number()
       .min(-180, t('longitudeRange', { min: -180, max: 180 }))
       .max(180, t('longitudeRange', { min: -180, max: 180 })),
-    maxParticipants: z.coerce
+    maxParticipants: z
       .number()
       .int(t('mustBeInteger'))
       .min(2, t('minParticipants', { min: 2 }))

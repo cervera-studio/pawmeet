@@ -68,7 +68,9 @@ const SuggestionCard = memo(function SuggestionCard({
   const { t } = useTranslation();
   const dayLabel = t(DAY_KEYS[suggestion.timeSlot.dayOfWeek] ?? DAY_KEYS[0]!);
   const timeRange = `${String(suggestion.timeSlot.hourStart).padStart(2, '0')}:00–${String(suggestion.timeSlot.hourEnd).padStart(2, '0')}:00`;
-  const terrainLabel = t(`discovery.filters.terrainOptions.${suggestion.terrainSuggestion}` as never) as string;
+  const terrainLabel = t(
+    `discovery.filters.terrainOptions.${suggestion.terrainSuggestion}` as never,
+  ) as string;
 
   return (
     <View className="mb-3 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm border border-gray-100 dark:border-[#38383A]">

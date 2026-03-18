@@ -12,11 +12,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.9.0",
+    "@hookform/resolvers": "^5.2.2",
     "@pawmeet/api-client": "workspace:*",
     "@pawmeet/config": "workspace:*",
-    "@pawmeet/i18n": "workspace:*",
     "@pawmeet/design-tokens": "workspace:*",
+    "@pawmeet/i18n": "workspace:*",
     "@pawmeet/types": "workspace:*",
     "@pawmeet/validation": "workspace:*",
     "@sentry/nextjs": "^10.43.0",

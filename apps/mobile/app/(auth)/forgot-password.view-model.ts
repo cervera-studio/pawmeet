@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { z } from 'zod';
-import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { zodToFieldErrors } from '@/lib/validation';
 

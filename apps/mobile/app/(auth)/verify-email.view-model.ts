@@ -43,7 +43,7 @@ export function useVerifyEmailViewModel() {
         intervalRef.current = null;
       }
     };
-  }, [countdown > 0]);
+  }, [countdown]);
 
   const handleVerify = useCallback(async () => {
     if (otp.length !== 6 || !email) return;

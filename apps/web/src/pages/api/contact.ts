@@ -14,7 +14,13 @@ export const POST: APIRoute = async ({ request }) => {
   const email = typeof body?.email === 'string' ? body.email.trim() : '';
   const message = typeof body?.message === 'string' ? body.message.trim() : '';
 
-  if (!name || name.length > 200 || !EMAIL_RE.test(email) || message.length < 10 || message.length > 5000) {
+  if (
+    !name ||
+    name.length > 200 ||
+    !EMAIL_RE.test(email) ||
+    message.length < 10 ||
+    message.length > 5000
+  ) {
     return new Response(JSON.stringify({ error: 'Dati non validi' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },

@@ -227,7 +227,12 @@ export function createFeedRouter(deps: typeof feedDeps) {
       .input(addContentReactionSchema)
       .mutation(async ({ ctx, input }) => {
         const result = unwrapResult(
-          await deps.addContentReaction(input.contentType, input.contentId, ctx.userId, input.emoji),
+          await deps.addContentReaction(
+            input.contentType,
+            input.contentId,
+            ctx.userId,
+            input.emoji,
+          ),
         );
         trackEvent('feed_reaction_added', ctx.userId, {
           contentType: input.contentType,
@@ -263,9 +268,7 @@ export function createFeedRouter(deps: typeof feedDeps) {
 
     trendingHashtags: protectedProcedure
       .input(trendingHashtagsSchema)
-      .query(async ({ input }) =>
-        unwrapResult(await deps.getTrendingHashtags(input.limit)),
-      ),
+      .query(async ({ input }) => unwrapResult(await deps.getTrendingHashtags(input.limit))),
 
     // ── Walk albums ─────────────────────────────────────────────────────────
 

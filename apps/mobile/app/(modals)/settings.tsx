@@ -1,12 +1,20 @@
 import process from 'node:process';
 import type { ConsentState } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useCallback, useState } from 'react';
-import { Linking, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Linking, Modal, Platform, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { ConsentModal } from '@/components/ConsentModal';
 import { syncSingleConsentToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';
 import { useSettingsViewModel } from './settings.view-model';
+
+const LANGUAGES = [
+  { code: 'it', label: 'Italiano' },
+  { code: 'en', label: 'English' },
+  { code: 'es', label: 'Español' },
+  { code: 'ro', label: 'Română' },
+] as const;
 
 const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'https://pawmeet.io';
 
@@ -15,6 +23,30 @@ export default function SettingsModal() {
   const consents = useConsentStore((s) => s.consents);
   const storeSetConsent = useConsentStore((s) => s.setConsent);
   const [showConsentModal, setShowConsentModal] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState<'start' | 'end' | null>(null);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+
+  const handleTimeChange = useCallback(
+    (_event: unknown, date?: Date) => {
+      if (!(date && showTimePicker)) {
+        setShowTimePicker(null);
+        return;
+      }
+      const hh = String(date.getHours()).padStart(2, '0');
+      const mm = String(date.getMinutes()).padStart(2, '0');
+      const timeStr = `${hh}:${mm}`;
+      vm.updateQuietHours({ [showTimePicker]: timeStr });
+      if (Platform.OS === 'android') setShowTimePicker(null);
+    },
+    [showTimePicker, vm],
+  );
+
+  const parseTime = (time: string): Date => {
+    const parts = time.split(':').map(Number);
+    const d = new Date();
+    d.setHours(parts[0] ?? 0, parts[1] ?? 0, 0, 0);
+    return d;
+  };
 
   const setConsent = useCallback(
     (key: keyof ConsentState, value: boolean) => {
@@ -201,26 +233,52 @@ export default function SettingsModal() {
         </View>
 
         {vm.quietHours.enabled && (
-          <View className="flex-row items-center justify-between py-4">
-            <View className="flex-row items-center gap-3">
-              <View>
-                <Text className="text-xs text-gray-400 dark:text-neutral-500 mb-1">Dalle</Text>
-                <Pressable className="rounded-xl bg-gray-100 dark:bg-[#38383A] px-4 py-2.5">
-                  <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
-                    {vm.quietHours.start}
-                  </Text>
-                </Pressable>
-              </View>
-              <View>
-                <Text className="text-xs text-gray-400 dark:text-neutral-500 mb-1">Alle</Text>
-                <Pressable className="rounded-xl bg-gray-100 dark:bg-[#38383A] px-4 py-2.5">
-                  <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
-                    {vm.quietHours.end}
-                  </Text>
-                </Pressable>
+          <>
+            <View className="flex-row items-center justify-between py-4">
+              <View className="flex-row items-center gap-3">
+                <View>
+                  <Text className="text-xs text-gray-400 dark:text-neutral-500 mb-1">Dalle</Text>
+                  <Pressable
+                    onPress={() => setShowTimePicker('start')}
+                    className="rounded-xl bg-gray-100 dark:bg-[#38383A] px-4 py-2.5"
+                  >
+                    <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
+                      {vm.quietHours.start}
+                    </Text>
+                  </Pressable>
+                </View>
+                <View>
+                  <Text className="text-xs text-gray-400 dark:text-neutral-500 mb-1">Alle</Text>
+                  <Pressable
+                    onPress={() => setShowTimePicker('end')}
+                    className="rounded-xl bg-gray-100 dark:bg-[#38383A] px-4 py-2.5"
+                  >
+                    <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
+                      {vm.quietHours.end}
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
-          </View>
+            {showTimePicker && (
+              <View className="py-2">
+                <DateTimePicker
+                  value={parseTime(
+                    showTimePicker === 'start' ? vm.quietHours.start : vm.quietHours.end,
+                  )}
+                  mode="time"
+                  is24Hour
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={handleTimeChange}
+                />
+                {Platform.OS === 'ios' && (
+                  <Pressable onPress={() => setShowTimePicker(null)} className="items-center py-2">
+                    <Text className="text-sm font-medium text-primary">Conferma</Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
+          </>
         )}
 
         {/* General settings section */}
@@ -247,14 +305,37 @@ export default function SettingsModal() {
         </View>
 
         <View className="mt-4 border-t border-gray-100 dark:border-[#38383A] pt-4">
-          <Pressable className="py-4">
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Raggio di ricerca</Text>
-            <Text className="text-sm text-gray-400 dark:text-neutral-500">5 km</Text>
-          </Pressable>
+          <View className="py-4">
+            <Text className="mb-2 text-base text-gray-700 dark:text-[#D1D1D6]">
+              Raggio di ricerca
+            </Text>
+            <View className="flex-row items-center gap-4">
+              <Pressable
+                onPress={() => vm.updateSearchRadius(Math.max(1, vm.searchRadiusKm - 1))}
+                className="h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-[#38383A]"
+              >
+                <Text className="text-lg font-bold text-gray-700 dark:text-[#D1D1D6]">−</Text>
+              </Pressable>
+              <Text className="min-w-[60px] text-center text-xl font-bold text-primary">
+                {vm.searchRadiusKm} km
+              </Text>
+              <Pressable
+                onPress={() => vm.updateSearchRadius(Math.min(25, vm.searchRadiusKm + 1))}
+                className="h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-[#38383A]"
+              >
+                <Text className="text-lg font-bold text-gray-700 dark:text-[#D1D1D6]">+</Text>
+              </Pressable>
+            </View>
+            <Text className="mt-1 text-xs text-gray-400 dark:text-neutral-500">
+              Min 1 km — Max 25 km
+            </Text>
+          </View>
 
-          <Pressable className="py-4">
+          <Pressable onPress={() => setShowLanguageModal(true)} className="py-4">
             <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">Lingua</Text>
-            <Text className="text-sm text-gray-400 dark:text-neutral-500">Italiano</Text>
+            <Text className="text-sm text-gray-400 dark:text-neutral-500">
+              {LANGUAGES.find((l) => l.code === vm.language)?.label ?? vm.language}
+            </Text>
           </Pressable>
         </View>
 
@@ -298,6 +379,46 @@ export default function SettingsModal() {
       </View>
 
       <ConsentModal visible={showConsentModal} onDismiss={() => setShowConsentModal(false)} />
+
+      <Modal
+        visible={showLanguageModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowLanguageModal(false)}
+      >
+        <Pressable
+          onPress={() => setShowLanguageModal(false)}
+          className="flex-1 justify-end bg-black/40"
+        >
+          <View className="rounded-t-3xl bg-white dark:bg-[#2C2C2E] px-6 pb-10 pt-6">
+            <Text className="mb-4 text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">
+              Seleziona lingua
+            </Text>
+            {LANGUAGES.map((lang) => (
+              <Pressable
+                key={lang.code}
+                onPress={() => {
+                  vm.changeLanguage(lang.code);
+                  setShowLanguageModal(false);
+                }}
+                className={`rounded-xl px-4 py-4 ${
+                  vm.language === lang.code ? 'bg-primary/10' : ''
+                }`}
+              >
+                <Text
+                  className={`text-base ${
+                    vm.language === lang.code
+                      ? 'font-semibold text-primary'
+                      : 'text-gray-700 dark:text-[#D1D1D6]'
+                  }`}
+                >
+                  {lang.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
     </ScrollView>
   );
 }

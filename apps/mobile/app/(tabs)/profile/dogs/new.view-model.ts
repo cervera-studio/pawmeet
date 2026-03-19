@@ -1,4 +1,5 @@
 import { MAX_DOGS_PER_USER } from '@pawmeet/config';
+import { logger } from '@pawmeet/utils';
 import { createDogSchema } from '@pawmeet/validation';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
@@ -10,6 +11,12 @@ import { zodToFieldErrors } from '@/lib/validation';
 import { useDogsStore } from '@/stores/dogs';
 
 // -- State shape --
+
+interface PendingPhoto {
+  uri: string;
+  contentType: string;
+  fileSize: number;
+}
 
 interface DogFormState {
   // Step 1: Basic info
@@ -35,6 +42,9 @@ interface DogFormState {
   walkPrefTerrain: string[];
   walkPrefDurationMin: string;
   walkPrefDurationMax: string;
+
+  // Step 4: Photos (collected locally before dog creation)
+  pendingPhotos: PendingPhoto[];
 }
 
 const initialState: DogFormState = {
@@ -56,6 +66,7 @@ const initialState: DogFormState = {
   walkPrefTerrain: [],
   walkPrefDurationMin: '30',
   walkPrefDurationMax: '60',
+  pendingPhotos: [],
 };
 
 // -- Reducer --
@@ -278,6 +289,57 @@ export function useNewDogViewModel() {
 
   const canGenerateBio = canGenerateBioFromState(state);
 
+  const MAX_PHOTOS = 6;
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+  const addPendingPhoto = useCallback(async () => {
+    if (state.pendingPhotos.length >= MAX_PHOTOS) {
+      Alert.alert('Limite raggiunto', `Puoi aggiungere al massimo ${MAX_PHOTOS} foto.`);
+      return;
+    }
+
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permesso necessario', "Consenti l'accesso alla galleria per caricare foto.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.8,
+      aspect: [1, 1],
+    });
+
+    if (result.canceled || !result.assets[0]) return;
+
+    const asset = result.assets[0];
+    const fileSize = asset.fileSize ?? 0;
+    if (fileSize > MAX_FILE_SIZE) {
+      Alert.alert('File troppo grande', 'La foto non può superare i 5 MB.');
+      return;
+    }
+
+    const contentType = asset.mimeType ?? 'image/jpeg';
+    const photo: PendingPhoto = { uri: asset.uri, contentType, fileSize };
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'pendingPhotos',
+      value: [...state.pendingPhotos, photo],
+    });
+  }, [state.pendingPhotos]);
+
+  const removePendingPhoto = useCallback(
+    (index: number) => {
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'pendingPhotos',
+        value: state.pendingPhotos.filter((_, i) => i !== index),
+      });
+    },
+    [state.pendingPhotos],
+  );
+
   const analyzePhoto = useCallback(async () => {
     const photo = await pickPhotoFromLibrary();
     if (!photo) return;
@@ -339,6 +401,30 @@ export function useNewDogViewModel() {
     setApiError('');
     try {
       const { dog } = await api.dogs.create.mutate(result.data);
+
+      // Upload pending photos after dog creation
+      for (const photo of state.pendingPhotos) {
+        try {
+          const { uploadUrl, key } = await api.dogs.uploadPhotoUrl.mutate({
+            dogId: dog.id,
+            contentType: photo.contentType,
+            fileSize: photo.fileSize,
+          });
+
+          const response = await fetch(photo.uri);
+          const blob = await response.blob();
+          await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': photo.contentType },
+            body: blob,
+          });
+
+          await api.dogs.confirmPhoto.mutate({ dogId: dog.id, key });
+        } catch (e) {
+          logger.warn('NewDog', `Failed to upload photo: ${photo.uri}`, e);
+        }
+      }
+
       addDog(dog);
       router.back();
     } catch (e) {
@@ -363,5 +449,8 @@ export function useNewDogViewModel() {
     canGenerateBio,
     analyzingPhoto,
     analyzePhoto,
+    addPendingPhoto,
+    removePendingPhoto,
+    pendingPhotos: state.pendingPhotos,
   } as const;
 }

@@ -11,7 +11,7 @@ import {
 } from '@pawmeet/config';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChipSelect } from '@/components/ChipSelect';
 import { Button } from '@/components/ui/Button';
@@ -366,7 +366,15 @@ function Step3WalkPrefs({
   );
 }
 
-function Step4Photos() {
+function Step4Photos({
+  photos,
+  onAdd,
+  onRemove,
+}: {
+  photos: { uri: string }[];
+  onAdd: () => void;
+  onRemove: (index: number) => void;
+}) {
   const { t } = useTranslation();
   return (
     <View className="gap-4">
@@ -374,14 +382,47 @@ function Step4Photos() {
         {t('dogForm.addPhotos')}
       </Text>
       <Text className="text-sm text-gray-500 dark:text-neutral-500">
-        Potrai aggiungere foto dopo aver creato il profilo.
+        Aggiungi fino a 6 foto. La prima sarà la foto principale.
       </Text>
-      <View className="h-48 items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-[#38383A]">
-        <Text className="text-4xl">📷</Text>
-        <Text className="mt-2 text-sm text-gray-400 dark:text-neutral-500">
-          Le foto saranno disponibili dopo la creazione
-        </Text>
+
+      <View className="flex-row flex-wrap gap-3">
+        {photos.map((photo, index) => (
+          <View key={photo.uri} className="relative">
+            <Image
+              source={{ uri: photo.uri }}
+              className="h-28 w-28 rounded-xl"
+              resizeMode="cover"
+            />
+            {index === 0 && (
+              <View className="absolute left-1 top-1 rounded-full bg-primary px-2 py-0.5">
+                <Text className="text-[10px] font-semibold text-white">Principale</Text>
+              </View>
+            )}
+            <Pressable
+              onPress={() => onRemove(index)}
+              className="absolute -right-1 -top-1 h-6 w-6 items-center justify-center rounded-full bg-red-500"
+            >
+              <Text className="text-xs font-bold text-white">✕</Text>
+            </Pressable>
+          </View>
+        ))}
+
+        {photos.length < 6 && (
+          <Pressable
+            onPress={onAdd}
+            className="h-28 w-28 items-center justify-center rounded-xl border-2 border-dashed border-gray-200 dark:border-[#38383A]"
+          >
+            <Text className="text-3xl text-gray-300 dark:text-neutral-500">+</Text>
+            <Text className="text-[10px] text-gray-400 dark:text-neutral-500">Aggiungi</Text>
+          </Pressable>
+        )}
       </View>
+
+      {photos.length === 0 && (
+        <Text className="text-xs text-gray-400 dark:text-neutral-500">
+          Puoi anche aggiungere foto dopo la creazione del profilo.
+        </Text>
+      )}
     </View>
   );
 }
@@ -405,6 +446,9 @@ export default function NewDogScreen() {
     canGenerateBio,
     analyzingPhoto,
     analyzePhoto,
+    addPendingPhoto,
+    removePendingPhoto,
+    pendingPhotos,
   } = useNewDogViewModel();
 
   return (
@@ -440,7 +484,13 @@ export default function NewDogScreen() {
           )}
           {step === 1 && <Step2Personality state={state} setField={setField} errors={errors} />}
           {step === 2 && <Step3WalkPrefs state={state} setField={setField} errors={errors} />}
-          {step === 3 && <Step4Photos />}
+          {step === 3 && (
+            <Step4Photos
+              photos={pendingPhotos}
+              onAdd={addPendingPhoto}
+              onRemove={removePendingPhoto}
+            />
+          )}
 
           {/* Navigation */}
           <View className="mt-8 gap-3">

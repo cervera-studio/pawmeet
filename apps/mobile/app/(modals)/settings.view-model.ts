@@ -2,6 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
+import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { useThemeStore } from '@/stores/theme';
 
@@ -46,6 +47,8 @@ export function useSettingsViewModel() {
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [quietHours, setQuietHours] = useState<QuietHours>(DEFAULT_QUIET_HOURS);
+  const [searchRadiusKm, setSearchRadiusKmLocal] = useState(5);
+  const [language, setLanguageLocal] = useState(i18n.language || 'it');
 
   // Load notification preferences from user profile
   useEffect(() => {
@@ -66,6 +69,9 @@ export function useSettingsViewModel() {
               end: np.quietHoursEnd,
             });
           }
+        }
+        if (data.searchRadiusKm) {
+          setSearchRadiusKmLocal(data.searchRadiusKm);
         }
       })
       .catch((e) => logger.warn('Settings', 'Failed to load notification prefs', e));
@@ -103,6 +109,22 @@ export function useSettingsViewModel() {
     },
     [quietHours],
   );
+
+  const updateSearchRadius = useCallback(
+    (km: number) => {
+      setSearchRadiusKmLocal(km);
+      api.users.updatePreferences.mutate({ searchRadiusKm: km }).catch((e) => {
+        logger.warn('Settings', 'Failed to update search radius', e);
+        setSearchRadiusKmLocal(searchRadiusKm);
+      });
+    },
+    [searchRadiusKm],
+  );
+
+  const changeLanguage = useCallback((lang: string) => {
+    setLanguageLocal(lang);
+    i18n.changeLanguage(lang);
+  }, []);
 
   const deleteAccount = useCallback(() => {
     Alert.alert(
@@ -165,5 +187,9 @@ export function useSettingsViewModel() {
     logout,
     deleteAccount,
     isDeleting,
+    searchRadiusKm,
+    updateSearchRadius,
+    language,
+    changeLanguage,
   };
 }

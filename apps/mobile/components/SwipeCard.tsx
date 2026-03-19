@@ -2,7 +2,7 @@ import type { ScoreBreakdown } from '@pawmeet/types';
 import { formatDistance, getTopReasons } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Pressable, Text, View } from 'react-native';
+import { Dimensions, Image, Pressable, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -85,8 +85,12 @@ export function SwipeCard({
       }
     });
 
+  const navigateToDetail = () => {
+    router.push(`/(modals)/dog-detail?dogId=${dog.dogId}`);
+  };
+
   const tapGesture = Gesture.Tap().onStart(() => {
-    runOnJS(router.push)('/(modals)/dog-detail');
+    runOnJS(navigateToDetail)();
   });
 
   const gesture = Gesture.Race(panGesture, tapGesture);
@@ -122,13 +126,16 @@ export function SwipeCard({
         className="w-full overflow-hidden rounded-3xl bg-white dark:bg-[#1C1C1E] shadow-lg"
         style={[{ aspectRatio: 3 / 4 }, cardStyle]}
       >
-        {/* Photo placeholder */}
-        <View className="flex-1 items-center justify-center bg-gray-100 dark:bg-[#38383A]">
-          <Avatar name={dog.name} size="lg" />
-          <Text className="mt-3 text-lg font-semibold text-gray-600 dark:text-[#D1D1D6]">
-            {dog.name}
-          </Text>
-        </View>
+        {dog.imageUrl ? (
+          <Image source={{ uri: dog.imageUrl }} className="flex-1" resizeMode="cover" />
+        ) : (
+          <View className="flex-1 items-center justify-center bg-gray-100 dark:bg-[#38383A]">
+            <Avatar name={dog.name} size="lg" />
+            <Text className="mt-3 text-lg font-semibold text-gray-600 dark:text-[#D1D1D6]">
+              {dog.name}
+            </Text>
+          </View>
+        )}
 
         {/* Like overlay */}
         <Animated.View

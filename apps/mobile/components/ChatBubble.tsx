@@ -1,6 +1,7 @@
 import type { MessageStatus } from '@pawmeet/types';
 import { memo } from 'react';
 import { Image, Linking, Pressable, Text, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
 interface LocationData {
   type: 'location';
@@ -45,10 +46,21 @@ function LocationCard({ location, isMine }: { location: LocationData; isMine: bo
           isMine ? 'rounded-br-sm bg-primary' : 'rounded-bl-sm bg-gray-100 dark:bg-[#38383A]'
         }`}
       >
-        {/* Map placeholder */}
-        <View className="h-32 items-center justify-center bg-gray-200 dark:bg-[#48484A]">
-          <Text className="text-3xl">📍</Text>
-        </View>
+        <MapView
+          style={{ height: 128, width: '100%' }}
+          scrollEnabled={false}
+          zoomEnabled={false}
+          rotateEnabled={false}
+          pitchEnabled={false}
+          initialRegion={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
+          }}
+        >
+          <Marker coordinate={{ latitude: location.latitude, longitude: location.longitude }} />
+        </MapView>
         <View className="px-4 py-2">
           <Text
             className={`text-sm font-medium ${isMine ? 'text-white' : 'text-gray-900 dark:text-[#F5F5F7]'}`}

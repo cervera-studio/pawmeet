@@ -1,61 +1,164 @@
-import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import type { RouterOutput } from '@pawmeet/api-client';
+import { formatDogAge } from '@pawmeet/utils';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { api } from '@/lib/trpc';
+
+type PublicProfile = RouterOutput['dogs']['getPublicProfile'];
+
+// ── Loading Skeleton ──────────────────────────────────────────────────────
+
+function DogDetailSkeleton() {
+  return (
+    <View className="flex-1 bg-white px-6 py-4 dark:bg-[#1C1C1E]">
+      <View className="mb-4 h-72 items-center justify-center rounded-2xl bg-gray-100 dark:bg-[#38383A]">
+        <ActivityIndicator size="large" />
+      </View>
+      <View className="mb-2 h-7 w-40 rounded-lg bg-gray-100 dark:bg-[#2C2C2E]" />
+      <View className="mb-4 h-5 w-56 rounded-lg bg-gray-100 dark:bg-[#2C2C2E]" />
+      <View className="h-24 rounded-2xl bg-gray-100 dark:bg-[#2C2C2E]" />
+      <View className="mt-4 flex-row gap-3">
+        <View className="h-16 flex-1 rounded-xl bg-gray-100 dark:bg-[#2C2C2E]" />
+        <View className="h-16 flex-1 rounded-xl bg-gray-100 dark:bg-[#2C2C2E]" />
+        <View className="h-16 flex-1 rounded-xl bg-gray-100 dark:bg-[#2C2C2E]" />
+      </View>
+    </View>
+  );
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+
+function formatAgeFromMonths(ageMonths: number): string {
+  // Build a fake birthDate that is `ageMonths` months ago so formatDogAge works
+  const now = new Date();
+  const birthDate = new Date(now.getFullYear(), now.getMonth() - ageMonths, now.getDate());
+  return formatDogAge(birthDate);
+}
+
+// ── Component ─────────────────────────────────────────────────────────────
 
 export default function DogDetailModal() {
   const router = useRouter();
+  const { t } = useTranslation();
+  const { dogId } = useLocalSearchParams<{ dogId: string }>();
+
+  const [profile, setProfile] = useState<PublicProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!dogId) {
+      setError('ID cane mancante');
+      setLoading(false);
+      return;
+    }
+
+    api.dogs.getPublicProfile
+      .query({ id: dogId })
+      .then((data) => {
+        setProfile(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Impossibile caricare il profilo');
+        setLoading(false);
+      });
+  }, [dogId]);
+
+  if (loading) {
+    return <DogDetailSkeleton />;
+  }
+
+  if (error || !profile) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E]">
+        <Text className="text-base text-gray-500 dark:text-neutral-500">
+          {error ?? 'Profilo non trovato'}
+        </Text>
+      </View>
+    );
+  }
+
+  const primaryPhoto = profile.photos.find((p) => p.isPrimary) ?? profile.photos[0];
+  const ageLabel = formatAgeFromMonths(profile.ageMonths);
+
+  const label = (value: string): string => {
+    const key = `labels.${value}`;
+    const translated = t(key);
+    return translated === key ? value : translated;
+  };
 
   return (
     <ScrollView className="flex-1 bg-white dark:bg-[#1C1C1E]" contentContainerClassName="px-6 py-4">
-      {/* Header immagine placeholder */}
-      <View className="mb-4 h-72 items-center justify-center rounded-2xl bg-gray-100 dark:bg-[#38383A]">
-        <Text className="text-6xl">🐕</Text>
-      </View>
+      {/* Header photo */}
+      {primaryPhoto ? (
+        <View className="mb-4 h-72 overflow-hidden rounded-2xl">
+          <Image source={{ uri: primaryPhoto.url }} className="h-full w-full" resizeMode="cover" />
+        </View>
+      ) : (
+        <View className="mb-4 h-72 items-center justify-center rounded-2xl bg-gray-100 dark:bg-[#38383A]">
+          <Text className="text-6xl">🐕</Text>
+        </View>
+      )}
 
+      {/* Name, breed, age */}
       <View className="flex-row items-center justify-between">
         <View>
-          <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Luna</Text>
+          <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+            {profile.name}
+          </Text>
           <Text className="text-base text-gray-500 dark:text-neutral-500">
-            Golden Retriever - 3 anni
+            {profile.breed}
+            {profile.breedSecondary ? ` / ${profile.breedSecondary}` : ''} - {ageLabel}
           </Text>
         </View>
-        <View className="rounded-full bg-secondary-50 px-3 py-1">
-          <Text className="text-sm font-medium text-secondary">1.2 km</Text>
+      </View>
+
+      {/* Bio */}
+      {profile.bio ? (
+        <View className="mt-4 rounded-2xl bg-gray-50 p-4 dark:bg-[#2C2C2E]">
+          <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">{profile.bio}</Text>
         </View>
-      </View>
+      ) : null}
 
-      <View className="mt-4 rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
-        <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-          Luna ama giocare al parco e fare lunghe passeggiate. Va d'accordo con tutti i cani,
-          specialmente quelli della sua taglia.
-        </Text>
-      </View>
-
+      {/* Trait chips */}
       <View className="mt-4 flex-row gap-3">
-        <View className="flex-1 items-center rounded-xl bg-primary-50 p-3">
+        <View className="flex-1 items-center rounded-xl bg-primary-50 p-3 dark:bg-[#2C2C2E]">
           <Text className="text-xs text-gray-500 dark:text-neutral-500">Taglia</Text>
-          <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">Grande</Text>
+          <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">
+            {label(profile.size)}
+          </Text>
         </View>
-        <View className="flex-1 items-center rounded-xl bg-primary-50 p-3">
+        <View className="flex-1 items-center rounded-xl bg-primary-50 p-3 dark:bg-[#2C2C2E]">
           <Text className="text-xs text-gray-500 dark:text-neutral-500">Energia</Text>
-          <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">Alta</Text>
+          <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">
+            {label(profile.energyLevel)}
+          </Text>
         </View>
-        <View className="flex-1 items-center rounded-xl bg-primary-50 p-3">
+        <View className="flex-1 items-center rounded-xl bg-primary-50 p-3 dark:bg-[#2C2C2E]">
           <Text className="text-xs text-gray-500 dark:text-neutral-500">Carattere</Text>
-          <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">Socievole</Text>
+          <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">
+            {label(profile.behaviorWithDogs)}
+          </Text>
         </View>
       </View>
 
       {/* Owner info */}
-      <View className="mt-4 flex-row items-center rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
-        <Avatar name="Marco" size="sm" />
+      <View className="mt-4 flex-row items-center rounded-2xl bg-gray-50 p-4 dark:bg-[#2C2C2E]">
+        <Avatar name={profile.ownerFirstName} size="sm" />
         <View className="ml-3">
-          <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">Marco</Text>
+          <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
+            {profile.ownerFirstName}
+          </Text>
           <Text className="text-sm text-gray-500 dark:text-neutral-500">Proprietario</Text>
         </View>
       </View>
 
+      {/* Actions */}
       <View className="mt-6 gap-3 pb-8">
         <Button onPress={() => router.back()} label="Mi piace!" />
         <Pressable onPress={() => router.push('/(modals)/report')} className="items-center py-2">

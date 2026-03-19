@@ -2,7 +2,7 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 
 import { MAX_DOGS_PER_USER } from '@pawmeet/config';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogProfileCard } from '@/components/DogProfileCard';
 import { Avatar } from '@/components/ui/Avatar';
@@ -263,7 +263,10 @@ export default function ProfileScreen() {
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
 
-          <Pressable className="flex-row items-center justify-between rounded-xl px-4 py-4">
+          <Pressable
+            onPress={vm.navigateToSettings}
+            className="flex-row items-center justify-between rounded-xl px-4 py-4"
+          >
             <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
               {t('profile.menu.privacy')}
             </Text>
@@ -280,7 +283,10 @@ export default function ProfileScreen() {
             <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
           </Pressable>
 
-          <Pressable className="flex-row items-center justify-between rounded-xl px-4 py-4">
+          <Pressable
+            onPress={() => Linking.openURL('https://pawmeet.io/help')}
+            className="flex-row items-center justify-between rounded-xl px-4 py-4"
+          >
             <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
               {t('profile.menu.help')}
             </Text>

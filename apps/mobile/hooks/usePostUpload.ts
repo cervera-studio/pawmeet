@@ -1,3 +1,4 @@
+import type { MediaType } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
 import { api } from '@/lib/trpc';
@@ -64,11 +65,11 @@ export function usePostUpload() {
           });
 
           // 3. Confirm upload
-          const mediaType = file.type.startsWith('video/') ? 'video' : 'photo';
+          const mediaType: MediaType = file.type.startsWith('video/') ? 'video' : 'photo';
           await api.feed.confirmMedia.mutate({
             postId,
             key,
-            mediaType: mediaType as 'photo' | 'video',
+            mediaType,
             position: i,
           });
 
@@ -110,10 +111,10 @@ export function usePostUpload() {
         });
 
         // 3. Confirm story
-        const mediaType = file.type.startsWith('video/') ? 'video' : 'photo';
+        const mediaType: MediaType = file.type.startsWith('video/') ? 'video' : 'photo';
         await api.feed.confirmStory.mutate({
           key,
-          mediaType: mediaType as 'photo' | 'video',
+          mediaType,
         });
 
         return true;

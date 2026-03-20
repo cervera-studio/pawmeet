@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import type { ContentReportReason } from '@pawmeet/types';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -137,7 +138,7 @@ export function usePostDetailViewModel() {
   );
 
   const handleReport = useCallback(
-    async (reason: string) => {
+    async (reason: ContentReportReason) => {
       if (!postId) return;
       const success = await reportContent('post', postId, reason);
       if (success) {

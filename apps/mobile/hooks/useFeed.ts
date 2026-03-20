@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import type { ContentReportReason } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
 import { api } from '@/lib/trpc';
@@ -140,12 +141,16 @@ export function useFeed() {
   }, []);
 
   const reportContent = useCallback(
-    async (contentType: 'post' | 'comment' | 'story', contentId: string, reason: string) => {
+    async (
+      contentType: 'post' | 'comment' | 'story',
+      contentId: string,
+      reason: ContentReportReason,
+    ) => {
       try {
         await api.feed.reportContent.mutate({
           contentType,
           contentId,
-          reason: reason as 'inappropriate' | 'spam' | 'harassment' | 'violence' | 'other',
+          reason,
         });
         return true;
       } catch (e) {

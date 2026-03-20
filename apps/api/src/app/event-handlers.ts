@@ -1,11 +1,17 @@
 import type { ChallengeType, XpAction } from '@pawmeet/config';
 import { XP_POINTS } from '@pawmeet/config';
-import type { AnalyticsEventMap, AnalyticsEventName, Result, WsMessage, XpSummary } from '@pawmeet/types';
+import type {
+  AnalyticsEventMap,
+  AnalyticsEventName,
+  Result,
+  WsMessage,
+  XpSummary,
+} from '@pawmeet/types';
 import { isSuccess, WS_EVENT } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { DOMAIN_EVENT, on } from '../domain/events.js';
 import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
 import type { SupportRepository } from '../ports/support-repository.js';
-import { DOMAIN_EVENT, on } from '../domain/events.js';
 
 type AwardXpFn = (
   userId: string,
@@ -268,11 +274,13 @@ async function handleGamification(
         previousLevel: res.data.previousLevel,
         totalXp: res.data.summary.totalXp,
       });
-      void infra.enqueueNotification({
-        userId,
-        title: 'Livello su!',
-        body: `Sei diventato ${res.data.summary.level}!`,
-      }).catch((e) => logger.warn('gamification', 'Side effect failed', e));
+      void infra
+        .enqueueNotification({
+          userId,
+          title: 'Livello su!',
+          body: `Sei diventato ${res.data.summary.level}!`,
+        })
+        .catch((e) => logger.warn('gamification', 'Side effect failed', e));
     }
     infra.trackEvent('gamification_xp_awarded', userId, {
       amount: XP_POINTS[xpAction],

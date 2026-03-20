@@ -16,6 +16,10 @@ import { securityHeadersMiddleware } from './middleware/security-headers.js';
 // Initialize Sentry before anything else
 initSentry();
 
+// Validate JWT secrets before anything else — fail fast if missing or too short
+import { validateJwtSecrets } from './lib/jwt.js';
+validateJwtSecrets();
+
 import process from 'node:process';
 import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { analytics } from './routes/analytics.js';

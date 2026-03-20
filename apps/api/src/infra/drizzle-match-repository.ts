@@ -1,9 +1,15 @@
 import { dogProfiles, matches, swipes, users } from '@pawmeet/db';
 import type { DogProfile, Match, Swipe } from '@pawmeet/types';
-import { and, eq, gte, ne, or } from 'drizzle-orm';
+import { and, eq, gte, ne, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CandidateDog, MatchRepository } from '../ports/match-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
+
+/** Maximum number of candidate dogs returned per discovery query */
+const MAX_CANDIDATES = 100;
+
+/** Default search radius in meters for PostGIS ST_DWithin (50 km) */
+const DEFAULT_SEARCH_RADIUS_M = 50_000;
 
 export class DrizzleMatchRepository implements MatchRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -96,7 +102,19 @@ export class DrizzleMatchRepository implements MatchRepository {
 
   // Discovery
 
-  async findCandidateDogs(excludeOwnerId: string): Promise<CandidateDog[]> {
+  async findCandidateDogs(
+    excludeOwnerId: string,
+    ownerLat?: number | null,
+    ownerLon?: number | null,
+    radiusMeters?: number,
+  ): Promise<CandidateDog[]> {
+    // If caller has no location, return empty — avoid full table scan
+    if (ownerLat == null || ownerLon == null) {
+      return [];
+    }
+
+    const radius = radiusMeters ?? DEFAULT_SEARCH_RADIUS_M;
+
     const rows = await this.db
       .select({
         dog: dogProfiles,
@@ -110,8 +128,15 @@ export class DrizzleMatchRepository implements MatchRepository {
           eq(dogProfiles.isActive, true),
           ne(dogProfiles.ownerId, excludeOwnerId),
           eq(users.isActive, true),
+          // PostGIS distance filter — uses the GIST index on users
+          sql`ST_DWithin(
+            CAST(ST_Point(${users.longitude}, ${users.latitude}) AS geography),
+            CAST(ST_Point(${ownerLon}, ${ownerLat}) AS geography),
+            ${radius}
+          )`,
         ),
-      );
+      )
+      .limit(MAX_CANDIDATES);
 
     return rows.map((r) => ({
       dog: r.dog as DogProfile,

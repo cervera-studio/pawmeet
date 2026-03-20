@@ -1,4 +1,4 @@
-import { COMPATIBILITY_THRESHOLD } from '@pawmeet/config';
+import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/config';
 import type { WalkSuggestion, WalkSuggestionDog, WalkTerrain } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { calculateDistance } from '@pawmeet/utils';
@@ -180,7 +180,13 @@ export function createSuggestWalks({
       return succeed({ suggestions: [] });
     }
 
-    const candidates = await matchRepo.findCandidateDogs(userId);
+    const radiusKm = user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
+    const candidates = await matchRepo.findCandidateDogs(
+      userId,
+      user.latitude,
+      user.longitude,
+      radiusKm * 1000,
+    );
     const rawSuggestions: WindowResult[] = [];
 
     for (const window of qualifyingWindows) {

@@ -68,7 +68,10 @@
     "aiMatchingPerformance": "Performance",
     "aiMatchingFlags": "Feature Flag",
     "challenges": "Provocari",
+    "badges": "Insigne",
     "fitness": "Fitness",
+    "settingsRoles": "Roluri si Permisiuni",
+    "settingsRateLimits": "Limite de Rata",
     "support": "Suport"
   },
   "header": {
@@ -754,6 +757,112 @@
       "title": "Sterge Provocare",
       "description": "Esti sigur ca vrei sa stergi provocarea \"{title}\"? Aceasta actiune nu poate fi anulata.",
       "confirm": "Sterge"
+    }
+  },
+  "badges": {
+    "title": "Gestionare Insigne",
+    "subtitle": "Prezentare generala a insignelor disponibile pe platforma",
+    "info": {
+      "title": "Despre Insigne",
+      "description": "Insignele (realizari) sunt acordate automat utilizatorilor cand ating anumite obiective. Aceasta pagina arata toate tipurile de insigne disponibile si criteriile de deblocare. Atribuirea insignelor este gestionata automat de sistem."
+    },
+    "categories": {
+      "walks": "Plimbari",
+      "matches": "Match-uri",
+      "social": "Social",
+      "special": "Special"
+    },
+    "types": {
+      "first_walk": "Prima Plimbare",
+      "walks_10": "10 Plimbari",
+      "walks_50": "50 Plimbari",
+      "walks_100": "100 Plimbari",
+      "first_match": "Primul Match",
+      "matches_10": "10 Match-uri",
+      "first_group_event": "Primul Eveniment de Grup",
+      "social_butterfly": "Fluture Social",
+      "marathon_walker": "Maratonist"
+    },
+    "criteria": {
+      "first_walk": "Completeaza prima ta plimbare",
+      "walks_10": "Completeaza 10 plimbari",
+      "walks_50": "Completeaza 50 plimbari",
+      "walks_100": "Completeaza 100 plimbari",
+      "first_match": "Obtine primul tau match",
+      "matches_10": "Obtine 10 match-uri",
+      "first_group_event": "Participa la primul tau eveniment de grup",
+      "social_butterfly": "Participa la 10 evenimente de grup",
+      "marathon_walker": "Plimba-te un total de 100 km"
+    }
+  },
+  "roles": {
+    "title": "Roluri si Permisiuni",
+    "subtitle": "Prezentare generala a ierarhiei rolurilor admin si controlul accesului bazat pe rute",
+    "hierarchy": {
+      "title": "Ierarhia Rolurilor",
+      "description": "Rolurile sunt ierarhice: rolurile superioare mostenesc toate permisiunile rolurilor inferioare."
+    },
+    "roleNames": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "moderator": "Moderator",
+      "viewer": "Vizualizator"
+    },
+    "roleDescriptions": {
+      "super_admin": "Acces complet la toate functiile inclusiv actiunile periculoase (golire cache, configurare sistem). Poate gestiona conturile admin.",
+      "admin": "Poate gestiona setarile, notificarile, AI matching, stergerile de conturi, audit log. Poate crea/edita provocari si evenimente.",
+      "moderator": "Poate modera continut, gestiona utilizatori, caini, rase, evenimente, organizatii, siguranta si tickete de suport.",
+      "viewer": "Acces doar in citire la dashboard. Nu poate efectua operatii de scriere."
+    },
+    "permissions": {
+      "title": "Matricea Permisiunilor",
+      "description": "Control al accesului bazat pe rute: fiecare ruta necesita un nivel minim de rol.",
+      "route": "Ruta",
+      "requiredRole": "Rol Necesar"
+    }
+  },
+  "rateLimits": {
+    "title": "Limite de Rata",
+    "subtitle": "Configurarea actuala a limitelor de frecventa API",
+    "info": {
+      "title": "Despre Limitele de Rata",
+      "description": "Limitele de rata sunt aplicate prin Upstash Redis folosind contoare cu fereastra glisanta.",
+      "note": "Aceste limite sunt definite in middleware-ul API si nu pot fi modificate din panoul admin. Contacteaza un dezvoltator pentru a modifica valorile."
+    },
+    "tableTitle": "Reguli Active de Limite de Rata",
+    "columns": {
+      "endpoint": "Endpoint",
+      "limit": "Max. Cereri",
+      "window": "Fereastra de Timp",
+      "scope": "Domeniu",
+      "prefix": "Prefix Redis"
+    },
+    "scopes": {
+      "ip": "Per IP",
+      "user": "Per Utilizator/IP",
+      "email": "Per Email"
+    },
+    "rules": {
+      "api": {
+        "name": "API General",
+        "window": "1 minut"
+      },
+      "auth": {
+        "name": "Autentificare",
+        "window": "15 minute"
+      },
+      "passwordReset": {
+        "name": "Reset Parola (IP)",
+        "window": "1 ora"
+      },
+      "passwordResetEmail": {
+        "name": "Reset Parola (Email)",
+        "window": "24 ore"
+      },
+      "analytics": {
+        "name": "Analytics Batch",
+        "window": "1 minut"
+      }
     }
   },
   "fitness": {

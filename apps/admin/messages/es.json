@@ -68,7 +68,10 @@
     "aiMatchingPerformance": "Rendimiento",
     "aiMatchingFlags": "Feature Flags",
     "challenges": "Desafíos",
+    "badges": "Insignias",
     "fitness": "Fitness",
+    "settingsRoles": "Roles y Permisos",
+    "settingsRateLimits": "Límites de Tasa",
     "support": "Soporte"
   },
   "header": {
@@ -754,6 +757,112 @@
       "title": "Eliminar desafío",
       "description": "¿Estás seguro de que deseas eliminar el desafío \"{title}\"? Esta acción no se puede deshacer.",
       "confirm": "Eliminar"
+    }
+  },
+  "badges": {
+    "title": "Gestión de Insignias",
+    "subtitle": "Resumen de las insignias disponibles en la plataforma",
+    "info": {
+      "title": "Sobre las Insignias",
+      "description": "Las insignias (logros) se otorgan automáticamente a los usuarios cuando alcanzan hitos específicos. Esta página muestra todos los tipos de insignias disponibles y sus criterios de desbloqueo. La asignación de insignias es gestionada automáticamente por el sistema."
+    },
+    "categories": {
+      "walks": "Paseos",
+      "matches": "Matches",
+      "social": "Social",
+      "special": "Especial"
+    },
+    "types": {
+      "first_walk": "Primer Paseo",
+      "walks_10": "10 Paseos",
+      "walks_50": "50 Paseos",
+      "walks_100": "100 Paseos",
+      "first_match": "Primer Match",
+      "matches_10": "10 Matches",
+      "first_group_event": "Primer Evento Grupal",
+      "social_butterfly": "Mariposa Social",
+      "marathon_walker": "Caminante Maratonista"
+    },
+    "criteria": {
+      "first_walk": "Completa tu primer paseo",
+      "walks_10": "Completa 10 paseos",
+      "walks_50": "Completa 50 paseos",
+      "walks_100": "Completa 100 paseos",
+      "first_match": "Obtén tu primer match",
+      "matches_10": "Obtén 10 matches",
+      "first_group_event": "Únete a tu primer evento grupal",
+      "social_butterfly": "Únete a 10 eventos grupales",
+      "marathon_walker": "Camina un total de 100 km"
+    }
+  },
+  "roles": {
+    "title": "Roles y Permisos",
+    "subtitle": "Resumen de la jerarquía de roles admin y control de acceso basado en rutas",
+    "hierarchy": {
+      "title": "Jerarquía de Roles",
+      "description": "Los roles son jerárquicos: los roles superiores heredan todos los permisos de los roles inferiores."
+    },
+    "roleNames": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "moderator": "Moderador",
+      "viewer": "Visualizador"
+    },
+    "roleDescriptions": {
+      "super_admin": "Acceso completo a todas las funciones incluyendo acciones peligrosas (vaciar caché, configuración del sistema). Puede gestionar cuentas admin.",
+      "admin": "Puede gestionar configuración, notificaciones, AI matching, eliminaciones de cuentas, audit log. Puede crear/editar desafíos y eventos.",
+      "moderator": "Puede moderar contenido, gestionar usuarios, perros, razas, eventos, organizaciones, seguridad y tickets de soporte.",
+      "viewer": "Acceso de solo lectura al panel. No puede realizar operaciones de escritura."
+    },
+    "permissions": {
+      "title": "Matriz de Permisos",
+      "description": "Control de acceso basado en rutas: cada ruta requiere un nivel mínimo de rol.",
+      "route": "Ruta",
+      "requiredRole": "Rol Requerido"
+    }
+  },
+  "rateLimits": {
+    "title": "Límites de Tasa",
+    "subtitle": "Configuración actual de los límites de frecuencia de la API",
+    "info": {
+      "title": "Sobre los Límites de Tasa",
+      "description": "Los límites de tasa se aplican mediante Upstash Redis usando contadores de ventana deslizante.",
+      "note": "Estos límites están definidos en el middleware de la API y no se pueden cambiar desde el panel admin. Contacta a un desarrollador para modificar los valores."
+    },
+    "tableTitle": "Reglas de Límite de Tasa Activas",
+    "columns": {
+      "endpoint": "Endpoint",
+      "limit": "Máx. Solicitudes",
+      "window": "Ventana de Tiempo",
+      "scope": "Ámbito",
+      "prefix": "Prefijo Redis"
+    },
+    "scopes": {
+      "ip": "Por IP",
+      "user": "Por Usuario/IP",
+      "email": "Por Email"
+    },
+    "rules": {
+      "api": {
+        "name": "API General",
+        "window": "1 minuto"
+      },
+      "auth": {
+        "name": "Autenticación",
+        "window": "15 minutos"
+      },
+      "passwordReset": {
+        "name": "Reset Contraseña (IP)",
+        "window": "1 hora"
+      },
+      "passwordResetEmail": {
+        "name": "Reset Contraseña (Email)",
+        "window": "24 horas"
+      },
+      "analytics": {
+        "name": "Analytics Batch",
+        "window": "1 minuto"
+      }
     }
   },
   "fitness": {

@@ -96,8 +96,13 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
     // Get already-swiped dog IDs and blocked users
     const swipedIds = new Set(await matchRepo.findSwipedDogIds(dogId));
 
-    // Get candidate dogs
-    const candidates = await matchRepo.findCandidateDogs(userId);
+    // Get candidate dogs (bounded by PostGIS distance filter + limit)
+    const candidates = await matchRepo.findCandidateDogs(
+      userId,
+      user.latitude,
+      user.longitude,
+      radiusKm * 1000,
+    );
 
     // Apply discovery filters, score, and rank
     const scored = candidates

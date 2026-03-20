@@ -68,7 +68,10 @@
     "aiMatchingPerformance": "Performance",
     "aiMatchingFlags": "Feature Flag",
     "challenges": "Sfide",
+    "badges": "Badge",
     "fitness": "Fitness",
+    "settingsRoles": "Ruoli e Permessi",
+    "settingsRateLimits": "Rate Limit",
     "support": "Supporto"
   },
   "header": {
@@ -821,6 +824,112 @@
       "title": "Elimina Sfida",
       "description": "Sei sicuro di voler eliminare la sfida \"{title}\"? Questa azione non può essere annullata.",
       "confirm": "Elimina"
+    }
+  },
+  "badges": {
+    "title": "Gestione Badge",
+    "subtitle": "Panoramica dei badge disponibili sulla piattaforma",
+    "info": {
+      "title": "Informazioni sui Badge",
+      "description": "I badge (traguardi) vengono assegnati automaticamente agli utenti quando raggiungono determinati obiettivi. Questa pagina mostra tutti i tipi di badge disponibili e i criteri per sbloccarli. L'assegnazione dei badge è gestita automaticamente dal sistema."
+    },
+    "categories": {
+      "walks": "Passeggiate",
+      "matches": "Match",
+      "social": "Sociale",
+      "special": "Speciale"
+    },
+    "types": {
+      "first_walk": "Prima Passeggiata",
+      "walks_10": "10 Passeggiate",
+      "walks_50": "50 Passeggiate",
+      "walks_100": "100 Passeggiate",
+      "first_match": "Primo Match",
+      "matches_10": "10 Match",
+      "first_group_event": "Primo Evento di Gruppo",
+      "social_butterfly": "Farfalla Sociale",
+      "marathon_walker": "Maratoneta"
+    },
+    "criteria": {
+      "first_walk": "Completa la tua prima passeggiata",
+      "walks_10": "Completa 10 passeggiate",
+      "walks_50": "Completa 50 passeggiate",
+      "walks_100": "Completa 100 passeggiate",
+      "first_match": "Ottieni il tuo primo match",
+      "matches_10": "Ottieni 10 match",
+      "first_group_event": "Partecipa al tuo primo evento di gruppo",
+      "social_butterfly": "Partecipa a 10 eventi di gruppo",
+      "marathon_walker": "Cammina un totale di 100 km"
+    }
+  },
+  "roles": {
+    "title": "Ruoli e Permessi",
+    "subtitle": "Panoramica della gerarchia dei ruoli admin e del controllo accessi basato sulle rotte",
+    "hierarchy": {
+      "title": "Gerarchia dei Ruoli",
+      "description": "I ruoli sono gerarchici: i ruoli superiori ereditano tutti i permessi dei ruoli inferiori."
+    },
+    "roleNames": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "moderator": "Moderatore",
+      "viewer": "Visualizzatore"
+    },
+    "roleDescriptions": {
+      "super_admin": "Accesso completo a tutte le funzionalità incluse le azioni pericolose (svuota cache, configurazione sistema). Può gestire gli account admin.",
+      "admin": "Può gestire impostazioni, notifiche, AI matching, eliminazioni account, audit log. Può creare/modificare sfide ed eventi.",
+      "moderator": "Può moderare contenuti, gestire utenti, cani, razze, eventi, organizzazioni, sicurezza e ticket di supporto.",
+      "viewer": "Accesso in sola lettura alla dashboard. Non può effettuare operazioni di scrittura."
+    },
+    "permissions": {
+      "title": "Matrice dei Permessi",
+      "description": "Controllo accessi basato sulle rotte: ogni rotta richiede un livello minimo di ruolo.",
+      "route": "Rotta",
+      "requiredRole": "Ruolo Richiesto"
+    }
+  },
+  "rateLimits": {
+    "title": "Rate Limit",
+    "subtitle": "Configurazione attuale dei limiti di frequenza API",
+    "info": {
+      "title": "Informazioni sui Rate Limit",
+      "description": "I rate limit sono applicati tramite Upstash Redis utilizzando contatori a finestra scorrevole.",
+      "note": "Questi limiti sono definiti nel middleware API e non possono essere modificati dal pannello admin. Contatta uno sviluppatore per modificare i valori."
+    },
+    "tableTitle": "Regole Rate Limit Attive",
+    "columns": {
+      "endpoint": "Endpoint",
+      "limit": "Max Richieste",
+      "window": "Finestra Temporale",
+      "scope": "Ambito",
+      "prefix": "Prefisso Redis"
+    },
+    "scopes": {
+      "ip": "Per IP",
+      "user": "Per Utente/IP",
+      "email": "Per Email"
+    },
+    "rules": {
+      "api": {
+        "name": "API Generale",
+        "window": "1 minuto"
+      },
+      "auth": {
+        "name": "Autenticazione",
+        "window": "15 minuti"
+      },
+      "passwordReset": {
+        "name": "Reset Password (IP)",
+        "window": "1 ora"
+      },
+      "passwordResetEmail": {
+        "name": "Reset Password (Email)",
+        "window": "24 ore"
+      },
+      "analytics": {
+        "name": "Analytics Batch",
+        "window": "1 minuto"
+      }
     }
   },
   "fitness": {

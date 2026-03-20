@@ -41,6 +41,7 @@ export function Header() {
   const { user, logout } = useAuthContext();
   const t = useTranslations('header');
   const ta = useTranslations('auth');
+  const tRoles = useTranslations('settings.admins.roles');
   const router = useRouter();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -51,6 +52,7 @@ export function Header() {
   const userInitial = user?.name?.charAt(0)?.toUpperCase() ?? 'A';
   const userName = user?.name ?? 'Admin';
   const userEmail = user?.email ?? '';
+  const userRole = user?.role ? tRoles(user.role) : '';
 
   function handleSearchSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -105,6 +107,11 @@ export function Header() {
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
                   {userEmail}
                 </p>
+                {userRole && (
+                  <p className="mt-1 text-xs font-medium text-primary-600 dark:text-primary-400">
+                    {userRole}
+                  </p>
+                )}
               </div>
 
               {/* Actions */}

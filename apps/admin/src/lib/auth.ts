@@ -87,6 +87,7 @@ export const routePermissions: Record<string, AdminRole> = {
   '/organizations': AdminRole.Moderator,
   '/group-events': AdminRole.Moderator,
   '/challenges': AdminRole.Moderator,
+  '/badges': AdminRole.Moderator,
   '/fitness': AdminRole.Moderator,
   '/': AdminRole.Viewer,
 };

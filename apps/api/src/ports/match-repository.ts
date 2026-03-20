@@ -24,5 +24,10 @@ export interface MatchRepository {
   }): Promise<Swipe>;
 
   // Discovery
-  findCandidateDogs(excludeOwnerId: string): Promise<CandidateDog[]>;
+  findCandidateDogs(
+    excludeOwnerId: string,
+    ownerLat?: number | null,
+    ownerLon?: number | null,
+    radiusMeters?: number,
+  ): Promise<CandidateDog[]>;
 }

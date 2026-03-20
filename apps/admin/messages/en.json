@@ -68,7 +68,10 @@
     "aiMatchingPerformance": "Performance",
     "aiMatchingFlags": "Feature Flags",
     "challenges": "Challenges",
+    "badges": "Badges",
     "fitness": "Fitness",
+    "settingsRoles": "Roles & Permissions",
+    "settingsRateLimits": "Rate Limits",
     "support": "Support"
   },
   "header": {
@@ -821,6 +824,112 @@
       "title": "Delete Challenge",
       "description": "Are you sure you want to delete the challenge \"{title}\"? This action cannot be undone.",
       "confirm": "Delete"
+    }
+  },
+  "badges": {
+    "title": "Badge Management",
+    "subtitle": "Overview of achievement badges available on the platform",
+    "info": {
+      "title": "About Badges",
+      "description": "Badges (achievements) are automatically awarded to users when they reach specific milestones. This page shows all available badge types and their unlock criteria. Badge assignment is handled automatically by the system."
+    },
+    "categories": {
+      "walks": "Walks",
+      "matches": "Matches",
+      "social": "Social",
+      "special": "Special"
+    },
+    "types": {
+      "first_walk": "First Walk",
+      "walks_10": "10 Walks",
+      "walks_50": "50 Walks",
+      "walks_100": "100 Walks",
+      "first_match": "First Match",
+      "matches_10": "10 Matches",
+      "first_group_event": "First Group Event",
+      "social_butterfly": "Social Butterfly",
+      "marathon_walker": "Marathon Walker"
+    },
+    "criteria": {
+      "first_walk": "Complete your first walk",
+      "walks_10": "Complete 10 walks",
+      "walks_50": "Complete 50 walks",
+      "walks_100": "Complete 100 walks",
+      "first_match": "Get your first match",
+      "matches_10": "Get 10 matches",
+      "first_group_event": "Join your first group event",
+      "social_butterfly": "Join 10 group events",
+      "marathon_walker": "Walk a total of 100 km"
+    }
+  },
+  "roles": {
+    "title": "Roles & Permissions",
+    "subtitle": "Overview of admin role hierarchy and route-based access control",
+    "hierarchy": {
+      "title": "Role Hierarchy",
+      "description": "Roles are hierarchical — higher roles inherit all permissions from lower roles."
+    },
+    "roleNames": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "moderator": "Moderator",
+      "viewer": "Viewer"
+    },
+    "roleDescriptions": {
+      "super_admin": "Full access to all features including danger zone actions (cache clear, system config). Can manage other admin accounts.",
+      "admin": "Can manage settings, notifications, AI matching, account deletions, audit log. Can create/edit challenges and events.",
+      "moderator": "Can moderate content, manage users, dogs, breeds, events, organizations, safety, and support tickets.",
+      "viewer": "Read-only access to the dashboard. Cannot perform any write operations."
+    },
+    "permissions": {
+      "title": "Permissions Matrix",
+      "description": "Route-based access control — each route requires a minimum role level.",
+      "route": "Route",
+      "requiredRole": "Required Role"
+    }
+  },
+  "rateLimits": {
+    "title": "Rate Limits",
+    "subtitle": "Current API rate limiting configuration",
+    "info": {
+      "title": "About Rate Limiting",
+      "description": "Rate limits are enforced via Upstash Redis using sliding window counters.",
+      "note": "These limits are defined in the API middleware and cannot be changed from the admin panel. Contact a developer to modify rate limit values."
+    },
+    "tableTitle": "Active Rate Limit Rules",
+    "columns": {
+      "endpoint": "Endpoint",
+      "limit": "Max Requests",
+      "window": "Time Window",
+      "scope": "Scope",
+      "prefix": "Redis Prefix"
+    },
+    "scopes": {
+      "ip": "Per IP",
+      "user": "Per User/IP",
+      "email": "Per Email"
+    },
+    "rules": {
+      "api": {
+        "name": "General API",
+        "window": "1 minute"
+      },
+      "auth": {
+        "name": "Authentication",
+        "window": "15 minutes"
+      },
+      "passwordReset": {
+        "name": "Password Reset (IP)",
+        "window": "1 hour"
+      },
+      "passwordResetEmail": {
+        "name": "Password Reset (Email)",
+        "window": "24 hours"
+      },
+      "analytics": {
+        "name": "Analytics Batch",
+        "window": "1 minute"
+      }
     }
   },
   "fitness": {

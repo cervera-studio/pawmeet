@@ -1,10 +1,15 @@
 import process from 'node:process';
 import { jwtVerify, SignJWT } from 'jose';
 
+const MIN_SECRET_LENGTH = 32;
+
 function requireEnv(name: string): Uint8Array {
   const value = process.env[name];
   if (!value) {
     throw new Error(`${name} environment variable is required`);
+  }
+  if (value.length < MIN_SECRET_LENGTH) {
+    throw new Error(`${name} must be at least ${MIN_SECRET_LENGTH} characters long`);
   }
   return new TextEncoder().encode(value);
 }
@@ -33,6 +38,25 @@ function getAdminJwtSecret(): Uint8Array {
     _adminJwtSecret = requireEnv('JWT_ADMIN_SECRET');
   }
   return _adminJwtSecret;
+}
+
+/**
+ * Validate all JWT secrets at startup. Call this before the server starts
+ * listening to fail fast if secrets are missing or too short.
+ */
+export function validateJwtSecrets(): void {
+  const secrets = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'JWT_ADMIN_SECRET'] as const;
+  for (const name of secrets) {
+    const value = process.env[name];
+    if (!value) {
+      throw new Error(`FATAL: ${name} environment variable is required`);
+    }
+    if (value.length < MIN_SECRET_LENGTH) {
+      throw new Error(
+        `FATAL: ${name} must be at least ${MIN_SECRET_LENGTH} characters long (got ${value.length})`,
+      );
+    }
+  }
 }
 
 const ACCESS_TOKEN_EXPIRY = '15m';

@@ -90,10 +90,13 @@ async function fetchCandidatesWithVector(
   userId: string,
   effectiveLimit: number,
   swipedIds: Set<string>,
+  ownerLat: number,
+  ownerLon: number,
+  radiusMeters: number,
 ): Promise<CandidateList> {
   const dogEmbedding = await embeddingRepo.findByDogId(dogId);
   if (!dogEmbedding) {
-    return matchRepo.findCandidateDogs(userId);
+    return matchRepo.findCandidateDogs(userId, ownerLat, ownerLon, radiusMeters);
   }
 
   const nearest = await embeddingRepo.findNearestDogIds(
@@ -103,7 +106,7 @@ async function fetchCandidatesWithVector(
     [...swipedIds],
   );
   const nearestIds = new Set(nearest.map((n) => n.dogId));
-  const allCandidates = await matchRepo.findCandidateDogs(userId);
+  const allCandidates = await matchRepo.findCandidateDogs(userId, ownerLat, ownerLon, radiusMeters);
   return allCandidates.filter((c) => nearestIds.has(c.dog.id));
 }
 
@@ -194,6 +197,7 @@ export function createDiscoverCandidatesAi({
 
     const swipedIds = new Set(await matchRepo.findSwipedDogIds(dogId));
 
+    const radiusMeters = radiusKm * 1000;
     const candidates = useVector
       ? await fetchCandidatesWithVector(
           embeddingRepo,
@@ -202,8 +206,11 @@ export function createDiscoverCandidatesAi({
           userId,
           effectiveLimit,
           swipedIds,
+          user.latitude,
+          user.longitude,
+          radiusMeters,
         )
-      : await matchRepo.findCandidateDogs(userId);
+      : await matchRepo.findCandidateDogs(userId, user.latitude, user.longitude, radiusMeters);
 
     // Apply filters, score, and rank
     const scoredPromises = candidates.flatMap((c) => {

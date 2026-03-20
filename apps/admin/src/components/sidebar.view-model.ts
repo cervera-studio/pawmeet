@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import {
   ActivityIcon,
   AlertTriangleIcon,
+  AwardIcon,
   BellIcon,
   BrainIcon,
   BuildingIcon,
@@ -43,6 +44,7 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
     { name: t('breeds'), href: '/breeds', icon: ListIcon },
     { name: t('events'), href: '/group-events', icon: CalendarIcon },
     { name: t('challenges'), href: '/challenges', icon: TrophyIcon },
+    { name: t('badges'), href: '/badges', icon: AwardIcon },
     { name: t('fitness'), href: '/fitness', icon: ActivityIcon },
     { name: t('organizations'), href: '/organizations', icon: BuildingIcon },
     {
@@ -74,6 +76,8 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
       children: [
         { name: t('settingsGeneral'), href: '/settings' },
         { name: t('settingsAdmins'), href: '/settings/admins' },
+        { name: t('settingsRoles'), href: '/settings/roles' },
+        { name: t('settingsRateLimits'), href: '/settings/rate-limits' },
       ],
     },
     { name: t('auditLog'), href: '/audit-log', icon: ScrollTextIcon },

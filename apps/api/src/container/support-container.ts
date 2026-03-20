@@ -21,4 +21,7 @@ export const supportDeps = {
   listUserTickets: createListUserSupportTickets({ supportRepo }),
   listTickets: createListSupportTickets({ supportRepo }),
   assignTicket: createAssignSupportTicket({ supportRepo }),
+  markAdminMessagesRead: (ticketId: string) => supportRepo.markAdminMessagesRead(ticketId),
+  markUserMessagesRead: (ticketId: string) => supportRepo.markUserMessagesRead(ticketId),
+  getTicketOwnerUserId: (ticketId: string) => supportRepo.getTicketOwnerUserId(ticketId),
 };

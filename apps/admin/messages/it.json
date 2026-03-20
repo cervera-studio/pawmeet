@@ -895,7 +895,8 @@
       },
       "assign": "Assegna",
       "assignTo": "Assegna a",
-      "removeAssignment": "Rimuovi assegnazione"
+      "removeAssignment": "Rimuovi assegnazione",
+      "readAt": "Letto il {time}"
     },
     "toast": {
       "statusUpdated": "Stato del ticket aggiornato",

@@ -23,6 +23,7 @@ export interface MessageRepository {
     senderId: string;
     content: string;
     mediaUrl?: string | null;
+    replyToId?: string | null;
   }): Promise<ChatMessage>;
   markAsRead(matchId: string, readerId: string): Promise<void>;
   isMatchParticipant(matchId: string, userId: string): Promise<boolean>;

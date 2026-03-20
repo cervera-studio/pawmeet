@@ -32,6 +32,7 @@ export function createSendMessage({
     matchId: string,
     content: string,
     mediaUrl?: string,
+    replyToId?: string,
   ): Promise<
     Result<{ message: ChatMessage; chatAgeHours: number; messageCountInChat: number }>
   > => {
@@ -54,6 +55,7 @@ export function createSendMessage({
       senderId: userId,
       content: sanitizedContent,
       mediaUrl: mediaUrl ?? null,
+      replyToId: replyToId ?? null,
     });
 
     // Emit to WebSocket room

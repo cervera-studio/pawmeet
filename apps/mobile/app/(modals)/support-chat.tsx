@@ -27,6 +27,19 @@ function formatDate(date: Date | string): string {
   return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
 }
 
+/** Read receipt indicator for user messages: double check if read, single check if sent */
+function ReadReceipt({ message }: { message: SupportMsg }) {
+  if (message.senderType !== 'user') return null;
+
+  return (
+    <Text
+      className={`ml-1 text-xs ${message.readAt ? 'text-primary' : 'text-gray-400 dark:text-neutral-500'}`}
+    >
+      {message.readAt ? '✓✓' : '✓'}
+    </Text>
+  );
+}
+
 const SupportBubble = memo(function SupportBubble({ message }: { message: SupportMsg }) {
   if (message.senderType === 'system') {
     return (
@@ -53,10 +66,11 @@ const SupportBubble = memo(function SupportBubble({ message }: { message: Suppor
           {message.content}
         </Text>
       </View>
-      <View className={`mt-1 ${isMine ? 'items-end' : 'items-start'}`}>
+      <View className={`mt-1 flex-row ${isMine ? 'justify-end' : 'justify-start'}`}>
         <Text className="text-xs text-gray-400 dark:text-neutral-500">
           {formatDate(message.createdAt)} {formatTime(message.createdAt)}
         </Text>
+        <ReadReceipt message={message} />
       </View>
     </View>
   );
@@ -95,6 +109,15 @@ export default function SupportChatModal() {
           <View className="bg-gray-100 dark:bg-[#38383A] px-6 py-3">
             <Text className="text-center text-sm text-gray-500 dark:text-neutral-400">
               {t('support.ticketClosed')}
+            </Text>
+          </View>
+        ) : null}
+
+        {/* Typing indicator */}
+        {vm.isTyping ? (
+          <View className="px-6 py-2">
+            <Text className="text-xs text-gray-400 dark:text-neutral-500 italic">
+              {t('support.typing')}
             </Text>
           </View>
         ) : null}

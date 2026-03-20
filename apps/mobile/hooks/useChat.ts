@@ -1,7 +1,8 @@
 import process from 'node:process';
 import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
-import { useCallback, useEffect, useState } from 'react';
+import * as Crypto from 'expo-crypto';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getSharedWs, useWebSocketListener } from '@/hooks/useWebSocket';
 import { cache } from '@/lib/storage';
 import { api } from '@/lib/trpc';
@@ -86,11 +87,13 @@ async function sendChatMessage(
   matchId: string,
   content: string,
   mediaUrl?: string,
+  replyToId?: string,
 ): Promise<Message> {
   const { message: msg } = await api.chat.sendMessage.mutate({
     matchId,
     content,
     mediaUrl,
+    replyToId,
   });
   getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));
   return msg;
@@ -118,6 +121,17 @@ function emitTypingIndicator(matchId: string, typing: boolean): void {
   );
 }
 
+/** Metadata for pending optimistic messages, keyed by temp ID. */
+interface PendingMeta {
+  content: string;
+  mediaUrl?: string;
+  imageUri?: string;
+  latitude?: number;
+  longitude?: number;
+  locationLabel?: string;
+  kind: 'text' | 'image' | 'location';
+}
+
 export function useChat(matchId?: string) {
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -129,6 +143,9 @@ export function useChat(matchId?: string) {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [loadingConversations, setLoadingConversations] = useState(false);
 
+  // Stores metadata for retry of failed messages, keyed by temp ID
+  const pendingMetaRef = useRef<Map<string, PendingMeta>>(new Map());
+
   // Track shared WS connection state
   useEffect(() => {
     const interval = setInterval(() => {
@@ -139,13 +156,47 @@ export function useChat(matchId?: string) {
   const token = useAuthStore((s) => s.token);
   const userId = useAuthStore((s) => s.user?.id);
 
+  /** Create an optimistic Message object with status "sending". */
+  const createOptimisticMessage = useCallback(
+    (tempId: string, content: string, mediaUrl?: string): Message => ({
+      id: tempId,
+      matchId: matchId ?? '',
+      senderId: userId ?? '',
+      content,
+      mediaUrl: mediaUrl ?? null,
+      replyToId: null,
+      replyTo: null,
+      status: 'sending',
+      isDeleted: false,
+      createdAt: new Date().toISOString(),
+    }),
+    [matchId, userId],
+  );
+
+  /** Replace an optimistic message by temp ID with the real server message. */
+  const replaceOptimistic = useCallback((tempId: string, real: Message) => {
+    pendingMetaRef.current.delete(tempId);
+    setMessages((prev) => prev.map((m) => (m.id === tempId ? real : m)));
+  }, []);
+
+  /** Mark an optimistic message as failed. */
+  const markFailed = useCallback((tempId: string) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === tempId ? { ...m, status: 'failed' as const } : m)),
+    );
+  }, []);
+
   // Listen for chat events on the shared WebSocket
   useWebSocketListener((data) => {
     switch (data.type) {
       case 'new_message': {
         const msg = data.payload as unknown as Message;
         if (matchId && msg.matchId === matchId) {
-          setMessages((prev) => [...prev, msg]);
+          // Avoid duplicating if we already have this message (from our own optimistic send)
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === msg.id)) return prev;
+            return [...prev, msg];
+          });
         }
         setConversations((prev) =>
           prev.map((c) =>
@@ -203,48 +254,107 @@ export function useChat(matchId?: string) {
     }
   }, [matchId]);
 
-  // Send text message
+  // Send text message (optimistic)
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, replyToId?: string) => {
       if (!(matchId && content.trim())) return;
+      const tempId = Crypto.randomUUID();
+      const optimistic = createOptimisticMessage(tempId, content);
+      pendingMetaRef.current.set(tempId, { content, kind: 'text' });
+      setMessages((prev) => [...prev, optimistic]);
+
       try {
-        const msg = await sendChatMessage(matchId, content);
-        setMessages((prev) => [...prev, msg]);
+        const msg = await sendChatMessage(matchId, content, undefined, replyToId);
+        replaceOptimistic(tempId, msg);
       } catch (e) {
         logger.warn('useChat', 'Failed to send message', e);
+        markFailed(tempId);
       }
     },
-    [matchId],
+    [matchId, createOptimisticMessage, replaceOptimistic, markFailed],
   );
 
-  // Send image message
+  // Send image message (optimistic)
   const sendImage = useCallback(
     async (imageUri: string) => {
       if (!matchId) return;
+      const tempId = Crypto.randomUUID();
+      const optimistic = createOptimisticMessage(tempId, '', imageUri);
+      pendingMetaRef.current.set(tempId, { content: '', imageUri, kind: 'image' });
+      setMessages((prev) => [...prev, optimistic]);
+
       try {
         const mediaUrl = await uploadImage(matchId, imageUri, token);
         const msg = await sendChatMessage(matchId, '', mediaUrl);
-        setMessages((prev) => [...prev, msg]);
+        replaceOptimistic(tempId, msg);
       } catch (e) {
         logger.error('useChat', 'Failed to send image', e);
+        markFailed(tempId);
       }
     },
-    [matchId, token],
+    [matchId, token, createOptimisticMessage, replaceOptimistic, markFailed],
   );
 
-  // Send location message
+  // Send location message (optimistic)
   const sendLocation = useCallback(
     async (latitude: number, longitude: number, label?: string) => {
       if (!matchId) return;
+      const tempId = Crypto.randomUUID();
+      const content = buildLocationContent(latitude, longitude, label);
+      const optimistic = createOptimisticMessage(tempId, content);
+      pendingMetaRef.current.set(tempId, {
+        content,
+        latitude,
+        longitude,
+        locationLabel: label,
+        kind: 'location',
+      });
+      setMessages((prev) => [...prev, optimistic]);
+
       try {
-        const content = buildLocationContent(latitude, longitude, label);
         const msg = await sendChatMessage(matchId, content);
-        setMessages((prev) => [...prev, msg]);
+        replaceOptimistic(tempId, msg);
       } catch (e) {
         logger.warn('useChat', 'Failed to send location', e);
+        markFailed(tempId);
       }
     },
-    [matchId],
+    [matchId, createOptimisticMessage, replaceOptimistic, markFailed],
+  );
+
+  // Retry a failed message
+  const retrySend = useCallback(
+    async (tempId: string) => {
+      if (!matchId) return;
+      const meta = pendingMetaRef.current.get(tempId);
+      if (!meta) return;
+
+      // Reset status back to "sending"
+      setMessages((prev) =>
+        prev.map((m) => (m.id === tempId ? { ...m, status: 'sending' as const } : m)),
+      );
+
+      try {
+        let msg: Message;
+        switch (meta.kind) {
+          case 'image': {
+            const mediaUrl = await uploadImage(matchId, meta.imageUri!, token);
+            msg = await sendChatMessage(matchId, '', mediaUrl);
+            break;
+          }
+          case 'location':
+          case 'text': {
+            msg = await sendChatMessage(matchId, meta.content);
+            break;
+          }
+        }
+        replaceOptimistic(tempId, msg);
+      } catch (e) {
+        logger.warn('useChat', `Failed to retry message ${tempId}`, e);
+        markFailed(tempId);
+      }
+    },
+    [matchId, token, replaceOptimistic, markFailed],
   );
 
   // Send typing indicator
@@ -269,6 +379,9 @@ export function useChat(matchId?: string) {
     }
   }, [matchId]);
 
+  // Compute total unread count across all conversations
+  const totalUnreadCount = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+
   return {
     connected,
     messages,
@@ -276,6 +389,7 @@ export function useChat(matchId?: string) {
     isTyping,
     loadingMessages,
     loadingConversations,
+    totalUnreadCount,
     fetchConversations,
     fetchMessages,
     sendMessage,
@@ -283,5 +397,6 @@ export function useChat(matchId?: string) {
     sendLocation,
     sendTyping,
     markAsRead,
+    retrySend,
   };
 }

@@ -605,7 +605,13 @@
     "location": {
       "meetingPoint": "Punto di incontro",
       "openMap": "Tocca per aprire la mappa"
-    }
+    },
+    "tapToRetry": "Tocca per riprovare",
+    "reply": "Rispondi",
+    "replyingTo": "Rispondendo a",
+    "you": "Tu",
+    "searchPlaceholder": "Cerca nei messaggi...",
+    "searchNoResults": "Nessun messaggio trovato"
   },
 
   "auth": {
@@ -1049,6 +1055,7 @@
     "empty": "Nessuna conversazione di supporto",
     "chatEmpty": "Scrivi un messaggio per iniziare la conversazione con il supporto.",
     "ticketClosed": "Questo ticket è stato chiuso",
+    "typing": "Il supporto sta scrivendo...",
     "categories": {
       "general": "Generale",
       "bug": "Bug",

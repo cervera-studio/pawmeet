@@ -553,7 +553,8 @@
     "location": {
       "meetingPoint": "Punto de encuentro",
       "openMap": "Toca para abrir el mapa"
-    }
+    },
+    "tapToRetry": "Toca para reintentar"
   },
 
   "auth": {

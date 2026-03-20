@@ -1,11 +1,13 @@
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Text, useColorScheme } from 'react-native';
+import { useChat } from '@/hooks/useChat';
 
 export default function TabLayout() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { totalUnreadCount } = useChat();
 
   return (
     <Tabs
@@ -55,7 +57,8 @@ export default function TabLayout() {
         name="chat"
         options={{
           title: t('tabs.chat'),
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>💬</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>{'\uD83D\uDCAC'}</Text>,
+          tabBarBadge: totalUnreadCount > 0 ? totalUnreadCount : undefined,
         }}
       />
       <Tabs.Screen

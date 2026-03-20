@@ -14,6 +14,7 @@ const sendMessageWithMatchSchema = z.object({
   matchId: z.string().uuid(),
   content: sendMessageSchema.shape.content,
   mediaUrl: sendMessageSchema.shape.mediaUrl,
+  replyToId: sendMessageSchema.shape.replyToId,
 });
 
 export function createChatRouter(deps: typeof chatDeps) {
@@ -32,7 +33,13 @@ export function createChatRouter(deps: typeof chatDeps) {
       .input(sendMessageWithMatchSchema)
       .mutation(async ({ ctx, input }) => {
         const result = unwrapResult(
-          await deps.sendMessage(ctx.userId, input.matchId, input.content, input.mediaUrl),
+          await deps.sendMessage(
+            ctx.userId,
+            input.matchId,
+            input.content,
+            input.mediaUrl,
+            input.replyToId,
+          ),
         );
         trackEvent('chat_message_sent', ctx.userId, {
           messageType: input.mediaUrl ? 'image' : 'text',

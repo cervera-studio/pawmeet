@@ -3,7 +3,7 @@ import { logger } from '@pawmeet/utils';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { WebSocket } from 'ws';
 import { z } from 'zod';
-import { getRooms, sendToRoom } from './registry.js';
+import { getRooms, sendToRoom, sendToUser } from './registry.js';
 
 const wsMessageSchema = z.object({
   type: z.string(),
@@ -12,6 +12,10 @@ const wsMessageSchema = z.object({
 
 const typingPayloadSchema = z.object({
   matchId: z.string().uuid(),
+});
+
+const supportTypingPayloadSchema = z.object({
+  ticketId: z.string().uuid(),
 });
 
 // ── Redis-backed rate limiter for WebSocket messages ──────────────────────────
@@ -64,6 +68,24 @@ export function handleTyping(
   sendToRoom(matchId, { type, payload: { userId, matchId } }, userId);
 }
 
+/** Handle support typing start/stop events by relaying to the ticket owner */
+export async function handleSupportTyping(
+  userId: string,
+  ticketId: string,
+  type: typeof WS_EVENT.SUPPORT_TYPING_START | typeof WS_EVENT.SUPPORT_TYPING_STOP,
+) {
+  // Lazy-import to avoid circular dependency at module load
+  const { supportRepo } = await import('../container/services.js');
+  const ownerUserId = await supportRepo.getTicketOwnerUserId(ticketId);
+  if (!ownerUserId) return;
+
+  // If the sender is the user, broadcast to admin is not needed (admins use HTTP polling).
+  // If the sender is an admin, broadcast to the ticket owner (user).
+  if (userId !== ownerUserId) {
+    sendToUser(ownerUserId, { type, payload: { ticketId } });
+  }
+}
+
 /** Handle incoming WebSocket messages from an authenticated user */
 export async function handleMessage(userId: string, ws: WebSocket, data: string) {
   // Rate limit WebSocket messages per user
@@ -83,6 +105,11 @@ export async function handleMessage(userId: string, ws: WebSocket, data: string)
     const result = typingPayloadSchema.safeParse(message.payload);
     if (result.success) {
       handleTyping(userId, result.data.matchId, type);
+    }
+  } else if (type === WS_EVENT.SUPPORT_TYPING_START || type === WS_EVENT.SUPPORT_TYPING_STOP) {
+    const result = supportTypingPayloadSchema.safeParse(message.payload);
+    if (result.success) {
+      void handleSupportTyping(userId, result.data.ticketId, type);
     }
   }
   // Other message types are handled via REST API

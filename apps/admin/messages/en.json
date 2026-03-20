@@ -895,7 +895,8 @@
       },
       "assign": "Assign",
       "assignTo": "Assign to",
-      "removeAssignment": "Remove assignment"
+      "removeAssignment": "Remove assignment",
+      "readAt": "Read at {time}"
     },
     "toast": {
       "statusUpdated": "Ticket status updated",

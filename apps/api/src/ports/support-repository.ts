@@ -64,4 +64,8 @@ export interface SupportRepository {
   assignTicket(ticketId: string, adminId: string | null): Promise<SupportTicket>;
   getTicketOwnerUserId(ticketId: string): Promise<string | null>;
   countMessagesByTicket(ticketId: string): Promise<number>;
+  /** Mark all admin messages in a ticket as read (called by user). Returns count of updated rows. */
+  markAdminMessagesRead(ticketId: string): Promise<number>;
+  /** Mark all user messages in a ticket as read (called by admin). Returns count of updated rows. */
+  markUserMessagesRead(ticketId: string): Promise<number>;
 }

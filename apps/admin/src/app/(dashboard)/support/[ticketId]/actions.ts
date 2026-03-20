@@ -26,6 +26,7 @@ export interface TicketMessage {
   senderName: string | null;
   content: string;
   isInternal: boolean;
+  readAt: string | null;
   createdAt: string;
 }
 
@@ -79,6 +80,7 @@ export async function fetchTicketMessages(ticketId: string): Promise<TicketMessa
     senderName: m.senderName ? String(m.senderName) : null,
     content: String(m.content),
     isInternal: Boolean(m.isInternal),
+    readAt: m.readAt ? String(m.readAt) : null,
     createdAt: String(m.createdAt),
   }));
 }
@@ -101,6 +103,11 @@ export async function changeTicketStatus(
   await api.support.updateStatus.mutate({ ticketId, status });
   revalidatePath(`/support/${ticketId}`);
   revalidatePath('/support');
+}
+
+export async function markAdminRead(ticketId: string): Promise<void> {
+  const api = await getServerTrpcClient();
+  await api.support.markAdminRead.mutate({ ticketId });
 }
 
 export async function assignTicketAction(ticketId: string, adminId: string | null): Promise<void> {

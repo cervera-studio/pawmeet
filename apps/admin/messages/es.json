@@ -828,7 +828,8 @@
       },
       "assign": "Asignar",
       "assignTo": "Asignar a",
-      "removeAssignment": "Quitar asignación"
+      "removeAssignment": "Quitar asignación",
+      "readAt": "Leído a las {time}"
     },
     "toast": {
       "statusUpdated": "Estado del ticket actualizado",

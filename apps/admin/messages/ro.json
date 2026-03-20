@@ -828,7 +828,8 @@
       },
       "assign": "Atribuie",
       "assignTo": "Atribuie lui",
-      "removeAssignment": "Sterge atribuirea"
+      "removeAssignment": "Sterge atribuirea",
+      "readAt": "Citit la {time}"
     },
     "toast": {
       "statusUpdated": "Starea ticketului actualizata",

@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList } from 'react-native';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useChat } from '@/hooks/useChat';
@@ -37,6 +37,7 @@ export function useChatConversationViewModel() {
     sendLocation,
     sendTyping,
     markAsRead,
+    retrySend,
   } = useChat(validMatchId);
   const { coordinates, getCurrentLocation } = useLocation();
   const { proposeWalk } = useWalks();
@@ -45,6 +46,17 @@ export function useChatConversationViewModel() {
   const [showWalkModal, setShowWalkModal] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Reply mode
+  const [replyingTo, setReplyingTo] = useState<{
+    id: string;
+    content: string;
+    senderName: string;
+  } | null>(null);
+
+  // Search mode
+  const [searchActive, setSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchMessages();
@@ -80,11 +92,12 @@ export function useChatConversationViewModel() {
   const handleSend = useCallback(() => {
     if (!text.trim()) return;
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    sendMessage(text.trim());
+    sendMessage(text.trim(), replyingTo?.id);
     setText('');
+    setReplyingTo(null);
     sendTyping(false);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-  }, [text, sendMessage, sendTyping]);
+  }, [text, sendMessage, sendTyping, replyingTo]);
 
   const handlePickImage = useCallback(async () => {
     setShowAttachments(false);
@@ -130,6 +143,51 @@ export function useChatConversationViewModel() {
     [proposeWalk],
   );
 
+  // Reply handlers
+  const handleReply = useCallback(
+    (message: (typeof messages)[number]) => {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      // In a 1:1 chat, "Tu" for own messages; for the other person we use
+      // the senderName already resolved by the API on the replyTo preview
+      // of previous messages, or fall back to empty (the banner is ephemeral).
+      const senderName = message.senderId === userId ? 'Tu' : '';
+      setReplyingTo({
+        id: message.id,
+        content: message.content,
+        senderName,
+      });
+    },
+    [userId],
+  );
+
+  const cancelReply = useCallback(() => {
+    setReplyingTo(null);
+  }, []);
+
+  // Search handlers
+  const toggleSearch = useCallback(() => {
+    setSearchActive((prev) => {
+      if (prev) setSearchQuery('');
+      return !prev;
+    });
+  }, []);
+
+  const filteredMessages = useMemo(() => {
+    if (!(searchActive && searchQuery.trim())) return messages;
+    const q = searchQuery.toLowerCase();
+    return messages.filter((m) => m.content.toLowerCase().includes(q));
+  }, [messages, searchActive, searchQuery]);
+
+  const scrollToMessage = useCallback(
+    (messageId: string) => {
+      const index = messages.findIndex((m) => m.id === messageId);
+      if (index >= 0) {
+        flatListRef.current?.scrollToIndex({ index, animated: true, viewPosition: 0.5 });
+      }
+    },
+    [messages],
+  );
+
   const renderItem = useCallback(
     ({ item }: { item: (typeof messages)[number] }) => ({
       text: item.content,
@@ -137,6 +195,7 @@ export function useChatConversationViewModel() {
       timestamp: formatTime(item.createdAt),
       mediaUrl: item.mediaUrl,
       status: item.senderId === userId ? item.status : undefined,
+      replyTo: item.replyTo ?? undefined,
     }),
     [userId],
   );
@@ -148,6 +207,7 @@ export function useChatConversationViewModel() {
     paramError,
     userId,
     messages,
+    filteredMessages,
     isTyping,
     connected,
     loadingMessages,
@@ -156,6 +216,17 @@ export function useChatConversationViewModel() {
     showWalkModal,
     flatListRef,
     hasText,
+    // Reply
+    replyingTo,
+    handleReply,
+    cancelReply,
+    // Search
+    searchActive,
+    searchQuery,
+    setSearchQuery,
+    toggleSearch,
+    scrollToMessage,
+    // Actions
     handleTextChange,
     handleSend,
     handlePickImage,
@@ -165,6 +236,7 @@ export function useChatConversationViewModel() {
     closeWalkModal,
     handleProposeWalk,
     renderItem,
+    retrySend,
   };
 }
 

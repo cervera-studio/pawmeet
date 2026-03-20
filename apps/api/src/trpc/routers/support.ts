@@ -1,3 +1,4 @@
+import { WS_EVENT } from '@pawmeet/types';
 import {
   assignTicketSchema,
   createSupportTicketSchema,
@@ -11,6 +12,7 @@ import type { supportDeps } from '../../container/index.js';
 import type { AdminRoleValue } from '../../lib/admin-permissions.js';
 import { paginate } from '../../lib/pagination.js';
 import { trackEvent } from '../../lib/track-event.js';
+import { sendToUser } from '../../ws/registry.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 const getMessagesSchema = z.object({
@@ -83,6 +85,25 @@ export function createSupportRouter(deps: typeof supportDeps) {
         return message;
       }),
 
+    /** Mark admin messages as read (called by user when opening the chat) */
+    markAsRead: protectedProcedure
+      .input(z.object({ ticketId: z.string().uuid() }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify the user owns this ticket
+        const ticket = unwrapResult(
+          await deps.getMessages(input.ticketId, null, 1, {
+            userId: ctx.userId,
+            isAdmin: false,
+          }),
+        );
+        if (!ticket) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket not found' });
+        }
+
+        const updated = await deps.markAdminMessagesRead(input.ticketId);
+        return { updated };
+      }),
+
     // ── Admin endpoints ───────────────────────────────────────────────────────
 
     listTickets: adminProcedure.input(listSupportTicketsSchema).query(async ({ input }) => {
@@ -137,5 +158,23 @@ export function createSupportRouter(deps: typeof supportDeps) {
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.assignTicket(ctx.userId, input.ticketId, input.adminId)),
       ),
+
+    /** Mark user messages as read (called by admin when opening the ticket) */
+    markAdminRead: adminProcedure
+      .input(z.object({ ticketId: z.string().uuid() }))
+      .mutation(async ({ input }) => {
+        const updated = await deps.markUserMessagesRead(input.ticketId);
+
+        // Notify the ticket owner that their messages have been read
+        const ownerUserId = await deps.getTicketOwnerUserId(input.ticketId);
+        if (ownerUserId) {
+          sendToUser(ownerUserId, {
+            type: WS_EVENT.SUPPORT_MESSAGES_READ,
+            payload: { ticketId: input.ticketId, readAt: new Date().toISOString() },
+          });
+        }
+
+        return { updated };
+      }),
   });
 }

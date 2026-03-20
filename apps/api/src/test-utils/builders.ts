@@ -234,6 +234,8 @@ export function buildMessage(overrides: Partial<ChatMessage> = {}): ChatMessage 
     senderId: 'user-1',
     content: 'Ciao!',
     mediaUrl: null,
+    replyToId: null,
+    replyTo: null,
     status: 'sent',
     isDeleted: false,
     createdAt: new Date(),

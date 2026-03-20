@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -48,6 +49,7 @@ const ESTIMATED_MESSAGE_HEIGHT = 60;
 export default function ChatConversationScreen() {
   usePreventScreenCapture();
   const vm = useChatConversationViewModel();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -57,7 +59,10 @@ export default function ChatConversationScreen() {
           title: 'Chat',
           headerBackTitle: 'Chat',
           headerRight: () => (
-            <View className="flex-row items-center gap-1">
+            <View className="flex-row items-center gap-3">
+              <Pressable onPress={vm.toggleSearch} hitSlop={8}>
+                <Text className="text-lg">{vm.searchActive ? '\u2715' : '\u{1F50D}'}</Text>
+              </Pressable>
               {vm.connected ? (
                 <View className="h-2 w-2 rounded-full bg-green-500" />
               ) : (
@@ -73,13 +78,27 @@ export default function ChatConversationScreen() {
           className="flex-1"
           keyboardVerticalOffset={90}
         >
+          {/* Search bar */}
+          {vm.searchActive && (
+            <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-2">
+              <TextInput
+                value={vm.searchQuery}
+                onChangeText={vm.setSearchQuery}
+                placeholder={t('chat.searchPlaceholder')}
+                className="rounded-full bg-gray-100 dark:bg-[#38383A] px-4 py-2 text-sm"
+                placeholderTextColor="#9CA3AF"
+                autoFocus
+              />
+            </View>
+          )}
+
           {/* Messages */}
           {vm.loadingMessages ? (
             <ChatLoadingSkeleton />
           ) : (
             <FlatList
               ref={vm.flatListRef}
-              data={vm.messages}
+              data={vm.searchActive ? vm.filteredMessages : vm.messages}
               keyExtractor={(item) => item.id}
               contentContainerClassName="px-4 py-2"
               renderItem={({ item }) => {
@@ -91,6 +110,9 @@ export default function ChatConversationScreen() {
                     timestamp={data.timestamp}
                     mediaUrl={data.mediaUrl}
                     status={data.status}
+                    replyTo={data.replyTo}
+                    onRetry={data.status === 'failed' ? () => vm.retrySend(item.id) : undefined}
+                    onLongPress={() => vm.handleReply(item)}
                   />
                 );
               }}
@@ -103,22 +125,30 @@ export default function ChatConversationScreen() {
               maxToRenderPerBatch={10}
               windowSize={11}
               ListEmptyComponent={
-                <View className="items-center py-20">
-                  <Text className="text-5xl">{'\u{1F43E}'}</Text>
-                  <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-                    Inizia la conversazione!
-                  </Text>
-                  <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
-                    Presentati e organizza una passeggiata insieme.
-                  </Text>
-                </View>
+                vm.searchActive && vm.searchQuery.trim() ? (
+                  <View className="items-center py-20">
+                    <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
+                      {t('chat.searchNoResults')}
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="items-center py-20">
+                    <Text className="text-5xl">{'\u{1F43E}'}</Text>
+                    <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
+                      {t('chat.emptyTitle')}
+                    </Text>
+                    <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
+                      {t('chat.emptyDescription')}
+                    </Text>
+                  </View>
+                )
               }
               ListFooterComponent={
                 vm.isTyping ? (
                   <View className="mb-2 self-start">
                     <View className="rounded-2xl rounded-bl-sm bg-gray-100 dark:bg-[#38383A] px-4 py-3">
                       <Text className="text-sm text-gray-500 dark:text-neutral-500">
-                        Sta scrivendo...
+                        {t('chat.typing')}
                       </Text>
                     </View>
                   </View>
@@ -135,24 +165,47 @@ export default function ChatConversationScreen() {
                 className="items-center rounded-xl bg-gray-50 dark:bg-[#2C2C2E] px-4 py-3"
               >
                 <Text className="text-2xl">{'\u{1F4F7}'}</Text>
-                <Text className="mt-1 text-xs text-gray-600 dark:text-[#D1D1D6]">Foto</Text>
+                <Text className="mt-1 text-xs text-gray-600 dark:text-[#D1D1D6]">
+                  {t('chat.attachments.photo')}
+                </Text>
               </Pressable>
               <Pressable
                 onPress={vm.handleSendLocation}
                 className="items-center rounded-xl bg-gray-50 dark:bg-[#2C2C2E] px-4 py-3"
               >
                 <Text className="text-2xl">{'\u{1F4CD}'}</Text>
-                <Text className="mt-1 text-xs text-gray-600 dark:text-[#D1D1D6]">Posizione</Text>
+                <Text className="mt-1 text-xs text-gray-600 dark:text-[#D1D1D6]">
+                  {t('chat.attachments.location')}
+                </Text>
               </Pressable>
               <Pressable
                 onPress={vm.openWalkModal}
                 className="items-center rounded-xl bg-gray-50 dark:bg-[#2C2C2E] px-4 py-3"
               >
                 <Text className="text-2xl">{'\u{1F5D3}'}</Text>
-                <Text className="mt-1 text-xs text-gray-600 dark:text-[#D1D1D6]">Passeggiata</Text>
+                <Text className="mt-1 text-xs text-gray-600 dark:text-[#D1D1D6]">
+                  {t('chat.attachments.walk')}
+                </Text>
               </Pressable>
             </View>
           )}
+
+          {/* Reply banner */}
+          {vm.replyingTo ? (
+            <View className="flex-row items-center border-t border-gray-100 dark:border-[#38383A] px-4 py-2">
+              <View className="flex-1 rounded-lg border-l-2 border-l-primary bg-gray-50 dark:bg-[#2C2C2E] px-3 py-2">
+                <Text className="text-xs font-semibold text-primary" numberOfLines={1}>
+                  {vm.replyingTo.senderName}
+                </Text>
+                <Text className="text-xs text-gray-500 dark:text-neutral-400" numberOfLines={1}>
+                  {vm.replyingTo.content}
+                </Text>
+              </View>
+              <Pressable onPress={vm.cancelReply} className="ml-3 p-2" hitSlop={8}>
+                <Text className="text-lg text-gray-400">{'\u2715'}</Text>
+              </Pressable>
+            </View>
+          ) : null}
 
           {/* Input bar */}
           <View className="flex-row items-center border-t border-gray-100 dark:border-[#38383A] px-4 py-2">
@@ -166,7 +219,7 @@ export default function ChatConversationScreen() {
             <TextInput
               value={vm.text}
               onChangeText={vm.handleTextChange}
-              placeholder="Scrivi un messaggio..."
+              placeholder={t('chat.messagePlaceholder')}
               className="mr-2 flex-1 rounded-full bg-gray-100 dark:bg-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               multiline

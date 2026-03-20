@@ -553,7 +553,8 @@
     "location": {
       "meetingPoint": "Punct de întâlnire",
       "openMap": "Atinge pentru a deschide harta"
-    }
+    },
+    "tapToRetry": "Atinge pentru a reincerca"
   },
 
   "auth": {

@@ -1,6 +1,16 @@
 import type { SupportMessage } from './support.js';
 
-export type MessageStatus = 'sent' | 'delivered' | 'read';
+/** Persisted statuses (DB CHECK constraint: sent | delivered | read). */
+export type PersistedMessageStatus = 'sent' | 'delivered' | 'read';
+
+/** Client-only statuses added for optimistic UI — never stored in DB. */
+export type MessageStatus = PersistedMessageStatus | 'sending' | 'failed';
+
+export interface ChatMessageReplyPreview {
+  id: string;
+  content: string;
+  senderName: string;
+}
 
 export interface ChatMessage {
   id: string;
@@ -8,6 +18,8 @@ export interface ChatMessage {
   senderId: string;
   content: string;
   mediaUrl: string | null;
+  replyToId: string | null;
+  replyTo: ChatMessageReplyPreview | null;
   status: MessageStatus;
   isDeleted: boolean;
   createdAt: Date;
@@ -44,6 +56,9 @@ export const WS_EVENT = {
   MESSAGE_REACTION: 'message_reaction',
   // Support events
   SUPPORT_NEW_MESSAGE: 'support_new_message',
+  SUPPORT_TYPING_START: 'support_typing_start',
+  SUPPORT_TYPING_STOP: 'support_typing_stop',
+  SUPPORT_MESSAGES_READ: 'support_messages_read',
   // Feed events
   FEED_NEW_POST: 'feed_new_post',
   FEED_POST_LIKED: 'feed_post_liked',
@@ -67,6 +82,12 @@ export type WsMessage =
   | {
       type: typeof WS_EVENT.SUPPORT_NEW_MESSAGE;
       payload: { ticketId: string; message: SupportMessage };
+    }
+  | { type: typeof WS_EVENT.SUPPORT_TYPING_START; payload: { ticketId: string } }
+  | { type: typeof WS_EVENT.SUPPORT_TYPING_STOP; payload: { ticketId: string } }
+  | {
+      type: typeof WS_EVENT.SUPPORT_MESSAGES_READ;
+      payload: { ticketId: string; readAt: string };
     }
   | { type: typeof WS_EVENT.FEED_NEW_POST; payload: { postId: string; authorId: string } }
   | { type: typeof WS_EVENT.FEED_POST_LIKED; payload: { postId: string; likerName: string } }

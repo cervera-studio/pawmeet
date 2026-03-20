@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ import {
   assignTicketAction,
   changeTicketStatus,
   fetchTicketMessages,
+  markAdminRead,
   replyToTicket,
 } from './actions';
 
@@ -62,6 +63,11 @@ function MessageBubble({
         ) : null}
       </div>
       <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+      {!(isSystem || isAdmin) && message.readAt ? (
+        <p className="mt-1 text-xs text-neutral-400">
+          {t('readAt', { time: formatDateTime(message.readAt) })}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -76,6 +82,11 @@ export function TicketDetail({ ticket, initialMessages }: TicketDetailProps) {
   const [isSending, setIsSending] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(ticket.status);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
+
+  // Mark user messages as read when admin opens the ticket
+  useEffect(() => {
+    void markAdminRead(ticket.id);
+  }, [ticket.id]);
 
   async function handleReply() {
     if (!replyContent.trim()) return;

@@ -59,6 +59,7 @@ export interface SupportMessage {
   senderId: string | null;
   content: string;
   isInternal: boolean;
+  readAt: Date | null;
   createdAt: Date;
 }
 

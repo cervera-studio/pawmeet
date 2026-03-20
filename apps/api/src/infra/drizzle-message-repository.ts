@@ -1,6 +1,6 @@
 import { dogProfiles, matches, messages, users } from '@pawmeet/db';
-import type { ChatMessage } from '@pawmeet/types';
-import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
+import type { ChatMessage, ChatMessageReplyPreview } from '@pawmeet/types';
+import { aliasedTable, and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   ConversationSummary,
@@ -45,6 +45,8 @@ export class DrizzleMessageRepository implements MessageRepository {
         senderId: row.senderId,
         content: row.content,
         mediaUrl: row.mediaUrl,
+        replyToId: row.replyToId ?? null,
+        replyTo: null, // Not needed for conversation list preview
         status: row.status as ChatMessage['status'],
         isDeleted: row.isDeleted,
         createdAt: row.createdAt,
@@ -152,6 +154,7 @@ export class DrizzleMessageRepository implements MessageRepository {
       }
     }
 
+    // Fetch messages without reply join (aliasedTable + select has Drizzle type issues)
     const rows = await this.db
       .select()
       .from(messages)
@@ -160,11 +163,50 @@ export class DrizzleMessageRepository implements MessageRepository {
       .limit(limit + 1);
 
     const hasMore = rows.length > limit;
-    const messageList = hasMore ? rows.slice(0, limit) : rows;
-    const nextCursor = hasMore ? (messageList.at(-1)?.id ?? null) : null;
+    const rowList = hasMore ? rows.slice(0, limit) : rows;
+
+    // Batch-fetch reply previews for messages that have replyToId
+    const replyIds = rowList.map((r) => r.replyToId).filter((id): id is string => id != null);
+    const replyMap = new Map<string, { content: string; senderName: string }>();
+    if (replyIds.length > 0) {
+      const replyRows = await this.db
+        .select({
+          id: messages.id,
+          content: messages.content,
+          senderName: users.displayName,
+        })
+        .from(messages)
+        .leftJoin(users, eq(messages.senderId, users.id))
+        .where(inArray(messages.id, replyIds));
+      for (const r of replyRows) {
+        replyMap.set(r.id, { content: r.content, senderName: r.senderName ?? '' });
+      }
+    }
+    const nextCursor = hasMore ? (rowList.at(-1)?.id ?? null) : null;
+
+    const messageList: ChatMessage[] = rowList.map((row) => {
+      const reply = row.replyToId ? replyMap.get(row.replyToId) : null;
+      const replyTo: ChatMessageReplyPreview | null =
+        row.replyToId && reply
+          ? { id: row.replyToId, content: reply.content, senderName: reply.senderName }
+          : null;
+
+      return {
+        id: row.id,
+        matchId: row.matchId,
+        senderId: row.senderId,
+        content: row.content,
+        mediaUrl: row.mediaUrl,
+        replyToId: row.replyToId ?? null,
+        replyTo,
+        status: row.status as ChatMessage['status'],
+        isDeleted: row.isDeleted,
+        createdAt: row.createdAt,
+      };
+    });
 
     return {
-      messages: rowsAs<ChatMessage>(messageList),
+      messages: messageList,
       nextCursor,
       hasMore,
     };
@@ -175,6 +217,7 @@ export class DrizzleMessageRepository implements MessageRepository {
     senderId: string;
     content: string;
     mediaUrl?: string | null;
+    replyToId?: string | null;
   }): Promise<ChatMessage> {
     const rows = await this.db
       .insert(messages)
@@ -183,9 +226,48 @@ export class DrizzleMessageRepository implements MessageRepository {
         senderId: input.senderId,
         content: input.content,
         mediaUrl: input.mediaUrl ?? null,
+        replyToId: input.replyToId ?? null,
       })
       .returning();
-    return firstRow<ChatMessage>(rows);
+
+    const row = rows[0]!;
+
+    // If replying, fetch the replied-to message preview
+    let replyTo: ChatMessageReplyPreview | null = null;
+    if (row.replyToId) {
+      const replyMessages = aliasedTable(messages, 'reply_msg');
+      const replyUsers = aliasedTable(users, 'reply_user');
+      const [replyRow] = await this.db
+        .select({
+          content: replyMessages.content,
+          senderName: replyUsers.displayName,
+        })
+        .from(replyMessages)
+        .leftJoin(replyUsers, eq(replyMessages.senderId, replyUsers.id))
+        .where(eq(replyMessages.id, row.replyToId))
+        .limit(1);
+
+      if (replyRow) {
+        replyTo = {
+          id: row.replyToId,
+          content: replyRow.content,
+          senderName: replyRow.senderName ?? '',
+        };
+      }
+    }
+
+    return {
+      id: row.id,
+      matchId: row.matchId,
+      senderId: row.senderId,
+      content: row.content,
+      mediaUrl: row.mediaUrl,
+      replyToId: row.replyToId ?? null,
+      replyTo,
+      status: row.status as ChatMessage['status'],
+      isDeleted: row.isDeleted,
+      createdAt: row.createdAt,
+    };
   }
 
   async markAsRead(matchId: string, readerId: string): Promise<void> {

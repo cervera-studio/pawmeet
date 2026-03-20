@@ -125,6 +125,8 @@ export function createCompositeChatRepository(deps: CompositeChatDeps): ChatRepo
         senderId: 'self',
         content: params.content,
         mediaUrl: params.mediaUrl ?? null,
+        replyToId: null,
+        replyTo: null,
         status: 'sent',
         isDeleted: false,
         createdAt: new Date().toISOString(),

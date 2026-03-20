@@ -394,7 +394,7 @@ describe('ChatMessage', () => {
   });
 
   it('accepts all MessageStatus variants', () => {
-    const statuses = ['sent', 'delivered', 'read'] satisfies MessageStatus[];
+    const statuses = ['sending', 'sent', 'delivered', 'read', 'failed'] satisfies MessageStatus[];
 
     for (const status of statuses) {
       const msg = buildChatMessage({ status });

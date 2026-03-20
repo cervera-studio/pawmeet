@@ -5,7 +5,7 @@ import type {
   SupportTicketListItem,
   SupportTicketStatus,
 } from '@pawmeet/types';
-import { and, desc, eq, lt, sql } from 'drizzle-orm';
+import { and, desc, eq, isNull, lt, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   AddMessageInput,
@@ -256,5 +256,35 @@ export class DrizzleSupportRepository implements SupportRepository {
       .from(supportMessages)
       .where(eq(supportMessages.ticketId, ticketId));
     return result?.count ?? 0;
+  }
+
+  async markAdminMessagesRead(ticketId: string): Promise<number> {
+    const rows = await this.db
+      .update(supportMessages)
+      .set({ readAt: new Date() })
+      .where(
+        and(
+          eq(supportMessages.ticketId, ticketId),
+          eq(supportMessages.senderType, 'admin'),
+          isNull(supportMessages.readAt),
+        ),
+      )
+      .returning({ id: supportMessages.id });
+    return rows.length;
+  }
+
+  async markUserMessagesRead(ticketId: string): Promise<number> {
+    const rows = await this.db
+      .update(supportMessages)
+      .set({ readAt: new Date() })
+      .where(
+        and(
+          eq(supportMessages.ticketId, ticketId),
+          eq(supportMessages.senderType, 'user'),
+          isNull(supportMessages.readAt),
+        ),
+      )
+      .returning({ id: supportMessages.id });
+    return rows.length;
   }
 }

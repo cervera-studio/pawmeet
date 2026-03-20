@@ -553,7 +553,8 @@
     "location": {
       "meetingPoint": "Meeting point",
       "openMap": "Tap to open the map"
-    }
+    },
+    "tapToRetry": "Tap to retry"
   },
 
   "auth": {

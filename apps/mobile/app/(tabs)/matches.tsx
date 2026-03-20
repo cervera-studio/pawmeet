@@ -2,13 +2,15 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 
 import type { ScoreBreakdown } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ExplanationModal } from '@/components/ExplanationModal';
 import { MatchCard } from '@/components/MatchCard';
+import { RequireDogModal } from '@/components/RequireDogModal';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
+import { useRequireDog } from '@/hooks/useRequireDog';
 import { api } from '@/lib/trpc';
 import type { EnrichedMatch } from './matches.view-model';
 import { useMatchesViewModel } from './matches.view-model';
@@ -71,6 +73,7 @@ export default function MatchesScreen() {
   const { t } = useTranslation();
   const vm = useMatchesViewModel();
   const analytics = useAnalyticsService();
+  const { hasDog, showGate, setShowGate, dismissGate, goToAddDog } = useRequireDog();
   const [explanationVisible, setExplanationVisible] = useState(false);
   const [explanationLoading, setExplanationLoading] = useState(false);
   const [explanationData, setExplanationData] = useState<{
@@ -136,8 +139,14 @@ export default function MatchesScreen() {
     [],
   );
 
+  // Show gate on mount if no dog
+  useEffect(() => {
+    if (!hasDog) setShowGate(true);
+  }, [hasDog, setShowGate]);
+
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
+      <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
       <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
         <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
           {t('matches.title')}

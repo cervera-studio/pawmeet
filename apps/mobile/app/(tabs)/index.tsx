@@ -9,8 +9,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogSelector } from '@/components/DogSelector';
 import { ExplanationModal } from '@/components/ExplanationModal';
 import { MatchCelebration } from '@/components/MatchCelebration';
+import { RequireDogModal } from '@/components/RequireDogModal';
 import { SwipeCard } from '@/components/SwipeCard';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
+import { useRequireDog } from '@/hooks/useRequireDog';
 import { useDiscoveryViewModel } from './index.view-model';
 
 // ── Filter configuration ────────────────────────────────────────────────────
@@ -236,9 +238,16 @@ export default function DiscoveryScreen() {
   const vm = useDiscoveryViewModel();
   const analytics = useAnalyticsService();
   const [explanationVisible, setExplanationVisible] = useState(false);
+  const { hasDog, showGate, setShowGate, dismissGate, goToAddDog } = useRequireDog();
+
+  // Show gate on mount if no dog
+  useEffect(() => {
+    if (!hasDog) setShowGate(true);
+  }, [hasDog, setShowGate]);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
+      <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-2">
         <View>

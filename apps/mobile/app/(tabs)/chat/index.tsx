@@ -1,8 +1,11 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
+import { useEffect } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { RequireDogModal } from '@/components/RequireDogModal';
 import { Avatar } from '@/components/ui/Avatar';
+import { useRequireDog } from '@/hooks/useRequireDog';
 import type { Conversation, GroupConversation, Tab } from './index.view-model';
 import { TABS, useChatListViewModel } from './index.view-model';
 
@@ -198,9 +201,15 @@ function GroupsEmptyState() {
 
 export default function ChatListScreen() {
   const vm = useChatListViewModel();
+  const { hasDog, showGate, setShowGate, dismissGate, goToAddDog } = useRequireDog();
+
+  useEffect(() => {
+    if (!hasDog) setShowGate(true);
+  }, [hasDog, setShowGate]);
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
+      <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
       <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
         <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Chat</Text>
       </View>

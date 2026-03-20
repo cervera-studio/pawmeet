@@ -51,6 +51,13 @@
     "uploadAvatarError": "Impossibile caricare l'immagine del profilo. Riprova."
   },
 
+  "requireDog": {
+    "title": "Aggiungi il tuo cane",
+    "description": "Per scoprire compagni di passeggiata, organizzare incontri e chattare, devi prima creare il profilo del tuo cane.",
+    "addDog": "Aggiungi cane",
+    "later": "Esplora prima"
+  },
+
   "tabs": {
     "discover": "Scopri",
     "map": "Mappa",

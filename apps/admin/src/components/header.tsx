@@ -41,7 +41,7 @@ export function Header() {
   const { user, logout } = useAuthContext();
   const t = useTranslations('header');
   const ta = useTranslations('auth');
-  const tRoles = useTranslations('users.roles');
+  const tRoles = useTranslations('adminUsers.roles');
   const router = useRouter();
 
   const [profileOpen, setProfileOpen] = useState(false);

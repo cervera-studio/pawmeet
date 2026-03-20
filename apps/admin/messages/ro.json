@@ -156,7 +156,17 @@
       "followers": "Urmaritori",
       "following": "Urmariti",
       "viewReports": "Vezi raportarile",
-      "viewPhotos": "Vezi fotografiile"
+      "viewPhotos": "Vezi fotografiile",
+      "exportData": "Exporta datele utilizatorului",
+      "suspend": "Suspenda",
+      "ban": "Baneaza",
+      "reactivate": "Reactiveaza",
+      "gdprExportDialog": {
+        "title": "Exporta datele utilizatorului (GDPR)",
+        "description": "Aceasta actiune va incepe exportul tuturor datelor utilizatorului in conformitate cu GDPR. Utilizatorul va primi un email cu linkul de descarcare.",
+        "confirm": "Incepe exportul",
+        "exporting": "Se exporta..."
+      }
     }
   },
   "dogs": {
@@ -172,9 +182,29 @@
       "addedAt": "Adaugat la"
     },
     "sizes": {
+      "toy": "Toy",
       "small": "Mic",
       "medium": "Mediu",
-      "large": "Mare"
+      "large": "Mare",
+      "giant": "Gigant"
+    },
+    "detail": {
+      "basicInfo": "Informatii",
+      "breed": "Rasa",
+      "breedSecondary": "Rasa secundara",
+      "size": "Marime",
+      "weight": "Greutate",
+      "gender": "Gen",
+      "neutered": "Sterilizat",
+      "addedAt": "Adaugat la",
+      "behaviorAndEnergy": "Comportament si energie",
+      "energyLevel": "Nivel de energie",
+      "behaviorWithDogs": "Comportament cu cainii",
+      "behaviorWithPeople": "Comportament cu oamenii",
+      "leashBehavior": "Comportament la lesa",
+      "owner": "Proprietar",
+      "bio": "Biografie",
+      "photos": "Fotografii ({count})"
     }
   },
   "settings": {
@@ -391,7 +421,35 @@
       "createdAt": "Creata la"
     },
     "verified": "Verificata",
-    "notVerified": "Neverificata"
+    "notVerified": "Neverificata",
+    "detail": {
+      "verified": "Verificata",
+      "notVerified": "Neverificata",
+      "backToList": "Inapoi la lista",
+      "revokeVerification": "Revoca verificarea",
+      "revokingVerification": "Se revoca...",
+      "verifyOrganization": "Verifica organizatia",
+      "verifying": "Se verifica...",
+      "confirmVerify": "Verifici aceasta organizatie?",
+      "confirmRevoke": "Revoci verificarea acestei organizatii?",
+      "type": "Tip",
+      "members": "Membri",
+      "createdAt": "Creata la",
+      "verification": "Verificare",
+      "details": "Detalii",
+      "description": "Descriere",
+      "contactEmail": "Email de contact",
+      "website": "Site web",
+      "updatedAt": "Actualizata la",
+      "membersCount": "Membri ({count})",
+      "noMembers": "Niciun membru",
+      "unknownUser": "Necunoscut",
+      "roles": {
+        "owner": "Proprietar",
+        "admin": "Admin",
+        "member": "Membru"
+      }
+    }
   },
   "events": {
     "title": "Evenimente",
@@ -627,7 +685,10 @@
       "metricWalkCompletion": "Finalizare plimbari",
       "chartMatchRate": "Rata de match in timp",
       "chartAcceptRate": "Rata de acceptare in timp",
-      "chartPlaceholder": "Grafic placeholder — Recharts in curand"
+      "chartPlaceholder": "Grafic placeholder — Recharts in curand",
+      "experiment": "Experiment",
+      "dateFrom": "Data de inceput",
+      "dateTo": "Data de sfarsit"
     },
     "performance": {
       "title": "Performance Model AI",
@@ -743,7 +804,13 @@
       "upcoming": "In curand"
     },
     "actions": {
+      "edit": "Editeaza",
       "delete": "Sterge"
+    },
+    "editDialog": {
+      "title": "Editeaza Provocare",
+      "description": "Editeaza provocarea \"{title}\"",
+      "submit": "Salveaza modificarile"
     },
     "createDialog": {
       "title": "Creeaza Provocare",
@@ -995,6 +1062,8 @@
       "banError": "Eroare la banare",
       "reactivated": "Utilizator reactivat",
       "reactivateError": "Eroare la reactivare",
+      "gdprExportSuccess": "Exportul datelor a fost initiat. Utilizatorul va primi un email.",
+      "gdprExportError": "Eroare la exportul datelor utilizatorului",
       "loadError": "Eroare la incarcarea utilizatorilor"
     },
     "admins": {
@@ -1018,6 +1087,7 @@
     },
     "challenges": {
       "createError": "Eroare la crearea provocarii",
+      "updateError": "Eroare la actualizarea provocarii",
       "deleteError": "Eroare la stergerea provocarii"
     },
     "deletions": {

@@ -1,6 +1,6 @@
 import { AppError, fail, PARTICIPANT_STATUS, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import { assertOwnership } from '../domain/ownership.js';
+import { checkOwnership } from '../domain/ownership.js';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -21,12 +21,13 @@ export function createDeclineParticipant({ groupEventRepo, notificationService }
       return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
-    assertOwnership(
+    const ownershipError = checkOwnership(
       event.createdBy,
       hostUserId,
       'NOT_ORGANIZER',
       'Only the organizer can decline requests',
     );
+    if (ownershipError) return fail(ownershipError);
 
     const participant = await groupEventRepo.findParticipant(eventId, targetUserId);
     if (!participant || participant.status !== PARTICIPANT_STATUS.PENDING) {

@@ -1,16 +1,17 @@
 import { AppError } from '@pawmeet/types';
 
 /**
- * Assert that the given entity belongs to the expected user.
- * Throws an AppError with the specified code and message if ownership check fails.
+ * Check that the given entity belongs to the expected user.
+ * Returns an AppError if ownership check fails, null otherwise.
  */
-export function assertOwnership(
+export function checkOwnership(
   entityOwnerId: string,
   userId: string,
   errorCode: string,
   errorMessage: string,
-): void {
+): AppError | null {
   if (entityOwnerId !== userId) {
-    throw new AppError(errorCode, errorMessage, 403);
+    return new AppError(errorCode, errorMessage, 403);
   }
+  return null;
 }

@@ -8,8 +8,9 @@ import type {
   XpTransaction,
 } from '@pawmeet/types';
 
-export interface GamificationRepository {
-  // XP
+// ── XP ─────────────────────────────────────────────────────────────────────────
+
+export interface XpRepository {
   createXpTransaction(
     userId: string,
     action: XpAction,
@@ -18,8 +19,11 @@ export interface GamificationRepository {
   ): Promise<XpTransaction>;
   getTotalXp(userId: string): Promise<number>;
   getLeaderboard(type: LeaderboardType, limit: number): Promise<LeaderboardEntry[]>;
+}
 
-  // Challenges
+// ── Challenges ─────────────────────────────────────────────────────────────────
+
+export interface ChallengeRepository {
   findActiveChallenges(now: Date): Promise<Challenge[]>;
   findUserChallenges(userId: string, challengeIds: string[]): Promise<UserChallenge[]>;
   upsertUserChallenge(
@@ -38,23 +42,6 @@ export interface GamificationRepository {
     startsAt: Date;
     endsAt: Date;
   }): Promise<Challenge>;
-
-  // Achievements
-  findAchievementsByUser(userId: string): Promise<Achievement[]>;
-  hasAchievement(userId: string, type: AchievementType): Promise<boolean>;
-  unlockAchievement(userId: string, type: AchievementType): Promise<Achievement>;
-
-  // Streaks
-  getStreak(userId: string, type: string): Promise<Streak | null>;
-  upsertStreak(
-    userId: string,
-    type: string,
-    data: { currentLength: number; longestLength: number; lastActivityDate: Date },
-  ): Promise<Streak>;
-  findStreaksOlderThan(date: Date): Promise<Streak[]>;
-  breakStreak(streakId: string): Promise<void>;
-
-  // Admin challenge management
   listAllChallenges(limit: number, offset: number): Promise<{ data: Challenge[]; total: number }>;
   updateChallenge(
     challengeId: string,
@@ -68,18 +55,49 @@ export interface GamificationRepository {
     },
   ): Promise<Challenge>;
   deleteChallenge(challengeId: string): Promise<void>;
+}
 
-  // Aggregate fitness stats (admin)
+// ── Achievements ───────────────────────────────────────────────────────────────
+
+export interface AchievementRepository {
+  findAchievementsByUser(userId: string): Promise<Achievement[]>;
+  hasAchievement(userId: string, type: AchievementType): Promise<boolean>;
+  unlockAchievement(userId: string, type: AchievementType): Promise<Achievement>;
+}
+
+// ── Streaks ────────────────────────────────────────────────────────────────────
+
+export interface StreakRepository {
+  getStreak(userId: string, type: string): Promise<Streak | null>;
+  upsertStreak(
+    userId: string,
+    type: string,
+    data: { currentLength: number; longestLength: number; lastActivityDate: Date },
+  ): Promise<Streak>;
+  findStreaksOlderThan(date: Date): Promise<Streak[]>;
+  breakStreak(streakId: string): Promise<void>;
+}
+
+// ── Stats (for achievement checks & admin) ─────────────────────────────────────
+
+export interface GamificationStatsRepository {
   getAggregateFitnessStats(): Promise<{
     totalWalks: number;
     avgDistanceKm: number;
     totalDistanceKm: number;
     topWalkers: { userId: string; displayName: string | null; totalKm: number }[];
   }>;
-
-  // Stats (for achievement checks)
   countCompletedWalks(userId: string): Promise<number>;
   countMatches(userId: string): Promise<number>;
   countGroupEventsJoined(userId: string): Promise<number>;
   getTotalWalkDistanceKm(userId: string): Promise<number>;
 }
+
+// ── Full repository (backward-compatible union of all interfaces) ──────────────
+
+export interface GamificationRepository
+  extends XpRepository,
+    ChallengeRepository,
+    AchievementRepository,
+    StreakRepository,
+    GamificationStatsRepository {}

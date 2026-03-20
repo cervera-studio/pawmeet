@@ -21,7 +21,8 @@ export function createAddContentReaction({ feedRepo }: Deps) {
       if (err instanceof Error && err.message.includes('unique')) {
         return fail(new AppError('REACTION_ALREADY_EXISTS', 'Reazione già presente', 409));
       }
-      throw err;
+      const message = err instanceof Error ? err.message : 'Errore imprevisto';
+      return fail(new AppError('REACTION_FAILED', message, 500));
     }
   };
 }

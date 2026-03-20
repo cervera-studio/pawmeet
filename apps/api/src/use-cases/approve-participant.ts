@@ -1,6 +1,5 @@
 import { AppError, fail, PARTICIPANT_STATUS, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import { assertOwnership } from '../domain/ownership.js';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 

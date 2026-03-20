@@ -1,7 +1,7 @@
 import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@pawmeet/types';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { canTransitionTo } from '../domain/group-event-state-machine.js';
-import { assertOwnership } from '../domain/ownership.js';
+import { checkOwnership } from '../domain/ownership.js';
 import type { GroupEventRepository } from '../ports/index.js';
 
 type Deps = {
@@ -15,12 +15,13 @@ export function createCancelGroupEvent({ groupEventRepo }: Deps) {
       return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
-    assertOwnership(
+    const ownershipError = checkOwnership(
       event.createdBy,
       userId,
       'NOT_ORGANIZER',
       'Only the organizer can cancel the event',
     );
+    if (ownershipError) return fail(ownershipError);
 
     if (!canTransitionTo(event.status, GROUP_EVENT_STATUS.CANCELLED)) {
       return fail(

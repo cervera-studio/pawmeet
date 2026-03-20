@@ -156,7 +156,17 @@
       "followers": "Seguidores",
       "following": "Siguiendo",
       "viewReports": "Ver reportes",
-      "viewPhotos": "Ver fotos"
+      "viewPhotos": "Ver fotos",
+      "exportData": "Exportar datos del usuario",
+      "suspend": "Suspender",
+      "ban": "Banear",
+      "reactivate": "Reactivar",
+      "gdprExportDialog": {
+        "title": "Exportar datos del usuario (GDPR)",
+        "description": "Esta acción iniciará la exportación de todos los datos del usuario en cumplimiento con el GDPR. El usuario recibirá un correo con el enlace de descarga.",
+        "confirm": "Iniciar exportación",
+        "exporting": "Exportando..."
+      }
     }
   },
   "dogs": {
@@ -172,9 +182,29 @@
       "addedAt": "Agregado el"
     },
     "sizes": {
+      "toy": "Toy",
       "small": "Pequeño",
       "medium": "Mediano",
-      "large": "Grande"
+      "large": "Grande",
+      "giant": "Gigante"
+    },
+    "detail": {
+      "basicInfo": "Información",
+      "breed": "Raza",
+      "breedSecondary": "Raza secundaria",
+      "size": "Tamaño",
+      "weight": "Peso",
+      "gender": "Género",
+      "neutered": "Castrado",
+      "addedAt": "Agregado el",
+      "behaviorAndEnergy": "Comportamiento y energía",
+      "energyLevel": "Nivel de energía",
+      "behaviorWithDogs": "Comportamiento con perros",
+      "behaviorWithPeople": "Comportamiento con personas",
+      "leashBehavior": "Comportamiento con correa",
+      "owner": "Propietario",
+      "bio": "Biografía",
+      "photos": "Fotos ({count})"
     }
   },
   "settings": {
@@ -391,7 +421,35 @@
       "createdAt": "Creada el"
     },
     "verified": "Verificada",
-    "notVerified": "No verificada"
+    "notVerified": "No verificada",
+    "detail": {
+      "verified": "Verificada",
+      "notVerified": "No verificada",
+      "backToList": "Volver a la lista",
+      "revokeVerification": "Revocar verificación",
+      "revokingVerification": "Revocando...",
+      "verifyOrganization": "Verificar organización",
+      "verifying": "Verificando...",
+      "confirmVerify": "¿Verificar esta organización?",
+      "confirmRevoke": "¿Revocar la verificación de esta organización?",
+      "type": "Tipo",
+      "members": "Miembros",
+      "createdAt": "Creada el",
+      "verification": "Verificación",
+      "details": "Detalles",
+      "description": "Descripción",
+      "contactEmail": "Correo de contacto",
+      "website": "Sitio web",
+      "updatedAt": "Actualizada el",
+      "membersCount": "Miembros ({count})",
+      "noMembers": "Sin miembros",
+      "unknownUser": "Desconocido",
+      "roles": {
+        "owner": "Propietario",
+        "admin": "Admin",
+        "member": "Miembro"
+      }
+    }
   },
   "events": {
     "title": "Eventos",
@@ -627,7 +685,10 @@
       "metricWalkCompletion": "Completar paseos",
       "chartMatchRate": "Tasa de match en el tiempo",
       "chartAcceptRate": "Tasa de aceptación en el tiempo",
-      "chartPlaceholder": "Gráfico placeholder — Recharts próximamente"
+      "chartPlaceholder": "Gráfico placeholder — Recharts próximamente",
+      "experiment": "Experimento",
+      "dateFrom": "Fecha de inicio",
+      "dateTo": "Fecha de fin"
     },
     "performance": {
       "title": "Rendimiento del modelo AI",
@@ -743,7 +804,13 @@
       "upcoming": "Próximo"
     },
     "actions": {
+      "edit": "Editar",
       "delete": "Eliminar"
+    },
+    "editDialog": {
+      "title": "Editar desafío",
+      "description": "Editar el desafío \"{title}\"",
+      "submit": "Guardar cambios"
     },
     "createDialog": {
       "title": "Crear desafío",
@@ -995,6 +1062,8 @@
       "banError": "Error al banear",
       "reactivated": "Usuario reactivado",
       "reactivateError": "Error al reactivar",
+      "gdprExportSuccess": "Exportación de datos iniciada. El usuario recibirá un correo.",
+      "gdprExportError": "Error al exportar los datos del usuario",
       "loadError": "Error al cargar los usuarios"
     },
     "admins": {
@@ -1018,6 +1087,7 @@
     },
     "challenges": {
       "createError": "Error al crear el desafío",
+      "updateError": "Error al actualizar el desafío",
       "deleteError": "Error al eliminar el desafío"
     },
     "deletions": {

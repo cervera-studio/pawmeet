@@ -13,16 +13,15 @@ export function canTransitionTo(from: GroupEventStatus, to: GroupEventStatus): b
   return VALID_TRANSITIONS[from].includes(to);
 }
 
-export class InvalidTransitionError extends AppError {
-  constructor(from: GroupEventStatus, to: GroupEventStatus) {
-    super('INVALID_STATUS_TRANSITION', `Cannot transition event from "${from}" to "${to}"`, 409);
-  }
-}
-
-export function assertTransition(from: GroupEventStatus, to: GroupEventStatus): void {
+export function checkTransition(from: GroupEventStatus, to: GroupEventStatus): AppError | null {
   if (!canTransitionTo(from, to)) {
-    throw new InvalidTransitionError(from, to);
+    return new AppError(
+      'INVALID_STATUS_TRANSITION',
+      `Cannot transition event from "${from}" to "${to}"`,
+      409,
+    );
   }
+  return null;
 }
 
 export function getValidTransitions(from: GroupEventStatus): readonly GroupEventStatus[] {

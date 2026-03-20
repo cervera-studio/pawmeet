@@ -1,7 +1,7 @@
 import { succeed } from '@pawmeet/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { clearHandlers, DOMAIN_EVENT, emit } from '../domain/events.js';
 import { registerDomainEventHandlers } from './event-handlers.js';
-import { clearHandlers, DOMAIN_EVENT, emit } from './events.js';
 
 function buildDeps() {
   return {
@@ -25,6 +25,12 @@ function buildDeps() {
     ),
     updateChallengeProgress: vi.fn().mockResolvedValue(succeed({ updated: [] })),
     checkAndUnlockAchievements: vi.fn().mockResolvedValue(succeed([])),
+    infra: {
+      enqueueMessageToxicityCheck: vi.fn().mockResolvedValue(undefined),
+      enqueueNotification: vi.fn().mockResolvedValue(undefined),
+      trackEvent: vi.fn(),
+      sendToUser: vi.fn(),
+    },
   };
 }
 

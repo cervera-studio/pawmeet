@@ -6,7 +6,7 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
-import { assertOwnership } from '../domain/ownership.js';
+import { checkOwnership } from '../domain/ownership.js';
 import type { GroupEventRepository } from '../ports/index.js';
 
 type Deps = {
@@ -35,12 +35,13 @@ export function createUpdateGroupEvent({ groupEventRepo }: Deps) {
       return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
-    assertOwnership(
+    const ownershipError = checkOwnership(
       event.createdBy,
       userId,
       'NOT_ORGANIZER',
       'Only the organizer can modify the event',
     );
+    if (ownershipError) return fail(ownershipError);
 
     if (
       event.status === GROUP_EVENT_STATUS.CANCELLED ||

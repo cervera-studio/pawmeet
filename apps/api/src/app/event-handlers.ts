@@ -3,12 +3,9 @@ import { XP_POINTS } from '@pawmeet/config';
 import type { Result, XpSummary } from '@pawmeet/types';
 import { isSuccess, WS_EVENT } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import { enqueueMessageToxicityCheck, enqueueNotification } from '../jobs/queue.js';
-import { trackEvent } from '../lib/track-event.js';
 import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
 import type { SupportRepository } from '../ports/support-repository.js';
-import { sendToUser } from '../ws/registry.js';
-import { DOMAIN_EVENT, on } from './events.js';
+import { DOMAIN_EVENT, on } from '../domain/events.js';
 
 type AwardXpFn = (
   userId: string,
@@ -24,7 +21,28 @@ type UpdateChallengeProgressFn = (
 
 type CheckAndUnlockAchievementsFn = (userId: string) => Promise<Result<unknown>>;
 
-interface EventHandlerDeps {
+/** Infrastructure callbacks injected from the composition root. */
+interface InfraCallbacks {
+  enqueueMessageToxicityCheck: (params: {
+    messageId: string;
+    matchId: string;
+    senderId: string;
+    content: string;
+  }) => Promise<unknown>;
+  enqueueNotification: (params: {
+    userId: string;
+    title: string;
+    body: string;
+  }) => Promise<unknown>;
+  trackEvent: (
+    event: string,
+    userId: string,
+    properties: Record<string, unknown>,
+  ) => void;
+  sendToUser: (userId: string, payload: unknown) => void;
+}
+
+export interface EventHandlerDeps {
   chat: ChatService;
   userRepo: UserRepository;
   notificationService: NotificationService;
@@ -32,6 +50,7 @@ interface EventHandlerDeps {
   awardXp: AwardXpFn;
   updateChallengeProgress: UpdateChallengeProgressFn;
   checkAndUnlockAchievements: CheckAndUnlockAchievementsFn;
+  infra: InfraCallbacks;
 }
 
 /** Register all domain event handlers. Call once at startup. */
@@ -43,6 +62,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
     awardXp,
     updateChallengeProgress,
     checkAndUnlockAchievements,
+    infra,
   } = deps;
 
   // ── MESSAGE_SENT ─────────────────────────────────────────────────────────────
@@ -80,7 +100,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
   // Toxicity check for direct messages
   on(DOMAIN_EVENT.MESSAGE_SENT, async (event) => {
     const { messageId, matchId, senderId, sanitizedContent } = event.payload;
-    await enqueueMessageToxicityCheck({
+    await infra.enqueueMessageToxicityCheck({
       messageId,
       matchId,
       senderId,
@@ -133,7 +153,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
   on(DOMAIN_EVENT.SUPPORT_REPLY_SENT, async (event) => {
     const { ticketId, userId, message, isInternal } = event.payload;
     if (isInternal || !userId) return;
-    sendToUser(userId, {
+    infra.sendToUser(userId, {
       type: WS_EVENT.SUPPORT_NEW_MESSAGE,
       payload: { ticketId, message },
     });
@@ -160,7 +180,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
   // WS broadcast for user support messages (multi-device sync)
   on(DOMAIN_EVENT.SUPPORT_MESSAGE_SENT, async (event) => {
     const { ticketId, userId, message } = event.payload;
-    sendToUser(userId, {
+    infra.sendToUser(userId, {
       type: WS_EVENT.SUPPORT_NEW_MESSAGE,
       payload: { ticketId, message },
     });
@@ -177,6 +197,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
       'new_matches',
       updateChallengeProgress,
       checkAndUnlockAchievements,
+      infra,
     );
   });
 
@@ -191,6 +212,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
       'group_events_joined',
       updateChallengeProgress,
       checkAndUnlockAchievements,
+      infra,
     );
   });
 
@@ -222,6 +244,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
       undefined,
       updateChallengeProgress,
       checkAndUnlockAchievements,
+      infra,
     );
   });
 }
@@ -235,22 +258,23 @@ async function handleGamification(
   challengeType: ChallengeType | undefined,
   updateChallengeProgress: UpdateChallengeProgressFn,
   checkAndUnlockAchievements: CheckAndUnlockAchievementsFn,
+  infra: InfraCallbacks,
 ): Promise<void> {
   try {
     const res = await awardXp(userId, xpAction);
     if (isSuccess(res) && res.data.previousLevel !== res.data.summary.level) {
-      trackEvent('gamification_level_up', userId, {
+      infra.trackEvent('gamification_level_up', userId, {
         newLevel: res.data.summary.level,
         previousLevel: res.data.previousLevel,
         totalXp: res.data.summary.totalXp,
       });
-      void enqueueNotification({
+      void infra.enqueueNotification({
         userId,
         title: 'Livello su!',
         body: `Sei diventato ${res.data.summary.level}!`,
       }).catch((e) => logger.warn('gamification', 'Side effect failed', e));
     }
-    trackEvent('gamification_xp_awarded', userId, {
+    infra.trackEvent('gamification_xp_awarded', userId, {
       amount: XP_POINTS[xpAction],
       source: xpAction,
     });

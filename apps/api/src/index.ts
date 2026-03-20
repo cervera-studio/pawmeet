@@ -11,7 +11,7 @@ import {
   supportDeps,
 } from './container/index.js';
 import { chat, notificationService, supportRepo, userRepo } from './container/services.js';
-import { registerDomainEventHandlers } from './domain/event-handlers.js';
+import { registerDomainEventHandlers } from './app/event-handlers.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { cacheControlMiddleware } from './middleware/cache-control.js';
@@ -119,6 +119,10 @@ app.get('/health', async (c) => {
 });
 
 // Register domain event handlers (in-process pub/sub for side effects)
+import { enqueueMessageToxicityCheck, enqueueNotification } from './jobs/queue.js';
+import { trackEvent } from './lib/track-event.js';
+import { sendToUser } from './ws/registry.js';
+
 registerDomainEventHandlers({
   chat,
   userRepo,
@@ -127,6 +131,7 @@ registerDomainEventHandlers({
   awardXp: gamificationDeps.awardXp,
   updateChallengeProgress: gamificationDeps.updateChallengeProgress,
   checkAndUnlockAchievements: gamificationDeps.checkAndUnlockAchievements,
+  infra: { enqueueMessageToxicityCheck, enqueueNotification, trackEvent, sendToUser },
 });
 
 const port = Number(process.env.PORT) || 3000;

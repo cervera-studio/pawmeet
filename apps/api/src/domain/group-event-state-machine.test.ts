@@ -1,10 +1,6 @@
+import { AppError } from '@pawmeet/types';
 import { describe, expect, it } from 'vitest';
-import {
-  assertTransition,
-  canTransitionTo,
-  getValidTransitions,
-  InvalidTransitionError,
-} from './group-event-state-machine.js';
+import { canTransitionTo, checkTransition, getValidTransitions } from './group-event-state-machine.js';
 
 describe('group-event-state-machine', () => {
   describe('canTransitionTo', () => {
@@ -46,24 +42,22 @@ describe('group-event-state-machine', () => {
     });
   });
 
-  describe('assertTransition', () => {
-    it('does not throw for valid transitions', () => {
-      expect(() => assertTransition('scheduled', 'in_progress')).not.toThrow();
-      expect(() => assertTransition('scheduled', 'cancelled')).not.toThrow();
-      expect(() => assertTransition('in_progress', 'completed')).not.toThrow();
+  describe('checkTransition', () => {
+    it('returns null for valid transitions', () => {
+      expect(checkTransition('scheduled', 'in_progress')).toBeNull();
+      expect(checkTransition('scheduled', 'cancelled')).toBeNull();
+      expect(checkTransition('in_progress', 'completed')).toBeNull();
     });
 
-    it('throws InvalidTransitionError for invalid transitions', () => {
-      expect(() => assertTransition('in_progress', 'cancelled')).toThrow(InvalidTransitionError);
+    it('returns AppError for invalid transitions', () => {
+      const error = checkTransition('in_progress', 'cancelled');
+      expect(error).toBeInstanceOf(AppError);
+      expect(error?.code).toBe('INVALID_STATUS_TRANSITION');
 
-      try {
-        assertTransition('completed', 'cancelled');
-      } catch (err) {
-        expect(err).toBeInstanceOf(InvalidTransitionError);
-        expect((err as InvalidTransitionError).code).toBe('INVALID_STATUS_TRANSITION');
-        expect((err as InvalidTransitionError).message).toContain('completed');
-        expect((err as InvalidTransitionError).message).toContain('cancelled');
-      }
+      const error2 = checkTransition('completed', 'cancelled');
+      expect(error2).toBeInstanceOf(AppError);
+      expect(error2?.message).toContain('completed');
+      expect(error2?.message).toContain('cancelled');
     });
   });
 

@@ -6,7 +6,7 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
-import { assertOwnership } from '../domain/ownership.js';
+import { checkOwnership } from '../domain/ownership.js';
 import type {
   DogRepository,
   GroupEventParticipationRepository,
@@ -40,12 +40,13 @@ export function createInviteToEvent({
     }
 
     // Only the creator can invite
-    assertOwnership(
+    const ownershipError = checkOwnership(
       event.createdBy,
       userId,
       'NOT_CREATOR',
       'Only the creator can invite participants',
     );
+    if (ownershipError) return fail(ownershipError);
 
     if (event.status !== GROUP_EVENT_STATUS.SCHEDULED) {
       return fail(

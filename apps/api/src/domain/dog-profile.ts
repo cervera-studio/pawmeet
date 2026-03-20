@@ -16,6 +16,12 @@ export interface DogProfileAggregate {
 
   /** Whether a photo key matches this dog's storage path. */
   isValidPhotoKey(key: string): boolean;
+
+  /** Whether this dog can accept more photos. */
+  canAddPhoto(currentPhotoCount: number): boolean;
+
+  /** Validate that a reorder request covers all existing photos exactly once. */
+  isValidPhotoReorder(requestedIds: string[], existingIds: string[]): boolean;
 }
 
 export function createDogProfileAggregate(dog: DogProfile): DogProfileAggregate {
@@ -33,17 +39,29 @@ export function createDogProfileAggregate(dog: DogProfile): DogProfileAggregate 
     isValidPhotoKey(key: string) {
       return key.startsWith(`dogs/${dog.id}/`);
     },
+
+    canAddPhoto(currentPhotoCount: number) {
+      return currentPhotoCount < MAX_PHOTOS_PER_DOG;
+    },
+
+    isValidPhotoReorder(requestedIds: string[], existingIds: string[]) {
+      if (requestedIds.length !== existingIds.length) return false;
+      const existing = new Set(existingIds);
+      return requestedIds.every((id) => existing.has(id));
+    },
   };
 }
 
-// ── Standalone domain rules (no aggregate instance needed) ───────────────────
+// ── Static domain rules (no aggregate instance needed) ────────────────────────
 
 /** Whether a user can register another dog. */
 export function canCreateDog(currentDogCount: number): boolean {
   return currentDogCount < MAX_DOGS_PER_USER;
 }
 
-/** Whether a dog can accept more photos. */
+// ── Keep backward-compatible standalone exports ───────────────────────────────
+
+/** @deprecated Use aggregate.canAddPhoto() instead. */
 export function canAddPhoto(currentPhotoCount: number): boolean {
   return currentPhotoCount < MAX_PHOTOS_PER_DOG;
 }
@@ -64,6 +82,7 @@ export function reindexPhotos(
 
 /**
  * Validate that a reorder request covers all existing photos exactly once.
+ * @deprecated Use aggregate.isValidPhotoReorder() instead.
  */
 export function isValidPhotoReorder(requestedIds: string[], existingIds: string[]): boolean {
   if (requestedIds.length !== existingIds.length) return false;

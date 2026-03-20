@@ -1,4 +1,3 @@
-import type { ChatMessage, SupportMessage } from '@pawmeet/types';
 import { WS_EVENT } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { enqueueMessageToxicityCheck } from '../jobs/queue.js';
@@ -22,7 +21,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
 
   // WS broadcast for direct messages
   on(DOMAIN_EVENT.MESSAGE_SENT, async (event) => {
-    const { matchId, message } = event.payload as { matchId: string; message: ChatMessage };
+    const { matchId, message } = event.payload;
     chat.sendToRoom(matchId, {
       type: WS_EVENT.NEW_MESSAGE,
       payload: { message },
@@ -31,12 +30,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
 
   // Push notification for direct messages
   on(DOMAIN_EVENT.MESSAGE_SENT, async (event) => {
-    const { matchId, senderId, recipientId, content } = event.payload as {
-      matchId: string;
-      senderId: string;
-      recipientId: string | null;
-      content: string;
-    };
+    const { matchId, senderId, recipientId, content } = event.payload;
     if (!recipientId) return;
 
     const recipient = await userRepo.findById(recipientId);
@@ -57,12 +51,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
 
   // Toxicity check for direct messages
   on(DOMAIN_EVENT.MESSAGE_SENT, async (event) => {
-    const { messageId, matchId, senderId, sanitizedContent } = event.payload as {
-      messageId: string;
-      matchId: string;
-      senderId: string;
-      sanitizedContent: string;
-    };
+    const { messageId, matchId, senderId, sanitizedContent } = event.payload;
     await enqueueMessageToxicityCheck({
       messageId,
       matchId,
@@ -75,10 +64,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
 
   // WS broadcast for group messages
   on(DOMAIN_EVENT.GROUP_MESSAGE_SENT, async (event) => {
-    const { eventId, message } = event.payload as {
-      eventId: string;
-      message: unknown;
-    };
+    const { eventId, message } = event.payload;
     const roomId = `group-${eventId}`;
     chat.sendToRoom(roomId, {
       type: WS_EVENT.NEW_MESSAGE,
@@ -88,12 +74,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
 
   // Push notifications for group messages
   on(DOMAIN_EVENT.GROUP_MESSAGE_SENT, async (event) => {
-    const { eventId, senderId, content, participantIds } = event.payload as {
-      eventId: string;
-      senderId: string;
-      content: string;
-      participantIds: string[];
-    };
+    const { eventId, senderId, content, participantIds } = event.payload;
 
     const sender = await userRepo.findById(senderId);
     const senderName = sender?.displayName ?? 'Qualcuno';
@@ -122,12 +103,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
 
   // WS broadcast for admin support replies
   on(DOMAIN_EVENT.SUPPORT_REPLY_SENT, async (event) => {
-    const { ticketId, userId, message, isInternal } = event.payload as {
-      ticketId: string;
-      userId: string | null;
-      message: SupportMessage;
-      isInternal: boolean;
-    };
+    const { ticketId, userId, message, isInternal } = event.payload;
     if (isInternal || !userId) return;
     sendToUser(userId, {
       type: WS_EVENT.SUPPORT_NEW_MESSAGE,
@@ -137,12 +113,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
 
   // Push notification for admin support replies
   on(DOMAIN_EVENT.SUPPORT_REPLY_SENT, async (event) => {
-    const { ticketId, userId, sanitizedContent, isInternal } = event.payload as {
-      ticketId: string;
-      userId: string | null;
-      sanitizedContent: string;
-      isInternal: boolean;
-    };
+    const { ticketId, userId, sanitizedContent, isInternal } = event.payload;
     if (isInternal || !userId) return;
 
     const preview =
@@ -160,11 +131,7 @@ export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
 
   // WS broadcast for user support messages (multi-device sync)
   on(DOMAIN_EVENT.SUPPORT_MESSAGE_SENT, async (event) => {
-    const { ticketId, userId, message } = event.payload as {
-      ticketId: string;
-      userId: string;
-      message: SupportMessage;
-    };
+    const { ticketId, userId, message } = event.payload;
     sendToUser(userId, {
       type: WS_EVENT.SUPPORT_NEW_MESSAGE,
       payload: { ticketId, message },

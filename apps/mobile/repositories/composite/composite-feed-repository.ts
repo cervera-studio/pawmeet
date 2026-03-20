@@ -121,6 +121,19 @@ export function createCompositeFeedRepository(deps: CompositeFeedDeps): FeedRepo
       });
     },
 
+    async deleteComment(commentId: string): Promise<void> {
+      if (network.isOnline()) {
+        await remote.deleteComment(commentId);
+        return;
+      }
+      await syncQueue.enqueue({
+        entityType: 'comment',
+        operation: 'delete',
+        endpoint: 'feed.deleteComment',
+        payload: { commentId },
+      });
+    },
+
     async viewStory(storyId: string): Promise<void> {
       if (!network.isOnline()) return;
       return remote.viewStory(storyId);

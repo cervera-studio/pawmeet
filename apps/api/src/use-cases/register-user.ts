@@ -2,6 +2,7 @@ import { TOKEN_TYPE } from '@pawmeet/db';
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { parseEmail } from '@pawmeet/validation';
 import { EMAIL_VERIFICATION_OTP_EXPIRY_MS, generateOtp } from '../lib/email.js';
 import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
@@ -35,7 +36,7 @@ export function createRegisterUser(deps: Deps) {
   return async (input: RegisterInput): Promise<Result<RegisterOutput>> => {
     const { userRepo, tokenRepo, authService, emailService } = deps;
     const { password, displayName, dateOfBirth, locale } = input;
-    const email = input.email.toLowerCase().trim();
+    const email = parseEmail(input.email);
 
     // Check if email already exists
     const existing = await userRepo.findByEmail(email);

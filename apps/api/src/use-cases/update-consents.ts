@@ -1,6 +1,6 @@
 import type { Result } from '@pawmeet/types';
 import type { UpdateConsentInput } from '@pawmeet/validation';
-import type { ConsentRepository } from '../infra/drizzle-consent-repository.js';
+import type { ConsentRepository } from '../ports/consent-repository.js';
 
 interface Deps {
   consentRepo: ConsentRepository;

@@ -1,12 +1,17 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
-import { api } from '@/lib/trpc';
+import { container } from '@/repositories/container';
+import type { CreateGroupEventInput } from '@/repositories/interfaces/group-event-repository';
+import { GROUP_EVENT_REPOSITORY } from '@/repositories/tokens';
 
 type GroupEvent = RouterOutput['groupEvents']['listNearby'][number];
 type GroupEventDetail = RouterOutput['groupEvents']['get'];
+type PendingRequest = RouterOutput['groupEvents']['listPendingRequests'][number];
 
 export type { GroupEvent, GroupEventDetail };
+
+const groupEventRepo = container.resolve(GROUP_EVENT_REPOSITORY);
 
 export function useGroupEvents() {
   const [events, setEvents] = useState<GroupEvent[]>([]);
@@ -21,13 +26,13 @@ export function useGroupEvents() {
     ) => {
       setLoading(true);
       try {
-        const data = await api.groupEvents.listNearby.query({
+        const data = await groupEventRepo.listNearby({
           latitude,
           longitude,
           radiusKm: radiusKm ?? 10,
           ...(category ? { category } : {}),
         });
-        setEvents(data);
+        setEvents(data as GroupEvent[]);
         return data;
       } catch (e) {
         logger.warn('useGroupEvents', 'Failed to fetch nearby events', e);
@@ -41,51 +46,48 @@ export function useGroupEvents() {
 
   const getEvent = useCallback(async (eventId: string) => {
     try {
-      return await api.groupEvents.get.query({ eventId });
+      return await groupEventRepo.getById(eventId);
     } catch (e) {
       logger.warn('useGroupEvents', 'Failed to fetch event detail', e);
       return null;
     }
   }, []);
 
-  const createEvent = useCallback(
-    async (input: Parameters<typeof api.groupEvents.create.mutate>[0]) => {
-      const result = await api.groupEvents.create.mutate(input);
-      return result;
+  const createEvent = useCallback(async (input: CreateGroupEventInput) => {
+    const result = await groupEventRepo.create(input);
+    return result;
+  }, []);
+
+  const joinEvent = useCallback(async (eventId: string, dogId: string) => {
+    await groupEventRepo.join(eventId, dogId);
+  }, []);
+
+  const leaveEvent = useCallback(async (eventId: string) => {
+    await groupEventRepo.leave(eventId);
+  }, []);
+
+  const cancelEvent = useCallback(async (eventId: string) => {
+    await groupEventRepo.cancel(eventId);
+  }, []);
+
+  const listPendingRequests = useCallback(
+    async (eventId: string): Promise<PendingRequest[]> => {
+      try {
+        return (await groupEventRepo.listPendingRequests(eventId)) as PendingRequest[];
+      } catch (e) {
+        logger.warn('useGroupEvents', 'Failed to fetch pending requests', e);
+        return [];
+      }
     },
     [],
   );
 
-  const joinEvent = useCallback(async (eventId: string, dogId: string) => {
-    const result = await api.groupEvents.join.mutate({ eventId, dogId });
-    return result;
-  }, []);
-
-  const leaveEvent = useCallback(async (eventId: string) => {
-    const result = await api.groupEvents.leave.mutate({ eventId });
-    return result;
-  }, []);
-
-  const cancelEvent = useCallback(async (eventId: string) => {
-    const result = await api.groupEvents.cancel.mutate({ eventId });
-    return result;
-  }, []);
-
-  const listPendingRequests = useCallback(async (eventId: string) => {
-    try {
-      return await api.groupEvents.listPendingRequests.query({ eventId });
-    } catch (e) {
-      logger.warn('useGroupEvents', 'Failed to fetch pending requests', e);
-      return [];
-    }
-  }, []);
-
   const approveParticipant = useCallback(async (eventId: string, userId: string) => {
-    return api.groupEvents.approveParticipant.mutate({ eventId, userId });
+    await groupEventRepo.approveParticipant(eventId, userId);
   }, []);
 
   const declineParticipant = useCallback(async (eventId: string, userId: string) => {
-    return api.groupEvents.declineParticipant.mutate({ eventId, userId });
+    await groupEventRepo.declineParticipant(eventId, userId);
   }, []);
 
   return {

@@ -15,6 +15,13 @@
       "when": 1774026229781,
       "tag": "0001_add_support_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774045517626,
+      "tag": "0002_add_missing_indexes",
+      "breakpoints": true
     }
   ]
 }

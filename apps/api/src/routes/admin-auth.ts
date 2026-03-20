@@ -192,6 +192,12 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
       }
     })
     .post('/refresh', async (c) => {
+      // CSRF check: cross-origin cookie endpoints require X-Requested-With header
+      const xrw = c.req.header('x-requested-with');
+      if (xrw !== 'XMLHttpRequest') {
+        return c.json({ error: 'CSRF check failed' }, 403);
+      }
+
       // Read refresh token from HttpOnly cookie
       const refreshToken = getCookie(c, REFRESH_COOKIE_NAME) ?? null;
 
@@ -234,6 +240,12 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
       }
     })
     .post('/logout', async (c) => {
+      // CSRF check: cross-origin cookie endpoints require X-Requested-With header
+      const xrw = c.req.header('x-requested-with');
+      if (xrw !== 'XMLHttpRequest') {
+        return c.json({ error: 'CSRF check failed' }, 403);
+      }
+
       // Clear the refresh token cookie
       setCookie(c, REFRESH_COOKIE_NAME, '', {
         httpOnly: true,

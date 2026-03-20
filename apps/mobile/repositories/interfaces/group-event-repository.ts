@@ -45,4 +45,7 @@ export interface GroupEventRepository {
   join(eventId: string, dogId: string): Promise<void>;
   leave(eventId: string): Promise<void>;
   cancel(eventId: string): Promise<void>;
+  listPendingRequests(eventId: string): Promise<unknown[]>;
+  approveParticipant(eventId: string, userId: string): Promise<void>;
+  declineParticipant(eventId: string, userId: string): Promise<void>;
 }

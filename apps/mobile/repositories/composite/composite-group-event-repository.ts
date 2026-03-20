@@ -100,5 +100,20 @@ export function createCompositeGroupEventRepository(deps: Deps): GroupEventRepos
       if (!network.isOnline()) throw new Error('Annullamento evento richiede connessione');
       await remote.cancel(eventId);
     },
+
+    async listPendingRequests(eventId) {
+      if (!network.isOnline()) throw new Error('Richieste in sospeso richiede connessione');
+      return remote.listPendingRequests(eventId);
+    },
+
+    async approveParticipant(eventId, userId) {
+      if (!network.isOnline()) throw new Error('Approvazione partecipante richiede connessione');
+      await remote.approveParticipant(eventId, userId);
+    },
+
+    async declineParticipant(eventId, userId) {
+      if (!network.isOnline()) throw new Error('Rifiuto partecipante richiede connessione');
+      await remote.declineParticipant(eventId, userId);
+    },
   };
 }

@@ -100,6 +100,7 @@ export const dogPhotos = pgTable(
     uploadedAt: timestamp('uploaded_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    index('dog_photos_dog_id_idx').on(table.dogId),
     check('dog_photos_position_range', sql`${table.position} >= 0 AND ${table.position} <= 5`),
     check(
       'dog_photos_moderation_status_valid',

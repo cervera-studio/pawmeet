@@ -95,27 +95,30 @@ async function computeUserFeaturesForBatch(
   mlFeatureRepo: MlFeatureRepository,
   users: { id: string }[],
 ): Promise<Array<{ key: string; value: string }>> {
-  const entries: Array<{ key: string; value: string }> = [];
+  const results = await Promise.all(
+    users.map(async (user) => {
+      const [swipeStats, matchPrefs, avgMessages, walkStats] = await Promise.all([
+        mlFeatureRepo.getUserSwipeStats(user.id),
+        mlFeatureRepo.getUserMatchPrefs(user.id),
+        mlFeatureRepo.getUserAvgMessages(user.id),
+        mlFeatureRepo.getUserWalkStats(user.id),
+      ]);
 
-  for (const user of users) {
-    const swipeStats = await mlFeatureRepo.getUserSwipeStats(user.id);
-    const likeRate = swipeStats.total > 0 ? swipeStats.likes / swipeStats.total : 0;
-    const matchPrefs = await mlFeatureRepo.getUserMatchPrefs(user.id);
-    const avgMessages = await mlFeatureRepo.getUserAvgMessages(user.id);
-    const walkStats = await mlFeatureRepo.getUserWalkStats(user.id);
+      const likeRate = swipeStats.total > 0 ? swipeStats.likes / swipeStats.total : 0;
 
-    const features: UserFeatures = {
-      likeRate,
-      matchSuccessRate: matchPrefs?.successRate ?? 0,
-      avgChatMessages: avgMessages,
-      walkCompletionRate: walkStats.total > 0 ? walkStats.completed / walkStats.total : 0,
-      sampleSize: matchPrefs?.sampleSize ?? 0,
-    };
+      const features: UserFeatures = {
+        likeRate,
+        matchSuccessRate: matchPrefs?.successRate ?? 0,
+        avgChatMessages: avgMessages,
+        walkCompletionRate: walkStats.total > 0 ? walkStats.completed / walkStats.total : 0,
+        sampleSize: matchPrefs?.sampleSize ?? 0,
+      };
 
-    entries.push({ key: `ml:features:user:${user.id}`, value: JSON.stringify(features) });
-  }
+      return { key: `ml:features:user:${user.id}`, value: JSON.stringify(features) };
+    }),
+  );
 
-  return entries;
+  return results;
 }
 
 async function computeUserFeatures(mlFeatureRepo: MlFeatureRepository): Promise<number> {

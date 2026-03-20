@@ -51,10 +51,15 @@ export interface GroupEventRepository {
 
 // ── Discovery ──────────────────────────────────────────────────────────────────
 
+export interface PaginationParams {
+  limit?: number;
+  offset?: number;
+}
+
 export interface GroupEventDiscoveryRepository {
   findNearby(query: NearbyEventsQuery): Promise<(GroupEvent & { distanceKm: number })[]>;
-  findByCreator(userId: string): Promise<GroupEvent[]>;
-  findByParticipant(userId: string): Promise<GroupEvent[]>;
+  findByCreator(userId: string, pagination?: PaginationParams): Promise<GroupEvent[]>;
+  findByParticipant(userId: string, pagination?: PaginationParams): Promise<GroupEvent[]>;
   findFeatured(limit: number, offset: number): Promise<GroupEvent[]>;
 }
 

@@ -1,5 +1,6 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { safeParseCoordinates } from '@pawmeet/validation';
 import { hasLocation } from '../domain/type-guards.js';
 import type { UserRepository } from '../ports/index.js';
 
@@ -27,8 +28,9 @@ export function createUpdateLocation({ userRepo }: Deps) {
     latitude: number,
     longitude: number,
   ): Promise<Result<{ latitude: number; longitude: number; updatedAt: string }>> => {
-    // Validate coordinate bounds
-    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+    // Validate coordinate bounds using value object
+    const coordsResult = safeParseCoordinates(latitude, longitude);
+    if (!coordsResult.success) {
       return fail(new AppError('INVALID_COORDINATES', 'Invalid coordinates', 400));
     }
 

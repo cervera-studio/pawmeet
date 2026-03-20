@@ -1,5 +1,7 @@
 import { TRPCError } from '@trpc/server';
+import type { GroupEventStatus } from '@pawmeet/types';
 import { z } from 'zod';
+import { canTransitionTo } from '../../domain/group-event-state-machine.js';
 import { enqueueNotification } from '../../jobs/queue.js';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import { AdminRole, requireRole } from '../../lib/admin-permissions.js';
@@ -451,10 +453,10 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
         }
 
-        if (event.status === 'cancelled' || event.status === 'completed') {
+        if (!canTransitionTo(event.status as GroupEventStatus, 'cancelled')) {
           throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Event already cancelled or completed',
+            code: 'PRECONDITION_FAILED',
+            message: `Cannot cancel event with status "${event.status}"`,
           });
         }
 

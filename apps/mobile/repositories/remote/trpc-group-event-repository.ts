@@ -28,5 +28,14 @@ export function createTrpcGroupEventRepository(api: ApiClient): GroupEventReposi
     async cancel(eventId) {
       await api.groupEvents.cancel.mutate({ eventId });
     },
+    async listPendingRequests(eventId) {
+      return api.groupEvents.listPendingRequests.query({ eventId });
+    },
+    async approveParticipant(eventId, userId) {
+      await api.groupEvents.approveParticipant.mutate({ eventId, userId });
+    },
+    async declineParticipant(eventId, userId) {
+      await api.groupEvents.declineParticipant.mutate({ eventId, userId });
+    },
   };
 }

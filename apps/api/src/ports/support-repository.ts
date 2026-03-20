@@ -52,7 +52,7 @@ export interface SupportRepository {
   addMessage(input: AddMessageInput): Promise<SupportMessage>;
   getTicketById(ticketId: string): Promise<SupportTicket | null>;
   getTicketByIdForUser(ticketId: string, userId: string): Promise<SupportTicket | null>;
-  listTicketsByUser(userId: string): Promise<SupportTicket[]>;
+  listTicketsByUser(userId: string, limit?: number, offset?: number): Promise<SupportTicket[]>;
   listTickets(query: ListTicketsQuery): Promise<PaginatedTickets>;
   getMessages(
     ticketId: string,

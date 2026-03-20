@@ -1,25 +1,9 @@
 import { userConsents } from '@pawmeet/db';
 import { and, eq } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { ConsentRecord, ConsentRepository } from '../ports/consent-repository.js';
 
-export interface ConsentRecord {
-  consentType: string;
-  granted: boolean;
-  grantedAt: Date;
-  source: string;
-}
-
-export interface ConsentRepository {
-  upsert(
-    userId: string,
-    consentType: string,
-    granted: boolean,
-    source: string,
-    ipAddress: string | null,
-    userAgent: string | null,
-  ): Promise<void>;
-  findByUser(userId: string): Promise<ConsentRecord[]>;
-}
+export type { ConsentRecord, ConsentRepository };
 
 export class DrizzleConsentRepository implements ConsentRepository {
   constructor(private db: NeonHttpDatabase) {}

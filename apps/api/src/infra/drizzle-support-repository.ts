@@ -87,12 +87,14 @@ export class DrizzleSupportRepository implements SupportRepository {
     return firstRowOrNull<SupportTicket>(rows);
   }
 
-  async listTicketsByUser(userId: string): Promise<SupportTicket[]> {
+  async listTicketsByUser(userId: string, limit = 50, offset = 0): Promise<SupportTicket[]> {
     const rows = await this.db
       .select()
       .from(supportTickets)
       .where(eq(supportTickets.userId, userId))
-      .orderBy(desc(supportTickets.updatedAt));
+      .orderBy(desc(supportTickets.updatedAt))
+      .limit(limit)
+      .offset(offset);
     return rowsAs<SupportTicket>(rows);
   }
 

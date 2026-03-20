@@ -1,20 +1,13 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '@/lib/trpc';
+import { container } from '@/repositories/container';
+import type { ProposeWalkInput } from '@/repositories/interfaces/walk-repository';
+import { WALK_REPOSITORY } from '@/repositories/tokens';
 
 type Walk = RouterOutput['walks']['listUpcoming']['walks'][number];
 
-type ProposeWalkInput = {
-  matchId: string;
-  scheduledAt: string;
-  durationMin?: number;
-  title?: string;
-  location?: string;
-  latitude?: number;
-  longitude?: number;
-  notes?: string;
-};
+const walkRepo = container.resolve(WALK_REPOSITORY);
 
 export function useWalks() {
   const [upcomingWalks, setUpcomingWalks] = useState<Walk[]>([]);
@@ -23,8 +16,8 @@ export function useWalks() {
   const fetchUpcoming = useCallback(async () => {
     setLoading(true);
     try {
-      const { walks } = await api.walks.listUpcoming.query();
-      setUpcomingWalks(walks);
+      const { walks } = await walkRepo.listUpcoming();
+      setUpcomingWalks(walks as Walk[]);
     } catch (e) {
       logger.warn('useWalks', 'Failed to fetch upcoming walks', e);
     } finally {
@@ -38,7 +31,7 @@ export function useWalks() {
 
   const proposeWalk = useCallback(
     async (input: ProposeWalkInput) => {
-      const result = await api.walks.propose.mutate(input);
+      const result = await walkRepo.propose(input);
       await fetchUpcoming();
       return result;
     },
@@ -47,25 +40,23 @@ export function useWalks() {
 
   const respondToWalk = useCallback(
     async (walkId: string, accept: boolean) => {
-      const result = await api.walks.respond.mutate({ walkId, accept });
+      await walkRepo.respond(walkId, accept);
       await fetchUpcoming();
-      return result;
     },
     [fetchUpcoming],
   );
 
   const cancelWalk = useCallback(
     async (walkId: string) => {
-      const result = await api.walks.cancel.mutate({ walkId });
+      await walkRepo.cancel(walkId);
       await fetchUpcoming();
-      return result;
     },
     [fetchUpcoming],
   );
 
   const fetchByMatch = useCallback(async (matchId: string) => {
     try {
-      const { walks } = await api.walks.listByMatch.query({ matchId });
+      const { walks } = await walkRepo.listByMatch(matchId);
       return walks;
     } catch (e) {
       logger.warn('useWalks', 'Failed to fetch walks for match', e);

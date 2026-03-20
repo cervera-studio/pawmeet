@@ -2,7 +2,8 @@ import type { RouterOutput } from '@pawmeet/api-client';
 import type { ContentReportReason } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
-import { api } from '@/lib/trpc';
+import { container } from '@/repositories/container';
+import { FEED_REPOSITORY } from '@/repositories/tokens';
 
 type FeedItem = RouterOutput['feed']['timeline']['items'][number];
 type FeedPage = RouterOutput['feed']['timeline'];
@@ -11,6 +12,8 @@ type CommentsPage = RouterOutput['feed']['getComments'];
 type StoryGroup = RouterOutput['feed']['stories']['groups'][number];
 
 export type { CommentsPage, FeedItem, FeedPage, PostDetail, StoryGroup };
+
+const feedRepo = container.resolve(FEED_REPOSITORY);
 
 export function useFeed() {
   const [items, setItems] = useState<FeedItem[]>([]);
@@ -25,14 +28,11 @@ export function useFeed() {
     else setLoading(true);
 
     try {
-      const data = await api.feed.timeline.query({
-        cursor: cursor ?? undefined,
-        limit: 20,
-      });
+      const data = await feedRepo.timeline(cursor ?? undefined, 20);
       if (isRefresh) {
-        setItems(data.items);
+        setItems(data.items as FeedItem[]);
       } else {
-        setItems((prev) => [...prev, ...data.items]);
+        setItems((prev) => [...prev, ...(data.items as FeedItem[])]);
       }
       setNextCursor(data.nextCursor);
       return data;
@@ -54,11 +54,12 @@ export function useFeed() {
     await fetchTimeline(null);
   }, [fetchTimeline]);
 
-  const fetchStories = useCallback(async () => {
+  const fetchStories = useCallback(async (): Promise<StoryGroup[]> => {
     try {
-      const data = await api.feed.stories.query();
-      setStoryGroups(data.groups);
-      return data.groups;
+      const data = await feedRepo.stories();
+      const groups = data.groups as StoryGroup[];
+      setStoryGroups(groups);
+      return groups;
     } catch (e) {
       logger.warn('useFeed', 'Failed to fetch stories', e);
       return [];
@@ -67,7 +68,7 @@ export function useFeed() {
 
   const likePost = useCallback(async (postId: string) => {
     try {
-      const result = await api.feed.like.mutate({ postId });
+      const result = await feedRepo.like(postId);
       setItems((prev) =>
         prev.map((item) =>
           item.id === postId
@@ -89,11 +90,7 @@ export function useFeed() {
   const createComment = useCallback(
     async (postId: string, content: string, parentId?: string | null) => {
       try {
-        const result = await api.feed.createComment.mutate({
-          postId,
-          content,
-          parentId: parentId ?? undefined,
-        });
+        const result = await feedRepo.createComment(postId, content, parentId ?? undefined);
         setItems((prev) =>
           prev.map((item) =>
             item.id === postId ? { ...item, commentsCount: item.commentsCount + 1 } : item,
@@ -108,22 +105,21 @@ export function useFeed() {
     [],
   );
 
-  const fetchComments = useCallback(async (postId: string, cursor?: string | null) => {
-    try {
-      return await api.feed.getComments.query({
-        postId,
-        cursor: cursor ?? undefined,
-        limit: 20,
-      });
-    } catch (e) {
-      logger.warn('useFeed', 'Failed to fetch comments', e);
-      return null;
-    }
-  }, []);
+  const fetchComments = useCallback(
+    async (postId: string, cursor?: string | null): Promise<CommentsPage | null> => {
+      try {
+        return (await feedRepo.getComments(postId, cursor ?? undefined, 20)) as CommentsPage;
+      } catch (e) {
+        logger.warn('useFeed', 'Failed to fetch comments', e);
+        return null;
+      }
+    },
+    [],
+  );
 
   const deletePost = useCallback(async (postId: string) => {
     try {
-      await api.feed.deletePost.mutate({ postId });
+      await feedRepo.deletePost(postId);
       setItems((prev) => prev.filter((item) => item.id !== postId));
       return true;
     } catch (e) {
@@ -134,7 +130,7 @@ export function useFeed() {
 
   const viewStory = useCallback(async (storyId: string) => {
     try {
-      await api.feed.viewStory.mutate({ storyId });
+      await feedRepo.viewStory(storyId);
     } catch (e) {
       logger.warn('useFeed', 'Failed to view story', e);
     }
@@ -142,7 +138,7 @@ export function useFeed() {
 
   const deleteComment = useCallback(async (commentId: string) => {
     try {
-      await api.feed.deleteComment.mutate({ commentId });
+      await feedRepo.deleteComment(commentId);
       return true;
     } catch (e) {
       logger.warn('useFeed', 'Failed to delete comment', e);
@@ -152,11 +148,7 @@ export function useFeed() {
 
   const addReaction = useCallback(async (postId: string, emoji: string) => {
     try {
-      await api.feed.addReaction.mutate({
-        contentType: 'post',
-        contentId: postId,
-        emoji,
-      });
+      await feedRepo.addReaction('post', postId, emoji);
       return true;
     } catch (e) {
       logger.warn('useFeed', 'Failed to add reaction', e);
@@ -166,11 +158,7 @@ export function useFeed() {
 
   const removeReaction = useCallback(async (postId: string, emoji: string) => {
     try {
-      await api.feed.removeReaction.mutate({
-        contentType: 'post',
-        contentId: postId,
-        emoji,
-      });
+      await feedRepo.removeReaction('post', postId, emoji);
       return true;
     } catch (e) {
       logger.warn('useFeed', 'Failed to remove reaction', e);
@@ -185,11 +173,7 @@ export function useFeed() {
       reason: ContentReportReason,
     ) => {
       try {
-        await api.feed.reportContent.mutate({
-          contentType,
-          contentId,
-          reason,
-        });
+        await feedRepo.reportContent(contentType, contentId, reason);
         return true;
       } catch (e) {
         logger.warn('useFeed', 'Failed to report content', e);

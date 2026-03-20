@@ -16,9 +16,19 @@ function getWsUrl(): string {
 const WS_URL = getWsUrl();
 
 type WsListener = (message: WsMessage) => void;
+type ConnectionListener = (connected: boolean) => void;
 
 const listeners = new Set<WsListener>();
+const connectionListeners = new Set<ConnectionListener>();
 let sharedWs: WebSocket | null = null;
+let isConnected = false;
+
+function setConnectedState(value: boolean) {
+  isConnected = value;
+  for (const listener of connectionListeners) {
+    listener(value);
+  }
+}
 let sharedToken: string | null = null;
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 let reconnectAttempt = 0;
@@ -44,6 +54,7 @@ function connect(token: string) {
     // Send auth token as first message instead of exposing it in the subprotocol/URL
     ws.send(JSON.stringify({ type: 'auth', payload: { token } }));
     reconnectAttempt = 0;
+    setConnectedState(true);
     logger.debug('useWebSocket', 'Connected');
   };
 
@@ -64,6 +75,7 @@ function connect(token: string) {
 
   ws.onclose = () => {
     sharedWs = null;
+    setConnectedState(false);
     if (sharedToken && listeners.size > 0) {
       scheduleReconnect();
     }
@@ -108,6 +120,13 @@ export function getSharedWs(): WebSocket | null {
 }
 
 /**
+ * Returns whether the shared WebSocket is currently connected.
+ */
+export function getIsConnected(): boolean {
+  return isConnected;
+}
+
+/**
  * Subscribe to all incoming WebSocket messages.
  * The connection is opened lazily when the first listener subscribes.
  * Reconnects automatically with exponential backoff.
@@ -140,7 +159,7 @@ export function useWebSocketListener(listener: WsListener) {
  */
 export function useWebSocketManager() {
   const token = useAuthStore((s) => s.token);
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(isConnected);
 
   useEffect(() => {
     if (!token) {
@@ -159,14 +178,13 @@ export function useWebSocketManager() {
       }
     });
 
-    // Track connected state
-    const interval = setInterval(() => {
-      setConnected(sharedWs?.readyState === WebSocket.OPEN);
-    }, 1000);
+    // Subscribe to connection state changes instead of polling
+    const onConnectionChange: ConnectionListener = (value) => setConnected(value);
+    connectionListeners.add(onConnectionChange);
 
     return () => {
       sub.remove();
-      clearInterval(interval);
+      connectionListeners.delete(onConnectionChange);
     };
   }, [token]);
 

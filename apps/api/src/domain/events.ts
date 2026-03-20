@@ -1,3 +1,4 @@
+import type { ChatMessage, SupportMessage } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 
 // ── Domain event types ─────────────────────────────────────────────────────────
@@ -10,26 +11,68 @@ export const DOMAIN_EVENT = {
   SUPPORT_MESSAGE_SENT: 'support_message.sent',
 } as const;
 
-export type DomainEventType = (typeof DOMAIN_EVENT)[keyof typeof DOMAIN_EVENT];
+// ── Typed domain events (discriminated union) ─────────────────────────────────
 
-// ── Event payloads ─────────────────────────────────────────────────────────────
-
-export interface DomainEvent {
-  type: DomainEventType;
-  payload: Record<string, unknown>;
-  timestamp: Date;
-}
+export type DomainEvent =
+  | {
+      type: typeof DOMAIN_EVENT.MESSAGE_SENT;
+      payload: {
+        messageId: string;
+        matchId: string;
+        senderId: string;
+        recipientId: string | null;
+        message: ChatMessage;
+        content: string;
+        sanitizedContent: string;
+      };
+      timestamp: Date;
+    }
+  | {
+      type: typeof DOMAIN_EVENT.GROUP_MESSAGE_SENT;
+      payload: {
+        eventId: string;
+        senderId: string;
+        message: unknown;
+        participantIds: string[];
+        content: string;
+      };
+      timestamp: Date;
+    }
+  | {
+      type: typeof DOMAIN_EVENT.SUPPORT_TICKET_CREATED;
+      payload: { ticketId: string; userId: string };
+      timestamp: Date;
+    }
+  | {
+      type: typeof DOMAIN_EVENT.SUPPORT_REPLY_SENT;
+      payload: {
+        ticketId: string;
+        userId: string | null;
+        message: SupportMessage;
+        isInternal: boolean;
+        sanitizedContent: string;
+      };
+      timestamp: Date;
+    }
+  | {
+      type: typeof DOMAIN_EVENT.SUPPORT_MESSAGE_SENT;
+      payload: { ticketId: string; userId: string; message: SupportMessage };
+      timestamp: Date;
+    };
 
 // ── In-process pub/sub ─────────────────────────────────────────────────────────
 
-type EventHandler = (event: DomainEvent) => Promise<void>;
+type EventHandler<T extends DomainEvent = DomainEvent> = (event: T) => Promise<void>;
 
-const handlers = new Map<string, EventHandler[]>();
+const handlers = new Map<string, EventHandler<DomainEvent>[]>();
 
 /** Register a handler for a specific event type. */
-export function on(type: DomainEventType, handler: EventHandler): void {
+export function on<T extends DomainEvent['type']>(
+  type: T,
+  handler: (event: Extract<DomainEvent, { type: T }>) => Promise<void>,
+): void {
   const list = handlers.get(type) ?? [];
-  list.push(handler);
+  list.push(handler as EventHandler<DomainEvent>);
   handlers.set(type, list);
 }
 

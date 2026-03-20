@@ -1,5 +1,5 @@
 import type { Result } from '@pawmeet/types';
-import type { ConsentRecord, ConsentRepository } from '../infra/drizzle-consent-repository.js';
+import type { ConsentRecord, ConsentRepository } from '../ports/consent-repository.js';
 
 interface Deps {
   consentRepo: ConsentRepository;

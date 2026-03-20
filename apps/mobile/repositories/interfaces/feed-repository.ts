@@ -40,6 +40,7 @@ export interface FeedRepository {
   ): Promise<{ comment: FeedComment }>;
   getComments(postId: string, cursor?: string, limit?: number): Promise<CommentsPage>;
   deletePost(postId: string): Promise<void>;
+  deleteComment(commentId: string): Promise<void>;
   viewStory(storyId: string): Promise<void>;
   reportContent(
     contentType: 'post' | 'comment' | 'story',

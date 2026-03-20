@@ -6,6 +6,7 @@ import type {
   CreateGroupEventInput,
   FullGroupEventRepository,
   NearbyEventsQuery,
+  PaginationParams,
   PendingParticipant,
 } from '../ports/group-event-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
@@ -126,16 +127,26 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
     return rowsAs<GroupEvent & { distanceKm: number }>(rows);
   }
 
-  async findByCreator(userId: string): Promise<GroupEvent[]> {
+  async findByCreator(
+    userId: string,
+    pagination: PaginationParams = {},
+  ): Promise<GroupEvent[]> {
+    const { limit = 50, offset = 0 } = pagination;
     const rows = await this.db
       .select()
       .from(groupEvents)
       .where(eq(groupEvents.createdBy, userId))
-      .orderBy(desc(groupEvents.scheduledAt));
+      .orderBy(desc(groupEvents.scheduledAt))
+      .limit(limit)
+      .offset(offset);
     return rowsAs<GroupEvent>(rows);
   }
 
-  async findByParticipant(userId: string): Promise<GroupEvent[]> {
+  async findByParticipant(
+    userId: string,
+    pagination: PaginationParams = {},
+  ): Promise<GroupEvent[]> {
+    const { limit = 50, offset = 0 } = pagination;
     const rows = await this.db
       .select({ event: groupEvents })
       .from(groupEventParticipants)
@@ -146,7 +157,9 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
           eq(groupEventParticipants.status, 'accepted'),
         ),
       )
-      .orderBy(desc(groupEvents.scheduledAt));
+      .orderBy(desc(groupEvents.scheduledAt))
+      .limit(limit)
+      .offset(offset);
     return rowsAs<GroupEvent>(rows.map((r) => r.event));
   }
 

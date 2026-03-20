@@ -1,6 +1,5 @@
-import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed, WS_EVENT } from '@pawmeet/types';
 import type { ChatService, MessageRepository } from '../ports/index.js';
-import { WS_EVENT } from '../ws/chat.js';
 
 type Deps = {
   messageRepo: MessageRepository;

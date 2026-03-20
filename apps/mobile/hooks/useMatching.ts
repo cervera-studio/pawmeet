@@ -4,13 +4,16 @@ import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { cache } from '@/lib/storage';
-import { api } from '@/lib/trpc';
+import { container } from '@/repositories/container';
+import { MATCH_REPOSITORY } from '@/repositories/tokens';
 import { useDogsStore } from '@/stores/dogs';
 
 type Suggestion = RouterOutput['matches']['discover']['suggestions'][number];
 type LikeResult = RouterOutput['matches']['like'];
 
 const SUGGESTIONS_CACHE_KEY = 'cache:suggestions';
+
+const matchRepo = container.resolve(MATCH_REPOSITORY);
 
 /**
  * Matching hook that reads the active dog from the store.
@@ -54,10 +57,11 @@ export function useMatching() {
     setIsLoading(true);
     try {
       const hasFilters = Object.keys(filters).length > 0;
-      const { suggestions: data } = await api.matches.discover.query({
-        dogId: dogId ?? '',
-        ...(hasFilters ? { filters } : {}),
-      });
+      const { suggestions: rawData } = await matchRepo.discover(
+        dogId ?? '',
+        hasFilters ? filters : undefined,
+      );
+      const data = rawData as Suggestion[];
       setSuggestions(data);
       setCurrentIndex(0);
       swipeCountRef.current = 0;
@@ -66,11 +70,7 @@ export function useMatching() {
       // Track match feed loaded
       const avgScore =
         data.length > 0
-          ? data.reduce(
-              (sum, s) =>
-                sum + (((s as Record<string, unknown>).compatibilityScore as number) ?? 0),
-              0,
-            ) / data.length
+          ? data.reduce((sum, s) => sum + (s.compatibilityScore ?? 0), 0) / data.length
           : 0;
       analytics.track('match_feed_loaded', {
         cardsAvailable: data.length,
@@ -91,7 +91,7 @@ export function useMatching() {
       if (next >= suggestions.length) {
         analytics.track('match_feed_exhausted', {
           totalSwipesSession: swipeCountRef.current,
-          searchRadiusKm: (filters.maxDistanceKm as number) ?? 50,
+          searchRadiusKm: filters.maxDistanceKm ?? 50,
         });
       }
       return next;
@@ -100,14 +100,13 @@ export function useMatching() {
 
   const trackSwipe = useCallback(
     (direction: 'right' | 'left') => {
-      const profile = currentProfile as Record<string, unknown> | null;
       analytics.track('match_swipe_performed', {
         direction,
-        compatibilityScore: (profile?.compatibilityScore as number) ?? 0,
-        distanceKm: (profile?.distanceKm as number) ?? 0,
+        compatibilityScore: currentProfile?.compatibilityScore ?? 0,
+        distanceKm: currentProfile?.distanceKm ?? 0,
         viewDurationMs: Date.now() - cardViewStartRef.current,
-        sizePair: (profile?.sizePair as string) ?? 'unknown',
-        energyPair: (profile?.energyPair as string) ?? 'unknown',
+        sizePair: currentProfile?.dog.size ?? 'unknown',
+        energyPair: currentProfile?.dog.energyLevel ?? 'unknown',
       });
     },
     [currentProfile, analytics],
@@ -117,12 +116,9 @@ export function useMatching() {
     async (targetDogId: string) => {
       trackSwipe('right');
       try {
-        const result = await api.matches.like.mutate({
-          dogId: dogId ?? '',
-          targetDogId,
-        });
+        const result = await matchRepo.like(dogId ?? '', targetDogId);
         if (result.isMatch) {
-          setNewMatch(result);
+          setNewMatch(result as LikeResult);
         }
       } catch (e) {
         logger.warn('useMatching', 'swipeRight failed', e);
@@ -136,7 +132,7 @@ export function useMatching() {
     async (targetDogId: string) => {
       trackSwipe('left');
       try {
-        await api.matches.pass.mutate({ dogId: dogId ?? '', targetDogId });
+        await matchRepo.pass(dogId ?? '', targetDogId);
       } catch (e) {
         logger.warn('useMatching', 'swipeLeft failed', e);
       }
@@ -148,12 +144,9 @@ export function useMatching() {
   const superLike = useCallback(
     async (targetDogId: string) => {
       try {
-        const result = await api.matches.like.mutate({
-          dogId: dogId ?? '',
-          targetDogId,
-        });
+        const result = await matchRepo.like(dogId ?? '', targetDogId);
         if (result.isMatch) {
-          setNewMatch(result);
+          setNewMatch(result as LikeResult);
         }
       } catch (e) {
         logger.warn('useMatching', 'superLike failed', e);

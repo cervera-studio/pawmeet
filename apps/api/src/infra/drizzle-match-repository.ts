@@ -50,7 +50,8 @@ export class DrizzleMatchRepository implements MatchRepository {
     const rows = await this.db
       .select({ swipedDogId: swipes.swipedDogId })
       .from(swipes)
-      .where(eq(swipes.swiperDogId, swiperDogId));
+      .where(eq(swipes.swiperDogId, swiperDogId))
+      .limit(5000);
     return rows.map((r) => r.swipedDogId);
   }
 

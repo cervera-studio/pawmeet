@@ -22,6 +22,9 @@ export function createTrpcFeedRepository(api: ApiClient): FeedRepository {
     async deletePost(postId) {
       await api.feed.deletePost.mutate({ postId });
     },
+    async deleteComment(commentId) {
+      await api.feed.deleteComment.mutate({ commentId });
+    },
     async viewStory(storyId) {
       await api.feed.viewStory.mutate({ storyId });
     },

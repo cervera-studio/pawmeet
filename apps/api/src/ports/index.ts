@@ -8,6 +8,7 @@ export type { BioGenerationService } from './bio-generation-service.js';
 export type { BreedDetectionResult, BreedDetectionService } from './breed-detection-service.js';
 export type { Breed, BreedRepository } from './breed-repository.js';
 export type { ChatService } from './chat-service.js';
+export type { ConsentRecord, ConsentRepository } from './consent-repository.js';
 export type {
   ContentModerationResult,
   ContentModerationService,

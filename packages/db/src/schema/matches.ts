@@ -53,6 +53,7 @@ export const swipes = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    index('swipes_swiper_dog_id_idx').on(table.swiperDogId),
     check('swipes_direction_valid', sql`${table.direction} IN ('like', 'pass')`),
     // Prevent duplicate swipes: one swipe per pair
     unique('uq_swipes_pair').on(table.swiperDogId, table.swipedDogId),

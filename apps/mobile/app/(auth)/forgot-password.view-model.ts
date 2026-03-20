@@ -1,26 +1,27 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { z } from 'zod';
+import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { zodToFieldErrors } from '@/lib/validation';
 
 type Phase = 'request' | 'reset';
 
 const requestSchema = z.object({
-  email: z.string().email('Inserisci un indirizzo email valido'),
+  email: z.string().email(i18n.t('auth.forgotPassword.invalidEmail')),
 });
 
 const resetSchema = z
   .object({
     otp: z
       .string()
-      .length(6, 'Il codice deve essere di 6 cifre')
-      .regex(/^\d{6}$/, 'Il codice deve contenere solo numeri'),
-    newPassword: z.string().min(8, 'La password deve avere almeno 8 caratteri'),
+      .length(6, i18n.t('auth.forgotPassword.codeRequired'))
+      .regex(/^\d{6}$/, i18n.t('auth.forgotPassword.codeRequired')),
+    newPassword: z.string().min(8, i18n.t('auth.forgotPassword.passwordTooShort')),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Le password non corrispondono',
+    message: i18n.t('auth.forgotPassword.passwordMismatch'),
     path: ['confirmPassword'],
   });
 
@@ -53,9 +54,7 @@ export function useForgotPasswordViewModel() {
       await api.auth.forgotPassword.mutate({ email });
       setPhase('reset');
     } catch (e) {
-      setApiError(
-        e instanceof Error ? e.message : "Errore nell'invio del codice. Riprova più tardi.",
-      );
+      setApiError(e instanceof Error ? e.message : i18n.t('auth.forgotPassword.sendError'));
     } finally {
       setLoading(false);
     }
@@ -76,9 +75,7 @@ export function useForgotPasswordViewModel() {
       await api.auth.resetPassword.mutate({ email, code: otp, password: newPassword });
       router.replace('/(auth)/login');
     } catch (e) {
-      setApiError(
-        e instanceof Error ? e.message : 'Errore nel reset della password. Riprova più tardi.',
-      );
+      setApiError(e instanceof Error ? e.message : i18n.t('auth.forgotPassword.resetError'));
     } finally {
       setLoading(false);
     }
@@ -93,9 +90,7 @@ export function useForgotPasswordViewModel() {
     try {
       await api.auth.forgotPassword.mutate({ email });
     } catch (e) {
-      setApiError(
-        e instanceof Error ? e.message : "Errore nell'invio del codice. Riprova più tardi.",
-      );
+      setApiError(e instanceof Error ? e.message : i18n.t('auth.forgotPassword.sendError'));
     }
 
     // Disable resend for 60 seconds

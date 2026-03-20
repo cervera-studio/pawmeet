@@ -264,7 +264,7 @@ export default function ProfileScreen() {
           </Pressable>
 
           <Pressable
-            onPress={vm.navigateToSettings}
+            onPress={vm.navigateToPrivacy}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >
             <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">

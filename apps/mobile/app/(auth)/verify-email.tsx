@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 import { useVerifyEmailViewModel } from './verify-email.view-model';
 
 export default function VerifyEmailScreen() {
+  const { t } = useTranslation();
   const vm = useVerifyEmailViewModel();
 
   return (
@@ -14,11 +16,10 @@ export default function VerifyEmailScreen() {
       >
         <View className="flex-1 justify-center px-8">
           <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-            Verifica la tua email
+            {t('auth.verifyEmail.title')}
           </Text>
           <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
-            Abbiamo inviato un codice a 6 cifre a{' '}
-            <Text className="font-semibold text-gray-700 dark:text-[#D1D1D6]">{vm.email}</Text>
+            {t('auth.verifyEmail.subtitle', { email: vm.email })}
           </Text>
 
           {vm.apiError ? (
@@ -34,13 +35,15 @@ export default function VerifyEmailScreen() {
             maxLength={6}
             autoFocus
             className="mb-8 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 text-center text-3xl font-bold tracking-[12px] text-gray-900 dark:border-[#38383A] dark:bg-[#2C2C2E] dark:text-[#F5F5F7]"
-            placeholder="000000"
+            placeholder={t('auth.verifyEmail.otpPlaceholder')}
             placeholderTextColor="#9CA3AF"
           />
 
           <Button
             onPress={vm.handleVerify}
-            label={vm.loading ? 'Verificando...' : 'Verifica'}
+            label={
+              vm.loading ? t('auth.verifyEmail.verifying') : t('auth.verifyEmail.verifyButton')
+            }
             disabled={!vm.canVerify}
           />
 
@@ -57,10 +60,10 @@ export default function VerifyEmailScreen() {
               }`}
             >
               {vm.resending
-                ? 'Invio in corso...'
+                ? t('auth.verifyEmail.resending')
                 : vm.countdown > 0
-                  ? `Reinvia codice (${vm.countdown}s)`
-                  : 'Reinvia codice'}
+                  ? t('auth.verifyEmail.resendCountdown', { seconds: vm.countdown })
+                  : t('auth.verifyEmail.resendCode')}
             </Text>
           </Pressable>
         </View>

@@ -18,11 +18,17 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useNewDogViewModel } from './new.view-model';
 
-const STEPS = ['Info base', 'Temperamento', 'Passeggiate', 'Foto'];
-
 // -- Step sub-components --
 
 function StepIndicator({ step }: { step: number }) {
+  const { t } = useTranslation();
+  const STEPS = [
+    t('dogForm.sections.basicInfo'),
+    t('dogForm.sections.temperament'),
+    t('dogForm.sections.walks'),
+    t('dogForm.sections.photos'),
+  ];
+
   return (
     <View className="mb-8 flex-row gap-2">
       {STEPS.map((s, i) => (
@@ -90,17 +96,25 @@ function Step1BasicInfo({
       </Pressable>
 
       <View>
-        <Input placeholder="Nome" value={state.name} onChangeText={(v) => setField('name', v)} />
+        <Input
+          placeholder={t('dogForm.fields.name')}
+          value={state.name}
+          onChangeText={(v) => setField('name', v)}
+        />
         <FieldError message={errors.name} />
       </View>
 
       <View>
-        <Input placeholder="Razza" value={state.breed} onChangeText={(v) => setField('breed', v)} />
+        <Input
+          placeholder={t('dogForm.fields.breed')}
+          value={state.breed}
+          onChangeText={(v) => setField('breed', v)}
+        />
         <FieldError message={errors.breed} />
       </View>
 
       <Input
-        placeholder="Seconda razza (opzionale)"
+        placeholder={t('dogForm.fields.breedSecondary')}
         value={state.breedSecondary}
         onChangeText={(v) => setField('breedSecondary', v)}
       />
@@ -125,7 +139,9 @@ function Step1BasicInfo({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Taglia</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          {t('dogForm.fields.size')}
+        </Text>
         <ChipSelect
           options={SIZE_OPTIONS}
           selected={state.size ?? ('' as string)}
@@ -135,7 +151,9 @@ function Step1BasicInfo({
       </View>
 
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Sesso</Text>
+        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+          {t('dogForm.fields.gender')}
+        </Text>
         <ChipSelect
           options={GENDER_OPTIONS}
           selected={state.gender ?? ('' as string)}
@@ -228,6 +246,7 @@ function Step2Personality({
   setField: ReturnType<typeof useNewDogViewModel>['setField'];
   errors: Record<string, string>;
 }) {
+  const { t } = useTranslation();
   return (
     <View className="gap-5">
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
@@ -236,7 +255,7 @@ function Step2Personality({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Livello di energia
+          {t('dogForm.fields.energy')}
         </Text>
         <ChipSelect
           options={ENERGY_OPTIONS}
@@ -248,7 +267,7 @@ function Step2Personality({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Comportamento con altri cani
+          {t('dogForm.fields.behaviorDogs')}
         </Text>
         <ChipSelect
           options={BEHAVIOR_DOGS_OPTIONS}
@@ -260,7 +279,7 @@ function Step2Personality({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Comportamento con le persone
+          {t('dogForm.fields.behaviorPeople')}
         </Text>
         <ChipSelect
           options={BEHAVIOR_PEOPLE_OPTIONS}
@@ -272,7 +291,7 @@ function Step2Personality({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Comportamento al guinzaglio
+          {t('dogForm.fields.leash')}
         </Text>
         <ChipSelect
           options={LEASH_OPTIONS}
@@ -284,7 +303,7 @@ function Step2Personality({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Richiamo (opzionale)
+          {t('dogForm.fields.recall')}
         </Text>
         <ChipSelect
           options={RECALL_OPTIONS}
@@ -305,6 +324,7 @@ function Step3WalkPrefs({
   setField: ReturnType<typeof useNewDogViewModel>['setField'];
   errors: Record<string, string>;
 }) {
+  const { t } = useTranslation();
   return (
     <View className="gap-5">
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
@@ -313,7 +333,7 @@ function Step3WalkPrefs({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Orari preferiti
+          {t('dogForm.fields.walkTimes')}
         </Text>
         <ChipSelect
           options={WALK_TIME_OPTIONS}
@@ -326,7 +346,7 @@ function Step3WalkPrefs({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Tipo di terreno
+          {t('dogForm.fields.walkTerrain')}
         </Text>
         <ChipSelect
           options={TERRAIN_OPTIONS}
@@ -339,7 +359,7 @@ function Step3WalkPrefs({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Durata minima (minuti)
+          {t('dogForm.fields.durationMin')}
         </Text>
         <Input
           placeholder="30"
@@ -352,7 +372,7 @@ function Step3WalkPrefs({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Durata massima (minuti)
+          {t('dogForm.fields.durationMax')}
         </Text>
         <Input
           placeholder="60"
@@ -381,9 +401,7 @@ function Step4Photos({
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
         {t('dogForm.addPhotos')}
       </Text>
-      <Text className="text-sm text-gray-500 dark:text-neutral-500">
-        Aggiungi fino a 6 foto. La prima sarà la foto principale.
-      </Text>
+      <Text className="text-sm text-gray-500 dark:text-neutral-500">{t('dogForm.photosHint')}</Text>
 
       <View className="flex-row flex-wrap gap-3">
         {photos.map((photo, index) => (
@@ -395,7 +413,9 @@ function Step4Photos({
             />
             {index === 0 && (
               <View className="absolute left-1 top-1 rounded-full bg-primary px-2 py-0.5">
-                <Text className="text-[10px] font-semibold text-white">Principale</Text>
+                <Text className="text-[10px] font-semibold text-white">
+                  {t('dogForm.photosPrimary')}
+                </Text>
               </View>
             )}
             <Pressable
@@ -413,14 +433,16 @@ function Step4Photos({
             className="h-28 w-28 items-center justify-center rounded-xl border-2 border-dashed border-gray-200 dark:border-[#38383A]"
           >
             <Text className="text-3xl text-gray-300 dark:text-neutral-500">+</Text>
-            <Text className="text-[10px] text-gray-400 dark:text-neutral-500">Aggiungi</Text>
+            <Text className="text-[10px] text-gray-400 dark:text-neutral-500">
+              {t('dogForm.photosAdd')}
+            </Text>
           </Pressable>
         )}
       </View>
 
       {photos.length === 0 && (
         <Text className="text-xs text-gray-400 dark:text-neutral-500">
-          Puoi anche aggiungere foto dopo la creazione del profilo.
+          {t('dogForm.photosPostCreate')}
         </Text>
       )}
     </View>
@@ -494,7 +516,7 @@ export default function NewDogScreen() {
 
           {/* Navigation */}
           <View className="mt-8 gap-3">
-            {step < STEPS.length - 1 ? (
+            {step < 3 ? (
               <Button onPress={nextStep} label={t('common.next')} />
             ) : (
               <Button

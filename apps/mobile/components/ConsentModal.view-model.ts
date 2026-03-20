@@ -7,7 +7,7 @@ import { useConsentStore } from '@/stores/consent';
 
 export function useConsentModalViewModel(onDismiss: () => void) {
   const store = useConsentStore();
-  const [local, setLocal] = useState<ConsentState>(DEFAULT_CONSENT_STATE);
+  const [local, setLocal] = useState<ConsentState>(() => store.consents);
 
   const setConsent = useCallback((key: keyof ConsentState, value: boolean) => {
     setLocal((prev) => ({ ...prev, [key]: value }));

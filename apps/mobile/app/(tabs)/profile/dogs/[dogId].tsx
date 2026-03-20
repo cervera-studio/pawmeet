@@ -324,6 +324,9 @@ export default function DogDetailScreen() {
           {/* Traits & Walk preferences */}
           <DogTraits dog={vm.dog} />
 
+          {/* Edit button */}
+          <Button onPress={vm.navigateToEdit} label="Modifica profilo" variant="outline" />
+
           {/* Photo gallery */}
           <PhotoGallery
             photos={vm.photos}

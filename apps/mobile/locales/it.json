@@ -609,6 +609,42 @@
       "submitButton": "Conferma",
       "submitting": "Invio...",
       "invalidDate": "Data non valida"
+    },
+    "forgotPassword": {
+      "title": "Recupera password",
+      "subtitle": "Inserisci la tua email per ricevere un codice di verifica",
+      "emailPlaceholder": "Email",
+      "sendCode": "Invia codice",
+      "sending": "Invio in corso...",
+      "sendError": "Errore nell'invio del codice. Riprova più tardi.",
+      "resetTitle": "Reimposta password",
+      "resetSubtitle": "Inserisci il codice ricevuto e la nuova password",
+      "otpPlaceholder": "Codice di verifica (6 cifre)",
+      "newPasswordPlaceholder": "Nuova password",
+      "confirmPasswordPlaceholder": "Conferma password",
+      "resetButton": "Reimposta password",
+      "resetting": "Reimpostazione...",
+      "resetError": "Errore nel reset della password. Riprova più tardi.",
+      "resendCode": "Reinvia codice",
+      "backToLogin": "Torna al login",
+      "codeSent": "Codice inviato!",
+      "invalidEmail": "Inserisci un indirizzo email valido",
+      "codeRequired": "Il codice deve essere di 6 cifre",
+      "passwordRequired": "Inserisci la nuova password",
+      "passwordTooShort": "La password deve avere almeno 8 caratteri",
+      "passwordMismatch": "Le password non corrispondono"
+    },
+    "verifyEmail": {
+      "title": "Verifica la tua email",
+      "subtitle": "Abbiamo inviato un codice a 6 cifre a {{email}}",
+      "otpPlaceholder": "000000",
+      "verifyButton": "Verifica",
+      "verifying": "Verificando...",
+      "verifyError": "Errore di verifica. Riprova.",
+      "resendCode": "Reinvia codice",
+      "resendCountdown": "Reinvia codice ({{seconds}}s)",
+      "resendError": "Errore nel reinvio del codice",
+      "resending": "Invio in corso..."
     }
   },
 
@@ -641,6 +677,51 @@
     "manageAll": "Gestisci tutti i consensi"
   },
 
+  "privacy": {
+    "title": "Privacy e sicurezza",
+    "visibilitySection": "Visibilità",
+    "profileActive": "Profilo attivo",
+    "profileActiveDescription": "Rendi il tuo profilo visibile agli altri utenti",
+    "approximateDistance": "Distanza approssimativa",
+    "approximateDistanceDescription": "Mostra una distanza approssimativa invece di quella esatta",
+    "showLastSeen": "Ultimo accesso",
+    "showLastSeenDescription": "Mostra quando sei stato online l'ultima volta nelle chat",
+    "blockedSection": "Utenti bloccati",
+    "blockedUsers": "Gestisci utenti bloccati",
+    "blockedCount": "{{count}} bloccati",
+    "dataSection": "I tuoi dati",
+    "exportData": "Esporta i miei dati",
+    "exportDataDescription": "Ai sensi del GDPR (Art. 20), hai il diritto di ricevere una copia dei tuoi dati personali in un formato leggibile.",
+    "exportConfirmTitle": "Esporta i tuoi dati",
+    "exportConfirmMessage": "Riceverai una email con tutti i tuoi dati personali in formato leggibile. Vuoi procedere?",
+    "exportButton": "Esporta",
+    "exportSuccess": "Richiesta inviata",
+    "exportSuccessMessage": "Riceverai una email con i tuoi dati entro 48 ore.",
+    "exportError": "Impossibile esportare i dati. Riprova più tardi.",
+    "dangerSection": "Zona pericolosa",
+    "deleteAccount": "Elimina account",
+    "deleteWarning": "Il tuo account verrà disattivato immediatamente. Tutti i tuoi dati verranno eliminati definitivamente entro 30 giorni. Questa azione non può essere annullata."
+  },
+
+  "safety": {
+    "title": "Sicurezza e emergenza",
+    "description": "Gestisci i tuoi contatti di emergenza. In caso di bisogno durante una passeggiata, potrai inviare rapidamente la tua posizione a queste persone.",
+    "contactsSection": "Contatti di emergenza",
+    "noContacts": "Nessun contatto di emergenza aggiunto.\nAggiungi fino a 3 contatti che potranno essere avvisati in caso di emergenza.",
+    "maxContacts": "Massimo 3 contatti",
+    "addContact": "Aggiungi contatto",
+    "adding": "Aggiunta in corso...",
+    "namePlaceholder": "Nome",
+    "phonePlaceholder": "Numero di telefono",
+    "nameRequired": "Il nome è obbligatorio",
+    "phoneRequired": "Inserisci un numero di telefono valido",
+    "deleteConfirmTitle": "Rimuovi contatto",
+    "deleteConfirmMessage": "Vuoi rimuovere {{name}} dai contatti di emergenza?",
+    "deleteButton": "Rimuovi",
+    "howSosWorks": "Come funziona SOS",
+    "sosDescription": "Durante una passeggiata, il pulsante SOS invierà la tua posizione GPS ai tuoi contatti di emergenza."
+  },
+
   "settings": {
     "title": "Impostazioni",
     "privacySection": "Privacy e consensi",
@@ -652,6 +733,7 @@
     "errorTrackingDescription": "Report dettagliati (sempre anonimi senza consenso)",
     "marketingTitle": "Comunicazioni marketing",
     "marketingDescription": "Novità, eventi e promozioni via email",
+    "manageConsents": "Gestisci tutti i consensi",
     "notifications": {
       "title": "Notifiche",
       "newMatches": "Nuovi match",
@@ -670,15 +752,20 @@
       "enable": "Attiva orari silenziosi",
       "description": "Disattiva le notifiche in determinati orari",
       "from": "Dalle",
-      "to": "Alle"
+      "to": "Alle",
+      "confirm": "Conferma"
     },
     "general": {
       "title": "Generali",
       "shareLocation": "Condividi posizione",
       "darkMode": "Tema scuro",
       "searchRadius": "Raggio di ricerca",
+      "searchRadiusUnit": "km",
+      "searchRadiusMin": "Min 1 km — Max 25 km",
+      "selectLanguage": "Seleziona lingua",
       "language": "Lingua",
-      "italian": "Italiano"
+      "italian": "Italiano",
+      "safetyAndEmergency": "Sicurezza e emergenza"
     },
     "legal": {
       "termsOfService": "Termini di servizio",
@@ -808,6 +895,37 @@
   },
 
   "dogForm": {
+    "editTitle": "Modifica {{name}}",
+    "saveChanges": "Salva modifiche",
+    "saving": "Salvataggio...",
+    "saveError": "Errore nel salvataggio. Riprova.",
+    "sections": {
+      "basicInfo": "Info base",
+      "temperament": "Temperamento",
+      "walks": "Passeggiate",
+      "photos": "Foto"
+    },
+    "fields": {
+      "name": "Nome",
+      "breed": "Razza",
+      "breedSecondary": "Seconda razza (opzionale)",
+      "size": "Taglia",
+      "gender": "Sesso",
+      "bio": "Bio (opzionale)",
+      "energy": "Energia",
+      "behaviorDogs": "Con altri cani",
+      "behaviorPeople": "Con le persone",
+      "leash": "Guinzaglio",
+      "recall": "Richiamo",
+      "walkTimes": "Orari",
+      "walkTerrain": "Terreno",
+      "durationMin": "Min (min)",
+      "durationMax": "Max (min)"
+    },
+    "photosPrimary": "Principale",
+    "photosAdd": "Aggiungi",
+    "photosHint": "Aggiungi fino a 6 foto. La prima sarà la foto principale.",
+    "photosPostCreate": "Puoi anche aggiungere foto dopo la creazione del profilo.",
     "validation": {
       "selectSize": "Seleziona la taglia",
       "selectGender": "Seleziona il sesso",

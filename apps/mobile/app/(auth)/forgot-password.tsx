@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { useForgotPasswordViewModel } from './forgot-password.view-model';
 
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation();
   const vm = useForgotPasswordViewModel();
 
   return (
@@ -15,12 +17,14 @@ export default function ForgotPasswordScreen() {
       >
         <View className="flex-1 justify-center px-8">
           <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-            {vm.phase === 'request' ? 'Recupera password' : 'Reimposta password'}
+            {vm.phase === 'request'
+              ? t('auth.forgotPassword.title')
+              : t('auth.forgotPassword.resetTitle')}
           </Text>
           <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
             {vm.phase === 'request'
-              ? 'Inserisci la tua email per ricevere un codice di verifica'
-              : 'Inserisci il codice ricevuto e la nuova password'}
+              ? t('auth.forgotPassword.subtitle')
+              : t('auth.forgotPassword.resetSubtitle')}
           </Text>
 
           {vm.apiError ? (
@@ -32,7 +36,7 @@ export default function ForgotPasswordScreen() {
           {vm.phase === 'request' ? (
             <>
               <FormField
-                placeholder="Email"
+                placeholder={t('auth.forgotPassword.emailPlaceholder')}
                 value={vm.email}
                 onChangeText={vm.setEmail}
                 keyboardType="email-address"
@@ -42,14 +46,16 @@ export default function ForgotPasswordScreen() {
 
               <Button
                 onPress={vm.handleRequestReset}
-                label={vm.loading ? 'Invio in corso...' : 'Invia codice'}
+                label={
+                  vm.loading ? t('auth.forgotPassword.sending') : t('auth.forgotPassword.sendCode')
+                }
                 disabled={vm.loading}
               />
             </>
           ) : (
             <>
               <FormField
-                placeholder="Codice di verifica (6 cifre)"
+                placeholder={t('auth.forgotPassword.otpPlaceholder')}
                 value={vm.otp}
                 onChangeText={vm.setOtp}
                 keyboardType="number-pad"
@@ -58,7 +64,7 @@ export default function ForgotPasswordScreen() {
               />
 
               <FormField
-                placeholder="Nuova password"
+                placeholder={t('auth.forgotPassword.newPasswordPlaceholder')}
                 value={vm.newPassword}
                 onChangeText={vm.setNewPassword}
                 secureTextEntry
@@ -66,7 +72,7 @@ export default function ForgotPasswordScreen() {
               />
 
               <FormField
-                placeholder="Conferma password"
+                placeholder={t('auth.forgotPassword.confirmPasswordPlaceholder')}
                 value={vm.confirmPassword}
                 onChangeText={vm.setConfirmPassword}
                 secureTextEntry
@@ -82,13 +88,17 @@ export default function ForgotPasswordScreen() {
                 <Text
                   className={`text-sm ${vm.resendDisabled ? 'text-gray-400 dark:text-neutral-600' : 'text-primary'}`}
                 >
-                  Reinvia codice
+                  {t('auth.forgotPassword.resendCode')}
                 </Text>
               </Pressable>
 
               <Button
                 onPress={vm.handleResetPassword}
-                label={vm.loading ? 'Reimpostazione...' : 'Reimposta password'}
+                label={
+                  vm.loading
+                    ? t('auth.forgotPassword.resetting')
+                    : t('auth.forgotPassword.resetButton')
+                }
                 disabled={vm.loading}
               />
             </>
@@ -98,7 +108,7 @@ export default function ForgotPasswordScreen() {
         <View className="px-8 pb-8">
           <Pressable onPress={vm.navigateToLogin} className="items-center py-2">
             <Text className="text-base text-gray-500 dark:text-neutral-500">
-              Torna al <Text className="font-semibold text-primary">Login</Text>
+              {t('auth.forgotPassword.backToLogin')}
             </Text>
           </Pressable>
         </View>

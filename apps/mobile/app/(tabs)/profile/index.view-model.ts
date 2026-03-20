@@ -87,6 +87,10 @@ export function useProfileViewModel() {
     router.push('/(tabs)/profile/gamification');
   };
 
+  const navigateToPrivacy = () => {
+    router.push('/(modals)/privacy');
+  };
+
   const navigateToBlocked = () => {
     router.push('/(modals)/blocked');
   };
@@ -116,6 +120,7 @@ export function useProfileViewModel() {
     navigateToFollowing,
     navigateToFriends,
     navigateToGamification,
+    navigateToPrivacy,
     navigateToBlocked,
     navigateToSearchUsers,
     logout,

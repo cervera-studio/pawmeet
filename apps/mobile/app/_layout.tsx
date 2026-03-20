@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useWebSocketManager } from '@/hooks/useWebSocket';
 import { getExpiringPins, validatePinsInitialized } from '@/lib/certificate-pinning';
+import { loadConsentsFromApi } from '@/lib/consent-sync';
 import { checkDeviceIntegrity } from '@/lib/device-security';
 import { startNetworkMonitor, stopNetworkMonitor } from '@/lib/network';
 import { api } from '@/lib/trpc';
@@ -211,10 +212,15 @@ function RootLayout() {
   // Hydrate theme store (triggers Appearance.setColorScheme on rehydrate)
   useThemeStore();
 
-  // Show consent modal after authentication if not yet seen
+  // Load server-side consents and show consent modal if not yet seen
   useEffect(() => {
-    if (isAuthenticated && !hasSeenConsentModal) {
-      setShowConsentModal(true);
+    if (isAuthenticated) {
+      loadConsentsFromApi().catch((e) =>
+        logger.warn('RootLayout', 'Failed to load consents from API', e),
+      );
+      if (!hasSeenConsentModal) {
+        setShowConsentModal(true);
+      }
     }
   }, [isAuthenticated, hasSeenConsentModal]);
 

@@ -131,6 +131,11 @@ export function useDogDetailViewModel() {
     }
   }, [dog, removeDogFromStore, router]);
 
+  const navigateToEdit = useCallback(() => {
+    if (!validDogId) return;
+    router.push(`/(modals)/edit-dog?dogId=${validDogId}`);
+  }, [validDogId, router]);
+
   const primaryPhoto = photos.find((p) => p.isPrimary) ?? photos[0];
 
   return {
@@ -148,5 +153,6 @@ export function useDogDetailViewModel() {
     handleDeletePhoto,
     handleToggleActive,
     handleDelete,
+    navigateToEdit,
   };
 }

@@ -1,13 +1,7 @@
-import {
-  AppError,
-  fail,
-  GROUP_EVENT_STATUS,
-  GROUP_EVENT_VISIBILITY,
-  type GroupEventParticipant,
-  type Result,
-  succeed,
-} from '@pawmeet/types';
+import { AppError, fail, type GroupEventParticipant, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { DOMAIN_EVENT, emit } from '../domain/events.js';
+import { createGroupEventAggregate } from '../domain/group-event.js';
 import type {
   DogRepository,
   FollowRepository,
@@ -43,18 +37,18 @@ export function createJoinGroupEvent({
       return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
-    if (event.status !== GROUP_EVENT_STATUS.SCHEDULED) {
-      return fail(
-        new AppError('EVENT_NOT_JOINABLE', 'Non è possibile unirsi a questo evento', 400),
-      );
-    }
+    const aggregate = createGroupEventAggregate(event);
 
-    if (event.scheduledAt <= new Date()) {
-      return fail(new AppError('EVENT_PAST', 'Evento già passato', 400));
+    if (!aggregate.isJoinable()) {
+      const errorCode = aggregate.isPast() ? 'EVENT_PAST' : 'EVENT_NOT_JOINABLE';
+      const errorMsg = aggregate.isPast()
+        ? 'Evento già passato'
+        : 'Non è possibile unirsi a questo evento';
+      return fail(new AppError(errorCode, errorMsg, 400));
     }
 
     // Friends-only visibility check
-    if (event.visibility === GROUP_EVENT_VISIBILITY.FRIENDS_ONLY) {
+    if (aggregate.isFriendsOnly()) {
       const isFriend = await followRepo.areFriends(userId, event.createdBy);
       if (!isFriend) {
         return fail(
@@ -75,17 +69,17 @@ export function createJoinGroupEvent({
 
     // Check if already participating
     const existing = await groupEventRepo.findParticipant(input.eventId, userId);
-    if (existing && existing.status !== 'declined' && existing.status !== 'cancelled') {
+    if (aggregate.isAlreadyActive(existing)) {
       return fail(new AppError('ALREADY_JOINED', 'Sei già iscritto a questo evento', 409));
     }
 
     // Determine status based on capacity and approval setting
     const count = await groupEventRepo.countParticipants(input.eventId);
-    if (count >= event.maxParticipants) {
+    if (aggregate.isFull(count)) {
       return fail(new AppError('EVENT_FULL', 'Evento al completo', 400));
     }
 
-    const status = event.requiresApproval ? 'pending' : 'accepted';
+    const status = aggregate.resolveJoinStatus();
 
     const participant = await groupEventRepo.addParticipant({
       eventId: input.eventId,
@@ -111,6 +105,12 @@ export function createJoinGroupEvent({
       .catch((err) => {
         logger.error('join-group-event', 'Failed to send notification', err);
       });
+
+    void emit({
+      type: DOMAIN_EVENT.GROUP_EVENT_JOINED,
+      payload: { eventId: input.eventId, userId, participantNumber: count + 1 },
+      timestamp: new Date(),
+    });
 
     return succeed({ participant, participantNumber: count + 1 });
   };

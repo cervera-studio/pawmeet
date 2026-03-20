@@ -127,10 +127,7 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
     return rowsAs<GroupEvent & { distanceKm: number }>(rows);
   }
 
-  async findByCreator(
-    userId: string,
-    pagination: PaginationParams = {},
-  ): Promise<GroupEvent[]> {
+  async findByCreator(userId: string, pagination: PaginationParams = {}): Promise<GroupEvent[]> {
     const { limit = 50, offset = 0 } = pagination;
     const rows = await this.db
       .select()

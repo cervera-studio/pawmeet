@@ -1,4 +1,12 @@
-import { AppError, fail, type GroupEvent, type Result, succeed } from '@pawmeet/types';
+import {
+  AppError,
+  fail,
+  GROUP_EVENT_STATUS,
+  type GroupEvent,
+  type Result,
+  succeed,
+} from '@pawmeet/types';
+import { assertOwnership } from '../domain/ownership.js';
 import type { GroupEventRepository } from '../ports/index.js';
 
 type Deps = {
@@ -27,13 +35,17 @@ export function createUpdateGroupEvent({ groupEventRepo }: Deps) {
       return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
-    if (event.createdBy !== userId) {
-      return fail(
-        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può modificare l'evento", 403),
-      );
-    }
+    assertOwnership(
+      event.createdBy,
+      userId,
+      'NOT_ORGANIZER',
+      'Only the organizer can modify the event',
+    );
 
-    if (event.status === 'cancelled' || event.status === 'completed') {
+    if (
+      event.status === GROUP_EVENT_STATUS.CANCELLED ||
+      event.status === GROUP_EVENT_STATUS.COMPLETED
+    ) {
       return fail(new AppError('EVENT_NOT_EDITABLE', 'Evento non modificabile', 400));
     }
 

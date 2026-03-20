@@ -1,6 +1,7 @@
 import type { Match } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { hasLocation } from '../domain/type-guards.js';
 import { checkDailySwipeLimit } from '../lib/swipe-limit.js';
 import type {
@@ -117,6 +118,19 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
     const distanceKm = targetDog
       ? await computeOwnerDistance(userRepo, userId, targetDog.ownerId)
       : undefined;
+
+    void emit({
+      type: DOMAIN_EVENT.MATCH_CREATED,
+      payload: {
+        matchId: match.id,
+        userId,
+        compatibilityScore: match.compatibilityScore,
+        distanceKm,
+        sizePair: targetDog ? `${myDog.size}-${targetDog.size}` : undefined,
+        energyPair: targetDog ? `${myDog.energyLevel}-${targetDog.energyLevel}` : undefined,
+      },
+      timestamp: new Date(),
+    });
 
     return succeed({
       match,

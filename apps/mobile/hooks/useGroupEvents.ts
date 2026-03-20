@@ -70,17 +70,14 @@ export function useGroupEvents() {
     await groupEventRepo.cancel(eventId);
   }, []);
 
-  const listPendingRequests = useCallback(
-    async (eventId: string): Promise<PendingRequest[]> => {
-      try {
-        return (await groupEventRepo.listPendingRequests(eventId)) as PendingRequest[];
-      } catch (e) {
-        logger.warn('useGroupEvents', 'Failed to fetch pending requests', e);
-        return [];
-      }
-    },
-    [],
-  );
+  const listPendingRequests = useCallback(async (eventId: string): Promise<PendingRequest[]> => {
+    try {
+      return (await groupEventRepo.listPendingRequests(eventId)) as PendingRequest[];
+    } catch (e) {
+      logger.warn('useGroupEvents', 'Failed to fetch pending requests', e);
+      return [];
+    }
+  }, []);
 
   const approveParticipant = useCallback(async (eventId: string, userId: string) => {
     await groupEventRepo.approveParticipant(eventId, userId);

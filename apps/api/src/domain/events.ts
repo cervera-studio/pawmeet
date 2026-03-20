@@ -9,6 +9,10 @@ export const DOMAIN_EVENT = {
   SUPPORT_TICKET_CREATED: 'support_ticket.created',
   SUPPORT_REPLY_SENT: 'support_reply.sent',
   SUPPORT_MESSAGE_SENT: 'support_message.sent',
+  MATCH_CREATED: 'match.created',
+  GROUP_EVENT_JOINED: 'group_event.joined',
+  GROUP_EVENT_CANCELLED: 'group_event.cancelled',
+  WALK_COMPLETED: 'walk.completed',
 } as const;
 
 // ── Typed domain events (discriminated union) ─────────────────────────────────
@@ -57,6 +61,47 @@ export type DomainEvent =
   | {
       type: typeof DOMAIN_EVENT.SUPPORT_MESSAGE_SENT;
       payload: { ticketId: string; userId: string; message: SupportMessage };
+      timestamp: Date;
+    }
+  | {
+      type: typeof DOMAIN_EVENT.MATCH_CREATED;
+      payload: {
+        matchId: string;
+        userId: string;
+        compatibilityScore: number;
+        distanceKm?: number;
+        sizePair?: string;
+        energyPair?: string;
+      };
+      timestamp: Date;
+    }
+  | {
+      type: typeof DOMAIN_EVENT.GROUP_EVENT_JOINED;
+      payload: {
+        eventId: string;
+        userId: string;
+        participantNumber: number;
+      };
+      timestamp: Date;
+    }
+  | {
+      type: typeof DOMAIN_EVENT.GROUP_EVENT_CANCELLED;
+      payload: {
+        eventId: string;
+        userId: string;
+        eventTitle: string;
+        participantUserIds: string[];
+      };
+      timestamp: Date;
+    }
+  | {
+      type: typeof DOMAIN_EVENT.WALK_COMPLETED;
+      payload: {
+        trackId: string;
+        userId: string;
+        distanceKm: number;
+        durationMinutes: number;
+      };
       timestamp: Date;
     };
 

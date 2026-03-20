@@ -40,6 +40,27 @@ describe('GroupEventAggregate', () => {
       );
       expect(agg.isJoinable()).toBe(false);
     });
+
+    it('uses explicit now parameter for deterministic testing', () => {
+      const eventTime = new Date('2027-06-15T10:00:00Z');
+      const agg = createGroupEventAggregate(
+        buildGroupEvent({ status: 'scheduled', scheduledAt: eventTime }),
+      );
+      const before = new Date('2027-06-15T09:00:00Z');
+      const after = new Date('2027-06-15T11:00:00Z');
+      expect(agg.isJoinable(before)).toBe(true);
+      expect(agg.isJoinable(after)).toBe(false);
+    });
+  });
+
+  describe('isPast', () => {
+    it('uses explicit now parameter', () => {
+      const eventTime = new Date('2027-06-15T10:00:00Z');
+      const agg = createGroupEventAggregate(buildGroupEvent({ scheduledAt: eventTime }));
+      expect(agg.isPast(new Date('2027-06-15T09:00:00Z'))).toBe(false);
+      expect(agg.isPast(new Date('2027-06-15T10:00:00Z'))).toBe(true);
+      expect(agg.isPast(new Date('2027-06-15T11:00:00Z'))).toBe(true);
+    });
   });
 
   describe('isFull', () => {

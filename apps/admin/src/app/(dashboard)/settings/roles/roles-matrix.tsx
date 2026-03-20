@@ -80,12 +80,24 @@ export function RolesMatrix() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium">
-                      {t(`roleNames.${role.key}` as 'roleNames.super_admin' | 'roleNames.admin' | 'roleNames.moderator' | 'roleNames.viewer')}
+                      {t(
+                        `roleNames.${role.key}` as
+                          | 'roleNames.super_admin'
+                          | 'roleNames.admin'
+                          | 'roleNames.moderator'
+                          | 'roleNames.viewer',
+                      )}
                     </p>
                     <Badge variant="outline">{role.key}</Badge>
                   </div>
                   <p className="mt-1 text-sm text-neutral-500">
-                    {t(`roleDescriptions.${role.key}` as 'roleDescriptions.super_admin' | 'roleDescriptions.admin' | 'roleDescriptions.moderator' | 'roleDescriptions.viewer')}
+                    {t(
+                      `roleDescriptions.${role.key}` as
+                        | 'roleDescriptions.super_admin'
+                        | 'roleDescriptions.admin'
+                        | 'roleDescriptions.moderator'
+                        | 'roleDescriptions.viewer',
+                    )}
                   </p>
                 </div>
               </div>
@@ -112,8 +124,17 @@ export function RolesMatrix() {
                     {t('permissions.requiredRole')}
                   </th>
                   {roles.map((role) => (
-                    <th key={role.key} className="px-3 py-2 text-center font-medium text-neutral-500">
-                      {t(`roleNames.${role.key}` as 'roleNames.super_admin' | 'roleNames.admin' | 'roleNames.moderator' | 'roleNames.viewer')}
+                    <th
+                      key={role.key}
+                      className="px-3 py-2 text-center font-medium text-neutral-500"
+                    >
+                      {t(
+                        `roleNames.${role.key}` as
+                          | 'roleNames.super_admin'
+                          | 'roleNames.admin'
+                          | 'roleNames.moderator'
+                          | 'roleNames.viewer',
+                      )}
                     </th>
                   ))}
                 </tr>

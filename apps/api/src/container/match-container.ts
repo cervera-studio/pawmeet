@@ -18,7 +18,6 @@ import { createRecordActivityWindow } from '../use-cases/record-activity-window.
 import { createRecordMatchInteraction } from '../use-cases/record-match-interaction.js';
 import { createSuggestWalks } from '../use-cases/suggest-walks.js';
 import { createUnmatch } from '../use-cases/unmatch.js';
-import { gamificationDeps as _gamificationDeps, awardXp } from './gamification-container.js';
 import {
   dogRepo,
   embeddingRepo,
@@ -42,9 +41,6 @@ export const matchDeps = {
   likeDog: createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }),
   passDog: createPassDog({ dogRepo, matchRepo }),
   unmatch: createUnmatch({ dogRepo, matchRepo, messageRepo }),
-  awardXp,
-  updateChallengeProgress: _gamificationDeps.updateChallengeProgress,
-  checkAndUnlockAchievements: _gamificationDeps.checkAndUnlockAchievements,
 };
 
 export const matchingAiDeps = {

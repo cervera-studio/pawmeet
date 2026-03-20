@@ -1,5 +1,6 @@
-import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { AppError, fail, PARTICIPANT_STATUS, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { assertOwnership } from '../domain/ownership.js';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -20,20 +21,25 @@ export function createDeclineParticipant({ groupEventRepo, notificationService }
       return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
-    if (event.createdBy !== hostUserId) {
-      return fail(
-        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può rifiutare le richieste", 403),
-      );
-    }
+    assertOwnership(
+      event.createdBy,
+      hostUserId,
+      'NOT_ORGANIZER',
+      'Only the organizer can decline requests',
+    );
 
     const participant = await groupEventRepo.findParticipant(eventId, targetUserId);
-    if (!participant || participant.status !== 'pending') {
+    if (!participant || participant.status !== PARTICIPANT_STATUS.PENDING) {
       return fail(
         new AppError('NO_PENDING_REQUEST', 'Nessuna richiesta pendente per questo utente', 404),
       );
     }
 
-    await groupEventRepo.updateParticipantStatus(eventId, targetUserId, 'declined');
+    await groupEventRepo.updateParticipantStatus(
+      eventId,
+      targetUserId,
+      PARTICIPANT_STATUS.DECLINED,
+    );
 
     notificationService
       .send({

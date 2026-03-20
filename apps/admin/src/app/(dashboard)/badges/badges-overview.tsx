@@ -63,7 +63,13 @@ export function BadgesOverview() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Badge variant={categoryVariants[category] ?? 'outline'}>
-                  {t(`categories.${category}` as 'categories.walks' | 'categories.matches' | 'categories.social' | 'categories.special')}
+                  {t(
+                    `categories.${category}` as
+                      | 'categories.walks'
+                      | 'categories.matches'
+                      | 'categories.social'
+                      | 'categories.special',
+                  )}
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -76,7 +82,18 @@ export function BadgesOverview() {
                   >
                     <div>
                       <p className="text-sm font-medium">
-                        {t(`types.${badge.type}` as 'types.first_walk' | 'types.walks_10' | 'types.walks_50' | 'types.walks_100' | 'types.first_match' | 'types.matches_10' | 'types.first_group_event' | 'types.social_butterfly' | 'types.marathon_walker')}
+                        {t(
+                          `types.${badge.type}` as
+                            | 'types.first_walk'
+                            | 'types.walks_10'
+                            | 'types.walks_50'
+                            | 'types.walks_100'
+                            | 'types.first_match'
+                            | 'types.matches_10'
+                            | 'types.first_group_event'
+                            | 'types.social_butterfly'
+                            | 'types.marathon_walker',
+                        )}
                       </p>
                       <p className="mt-1 text-xs text-neutral-500">{badge.criteria}</p>
                     </div>

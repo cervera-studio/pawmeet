@@ -1,26 +1,26 @@
 import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@pawmeet/types';
-import { logger } from '@pawmeet/utils';
+import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { canTransitionTo } from '../domain/group-event-state-machine.js';
+import { assertOwnership } from '../domain/ownership.js';
 import type { GroupEventRepository } from '../ports/index.js';
-import type { NotificationService } from '../ports/notification-service.js';
 
 type Deps = {
   groupEventRepo: Pick<GroupEventRepository, 'findByIdWithParticipants' | 'updateStatus'>;
-  notificationService: NotificationService;
 };
 
-export function createCancelGroupEvent({ groupEventRepo, notificationService }: Deps) {
+export function createCancelGroupEvent({ groupEventRepo }: Deps) {
   return async (userId: string, eventId: string): Promise<Result<void>> => {
     const event = await groupEventRepo.findByIdWithParticipants(eventId);
     if (!event) {
       return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
-    if (event.createdBy !== userId) {
-      return fail(
-        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può annullare l'evento", 403),
-      );
-    }
+    assertOwnership(
+      event.createdBy,
+      userId,
+      'NOT_ORGANIZER',
+      'Only the organizer can cancel the event',
+    );
 
     if (!canTransitionTo(event.status, GROUP_EVENT_STATUS.CANCELLED)) {
       return fail(
@@ -34,19 +34,21 @@ export function createCancelGroupEvent({ groupEventRepo, notificationService }: 
 
     await groupEventRepo.updateStatus(eventId, GROUP_EVENT_STATUS.CANCELLED);
 
-    // Notify all participants (except organizer)
-    const otherParticipants = event.participants.filter((p) => p.userId !== userId);
-    for (const participant of otherParticipants) {
-      notificationService
-        .send({
-          userId: participant.userId,
-          title: 'Evento annullato',
-          body: `L'evento "${event.title}" è stato annullato dall'organizzatore`,
-        })
-        .catch((err) => {
-          logger.error('cancel-group-event', 'Failed to send notification', err);
-        });
-    }
+    // Emit domain event — notifications handled by event handler
+    const otherParticipantIds = event.participants
+      .filter((p) => p.userId !== userId)
+      .map((p) => p.userId);
+
+    void emit({
+      type: DOMAIN_EVENT.GROUP_EVENT_CANCELLED,
+      payload: {
+        eventId,
+        userId,
+        eventTitle: event.title,
+        participantUserIds: otherParticipantIds,
+      },
+      timestamp: new Date(),
+    });
 
     return succeed(undefined);
   };

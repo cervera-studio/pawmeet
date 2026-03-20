@@ -1,14 +1,16 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type {
-  AdminDataRepository,
   AdminEventSponsorRow,
+  AdminGroupEventRepository,
+  AdminOrganizationRepository,
 } from '../../ports/admin-data-repository.js';
 
 type Deps = {
   adminDataRepo: Pick<
-    AdminDataRepository,
-    'findGroupEventById' | 'findOrganizationById' | 'countEventSponsorsByTier' | 'addEventSponsor'
-  >;
+    AdminGroupEventRepository,
+    'findGroupEventById' | 'countEventSponsorsByTier' | 'addEventSponsor'
+  > &
+    Pick<AdminOrganizationRepository, 'findOrganizationById'>;
 };
 
 interface AddEventSponsorInput {

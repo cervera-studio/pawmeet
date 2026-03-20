@@ -59,13 +59,6 @@ export function canCreateDog(currentDogCount: number): boolean {
   return currentDogCount < MAX_DOGS_PER_USER;
 }
 
-// ── Keep backward-compatible standalone exports ───────────────────────────────
-
-/** @deprecated Use aggregate.canAddPhoto() instead. */
-export function canAddPhoto(currentPhotoCount: number): boolean {
-  return currentPhotoCount < MAX_PHOTOS_PER_DOG;
-}
-
 /**
  * Recompute photo positions after a deletion or reorder.
  * Returns new position assignments with the first photo as primary.
@@ -78,14 +71,4 @@ export function reindexPhotos(
     position: i,
     isPrimary: i === 0,
   }));
-}
-
-/**
- * Validate that a reorder request covers all existing photos exactly once.
- * @deprecated Use aggregate.isValidPhotoReorder() instead.
- */
-export function isValidPhotoReorder(requestedIds: string[], existingIds: string[]): boolean {
-  if (requestedIds.length !== existingIds.length) return false;
-  const existing = new Set(existingIds);
-  return requestedIds.every((id) => existing.has(id));
 }

@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildDog } from '../test-utils/builders.js';
-import {
-  canAddPhoto,
-  canCreateDog,
-  createDogProfileAggregate,
-  isValidPhotoReorder,
-  reindexPhotos,
-} from './dog-profile.js';
+import { canCreateDog, createDogProfileAggregate, reindexPhotos } from './dog-profile.js';
 
 describe('DogProfileAggregate', () => {
   describe('isActive', () => {
@@ -49,6 +43,41 @@ describe('DogProfileAggregate', () => {
       expect(agg.isValidPhotoKey('users/user-1/avatar.jpg')).toBe(false);
     });
   });
+
+  describe('canAddPhoto', () => {
+    it('allows adding when below limit', () => {
+      const agg = createDogProfileAggregate(buildDog());
+      expect(agg.canAddPhoto(0)).toBe(true);
+      expect(agg.canAddPhoto(5)).toBe(true);
+    });
+
+    it('rejects when at limit', () => {
+      const agg = createDogProfileAggregate(buildDog());
+      expect(agg.canAddPhoto(6)).toBe(false);
+    });
+  });
+
+  describe('isValidPhotoReorder', () => {
+    it('accepts valid reorder with all photos', () => {
+      const agg = createDogProfileAggregate(buildDog());
+      expect(agg.isValidPhotoReorder(['a', 'b', 'c'], ['c', 'a', 'b'])).toBe(true);
+    });
+
+    it('rejects if a photo is missing', () => {
+      const agg = createDogProfileAggregate(buildDog());
+      expect(agg.isValidPhotoReorder(['a', 'b'], ['a', 'b', 'c'])).toBe(false);
+    });
+
+    it('rejects if an unknown photo is included', () => {
+      const agg = createDogProfileAggregate(buildDog());
+      expect(agg.isValidPhotoReorder(['a', 'b', 'x'], ['a', 'b', 'c'])).toBe(false);
+    });
+
+    it('rejects different lengths', () => {
+      const agg = createDogProfileAggregate(buildDog());
+      expect(agg.isValidPhotoReorder(['a'], ['a', 'b'])).toBe(false);
+    });
+  });
 });
 
 describe('canCreateDog', () => {
@@ -63,17 +92,6 @@ describe('canCreateDog', () => {
 
   it('rejects when above limit', () => {
     expect(canCreateDog(6)).toBe(false);
-  });
-});
-
-describe('canAddPhoto', () => {
-  it('allows adding when below limit', () => {
-    expect(canAddPhoto(0)).toBe(true);
-    expect(canAddPhoto(5)).toBe(true);
-  });
-
-  it('rejects when at limit', () => {
-    expect(canAddPhoto(6)).toBe(false);
   });
 });
 
@@ -92,23 +110,5 @@ describe('reindexPhotos', () => {
 
   it('handles empty array', () => {
     expect(reindexPhotos([])).toEqual([]);
-  });
-});
-
-describe('isValidPhotoReorder', () => {
-  it('accepts valid reorder with all photos', () => {
-    expect(isValidPhotoReorder(['a', 'b', 'c'], ['c', 'a', 'b'])).toBe(true);
-  });
-
-  it('rejects if a photo is missing', () => {
-    expect(isValidPhotoReorder(['a', 'b'], ['a', 'b', 'c'])).toBe(false);
-  });
-
-  it('rejects if an unknown photo is included', () => {
-    expect(isValidPhotoReorder(['a', 'b', 'x'], ['a', 'b', 'c'])).toBe(false);
-  });
-
-  it('rejects different lengths', () => {
-    expect(isValidPhotoReorder(['a'], ['a', 'b'])).toBe(false);
   });
 });

@@ -1,5 +1,5 @@
 import type { GroupEvent, GroupEventParticipant, GroupEventStatus } from '@pawmeet/types';
-import { GROUP_EVENT_STATUS, GROUP_EVENT_VISIBILITY } from '@pawmeet/types';
+import { GROUP_EVENT_STATUS, GROUP_EVENT_VISIBILITY, PARTICIPANT_STATUS } from '@pawmeet/types';
 import { canTransitionTo, getValidTransitions } from './group-event-state-machine.js';
 
 /**
@@ -10,10 +10,10 @@ export interface GroupEventAggregate {
   readonly event: GroupEvent;
 
   /** Whether the event is still open for new participants. */
-  isJoinable(): boolean;
+  isJoinable(now?: Date): boolean;
 
   /** Whether the event has started or is past its scheduled time. */
-  isPast(): boolean;
+  isPast(now?: Date): boolean;
 
   /** Whether the event is at capacity. */
   isFull(currentCount: number): boolean;
@@ -38,12 +38,12 @@ export function createGroupEventAggregate(event: GroupEvent): GroupEventAggregat
   return {
     event,
 
-    isJoinable() {
-      return event.status === GROUP_EVENT_STATUS.SCHEDULED && event.scheduledAt > new Date();
+    isJoinable(now: Date = new Date()) {
+      return event.status === GROUP_EVENT_STATUS.SCHEDULED && event.scheduledAt > now;
     },
 
-    isPast() {
-      return event.scheduledAt <= new Date();
+    isPast(now: Date = new Date()) {
+      return event.scheduledAt <= now;
     },
 
     isFull(currentCount: number) {
@@ -68,7 +68,10 @@ export function createGroupEventAggregate(event: GroupEvent): GroupEventAggregat
 
     isAlreadyActive(participant: GroupEventParticipant | null) {
       if (!participant) return false;
-      return participant.status !== 'declined' && participant.status !== 'cancelled';
+      return (
+        participant.status !== PARTICIPANT_STATUS.DECLINED &&
+        participant.status !== PARTICIPANT_STATUS.CANCELLED
+      );
     },
   };
 }

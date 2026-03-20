@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { assertOwnership } from '../domain/ownership.js';
 import type {
   GroupEventParticipationRepository,
   GroupEventRepository,
@@ -17,11 +18,12 @@ export function createListPendingRequests({ groupEventRepo }: Deps) {
       return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
-    if (event.createdBy !== userId) {
-      return fail(
-        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può vedere le richieste pendenti", 403),
-      );
-    }
+    assertOwnership(
+      event.createdBy,
+      userId,
+      'NOT_ORGANIZER',
+      'Only the organizer can view pending requests',
+    );
 
     const pending = await groupEventRepo.findPendingParticipants(eventId);
     return succeed(pending);

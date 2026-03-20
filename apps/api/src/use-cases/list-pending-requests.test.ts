@@ -1,4 +1,4 @@
-import { isFailure, isSuccess } from '@pawmeet/types';
+import { AppError, isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildGroupEvent, buildGroupEventRepo } from '../test-utils/builders.js';
 import { createListPendingRequests } from './list-pending-requests.js';
@@ -27,17 +27,16 @@ describe('listPendingRequests', () => {
     expect(result.data[0]?.displayName).toBe('Mario');
   });
 
-  it('fails if not organizer', async () => {
+  it('throws if not organizer', async () => {
     const groupEventRepo = buildGroupEventRepo({
       findById: vi.fn().mockResolvedValue(buildGroupEvent({ createdBy: 'host-1' })),
     });
     const listPending = createListPendingRequests({ groupEventRepo });
 
-    const result = await listPending('other-user', 'event-1');
-
-    expect(isFailure(result)).toBe(true);
-    if (!isFailure(result)) return;
-    expect(result.error.code).toBe('NOT_ORGANIZER');
+    await expect(listPending('other-user', 'event-1')).rejects.toThrow(AppError);
+    await expect(listPending('other-user', 'event-1')).rejects.toThrow(
+      expect.objectContaining({ code: 'NOT_ORGANIZER' }),
+    );
   });
 
   it('fails if event not found', async () => {

@@ -1,4 +1,4 @@
-import { type GroupEventParticipant, isFailure, isSuccess } from '@pawmeet/types';
+import { AppError, type GroupEventParticipant, isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildGroupEvent,
@@ -43,14 +43,13 @@ describe('declineParticipant', () => {
     );
   });
 
-  it('fails if not organizer', async () => {
+  it('throws if not organizer', async () => {
     const { decline } = setup();
 
-    const result = await decline('other-user', 'event-1', 'user-2');
-
-    expect(isFailure(result)).toBe(true);
-    if (!isFailure(result)) return;
-    expect(result.error.code).toBe('NOT_ORGANIZER');
+    await expect(decline('other-user', 'event-1', 'user-2')).rejects.toThrow(AppError);
+    await expect(decline('other-user', 'event-1', 'user-2')).rejects.toThrow(
+      expect.objectContaining({ code: 'NOT_ORGANIZER' }),
+    );
   });
 
   it('fails if no pending request', async () => {

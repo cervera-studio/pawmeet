@@ -1,7 +1,8 @@
 import type { GroupEventWithParticipants } from '@pawmeet/types';
-import { isFailure, isSuccess } from '@pawmeet/types';
+import { AppError, isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
-import { buildGroupEventRepo, buildNotificationService } from '../test-utils/builders.js';
+import { clearHandlers } from '../domain/events.js';
+import { buildGroupEventRepo } from '../test-utils/builders.js';
 import { createCancelGroupEvent } from './cancel-group-event.js';
 
 function buildGroupEventWithParticipants(
@@ -48,36 +49,29 @@ function buildGroupEventWithParticipants(
 }
 
 describe('cancelGroupEvent', () => {
-  it('cancels the event and notifies participants', async () => {
+  it('cancels the event and emits domain event', async () => {
+    clearHandlers();
     const groupEventRepo = buildGroupEventRepo({
       findByIdWithParticipants: vi.fn().mockResolvedValue(buildGroupEventWithParticipants()),
     });
-    const notificationService = buildNotificationService();
-    const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
+    const cancelEvent = createCancelGroupEvent({ groupEventRepo });
 
     const result = await cancelEvent('user-1', 'event-1');
 
     expect(isSuccess(result)).toBe(true);
     expect(groupEventRepo.updateStatus).toHaveBeenCalledWith('event-1', 'cancelled');
-    // Should notify user-2 but not user-1 (organizer)
-    expect(notificationService.send).toHaveBeenCalledTimes(1);
-    expect(notificationService.send).toHaveBeenCalledWith(
-      expect.objectContaining({ userId: 'user-2' }),
-    );
   });
 
-  it('fails when user is not the organizer', async () => {
+  it('throws when user is not the organizer', async () => {
     const groupEventRepo = buildGroupEventRepo({
       findByIdWithParticipants: vi.fn().mockResolvedValue(buildGroupEventWithParticipants()),
     });
-    const notificationService = buildNotificationService();
-    const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
+    const cancelEvent = createCancelGroupEvent({ groupEventRepo });
 
-    const result = await cancelEvent('user-2', 'event-1');
-
-    expect(isFailure(result)).toBe(true);
-    if (!isFailure(result)) return;
-    expect(result.error.code).toBe('NOT_ORGANIZER');
+    await expect(cancelEvent('user-2', 'event-1')).rejects.toThrow(AppError);
+    await expect(cancelEvent('user-2', 'event-1')).rejects.toThrow(
+      expect.objectContaining({ code: 'NOT_ORGANIZER' }),
+    );
   });
 
   it('fails when event is already cancelled', async () => {
@@ -86,8 +80,7 @@ describe('cancelGroupEvent', () => {
         .fn()
         .mockResolvedValue(buildGroupEventWithParticipants({ status: 'cancelled' })),
     });
-    const notificationService = buildNotificationService();
-    const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
+    const cancelEvent = createCancelGroupEvent({ groupEventRepo });
 
     const result = await cancelEvent('user-1', 'event-1');
 
@@ -102,8 +95,7 @@ describe('cancelGroupEvent', () => {
         .fn()
         .mockResolvedValue(buildGroupEventWithParticipants({ status: 'completed' })),
     });
-    const notificationService = buildNotificationService();
-    const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
+    const cancelEvent = createCancelGroupEvent({ groupEventRepo });
 
     const result = await cancelEvent('user-1', 'event-1');
 
@@ -118,8 +110,7 @@ describe('cancelGroupEvent', () => {
         .fn()
         .mockResolvedValue(buildGroupEventWithParticipants({ status: 'in_progress' })),
     });
-    const notificationService = buildNotificationService();
-    const cancelEvent = createCancelGroupEvent({ groupEventRepo, notificationService });
+    const cancelEvent = createCancelGroupEvent({ groupEventRepo });
 
     const result = await cancelEvent('user-1', 'event-1');
 

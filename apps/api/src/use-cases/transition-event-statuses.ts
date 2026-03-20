@@ -1,5 +1,5 @@
 import type { GroupEventStatus, Result } from '@pawmeet/types';
-import { succeed } from '@pawmeet/types';
+import { PARTICIPANT_STATUS, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { canTransitionTo } from '../domain/group-event-state-machine.js';
 import type { BadgeRepository } from '../ports/badge-repository.js';
@@ -96,7 +96,7 @@ export function createTransitionEventStatuses({
 
       const full = await groupEventRepo.findByIdWithParticipants(event.id);
       if (full) {
-        const accepted = full.participants.filter((p) => p.status === 'accepted');
+        const accepted = full.participants.filter((p) => p.status === PARTICIPANT_STATUS.ACCEPTED);
         await notifyCompletedParticipants(notificationService, accepted, event);
 
         if (event.isOfficial) {

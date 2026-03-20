@@ -2,6 +2,7 @@ import { dogProfiles, matches, messages, users } from '@pawmeet/db';
 import type { ChatMessage, ChatMessageReplyPreview } from '@pawmeet/types';
 import { aliasedTable, and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import { maybeDecrypt, maybeEncrypt } from '../lib/message-encryption.js';
 import type {
   ConversationSummary,
   MessageRepository,
@@ -53,8 +54,8 @@ export class DrizzleMessageRepository implements MessageRepository {
         id: row.id,
         matchId: row.matchId,
         senderId: row.senderId,
-        content: row.content,
-        mediaUrl: row.mediaUrl,
+        content: maybeDecrypt(row.content),
+        mediaUrl: row.mediaUrl ? maybeDecrypt(row.mediaUrl) : null,
         replyToId: row.replyToId ?? null,
         replyTo: null, // Not needed for conversation list preview
         status: row.status as ChatMessage['status'],
@@ -215,8 +216,8 @@ export class DrizzleMessageRepository implements MessageRepository {
         id: row.id,
         matchId: row.matchId,
         senderId: row.senderId,
-        content: row.content,
-        mediaUrl: row.mediaUrl,
+        content: maybeDecrypt(row.content),
+        mediaUrl: row.mediaUrl ? maybeDecrypt(row.mediaUrl) : null,
         replyToId: row.replyToId ?? null,
         replyTo,
         status: row.status as ChatMessage['status'],
@@ -244,8 +245,8 @@ export class DrizzleMessageRepository implements MessageRepository {
       .values({
         matchId: input.matchId,
         senderId: input.senderId,
-        content: input.content,
-        mediaUrl: input.mediaUrl ?? null,
+        content: maybeEncrypt(input.content),
+        mediaUrl: input.mediaUrl ? maybeEncrypt(input.mediaUrl) : null,
         replyToId: input.replyToId ?? null,
       })
       .returning();

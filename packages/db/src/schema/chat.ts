@@ -27,7 +27,9 @@ export const messages = pgTable(
     content: text('content').notNull(),
     mediaUrl: text('media_url'),
     status: varchar('status', { length: 10 }).notNull().default('sent'),
-    replyToId: uuid('reply_to_id').references((): AnyPgColumn => messages.id, { onDelete: 'set null' }),
+    replyToId: uuid('reply_to_id').references((): AnyPgColumn => messages.id, {
+      onDelete: 'set null',
+    }),
     isDeleted: boolean('is_deleted').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },

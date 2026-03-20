@@ -1,4 +1,11 @@
-import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@pawmeet/types';
+import {
+  AppError,
+  fail,
+  GROUP_EVENT_STATUS,
+  PARTICIPANT_STATUS,
+  type Result,
+  succeed,
+} from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
@@ -34,7 +41,7 @@ export function createLeaveGroupEvent({ groupEventRepo, notificationService }: D
       return fail(new AppError('NOT_PARTICIPANT', 'Non sei iscritto a questo evento', 404));
     }
 
-    const wasAccepted = participant.status === 'accepted';
+    const wasAccepted = participant.status === PARTICIPANT_STATUS.ACCEPTED;
     await groupEventRepo.removeParticipant(eventId, userId);
 
     // If someone left an active event, promote from waitlist

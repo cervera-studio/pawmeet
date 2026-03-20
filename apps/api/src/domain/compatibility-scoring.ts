@@ -5,6 +5,7 @@ import {
   calculateEnergyScore,
   calculateSizeScore,
 } from '@pawmeet/utils';
+import { parseCompatibilityScore } from '@pawmeet/validation';
 
 // ── Weights from MVP spec ──────────────────────────────────────────────────────
 
@@ -87,6 +88,11 @@ export function calculateCompatibilityScoreWithBreakdown(
     WEIGHT_DISTANCE * distanceScore +
     WEIGHT_LEASH * leashScore;
 
+  const roundedOverall = Math.round(overallScore * 100) / 100;
+
+  // Validate overallScore is in [0, 1] via branded type
+  parseCompatibilityScore(roundedOverall);
+
   return {
     sizeScore: Math.round(sizeScore * 100) / 100,
     energyScore: Math.round(energyScore * 100) / 100,
@@ -94,6 +100,6 @@ export function calculateCompatibilityScoreWithBreakdown(
     walkScore: Math.round(walkScore * 100) / 100,
     distanceScore: Math.round(distanceScore * 100) / 100,
     leashScore: Math.round(leashScore * 100) / 100,
-    overallScore: Math.round(overallScore * 100) / 100,
+    overallScore: roundedOverall,
   };
 }

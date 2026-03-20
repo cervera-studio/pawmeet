@@ -6,7 +6,10 @@ import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import { AdminRole, hasMinRole, requireRole } from '../../lib/admin-permissions.js';
 import { paginate } from '../../lib/pagination.js';
 import { trackEvent } from '../../lib/track-event.js';
-import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
+import type {
+  AdminSettingsRepository,
+  AdminUserRepository,
+} from '../../ports/admin-data-repository.js';
 import type { AdminNotificationService } from '../../ports/admin-notification-service.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import type { GdprExportRepository } from '../../ports/gdpr-export-repository.js';
@@ -57,7 +60,7 @@ const listAdminUsersSchema = z.object({
 });
 
 interface UsersRouterDeps {
-  adminDataRepo: AdminDataRepository;
+  adminDataRepo: AdminUserRepository & AdminSettingsRepository;
   adminNotificationService: AdminNotificationService;
   auditLogRepo: AuditLogRepository;
   gdprExportRepo?: GdprExportRepository;

@@ -1,4 +1,12 @@
-import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import {
+  AppError,
+  fail,
+  GROUP_EVENT_STATUS,
+  PARTICIPANT_STATUS,
+  type Result,
+  succeed,
+} from '@pawmeet/types';
+import { assertOwnership } from '../domain/ownership.js';
 import type {
   DogRepository,
   GroupEventParticipationRepository,
@@ -32,11 +40,14 @@ export function createInviteToEvent({
     }
 
     // Only the creator can invite
-    if (event.createdBy !== userId) {
-      return fail(new AppError('NOT_CREATOR', 'Solo il creatore può invitare partecipanti', 403));
-    }
+    assertOwnership(
+      event.createdBy,
+      userId,
+      'NOT_CREATOR',
+      'Only the creator can invite participants',
+    );
 
-    if (event.status !== 'scheduled') {
+    if (event.status !== GROUP_EVENT_STATUS.SCHEDULED) {
       return fail(
         new AppError('EVENT_NOT_SCHEDULED', "L'evento non è più aperto agli inviti", 400),
       );
@@ -49,7 +60,9 @@ export function createInviteToEvent({
     }
 
     // Check capacity
-    const acceptedCount = event.participants.filter((p) => p.status === 'accepted').length;
+    const acceptedCount = event.participants.filter(
+      (p) => p.status === PARTICIPANT_STATUS.ACCEPTED,
+    ).length;
     if (acceptedCount >= event.maxParticipants) {
       return fail(new AppError('EVENT_FULL', "L'evento ha raggiunto il numero massimo", 400));
     }
@@ -71,7 +84,7 @@ export function createInviteToEvent({
       eventId,
       userId: invitedUserId,
       dogId: firstDog.id,
-      status: 'accepted',
+      status: PARTICIPANT_STATUS.ACCEPTED,
     });
 
     // Notify the invited user

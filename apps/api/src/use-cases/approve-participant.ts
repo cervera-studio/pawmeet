@@ -1,5 +1,6 @@
-import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { AppError, fail, PARTICIPANT_STATUS, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { assertOwnership } from '../domain/ownership.js';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -21,19 +22,21 @@ export function createApproveParticipant({ groupEventRepo, notificationService }
     }
 
     if (event.createdBy !== hostUserId) {
-      return fail(
-        new AppError('NOT_ORGANIZER', "Solo l'organizzatore può approvare le richieste", 403),
-      );
+      return fail(new AppError('NOT_ORGANIZER', 'Only the organizer can approve requests', 403));
     }
 
     const participant = await groupEventRepo.findParticipant(eventId, targetUserId);
-    if (!participant || participant.status !== 'pending') {
+    if (!participant || participant.status !== PARTICIPANT_STATUS.PENDING) {
       return fail(
         new AppError('NO_PENDING_REQUEST', 'Nessuna richiesta pendente per questo utente', 404),
       );
     }
 
-    await groupEventRepo.updateParticipantStatus(eventId, targetUserId, 'accepted');
+    await groupEventRepo.updateParticipantStatus(
+      eventId,
+      targetUserId,
+      PARTICIPANT_STATUS.ACCEPTED,
+    );
 
     notificationService
       .send({

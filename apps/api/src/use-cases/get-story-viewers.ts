@@ -21,7 +21,7 @@ export function createGetStoryViewers({ storyRepo }: Deps) {
 
     // Only the story author can see who viewed it
     if (story.authorId !== userId) {
-      return fail(new AppError('FORBIDDEN', "Solo l'autore può vedere chi ha visualizzato", 403));
+      return fail(new AppError('FORBIDDEN', 'Only the author can see viewers', 403));
     }
 
     const viewers = await storyRepo.getViewers(storyId);

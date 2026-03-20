@@ -3,7 +3,13 @@ import { trpcServer } from '@hono/trpc-server';
 import { logger as appLogger } from '@pawmeet/utils';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import { adminDeps, experimentService, onnxModelLoader, supportDeps } from './container/index.js';
+import {
+  adminDeps,
+  experimentService,
+  gamificationDeps,
+  onnxModelLoader,
+  supportDeps,
+} from './container/index.js';
 import { chat, notificationService, supportRepo, userRepo } from './container/services.js';
 import { registerDomainEventHandlers } from './domain/event-handlers.js';
 import { initSentry, Sentry } from './lib/sentry.js';
@@ -18,6 +24,7 @@ initSentry();
 
 // Validate JWT secrets before anything else — fail fast if missing or too short
 import { validateJwtSecrets } from './lib/jwt.js';
+
 validateJwtSecrets();
 
 import process from 'node:process';
@@ -112,7 +119,15 @@ app.get('/health', async (c) => {
 });
 
 // Register domain event handlers (in-process pub/sub for side effects)
-registerDomainEventHandlers({ chat, userRepo, notificationService, supportRepo });
+registerDomainEventHandlers({
+  chat,
+  userRepo,
+  notificationService,
+  supportRepo,
+  awardXp: gamificationDeps.awardXp,
+  updateChallengeProgress: gamificationDeps.updateChallengeProgress,
+  checkAndUnlockAchievements: gamificationDeps.checkAndUnlockAchievements,
+});
 
 const port = Number(process.env.PORT) || 3000;
 

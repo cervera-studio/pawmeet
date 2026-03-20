@@ -7,6 +7,7 @@ import type {
 } from '@pawmeet/types';
 import { and, desc, eq, isNull, lt, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import { maybeDecrypt, maybeEncrypt } from '../lib/message-encryption.js';
 import type {
   AddMessageInput,
   CreateGuestTicketInput,
@@ -54,7 +55,7 @@ export class DrizzleSupportRepository implements SupportRepository {
           ticketId: input.ticketId,
           senderType: input.senderType,
           senderId: input.senderId,
-          content: input.content,
+          content: maybeEncrypt(input.content),
           isInternal: input.isInternal ?? false,
         })
         .returning();
@@ -65,7 +66,8 @@ export class DrizzleSupportRepository implements SupportRepository {
         .set({ updatedAt: new Date() })
         .where(eq(supportTickets.id, input.ticketId));
 
-      return firstRow<SupportMessage>(rows);
+      const msg = firstRow<SupportMessage>(rows);
+      return { ...msg, content: maybeDecrypt(msg.content) };
     });
   }
 
@@ -209,7 +211,10 @@ export class DrizzleSupportRepository implements SupportRepository {
     const nextCursor = hasMore ? (messageList.at(-1)?.id ?? null) : null;
 
     return {
-      messages: rowsAs<SupportMessage>(messageList),
+      messages: rowsAs<SupportMessage>(messageList).map((m) => ({
+        ...m,
+        content: maybeDecrypt(m.content),
+      })),
       nextCursor,
       hasMore,
     };

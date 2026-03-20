@@ -368,112 +368,18 @@ export interface NotificationStats {
   };
 }
 
-// ── Port interface ────────────────────────────────────────────────────────────
+// ── Focused port interfaces (ISP) ────────────────────────────────────────────
 
-export interface AdminDataRepository {
-  // Dashboard
+export interface AdminDashboardRepository {
   getStats(): Promise<DashboardStats>;
   getAnalyticsDbMetrics(): Promise<AnalyticsDbMetrics>;
+}
 
-  // Audit log
+export interface AdminAuditLogRepository {
   listAuditLog(filters: AuditLogFilters): Promise<PaginatedResult<AuditLogEntry>>;
+}
 
-  // Dogs
-  listDogs(input: {
-    page: number;
-    pageSize: number;
-    search?: string;
-  }): Promise<PaginatedResult<AdminDogListItem>>;
-  getDog(id: string): Promise<AdminDogDetail | null>;
-
-  // Reports
-  listReports(input: {
-    page: number;
-    pageSize: number;
-    status?: string;
-  }): Promise<{ items: AdminReportItem[]; total: number }>;
-  getReportUserInfos(userIds: string[]): Promise<AdminReportUserInfo[]>;
-  findReportById(
-    id: string,
-  ): Promise<{ id: string; status: string; reportedUserId: string } | null>;
-  resolveReport(
-    id: string,
-    status: string,
-    resolvedBy: string,
-    resolvedAction: string,
-  ): Promise<void>;
-  deactivateUser(userId: string): Promise<void>;
-
-  // Feed
-  listFeedPosts(input: {
-    page: number;
-    pageSize: number;
-    status?: string;
-    search?: string;
-  }): Promise<AdminFeedPostsResult>;
-  findPostById(id: string): Promise<{ id: string; moderationStatus: string } | null>;
-  updatePostModeration(postId: string, status: string): Promise<void>;
-  softDeletePost(postId: string): Promise<void>;
-
-  // Stories
-  listStories(input: { page: number; pageSize: number }): Promise<PaginatedResult<AdminStoryItem>>;
-  findStoryById(id: string): Promise<{ id: string } | null>;
-  deleteStory(id: string): Promise<void>;
-  getFeedStats(): Promise<FeedStats>;
-
-  // Group events
-  listGroupEvents(input: {
-    page: number;
-    pageSize: number;
-    search?: string;
-    status?: string;
-    category?: string;
-  }): Promise<{
-    items: AdminGroupEventItem[];
-    total: number;
-    participantCounts: AdminGroupEventParticipantCount[];
-  }>;
-  getGroupEvent(id: string): Promise<{
-    event: AdminGroupEventDetail;
-    participants: AdminEventParticipant[];
-  } | null>;
-  findGroupEventById(id: string): Promise<{ id: string; status: string } | null>;
-  cancelGroupEvent(id: string): Promise<void>;
-  findParticipantById(id: string): Promise<{ id: string } | null>;
-  removeParticipant(id: string): Promise<void>;
-
-  // Organizations
-  listOrganizations(input: {
-    page: number;
-    pageSize: number;
-    search?: string;
-    type?: string;
-  }): Promise<{
-    items: AdminOrganizationItem[];
-    total: number;
-    memberCounts: { organizationId: string; count: number }[];
-  }>;
-  getOrganization(id: string): Promise<{
-    organization: AdminOrganizationDetail;
-    members: AdminOrganizationMember[];
-  } | null>;
-  findOrganizationById(id: string): Promise<AdminOrganizationDetail | null>;
-  verifyOrganization(id: string, verifiedBy: string): Promise<void>;
-  revokeOrganization(id: string): Promise<void>;
-
-  // Event sponsors
-  listEventSponsors(eventId: string): Promise<AdminEventSponsorItem[]>;
-  findEventSponsor(eventId: string, organizationId: string): Promise<{ id: string } | null>;
-  countEventSponsorsByTier(eventId: string, tier: string): Promise<number>;
-  addEventSponsor(input: {
-    eventId: string;
-    organizationId: string;
-    tier: string;
-    logoPlacement: string;
-  }): Promise<AdminEventSponsorRow>;
-  removeEventSponsor(eventId: string, organizationId: string): Promise<void>;
-
-  // Users
+export interface AdminUserRepository {
   listUsers(input: {
     page: number;
     pageSize: number;
@@ -494,26 +400,152 @@ export interface AdminDataRepository {
   findUserById(id: string): Promise<{ id: string; isActive: boolean } | null>;
   setUserActive(userId: string, isActive: boolean): Promise<void>;
   cancelDeletion(userId: string): Promise<void>;
-
-  // Account deletions
   listPendingDeletions(input: {
     page: number;
     pageSize: number;
   }): Promise<PaginatedResult<AdminDeletionItem>>;
+  deactivateUser(userId: string): Promise<void>;
+}
 
-  // Safety
-  listSosAlerts(input: {
-    page: number;
-    pageSize: number;
-    type?: string;
-  }): Promise<PaginatedResult<AdminSosAlertItem>>;
-  listEmergencyContacts(input: {
+export interface AdminDogRepository {
+  listDogs(input: {
     page: number;
     pageSize: number;
     search?: string;
-  }): Promise<PaginatedResult<AdminEmergencyContactItem>>;
+  }): Promise<PaginatedResult<AdminDogListItem>>;
+  getDog(id: string): Promise<AdminDogDetail | null>;
+}
 
-  // Admin users
+export interface AdminModerationRepository {
+  // Reports
+  listReports(input: {
+    page: number;
+    pageSize: number;
+    status?: string;
+  }): Promise<{ items: AdminReportItem[]; total: number }>;
+  getReportUserInfos(userIds: string[]): Promise<AdminReportUserInfo[]>;
+  findReportById(
+    id: string,
+  ): Promise<{ id: string; status: string; reportedUserId: string } | null>;
+  resolveReport(
+    id: string,
+    status: string,
+    resolvedBy: string,
+    resolvedAction: string,
+  ): Promise<void>;
+  // Feed
+  listFeedPosts(input: {
+    page: number;
+    pageSize: number;
+    status?: string;
+    search?: string;
+  }): Promise<AdminFeedPostsResult>;
+  findPostById(id: string): Promise<{ id: string; moderationStatus: string } | null>;
+  updatePostModeration(postId: string, status: string): Promise<void>;
+  softDeletePost(postId: string): Promise<void>;
+  // Stories
+  listStories(input: { page: number; pageSize: number }): Promise<PaginatedResult<AdminStoryItem>>;
+  findStoryById(id: string): Promise<{ id: string } | null>;
+  deleteStory(id: string): Promise<void>;
+  getFeedStats(): Promise<FeedStats>;
+  // Photos
+  listPendingPhotos(): Promise<PendingPhotoItem[]>;
+  findPhotoById(id: string): Promise<{ id: string; moderationStatus: string } | null>;
+  updatePhotoModeration(id: string, status: string): Promise<void>;
+  approveAllPendingPhotos(): Promise<void>;
+}
+
+export interface AdminOrganizationRepository {
+  listOrganizations(input: {
+    page: number;
+    pageSize: number;
+    search?: string;
+    type?: string;
+  }): Promise<{
+    items: AdminOrganizationItem[];
+    total: number;
+    memberCounts: { organizationId: string; count: number }[];
+  }>;
+  getOrganization(id: string): Promise<{
+    organization: AdminOrganizationDetail;
+    members: AdminOrganizationMember[];
+  } | null>;
+  findOrganizationById(id: string): Promise<AdminOrganizationDetail | null>;
+  verifyOrganization(id: string, verifiedBy: string): Promise<void>;
+  revokeOrganization(id: string): Promise<void>;
+}
+
+export interface AdminGroupEventRepository {
+  listGroupEvents(input: {
+    page: number;
+    pageSize: number;
+    search?: string;
+    status?: string;
+    category?: string;
+  }): Promise<{
+    items: AdminGroupEventItem[];
+    total: number;
+    participantCounts: AdminGroupEventParticipantCount[];
+  }>;
+  getGroupEvent(id: string): Promise<{
+    event: AdminGroupEventDetail;
+    participants: AdminEventParticipant[];
+  } | null>;
+  findGroupEventById(id: string): Promise<{ id: string; status: string } | null>;
+  cancelGroupEvent(id: string): Promise<void>;
+  findParticipantById(id: string): Promise<{ id: string } | null>;
+  removeParticipant(id: string): Promise<void>;
+  // Event sponsors
+  listEventSponsors(eventId: string): Promise<AdminEventSponsorItem[]>;
+  findEventSponsor(eventId: string, organizationId: string): Promise<{ id: string } | null>;
+  countEventSponsorsByTier(eventId: string, tier: string): Promise<number>;
+  addEventSponsor(input: {
+    eventId: string;
+    organizationId: string;
+    tier: string;
+    logoPlacement: string;
+  }): Promise<AdminEventSponsorRow>;
+  removeEventSponsor(eventId: string, organizationId: string): Promise<void>;
+  // Official events
+  createOfficialEvent(input: {
+    createdBy: string;
+    title: string;
+    description: string | null;
+    scheduledAt: Date;
+    durationMin: number;
+    location: string;
+    latitude: number;
+    longitude: number;
+    maxParticipants: number;
+    category: string;
+    coverImageUrl: string | null;
+    organizationId: string;
+  }): Promise<AdminGroupEventDetail>;
+}
+
+export interface AdminBreedRepository {
+  listBreeds(input: {
+    page: number;
+    pageSize: number;
+    search?: string;
+    group?: string;
+  }): Promise<PaginatedResult<AdminBreedItem>>;
+  findBreedById(id: number): Promise<AdminBreedItem | null>;
+  createBreed(input: {
+    code: string;
+    group?: string;
+    sizeCategory: string;
+    avgWeightKg?: number;
+  }): Promise<AdminBreedItem>;
+  updateBreed(
+    id: number,
+    updates: Partial<Omit<AdminBreedItem, 'id'>>,
+  ): Promise<AdminBreedItem | null>;
+  deleteBreed(id: number): Promise<void>;
+  countDogsReferencingBreed(breedCode: string): Promise<number>;
+}
+
+export interface AdminSettingsRepository {
   listAdminUsers(input: {
     page: number;
     pageSize: number;
@@ -545,52 +577,37 @@ export interface AdminDataRepository {
     isActive: boolean;
   } | null>;
   updateAdminPassword(id: string, passwordHash: string): Promise<void>;
+}
 
-  // Breeds
-  listBreeds(input: {
+export interface AdminSafetyRepository {
+  listSosAlerts(input: {
+    page: number;
+    pageSize: number;
+    type?: string;
+  }): Promise<PaginatedResult<AdminSosAlertItem>>;
+  listEmergencyContacts(input: {
     page: number;
     pageSize: number;
     search?: string;
-    group?: string;
-  }): Promise<PaginatedResult<AdminBreedItem>>;
-  findBreedById(id: number): Promise<AdminBreedItem | null>;
-  createBreed(input: {
-    code: string;
-    group?: string;
-    sizeCategory: string;
-    avgWeightKg?: number;
-  }): Promise<AdminBreedItem>;
-  updateBreed(
-    id: number,
-    updates: Partial<Omit<AdminBreedItem, 'id'>>,
-  ): Promise<AdminBreedItem | null>;
-  deleteBreed(id: number): Promise<void>;
-  countDogsReferencingBreed(breedCode: string): Promise<number>;
+  }): Promise<PaginatedResult<AdminEmergencyContactItem>>;
+}
 
-  // Official events
-  createOfficialEvent(input: {
-    createdBy: string;
-    title: string;
-    description: string | null;
-    scheduledAt: Date;
-    durationMin: number;
-    location: string;
-    latitude: number;
-    longitude: number;
-    maxParticipants: number;
-    category: string;
-    coverImageUrl: string | null;
-    organizationId: string;
-  }): Promise<AdminGroupEventDetail>;
-
-  // Photos
-  listPendingPhotos(): Promise<PendingPhotoItem[]>;
-  findPhotoById(id: string): Promise<{ id: string; moderationStatus: string } | null>;
-  updatePhotoModeration(id: string, status: string): Promise<void>;
-  approveAllPendingPhotos(): Promise<void>;
-
-  // Notifications
+export interface AdminNotificationRepository {
   getActiveUsersWithPushToken(): Promise<{ id: string }[]>;
   getTargetedUsers(userIds: string[]): Promise<{ id: string; pushToken: string | null }[]>;
   getNotificationStats(): Promise<NotificationStats>;
 }
+
+// ── Backward-compatible composite type ───────────────────────────────────────
+
+export type AdminDataRepository = AdminDashboardRepository &
+  AdminAuditLogRepository &
+  AdminUserRepository &
+  AdminDogRepository &
+  AdminModerationRepository &
+  AdminOrganizationRepository &
+  AdminGroupEventRepository &
+  AdminBreedRepository &
+  AdminSettingsRepository &
+  AdminSafetyRepository &
+  AdminNotificationRepository;

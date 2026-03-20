@@ -1,5 +1,5 @@
-import { TRPCError } from '@trpc/server';
 import type { GroupEventStatus } from '@pawmeet/types';
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { canTransitionTo } from '../../domain/group-event-state-machine.js';
 import { enqueueNotification } from '../../jobs/queue.js';

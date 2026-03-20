@@ -1,7 +1,10 @@
 import { z } from 'zod';
 import { paginate } from '../../lib/pagination.js';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
-import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
+import type {
+  AdminAuditLogRepository,
+  AdminDashboardRepository,
+} from '../../ports/admin-data-repository.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import { router } from '../trpc.js';
 import { createAdminProcedure } from './admin-procedure.js';
@@ -18,7 +21,7 @@ const listAuditLogSchema = z.object({
 });
 
 interface DashboardRouterDeps {
-  adminDataRepo: AdminDataRepository;
+  adminDataRepo: AdminDashboardRepository & AdminAuditLogRepository;
   auditLogRepo: AuditLogRepository;
 }
 

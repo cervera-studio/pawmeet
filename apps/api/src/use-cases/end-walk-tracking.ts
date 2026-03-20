@@ -2,6 +2,7 @@ import type { XpAction } from '@pawmeet/config';
 import type { Result, WalkTrack, XpSummary } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { calculateDistance } from '@pawmeet/utils';
+import { assertOwnership } from '../domain/ownership.js';
 import type { WalkTrackRepository } from '../ports/walk-track-repository.js';
 
 type AwardXpFn = (
@@ -26,11 +27,12 @@ export function createEndWalkTracking({ walkTrackRepo, awardXp }: Deps) {
       return fail(new AppError('TRACK_NOT_FOUND', 'Walk track not found', 404));
     }
 
-    if (track.userId !== userId) {
-      return fail(
-        new AppError('TRACK_NOT_OWNED', 'Non hai i permessi per questo tracciamento', 403),
-      );
-    }
+    assertOwnership(
+      track.userId,
+      userId,
+      'TRACK_NOT_OWNED',
+      'Non hai i permessi per questo tracciamento',
+    );
 
     if (track.isCompleted) {
       return fail(new AppError('TRACK_ALREADY_COMPLETED', 'Il tracciamento è già completato', 400));

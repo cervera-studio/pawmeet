@@ -5,85 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1773237862527,
-      "tag": "0000_green_zombie",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1773246629226,
-      "tag": "0001_medical_toad_men",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1773247289296,
-      "tag": "0002_free_blade",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1773249517072,
-      "tag": "0003_ambitious_puppet_master",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1773252811064,
-      "tag": "0004_dazzling_miek",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1773585889084,
-      "tag": "0005_living_kree",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1773596270464,
-      "tag": "0006_opposite_eternals",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1773692931040,
-      "tag": "0007_minor_jack_murdock",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1774017650829,
-      "tag": "0008_migrate_enums_to_english",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1774017977102,
-      "tag": "0009_add_postgis",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1774017982731,
-      "tag": "0010_breed_i18n_code",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1774017987782,
-      "tag": "0011_add_pgvector_embeddings",
+      "when": 1774018199714,
+      "tag": "0000_initial",
       "breakpoints": true
     }
   ]

@@ -10,6 +10,17 @@ import {
   TERRAIN_OPTIONS,
   WALK_TIME_OPTIONS,
 } from '@pawmeet/config';
+import type {
+  BehaviorWithDogs,
+  BehaviorWithPeople,
+  DogSize,
+  EnergyLevel,
+  Gender,
+  LeashBehavior,
+  RecallReliability,
+  WalkTerrain,
+  WalkTime,
+} from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -27,16 +38,16 @@ interface EditDogForm {
   breed: string;
   breedSecondary: string;
   bio: string;
-  size: string;
-  gender: string;
+  size: DogSize;
+  gender: Gender;
   isNeutered: boolean;
-  energyLevel: string;
-  behaviorWithDogs: string;
-  behaviorWithPeople: string;
-  leashBehavior: string;
-  recallReliability: string;
-  walkPrefTime: string[];
-  walkPrefTerrain: string[];
+  energyLevel: EnergyLevel;
+  behaviorWithDogs: BehaviorWithDogs;
+  behaviorWithPeople: BehaviorWithPeople;
+  leashBehavior: LeashBehavior;
+  recallReliability: RecallReliability | '';
+  walkPrefTime: WalkTime[];
+  walkPrefTerrain: WalkTerrain[];
   walkPrefDurationMin: string;
   walkPrefDurationMax: string;
 }
@@ -121,44 +132,16 @@ export function useEditDogViewModel() {
           breed: form.breed,
           breedSecondary: form.breedSecondary || undefined,
           bio: form.bio || undefined,
-          size: form.size as 'toy' | 'piccola' | 'media' | 'grande' | 'gigante',
-          gender: form.gender as 'maschio' | 'femmina',
+          size: form.size,
+          gender: form.gender,
           isNeutered: form.isNeutered,
-          energyLevel: form.energyLevel as 'bassa' | 'media' | 'alta' | 'molto_alta',
-          behaviorWithDogs: form.behaviorWithDogs as
-            | 'molto_socievole'
-            | 'socievole'
-            | 'selettivo'
-            | 'reattivo',
-          behaviorWithPeople: form.behaviorWithPeople as
-            | 'molto_socievole'
-            | 'socievole'
-            | 'timido'
-            | 'diffidente',
-          leashBehavior: form.leashBehavior as
-            | 'eccellente'
-            | 'buono'
-            | 'in_addestramento'
-            | 'difficile',
-          recallReliability: (form.recallReliability || undefined) as
-            | 'affidabile'
-            | 'parziale'
-            | 'non_affidabile'
-            | undefined,
-          walkPrefTime: form.walkPrefTime as (
-            | 'mattina_presto'
-            | 'mattina'
-            | 'pomeriggio'
-            | 'sera'
-            | 'sera_tardi'
-          )[],
-          walkPrefTerrain: form.walkPrefTerrain as (
-            | 'urbano'
-            | 'parco'
-            | 'campagna'
-            | 'spiaggia'
-            | 'montagna'
-          )[],
+          energyLevel: form.energyLevel,
+          behaviorWithDogs: form.behaviorWithDogs,
+          behaviorWithPeople: form.behaviorWithPeople,
+          leashBehavior: form.leashBehavior,
+          recallReliability: form.recallReliability || undefined,
+          walkPrefTime: form.walkPrefTime,
+          walkPrefTerrain: form.walkPrefTerrain,
           walkPrefDurationMin: Number(form.walkPrefDurationMin),
           walkPrefDurationMax: Number(form.walkPrefDurationMax),
         },

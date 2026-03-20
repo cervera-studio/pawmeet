@@ -9,6 +9,16 @@ import {
   TERRAIN_OPTIONS,
   WALK_TIME_OPTIONS,
 } from '@pawmeet/config';
+import type {
+  BehaviorWithDogs,
+  BehaviorWithPeople,
+  DogSize,
+  EnergyLevel,
+  Gender,
+  LeashBehavior,
+  WalkTerrain,
+  WalkTime,
+} from '@pawmeet/types';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
@@ -144,8 +154,8 @@ function Step1BasicInfo({
         </Text>
         <ChipSelect
           options={SIZE_OPTIONS}
-          selected={state.size ?? ('' as string)}
-          onSelect={(v) => setField('size', v)}
+          selected={state.size ?? ''}
+          onSelect={(v) => setField('size', (v || null) as DogSize | null)}
         />
         <FieldError message={errors.size} />
       </View>
@@ -156,8 +166,8 @@ function Step1BasicInfo({
         </Text>
         <ChipSelect
           options={GENDER_OPTIONS}
-          selected={state.gender ?? ('' as string)}
-          onSelect={(v) => setField('gender', v)}
+          selected={state.gender ?? ''}
+          onSelect={(v) => setField('gender', (v || null) as Gender | null)}
         />
         <FieldError message={errors.gender} />
       </View>
@@ -259,8 +269,8 @@ function Step2Personality({
         </Text>
         <ChipSelect
           options={ENERGY_OPTIONS}
-          selected={state.energyLevel ?? ('' as string)}
-          onSelect={(v) => setField('energyLevel', v)}
+          selected={state.energyLevel ?? ''}
+          onSelect={(v) => setField('energyLevel', (v || null) as EnergyLevel | null)}
         />
         <FieldError message={errors.energyLevel} />
       </View>
@@ -271,8 +281,8 @@ function Step2Personality({
         </Text>
         <ChipSelect
           options={BEHAVIOR_DOGS_OPTIONS}
-          selected={state.behaviorWithDogs ?? ('' as string)}
-          onSelect={(v) => setField('behaviorWithDogs', v)}
+          selected={state.behaviorWithDogs ?? ''}
+          onSelect={(v) => setField('behaviorWithDogs', (v || null) as BehaviorWithDogs | null)}
         />
         <FieldError message={errors.behaviorWithDogs} />
       </View>
@@ -283,8 +293,8 @@ function Step2Personality({
         </Text>
         <ChipSelect
           options={BEHAVIOR_PEOPLE_OPTIONS}
-          selected={state.behaviorWithPeople ?? ('' as string)}
-          onSelect={(v) => setField('behaviorWithPeople', v)}
+          selected={state.behaviorWithPeople ?? ''}
+          onSelect={(v) => setField('behaviorWithPeople', (v || null) as BehaviorWithPeople | null)}
         />
         <FieldError message={errors.behaviorWithPeople} />
       </View>
@@ -295,8 +305,8 @@ function Step2Personality({
         </Text>
         <ChipSelect
           options={LEASH_OPTIONS}
-          selected={state.leashBehavior ?? ('' as string)}
-          onSelect={(v) => setField('leashBehavior', v)}
+          selected={state.leashBehavior ?? ''}
+          onSelect={(v) => setField('leashBehavior', (v || null) as LeashBehavior | null)}
         />
         <FieldError message={errors.leashBehavior} />
       </View>
@@ -307,7 +317,7 @@ function Step2Personality({
         </Text>
         <ChipSelect
           options={RECALL_OPTIONS}
-          selected={state.recallReliability ?? ('' as string)}
+          selected={state.recallReliability ?? ''}
           onSelect={(v) => setField('recallReliability', v)}
         />
       </View>
@@ -338,7 +348,7 @@ function Step3WalkPrefs({
         <ChipSelect
           options={WALK_TIME_OPTIONS}
           selected={state.walkPrefTime}
-          onSelect={(v) => setField('walkPrefTime', v)}
+          onSelect={(v) => setField('walkPrefTime', v as WalkTime[])}
           multiple
         />
         <FieldError message={errors.walkPrefTime} />
@@ -351,7 +361,7 @@ function Step3WalkPrefs({
         <ChipSelect
           options={TERRAIN_OPTIONS}
           selected={state.walkPrefTerrain}
-          onSelect={(v) => setField('walkPrefTerrain', v)}
+          onSelect={(v) => setField('walkPrefTerrain', v as WalkTerrain[])}
           multiple
         />
         <FieldError message={errors.walkPrefTerrain} />

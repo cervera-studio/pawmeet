@@ -1,4 +1,14 @@
 import { MAX_DOGS_PER_USER } from '@pawmeet/config';
+import type {
+  BehaviorWithDogs,
+  BehaviorWithPeople,
+  DogSize,
+  EnergyLevel,
+  Gender,
+  LeashBehavior,
+  WalkTerrain,
+  WalkTime,
+} from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { createDogSchema } from '@pawmeet/validation';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,21 +35,21 @@ interface DogFormState {
   breedSecondary: string;
   birthDate: string;
   weightKg: string;
-  size: string | null;
-  gender: string | null;
+  size: DogSize | null;
+  gender: Gender | null;
   isNeutered: boolean | null;
   bio: string;
 
   // Step 2: Temperament
-  energyLevel: string | null;
-  behaviorWithDogs: string | null;
-  behaviorWithPeople: string | null;
-  leashBehavior: string | null;
+  energyLevel: EnergyLevel | null;
+  behaviorWithDogs: BehaviorWithDogs | null;
+  behaviorWithPeople: BehaviorWithPeople | null;
+  leashBehavior: LeashBehavior | null;
   recallReliability: string | null;
 
   // Step 3: Walk preferences
-  walkPrefTime: string[];
-  walkPrefTerrain: string[];
+  walkPrefTime: WalkTime[];
+  walkPrefTerrain: WalkTerrain[];
   walkPrefDurationMin: string;
   walkPrefDurationMax: string;
 
@@ -165,34 +175,14 @@ function buildBioMutationInput(state: DogFormState) {
     name: state.name,
     breed: state.breed,
     breedSecondary: state.breedSecondary || undefined,
-    size: state.size as 'toy' | 'piccola' | 'media' | 'grande' | 'gigante',
-    gender: state.gender as 'maschio' | 'femmina',
-    energyLevel: state.energyLevel as 'bassa' | 'media' | 'alta' | 'molto_alta',
-    behaviorWithDogs: state.behaviorWithDogs as
-      | 'molto_socievole'
-      | 'socievole'
-      | 'selettivo'
-      | 'reattivo',
-    behaviorWithPeople: state.behaviorWithPeople as
-      | 'molto_socievole'
-      | 'socievole'
-      | 'timido'
-      | 'diffidente',
-    leashBehavior: state.leashBehavior as 'eccellente' | 'buono' | 'in_addestramento' | 'difficile',
-    walkPrefTime: state.walkPrefTime as (
-      | 'mattina_presto'
-      | 'mattina'
-      | 'pomeriggio'
-      | 'sera'
-      | 'sera_tardi'
-    )[],
-    walkPrefTerrain: state.walkPrefTerrain as (
-      | 'urbano'
-      | 'parco'
-      | 'campagna'
-      | 'spiaggia'
-      | 'montagna'
-    )[],
+    size: state.size!,
+    gender: state.gender!,
+    energyLevel: state.energyLevel!,
+    behaviorWithDogs: state.behaviorWithDogs!,
+    behaviorWithPeople: state.behaviorWithPeople!,
+    leashBehavior: state.leashBehavior!,
+    walkPrefTime: state.walkPrefTime,
+    walkPrefTerrain: state.walkPrefTerrain,
   };
 }
 

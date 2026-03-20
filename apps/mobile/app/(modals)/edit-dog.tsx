@@ -1,3 +1,4 @@
+import type { WalkTerrain, WalkTime } from '@pawmeet/types';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
@@ -171,7 +172,7 @@ export default function EditDogScreen() {
               <ChipSelect
                 options={WALK_TIME_OPTIONS}
                 selected={vm.form.walkPrefTime}
-                onSelect={(v) => vm.setField('walkPrefTime', v)}
+                onSelect={(v) => vm.setField('walkPrefTime', v as WalkTime[])}
                 multiple
               />
             </View>
@@ -182,7 +183,7 @@ export default function EditDogScreen() {
               <ChipSelect
                 options={TERRAIN_OPTIONS}
                 selected={vm.form.walkPrefTerrain}
-                onSelect={(v) => vm.setField('walkPrefTerrain', v)}
+                onSelect={(v) => vm.setField('walkPrefTerrain', v as WalkTerrain[])}
                 multiple
               />
             </View>

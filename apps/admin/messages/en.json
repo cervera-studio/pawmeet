@@ -68,7 +68,8 @@
     "aiMatchingPerformance": "Performance",
     "aiMatchingFlags": "Feature Flags",
     "challenges": "Challenges",
-    "fitness": "Fitness"
+    "fitness": "Fitness",
+    "support": "Support"
   },
   "header": {
     "searchPlaceholder": "Search users, dogs, reports...",
@@ -115,6 +116,12 @@
       "pending": "Pending",
       "resolved": "Resolved",
       "dismissed": "Dismissed"
+    },
+    "support": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
     }
   },
   "users": {
@@ -828,6 +835,78 @@
       "distanceKm": "Distance (km)",
       "unknownUser": "Unknown user",
       "noData": "No data available"
+    }
+  },
+  "support": {
+    "title": "Support Inbox",
+    "subtitle": "Manage support tickets and customer inquiries",
+    "tickets": "Tickets",
+    "noTickets": "No support tickets found",
+    "allStatuses": "All statuses",
+    "allCategories": "All categories",
+    "statuses": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "categories": {
+      "general": "General",
+      "bug": "Bug",
+      "account": "Account",
+      "safety": "Safety",
+      "billing": "Billing",
+      "other": "Other"
+    },
+    "columns": {
+      "status": "Status",
+      "subject": "Subject",
+      "user": "User",
+      "category": "Category",
+      "assignedTo": "Assigned to",
+      "lastMessage": "Last message",
+      "messages": "Messages",
+      "createdAt": "Created"
+    },
+    "detail": {
+      "backToList": "Back to tickets",
+      "ticketInfo": "Ticket information",
+      "subject": "Subject",
+      "category": "Category",
+      "status": "Status",
+      "createdAt": "Created",
+      "user": "User",
+      "guest": "Guest",
+      "assignedTo": "Assigned to",
+      "unassigned": "Unassigned",
+      "messageThread": "Messages",
+      "internalNote": "Internal note",
+      "systemMessage": "System",
+      "replyPlaceholder": "Type your reply...",
+      "sendReply": "Send reply",
+      "sending": "Sending...",
+      "internalNoteToggle": "Internal note",
+      "internalNoteHint": "Internal notes are only visible to admins",
+      "actions": {
+        "markInProgress": "Mark in progress",
+        "resolve": "Resolve",
+        "close": "Close",
+        "reopen": "Reopen"
+      },
+      "assign": "Assign",
+      "assignTo": "Assign to",
+      "removeAssignment": "Remove assignment"
+    },
+    "toast": {
+      "statusUpdated": "Ticket status updated",
+      "statusUpdateError": "Error updating ticket status",
+      "assigned": "Ticket assigned",
+      "assignError": "Error assigning ticket",
+      "replySent": "Reply sent",
+      "replyError": "Error sending reply",
+      "loadError": "Error loading tickets",
+      "detailLoadError": "Error loading ticket details",
+      "messagesLoadError": "Error loading messages"
     }
   },
   "validation": {

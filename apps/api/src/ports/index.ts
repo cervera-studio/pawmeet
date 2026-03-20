@@ -66,6 +66,15 @@ export type {
 export type { StorageService } from './storage-service.js';
 export type { CreateStoryInput, StoryRepository } from './story-repository.js';
 export type {
+  AddMessageInput as SupportAddMessageInput,
+  CreateGuestTicketInput,
+  CreateTicketInput as SupportCreateTicketInput,
+  ListTicketsQuery,
+  PaginatedMessages as SupportPaginatedMessages,
+  PaginatedTickets,
+  SupportRepository,
+} from './support-repository.js';
+export type {
   RefreshTokenRecord,
   TokenRepository,
   VerificationTokenRecord,

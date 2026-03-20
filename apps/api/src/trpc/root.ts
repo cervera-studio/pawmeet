@@ -19,6 +19,7 @@ import {
   matchingAiDeps,
   moodLogDeps,
   organizationDeps,
+  supportDeps,
   userDeps,
   walkDeps,
 } from '../container/index.js';
@@ -42,6 +43,7 @@ import { createMatchingAiRouter } from './routers/matching-ai.js';
 import { createMoodLogRouter } from './routers/mood-logs.js';
 import { createOrganizationsRouter } from './routers/organizations.js';
 import { createSafetyRouter } from './routers/safety.js';
+import { createSupportRouter } from './routers/support.js';
 import { createUsersRouter } from './routers/users.js';
 import { createWalksRouter } from './routers/walks.js';
 import { router } from './trpc.js';
@@ -69,6 +71,7 @@ export const appRouter = router({
   groupEvents: createGroupEventsRouter(groupEventDeps),
   organizations: createOrganizationsRouter(organizationDeps),
   safety: createSafetyRouter(emergencyContactDeps),
+  support: createSupportRouter(supportDeps),
 });
 
 export type AppRouter = typeof appRouter;

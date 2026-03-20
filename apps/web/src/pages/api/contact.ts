@@ -27,23 +27,44 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
+  const subject = typeof body?.subject === 'string' ? body.subject.trim() : '';
+
   try {
     await resend.emails.send({
       from: 'PawMeet Contatti <noreply@pawmeet.io>',
       to: CONTACT_EMAIL,
       replyTo: email,
-      subject: `Contatto da ${name}`,
+      subject: subject ? `[Contatto] ${subject}` : `Contatto da ${name}`,
       text: [
         `Nuovo messaggio dal form contatti PawMeet.`,
         ``,
         `Nome: ${name}`,
         `Email: ${email}`,
+        ...(subject ? [`Oggetto: ${subject}`] : []),
         `Data: ${new Date().toISOString()}`,
         ``,
         `Messaggio:`,
         message,
       ].join('\n'),
     });
+
+    // Create a guest support ticket via the API (best-effort, do not fail the response)
+    const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+    try {
+      await fetch(`${apiUrl}/api/support/guest-ticket`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          subject: subject || `Contatto da ${name}`,
+          category: 'general',
+          message,
+        }),
+      });
+    } catch (ticketErr) {
+      console.warn('Failed to create guest support ticket:', ticketErr);
+    }
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

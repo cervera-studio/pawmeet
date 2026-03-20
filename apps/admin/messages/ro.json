@@ -68,7 +68,8 @@
     "aiMatchingPerformance": "Performance",
     "aiMatchingFlags": "Feature Flag",
     "challenges": "Provocari",
-    "fitness": "Fitness"
+    "fitness": "Fitness",
+    "support": "Suport"
   },
   "header": {
     "searchPlaceholder": "Cauta utilizatori, caini, raportari...",
@@ -115,6 +116,12 @@
       "pending": "In asteptare",
       "resolved": "Rezolvat",
       "dismissed": "Arhivat"
+    },
+    "support": {
+      "open": "Deschis",
+      "in_progress": "In lucru",
+      "resolved": "Rezolvat",
+      "closed": "Inchis"
     }
   },
   "users": {
@@ -761,6 +768,78 @@
       "distanceKm": "Distanta (km)",
       "unknownUser": "Utilizator necunoscut",
       "noData": "Nu exista date disponibile"
+    }
+  },
+  "support": {
+    "title": "Inbox Suport",
+    "subtitle": "Gestioneaza ticketele de suport si intrebarile clientilor",
+    "tickets": "Tickete",
+    "noTickets": "Niciun ticket de suport gasit",
+    "allStatuses": "Toate starile",
+    "allCategories": "Toate categoriile",
+    "statuses": {
+      "open": "Deschis",
+      "in_progress": "In lucru",
+      "resolved": "Rezolvat",
+      "closed": "Inchis"
+    },
+    "categories": {
+      "general": "General",
+      "bug": "Bug",
+      "account": "Cont",
+      "safety": "Siguranta",
+      "billing": "Facturare",
+      "other": "Altele"
+    },
+    "columns": {
+      "status": "Stare",
+      "subject": "Subiect",
+      "user": "Utilizator",
+      "category": "Categorie",
+      "assignedTo": "Atribuit lui",
+      "lastMessage": "Ultimul mesaj",
+      "messages": "Mesaje",
+      "createdAt": "Creat"
+    },
+    "detail": {
+      "backToList": "Inapoi la tickete",
+      "ticketInfo": "Informatii ticket",
+      "subject": "Subiect",
+      "category": "Categorie",
+      "status": "Stare",
+      "createdAt": "Creat la",
+      "user": "Utilizator",
+      "guest": "Oaspete",
+      "assignedTo": "Atribuit lui",
+      "unassigned": "Neatribuit",
+      "messageThread": "Mesaje",
+      "internalNote": "Nota interna",
+      "systemMessage": "Sistem",
+      "replyPlaceholder": "Scrie raspunsul tau...",
+      "sendReply": "Trimite raspuns",
+      "sending": "Se trimite...",
+      "internalNoteToggle": "Nota interna",
+      "internalNoteHint": "Notele interne sunt vizibile doar pentru admini",
+      "actions": {
+        "markInProgress": "Marcheaza in lucru",
+        "resolve": "Rezolva",
+        "close": "Inchide",
+        "reopen": "Redeschide"
+      },
+      "assign": "Atribuie",
+      "assignTo": "Atribuie lui",
+      "removeAssignment": "Sterge atribuirea"
+    },
+    "toast": {
+      "statusUpdated": "Starea ticketului actualizata",
+      "statusUpdateError": "Eroare la actualizarea starii ticketului",
+      "assigned": "Ticket atribuit",
+      "assignError": "Eroare la atribuirea ticketului",
+      "replySent": "Raspuns trimis",
+      "replyError": "Eroare la trimiterea raspunsului",
+      "loadError": "Eroare la incarcarea ticketelor",
+      "detailLoadError": "Eroare la incarcarea detaliilor ticketului",
+      "messagesLoadError": "Eroare la incarcarea mesajelor"
     }
   },
   "validation": {

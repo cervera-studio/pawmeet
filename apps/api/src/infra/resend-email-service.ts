@@ -4,6 +4,7 @@ import {
   sendGdprExportFailed,
   sendGdprExportReady,
   sendPasswordResetOtp,
+  sendSupportTicketNotification,
   sendVerificationOtp,
 } from '../lib/email.js';
 import type { EmailService } from '../ports/email-service.js';
@@ -40,5 +41,14 @@ export class ResendEmailService implements EmailService {
 
   async sendAdminInvite(email: string, temporaryPassword: string, locale?: string): Promise<void> {
     return sendAdminInvite(email, temporaryPassword, locale);
+  }
+
+  async sendSupportTicketNotification(
+    to: string,
+    ticketId: string,
+    subject: string,
+    preview: string,
+  ): Promise<void> {
+    return sendSupportTicketNotification(to, ticketId, subject, preview);
   }
 }

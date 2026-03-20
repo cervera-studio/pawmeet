@@ -39,6 +39,7 @@ import { DrizzleNearbyJobRepository } from '../infra/drizzle-nearby-job-reposito
 import { DrizzleOrganizationRepository } from '../infra/drizzle-organization-repository.js';
 import { DrizzleRisingCompatibilityRepository } from '../infra/drizzle-rising-compatibility-repository.js';
 import { DrizzleStoryRepository } from '../infra/drizzle-story-repository.js';
+import { DrizzleSupportRepository } from '../infra/drizzle-support-repository.js';
 import { DrizzleTokenRepository } from '../infra/drizzle-token-repository.js';
 import { DrizzleUserRepository } from '../infra/drizzle-user-repository.js';
 import { DrizzleWalkAlbumRepository } from '../infra/drizzle-walk-album-repository.js';
@@ -102,6 +103,7 @@ export const organizationRepo = new DrizzleOrganizationRepository(db);
 export const eventSponsorRepo = new DrizzleEventSponsorRepository(db);
 export const gdprExportRepo = new DrizzleGdprExportRepository(db);
 export const emergencyContactRepo = new DrizzleEmergencyContactRepository(db);
+export const supportRepo = new DrizzleSupportRepository(db);
 
 // ── Embedding (pgvector) ─────────────────────────────────────────────────────
 

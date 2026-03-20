@@ -13,6 +13,7 @@ export { matchDeps, matchingAiDeps, onnxModelLoader } from './match-container.js
 export { organizationDeps } from './organization-container.js';
 export { emergencyContactDeps } from './safety-container.js';
 export { analyticsProviders, experimentService } from './services.js';
+export { supportDeps } from './support-container.js';
 export { consentDeps, userDeps } from './user-container.js';
 export {
   feedbackDeps,

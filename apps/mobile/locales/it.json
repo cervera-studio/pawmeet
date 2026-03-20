@@ -817,7 +817,8 @@
       "selectLanguage": "Seleziona lingua",
       "language": "Lingua",
       "italian": "Italiano",
-      "safetyAndEmergency": "Sicurezza e emergenza"
+      "safetyAndEmergency": "Sicurezza e emergenza",
+      "contactSupport": "Contatta il supporto"
     },
     "legal": {
       "termsOfService": "Termini di servizio",
@@ -1032,5 +1033,35 @@
     "submit": "Salva umore",
     "submitting": "Salvataggio...",
     "submitError": "Impossibile salvare l'umore. Riprova."
+  },
+
+  "support": {
+    "title": "Supporto",
+    "newTicket": "Nuovo ticket",
+    "subjectLabel": "Oggetto",
+    "subjectPlaceholder": "Descrivi brevemente il problema",
+    "categoryLabel": "Categoria",
+    "messageLabel": "Messaggio",
+    "messagePlaceholder": "Descrivi il tuo problema in dettaglio...",
+    "inputPlaceholder": "Scrivi un messaggio...",
+    "send": "Invia",
+    "sending": "Invio...",
+    "empty": "Nessuna conversazione di supporto",
+    "chatEmpty": "Scrivi un messaggio per iniziare la conversazione con il supporto.",
+    "ticketClosed": "Questo ticket è stato chiuso",
+    "categories": {
+      "general": "Generale",
+      "bug": "Bug",
+      "account": "Account",
+      "safety": "Sicurezza",
+      "billing": "Fatturazione",
+      "other": "Altro"
+    },
+    "status": {
+      "open": "Aperto",
+      "in_progress": "In corso",
+      "resolved": "Risolto",
+      "closed": "Chiuso"
+    }
   }
 }

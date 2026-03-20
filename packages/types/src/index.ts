@@ -19,5 +19,6 @@ export * from './organization';
 export * from './pagination';
 export * from './result';
 export * from './serialized';
+export * from './support';
 export * from './user';
 export * from './walk';

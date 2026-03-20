@@ -68,7 +68,8 @@
     "aiMatchingPerformance": "Performance",
     "aiMatchingFlags": "Feature Flag",
     "challenges": "Sfide",
-    "fitness": "Fitness"
+    "fitness": "Fitness",
+    "support": "Supporto"
   },
   "header": {
     "searchPlaceholder": "Cerca utenti, cani, segnalazioni...",
@@ -115,6 +116,12 @@
       "pending": "In attesa",
       "resolved": "Risolto",
       "dismissed": "Archiviato"
+    },
+    "support": {
+      "open": "Aperto",
+      "in_progress": "In lavorazione",
+      "resolved": "Risolto",
+      "closed": "Chiuso"
     }
   },
   "users": {
@@ -828,6 +835,78 @@
       "distanceKm": "Distanza (km)",
       "unknownUser": "Utente sconosciuto",
       "noData": "Nessun dato disponibile"
+    }
+  },
+  "support": {
+    "title": "Inbox Supporto",
+    "subtitle": "Gestisci i ticket di supporto e le richieste dei clienti",
+    "tickets": "Ticket",
+    "noTickets": "Nessun ticket di supporto trovato",
+    "allStatuses": "Tutti gli stati",
+    "allCategories": "Tutte le categorie",
+    "statuses": {
+      "open": "Aperto",
+      "in_progress": "In lavorazione",
+      "resolved": "Risolto",
+      "closed": "Chiuso"
+    },
+    "categories": {
+      "general": "Generale",
+      "bug": "Bug",
+      "account": "Account",
+      "safety": "Sicurezza",
+      "billing": "Fatturazione",
+      "other": "Altro"
+    },
+    "columns": {
+      "status": "Stato",
+      "subject": "Oggetto",
+      "user": "Utente",
+      "category": "Categoria",
+      "assignedTo": "Assegnato a",
+      "lastMessage": "Ultimo messaggio",
+      "messages": "Messaggi",
+      "createdAt": "Creato"
+    },
+    "detail": {
+      "backToList": "Torna ai ticket",
+      "ticketInfo": "Informazioni ticket",
+      "subject": "Oggetto",
+      "category": "Categoria",
+      "status": "Stato",
+      "createdAt": "Creato il",
+      "user": "Utente",
+      "guest": "Ospite",
+      "assignedTo": "Assegnato a",
+      "unassigned": "Non assegnato",
+      "messageThread": "Messaggi",
+      "internalNote": "Nota interna",
+      "systemMessage": "Sistema",
+      "replyPlaceholder": "Scrivi la tua risposta...",
+      "sendReply": "Invia risposta",
+      "sending": "Invio...",
+      "internalNoteToggle": "Nota interna",
+      "internalNoteHint": "Le note interne sono visibili solo agli admin",
+      "actions": {
+        "markInProgress": "Segna in lavorazione",
+        "resolve": "Risolvi",
+        "close": "Chiudi",
+        "reopen": "Riapri"
+      },
+      "assign": "Assegna",
+      "assignTo": "Assegna a",
+      "removeAssignment": "Rimuovi assegnazione"
+    },
+    "toast": {
+      "statusUpdated": "Stato del ticket aggiornato",
+      "statusUpdateError": "Errore nell'aggiornamento dello stato",
+      "assigned": "Ticket assegnato",
+      "assignError": "Errore nell'assegnazione del ticket",
+      "replySent": "Risposta inviata",
+      "replyError": "Errore nell'invio della risposta",
+      "loadError": "Errore nel caricamento dei ticket",
+      "detailLoadError": "Errore nel caricamento dei dettagli del ticket",
+      "messagesLoadError": "Errore nel caricamento dei messaggi"
     }
   },
   "validation": {

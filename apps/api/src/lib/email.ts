@@ -186,6 +186,29 @@ export async function sendAdminInvite(
 }
 
 /**
+ * Send a notification email when a support ticket receives a new message.
+ */
+export async function sendSupportTicketNotification(
+  to: string,
+  ticketId: string,
+  subject: string,
+  preview: string,
+): Promise<void> {
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: `[PawMeet Support] ${subject}`,
+    html: `
+      <h2>Aggiornamento ticket di supporto</h2>
+      <p><strong>Ticket:</strong> ${ticketId.slice(0, 8)}</p>
+      <p><strong>Oggetto:</strong> ${subject}</p>
+      <p><strong>Anteprima:</strong> ${preview}</p>
+      <p>Accedi all'app per visualizzare la risposta completa.</p>
+    `,
+  });
+}
+
+/**
  * Send account deletion confirmation email (GDPR Art. 17 acknowledgment).
  */
 export async function sendAccountDeletedConfirmation(

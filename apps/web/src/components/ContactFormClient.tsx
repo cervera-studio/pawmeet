@@ -33,6 +33,7 @@ export default function ContactFormClient({ strings }: Props) {
     const data = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
+      subject: formData.get('subject') as string,
       message: formData.get('message') as string,
     };
 
@@ -120,6 +121,24 @@ export default function ContactFormClient({ strings }: Props) {
                 required
                 autoComplete="email"
                 placeholder={strings.emailPlaceholder}
+                disabled={state === 'loading'}
+                className={inputClasses}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="contact-subject"
+                className="block text-[13px] font-semibold text-neutral-700 mb-1.5"
+              >
+                {strings.subjectLabel}
+              </label>
+              <input
+                type="text"
+                id="contact-subject"
+                name="subject"
+                required
+                placeholder={strings.subjectPlaceholder}
                 disabled={state === 'loading'}
                 className={inputClasses}
               />

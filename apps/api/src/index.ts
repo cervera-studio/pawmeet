@@ -3,7 +3,7 @@ import { trpcServer } from '@hono/trpc-server';
 import { logger as appLogger } from '@pawmeet/utils';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import { adminDeps, experimentService, onnxModelLoader } from './container/index.js';
+import { adminDeps, experimentService, onnxModelLoader, supportDeps } from './container/index.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { cacheControlMiddleware } from './middleware/cache-control.js';
@@ -17,6 +17,7 @@ initSentry();
 import process from 'node:process';
 import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { analytics } from './routes/analytics.js';
+import { createSupportRoutes } from './routes/support.js';
 import { appRouter } from './trpc/root.js';
 import { createContext } from './trpc/trpc.js';
 import { setupWebSocket } from './ws/chat.js';
@@ -71,6 +72,9 @@ app.route('/api/events', analytics);
 
 // Admin auth routes — mounted at root level for the admin backoffice
 app.route('/admin/auth', createAdminAuthRoutes(adminDeps));
+
+// Support routes — public endpoint for guest ticket creation (web contact form)
+app.route('/api/support', createSupportRoutes(supportDeps));
 
 app.get('/health', async (c) => {
   const checks: Record<string, 'ok' | 'fail'> = {};

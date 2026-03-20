@@ -18,6 +18,7 @@ export * from './mood-log';
 export * from './notification';
 export * from './organization';
 export * from './search';
+export * from './support';
 export * from './user';
 export * from './value-objects';
 export * from './walk';

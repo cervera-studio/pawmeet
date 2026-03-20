@@ -105,6 +105,8 @@
     "namePlaceholder": "Numele tău",
     "emailLabel": "Email",
     "emailPlaceholder": "Emailul tău",
+    "subjectLabel": "Subiect",
+    "subjectPlaceholder": "Despre ce este vorba?",
     "messageLabel": "Mesaj",
     "messagePlaceholder": "Scrie mesajul tău...",
     "submitButton": "Trimite mesajul",

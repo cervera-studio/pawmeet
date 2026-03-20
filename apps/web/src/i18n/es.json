@@ -105,6 +105,8 @@
     "namePlaceholder": "Tu nombre",
     "emailLabel": "Correo",
     "emailPlaceholder": "Tu correo",
+    "subjectLabel": "Asunto",
+    "subjectPlaceholder": "De que se trata?",
     "messageLabel": "Mensaje",
     "messagePlaceholder": "Escribe tu mensaje...",
     "submitButton": "Enviar mensaje",

@@ -2,6 +2,7 @@ import process from 'node:process';
 import type { ConsentState } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Modal, Platform, Pressable, ScrollView, Switch, Text, View } from 'react-native';
@@ -22,6 +23,7 @@ const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'https://pawmeet.io';
 export default function SettingsModal() {
   const { t } = useTranslation();
   const vm = useSettingsViewModel();
+  const router = useRouter();
   const consents = useConsentStore((s) => s.consents);
   const storeSetConsent = useConsentStore((s) => s.setConsent);
   const [showConsentModal, setShowConsentModal] = useState(false);
@@ -389,6 +391,12 @@ export default function SettingsModal() {
               {t('settings.legal.appVersion')}
             </Text>
             <Text className="text-sm text-gray-400 dark:text-neutral-500">0.0.1</Text>
+          </Pressable>
+
+          <Pressable className="py-4" onPress={() => router.push('/(modals)/support')}>
+            <Text className="text-base text-primary font-medium">
+              {t('settings.general.contactSupport')}
+            </Text>
           </Pressable>
         </View>
 

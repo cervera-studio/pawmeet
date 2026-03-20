@@ -14,4 +14,10 @@ export interface EmailService {
   ): Promise<void>;
   sendGdprExportFailed(email: string, displayName: string, locale?: string): Promise<void>;
   sendAdminInvite(email: string, temporaryPassword: string, locale?: string): Promise<void>;
+  sendSupportTicketNotification(
+    to: string,
+    ticketId: string,
+    subject: string,
+    preview: string,
+  ): Promise<void>;
 }

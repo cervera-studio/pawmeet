@@ -62,6 +62,11 @@ export function usePushNotifications() {
         return;
       }
 
+      if (data?.type === 'support_reply' && data?.ticketId) {
+        router.push(`/(modals)/support-chat?ticketId=${data.ticketId}`);
+        return;
+      }
+
       if (data?.matchId) {
         router.push(`/(tabs)/chat/${data.matchId}`);
       }

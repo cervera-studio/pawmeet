@@ -22,9 +22,17 @@ const REPORT_STATUS_VARIANTS: Record<string, BadgeVariant> = {
   dismissed: 'outline',
 };
 
+const SUPPORT_STATUS_VARIANTS: Record<string, BadgeVariant> = {
+  open: 'warning',
+  in_progress: 'default',
+  resolved: 'success',
+  closed: 'secondary',
+};
+
 const STATUS_VARIANT_CONFIGS = {
   user: USER_STATUS_VARIANTS,
   report: REPORT_STATUS_VARIANTS,
+  support: SUPPORT_STATUS_VARIANTS,
 } as const;
 
 type StatusType = keyof typeof STATUS_VARIANT_CONFIGS;

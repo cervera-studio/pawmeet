@@ -1,9 +1,10 @@
 import type { SupportMessage } from '@pawmeet/types';
-import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed, WS_EVENT } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type { NotificationService } from '../ports/notification-service.js';
 import type { SupportRepository } from '../ports/support-repository.js';
+import { sendToUser } from '../ws/registry.js';
 
 type Deps = {
   supportRepo: SupportRepository;
@@ -37,7 +38,15 @@ export function createAdminReplySupportTicket({ supportRepo, notificationService
       await supportRepo.updateStatus(ticketId, 'in_progress');
     }
 
-    // Send push notification to user if not an internal note
+    // Broadcast via WebSocket to user if not an internal note
+    if (!isInternal && ticket.userId) {
+      sendToUser(ticket.userId, {
+        type: WS_EVENT.SUPPORT_NEW_MESSAGE,
+        payload: { ticketId, message },
+      });
+    }
+
+    // Send push notification to user if not an internal note (fallback for offline)
     if (!isInternal && ticket.userId) {
       const preview =
         sanitizedContent.length > 50 ? `${sanitizedContent.slice(0, 47)}...` : sanitizedContent;

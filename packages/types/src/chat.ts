@@ -1,3 +1,5 @@
+import type { SupportMessage } from './support.js';
+
 export type MessageStatus = 'sent' | 'delivered' | 'read';
 
 export interface ChatMessage {
@@ -40,6 +42,8 @@ export const WS_EVENT = {
   ONLINE_STATUS: 'online_status',
   ERROR: 'error',
   MESSAGE_REACTION: 'message_reaction',
+  // Support events
+  SUPPORT_NEW_MESSAGE: 'support_new_message',
   // Feed events
   FEED_NEW_POST: 'feed_new_post',
   FEED_POST_LIKED: 'feed_post_liked',
@@ -59,6 +63,10 @@ export type WsMessage =
   | {
       type: typeof WS_EVENT.MESSAGE_REACTION;
       payload: { matchId: string; messageId: string; emoji: ReactionEmoji; userId: string };
+    }
+  | {
+      type: typeof WS_EVENT.SUPPORT_NEW_MESSAGE;
+      payload: { ticketId: string; message: SupportMessage };
     }
   | { type: typeof WS_EVENT.FEED_NEW_POST; payload: { postId: string; authorId: string } }
   | { type: typeof WS_EVENT.FEED_POST_LIKED; payload: { postId: string; likerName: string } }

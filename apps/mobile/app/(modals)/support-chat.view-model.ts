@@ -1,13 +1,14 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import type { WsMessage } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useWebSocketListener } from '@/hooks/useWebSocket';
 import { api } from '@/lib/trpc';
+import { enqueueMutation } from '@/services/sync-engine';
 
 type Message = RouterOutput['support']['getTicketMessages']['messages'][number];
 type MyTicket = RouterOutput['support']['listMyTickets'][number];
-
-const POLL_INTERVAL_MS = 30_000;
 
 export function useSupportChatViewModel() {
   const { ticketId } = useLocalSearchParams<{ ticketId: string }>();
@@ -16,7 +17,6 @@ export function useSupportChatViewModel() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [inputText, setInputText] = useState('');
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isClosed = ticket?.status === 'resolved' || ticket?.status === 'closed';
 
@@ -47,20 +47,28 @@ export function useSupportChatViewModel() {
   useEffect(() => {
     void fetchMessages();
     void fetchTicket();
-  }, [fetchMessages]);
+  }, [fetchMessages, fetchTicket]);
 
-  // Poll for new messages
-  useEffect(() => {
-    pollRef.current = setInterval(() => {
-      void fetchMessages();
-    }, POLL_INTERVAL_MS);
+  // Real-time: listen for new support messages via WebSocket
+  useWebSocketListener(
+    useCallback(
+      (wsMsg: WsMessage) => {
+        if (wsMsg.type !== 'support_new_message') return;
+        if (wsMsg.payload.ticketId !== ticketId) return;
 
-    return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-      }
-    };
-  }, [fetchMessages]);
+        const raw = wsMsg.payload.message;
+        const incoming: Message = {
+          ...raw,
+          createdAt: typeof raw.createdAt === 'string' ? raw.createdAt : String(raw.createdAt),
+        };
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === incoming.id)) return prev;
+          return [...prev, incoming];
+        });
+      },
+      [ticketId],
+    ),
+  );
 
   const handleSend = useCallback(async () => {
     if (!(ticketId && inputText.trim()) || sending) return;
@@ -70,17 +78,21 @@ export function useSupportChatViewModel() {
     setInputText('');
 
     try {
-      const result = await api.support.sendMessage.mutate({ ticketId, content });
-      // Refetch to get the new message with proper shape
+      await enqueueMutation({
+        entityType: 'support_message',
+        operation: 'create',
+        endpoint: 'support.sendMessage',
+        payload: { ticketId, content },
+      });
+      // Refetch to get the sent message with proper shape
       await fetchMessages();
     } catch (e) {
-      logger.warn('SupportChat', 'Failed to send message', e);
-      // Restore input on failure
+      logger.warn('SupportChat', 'Failed to enqueue message', e);
       setInputText(content);
     } finally {
       setSending(false);
     }
-  }, [ticketId, inputText, sending]);
+  }, [ticketId, inputText, sending, fetchMessages]);
 
   return {
     ticketId,

@@ -1,8 +1,9 @@
 import type { SupportMessage } from '@pawmeet/types';
-import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed, WS_EVENT } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type { SupportRepository } from '../ports/support-repository.js';
+import { sendToUser } from '../ws/registry.js';
 
 type Deps = {
   supportRepo: SupportRepository;
@@ -39,6 +40,12 @@ export function createSendSupportMessage({ supportRepo }: Deps) {
       await supportRepo.updateStatus(ticketId, 'open');
       logger.info('SendSupportMessage', 'Ticket reopened by user message', { ticketId, userId });
     }
+
+    // Broadcast to user's other devices for multi-device sync
+    sendToUser(userId, {
+      type: WS_EVENT.SUPPORT_NEW_MESSAGE,
+      payload: { ticketId, message },
+    });
 
     logger.info('SendSupportMessage', 'Support message sent', { userId, ticketId });
 

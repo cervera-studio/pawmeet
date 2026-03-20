@@ -64,6 +64,27 @@
       "when": 1774017650829,
       "tag": "0008_migrate_enums_to_english",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1774017977102,
+      "tag": "0009_add_postgis",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1774017982731,
+      "tag": "0010_breed_i18n_code",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1774017987782,
+      "tag": "0011_add_pgvector_embeddings",
+      "breakpoints": true
     }
   ]
 }

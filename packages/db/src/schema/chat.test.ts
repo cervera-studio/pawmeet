@@ -18,11 +18,12 @@ describe('messages table', () => {
         'content',
         'mediaUrl',
         'status',
+        'replyToId',
         'isDeleted',
         'createdAt',
       ]),
     );
-    expect(columnNames).toHaveLength(8);
+    expect(columnNames).toHaveLength(9);
   });
 
   describe('id column', () => {

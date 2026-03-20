@@ -261,16 +261,32 @@ export class DrizzleSupportRepository implements SupportRepository {
   }
 
   async markAdminMessagesRead(ticketId: string): Promise<number> {
-    const result = await this.db.execute(
-      sql`UPDATE support_messages SET read_at = NOW() WHERE ticket_id = ${ticketId} AND sender_type = 'admin' AND read_at IS NULL`,
-    );
-    return Number(result.rowCount ?? 0);
+    const rows = await this.db
+      .update(supportMessages)
+      .set({ readAt: new Date() })
+      .where(
+        and(
+          eq(supportMessages.ticketId, ticketId),
+          eq(supportMessages.senderType, 'admin'),
+          isNull(supportMessages.readAt),
+        ),
+      )
+      .returning({ id: supportMessages.id });
+    return rows.length;
   }
 
   async markUserMessagesRead(ticketId: string): Promise<number> {
-    const result = await this.db.execute(
-      sql`UPDATE support_messages SET read_at = NOW() WHERE ticket_id = ${ticketId} AND sender_type = 'user' AND read_at IS NULL`,
-    );
-    return Number(result.rowCount ?? 0);
+    const rows = await this.db
+      .update(supportMessages)
+      .set({ readAt: new Date() })
+      .where(
+        and(
+          eq(supportMessages.ticketId, ticketId),
+          eq(supportMessages.senderType, 'user'),
+          isNull(supportMessages.readAt),
+        ),
+      )
+      .returning({ id: supportMessages.id });
+    return rows.length;
   }
 }

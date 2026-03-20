@@ -55,6 +55,7 @@ export const supportMessages = pgTable(
     senderId: uuid('sender_id'),
     content: text('content').notNull(),
     isInternal: boolean('is_internal').notNull().default(false),
+    readAt: timestamp('read_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [

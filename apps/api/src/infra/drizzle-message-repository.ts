@@ -38,7 +38,7 @@ export class DrizzleMessageRepository implements MessageRepository {
         senderId: messages.senderId,
         content: messages.content,
         mediaUrl: messages.mediaUrl,
-        replyToId: sql<string | null>`${messages}.reply_to_id`.as('reply_to_id'),
+        replyToId: messages.replyToId,
         status: messages.status,
         isDeleted: messages.isDeleted,
         createdAt: messages.createdAt,
@@ -172,7 +172,7 @@ export class DrizzleMessageRepository implements MessageRepository {
         senderId: messages.senderId,
         content: messages.content,
         mediaUrl: messages.mediaUrl,
-        replyToId: sql<string | null>`${messages}.reply_to_id`.as('reply_to_id'),
+        replyToId: messages.replyToId,
         status: messages.status,
         isDeleted: messages.isDeleted,
         createdAt: messages.createdAt,
@@ -246,15 +246,9 @@ export class DrizzleMessageRepository implements MessageRepository {
         senderId: input.senderId,
         content: input.content,
         mediaUrl: input.mediaUrl ?? null,
-      } as typeof messages.$inferInsert)
+        replyToId: input.replyToId ?? null,
+      })
       .returning();
-
-    // Set replyToId via raw update (AnyPgColumn self-ref loses type info in Drizzle)
-    if (input.replyToId) {
-      await this.db.execute(
-        sql`UPDATE messages SET reply_to_id = ${input.replyToId} WHERE id = ${rows[0]!.id}`,
-      );
-    }
 
     const row = rows[0]!;
     const replyToId = input.replyToId ?? null;

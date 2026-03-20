@@ -41,7 +41,7 @@ export default async function NotificationsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-neutral-500">
-              {t('stats.prefStats.matches')}
+              {t('stats.prefMatches')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -51,7 +51,7 @@ export default async function NotificationsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-neutral-500">
-              {t('stats.prefStats.messages')}
+              {t('stats.prefMessages')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -61,7 +61,7 @@ export default async function NotificationsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-neutral-500">
-              {t('stats.prefStats.reminders')}
+              {t('stats.prefReminders')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -71,7 +71,7 @@ export default async function NotificationsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-neutral-500">
-              {t('stats.prefStats.feed')}
+              {t('stats.prefFeed')}
             </CardTitle>
           </CardHeader>
           <CardContent>

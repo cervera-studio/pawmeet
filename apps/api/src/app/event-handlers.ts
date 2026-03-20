@@ -1,6 +1,6 @@
 import type { ChallengeType, XpAction } from '@pawmeet/config';
 import { XP_POINTS } from '@pawmeet/config';
-import type { Result, XpSummary } from '@pawmeet/types';
+import type { AnalyticsEventMap, AnalyticsEventName, Result, WsMessage, XpSummary } from '@pawmeet/types';
 import { isSuccess, WS_EVENT } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
@@ -34,12 +34,12 @@ interface InfraCallbacks {
     title: string;
     body: string;
   }) => Promise<unknown>;
-  trackEvent: (
-    event: string,
-    userId: string,
-    properties: Record<string, unknown>,
+  trackEvent: <E extends AnalyticsEventName>(
+    event: E,
+    userId: string | null,
+    properties: AnalyticsEventMap[E],
   ) => void;
-  sendToUser: (userId: string, payload: unknown) => void;
+  sendToUser: (userId: string, message: WsMessage) => void;
 }
 
 export interface EventHandlerDeps {

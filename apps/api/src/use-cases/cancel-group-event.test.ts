@@ -1,5 +1,5 @@
 import type { GroupEventWithParticipants } from '@pawmeet/types';
-import { AppError, isFailure, isSuccess } from '@pawmeet/types';
+import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { clearHandlers } from '../domain/events.js';
 import { buildGroupEventRepo } from '../test-utils/builders.js';
@@ -62,16 +62,18 @@ describe('cancelGroupEvent', () => {
     expect(groupEventRepo.updateStatus).toHaveBeenCalledWith('event-1', 'cancelled');
   });
 
-  it('throws when user is not the organizer', async () => {
+  it('fails when user is not the organizer', async () => {
     const groupEventRepo = buildGroupEventRepo({
       findByIdWithParticipants: vi.fn().mockResolvedValue(buildGroupEventWithParticipants()),
     });
     const cancelEvent = createCancelGroupEvent({ groupEventRepo });
 
-    await expect(cancelEvent('user-2', 'event-1')).rejects.toThrow(AppError);
-    await expect(cancelEvent('user-2', 'event-1')).rejects.toThrow(
-      expect.objectContaining({ code: 'NOT_ORGANIZER' }),
-    );
+    const result = await cancelEvent('user-2', 'event-1');
+
+    expect(isFailure(result)).toBe(true);
+    if (!isFailure(result)) return;
+    expect(result.error.code).toBe('NOT_ORGANIZER');
+    expect(result.error.status).toBe(403);
   });
 
   it('fails when event is already cancelled', async () => {

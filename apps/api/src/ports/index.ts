@@ -31,8 +31,15 @@ export type {
   AddPostMediaInput,
   CommentsPage,
   CreatePostInput,
+  FeedCommentRepository,
+  FeedHashtagRepository,
+  FeedLikeRepository,
+  FeedMediaRepository,
   FeedPage,
+  FeedPostRepository,
+  FeedReactionRepository,
   FeedRepository,
+  FeedTagRepository,
 } from './feed-repository.js';
 export type { FeedbackRepository } from './feedback-repository.js';
 export type { FollowRepository, PaginatedQuery } from './follow-repository.js';

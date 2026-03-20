@@ -1,5 +1,6 @@
 import type { ChallengeWithProgress } from '@pawmeet/types';
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useChallengesViewModel } from './challenges.view-model';
@@ -21,10 +22,35 @@ function ChallengesSkeleton() {
   );
 }
 
+// ── Time remaining helper ───────────────────────────────────────────────────
+
+function formatTimeRemaining(
+  endsAt: Date | string,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string {
+  const end = typeof endsAt === 'string' ? new Date(endsAt) : endsAt;
+  const diffMs = end.getTime() - Date.now();
+  if (diffMs <= 0) return t('profile.challenges.expired');
+  const diffH = Math.floor(diffMs / 3_600_000);
+  if (diffH < 24) return t('profile.challenges.hoursLeft', { count: diffH });
+  const diffD = Math.floor(diffH / 24);
+  return t('profile.challenges.daysLeft', { count: diffD });
+}
+
 // ── Progress bar ────────────────────────────────────────────────────────────
 
-function ChallengeProgressBar({ progress, target }: { progress: number; target: number }) {
+function ChallengeProgressBar({
+  progress,
+  target,
+  endsAt,
+}: {
+  progress: number;
+  target: number;
+  endsAt: Date | string;
+}) {
+  const { t } = useTranslation();
   const ratio = target > 0 ? Math.min(progress / target, 1) : 0;
+  const timeLeft = formatTimeRemaining(endsAt, t);
 
   return (
     <View className="mt-2">
@@ -34,9 +60,12 @@ function ChallengeProgressBar({ progress, target }: { progress: number; target: 
           style={{ width: `${Math.round(ratio * 100)}%` }}
         />
       </View>
-      <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-        {progress} / {target}
-      </Text>
+      <View className="flex-row justify-between mt-1">
+        <Text className="text-xs text-neutral-500 dark:text-neutral-500">
+          {progress} / {target}
+        </Text>
+        <Text className="text-xs text-neutral-400 dark:text-neutral-500">{timeLeft}</Text>
+      </View>
     </View>
   );
 }
@@ -44,6 +73,7 @@ function ChallengeProgressBar({ progress, target }: { progress: number; target: 
 // ── Challenge Card ──────────────────────────────────────────────────────────
 
 function ChallengeCard({ challenge }: { challenge: ChallengeWithProgress }) {
+  const { t } = useTranslation();
   const isCompleted = challenge.completedAt != null;
 
   return (
@@ -79,9 +109,15 @@ function ChallengeCard({ challenge }: { challenge: ChallengeWithProgress }) {
       </View>
 
       {isCompleted ? (
-        <Text className="mt-2 text-xs text-green-600 dark:text-green-400">Completata!</Text>
+        <Text className="mt-2 text-xs text-green-600 dark:text-green-400">
+          {t('profile.challenges.completed')}
+        </Text>
       ) : (
-        <ChallengeProgressBar progress={challenge.progress} target={challenge.targetValue} />
+        <ChallengeProgressBar
+          progress={challenge.progress}
+          target={challenge.targetValue}
+          endsAt={challenge.endsAt}
+        />
       )}
     </View>
   );
@@ -90,6 +126,7 @@ function ChallengeCard({ challenge }: { challenge: ChallengeWithProgress }) {
 // ── Main Screen ─────────────────────────────────────────────────────────────
 
 export default function ChallengesScreen() {
+  const { t } = useTranslation();
   const vm = useChallengesViewModel();
 
   return (
@@ -97,8 +134,8 @@ export default function ChallengesScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Sfide',
-          headerBackTitle: 'Gamification',
+          title: t('profile.challenges.title'),
+          headerBackTitle: t('profile.challenges.backButton'),
         }}
       />
 
@@ -114,7 +151,7 @@ export default function ChallengesScreen() {
             <View className="items-center py-12">
               <Text className="text-4xl mb-3">{'\u{1F3AF}'}</Text>
               <Text className="text-neutral-500 dark:text-neutral-500 text-center">
-                Nessuna sfida attiva al momento.{'\n'}Torna presto per nuove sfide!
+                {t('profile.challenges.noChallenges')}
               </Text>
             </View>
           }

@@ -1,5 +1,6 @@
 import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { container } from 'tsyringe';
 import { FOLLOW_REPOSITORY } from '@/repositories/tokens';
@@ -9,6 +10,7 @@ const followRepo = container.resolve(FOLLOW_REPOSITORY);
 export type FollowState = 'idle' | 'following' | 'follows_you' | 'loading';
 
 export function useFollowButtonViewModel(userId: string) {
+  const { t } = useTranslation();
   const [isFollowing, setIsFollowing] = useState(false);
   const [isFollowingMe, setIsFollowingMe] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -38,11 +40,11 @@ export function useFollowButtonViewModel(userId: string) {
       }
     } catch (e) {
       logger.warn('FollowButton', 'Failed to toggle follow', e);
-      Alert.alert('Errore', "Impossibile completare l'azione. Riprova.");
+      Alert.alert(t('common.error'), t('userProfile.followError'));
     } finally {
       setLoading(false);
     }
-  }, [userId, isFollowing, loading]);
+  }, [userId, isFollowing, loading, t]);
 
   const state: FollowState = (() => {
     if (loading) return 'loading';

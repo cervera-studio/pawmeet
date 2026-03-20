@@ -1,12 +1,13 @@
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 import type { FollowState } from './follow-button.view-model';
 import { useFollowButtonViewModel } from './follow-button.view-model';
 
-const LABELS: Record<FollowState, string> = {
-  idle: 'Segui',
-  following: 'Seguendo',
-  follows_you: 'Segui anche tu',
-  loading: 'Segui',
+const LABEL_KEYS: Record<FollowState, string> = {
+  idle: 'followButton.follow',
+  following: 'followButton.following',
+  follows_you: 'followButton.followBack',
+  loading: 'followButton.follow',
 };
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function FollowButton({ userId, size = 'md' }: Props) {
+  const { t } = useTranslation();
   const vm = useFollowButtonViewModel(userId);
 
   const isFilled = vm.state === 'idle' || vm.state === 'follows_you' || vm.state === 'loading';
@@ -36,7 +38,7 @@ export function FollowButton({ userId, size = 'md' }: Props) {
             isFilled ? 'text-white' : 'text-primary'
           }`}
         >
-          {LABELS[vm.state]}
+          {t(LABEL_KEYS[vm.state])}
         </Text>
       )}
     </Pressable>

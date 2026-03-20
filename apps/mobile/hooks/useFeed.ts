@@ -140,6 +140,44 @@ export function useFeed() {
     }
   }, []);
 
+  const deleteComment = useCallback(async (commentId: string) => {
+    try {
+      await api.feed.deleteComment.mutate({ commentId });
+      return true;
+    } catch (e) {
+      logger.warn('useFeed', 'Failed to delete comment', e);
+      return false;
+    }
+  }, []);
+
+  const addReaction = useCallback(async (postId: string, emoji: string) => {
+    try {
+      await api.feed.addReaction.mutate({
+        contentType: 'post',
+        contentId: postId,
+        emoji,
+      });
+      return true;
+    } catch (e) {
+      logger.warn('useFeed', 'Failed to add reaction', e);
+      return false;
+    }
+  }, []);
+
+  const removeReaction = useCallback(async (postId: string, emoji: string) => {
+    try {
+      await api.feed.removeReaction.mutate({
+        contentType: 'post',
+        contentId: postId,
+        emoji,
+      });
+      return true;
+    } catch (e) {
+      logger.warn('useFeed', 'Failed to remove reaction', e);
+      return false;
+    }
+  }, []);
+
   const reportContent = useCallback(
     async (
       contentType: 'post' | 'comment' | 'story',
@@ -174,8 +212,11 @@ export function useFeed() {
     likePost,
     createComment,
     fetchComments,
+    deleteComment,
     deletePost,
     viewStory,
     reportContent,
+    addReaction,
+    removeReaction,
   };
 }

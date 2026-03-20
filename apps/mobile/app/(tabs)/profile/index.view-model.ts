@@ -83,6 +83,10 @@ export function useProfileViewModel() {
     router.push('/(tabs)/profile/friends');
   };
 
+  const navigateToNotifications = () => {
+    router.push('/(tabs)/notifications');
+  };
+
   const navigateToGamification = () => {
     router.push('/(tabs)/profile/gamification');
   };
@@ -119,6 +123,7 @@ export function useProfileViewModel() {
     navigateToFollowers,
     navigateToFollowing,
     navigateToFriends,
+    navigateToNotifications,
     navigateToGamification,
     navigateToPrivacy,
     navigateToBlocked,

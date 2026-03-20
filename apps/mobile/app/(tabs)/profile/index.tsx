@@ -224,6 +224,16 @@ export default function ProfileScreen() {
         {/* Menu */}
         <View className="gap-1">
           <Pressable
+            onPress={vm.navigateToNotifications}
+            className="flex-row items-center justify-between rounded-xl px-4 py-4"
+          >
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              {t('profile.menu.notifications')}
+            </Text>
+            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
+          </Pressable>
+
+          <Pressable
             onPress={vm.navigateToGamification}
             className="flex-row items-center justify-between rounded-xl px-4 py-4"
           >

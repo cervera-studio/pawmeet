@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { DogReviews } from '@/components/DogReviews';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/trpc';
@@ -146,6 +147,9 @@ export default function DogDetailModal() {
           </Text>
         </View>
       </View>
+
+      {/* Reviews */}
+      <DogReviews dogId={dogId!} dogRating={null} />
 
       {/* Owner info */}
       <View className="mt-4 flex-row items-center rounded-2xl bg-gray-50 p-4 dark:bg-[#2C2C2E]">

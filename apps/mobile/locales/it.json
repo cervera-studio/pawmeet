@@ -265,10 +265,19 @@
     "comments": {
       "title": "Commenti",
       "noComments": "Nessun commento ancora",
+      "noCommentsDescription": "Sii il primo a commentare questo post!",
       "writePlaceholder": "Scrivi un commento...",
       "replyPlaceholder": "Scrivi una risposta...",
       "replyTo": "Rispondi a",
-      "sendButton": "Invia"
+      "sendButton": "Invia",
+      "deleteTitle": "Elimina commento",
+      "deleteConfirm": "Sei sicuro di voler eliminare questo commento?",
+      "deleteError": "Impossibile eliminare il commento. Riprova.",
+      "report": "Segnala"
+    },
+    "reactions": {
+      "addReaction": "Aggiungi reazione",
+      "removeReaction": "Rimuovi reazione"
     },
     "actions": {
       "deletePost": "Elimina post",
@@ -279,7 +288,25 @@
       "publishError": "Impossibile pubblicare la storia",
       "tapToSelect": "Tocca per selezionare",
       "noViews": "Nessuna visualizzazione",
-      "noViewsDescription": "Nessuno ha ancora visto questa storia."
+      "noViewsDescription": "Nessuno ha ancora visto questa storia.",
+      "viewsCount": "{{count}} visualizzazioni",
+      "viewsCountOne": "1 visualizzazione"
+    },
+    "hashtag": {
+      "title": "#{{hashtag}}",
+      "noPosts": "Nessun post con questo hashtag",
+      "noPostsDescription": "Non ci sono ancora post con #{{hashtag}}.",
+      "trending": "Di tendenza",
+      "trendingTitle": "Hashtag di tendenza",
+      "postsCount": "{{count}} post",
+      "loadError": "Impossibile caricare i post"
+    },
+    "reviews": {
+      "title": "Recensioni",
+      "noReviews": "Nessuna recensione ancora",
+      "noReviewsDescription": "Le recensioni appariranno dopo le passeggiate.",
+      "anonymous": "Utente",
+      "loadError": "Impossibile caricare le recensioni"
     }
   },
 
@@ -300,6 +327,7 @@
     "activate": "Attiva",
     "xpToNextLevel": "{{count}} XP al prossimo livello",
     "menu": {
+      "notifications": "Notifiche",
       "gamification": "Gamification",
       "activity": "Attività e Statistiche",
       "matchingInsights": "Statistiche Matching",
@@ -348,7 +376,14 @@
       "deactivateProfile": "Disattiva profilo",
       "activateProfile": "Attiva profilo",
       "deleteProfile": "Elimina profilo cane",
-      "addPhotos": "Aggiungi delle foto"
+      "addPhotos": "Aggiungi delle foto",
+      "viewAllBadges": "Vedi tutti",
+      "moodHistory": "Storico umore",
+      "moodHistorySubtitle": "Visualizza l'umore del tuo cane nel tempo"
+    },
+    "dogBadges": {
+      "title": "Badge",
+      "locked": "Bloccato"
     },
     "activity": {
       "title": "Attività",
@@ -380,7 +415,10 @@
       "title": "Sfide",
       "backButton": "Gamification",
       "completed": "Completata!",
-      "noChallenges": "Nessuna sfida attiva al momento.\nTorna presto per nuove sfide!"
+      "noChallenges": "Nessuna sfida attiva al momento.\nTorna presto per nuove sfide!",
+      "expired": "Scaduta",
+      "hoursLeft": "{{count}}h rimaste",
+      "daysLeft": "{{count}}g rimasti"
     },
     "followList": {
       "noFollowers": "Nessun follower",
@@ -388,8 +426,15 @@
       "notFollowing": "Non segui nessuno",
       "notFollowingSubtitle": "Inizia a seguire altri proprietari per restare aggiornato!",
       "noFriends": "Nessun amico ancora",
-      "noFriendsSubtitle": "Gli amici sono le persone che segui e che ti seguono a loro volta."
+      "noFriendsSubtitle": "Gli amici sono le persone che segui e che ti seguono a loro volta.",
+      "followsYou": "Ti segue"
     }
+  },
+
+  "followButton": {
+    "follow": "Segui",
+    "following": "Seguendo",
+    "followBack": "Segui anche tu"
   },
 
   "events": {
@@ -939,6 +984,17 @@
     "bioGenerationError": "Errore durante la generazione della bio",
     "createError": "Errore durante la creazione",
     "addPhotos": "Aggiungi delle foto"
+  },
+
+  "notifications": {
+    "title": "Notifiche",
+    "empty": "Nessuna notifica.\nLe notifiche delle tue attività appariranno qui.",
+    "noTitle": "Notifica"
+  },
+
+  "moodHistory": {
+    "title": "Storico umore",
+    "empty": "Nessun registro dell'umore.\nDopo una passeggiata, registra l'umore del tuo cane per visualizzarlo qui."
   },
 
   "moodLog": {

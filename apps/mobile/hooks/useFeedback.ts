@@ -4,11 +4,16 @@ import { useCallback, useState } from 'react';
 import { api } from '@/lib/trpc';
 
 type DogRating = RouterOutput['feedback']['getDogRating'];
+type WalkFeedbackItem = RouterOutput['feedback']['listByWalk'][number];
+
+export type { DogRating, WalkFeedbackItem };
 
 export function useFeedback() {
   const [submitting, setSubmitting] = useState(false);
   const [dogRating, setDogRating] = useState<DogRating | null>(null);
   const [loadingRating, setLoadingRating] = useState(false);
+  const [walkFeedback, setWalkFeedback] = useState<WalkFeedbackItem[]>([]);
+  const [loadingWalkFeedback, setLoadingWalkFeedback] = useState(false);
 
   const submitFeedback = useCallback(
     async (walkId: string, toDogId: string, rating: number, comment?: string) => {
@@ -41,11 +46,28 @@ export function useFeedback() {
     }
   }, []);
 
+  const fetchWalkFeedback = useCallback(async (walkId: string) => {
+    setLoadingWalkFeedback(true);
+    try {
+      const result = await api.feedback.listByWalk.query({ walkId });
+      setWalkFeedback(result as WalkFeedbackItem[]);
+      return result;
+    } catch (e) {
+      logger.warn('useFeedback', 'Failed to fetch walk feedback', e);
+      return null;
+    } finally {
+      setLoadingWalkFeedback(false);
+    }
+  }, []);
+
   return {
     submitting,
     dogRating,
     loadingRating,
+    walkFeedback,
+    loadingWalkFeedback,
     submitFeedback,
     fetchDogRating,
+    fetchWalkFeedback,
   };
 }

@@ -32,6 +32,13 @@ export default function FeedLayout() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="hashtag"
+        options={{
+          headerShown: true,
+          headerBackTitle: t('feed.backButton'),
+        }}
+      />
     </Stack>
   );
 }

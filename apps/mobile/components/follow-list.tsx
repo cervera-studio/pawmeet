@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import type { FollowUser } from '@/repositories/interfaces/follow-repository';
 import { FollowButton } from './follow-button';
@@ -26,36 +27,31 @@ function ListSkeleton() {
 
 // ── Empty State ──────────────────────────────────────────────────────────
 
-type EmptyMessages = {
-  followers: { title: string; subtitle: string };
-  following: { title: string; subtitle: string };
-  friends: { title: string; subtitle: string };
-};
-
-const EMPTY_MESSAGES: EmptyMessages = {
+const EMPTY_KEYS = {
   followers: {
-    title: 'Nessun follower',
-    subtitle: 'Quando qualcuno ti seguirà, apparirà qui.',
+    title: 'profile.followList.noFollowers',
+    subtitle: 'profile.followList.noFollowersSubtitle',
   },
   following: {
-    title: 'Non segui nessuno',
-    subtitle: 'Inizia a seguire altri proprietari per restare aggiornato!',
+    title: 'profile.followList.notFollowing',
+    subtitle: 'profile.followList.notFollowingSubtitle',
   },
   friends: {
-    title: 'Nessun amico ancora',
-    subtitle: 'Gli amici sono le persone che segui e che ti seguono a loro volta.',
+    title: 'profile.followList.noFriends',
+    subtitle: 'profile.followList.noFriendsSubtitle',
   },
-};
+} as const;
 
 function EmptyState({ mode }: { mode: 'followers' | 'following' | 'friends' }) {
-  const messages = EMPTY_MESSAGES[mode];
+  const { t } = useTranslation();
+  const keys = EMPTY_KEYS[mode];
   return (
     <View className="flex-1 items-center justify-center px-8 pt-20">
       <Text className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-        {messages.title}
+        {t(keys.title)}
       </Text>
       <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
-        {messages.subtitle}
+        {t(keys.subtitle)}
       </Text>
     </View>
   );
@@ -72,6 +68,7 @@ const UserRow = memo(function UserRow({
   currentUserId: string | undefined;
   onPress: (userId: string) => void;
 }) {
+  const { t } = useTranslation();
   const isCurrentUser = currentUserId === user.id;
 
   return (
@@ -82,7 +79,9 @@ const UserRow = memo(function UserRow({
           {user.displayName}
         </Text>
         {user.isFollowingMe && !user.isFollowedByMe ? (
-          <Text className="text-xs text-gray-400 dark:text-neutral-500">Ti segue</Text>
+          <Text className="text-xs text-gray-400 dark:text-neutral-500">
+            {t('profile.followList.followsYou')}
+          </Text>
         ) : null}
       </View>
       {isCurrentUser ? null : <FollowButton userId={user.id} size="sm" />}

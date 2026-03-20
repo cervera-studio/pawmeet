@@ -1,10 +1,11 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { formatDogAge } from '@pawmeet/utils';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BadgeDisplay } from '@/components/BadgeDisplay';
+import { DogReviews } from '@/components/DogReviews';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { label, MAX_PHOTOS, useDogDetailViewModel } from './[dogId].view-model';
@@ -231,6 +232,7 @@ function DogActions({
 
 export default function DogDetailScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const vm = useDogDetailViewModel();
 
   if (vm.loading) {
@@ -302,11 +304,39 @@ export default function DogDetailScreen() {
 
           {/* Badges */}
           <View className="mt-4">
-            <Text className="mb-2 text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
-              {t('profile.dogDetail.badges')}
-            </Text>
+            <View className="flex-row items-center justify-between mb-2">
+              <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
+                {t('profile.dogDetail.badges')}
+              </Text>
+              <Pressable
+                onPress={() =>
+                  vm.dog && router.push(`/(tabs)/profile/dogs/badges?dogId=${vm.dog.id}`)
+                }
+              >
+                <Text className="text-sm font-medium text-primary">
+                  {t('profile.dogDetail.viewAllBadges')}
+                </Text>
+              </Pressable>
+            </View>
             <BadgeDisplay badges={vm.badges} />
           </View>
+
+          {/* Mood history link */}
+          <Pressable
+            onPress={() => vm.dog && router.push(`/(tabs)/profile/mood-history?dogId=${vm.dog.id}`)}
+            className="mt-4 flex-row items-center rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4"
+          >
+            <Text className="text-2xl mr-3">{'\u{1F4DD}'}</Text>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
+                {t('profile.dogDetail.moodHistory')}
+              </Text>
+              <Text className="text-sm text-gray-500 dark:text-neutral-500">
+                {t('profile.dogDetail.moodHistorySubtitle')}
+              </Text>
+            </View>
+            <Text className="text-neutral-400 dark:text-neutral-500">{'\u203A'}</Text>
+          </Pressable>
 
           {/* Bio */}
           {vm.dog.bio ? (
@@ -323,6 +353,9 @@ export default function DogDetailScreen() {
 
           {/* Traits & Walk preferences */}
           <DogTraits dog={vm.dog} />
+
+          {/* Reviews */}
+          <DogReviews dogId={vm.dog.id} dogRating={vm.dogRating} />
 
           {/* Edit button */}
           <Button onPress={vm.navigateToEdit} label="Modifica profilo" variant="outline" />

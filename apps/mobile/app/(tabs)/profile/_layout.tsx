@@ -93,6 +93,22 @@ export default function ProfileLayout() {
           headerBackTitle: 'Gamification',
         }}
       />
+      <Stack.Screen
+        name="dogs/badges"
+        options={{
+          headerShown: true,
+          title: 'Badge',
+          headerBackTitle: 'Dettaglio',
+        }}
+      />
+      <Stack.Screen
+        name="mood-history"
+        options={{
+          headerShown: true,
+          title: 'Storico umore',
+          headerBackTitle: 'Dettaglio',
+        }}
+      />
     </Stack>
   );
 }

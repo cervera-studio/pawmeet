@@ -5,6 +5,7 @@ import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PostCard } from '@/components/PostCard';
 import { StoriesRow } from '@/components/StoriesRow';
+import { TrendingHashtags } from '@/components/TrendingHashtags';
 import type { FeedItem } from './index.view-model';
 import { useFeedViewModel } from './index.view-model';
 
@@ -118,11 +119,14 @@ export default function FeedScreen() {
         data={vm.items}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
-          <StoriesRow
-            groups={vm.storyGroups}
-            onPress={vm.navigateToStoryViewer}
-            onCreateStory={vm.navigateToStoryCreate}
-          />
+          <>
+            <StoriesRow
+              groups={vm.storyGroups}
+              onPress={vm.navigateToStoryViewer}
+              onCreateStory={vm.navigateToStoryCreate}
+            />
+            <TrendingHashtags />
+          </>
         }
         ListEmptyComponent={<EmptyFeed />}
         renderItem={({ item }) => (

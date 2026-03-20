@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
@@ -6,20 +7,24 @@ import { useStoryViewersViewModel } from './story-viewers.view-model';
 
 // ── Time formatting ─────────────────────────────────────────────────────
 
-function formatTimeAgo(date: Date | string): string {
-  const now = Date.now();
-  const then = typeof date === 'string' ? new Date(date).getTime() : date.getTime();
-  const diffMs = now - then;
-  const diffMin = Math.floor(diffMs / 60_000);
+function useFormatTimeAgo() {
+  const { t } = useTranslation();
 
-  if (diffMin < 1) return 'Adesso';
-  if (diffMin < 60) return `${diffMin} min fa`;
+  return (date: Date | string): string => {
+    const now = Date.now();
+    const then = typeof date === 'string' ? new Date(date).getTime() : date.getTime();
+    const diffMs = now - then;
+    const diffMin = Math.floor(diffMs / 60_000);
 
-  const diffHours = Math.floor(diffMin / 60);
-  if (diffHours < 24) return `${diffHours}h fa`;
+    if (diffMin < 1) return t('common.now');
+    if (diffMin < 60) return t('common.minuteAgo', { count: diffMin });
 
-  const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays}g fa`;
+    const diffHours = Math.floor(diffMin / 60);
+    if (diffHours < 24) return t('common.hourAgo', { count: diffHours });
+
+    const diffDays = Math.floor(diffHours / 24);
+    return t('common.dayAgo', { count: diffDays });
+  };
 }
 
 // ── Loading Skeleton ────────────────────────────────────────────────────
@@ -43,13 +48,14 @@ function ViewersSkeleton() {
 // ── Empty State ─────────────────────────────────────────────────────────
 
 function EmptyViewers() {
+  const { t } = useTranslation();
   return (
     <View className="flex-1 items-center justify-center px-8 pt-20">
       <Text className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-        Nessuna visualizzazione
+        {t('feed.story.noViews')}
       </Text>
       <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
-        Nessuno ha ancora visto questa storia.
+        {t('feed.story.noViewsDescription')}
       </Text>
     </View>
   );
@@ -59,8 +65,10 @@ function EmptyViewers() {
 
 const ViewerRow = memo(function ViewerRow({
   viewer,
+  formatTimeAgo,
 }: {
   viewer: { id: string; displayName: string; avatarUrl: string | null; viewedAt: string };
+  formatTimeAgo: (date: Date | string) => string;
 }) {
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
@@ -81,6 +89,7 @@ const ViewerRow = memo(function ViewerRow({
 
 export default function StoryViewersScreen() {
   const vm = useStoryViewersViewModel();
+  const formatTimeAgo = useFormatTimeAgo();
 
   if (vm.isInitialLoad) {
     return (
@@ -95,7 +104,7 @@ export default function StoryViewersScreen() {
       <FlatList
         data={vm.viewers}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ViewerRow viewer={item} />}
+        renderItem={({ item }) => <ViewerRow viewer={item} formatTimeAgo={formatTimeAgo} />}
         ListEmptyComponent={<EmptyViewers />}
         refreshing={vm.refreshing}
         onRefresh={vm.refresh}

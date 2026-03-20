@@ -1,6 +1,7 @@
 import { ResizeMode, Video } from 'expo-av';
 import { memo, useState } from 'react';
 import { Image, Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { HashtagText } from '@/components/HashtagText';
 import { Avatar } from '@/components/ui/Avatar';
 
 interface PostMedia {
@@ -186,10 +187,12 @@ export const PostCard = memo(function PostCard({
 
       {/* Caption */}
       {post.caption ? (
-        <Text className="px-4 pb-2 text-sm text-gray-700 dark:text-[#D1D1D6]" numberOfLines={3}>
-          <Text className="font-semibold">{post.author.displayName} </Text>
-          {post.caption}
-        </Text>
+        <HashtagText
+          text={post.caption}
+          authorName={post.author.displayName}
+          className="px-4 pb-2 text-sm text-gray-700 dark:text-[#D1D1D6]"
+          numberOfLines={3}
+        />
       ) : null}
 
       {/* Actions */}

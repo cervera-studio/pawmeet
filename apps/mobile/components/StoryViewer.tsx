@@ -1,6 +1,7 @@
 import type { AVPlaybackStatus } from 'expo-av';
 import { ResizeMode, Video } from 'expo-av';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, Image, Pressable, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 
@@ -8,6 +9,7 @@ interface Story {
   id: string;
   mediaUrl: string;
   mediaType: string;
+  viewCount: number;
   createdAt: Date | string;
 }
 
@@ -18,8 +20,10 @@ interface StoryViewerProps {
     displayName: string;
     avatarUrl: string | null;
   };
+  isOwn?: boolean;
   onView: (storyId: string) => void;
   onClose: () => void;
+  onViewersPress?: (storyId: string) => void;
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -33,7 +37,15 @@ function formatTimeAgo(date: Date | string): string {
   return `${diffHours}h fa`;
 }
 
-export function StoryViewer({ stories, author, onView, onClose }: StoryViewerProps) {
+export function StoryViewer({
+  stories,
+  author,
+  isOwn = false,
+  onView,
+  onClose,
+  onViewersPress,
+}: StoryViewerProps) {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -159,6 +171,22 @@ export function StoryViewer({ stories, author, onView, onClose }: StoryViewerPro
           style={{ width: SCREEN_WIDTH }}
         />
       )}
+
+      {/* Views counter for own stories */}
+      {isOwn && currentStory ? (
+        <Pressable
+          onPress={() => onViewersPress?.(currentStory.id)}
+          className="absolute bottom-10 left-0 right-0 z-10 items-center"
+        >
+          <View className="flex-row items-center gap-1.5 rounded-full bg-black/50 px-4 py-2">
+            <Text className="text-sm text-white">
+              {currentStory.viewCount === 1
+                ? t('feed.story.viewsCountOne')
+                : t('feed.story.viewsCount', { count: currentStory.viewCount })}
+            </Text>
+          </View>
+        </Pressable>
+      ) : null}
 
       {/* Touch areas for navigation */}
       <View className="absolute inset-0 flex-row" style={{ top: 100 }}>

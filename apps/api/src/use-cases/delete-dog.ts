@@ -9,7 +9,7 @@ export function createDeleteDog({ dogRepo }: Deps) {
   return async (dogId: string, userId: string): Promise<Result<{ message: string }>> => {
     const existing = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!existing) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     await dogRepo.softDelete(dogId);

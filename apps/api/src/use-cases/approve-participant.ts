@@ -17,7 +17,7 @@ export function createApproveParticipant({ groupEventRepo, notificationService }
   ): Promise<Result<void>> => {
     const event = await groupEventRepo.findById(eventId);
     if (!event) {
-      return fail(new AppError('EVENT_NOT_FOUND', 'Evento non trovato', 404));
+      return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
     if (event.createdBy !== hostUserId) {

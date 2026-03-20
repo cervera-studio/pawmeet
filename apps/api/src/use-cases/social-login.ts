@@ -35,7 +35,7 @@ export function createSocialLogin(deps: Deps) {
         event: SECURITY_EVENT.SocialLoginFailed,
         metadata: { provider, reason: 'invalid_token' },
       });
-      return fail(new AppError('AUTH_INVALID_TOKEN', 'Token social non valido', 401));
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid social token', 401));
     }
 
     // Find or create user

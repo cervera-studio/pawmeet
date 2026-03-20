@@ -9,7 +9,7 @@ export function createRevokeOrganization({ organizationRepo }: Deps) {
   return async (organizationId: string): Promise<Result<Organization>> => {
     const org = await organizationRepo.findById(organizationId);
     if (!org) {
-      return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
+      return fail(new AppError('ORG_NOT_FOUND', 'Organization not found', 404));
     }
 
     const revoked = await organizationRepo.revoke(organizationId);

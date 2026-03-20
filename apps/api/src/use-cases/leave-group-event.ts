@@ -16,14 +16,14 @@ export function createLeaveGroupEvent({ groupEventRepo, notificationService }: D
   return async (userId: string, eventId: string): Promise<Result<void>> => {
     const event = await groupEventRepo.findById(eventId);
     if (!event) {
-      return fail(new AppError('EVENT_NOT_FOUND', 'Evento non trovato', 404));
+      return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
     if (event.createdBy === userId) {
       return fail(
         new AppError(
           'ORGANIZER_CANNOT_LEAVE',
-          "L'organizzatore non può abbandonare l'evento. Annullalo invece.",
+          'The organizer cannot leave the event. Cancel it instead.',
           400,
         ),
       );

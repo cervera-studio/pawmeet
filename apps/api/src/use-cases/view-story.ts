@@ -9,7 +9,7 @@ export function createViewStory({ storyRepo }: Deps) {
   return async (storyId: string, userId: string): Promise<Result<{ storyAgeHours: number }>> => {
     const story = await storyRepo.findById(storyId);
     if (!story) {
-      return fail(new AppError('STORY_NOT_FOUND', 'Storia non trovata', 404));
+      return fail(new AppError('STORY_NOT_FOUND', 'Story not found', 404));
     }
 
     if (story.expiresAt < new Date()) {

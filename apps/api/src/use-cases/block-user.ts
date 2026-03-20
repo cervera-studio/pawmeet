@@ -16,7 +16,7 @@ export function createBlockUser({ followRepo, userRepo }: Deps) {
 
     const target = await userRepo.findById(targetUserId);
     if (!target) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     const alreadyBlocked = await followRepo.isBlocked(userId, targetUserId);

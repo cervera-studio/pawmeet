@@ -22,7 +22,7 @@ export function createUpdateSupportTicketStatus({ supportRepo }: Deps) {
   ): Promise<Result<{ ticket: SupportTicket; messageCount: number }>> => {
     const ticket = await supportRepo.getTicketById(ticketId);
     if (!ticket) {
-      return fail(new AppError('TICKET_NOT_FOUND', 'Ticket di supporto non trovato', 404));
+      return fail(new AppError('TICKET_NOT_FOUND', 'Support ticket not found', 404));
     }
 
     if (ticket.status === status) {

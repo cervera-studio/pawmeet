@@ -27,7 +27,7 @@ export function createGetDogHealthGoal({ dogRepo, activityRepo }: Deps) {
     const dog = await dogRepo.findById(input.dogId);
 
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog not found', 404));
     }
 
     if (dog.ownerId !== userId) {

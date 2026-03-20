@@ -36,6 +36,7 @@
     "@upstash/redis": "^1.37.0",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.71.0",
+    "ioredis": "^5.10.0",
     "drizzle-orm": "^0.45.0",
     "expo-server-sdk": "^6.1.0",
     "hono": "^4.12.8",

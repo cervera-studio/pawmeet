@@ -11,7 +11,7 @@ type Deps = {
 export function createRegisterPushToken({ userRepo }: Deps) {
   return async (userId: string, token: string): Promise<Result<{ registered: boolean }>> => {
     if (!EXPO_PUSH_TOKEN_REGEX.test(token)) {
-      return fail(new AppError('INVALID_PUSH_TOKEN', 'Token push non valido', 400));
+      return fail(new AppError('INVALID_PUSH_TOKEN', 'Invalid push token', 400));
     }
 
     try {

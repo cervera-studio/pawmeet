@@ -11,6 +11,7 @@ export interface ChatRepository {
     matchId: string;
     content: string;
     mediaUrl?: string;
+    replyToId?: string;
   }): Promise<{ message: Serialized<ChatMessage> }>;
   markMessagesRead(matchId: string): Promise<void>;
   uploadImage(matchId: string, imageUri: string): Promise<{ mediaUrl: string }>;

@@ -17,7 +17,7 @@ export function createFollowUser({ followRepo, userRepo, notificationService }: 
 
     const target = await userRepo.findById(targetUserId);
     if (!target?.isActive) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     const blocked = await followRepo.isBlockedEitherWay(userId, targetUserId);

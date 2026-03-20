@@ -16,14 +16,14 @@ export function createConfirmDogPhoto({ dogRepo, storage }: Deps) {
   ): Promise<Result<{ photo: DogPhoto }>> => {
     const dog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     // Strict key validation: must be exactly dogs/{dogId}/{filename}
     // Prevents path traversal (../) and cross-dog photo hijacking
     const KEY_PATTERN = /^dogs\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/;
     if (!(key.startsWith(`dogs/${dogId}/`) && KEY_PATTERN.test(key))) {
-      return fail(new AppError('INVALID_PHOTO_KEY', 'Chiave non valida', 403));
+      return fail(new AppError('INVALID_PHOTO_KEY', 'Invalid key', 403));
     }
 
     const photoCount = await dogRepo.countPhotos(dogId);

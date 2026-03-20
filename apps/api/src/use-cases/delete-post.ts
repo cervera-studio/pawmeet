@@ -12,7 +12,7 @@ export function createDeletePost({ feedRepo }: Deps) {
   ): Promise<Result<{ postAgeHours: number; mediaCount: number }>> => {
     const post = await feedRepo.findPostById(postId);
     if (!post || post.authorId !== userId) {
-      return fail(new AppError('POST_NOT_FOUND', 'Post non trovato', 404));
+      return fail(new AppError('POST_NOT_FOUND', 'Post not found', 404));
     }
 
     if (post.isDeleted) {

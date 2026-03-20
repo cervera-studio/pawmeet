@@ -1,3 +1,4 @@
+import { logger } from '@pawmeet/utils';
 import type {
   AuditEntry,
   AuditLogRepository,
@@ -25,11 +26,21 @@ const RESOURCE_TYPE = {
 /**
  * Log an admin action to the audit log table.
  *
- * Fire-and-forget: errors are logged but never thrown,
- * so audit logging never blocks the main mutation.
+ * Fire-and-forget safe: errors are logged but never thrown,
+ * so audit logging never blocks the main mutation and
+ * `void logAdminAction(...)` never creates unhandled rejections.
  */
 async function logAdminAction(repo: AuditLogRepository, entry: AuditEntry): Promise<void> {
-  await repo.logAction(entry);
+  try {
+    await repo.logAction(entry);
+  } catch (error) {
+    logger.error('AdminAudit', 'Failed to log admin action', {
+      action: entry.action,
+      resourceType: entry.resourceType,
+      resourceId: entry.resourceId,
+      error,
+    });
+  }
 }
 
 export type { AuditEntry, ResourceType };

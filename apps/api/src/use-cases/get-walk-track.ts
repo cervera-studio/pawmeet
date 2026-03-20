@@ -14,7 +14,7 @@ export function createGetWalkTrack({ walkTrackRepo }: Deps) {
     const track = await walkTrackRepo.findById(input.trackId);
 
     if (!track) {
-      return fail(new AppError('TRACK_NOT_FOUND', 'Tracciamento non trovato', 404));
+      return fail(new AppError('TRACK_NOT_FOUND', 'Walk track not found', 404));
     }
 
     if (track.userId !== userId) {

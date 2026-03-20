@@ -1,17 +1,15 @@
 import type { SupportMessage } from '@pawmeet/types';
-import { AppError, fail, type Result, succeed, WS_EVENT } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { sanitizeContent } from '../lib/sanitize.js';
-import type { NotificationService } from '../ports/notification-service.js';
 import type { SupportRepository } from '../ports/support-repository.js';
-import { sendToUser } from '../ws/registry.js';
 
 type Deps = {
   supportRepo: SupportRepository;
-  notificationService: NotificationService;
 };
 
-export function createAdminReplySupportTicket({ supportRepo, notificationService }: Deps) {
+export function createAdminReplySupportTicket({ supportRepo }: Deps) {
   return async (
     adminId: string,
     ticketId: string,
@@ -20,7 +18,7 @@ export function createAdminReplySupportTicket({ supportRepo, notificationService
   ): Promise<Result<SupportMessage>> => {
     const ticket = await supportRepo.getTicketById(ticketId);
     if (!ticket) {
-      return fail(new AppError('TICKET_NOT_FOUND', 'Ticket di supporto non trovato', 404));
+      return fail(new AppError('TICKET_NOT_FOUND', 'Support ticket not found', 404));
     }
 
     const sanitizedContent = sanitizeContent(content);
@@ -38,30 +36,18 @@ export function createAdminReplySupportTicket({ supportRepo, notificationService
       await supportRepo.updateStatus(ticketId, 'in_progress');
     }
 
-    // Broadcast via WebSocket to user if not an internal note
-    if (!isInternal && ticket.userId) {
-      sendToUser(ticket.userId, {
-        type: WS_EVENT.SUPPORT_NEW_MESSAGE,
-        payload: { ticketId, message },
-      });
-    }
-
-    // Send push notification to user if not an internal note (fallback for offline)
-    if (!isInternal && ticket.userId) {
-      const preview =
-        sanitizedContent.length > 50 ? `${sanitizedContent.slice(0, 47)}...` : sanitizedContent;
-
-      notificationService
-        .send({
-          userId: ticket.userId,
-          title: 'Supporto PawMeet',
-          body: preview,
-          data: { ticketId, type: 'support_reply' },
-        })
-        .catch((err) =>
-          logger.error('adminReplySupportTicket', 'Failed to send push notification', err),
-        );
-    }
+    // Emit domain event — WS broadcast and push notifications handled by listeners
+    void emit({
+      type: DOMAIN_EVENT.SUPPORT_REPLY_SENT,
+      payload: {
+        ticketId,
+        userId: ticket.userId,
+        message,
+        sanitizedContent,
+        isInternal,
+      },
+      timestamp: new Date(),
+    });
 
     logger.info('AdminReplySupportTicket', 'Admin replied to support ticket', {
       adminId,

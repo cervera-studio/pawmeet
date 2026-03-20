@@ -13,7 +13,7 @@ export function createSubmitDateOfBirth({ userRepo }: Deps) {
   return async (userId: string, dateOfBirth: Date): Promise<Result<{ message: string }>> => {
     const user = await userRepo.findById(userId);
     if (!user) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     // Prevent overwriting an already-set date of birth

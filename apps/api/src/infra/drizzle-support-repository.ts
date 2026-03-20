@@ -47,24 +47,26 @@ export class DrizzleSupportRepository implements SupportRepository {
   }
 
   async addMessage(input: AddMessageInput): Promise<SupportMessage> {
-    const rows = await this.db
-      .insert(supportMessages)
-      .values({
-        ticketId: input.ticketId,
-        senderType: input.senderType,
-        senderId: input.senderId,
-        content: input.content,
-        isInternal: input.isInternal ?? false,
-      })
-      .returning();
+    return await this.db.transaction(async (tx) => {
+      const rows = await tx
+        .insert(supportMessages)
+        .values({
+          ticketId: input.ticketId,
+          senderType: input.senderType,
+          senderId: input.senderId,
+          content: input.content,
+          isInternal: input.isInternal ?? false,
+        })
+        .returning();
 
-    // Update ticket updatedAt timestamp
-    await this.db
-      .update(supportTickets)
-      .set({ updatedAt: new Date() })
-      .where(eq(supportTickets.id, input.ticketId));
+      // Update ticket updatedAt timestamp within the same transaction
+      await tx
+        .update(supportTickets)
+        .set({ updatedAt: new Date() })
+        .where(eq(supportTickets.id, input.ticketId));
 
-    return firstRow<SupportMessage>(rows);
+      return firstRow<SupportMessage>(rows);
+    });
   }
 
   async getTicketById(ticketId: string): Promise<SupportTicket | null> {
@@ -259,32 +261,16 @@ export class DrizzleSupportRepository implements SupportRepository {
   }
 
   async markAdminMessagesRead(ticketId: string): Promise<number> {
-    const rows = await this.db
-      .update(supportMessages)
-      .set({ readAt: new Date() })
-      .where(
-        and(
-          eq(supportMessages.ticketId, ticketId),
-          eq(supportMessages.senderType, 'admin'),
-          isNull(supportMessages.readAt),
-        ),
-      )
-      .returning({ id: supportMessages.id });
-    return rows.length;
+    const result = await this.db.execute(
+      sql`UPDATE support_messages SET read_at = NOW() WHERE ticket_id = ${ticketId} AND sender_type = 'admin' AND read_at IS NULL`,
+    );
+    return Number(result.rowCount ?? 0);
   }
 
   async markUserMessagesRead(ticketId: string): Promise<number> {
-    const rows = await this.db
-      .update(supportMessages)
-      .set({ readAt: new Date() })
-      .where(
-        and(
-          eq(supportMessages.ticketId, ticketId),
-          eq(supportMessages.senderType, 'user'),
-          isNull(supportMessages.readAt),
-        ),
-      )
-      .returning({ id: supportMessages.id });
-    return rows.length;
+    const result = await this.db.execute(
+      sql`UPDATE support_messages SET read_at = NOW() WHERE ticket_id = ${ticketId} AND sender_type = 'user' AND read_at IS NULL`,
+    );
+    return Number(result.rowCount ?? 0);
   }
 }

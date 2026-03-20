@@ -12,12 +12,12 @@ export function createGetPublicDogProfile({ dogRepo, userRepo }: Deps) {
   return async (dogId: string): Promise<Result<PublicDogProfile>> => {
     const dog = await dogRepo.findById(dogId);
     if (!dog?.isActive) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     const owner = await userRepo.findById(dog.ownerId);
     if (!owner) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     const photos = await dogRepo.findPhotos(dogId);

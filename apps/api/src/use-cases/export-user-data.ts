@@ -246,7 +246,7 @@ export function createExportUserData(deps: Deps) {
     ]);
 
     if (!profile) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     const dogIds = dogs.map((d) => d.id);

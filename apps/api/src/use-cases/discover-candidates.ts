@@ -82,7 +82,7 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
     // Verify ownership
     const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!myDog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     // Get current user's location

@@ -176,7 +176,13 @@ describe('chat router', () => {
       const result = await caller.chat.sendMessage({ matchId, content: 'Ciao!' });
 
       expect(result.message.content).toBe('Ciao!');
-      expect(deps.sendMessage).toHaveBeenCalledWith('user-1', matchId, 'Ciao!', undefined);
+      expect(deps.sendMessage).toHaveBeenCalledWith(
+        'user-1',
+        matchId,
+        'Ciao!',
+        undefined,
+        undefined,
+      );
     });
 
     it('sends a message with media URL', async () => {
@@ -194,6 +200,7 @@ describe('chat router', () => {
         matchId,
         'Look!',
         'https://cdn.example.com/photo.jpg',
+        undefined,
       );
     });
 

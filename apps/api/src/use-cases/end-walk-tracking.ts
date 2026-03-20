@@ -23,7 +23,7 @@ export function createEndWalkTracking({ walkTrackRepo, awardXp }: Deps) {
     const track = await walkTrackRepo.findById(input.trackId);
 
     if (!track) {
-      return fail(new AppError('TRACK_NOT_FOUND', 'Tracciamento non trovato', 404));
+      return fail(new AppError('TRACK_NOT_FOUND', 'Walk track not found', 404));
     }
 
     if (track.userId !== userId) {
@@ -74,7 +74,7 @@ export function createEndWalkTracking({ walkTrackRepo, awardXp }: Deps) {
     const updatedTrack = await walkTrackRepo.endTrack(input.trackId, summary);
 
     if (!updatedTrack) {
-      return fail(new AppError('TRACK_NOT_FOUND', 'Tracciamento non trovato', 404));
+      return fail(new AppError('TRACK_NOT_FOUND', 'Walk track not found', 404));
     }
 
     if (awardXp) {

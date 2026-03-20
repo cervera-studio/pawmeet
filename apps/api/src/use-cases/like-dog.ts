@@ -77,7 +77,7 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
   > => {
     const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!myDog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     const limitResult = await checkDailySwipeLimit(matchRepo, dogId);

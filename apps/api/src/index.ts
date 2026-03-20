@@ -4,6 +4,8 @@ import { logger as appLogger } from '@pawmeet/utils';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { adminDeps, experimentService, onnxModelLoader, supportDeps } from './container/index.js';
+import { chat, notificationService, supportRepo, userRepo } from './container/services.js';
+import { registerDomainEventHandlers } from './domain/event-handlers.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { cacheControlMiddleware } from './middleware/cache-control.js';
@@ -105,6 +107,9 @@ app.get('/health', async (c) => {
   return c.json({ status, timestamp: new Date().toISOString(), checks }, statusCode);
 });
 
+// Register domain event handlers (in-process pub/sub for side effects)
+registerDomainEventHandlers({ chat, userRepo, notificationService, supportRepo });
+
 const port = Number(process.env.PORT) || 3000;
 
 // Initialize Statsig for A/B testing and feature flags
@@ -123,6 +128,13 @@ const server = serve({ fetch: app.fetch, port, hostname: '0.0.0.0' });
 
 // Attach WebSocket server to the HTTP server
 setupWebSocket(server);
+
+// Initialize Redis pub/sub for cross-server WebSocket relay (Fly.io multi-instance)
+import('./ws/registry.js').then(({ initWsRedisSubscription }) => {
+  initWsRedisSubscription().then(() => {
+    appLogger.info('API', 'WebSocket Redis pub/sub relay initialized');
+  });
+});
 
 // Start BullMQ workers in production
 if (process.env.NODE_ENV === 'production') {

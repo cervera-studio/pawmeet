@@ -189,6 +189,9 @@ importers:
       hono:
         specifier: ^4.12.8
         version: 4.12.8
+      ioredis:
+        specifier: ^5.10.0
+        version: 5.10.0
       jose:
         specifier: ^6.2.0
         version: 6.2.1
@@ -11574,8 +11577,7 @@ snapshots:
 
   '@ioredis/commands@1.5.0': {}
 
-  '@ioredis/commands@1.5.1':
-    optional: true
+  '@ioredis/commands@1.5.1': {}
 
   '@isaacs/ttlcache@1.4.1': {}
 
@@ -15890,7 +15892,6 @@ snapshots:
       standard-as-callback: 2.1.0
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   ioredis@5.9.3:
     dependencies:

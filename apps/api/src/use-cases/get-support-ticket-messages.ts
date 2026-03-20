@@ -16,15 +16,15 @@ export function createGetSupportTicketMessages({ supportRepo }: Deps) {
     if (options.isAdmin) {
       const ticket = await supportRepo.getTicketById(ticketId);
       if (!ticket) {
-        return fail(new AppError('TICKET_NOT_FOUND', 'Ticket di supporto non trovato', 404));
+        return fail(new AppError('TICKET_NOT_FOUND', 'Support ticket not found', 404));
       }
     } else if (options.userId) {
       const ticket = await supportRepo.getTicketByIdForUser(ticketId, options.userId);
       if (!ticket) {
-        return fail(new AppError('TICKET_NOT_FOUND', 'Ticket di supporto non trovato', 404));
+        return fail(new AppError('TICKET_NOT_FOUND', 'Support ticket not found', 404));
       }
     } else {
-      return fail(new AppError('UNAUTHORIZED', 'Accesso non autorizzato', 401));
+      return fail(new AppError('UNAUTHORIZED', 'Unauthorized access', 401));
     }
 
     const includeInternal = options.isAdmin;

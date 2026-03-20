@@ -9,13 +9,13 @@ import { createListSupportTickets } from '../use-cases/list-support-tickets.js';
 import { createListUserSupportTickets } from '../use-cases/list-user-support-tickets.js';
 import { createSendSupportMessage } from '../use-cases/send-support-message.js';
 import { createUpdateSupportTicketStatus } from '../use-cases/update-support-ticket-status.js';
-import { emailService, notificationService, supportRepo, userRepo } from './services.js';
+import { emailService, supportRepo, userRepo } from './services.js';
 
 export const supportDeps = {
   createTicket: createCreateSupportTicket({ supportRepo, emailService, userRepo }),
   createGuestTicket: createCreateGuestSupportTicket({ supportRepo, emailService }),
   sendMessage: createSendSupportMessage({ supportRepo }),
-  adminReply: createAdminReplySupportTicket({ supportRepo, notificationService }),
+  adminReply: createAdminReplySupportTicket({ supportRepo }),
   updateStatus: createUpdateSupportTicketStatus({ supportRepo }),
   getMessages: createGetSupportTicketMessages({ supportRepo }),
   listUserTickets: createListUserSupportTickets({ supportRepo }),

@@ -45,7 +45,7 @@ export function createCreateGroupEvent({ groupEventRepo, dogRepo }: Deps) {
     // Verify the dog belongs to the user
     const dog = await dogRepo.findByIdAndOwner(input.dogId, userId);
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog not found', 404));
     }
 
     const event = await groupEventRepo.create({

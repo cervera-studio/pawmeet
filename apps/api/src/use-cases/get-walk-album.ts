@@ -14,7 +14,7 @@ export function createGetWalkAlbum({ walkAlbumRepo, feedRepo }: Deps) {
   ): Promise<Result<{ album: WalkAlbum; posts: import('@pawmeet/types').FeedItem[] }>> => {
     const album = await walkAlbumRepo.findByWalkId(walkId);
     if (!album) {
-      return fail(new AppError('ALBUM_NOT_FOUND', 'Album non trovato', 404));
+      return fail(new AppError('ALBUM_NOT_FOUND', 'Album not found', 404));
     }
 
     // Get posts linked to this walk

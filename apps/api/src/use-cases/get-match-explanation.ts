@@ -45,13 +45,13 @@ export function createGetMatchExplanation({ matchRepo, dogRepo, userRepo }: Deps
   return async (userId: string, matchId: string): Promise<Result<MatchExplanation>> => {
     const match = await matchRepo.findById(matchId);
     if (!match) {
-      return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
+      return fail(new AppError('MATCH_NOT_FOUND', 'Match not found', 404));
     }
 
     const dogA = await dogRepo.findById(match.dogAId);
     const dogB = await dogRepo.findById(match.dogBId);
     if (!(dogA && dogB)) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     // Verify user owns one of the dogs

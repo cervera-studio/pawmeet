@@ -53,7 +53,7 @@ function MessageBubble({
             ? t('systemMessage')
             : isInternal
               ? t('internalNote')
-              : (message.senderName ?? message.senderType)}
+              : (message.senderId ?? message.senderType)}
         </span>
         <span className="text-xs text-neutral-400">{formatDateTime(message.createdAt)}</span>
         {isInternal ? (
@@ -195,7 +195,7 @@ export function TicketDetail({ ticket, initialMessages }: TicketDetailProps) {
             <div>
               <p className="text-xs font-medium text-neutral-500">{td('assignedTo')}</p>
               <div className="flex items-center gap-2">
-                <p className="text-sm">{ticket.assignedAdminName ?? td('unassigned')}</p>
+                <p className="text-sm">{ticket.assignedTo ?? td('unassigned')}</p>
                 {ticket.assignedTo ? (
                   <Button variant="ghost" size="sm" onClick={handleRemoveAssignment}>
                     {td('removeAssignment')}

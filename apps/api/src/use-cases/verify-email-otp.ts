@@ -21,7 +21,7 @@ export function createVerifyEmailOtp(deps: Deps) {
 
     const user = await userRepo.findByEmail(input.email);
     if (!user) {
-      return fail(new AppError('AUTH_INVALID_TOKEN', 'Codice non valido o scaduto', 400));
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid or expired code', 400));
     }
 
     if (user.emailVerified) {
@@ -36,7 +36,7 @@ export function createVerifyEmailOtp(deps: Deps) {
     );
 
     if (!stored) {
-      return fail(new AppError('AUTH_INVALID_TOKEN', 'Codice non valido o scaduto', 400));
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid or expired code', 400));
     }
 
     await tokenRepo.markVerificationTokenUsed(stored.id);

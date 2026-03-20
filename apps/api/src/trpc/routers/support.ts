@@ -89,14 +89,9 @@ export function createSupportRouter(deps: typeof supportDeps) {
     markAsRead: protectedProcedure
       .input(z.object({ ticketId: z.string().uuid() }))
       .mutation(async ({ ctx, input }) => {
-        // Verify the user owns this ticket
-        const ticket = unwrapResult(
-          await deps.getMessages(input.ticketId, null, 1, {
-            userId: ctx.userId,
-            isAdmin: false,
-          }),
-        );
-        if (!ticket) {
+        // Verify the user owns this ticket (lightweight check, no message fetch)
+        const ownerUserId = await deps.getTicketOwnerUserId(input.ticketId);
+        if (ownerUserId !== ctx.userId) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket not found' });
         }
 

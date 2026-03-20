@@ -21,7 +21,7 @@ export function createLikePost({ feedRepo, userRepo, notificationService, feedRe
   ): Promise<Result<{ liked: boolean; postAgeHours: number }>> => {
     const post = await feedRepo.findPostById(postId);
     if (!post || post.isDeleted) {
-      return fail(new AppError('POST_NOT_FOUND', 'Post non trovato', 404));
+      return fail(new AppError('POST_NOT_FOUND', 'Post not found', 404));
     }
 
     const postAgeHours = Math.floor(

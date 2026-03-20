@@ -50,7 +50,7 @@ export function createLoginUser(deps: Deps) {
         email,
         metadata: { reason: 'user_not_found' },
       });
-      return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Credenziali non valide', 401));
+      return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Invalid credentials', 401));
     }
 
     // Check account lockout before verifying password
@@ -85,7 +85,7 @@ export function createLoginUser(deps: Deps) {
           metadata: { attempts },
         });
       }
-      return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Credenziali non valide', 401));
+      return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Invalid credentials', 401));
     }
 
     // Reset failed attempts on successful login

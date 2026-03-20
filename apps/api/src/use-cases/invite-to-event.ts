@@ -28,7 +28,7 @@ export function createInviteToEvent({
   ): Promise<Result<{ message: string }>> => {
     const event = await groupEventRepo.findByIdWithParticipants(eventId);
     if (!event) {
-      return fail(new AppError('EVENT_NOT_FOUND', 'Evento non trovato', 404));
+      return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
     // Only the creator can invite
@@ -57,7 +57,7 @@ export function createInviteToEvent({
     // Invited user must exist and have at least one active dog
     const invitedUser = await userRepo.findById(invitedUserId);
     if (!invitedUser) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     const dogs = await dogRepo.findByOwner(invitedUserId, true);

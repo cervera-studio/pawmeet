@@ -40,7 +40,7 @@ export function createJoinGroupEvent({
   ): Promise<Result<{ participant: GroupEventParticipant; participantNumber: number }>> => {
     const event = await groupEventRepo.findById(input.eventId);
     if (!event) {
-      return fail(new AppError('EVENT_NOT_FOUND', 'Evento non trovato', 404));
+      return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
     if (event.status !== GROUP_EVENT_STATUS.SCHEDULED) {
@@ -70,7 +70,7 @@ export function createJoinGroupEvent({
     // Verify the dog belongs to the user
     const dog = await dogRepo.findByIdAndOwner(input.dogId, userId);
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog not found', 404));
     }
 
     // Check if already participating

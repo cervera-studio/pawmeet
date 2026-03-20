@@ -21,17 +21,17 @@ export function createSubmitMoodLog({ moodLogRepo, walkTrackRepo, dogRepo }: Dep
     // Verify dog ownership
     const dog = await dogRepo.findByIdAndOwner(input.dogId, userId);
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     // Verify track exists and belongs to user
     const track = await walkTrackRepo.findById(input.trackId);
     if (!track) {
-      return fail(new AppError('TRACK_NOT_FOUND', 'Tracciamento non trovato', 404));
+      return fail(new AppError('TRACK_NOT_FOUND', 'Walk track not found', 404));
     }
 
     if (track.userId !== userId) {
-      return fail(new AppError('TRACK_NOT_OWNED', 'Tracciamento non autorizzato', 403));
+      return fail(new AppError('TRACK_NOT_OWNED', 'Walk track not authorized', 403));
     }
 
     // Verify track is completed

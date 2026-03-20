@@ -15,7 +15,7 @@ export function createReviewContentReport({ contentReportRepo }: Deps) {
   ): Promise<Result<{ report: ContentReport }>> => {
     const report = await contentReportRepo.reviewReport(reportId, reviewerId, action);
     if (!report) {
-      return fail(new AppError('REPORT_NOT_FOUND', 'Segnalazione non trovata', 404));
+      return fail(new AppError('REPORT_NOT_FOUND', 'Report not found', 404));
     }
 
     logger.info('ReviewContentReport', 'Report reviewed', { reportId, reviewerId, action });

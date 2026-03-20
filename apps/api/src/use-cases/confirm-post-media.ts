@@ -17,14 +17,14 @@ export function createConfirmPostMedia({ feedRepo, storage }: Deps) {
   ): Promise<Result<{ media: PostMedia }>> => {
     const post = await feedRepo.findPostById(postId);
     if (!post || post.authorId !== userId) {
-      return fail(new AppError('POST_NOT_FOUND', 'Post non trovato', 404));
+      return fail(new AppError('POST_NOT_FOUND', 'Post not found', 404));
     }
 
     // Strict key validation: must be exactly posts/{postId}/{filename}
     // Prevents path traversal (../) and cross-post media hijacking
     const KEY_PATTERN = /^posts\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/;
     if (!(key.startsWith(`posts/${postId}/`) && KEY_PATTERN.test(key))) {
-      return fail(new AppError('INVALID_MEDIA_KEY', 'Chiave media non valida', 403));
+      return fail(new AppError('INVALID_MEDIA_KEY', 'Invalid media key', 403));
     }
 
     const publicUrl = storage.getPublicUrl(key);

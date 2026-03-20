@@ -34,7 +34,7 @@ export function createResetPassword(deps: Deps) {
         email,
         metadata: { reason: 'user_not_found' },
       });
-      return fail(new AppError('AUTH_INVALID_TOKEN', 'Codice non valido o scaduto', 400));
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid or expired code', 400));
     }
 
     const codeHash = await authService.hashToken(code);
@@ -51,7 +51,7 @@ export function createResetPassword(deps: Deps) {
         email,
         metadata: { reason: 'invalid_code' },
       });
-      return fail(new AppError('AUTH_INVALID_TOKEN', 'Codice non valido o scaduto', 400));
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid or expired code', 400));
     }
 
     // Mark token as used

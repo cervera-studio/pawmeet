@@ -14,7 +14,7 @@ export function createReorderDogPhotos({ dogRepo }: Deps) {
   ): Promise<Result<{ photos: DogPhoto[] }>> => {
     const dog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     // Verify all photo IDs belong to this dog
@@ -23,7 +23,7 @@ export function createReorderDogPhotos({ dogRepo }: Deps) {
     const allValid = photoIds.every((id) => existingIds.has(id));
 
     if (!allValid || photoIds.length !== existingPhotos.length) {
-      return fail(new AppError('INVALID_PHOTO_IDS', 'Lista foto non valida', 400));
+      return fail(new AppError('INVALID_PHOTO_IDS', 'Invalid photo list', 400));
     }
 
     // Update positions

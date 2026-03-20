@@ -23,7 +23,7 @@ export function createConfirmStory({ storyRepo, storage, awardXp }: Deps) {
     mediaType: string,
   ): Promise<Result<{ story: Story }>> => {
     if (!key.startsWith(`stories/${userId}/`)) {
-      return fail(new AppError('INVALID_STORY_KEY', 'Chiave story non valida', 403));
+      return fail(new AppError('INVALID_STORY_KEY', 'Invalid story key', 403));
     }
 
     const publicUrl = storage.getPublicUrl(key);

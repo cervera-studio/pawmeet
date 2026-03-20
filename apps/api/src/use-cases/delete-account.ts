@@ -62,7 +62,7 @@ async function verifyPassword(
     email,
     metadata: { reason: 'delete_account_wrong_password' },
   });
-  return fail(new AppError('INVALID_PASSWORD', 'Password non valida', 401));
+  return fail(new AppError('INVALID_PASSWORD', 'Invalid password', 401));
 }
 
 async function deleteR2Object(storage: StorageService, url: string, label: string): Promise<void> {
@@ -120,7 +120,7 @@ export function createDeleteAccount(deps: Deps) {
 
     const user = await userRepo.findById(userId);
     if (!user) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     // Re-auth gate: verify password before proceeding

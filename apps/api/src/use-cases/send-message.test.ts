@@ -1,32 +1,20 @@
 import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
-import {
-  buildChatService,
-  buildMatchRepo,
-  buildMessage,
-  buildMessageRepo,
-  buildNotificationService,
-  buildUserRepo,
-} from '../test-utils/builders.js';
+import { clearHandlers } from '../domain/events.js';
+import { buildMatchRepo, buildMessage, buildMessageRepo } from '../test-utils/builders.js';
 import { createSendMessage } from './send-message.js';
 
 describe('sendMessage', () => {
-  it('sends a message and emits WS event', async () => {
+  // Clear domain event handlers so side effects don't fire in tests
+  afterEach(() => clearHandlers());
+
+  it('sends a message and returns success', async () => {
     const msg = buildMessage();
     const messageRepo = buildMessageRepo({
       create: vi.fn().mockResolvedValue(msg),
     });
-    const chat = buildChatService();
-    const userRepo = buildUserRepo();
-    const notificationService = buildNotificationService();
     const matchRepo = buildMatchRepo();
-    const sendMessage = createSendMessage({
-      messageRepo,
-      matchRepo,
-      chat,
-      userRepo,
-      notificationService,
-    });
+    const sendMessage = createSendMessage({ messageRepo, matchRepo });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 
@@ -38,14 +26,8 @@ describe('sendMessage', () => {
       senderId: 'user-1',
       content: 'Ciao!',
       mediaUrl: null,
+      replyToId: null,
     });
-    expect(chat.sendToRoom).toHaveBeenCalledWith(
-      'match-1',
-      expect.objectContaining({
-        type: 'new_message',
-        payload: { message: msg },
-      }),
-    );
   });
 
   it('includes mediaUrl when provided', async () => {
@@ -53,17 +35,8 @@ describe('sendMessage', () => {
     const messageRepo = buildMessageRepo({
       create: vi.fn().mockResolvedValue(msg),
     });
-    const chat = buildChatService();
-    const userRepo = buildUserRepo();
-    const notificationService = buildNotificationService();
     const matchRepo = buildMatchRepo();
-    const sendMessage = createSendMessage({
-      messageRepo,
-      matchRepo,
-      chat,
-      userRepo,
-      notificationService,
-    });
+    const sendMessage = createSendMessage({ messageRepo, matchRepo });
 
     const result = await sendMessage(
       'user-1',
@@ -82,17 +55,8 @@ describe('sendMessage', () => {
     const messageRepo = buildMessageRepo({
       isMatchParticipant: vi.fn().mockResolvedValue(false),
     });
-    const chat = buildChatService();
-    const userRepo = buildUserRepo();
-    const notificationService = buildNotificationService();
     const matchRepo = buildMatchRepo();
-    const sendMessage = createSendMessage({
-      messageRepo,
-      matchRepo,
-      chat,
-      userRepo,
-      notificationService,
-    });
+    const sendMessage = createSendMessage({ messageRepo, matchRepo });
 
     const result = await sendMessage('user-1', 'match-1', 'Ciao!');
 
@@ -101,6 +65,5 @@ describe('sendMessage', () => {
     expect(result.error.code).toBe('CONVERSATION_NOT_FOUND');
     expect(result.error.status).toBe(404);
     expect(messageRepo.create).not.toHaveBeenCalled();
-    expect(chat.sendToRoom).not.toHaveBeenCalled();
   });
 });

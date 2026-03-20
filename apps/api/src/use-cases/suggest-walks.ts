@@ -159,7 +159,7 @@ export function createSuggestWalks({
 
     const myDog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!myDog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     const user = await userRepo.findById(userId);

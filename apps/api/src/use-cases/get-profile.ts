@@ -10,7 +10,7 @@ export function createGetProfile({ userRepo }: Deps) {
   return async (userId: string): Promise<Result<SafeUser>> => {
     const user = await userRepo.findById(userId);
     if (!user) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     const { passwordHash: _, pushToken: __, ...safeUser } = user;

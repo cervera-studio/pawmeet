@@ -16,7 +16,7 @@ export function createGetStoryViewers({ storyRepo }: Deps) {
   return async (storyId: string, userId: string): Promise<Result<StoryViewer[]>> => {
     const story = await storyRepo.findById(storyId);
     if (!story) {
-      return fail(new AppError('STORY_NOT_FOUND', 'Storia non trovata', 404));
+      return fail(new AppError('STORY_NOT_FOUND', 'Story not found', 404));
     }
 
     // Only the story author can see who viewed it

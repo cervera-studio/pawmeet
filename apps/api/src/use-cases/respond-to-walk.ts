@@ -29,7 +29,7 @@ export function createRespondToWalk({
   ): Promise<Result<{ message: string; proposalAgeHours: number }>> => {
     const walk = await walkRepo.findById(walkId);
     if (!walk) {
-      return fail(new AppError('WALK_NOT_FOUND', 'Passeggiata non trovata', 404));
+      return fail(new AppError('WALK_NOT_FOUND', 'Walk not found', 404));
     }
 
     if (walk.status !== WALK_STATUS.PENDING) {
@@ -50,13 +50,13 @@ export function createRespondToWalk({
     // Verify user is a participant in this match
     const match = await matchRepo.findById(walk.matchId);
     if (!match?.isActive) {
-      return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
+      return fail(new AppError('MATCH_NOT_FOUND', 'Match not found', 404));
     }
 
     const userDogs = await dogRepo.findByOwner(userId, true);
     const dogIds = new Set(userDogs.map((d) => d.id));
     if (!(dogIds.has(match.dogAId) || dogIds.has(match.dogBId))) {
-      return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
+      return fail(new AppError('MATCH_NOT_FOUND', 'Match not found', 404));
     }
 
     const newStatus = accept ? WALK_STATUS.ACCEPTED : WALK_STATUS.DECLINED;

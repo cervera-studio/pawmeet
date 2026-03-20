@@ -10,7 +10,7 @@ type Deps = {
 export function createConfirmAvatar({ userRepo, storage }: Deps) {
   return async (userId: string, key: string): Promise<Result<{ avatarUrl: string }>> => {
     if (!key.startsWith(`avatars/${userId}/`)) {
-      return fail(new AppError('INVALID_KEY', 'Chiave non valida', 403));
+      return fail(new AppError('INVALID_KEY', 'Invalid key', 403));
     }
 
     // Delete old avatar from R2 if present

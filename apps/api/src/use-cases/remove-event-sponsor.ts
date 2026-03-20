@@ -11,7 +11,7 @@ export function createRemoveEventSponsor({ eventSponsorRepo }: Deps) {
     const sponsors = await eventSponsorRepo.findByEvent(eventId);
     const exists = sponsors.some((s) => s.organizationId === organizationId);
     if (!exists) {
-      return fail(new AppError('SPONSOR_NOT_FOUND', 'Sponsor non trovato per questo evento', 404));
+      return fail(new AppError('SPONSOR_NOT_FOUND', 'Sponsor not found for this event', 404));
     }
 
     await eventSponsorRepo.remove(eventId, organizationId);

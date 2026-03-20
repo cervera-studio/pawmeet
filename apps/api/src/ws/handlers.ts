@@ -45,6 +45,33 @@ async function isWsRateLimited(userId: string): Promise<boolean> {
   }
 }
 
+// ── TTL cache for ticket ownership (avoids DB hit on every keystroke) ─────────
+
+interface CachedOwner {
+  ownerUserId: string | null;
+  expiresAt: number;
+}
+
+const TICKET_OWNER_TTL_MS = 30_000; // 30 seconds
+const ticketOwnerCache = new Map<string, CachedOwner>();
+
+async function getTicketOwnerCached(ticketId: string): Promise<string | null> {
+  const cached = ticketOwnerCache.get(ticketId);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.ownerUserId;
+  }
+
+  const { supportRepo } = await import('../container/services.js');
+  const ownerUserId = await supportRepo.getTicketOwnerUserId(ticketId);
+
+  ticketOwnerCache.set(ticketId, {
+    ownerUserId,
+    expiresAt: Date.now() + TICKET_OWNER_TTL_MS,
+  });
+
+  return ownerUserId;
+}
+
 /** Parse and validate an incoming WebSocket message */
 export function parseWsMessage(
   data: string,
@@ -74,16 +101,31 @@ export async function handleSupportTyping(
   ticketId: string,
   type: typeof WS_EVENT.SUPPORT_TYPING_START | typeof WS_EVENT.SUPPORT_TYPING_STOP,
 ) {
-  // Lazy-import to avoid circular dependency at module load
-  const { supportRepo } = await import('../container/services.js');
-  const ownerUserId = await supportRepo.getTicketOwnerUserId(ticketId);
+  const ownerUserId = await getTicketOwnerCached(ticketId);
   if (!ownerUserId) return;
 
-  // If the sender is the user, broadcast to admin is not needed (admins use HTTP polling).
-  // If the sender is an admin, broadcast to the ticket owner (user).
-  if (userId !== ownerUserId) {
-    sendToUser(ownerUserId, { type, payload: { ticketId } });
+  // Authorization: only the ticket owner or an admin can emit typing for this ticket.
+  // The ticket owner types → broadcast to admin (handled via HTTP polling, no WS needed).
+  // An admin types → broadcast to the ticket owner.
+  // Any other user is unauthorized — silently drop.
+  if (userId === ownerUserId) {
+    // User is the owner — admins use HTTP polling, nothing to broadcast
+    return;
   }
+
+  // Check if sender is an admin (lazy-import to avoid circular dependency)
+  const { adminUserRepo } = await import('../container/services.js');
+  const admin = await adminUserRepo.findById(userId);
+  if (!admin) {
+    // Not the owner and not an admin — unauthorized, silently drop
+    logger.warn(
+      'WebSocket',
+      `Unauthorized support typing: user ${userId} is not owner or admin for ticket ${ticketId}`,
+    );
+    return;
+  }
+
+  sendToUser(ownerUserId, { type, payload: { ticketId } });
 }
 
 /** Handle incoming WebSocket messages from an authenticated user */

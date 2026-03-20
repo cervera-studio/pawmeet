@@ -9,7 +9,7 @@ export function createDeleteComment({ feedRepo }: Deps) {
   return async (commentId: string, userId: string): Promise<Result<void>> => {
     const comment = await feedRepo.findCommentById(commentId);
     if (!comment || comment.authorId !== userId) {
-      return fail(new AppError('COMMENT_NOT_FOUND', 'Commento non trovato', 404));
+      return fail(new AppError('COMMENT_NOT_FOUND', 'Comment not found', 404));
     }
 
     if (comment.isDeleted) {

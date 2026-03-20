@@ -15,12 +15,12 @@ export function createDeleteDogPhoto({ dogRepo, storage }: Deps) {
   ): Promise<Result<{ message: string }>> => {
     const dog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     const photo = await dogRepo.findPhoto(photoId, dogId);
     if (!photo) {
-      return fail(new AppError('PHOTO_NOT_FOUND', 'Foto non trovata', 404));
+      return fail(new AppError('PHOTO_NOT_FOUND', 'Photo not found', 404));
     }
 
     // Delete from storage (ignore errors if already gone)

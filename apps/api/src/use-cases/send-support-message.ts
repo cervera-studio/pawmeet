@@ -1,9 +1,9 @@
 import type { SupportMessage } from '@pawmeet/types';
-import { AppError, fail, type Result, succeed, WS_EVENT } from '@pawmeet/types';
+import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type { SupportRepository } from '../ports/support-repository.js';
-import { sendToUser } from '../ws/registry.js';
 
 type Deps = {
   supportRepo: SupportRepository;
@@ -17,12 +17,12 @@ export function createSendSupportMessage({ supportRepo }: Deps) {
   ): Promise<Result<SupportMessage>> => {
     const ticket = await supportRepo.getTicketByIdForUser(ticketId, userId);
     if (!ticket) {
-      return fail(new AppError('TICKET_NOT_FOUND', 'Ticket di supporto non trovato', 404));
+      return fail(new AppError('TICKET_NOT_FOUND', 'Support ticket not found', 404));
     }
 
     if (ticket.status === 'closed') {
       return fail(
-        new AppError('TICKET_CLOSED', 'Il ticket è chiuso e non accetta nuovi messaggi', 400),
+        new AppError('TICKET_CLOSED', 'Ticket is closed and does not accept new messages', 400),
       );
     }
 
@@ -41,10 +41,11 @@ export function createSendSupportMessage({ supportRepo }: Deps) {
       logger.info('SendSupportMessage', 'Ticket reopened by user message', { ticketId, userId });
     }
 
-    // Broadcast to user's other devices for multi-device sync
-    sendToUser(userId, {
-      type: WS_EVENT.SUPPORT_NEW_MESSAGE,
-      payload: { ticketId, message },
+    // Emit domain event — WS broadcast handled by listeners
+    void emit({
+      type: DOMAIN_EVENT.SUPPORT_MESSAGE_SENT,
+      payload: { ticketId, userId, message },
+      timestamp: new Date(),
     });
 
     logger.info('SendSupportMessage', 'Support message sent', { userId, ticketId });

@@ -27,7 +27,7 @@ export function createAddOrganizationMember({ organizationRepo, organizationAuth
   ): Promise<Result<OrganizationMember>> => {
     const org = await organizationRepo.findById(input.organizationId);
     if (!org) {
-      return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
+      return fail(new AppError('ORG_NOT_FOUND', 'Organization not found', 404));
     }
 
     // Check that the actor is an owner or admin of the org

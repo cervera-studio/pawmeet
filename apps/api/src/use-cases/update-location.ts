@@ -29,7 +29,7 @@ export function createUpdateLocation({ userRepo }: Deps) {
   ): Promise<Result<{ latitude: number; longitude: number; updatedAt: string }>> => {
     // Validate coordinate bounds
     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-      return fail(new AppError('INVALID_COORDINATES', 'Coordinate non valide', 400));
+      return fail(new AppError('INVALID_COORDINATES', 'Invalid coordinates', 400));
     }
 
     // Check for unrealistic movement speed

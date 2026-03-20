@@ -19,7 +19,7 @@ export function createListDogMoodLogs({ moodLogRepo, dogRepo }: Deps) {
     // Verify dog ownership
     const dog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     const result = await moodLogRepo.findByDog(dogId, cursor ?? null, effectiveLimit);

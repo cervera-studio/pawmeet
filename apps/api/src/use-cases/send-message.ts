@@ -1,32 +1,16 @@
 import type { ChatMessage } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import { enqueueMessageToxicityCheck } from '../jobs/queue.js';
+import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { sanitizeContent } from '../lib/sanitize.js';
-import type {
-  ChatService,
-  MatchRepository,
-  MessageRepository,
-  NotificationService,
-  UserRepository,
-} from '../ports/index.js';
-import { WS_EVENT } from '../ws/chat.js';
+import type { MatchRepository, MessageRepository } from '../ports/index.js';
 
 type Deps = {
   messageRepo: MessageRepository;
   matchRepo: MatchRepository;
-  chat: ChatService;
-  userRepo: UserRepository;
-  notificationService: NotificationService;
 };
 
-export function createSendMessage({
-  messageRepo,
-  matchRepo,
-  chat,
-  userRepo,
-  notificationService,
-}: Deps) {
+export function createSendMessage({ messageRepo, matchRepo }: Deps) {
   return async (
     userId: string,
     matchId: string,
@@ -39,14 +23,14 @@ export function createSendMessage({
     // Check participation
     const isParticipant = await messageRepo.isMatchParticipant(matchId, userId);
     if (!isParticipant) {
-      return fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversazione non trovata', 404));
+      return fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversation not found', 404));
     }
 
     const sanitizedContent = sanitizeContent(content);
 
     // Validate media URL if provided
     if (mediaUrl && !/^https:\/\//i.test(mediaUrl)) {
-      return fail(new AppError('INVALID_INPUT', 'URL media non valido', 400));
+      return fail(new AppError('INVALID_INPUT', 'Invalid media URL', 400));
     }
 
     // Insert message
@@ -58,43 +42,23 @@ export function createSendMessage({
       replyToId: replyToId ?? null,
     });
 
-    // Emit to WebSocket room
-    chat.sendToRoom(matchId, {
-      type: WS_EVENT.NEW_MESSAGE,
-      payload: { message },
-    });
-
-    // Send push notification to the recipient (if they opted in)
+    // Resolve recipient for side effects
     const recipientId = await messageRepo.getOtherParticipant(matchId, userId);
-    if (recipientId) {
-      const recipient = await userRepo.findById(recipientId);
-      const wantsMessageNotifs = recipient?.notificationPrefs?.messages !== false;
 
-      if (wantsMessageNotifs) {
-        const sender = await userRepo.findById(userId);
-        const senderName = sender?.displayName ?? 'Qualcuno';
-        const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
-
-        notificationService
-          .send({
-            userId: recipientId,
-            title: senderName,
-            body: preview,
-            data: { matchId, type: 'new_message' },
-          })
-          .catch((err) =>
-            logger.error('sendMessage', 'Failed to enqueue message notification', err),
-          );
-      }
-    }
-
-    // Async toxicity check (non-blocking — message is already delivered)
-    enqueueMessageToxicityCheck({
-      messageId: message.id,
-      matchId,
-      senderId: userId,
-      content: sanitizedContent,
-    }).catch((err) => logger.error('sendMessage', 'Failed to enqueue toxicity check', err));
+    // Emit domain event — all side effects (WS broadcast, push, toxicity) are handled by listeners
+    void emit({
+      type: DOMAIN_EVENT.MESSAGE_SENT,
+      payload: {
+        messageId: message.id,
+        matchId,
+        senderId: userId,
+        recipientId,
+        message,
+        content,
+        sanitizedContent,
+      },
+      timestamp: new Date(),
+    });
 
     // Compute analytics metadata
     const match = await matchRepo.findById(matchId);

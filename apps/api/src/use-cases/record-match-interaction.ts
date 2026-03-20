@@ -17,7 +17,7 @@ export function createRecordMatchInteraction({ matchingAiRepo, matchRepo }: Deps
   ): Promise<Result<{ interaction: MatchInteraction }>> => {
     const match = await matchRepo.findById(matchId);
     if (!match) {
-      return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
+      return fail(new AppError('MATCH_NOT_FOUND', 'Match not found', 404));
     }
 
     const interaction = await matchingAiRepo.createMatchInteraction({

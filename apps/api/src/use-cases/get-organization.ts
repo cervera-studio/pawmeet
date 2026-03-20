@@ -9,7 +9,7 @@ export function createGetOrganization({ organizationRepo }: Deps) {
   return async (id: string): Promise<Result<Organization>> => {
     const org = await organizationRepo.findById(id);
     if (!org) {
-      return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
+      return fail(new AppError('ORG_NOT_FOUND', 'Organization not found', 404));
     }
 
     return succeed(org);

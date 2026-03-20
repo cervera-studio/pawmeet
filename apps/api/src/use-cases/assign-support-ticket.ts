@@ -15,7 +15,7 @@ export function createAssignSupportTicket({ supportRepo }: Deps) {
   ): Promise<Result<SupportTicket>> => {
     const ticket = await supportRepo.getTicketById(ticketId);
     if (!ticket) {
-      return fail(new AppError('TICKET_NOT_FOUND', 'Ticket di supporto non trovato', 404));
+      return fail(new AppError('TICKET_NOT_FOUND', 'Support ticket not found', 404));
     }
 
     const updated = await supportRepo.assignTicket(ticketId, assignToAdminId);

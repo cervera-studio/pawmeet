@@ -99,14 +99,14 @@ export function createCreateComment({
 
     const post = await feedRepo.findPostById(postId);
     if (!post || post.isDeleted) {
-      return fail(new AppError('POST_NOT_FOUND', 'Post non trovato', 404));
+      return fail(new AppError('POST_NOT_FOUND', 'Post not found', 404));
     }
 
     let parentComment: PostComment | null = null;
     if (parentId) {
       parentComment = await feedRepo.findCommentById(parentId);
       if (!parentComment || parentComment.isDeleted || parentComment.postId !== postId) {
-        return fail(new AppError('PARENT_COMMENT_NOT_FOUND', 'Commento genitore non trovato', 404));
+        return fail(new AppError('PARENT_COMMENT_NOT_FOUND', 'Parent comment not found', 404));
       }
       // Only allow 1 level of nesting
       if (parentComment.parentId) {

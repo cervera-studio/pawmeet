@@ -15,7 +15,7 @@ export function createUploadDogPhotoUrl({ dogRepo, storage }: Deps) {
   ): Promise<Result<{ uploadUrl: string; key: string }>> => {
     const dog = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!dog) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     const photoCount = await dogRepo.countPhotos(dogId);

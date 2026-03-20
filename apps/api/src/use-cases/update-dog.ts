@@ -14,7 +14,7 @@ export function createUpdateDog({ dogRepo }: Deps) {
   ): Promise<Result<{ dog: DogProfile }>> => {
     const existing = await dogRepo.findByIdAndOwner(dogId, userId);
     if (!existing) {
-      return fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404));
+      return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
     const dog = await dogRepo.update(dogId, input);

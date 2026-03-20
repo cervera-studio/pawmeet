@@ -26,7 +26,7 @@ export function createSubmitFeedback({ feedbackRepo, walkRepo, matchRepo, dogRep
     // Validate walk exists and is completed
     const walk = await walkRepo.findById(input.walkId);
     if (!walk) {
-      return fail(new AppError('WALK_NOT_FOUND', 'Passeggiata non trovata', 404));
+      return fail(new AppError('WALK_NOT_FOUND', 'Walk not found', 404));
     }
 
     if (walk.status !== WALK_STATUS.COMPLETED) {
@@ -38,7 +38,7 @@ export function createSubmitFeedback({ feedbackRepo, walkRepo, matchRepo, dogRep
     // Verify user participated in this walk via match
     const match = await matchRepo.findById(walk.matchId);
     if (!match) {
-      return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
+      return fail(new AppError('MATCH_NOT_FOUND', 'Match not found', 404));
     }
 
     const userDogs = await dogRepo.findByOwner(userId, true);

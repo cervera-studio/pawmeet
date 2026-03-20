@@ -13,13 +13,13 @@ export function createListWalksByMatch({ walkRepo, matchRepo, dogRepo }: Deps) {
     // Verify match exists and user is a participant
     const match = await matchRepo.findById(matchId);
     if (!match?.isActive) {
-      return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
+      return fail(new AppError('MATCH_NOT_FOUND', 'Match not found', 404));
     }
 
     const userDogs = await dogRepo.findByOwner(userId, true);
     const dogIds = new Set(userDogs.map((d) => d.id));
     if (!(dogIds.has(match.dogAId) || dogIds.has(match.dogBId))) {
-      return fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404));
+      return fail(new AppError('MATCH_NOT_FOUND', 'Match not found', 404));
     }
 
     const walks = await walkRepo.findByMatchId(matchId);

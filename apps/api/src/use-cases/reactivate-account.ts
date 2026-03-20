@@ -25,7 +25,7 @@ export function createReactivateAccount(deps: Deps) {
 
     const user = await userRepo.findById(userId);
     if (!user) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     if (user.isActive) {
@@ -33,7 +33,7 @@ export function createReactivateAccount(deps: Deps) {
     }
 
     if (!user.deletionScheduledAt) {
-      return fail(new AppError('CANNOT_REACTIVATE', 'Account non può essere riattivato', 400));
+      return fail(new AppError('CANNOT_REACTIVATE', 'Account cannot be reactivated', 400));
     }
 
     // Check if grace period has expired
@@ -51,7 +51,7 @@ export function createReactivateAccount(deps: Deps) {
           email: user.email,
           metadata: { reason: 'reactivate_wrong_password' },
         });
-        return fail(new AppError('INVALID_PASSWORD', 'Password non valida', 401));
+        return fail(new AppError('INVALID_PASSWORD', 'Invalid password', 401));
       }
     }
 

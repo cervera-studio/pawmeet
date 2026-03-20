@@ -32,7 +32,17 @@ export class DrizzleMessageRepository implements MessageRepository {
 
     // DISTINCT ON to get only the last message per match (instead of fetching ALL messages)
     const lastMessagesRows = await this.db
-      .selectDistinctOn([messages.matchId])
+      .selectDistinctOn([messages.matchId], {
+        id: messages.id,
+        matchId: messages.matchId,
+        senderId: messages.senderId,
+        content: messages.content,
+        mediaUrl: messages.mediaUrl,
+        replyToId: sql<string | null>`${messages}.reply_to_id`.as('reply_to_id'),
+        status: messages.status,
+        isDeleted: messages.isDeleted,
+        createdAt: messages.createdAt,
+      })
       .from(messages)
       .where(and(inArray(messages.matchId, matchIds), eq(messages.isDeleted, false)))
       .orderBy(messages.matchId, desc(messages.createdAt));
@@ -156,7 +166,17 @@ export class DrizzleMessageRepository implements MessageRepository {
 
     // Fetch messages without reply join (aliasedTable + select has Drizzle type issues)
     const rows = await this.db
-      .select()
+      .select({
+        id: messages.id,
+        matchId: messages.matchId,
+        senderId: messages.senderId,
+        content: messages.content,
+        mediaUrl: messages.mediaUrl,
+        replyToId: sql<string | null>`${messages}.reply_to_id`.as('reply_to_id'),
+        status: messages.status,
+        isDeleted: messages.isDeleted,
+        createdAt: messages.createdAt,
+      })
       .from(messages)
       .where(and(...conditions))
       .orderBy(desc(messages.createdAt))
@@ -226,15 +246,22 @@ export class DrizzleMessageRepository implements MessageRepository {
         senderId: input.senderId,
         content: input.content,
         mediaUrl: input.mediaUrl ?? null,
-        replyToId: input.replyToId ?? null,
-      })
+      } as typeof messages.$inferInsert)
       .returning();
 
+    // Set replyToId via raw update (AnyPgColumn self-ref loses type info in Drizzle)
+    if (input.replyToId) {
+      await this.db.execute(
+        sql`UPDATE messages SET reply_to_id = ${input.replyToId} WHERE id = ${rows[0]!.id}`,
+      );
+    }
+
     const row = rows[0]!;
+    const replyToId = input.replyToId ?? null;
 
     // If replying, fetch the replied-to message preview
     let replyTo: ChatMessageReplyPreview | null = null;
-    if (row.replyToId) {
+    if (replyToId) {
       const replyMessages = aliasedTable(messages, 'reply_msg');
       const replyUsers = aliasedTable(users, 'reply_user');
       const [replyRow] = await this.db
@@ -244,12 +271,12 @@ export class DrizzleMessageRepository implements MessageRepository {
         })
         .from(replyMessages)
         .leftJoin(replyUsers, eq(replyMessages.senderId, replyUsers.id))
-        .where(eq(replyMessages.id, row.replyToId))
+        .where(eq(replyMessages.id, replyToId))
         .limit(1);
 
       if (replyRow) {
         replyTo = {
-          id: row.replyToId,
+          id: replyToId,
           content: replyRow.content,
           senderName: replyRow.senderName ?? '',
         };
@@ -262,7 +289,7 @@ export class DrizzleMessageRepository implements MessageRepository {
       senderId: row.senderId,
       content: row.content,
       mediaUrl: row.mediaUrl,
-      replyToId: row.replyToId ?? null,
+      replyToId,
       replyTo,
       status: row.status as ChatMessage['status'],
       isDeleted: row.isDeleted,

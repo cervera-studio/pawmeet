@@ -13,7 +13,7 @@ export function createUpdateNotificationPrefs({ userRepo }: Deps) {
   ): Promise<Result<{ notificationPrefs: NotificationPrefs }>> => {
     const user = await userRepo.findById(userId);
     if (!user) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     // Merge with current prefs (or defaults if user has none yet)

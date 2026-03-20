@@ -1,24 +1,15 @@
 import type { GroupChatMessage } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
-import type { ChatService, NotificationService, UserRepository } from '../ports/index.js';
-import { WS_EVENT } from '../ws/chat.js';
 
 type Deps = {
   groupMessageRepo: GroupMessageRepository;
-  chat: ChatService;
-  userRepo: UserRepository;
-  notificationService: NotificationService;
 };
 
-export function createSendGroupMessage({
-  groupMessageRepo,
-  chat,
-  userRepo,
-  notificationService,
-}: Deps) {
+export function createSendGroupMessage({ groupMessageRepo }: Deps) {
   return async (
     userId: string,
     eventId: string,
@@ -34,7 +25,7 @@ export function createSendGroupMessage({
 
     // Validate media URL if provided
     if (mediaUrl && !/^https:\/\//i.test(mediaUrl)) {
-      return fail(new AppError('INVALID_INPUT', 'URL media non valido', 400));
+      return fail(new AppError('INVALID_INPUT', 'Invalid media URL', 400));
     }
 
     const message = await groupMessageRepo.create({
@@ -44,35 +35,21 @@ export function createSendGroupMessage({
       mediaUrl: mediaUrl ?? null,
     });
 
-    const roomId = `group-${eventId}`;
-    chat.sendToRoom(roomId, {
-      type: WS_EVENT.NEW_MESSAGE,
-      payload: { message },
-    });
-
-    // Notify all other participants
+    // Resolve participants for notification side effects
     const participantIds = await groupMessageRepo.getParticipantUserIds(eventId);
-    const sender = await userRepo.findById(userId);
-    const senderName = sender?.displayName ?? 'Qualcuno';
-    const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
 
-    for (const participantId of participantIds) {
-      if (participantId === userId) continue;
-
-      const recipient = await userRepo.findById(participantId);
-      if (recipient?.notificationPrefs?.messages === false) continue;
-
-      notificationService
-        .send({
-          userId: participantId,
-          title: `${senderName} (gruppo)`,
-          body: preview,
-          data: { eventId, type: 'group_message' },
-        })
-        .catch((err) =>
-          logger.error('sendGroupMessage', 'Failed to enqueue group message notification', err),
-        );
-    }
+    // Emit domain event — WS broadcast and push notifications handled by listeners
+    void emit({
+      type: DOMAIN_EVENT.GROUP_MESSAGE_SENT,
+      payload: {
+        eventId,
+        senderId: userId,
+        message,
+        content,
+        participantIds,
+      },
+      timestamp: new Date(),
+    });
 
     return succeed({ message });
   };

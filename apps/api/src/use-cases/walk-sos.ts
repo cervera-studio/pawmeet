@@ -31,7 +31,7 @@ export function createWalkSos({
   ): Promise<Result<{ message: string }>> => {
     const walk = await walkRepo.findById(walkId);
     if (!walk) {
-      return fail(new AppError('WALK_NOT_FOUND', 'Passeggiata non trovata', 404));
+      return fail(new AppError('WALK_NOT_FOUND', 'Walk not found', 404));
     }
 
     if (walk.status !== 'accepted' && walk.status !== 'pending') {
@@ -40,7 +40,7 @@ export function createWalkSos({
 
     const user = await userRepo.findById(userId);
     if (!user) {
-      return fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404));
+      return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }
 
     // Record the SOS checkin
@@ -87,7 +87,7 @@ export function createWalkCheckin({
   return async (userId: string, walkId: string): Promise<Result<{ message: string }>> => {
     const walk = await walkRepo.findById(walkId);
     if (!walk) {
-      return fail(new AppError('WALK_NOT_FOUND', 'Passeggiata non trovata', 404));
+      return fail(new AppError('WALK_NOT_FOUND', 'Walk not found', 404));
     }
 
     await emergencyContactRepo.createCheckin({

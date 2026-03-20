@@ -30,12 +30,12 @@ export function createAddEventSponsor({
   }): Promise<Result<EventSponsor>> => {
     const event = await groupEventRepo.findById(input.eventId);
     if (!event) {
-      return fail(new AppError('EVENT_NOT_FOUND', 'Evento non trovato', 404));
+      return fail(new AppError('EVENT_NOT_FOUND', 'Event not found', 404));
     }
 
     const org = await organizationRepo.findById(input.organizationId);
     if (!org) {
-      return fail(new AppError('ORG_NOT_FOUND', 'Organizzazione non trovata', 404));
+      return fail(new AppError('ORG_NOT_FOUND', 'Organization not found', 404));
     }
 
     if (!(org.isVerified && org.isActive)) {

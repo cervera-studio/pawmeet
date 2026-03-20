@@ -27,7 +27,7 @@ export function createRefreshTokens(deps: Deps) {
         event: SECURITY_EVENT.TokenRefreshFailed,
         metadata: { reason: 'invalid_jwt' },
       });
-      return fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido', 401));
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid token', 401));
     }
 
     // Check the token hash exists and is not revoked
@@ -40,7 +40,7 @@ export function createRefreshTokens(deps: Deps) {
         userId: payload.sub,
         metadata: { reason: 'token_revoked_or_expired' },
       });
-      return fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido', 401));
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid token', 401));
     }
 
     // Revoke the old refresh token (rotation)

@@ -1,0 +1,58 @@
+import { z } from 'zod';
+import { paginate } from '../../lib/pagination.js';
+import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
+import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
+import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
+import { router } from '../trpc.js';
+import { createAdminProcedure } from './admin-procedure.js';
+
+const listAuditLogSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(20),
+  adminId: z.string().uuid().optional(),
+  resourceType: z.string().optional(),
+  action: z.string().optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  search: z.string().optional(),
+});
+
+interface DashboardRouterDeps {
+  adminDataRepo: AdminDataRepository;
+  auditLogRepo: AuditLogRepository;
+}
+
+export function createAdminDashboardRouter(deps: DashboardRouterDeps) {
+  const adminProcedure = createAdminProcedure();
+  const { adminDataRepo } = deps;
+
+  return router({
+    getStats: adminProcedure.query(async () => {
+      return adminDataRepo.getStats();
+    }),
+
+    getAnalyticsKpis: adminProcedure.query(async () => {
+      const [dauToday, dauTimeSeries, dbMetrics] = await Promise.all([
+        getDauCount(new Date().toISOString().slice(0, 10)),
+        getDauTimeSeries(30),
+        adminDataRepo.getAnalyticsDbMetrics(),
+      ]);
+
+      const todayMap = new Map(dbMetrics.todayMetrics.map((m) => [m.eventName, m.value]));
+
+      return {
+        dauToday,
+        registrationsToday: todayMap.get('auth_registration_completed') ?? 0,
+        matchesToday: todayMap.get('match_created') ?? 0,
+        totalEvents: dbMetrics.totalEvents,
+        eventsLast24h: dbMetrics.eventsLast24h,
+        dauTimeSeries,
+      };
+    }),
+
+    listAuditLog: adminProcedure.input(listAuditLogSchema).query(async ({ input }) => {
+      const result = await adminDataRepo.listAuditLog(input);
+      return paginate(result, input);
+    }),
+  });
+}

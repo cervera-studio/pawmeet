@@ -17,7 +17,7 @@ export function createGetMessages({ messageRepo, chat }: Deps) {
     // Check participation
     const isParticipant = await messageRepo.isMatchParticipant(matchId, userId);
     if (!isParticipant) {
-      return fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversazione non trovata', 404));
+      return fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversation not found', 404));
     }
 
     // Join room for WebSocket events

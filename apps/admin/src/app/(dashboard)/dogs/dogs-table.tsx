@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
+import { ExportButton } from '@/components/export-button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { TIMING } from '@/lib/constants';
@@ -138,7 +139,7 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
 
   return (
     <>
-      {/* Search */}
+      {/* Search + Export */}
       <div className="flex items-center gap-4">
         <Input
           placeholder={t('searchPlaceholder')}
@@ -146,6 +147,7 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
         />
+        <ExportButton data={(data.data as DogRow[]) ?? []} filename="dogs-export" />
       </div>
 
       <DataTable

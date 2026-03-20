@@ -51,6 +51,20 @@ export async function reactivateUser(
   }
 }
 
+export async function requestGdprExport(
+  userId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const api = await getServerTrpcClient();
+    await api.admin.requestGdprExport.mutate({ userId });
+    return { success: true };
+  } catch (error) {
+    logger.error('AdminUsers', 'requestGdprExport failed', error);
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('users.gdprExportError') };
+  }
+}
+
 export async function fetchUser(id: string) {
   const api = await getServerTrpcClient();
   try {

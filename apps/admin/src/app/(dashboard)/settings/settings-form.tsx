@@ -17,7 +17,7 @@ import {
   type ModerationSettingsFormValues,
 } from '@/lib/schemas/settings';
 import type { AppSettings } from '@/repositories';
-import { updateSettings } from './actions';
+import { clearCache, updateSettings } from './actions';
 
 interface SettingsFormProps {
   initialSettings: AppSettings;
@@ -103,8 +103,17 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     setIsSaving(false);
   }
 
-  function handleClearCache() {
-    toast.info(t('notImplemented'));
+  const [isClearing, setIsClearing] = useState(false);
+
+  async function handleClearCache() {
+    setIsClearing(true);
+    const result = await clearCache();
+    if (result.success) {
+      toast.success(t('dangerZone.cacheCleared'));
+    } else {
+      toast.error(result.error ?? t('saveError'));
+    }
+    setIsClearing(false);
   }
 
   return (
@@ -334,8 +343,13 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               <p className="text-sm font-medium text-neutral-900">{t('dangerZone.clearCache')}</p>
               <p className="text-xs text-neutral-500">{t('dangerZone.clearCacheDesc')}</p>
             </div>
-            <Button variant="destructive" size="sm" onClick={handleClearCache}>
-              {t('dangerZone.clearButton')}
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleClearCache}
+              disabled={isClearing}
+            >
+              {isClearing ? tc('saving') : t('dangerZone.clearButton')}
             </Button>
           </div>
         </CardContent>

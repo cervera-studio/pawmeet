@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
+import { ExportButton } from '@/components/export-button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import {
@@ -224,18 +225,21 @@ export function ReportsList({ initialData }: ReportsListProps) {
         <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
-      {/* Status filter tabs */}
-      <div className="flex items-center gap-2">
-        {STATUS_TABS.map((tab) => (
-          <Button
-            key={tab.label}
-            variant={statusFilter === tab.value ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => handleStatusFilterChange(tab.value)}
-          >
-            {tab.label}
-          </Button>
-        ))}
+      {/* Status filter tabs + Export */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {STATUS_TABS.map((tab) => (
+            <Button
+              key={tab.label}
+              variant={statusFilter === tab.value ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleStatusFilterChange(tab.value)}
+            >
+              {tab.label}
+            </Button>
+          ))}
+        </div>
+        <ExportButton data={(data.data as ReportRow[]) ?? []} filename="reports-export" />
       </div>
 
       <DataTable

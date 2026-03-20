@@ -464,6 +464,9 @@ export function buildGamificationRepo(
     breakStreak: vi.fn().mockResolvedValue(undefined),
     listAllChallenges: vi.fn().mockResolvedValue({ data: [], total: 0 }),
     deleteChallenge: vi.fn().mockResolvedValue(undefined),
+    updateChallenge: vi
+      .fn()
+      .mockImplementation((id, data) => Promise.resolve({ id, ...data, createdAt: new Date() })),
     getAggregateFitnessStats: vi.fn().mockResolvedValue({
       totalWalks: 0,
       avgDistanceKm: 0,

@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/table';
 import { formatNumber } from '@/lib/formatters';
 import { LazyAbTestCharts } from './ab-test-charts-lazy';
-import { fetchExperimentMetrics } from './actions';
+import { AbTestFilters } from './ab-test-filters';
+import { fetchExperimentMetrics, fetchFeatureFlags } from './actions';
 
 function fmtPct(v: number | null | undefined): string {
   if (v == null) return '\u2014';
@@ -23,15 +24,49 @@ function computeLift(control: number | null, treatment: number | null): string {
   return `${(((treatment - control) / control) * 100).toFixed(1)}%`;
 }
 
-export default async function AbTestsPage() {
-  const [data, t] = await Promise.all([
-    fetchExperimentMetrics(),
+interface AbTestsPageProps {
+  searchParams: Promise<{
+    experiment?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }>;
+}
+
+export default async function AbTestsPage({ searchParams }: AbTestsPageProps) {
+  const params = await searchParams;
+  const experimentName = params.experiment ?? 'ml_matching_v1';
+  const dateFrom = params.dateFrom ?? '';
+  const dateTo = params.dateTo ?? '';
+
+  const [data, flags, t] = await Promise.all([
+    fetchExperimentMetrics({
+      experimentName,
+      dateFrom: dateFrom ? new Date(dateFrom).toISOString() : undefined,
+      dateTo: dateTo ? new Date(dateTo).toISOString() : undefined,
+    }),
+    fetchFeatureFlags().catch(() => ({ flags: [] })),
     getTranslations('aiMatching.abTests'),
   ]);
+
+  const experimentNames =
+    flags.flags.length > 0 ? flags.flags.map((f) => f.name) : ['ml_matching_v1'];
+
+  // Deduplicate and ensure the current experiment is included
+  const uniqueExperiments = [...new Set([...experimentNames, experimentName])];
 
   const control = data.variants.find((v) => v.variant === 'control');
   const treatment = data.variants.find((v) => v.variant === 'treatment');
   const totalUsers = data.variants.reduce((sum, v) => sum + v.totalUsers, 0);
+
+  // Derive the earliest date from time series data
+  const earliestDate =
+    data.timeSeries.length > 0
+      ? new Date(data.timeSeries[0]!.date).toLocaleDateString('it-IT', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+      : '\u2014';
 
   const controlWalkRate =
     control && control.totalMatches > 0 ? control.totalWalksCompleted / control.totalMatches : null;
@@ -83,13 +118,21 @@ export default async function AbTestsPage() {
         <p className="text-neutral-500">{t('subtitle')}</p>
       </div>
 
+      {/* Filters */}
+      <AbTestFilters
+        experiments={uniqueExperiments}
+        currentExperiment={experimentName}
+        currentDateFrom={dateFrom}
+        currentDateTo={dateTo}
+      />
+
       {/* Experiment status banner */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>ML Matching vs Rule-Based</CardTitle>
-              <CardDescription>{t('startedOn', { date: '2026-03-10' })}</CardDescription>
+              <CardTitle>{experimentName}</CardTitle>
+              <CardDescription>{t('startedOn', { date: earliestDate })}</CardDescription>
             </div>
             <Badge variant="success">{t('statusRunning')}</Badge>
           </div>

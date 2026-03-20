@@ -56,6 +56,17 @@ export interface GamificationRepository {
 
   // Admin challenge management
   listAllChallenges(limit: number, offset: number): Promise<{ data: Challenge[]; total: number }>;
+  updateChallenge(
+    challengeId: string,
+    data: {
+      title?: string;
+      description?: string;
+      targetValue?: number;
+      xpReward?: number;
+      startsAt?: Date;
+      endsAt?: Date;
+    },
+  ): Promise<Challenge>;
   deleteChallenge(challengeId: string): Promise<void>;
 
   // Aggregate fitness stats (admin)

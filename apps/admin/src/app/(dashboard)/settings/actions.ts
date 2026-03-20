@@ -25,3 +25,16 @@ export async function updateSettings(
     return { success: false, error: tt('settings.saveError') };
   }
 }
+
+export async function clearCache(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const api = await getServerTrpcClient();
+    await api.admin.clearCache.mutate();
+    revalidatePath('/settings');
+    return { success: true };
+  } catch (error) {
+    logger.error('AdminSettings', 'clearCache failed', error);
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('settings.saveError') };
+  }
+}

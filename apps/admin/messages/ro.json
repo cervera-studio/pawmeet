@@ -48,6 +48,7 @@
     "moderationStories": "Povesti",
     "moderationPhotos": "Fotografii",
     "moderationContent": "Continut",
+    "moderationChat": "Chat",
     "moderationReports": "Raportari",
     "dogs": "Caini",
     "breeds": "Rase",
@@ -201,7 +202,8 @@
       "subtitle": "Actiuni ireversibile",
       "clearCache": "Goleste cache-ul",
       "clearCacheDesc": "Invalideaza tot cache-ul sistemului",
-      "clearButton": "Goleste"
+      "clearButton": "Goleste",
+      "cacheCleared": "Cache-ul a fost golit cu succes"
     }
   },
   "reports": {
@@ -285,6 +287,27 @@
       "rejectError": "Eroare la respingerea fotografiei",
       "allApproved": "Toate fotografiile aprobate",
       "allApproveError": "Eroare la aprobarea fotografiilor"
+    }
+  },
+  "chatModeration": {
+    "title": "Moderare Chat",
+    "subtitle": "Revizuieste mesajele si conversatiile raportate",
+    "noPending": "Niciun raport de chat in asteptare",
+    "reporter": "Raportator",
+    "reported": "Utilizator raportat",
+    "tabs": {
+      "all": "Toate",
+      "pending": "In asteptare",
+      "resolved": "Rezolvate",
+      "dismissed": "Respinse"
+    },
+    "actions": {
+      "manage": "Gestioneaza",
+      "dismiss": "Respinge",
+      "warn": "Avertizeaza utilizatorul",
+      "suspend": "Suspenda utilizatorul",
+      "completed": "Actiune finalizata",
+      "error": "Eroare la efectuarea actiunii"
     }
   },
   "stories": {

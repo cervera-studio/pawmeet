@@ -48,6 +48,7 @@
     "moderationStories": "Historias",
     "moderationPhotos": "Fotos",
     "moderationContent": "Contenidos",
+    "moderationChat": "Chat",
     "moderationReports": "Reportes",
     "dogs": "Perros",
     "breeds": "Razas",
@@ -201,7 +202,8 @@
       "subtitle": "Acciones irreversibles",
       "clearCache": "Vaciar caché",
       "clearCacheDesc": "Invalidar toda la caché del sistema",
-      "clearButton": "Vaciar"
+      "clearButton": "Vaciar",
+      "cacheCleared": "Caché vaciada con éxito"
     }
   },
   "reports": {
@@ -285,6 +287,27 @@
       "rejectError": "Error al rechazar la foto",
       "allApproved": "Todas las fotos aprobadas",
       "allApproveError": "Error al aprobar las fotos"
+    }
+  },
+  "chatModeration": {
+    "title": "Moderación de Chat",
+    "subtitle": "Revisa mensajes y conversaciones reportadas",
+    "noPending": "No hay reportes de chat pendientes",
+    "reporter": "Reportador",
+    "reported": "Usuario reportado",
+    "tabs": {
+      "all": "Todos",
+      "pending": "Pendientes",
+      "resolved": "Resueltos",
+      "dismissed": "Descartados"
+    },
+    "actions": {
+      "manage": "Gestionar",
+      "dismiss": "Descartar",
+      "warn": "Advertir usuario",
+      "suspend": "Suspender usuario",
+      "completed": "Acción completada",
+      "error": "Error al realizar la acción"
     }
   },
   "stories": {

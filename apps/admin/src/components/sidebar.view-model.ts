@@ -34,6 +34,7 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
         { name: t('moderationStories'), href: '/moderation/stories' },
         { name: t('moderationPhotos'), href: '/moderation/photos' },
         { name: t('moderationContent'), href: '/moderation/content' },
+        { name: t('moderationChat'), href: '/moderation/chat' },
         { name: t('moderationReports'), href: '/moderation/reports' },
       ],
     },

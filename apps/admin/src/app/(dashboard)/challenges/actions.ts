@@ -20,6 +20,19 @@ export async function createChallenge(data: {
   return api.admin.createChallenge.mutate(data);
 }
 
+export async function updateChallenge(data: {
+  challengeId: string;
+  title?: string;
+  description?: string;
+  targetValue?: number;
+  xpReward?: number;
+  startsAt?: string;
+  endsAt?: string;
+}) {
+  const api = await getServerTrpcClient();
+  return api.admin.updateChallenge.mutate(data);
+}
+
 export async function deleteChallenge(data: { challengeId: string }) {
   const api = await getServerTrpcClient();
   return api.admin.deleteChallenge.mutate(data);

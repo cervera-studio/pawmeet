@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -40,8 +41,10 @@ export function Header() {
   const { user, logout } = useAuthContext();
   const t = useTranslations('header');
   const ta = useTranslations('auth');
+  const router = useRouter();
 
   const [profileOpen, setProfileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   useClickOutside(dropdownRef, () => setProfileOpen(false));
 
@@ -49,24 +52,37 @@ export function Header() {
   const userName = user?.name ?? 'Admin';
   const userEmail = user?.email ?? '';
 
+  function handleSearchSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = searchQuery.trim();
+    if (!trimmed) return;
+    router.push(`/users?search=${encodeURIComponent(trimmed)}`);
+    setSearchQuery('');
+  }
+
   return (
     <header className="flex h-16 items-center justify-between border-b border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-950 px-6">
       {/* Search */}
-      <div className="flex-1 max-w-md">
-        <Input type="search" placeholder={t('searchPlaceholder')} className="w-full" />
-      </div>
+      <form onSubmit={handleSearchSubmit} className="flex-1 max-w-md">
+        <Input
+          type="search"
+          placeholder={t('searchPlaceholder')}
+          className="w-full"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </form>
 
       {/* Actions */}
       <div className="flex items-center gap-3">
         <LocaleSwitcher />
 
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon">
           <BellIcon
             className="h-5 w-5 text-neutral-600 dark:text-neutral-300"
             title={t('notifications')}
           />
-          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
         </Button>
 
         {/* Profile dropdown */}

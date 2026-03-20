@@ -270,6 +270,8 @@ export interface AnalyticsEventMap {
 
   // Admin Gamification
   admin_challenge_created: { challengeId: string; type: string };
+  admin_challenge_updated: { challengeId: string };
+  admin_gdpr_export_requested: { targetUserId: string };
 
   // Privacy
   privacy_consent_updated: {

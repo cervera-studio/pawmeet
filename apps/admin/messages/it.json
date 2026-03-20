@@ -48,6 +48,7 @@
     "moderationStories": "Storie",
     "moderationPhotos": "Foto",
     "moderationContent": "Contenuti",
+    "moderationChat": "Chat",
     "moderationReports": "Segnalazioni",
     "dogs": "Cani",
     "breeds": "Razze",
@@ -145,7 +146,17 @@
       "followers": "Follower",
       "following": "Seguiti",
       "viewReports": "Vedi segnalazioni",
-      "viewPhotos": "Vedi foto"
+      "viewPhotos": "Vedi foto",
+      "exportData": "Esporta dati utente",
+      "suspend": "Sospendi",
+      "ban": "Banna",
+      "reactivate": "Riattiva",
+      "gdprExportDialog": {
+        "title": "Esporta dati utente (GDPR)",
+        "description": "Questa azione avvia l'esportazione di tutti i dati dell'utente in conformità al GDPR. L'utente riceverà un'email con il link per il download.",
+        "confirm": "Avvia esportazione",
+        "exporting": "Esportazione in corso..."
+      }
     }
   },
   "dogs": {
@@ -161,9 +172,29 @@
       "addedAt": "Aggiunto il"
     },
     "sizes": {
+      "toy": "Toy",
       "small": "Piccolo",
       "medium": "Medio",
-      "large": "Grande"
+      "large": "Grande",
+      "giant": "Gigante"
+    },
+    "detail": {
+      "basicInfo": "Informazioni",
+      "breed": "Razza",
+      "breedSecondary": "Razza secondaria",
+      "size": "Taglia",
+      "weight": "Peso",
+      "gender": "Sesso",
+      "neutered": "Sterilizzato",
+      "addedAt": "Aggiunto il",
+      "behaviorAndEnergy": "Comportamento ed energia",
+      "energyLevel": "Livello energia",
+      "behaviorWithDogs": "Comportamento con cani",
+      "behaviorWithPeople": "Comportamento con persone",
+      "leashBehavior": "Comportamento al guinzaglio",
+      "owner": "Proprietario",
+      "bio": "Biografia",
+      "photos": "Foto ({count})"
     }
   },
   "settings": {
@@ -201,7 +232,8 @@
       "subtitle": "Azioni irreversibili",
       "clearCache": "Svuota cache",
       "clearCacheDesc": "Invalida tutta la cache del sistema",
-      "clearButton": "Svuota"
+      "clearButton": "Svuota",
+      "cacheCleared": "Cache svuotata con successo"
     }
   },
   "reports": {
@@ -287,6 +319,27 @@
       "allApproveError": "Errore durante l'approvazione"
     }
   },
+  "chatModeration": {
+    "title": "Moderazione Chat",
+    "subtitle": "Rivedi i messaggi e le conversazioni segnalate",
+    "noPending": "Nessuna segnalazione chat in attesa",
+    "reporter": "Segnalante",
+    "reported": "Utente segnalato",
+    "tabs": {
+      "all": "Tutte",
+      "pending": "In attesa",
+      "resolved": "Risolte",
+      "dismissed": "Archiviate"
+    },
+    "actions": {
+      "manage": "Gestisci",
+      "dismiss": "Archivia",
+      "warn": "Avvisa utente",
+      "suspend": "Sospendi utente",
+      "completed": "Azione completata",
+      "error": "Errore durante l'azione"
+    }
+  },
   "stories": {
     "title": "Gestione storie",
     "subtitle": "Visualizza e modera le storie degli utenti",
@@ -358,7 +411,35 @@
       "createdAt": "Creata il"
     },
     "verified": "Verificata",
-    "notVerified": "Non verificata"
+    "notVerified": "Non verificata",
+    "detail": {
+      "verified": "Verificata",
+      "notVerified": "Non verificata",
+      "backToList": "Torna alla lista",
+      "revokeVerification": "Revoca verifica",
+      "revokingVerification": "Revoca in corso...",
+      "verifyOrganization": "Verifica organizzazione",
+      "verifying": "Verifica in corso...",
+      "confirmVerify": "Verificare questa organizzazione?",
+      "confirmRevoke": "Revocare la verifica di questa organizzazione?",
+      "type": "Tipo",
+      "members": "Membri",
+      "createdAt": "Creata il",
+      "verification": "Verifica",
+      "details": "Dettagli",
+      "description": "Descrizione",
+      "contactEmail": "Email contatto",
+      "website": "Sito web",
+      "updatedAt": "Aggiornata il",
+      "membersCount": "Membri ({count})",
+      "noMembers": "Nessun membro",
+      "unknownUser": "Sconosciuto",
+      "roles": {
+        "owner": "Proprietario",
+        "admin": "Admin",
+        "member": "Membro"
+      }
+    }
   },
   "events": {
     "title": "Eventi",
@@ -594,7 +675,10 @@
       "metricWalkCompletion": "Completamento passeggiate",
       "chartMatchRate": "Tasso di match nel tempo",
       "chartAcceptRate": "Tasso di accettazione nel tempo",
-      "chartPlaceholder": "Grafico placeholder — Recharts in arrivo"
+      "chartPlaceholder": "Grafico placeholder — Recharts in arrivo",
+      "experiment": "Esperimento",
+      "dateFrom": "Data inizio",
+      "dateTo": "Data fine"
     },
     "performance": {
       "title": "Performance Modello AI",
@@ -710,7 +794,13 @@
       "upcoming": "In arrivo"
     },
     "actions": {
+      "edit": "Modifica",
       "delete": "Elimina"
+    },
+    "editDialog": {
+      "title": "Modifica Sfida",
+      "description": "Modifica la sfida \"{title}\"",
+      "submit": "Salva modifiche"
     },
     "createDialog": {
       "title": "Crea Sfida",
@@ -783,6 +873,8 @@
       "banError": "Errore durante il ban",
       "reactivated": "Utente riattivato",
       "reactivateError": "Errore durante la riattivazione",
+      "gdprExportSuccess": "Esportazione dati avviata. L'utente riceverà un'email.",
+      "gdprExportError": "Errore durante l'esportazione dei dati",
       "loadError": "Errore nel caricamento degli utenti"
     },
     "admins": {
@@ -806,6 +898,7 @@
     },
     "challenges": {
       "createError": "Errore durante la creazione della sfida",
+      "updateError": "Errore durante l'aggiornamento della sfida",
       "deleteError": "Errore durante l'eliminazione della sfida"
     },
     "deletions": {

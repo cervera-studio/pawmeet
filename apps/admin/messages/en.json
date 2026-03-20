@@ -48,6 +48,7 @@
     "moderationStories": "Stories",
     "moderationPhotos": "Photos",
     "moderationContent": "Content",
+    "moderationChat": "Chat",
     "moderationReports": "Reports",
     "dogs": "Dogs",
     "breeds": "Breeds",
@@ -145,7 +146,17 @@
       "followers": "Followers",
       "following": "Following",
       "viewReports": "View reports",
-      "viewPhotos": "View photos"
+      "viewPhotos": "View photos",
+      "exportData": "Export user data",
+      "suspend": "Suspend",
+      "ban": "Ban",
+      "reactivate": "Reactivate",
+      "gdprExportDialog": {
+        "title": "Export user data (GDPR)",
+        "description": "This action will start exporting all of the user's data in compliance with GDPR. The user will receive an email with the download link.",
+        "confirm": "Start export",
+        "exporting": "Exporting..."
+      }
     }
   },
   "dogs": {
@@ -161,9 +172,29 @@
       "addedAt": "Added on"
     },
     "sizes": {
+      "toy": "Toy",
       "small": "Small",
       "medium": "Medium",
-      "large": "Large"
+      "large": "Large",
+      "giant": "Giant"
+    },
+    "detail": {
+      "basicInfo": "Information",
+      "breed": "Breed",
+      "breedSecondary": "Secondary breed",
+      "size": "Size",
+      "weight": "Weight",
+      "gender": "Gender",
+      "neutered": "Neutered",
+      "addedAt": "Added on",
+      "behaviorAndEnergy": "Behavior & energy",
+      "energyLevel": "Energy level",
+      "behaviorWithDogs": "Behavior with dogs",
+      "behaviorWithPeople": "Behavior with people",
+      "leashBehavior": "Leash behavior",
+      "owner": "Owner",
+      "bio": "Bio",
+      "photos": "Photos ({count})"
     }
   },
   "settings": {
@@ -201,7 +232,8 @@
       "subtitle": "Irreversible actions",
       "clearCache": "Clear cache",
       "clearCacheDesc": "Invalidate all system cache",
-      "clearButton": "Clear"
+      "clearButton": "Clear",
+      "cacheCleared": "Cache cleared successfully"
     }
   },
   "reports": {
@@ -287,6 +319,27 @@
       "allApproveError": "Error approving photos"
     }
   },
+  "chatModeration": {
+    "title": "Chat Moderation",
+    "subtitle": "Review reported chat messages and conversations",
+    "noPending": "No pending chat reports",
+    "reporter": "Reporter",
+    "reported": "Reported user",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed"
+    },
+    "actions": {
+      "manage": "Manage",
+      "dismiss": "Dismiss",
+      "warn": "Warn user",
+      "suspend": "Suspend user",
+      "completed": "Action completed",
+      "error": "Error performing action"
+    }
+  },
   "stories": {
     "title": "Story Management",
     "subtitle": "View and moderate user stories",
@@ -358,7 +411,35 @@
       "createdAt": "Created on"
     },
     "verified": "Verified",
-    "notVerified": "Not verified"
+    "notVerified": "Not verified",
+    "detail": {
+      "verified": "Verified",
+      "notVerified": "Not verified",
+      "backToList": "Back to list",
+      "revokeVerification": "Revoke verification",
+      "revokingVerification": "Revoking...",
+      "verifyOrganization": "Verify organization",
+      "verifying": "Verifying...",
+      "confirmVerify": "Verify this organization?",
+      "confirmRevoke": "Revoke the verification of this organization?",
+      "type": "Type",
+      "members": "Members",
+      "createdAt": "Created on",
+      "verification": "Verification",
+      "details": "Details",
+      "description": "Description",
+      "contactEmail": "Contact email",
+      "website": "Website",
+      "updatedAt": "Updated on",
+      "membersCount": "Members ({count})",
+      "noMembers": "No members",
+      "unknownUser": "Unknown",
+      "roles": {
+        "owner": "Owner",
+        "admin": "Admin",
+        "member": "Member"
+      }
+    }
   },
   "events": {
     "title": "Events",
@@ -594,7 +675,10 @@
       "metricWalkCompletion": "Walk completion",
       "chartMatchRate": "Match rate over time",
       "chartAcceptRate": "Accept rate over time",
-      "chartPlaceholder": "Chart placeholder — Recharts coming soon"
+      "chartPlaceholder": "Chart placeholder — Recharts coming soon",
+      "experiment": "Experiment",
+      "dateFrom": "Start date",
+      "dateTo": "End date"
     },
     "performance": {
       "title": "AI Model Performance",
@@ -710,7 +794,13 @@
       "upcoming": "Upcoming"
     },
     "actions": {
+      "edit": "Edit",
       "delete": "Delete"
+    },
+    "editDialog": {
+      "title": "Edit Challenge",
+      "description": "Edit the challenge \"{title}\"",
+      "submit": "Save changes"
     },
     "createDialog": {
       "title": "Create Challenge",
@@ -783,6 +873,8 @@
       "banError": "Error banning user",
       "reactivated": "User reactivated",
       "reactivateError": "Error reactivating user",
+      "gdprExportSuccess": "Data export started. The user will receive an email.",
+      "gdprExportError": "Error exporting user data",
       "loadError": "Error loading users"
     },
     "admins": {
@@ -806,6 +898,7 @@
     },
     "challenges": {
       "createError": "Error creating challenge",
+      "updateError": "Error updating challenge",
       "deleteError": "Error deleting challenge"
     },
     "deletions": {

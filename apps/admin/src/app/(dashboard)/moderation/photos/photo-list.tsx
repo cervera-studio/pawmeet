@@ -10,6 +10,7 @@ import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { PendingPhoto } from '@/repositories';
 import { approveAllPhotos, approvePhoto, rejectPhoto } from './actions';
+import { PhotoViewer } from './photo-viewer';
 
 interface PhotoListProps {
   initialPhotos: PendingPhoto[];
@@ -18,6 +19,8 @@ interface PhotoListProps {
 export function PhotoList({ initialPhotos }: PhotoListProps) {
   const t = useTranslations('photos');
   const [photos, setPhotos] = useState<PendingPhoto[]>(initialPhotos);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
 
   async function handleApprove(photoId: string) {
     try {
@@ -49,6 +52,11 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
     }
   }
 
+  function openViewer(index: number) {
+    setViewerIndex(index);
+    setViewerOpen(true);
+  }
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -73,14 +81,20 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {photos.map((photo) => (
+          {photos.map((photo, idx) => (
             <Card key={photo.id} className="overflow-hidden">
               {photo.imageUrl ? (
-                <img
-                  src={photo.imageUrl}
-                  alt={t('photoOf', { name: photo.userName ?? '' })}
-                  className="aspect-square w-full object-cover"
-                />
+                <button
+                  type="button"
+                  className="w-full cursor-pointer"
+                  onClick={() => openViewer(idx)}
+                >
+                  <img
+                    src={photo.imageUrl}
+                    alt={t('photoOf', { name: photo.userName ?? '' })}
+                    className="aspect-square w-full object-cover hover:opacity-90 transition-opacity"
+                  />
+                </button>
               ) : (
                 <div className="aspect-square bg-neutral-100 flex items-center justify-center">
                   <span className="text-neutral-300 text-sm">{t('photo')}</span>
@@ -127,6 +141,17 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
           ))}
         </div>
       )}
+
+      <PhotoViewer
+        photos={photos}
+        currentIndex={viewerIndex}
+        open={viewerOpen}
+        onOpenChange={setViewerOpen}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        approveLabel={t('actions.approve')}
+        rejectLabel={t('actions.reject')}
+      />
     </>
   );
 }

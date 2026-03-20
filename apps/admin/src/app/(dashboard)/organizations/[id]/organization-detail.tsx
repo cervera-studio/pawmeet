@@ -11,19 +11,6 @@ import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import { revokeOrganization, verifyOrganization } from '../actions';
 
-const typeLabels: Record<string, string> = {
-  pawmeet_team: 'PawMeet Team',
-  association: 'Associazione',
-  educator: 'Educatore',
-  brand: 'Brand',
-};
-
-const roleLabels: Record<string, string> = {
-  owner: 'Proprietario',
-  admin: 'Admin',
-  member: 'Membro',
-};
-
 interface OrganizationDetailProps {
   organization: {
     id: string;
@@ -53,11 +40,13 @@ interface OrganizationDetailProps {
 
 export function OrganizationDetail({ organization }: OrganizationDetailProps) {
   const router = useRouter();
+  const t = useTranslations('organizations.detail');
+  const tTypes = useTranslations('organizations.types');
   const tt = useTranslations('toast');
   const [isProcessing, setIsProcessing] = useState(false);
 
   async function handleVerify() {
-    if (!confirm('Verificare questa organizzazione?')) return;
+    if (!confirm(t('confirmVerify'))) return;
     setIsProcessing(true);
     try {
       await verifyOrganization(organization.id);
@@ -70,7 +59,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
   }
 
   async function handleRevoke() {
-    if (!confirm('Revocare la verifica di questa organizzazione?')) return;
+    if (!confirm(t('confirmRevoke'))) return;
     setIsProcessing(true);
     try {
       await revokeOrganization(organization.id);
@@ -90,24 +79,24 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-neutral-900">{organization.name}</h1>
             {organization.isVerified ? (
-              <Badge variant="success">Verificata</Badge>
+              <Badge variant="success">{t('verified')}</Badge>
             ) : (
-              <Badge variant="secondary">Non verificata</Badge>
+              <Badge variant="secondary">{t('notVerified')}</Badge>
             )}
           </div>
           <p className="mt-1 font-mono text-sm text-neutral-500">{organization.slug}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => router.push('/organizations')}>
-            Torna alla lista
+            {t('backToList')}
           </Button>
           {organization.isVerified ? (
             <Button variant="destructive" onClick={handleRevoke} disabled={isProcessing}>
-              {isProcessing ? 'Revoca in corso...' : 'Revoca verifica'}
+              {isProcessing ? t('revokingVerification') : t('revokeVerification')}
             </Button>
           ) : (
             <Button onClick={handleVerify} disabled={isProcessing}>
-              {isProcessing ? 'Verifica in corso...' : 'Verifica organizzazione'}
+              {isProcessing ? t('verifying') : t('verifyOrganization')}
             </Button>
           )}
         </div>
@@ -117,16 +106,16 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Tipo</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">{t('type')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant="outline">{typeLabels[organization.type] ?? organization.type}</Badge>
+            <Badge variant="outline">{tTypes(organization.type)}</Badge>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Membri</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">{t('members')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">{organization.members.length}</p>
@@ -135,7 +124,7 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Creata il</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">{t('createdAt')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-medium">{formatDateTime(organization.createdAt)}</p>
@@ -144,13 +133,15 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Verifica</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">
+              {t('verification')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {organization.isVerified && organization.verifiedAt ? (
               <p className="text-sm font-medium">{formatDateTime(organization.verifiedAt)}</p>
             ) : (
-              <p className="text-sm text-neutral-500">Non verificata</p>
+              <p className="text-sm text-neutral-500">{t('notVerified')}</p>
             )}
           </CardContent>
         </Card>
@@ -159,30 +150,30 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       {/* Details */}
       <Card>
         <CardHeader>
-          <CardTitle>Dettagli</CardTitle>
+          <CardTitle>{t('details')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-4 text-sm">
             {organization.description && (
               <div className="col-span-2">
-                <span className="text-neutral-500">Descrizione:</span>
+                <span className="text-neutral-500">{t('description')}:</span>
                 <p className="mt-1 font-medium">{organization.description}</p>
               </div>
             )}
             {organization.contactEmail && (
               <div>
-                <span className="text-neutral-500">Email contatto:</span>{' '}
+                <span className="text-neutral-500">{t('contactEmail')}:</span>{' '}
                 <span className="font-medium">{organization.contactEmail}</span>
               </div>
             )}
             {organization.websiteUrl && (
               <div>
-                <span className="text-neutral-500">Sito web:</span>{' '}
+                <span className="text-neutral-500">{t('website')}:</span>{' '}
                 <span className="font-medium">{organization.websiteUrl}</span>
               </div>
             )}
             <div>
-              <span className="text-neutral-500">Aggiornata il:</span>{' '}
+              <span className="text-neutral-500">{t('updatedAt')}:</span>{' '}
               <span className="font-medium">{formatDateTime(organization.updatedAt)}</span>
             </div>
           </div>
@@ -192,11 +183,11 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
       {/* Members */}
       <Card>
         <CardHeader>
-          <CardTitle>Membri ({organization.members.length})</CardTitle>
+          <CardTitle>{t('membersCount', { count: organization.members.length })}</CardTitle>
         </CardHeader>
         <CardContent>
           {organization.members.length === 0 ? (
-            <p className="text-sm text-neutral-500">Nessun membro</p>
+            <p className="text-sm text-neutral-500">{t('noMembers')}</p>
           ) : (
             <div className="divide-y divide-neutral-100">
               {organization.members.map((member) => (
@@ -206,14 +197,14 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
                       href={`/users/${member.userId}`}
                       className="text-sm font-medium text-primary-600 hover:underline"
                     >
-                      {member.userName ?? 'Sconosciuto'}
+                      {member.userName ?? t('unknownUser')}
                     </a>
                     {member.userEmail && (
                       <p className="text-xs text-neutral-500">{member.userEmail}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">{roleLabels[member.role] ?? member.role}</Badge>
+                    <Badge variant="outline">{t(`roles.${member.role}`)}</Badge>
                     <span className="text-xs text-neutral-500">
                       {formatDateTime(member.createdAt)}
                     </span>

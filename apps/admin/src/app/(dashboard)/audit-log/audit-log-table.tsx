@@ -4,6 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
+import { ExportButton } from '@/components/export-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -202,6 +203,7 @@ export function AuditLogTable({ initialData, pageSize }: AuditLogTableProps) {
             </option>
           ))}
         </select>
+        <ExportButton data={vm.data ?? []} filename="audit-log-export" />
       </div>
 
       <DataTable

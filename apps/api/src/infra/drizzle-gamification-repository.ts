@@ -239,6 +239,34 @@ export class DrizzleGamificationRepository implements GamificationRepository {
     return { data: rowsAs<Challenge>(rows), total: countResult[0]?.count ?? 0 };
   }
 
+  async updateChallenge(
+    challengeId: string,
+    data: {
+      title?: string;
+      description?: string;
+      targetValue?: number;
+      xpReward?: number;
+      startsAt?: Date;
+      endsAt?: Date;
+    },
+  ): Promise<Challenge> {
+    const updates: Record<string, unknown> = {};
+    if (data.title !== undefined) updates.title = data.title;
+    if (data.description !== undefined) updates.description = data.description;
+    if (data.targetValue !== undefined) updates.targetValue = data.targetValue;
+    if (data.xpReward !== undefined) updates.xpReward = data.xpReward;
+    if (data.startsAt !== undefined) updates.startsAt = data.startsAt;
+    if (data.endsAt !== undefined) updates.endsAt = data.endsAt;
+
+    const [row] = await this.db
+      .update(challenges)
+      .set(updates)
+      .where(eq(challenges.id, challengeId))
+      .returning();
+
+    return row as Challenge;
+  }
+
   async deleteChallenge(challengeId: string): Promise<void> {
     await this.db.delete(challenges).where(eq(challenges.id, challengeId));
   }

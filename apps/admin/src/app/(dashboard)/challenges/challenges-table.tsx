@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ChallengeEditDialog } from './challenge-edit-dialog';
 import { CreateChallengeDialog } from './create-challenge-dialog';
 import { DeleteChallengeDialog } from './delete-challenge-dialog';
 import { type Challenge, type ChallengesData, useChallengesViewModel } from './page.view-model';
@@ -50,8 +51,14 @@ export function ChallengesTable({ initialData, pageSize }: ChallengesTableProps)
   const vm = useChallengesViewModel(initialData, pageSize);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+
+  const openEditDialog = useCallback((challenge: Challenge) => {
+    setSelectedChallenge(challenge);
+    setEditDialogOpen(true);
+  }, []);
 
   const openDeleteDialog = useCallback((challenge: Challenge) => {
     setSelectedChallenge(challenge);
@@ -106,13 +113,18 @@ export function ChallengesTable({ initialData, pageSize }: ChallengesTableProps)
         id: 'actions',
         header: t('columns.actions'),
         cell: ({ row }) => (
-          <Button variant="outline" size="sm" onClick={() => openDeleteDialog(row.original)}>
-            {t('actions.delete')}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => openEditDialog(row.original)}>
+              {t('actions.edit')}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => openDeleteDialog(row.original)}>
+              {t('actions.delete')}
+            </Button>
+          </div>
         ),
       },
     ],
-    [t, openDeleteDialog],
+    [t, openEditDialog, openDeleteDialog],
   );
 
   return (
@@ -135,6 +147,16 @@ export function ChallengesTable({ initialData, pageSize }: ChallengesTableProps)
         open={createDialogOpen}
         onClose={() => setCreateDialogOpen(false)}
         onCreated={() => void vm.refetch()}
+      />
+
+      <ChallengeEditDialog
+        challenge={selectedChallenge}
+        open={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedChallenge(null);
+        }}
+        onUpdated={() => void vm.refetch()}
       />
 
       <DeleteChallengeDialog

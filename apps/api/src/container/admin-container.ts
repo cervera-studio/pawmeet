@@ -7,6 +7,7 @@ import {
   adminUserRepo,
   auditLogRepo,
   gamificationRepo,
+  gdprExportRepo,
 } from './services.js';
 
 export const adminDeps = {
@@ -15,6 +16,7 @@ export const adminDeps = {
   adminNotificationService,
   gamificationRepo,
   auditLogRepo,
+  gdprExportRepo,
 };
 
 export const adminAiMatchingDeps = {

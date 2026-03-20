@@ -2,13 +2,18 @@
 
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { handleError } from '@/lib/error-handler';
-import { addSponsorToEvent, fetchEventSponsors, removeSponsorFromEvent } from '../actions';
+import {
+  addSponsorToEvent,
+  fetchEventSponsors,
+  fetchVerifiedOrganizations,
+  removeSponsorFromEvent,
+} from '../actions';
 
 interface EventSponsor {
   id: string;
@@ -19,6 +24,12 @@ interface EventSponsor {
   createdAt: string;
   organizationName: string;
   organizationLogoUrl: string | null;
+}
+
+interface OrgOption {
+  id: string;
+  name: string;
+  type: string;
 }
 
 const tierConfig: Record<
@@ -36,6 +47,133 @@ const placementLabels: Record<string, string> = {
   footer: 'Footer',
   banner: 'Banner',
 };
+
+const orgTypeLabels: Record<string, string> = {
+  pawmeet_team: 'PawMeet Team',
+  association: 'Associazione',
+  educator: 'Educatore',
+  brand: 'Brand',
+};
+
+function OrgPicker({ value, onChange }: { value: string; onChange: (orgId: string) => void }) {
+  const [query, setQuery] = useState('');
+  const [organizations, setOrganizations] = useState<OrgOption[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedName, setSelectedName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      setIsLoading(true);
+      try {
+        const orgs = await fetchVerifiedOrganizations();
+        if (active) {
+          setOrganizations(
+            orgs.map((o: { id: string; name: string; type: string }) => ({
+              id: o.id,
+              name: o.name,
+              type: o.type,
+            })),
+          );
+        }
+      } catch {
+        // Silently fail — user can retry
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const filtered = organizations.filter(
+    (org) =>
+      org.name.toLowerCase().includes(query.toLowerCase()) ||
+      org.type.toLowerCase().includes(query.toLowerCase()),
+  );
+
+  const handleSelect = useCallback(
+    (org: OrgOption) => {
+      onChange(org.id);
+      setSelectedName(org.name);
+      setQuery('');
+      setIsOpen(false);
+    },
+    [onChange],
+  );
+
+  function handleClear() {
+    onChange('');
+    setSelectedName('');
+    setQuery('');
+  }
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function listener(e: MouseEvent) {
+      if (!containerRef.current || containerRef.current.contains(e.target as Node)) return;
+      setIsOpen(false);
+    }
+    document.addEventListener('mousedown', listener);
+    return () => document.removeEventListener('mousedown', listener);
+  }, []);
+
+  if (value && selectedName) {
+    return (
+      <div className="flex items-center gap-2 rounded-md border px-3 py-2">
+        <span className="flex-1 text-sm">{selectedName}</span>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="text-xs text-neutral-500 hover:text-neutral-700"
+        >
+          &times;
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <Input
+        placeholder={isLoading ? 'Caricamento organizzazioni...' : 'Cerca organizzazione...'}
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setIsOpen(true);
+        }}
+        onFocus={() => setIsOpen(true)}
+        disabled={isLoading}
+      />
+      {isOpen && filtered.length > 0 && (
+        <div className="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-md border bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+          {filtered.map((org) => (
+            <button
+              key={org.id}
+              type="button"
+              onClick={() => handleSelect(org)}
+              className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            >
+              <span className="font-medium">{org.name}</span>
+              <span className="text-xs text-neutral-500">
+                {orgTypeLabels[org.type] ?? org.type}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+      {isOpen && !isLoading && query && filtered.length === 0 && (
+        <div className="absolute z-50 mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm text-neutral-500 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+          Nessuna organizzazione trovata
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function SponsorsSection({
   eventId,
@@ -91,11 +229,7 @@ export function SponsorsSection({
 
       {showAddForm && (
         <div className="rounded-md border p-4 space-y-3">
-          <Input
-            placeholder="Organization ID"
-            value={orgId}
-            onChange={(e) => setOrgId(e.target.value)}
-          />
+          <OrgPicker value={orgId} onChange={setOrgId} />
           <div className="flex gap-3">
             <select
               className="rounded-md border px-3 py-2 text-sm"

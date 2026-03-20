@@ -2,7 +2,7 @@ import { CHALLENGE_TYPE, DEFAULT_WEIGHTS } from '@pawmeet/config';
 import { TRPCError } from '@trpc/server';
 import { hash } from 'bcryptjs';
 import { z } from 'zod';
-import { enqueueNotification } from '../../jobs/queue.js';
+import { enqueueGdprExport, enqueueNotification } from '../../jobs/queue.js';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import {
   AdminRole,
@@ -12,18 +12,61 @@ import {
 } from '../../lib/admin-permissions.js';
 import { toAuditChanges } from '../../lib/audit-helpers.js';
 import { paginate } from '../../lib/pagination.js';
+import { redis } from '../../lib/redis.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 import type { AdminNotificationService } from '../../ports/admin-notification-service.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import type { GamificationRepository } from '../../ports/gamification-repository.js';
+import type { GdprExportRepository } from '../../ports/gdpr-export-repository.js';
 import { createAddEventSponsor } from '../../use-cases/admin/add-event-sponsor.js';
 import { createCreateAdminUser } from '../../use-cases/admin/create-admin-user.js';
 import { createResolveContentReport } from '../../use-cases/admin/resolve-content-report.js';
 import { createUpdateAdminRole } from '../../use-cases/admin/update-admin-role.js';
 import { validateMatchWeights } from '../../use-cases/admin/validate-match-weights.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
+
+// ── Settings persistence (Redis) ────────────────────────────────────────────────
+
+const SETTINGS_REDIS_KEY = 'pawmeet:admin:settings';
+
+export interface PersistedSettings {
+  appName: string;
+  supportEmail: string;
+  photoConfidenceThreshold: number;
+  maxReportsBeforeSuspension: number;
+  matchWeightSize: number;
+  matchWeightEnergy: number;
+  matchWeightBehavior: number;
+  matchWeightWalk: number;
+  matchWeightDistance: number;
+  matchWeightLeash: number;
+}
+
+function getDefaultSettings(): PersistedSettings {
+  return {
+    appName: 'PawMeet',
+    supportEmail: 'support@pawmeet.io',
+    photoConfidenceThreshold: 95,
+    maxReportsBeforeSuspension: 5,
+    matchWeightSize: DEFAULT_WEIGHTS.size,
+    matchWeightEnergy: DEFAULT_WEIGHTS.energy,
+    matchWeightBehavior: DEFAULT_WEIGHTS.behavior,
+    matchWeightWalk: DEFAULT_WEIGHTS.walk,
+    matchWeightDistance: DEFAULT_WEIGHTS.distance,
+    matchWeightLeash: DEFAULT_WEIGHTS.leash,
+  };
+}
+
+async function loadSettings(): Promise<PersistedSettings> {
+  const stored = await redis.get<PersistedSettings>(SETTINGS_REDIS_KEY);
+  return stored ?? getDefaultSettings();
+}
+
+async function saveSettings(settings: PersistedSettings): Promise<void> {
+  await redis.set(SETTINGS_REDIS_KEY, settings);
+}
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 
@@ -232,13 +275,20 @@ interface AdminRouterDeps {
   adminNotificationService: AdminNotificationService;
   auditLogRepo: AuditLogRepository;
   gamificationRepo?: GamificationRepository;
+  gdprExportRepo?: GdprExportRepository;
 }
 
 // ── Router ─────────────────────────────────────────────────────────────────────
 
 export function createAdminRouter(deps: AdminRouterDeps) {
   const adminProcedure = createAdminProcedure();
-  const { adminDataRepo, adminNotificationService, auditLogRepo, gamificationRepo } = deps;
+  const {
+    adminDataRepo,
+    adminNotificationService,
+    auditLogRepo,
+    gamificationRepo,
+    gdprExportRepo,
+  } = deps;
 
   // ── Use cases ───────────────────────────────────────────────────────────────
   const resolveContentReport = createResolveContentReport({ adminDataRepo });
@@ -874,6 +924,55 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         return { success: true };
       }),
 
+    // ── GDPR export (admin-triggered) ────────────────────────────────────────
+    requestGdprExport: adminProcedure
+      .input(z.object({ userId: z.string().uuid() }))
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        if (!gdprExportRepo) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'GDPR export repository not configured',
+          });
+        }
+
+        const userData = await adminDataRepo.getUser(input.userId);
+        if (!userData) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+        }
+
+        const pending = await gdprExportRepo.findPendingExport(input.userId);
+        if (pending) {
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: 'An export is already in progress for this user',
+          });
+        }
+
+        const exportRecord = await gdprExportRepo.createExport(input.userId);
+
+        await enqueueGdprExport({
+          userId: input.userId,
+          email: userData.user.email ?? '',
+          displayName: userData.user.displayName ?? '',
+          exportId: exportRecord.id,
+        });
+
+        void logAdminAction(auditLogRepo, {
+          adminId: ctx.userId,
+          action: 'user.gdpr_export',
+          resourceType: RESOURCE_TYPE.user,
+          resourceId: input.userId,
+        });
+
+        trackEvent('admin_gdpr_export_requested', ctx.userId, {
+          targetUserId: input.userId,
+        });
+
+        return { success: true };
+      }),
+
     // ── Photo moderation ─────────────────────────────────────────────────────
     listPendingPhotos: adminProcedure.query(async () => {
       const rows = await adminDataRepo.listPendingPhotos();
@@ -1048,26 +1147,33 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         );
       }),
 
-    // ── Settings (MVP: in-memory defaults, no DB persistence) ────────────────
+    // ── Settings (persisted to Redis) ───────────────────────────────────────
     getSettings: adminProcedure.query(async () => {
-      return {
-        appName: 'PawMeet',
-        supportEmail: 'support@pawmeet.io',
-        photoConfidenceThreshold: 95,
-        maxReportsBeforeSuspension: 5,
-        matchWeightSize: DEFAULT_WEIGHTS.size,
-        matchWeightEnergy: DEFAULT_WEIGHTS.energy,
-        matchWeightBehavior: DEFAULT_WEIGHTS.behavior,
-        matchWeightWalk: DEFAULT_WEIGHTS.walk,
-        matchWeightDistance: DEFAULT_WEIGHTS.distance,
-        matchWeightLeash: DEFAULT_WEIGHTS.leash,
-      };
+      return loadSettings();
     }),
 
     updateSettings: adminProcedure.input(updateSettingsSchema).mutation(async ({ ctx, input }) => {
       requireRole(ctx.adminRole, AdminRole.SuperAdmin);
 
       const weights = unwrapResult(validateMatchWeights(input));
+
+      const current = await loadSettings();
+      const updated: PersistedSettings = {
+        appName: input.appName ?? current.appName,
+        supportEmail: input.supportEmail ?? current.supportEmail,
+        photoConfidenceThreshold:
+          input.photoConfidenceThreshold ?? current.photoConfidenceThreshold,
+        maxReportsBeforeSuspension:
+          input.maxReportsBeforeSuspension ?? current.maxReportsBeforeSuspension,
+        matchWeightSize: weights.size,
+        matchWeightEnergy: weights.energy,
+        matchWeightBehavior: weights.behavior,
+        matchWeightWalk: weights.walk,
+        matchWeightDistance: weights.distance,
+        matchWeightLeash: weights.leash,
+      };
+
+      await saveSettings(updated);
 
       void logAdminAction(auditLogRepo, {
         adminId: ctx.userId,
@@ -1080,18 +1186,29 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         changedFields: Object.keys(input),
       });
 
-      return {
-        appName: input.appName ?? 'PawMeet',
-        supportEmail: input.supportEmail ?? 'support@pawmeet.io',
-        photoConfidenceThreshold: input.photoConfidenceThreshold ?? 95,
-        maxReportsBeforeSuspension: input.maxReportsBeforeSuspension ?? 5,
-        matchWeightSize: weights.size,
-        matchWeightEnergy: weights.energy,
-        matchWeightBehavior: weights.behavior,
-        matchWeightWalk: weights.walk,
-        matchWeightDistance: weights.distance,
-        matchWeightLeash: weights.leash,
-      };
+      return updated;
+    }),
+
+    clearCache: adminProcedure.mutation(async ({ ctx }) => {
+      requireRole(ctx.adminRole, AdminRole.SuperAdmin);
+
+      // Clear all application cache keys (pattern-based) while preserving settings
+      const patterns = ['pawmeet:cache:*', 'pawmeet:rate-limit:*', 'pawmeet:dau:*', 'pawmeet:ml:*'];
+
+      for (const pattern of patterns) {
+        const keys = await redis.keys(pattern);
+        if (keys.length > 0) {
+          await redis.del(...keys);
+        }
+      }
+
+      void logAdminAction(auditLogRepo, {
+        adminId: ctx.userId,
+        action: 'settings.clear_cache',
+        resourceType: RESOURCE_TYPE.settings,
+      });
+
+      return { success: true };
     }),
 
     // ── Admin user management ─────────────────────────────────────────────────
@@ -1529,6 +1646,69 @@ export function createAdminRouter(deps: AdminRouterDeps) {
         trackEvent('admin_challenge_created', ctx.userId, {
           challengeId: challenge.id,
           type: input.type,
+        });
+
+        return challenge;
+      }),
+
+    updateChallenge: adminProcedure
+      .input(
+        z.object({
+          challengeId: z.string().uuid(),
+          title: z.string().min(1).max(200).optional(),
+          description: z.string().min(1).max(1000).optional(),
+          targetValue: z.number().int().positive().optional(),
+          xpReward: z.number().int().positive().optional(),
+          startsAt: z.string().datetime().optional(),
+          endsAt: z.string().datetime().optional(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        if (!gamificationRepo) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Gamification repository not configured',
+          });
+        }
+
+        const { challengeId, ...data } = input;
+
+        const updateData: {
+          title?: string;
+          description?: string;
+          targetValue?: number;
+          xpReward?: number;
+          startsAt?: Date;
+          endsAt?: Date;
+        } = {};
+        if (data.title !== undefined) updateData.title = data.title;
+        if (data.description !== undefined) updateData.description = data.description;
+        if (data.targetValue !== undefined) updateData.targetValue = data.targetValue;
+        if (data.xpReward !== undefined) updateData.xpReward = data.xpReward;
+        if (data.startsAt !== undefined) updateData.startsAt = new Date(data.startsAt);
+        if (data.endsAt !== undefined) updateData.endsAt = new Date(data.endsAt);
+
+        if (updateData.startsAt && updateData.endsAt && updateData.startsAt >= updateData.endsAt) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Start date must be before end date',
+          });
+        }
+
+        const challenge = await gamificationRepo.updateChallenge(challengeId, updateData);
+
+        void logAdminAction(auditLogRepo, {
+          adminId: ctx.userId,
+          action: 'challenge.update',
+          resourceType: RESOURCE_TYPE.challenge,
+          resourceId: challengeId,
+          changes: { after: data },
+        });
+
+        trackEvent('admin_challenge_updated', ctx.userId, {
+          challengeId,
         });
 
         return challenge;

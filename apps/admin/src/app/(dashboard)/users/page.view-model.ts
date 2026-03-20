@@ -12,10 +12,13 @@ function getOrderDirection(isDesc: boolean): 'desc' | 'asc' {
   return isDesc ? 'desc' : 'asc';
 }
 
-export function useUsersViewModel(initialData: PaginatedResult<AdminUserListItem>) {
+export function useUsersViewModel(
+  initialData: PaginatedResult<AdminUserListItem>,
+  initialSearch?: string,
+) {
   const tt = useTranslations('toast');
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState(initialSearch ?? '');
   const [result, setResult] = useState<PaginatedResult<AdminUserListItem>>(initialData);
   const [isLoading, setIsLoading] = useState(false);
 

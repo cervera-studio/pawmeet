@@ -4,9 +4,14 @@ import { UsersTable } from './users-table';
 
 const DEFAULT_PAGE_SIZE = 20;
 
-export default async function UsersPage() {
+export default async function UsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>;
+}) {
+  const { search } = await searchParams;
   const [initialData, t] = await Promise.all([
-    fetchUsers({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    fetchUsers({ page: 1, pageSize: DEFAULT_PAGE_SIZE, search: search || undefined }),
     getTranslations('users'),
   ]);
 
@@ -19,7 +24,7 @@ export default async function UsersPage() {
         </div>
       </div>
 
-      <UsersTable initialData={initialData} />
+      <UsersTable initialData={initialData} initialSearch={search} />
     </div>
   );
 }

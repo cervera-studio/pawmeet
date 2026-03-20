@@ -5,6 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
+import { ExportButton } from '@/components/export-button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Input } from '@/components/ui/input';
 import { formatDate } from '@/lib/formatters';
@@ -13,12 +14,13 @@ import { useUsersViewModel } from './page.view-model';
 
 interface UsersTableProps {
   initialData: PaginatedResult<AdminUserListItem>;
+  initialSearch?: string;
 }
 
-export function UsersTable({ initialData }: UsersTableProps) {
+export function UsersTable({ initialData, initialSearch }: UsersTableProps) {
   const t = useTranslations('users');
   const tc = useTranslations('common');
-  const vm = useUsersViewModel(initialData);
+  const vm = useUsersViewModel(initialData, initialSearch);
 
   const columns: ColumnDef<AdminUserListItem>[] = useMemo(
     () => [
@@ -72,7 +74,7 @@ export function UsersTable({ initialData }: UsersTableProps) {
 
   return (
     <>
-      {/* Search */}
+      {/* Search + Export */}
       <div className="flex items-center gap-4">
         <Input
           placeholder={t('searchPlaceholder')}
@@ -80,6 +82,7 @@ export function UsersTable({ initialData }: UsersTableProps) {
           value={vm.globalFilter}
           onChange={(e) => vm.setGlobalFilter(e.target.value)}
         />
+        <ExportButton data={vm.data} filename="users-export" />
       </div>
 
       {/* Table */}

@@ -54,7 +54,7 @@ const validCreateInput = {
   name: 'Rex',
   birthDate: '2022-01-01',
   breed: 'Labrador',
-  size: 'grande' as const,
+  size: 'large' as const,
   weightKg: 30,
   gender: 'male' as const,
   isNeutered: true,

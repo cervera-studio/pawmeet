@@ -43,7 +43,7 @@ function buildNearbyUser(overrides: Partial<NearbyUser> = {}): NearbyUser {
         name: 'Bella',
         breed: 'Beagle',
         size: 'media',
-        energyLevel: 'alta',
+        energyLevel: 'high',
         avatarUrl: null,
       },
     ],

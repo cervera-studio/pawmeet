@@ -5,7 +5,7 @@ import { createAnalyzeDogPhoto } from './analyze-dog-photo.js';
 const mockResult = {
   breed: 'Labrador Retriever',
   breedSecondary: undefined,
-  size: 'grande' as const,
+  size: 'large' as const,
   ageEstimate: '2-4 anni',
   confidence: 0.92,
 };
@@ -25,7 +25,7 @@ describe('analyzeDogPhoto', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.analysis.breed).toBe('Labrador Retriever');
-      expect(result.data.analysis.size).toBe('grande');
+      expect(result.data.analysis.size).toBe('large');
       expect(result.data.analysis.confidence).toBe(0.92);
     }
   });

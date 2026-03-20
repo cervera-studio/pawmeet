@@ -5,7 +5,7 @@ import { createGetDogHealthGoal } from './get-dog-health-goal.js';
 
 describe('createGetDogHealthGoal', () => {
   it('returns health goal with progress for a large dog', async () => {
-    const dog = buildDog({ id: 'dog-1', ownerId: 'user-1', size: 'grande' });
+    const dog = buildDog({ id: 'dog-1', ownerId: 'user-1', size: 'large' });
     const dogRepo = buildDogRepo({
       findById: vi.fn().mockResolvedValue(dog),
     });

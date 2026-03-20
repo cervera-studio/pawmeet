@@ -2,7 +2,7 @@
 
 import { getServerTrpcClient } from '@/lib/server-api';
 
-type SizeCategory = 'toy' | 'piccola' | 'media' | 'grande' | 'gigante';
+type SizeCategory = 'toy' | 'small' | 'medium' | 'large' | 'giant';
 
 export async function fetchBreeds(params: {
   page: number;

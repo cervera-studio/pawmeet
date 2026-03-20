@@ -3,7 +3,7 @@ export const breedsData = [
   {
     code: 'australian_shepherd',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 5,
     playfulness: 4,
@@ -19,7 +19,7 @@ export const breedsData = [
   {
     code: 'australian_cattle_dog',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: 5,
     playfulness: 3,
@@ -35,7 +35,7 @@ export const breedsData = [
   {
     code: 'bearded_collie',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 22,
     energy: 4,
     playfulness: 4,
@@ -51,7 +51,7 @@ export const breedsData = [
   {
     code: 'belgian_malinois',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 4,
     playfulness: 3,
@@ -67,7 +67,7 @@ export const breedsData = [
   {
     code: 'belgian_tervuren',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: 4,
     playfulness: 3,
@@ -83,7 +83,7 @@ export const breedsData = [
   {
     code: 'belgian_groenendael',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: null,
     playfulness: null,
@@ -99,7 +99,7 @@ export const breedsData = [
   {
     code: 'bergamasco_shepherd',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 32,
     energy: null,
     playfulness: null,
@@ -115,7 +115,7 @@ export const breedsData = [
   {
     code: 'border_collie',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 18,
     energy: 5,
     playfulness: 5,
@@ -131,7 +131,7 @@ export const breedsData = [
   {
     code: 'bouvier_des_flandres',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 36,
     energy: 4,
     playfulness: 3,
@@ -147,7 +147,7 @@ export const breedsData = [
   {
     code: 'briard',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 35,
     energy: 3,
     playfulness: 3,
@@ -163,7 +163,7 @@ export const breedsData = [
   {
     code: 'collie_rough',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: 4,
     playfulness: 4,
@@ -179,7 +179,7 @@ export const breedsData = [
   {
     code: 'collie_smooth',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 4,
     playfulness: 4,
@@ -195,7 +195,7 @@ export const breedsData = [
   {
     code: 'german_shepherd',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 34,
     energy: 5,
     playfulness: 4,
@@ -211,7 +211,7 @@ export const breedsData = [
   {
     code: 'maremma_sheepdog',
     group: 'Sheepdogs',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 40,
     energy: null,
     playfulness: null,
@@ -227,7 +227,7 @@ export const breedsData = [
   {
     code: 'old_english_sheepdog',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 3,
     playfulness: 4,
@@ -243,7 +243,7 @@ export const breedsData = [
   {
     code: 'shetland_sheepdog',
     group: 'Sheepdogs',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 9,
     energy: 4,
     playfulness: 5,
@@ -259,7 +259,7 @@ export const breedsData = [
   {
     code: 'welsh_corgi_pembroke',
     group: 'Sheepdogs',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 12,
     energy: null,
     playfulness: null,
@@ -275,7 +275,7 @@ export const breedsData = [
   {
     code: 'welsh_corgi_cardigan',
     group: 'Sheepdogs',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 14,
     energy: null,
     playfulness: null,
@@ -291,7 +291,7 @@ export const breedsData = [
   {
     code: 'white_swiss_shepherd',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 32,
     energy: null,
     playfulness: null,
@@ -307,7 +307,7 @@ export const breedsData = [
   {
     code: 'boxer',
     group: 'Molossoid',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 4,
     playfulness: 4,
@@ -323,7 +323,7 @@ export const breedsData = [
   {
     code: 'bullmastiff',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 55,
     energy: 4,
     playfulness: 3,
@@ -339,7 +339,7 @@ export const breedsData = [
   {
     code: 'cane_corso',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 45,
     energy: 4,
     playfulness: 3,
@@ -355,7 +355,7 @@ export const breedsData = [
   {
     code: 'dobermann',
     group: 'Molossoid',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 38,
     energy: null,
     playfulness: null,
@@ -371,7 +371,7 @@ export const breedsData = [
   {
     code: 'dogo_argentino',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 42,
     energy: 5,
     playfulness: 4,
@@ -387,7 +387,7 @@ export const breedsData = [
   {
     code: 'dogue_de_bordeaux',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 50,
     energy: 3,
     playfulness: 3,
@@ -403,7 +403,7 @@ export const breedsData = [
   {
     code: 'english_mastiff',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 72,
     energy: null,
     playfulness: null,
@@ -419,7 +419,7 @@ export const breedsData = [
   {
     code: 'giant_schnauzer',
     group: 'Molossoid',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 35,
     energy: 5,
     playfulness: 4,
@@ -435,7 +435,7 @@ export const breedsData = [
   {
     code: 'great_dane',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 60,
     energy: 4,
     playfulness: 4,
@@ -451,7 +451,7 @@ export const breedsData = [
   {
     code: 'greater_swiss_mountain_dog',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 50,
     energy: 4,
     playfulness: 4,
@@ -467,7 +467,7 @@ export const breedsData = [
   {
     code: 'leonberger',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 55,
     energy: 3,
     playfulness: 3,
@@ -499,7 +499,7 @@ export const breedsData = [
   {
     code: 'miniature_schnauzer',
     group: 'Molossoid',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 6,
     energy: 3,
     playfulness: 4,
@@ -515,7 +515,7 @@ export const breedsData = [
   {
     code: 'neapolitan_mastiff',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 60,
     energy: 2,
     playfulness: 2,
@@ -531,7 +531,7 @@ export const breedsData = [
   {
     code: 'newfoundland',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 55,
     energy: 3,
     playfulness: 3,
@@ -547,7 +547,7 @@ export const breedsData = [
   {
     code: 'pinscher',
     group: 'Molossoid',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 14,
     energy: 3,
     playfulness: 3,
@@ -563,7 +563,7 @@ export const breedsData = [
   {
     code: 'rottweiler',
     group: 'Molossoid',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 45,
     energy: 3,
     playfulness: 4,
@@ -579,7 +579,7 @@ export const breedsData = [
   {
     code: 'saint_bernard',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 70,
     energy: 3,
     playfulness: 3,
@@ -595,7 +595,7 @@ export const breedsData = [
   {
     code: 'schnauzer',
     group: 'Molossoid',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 16,
     energy: 5,
     playfulness: 4,
@@ -611,7 +611,7 @@ export const breedsData = [
   {
     code: 'shar_pei',
     group: 'Molossoid',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 22,
     energy: null,
     playfulness: null,
@@ -627,7 +627,7 @@ export const breedsData = [
   {
     code: 'tibetan_mastiff',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 55,
     energy: 3,
     playfulness: 3,
@@ -643,7 +643,7 @@ export const breedsData = [
   {
     code: 'bernese_mountain_dog',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 42,
     energy: 4,
     playfulness: 4,
@@ -659,7 +659,7 @@ export const breedsData = [
   {
     code: 'airedale_terrier',
     group: 'Terriers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 3,
     playfulness: 3,
@@ -675,7 +675,7 @@ export const breedsData = [
   {
     code: 'american_staffordshire_terrier',
     group: 'Terriers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 3,
     playfulness: 3,
@@ -691,7 +691,7 @@ export const breedsData = [
   {
     code: 'border_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 6,
     energy: 3,
     playfulness: 4,
@@ -707,7 +707,7 @@ export const breedsData = [
   {
     code: 'bull_terrier',
     group: 'Terriers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 25,
     energy: 4,
     playfulness: 4,
@@ -723,7 +723,7 @@ export const breedsData = [
   {
     code: 'bull_terrier_miniature',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 12,
     energy: 4,
     playfulness: 4,
@@ -739,7 +739,7 @@ export const breedsData = [
   {
     code: 'cairn_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 6,
     energy: 3,
     playfulness: 4,
@@ -755,7 +755,7 @@ export const breedsData = [
   {
     code: 'fox_terrier_smooth',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 8,
     energy: 4,
     playfulness: 4,
@@ -771,7 +771,7 @@ export const breedsData = [
   {
     code: 'fox_terrier_wire',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 8,
     energy: 4,
     playfulness: 4,
@@ -787,7 +787,7 @@ export const breedsData = [
   {
     code: 'irish_terrier',
     group: 'Terriers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: 3,
     playfulness: 3,
@@ -803,7 +803,7 @@ export const breedsData = [
   {
     code: 'jack_russell_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 6,
     energy: null,
     playfulness: null,
@@ -819,7 +819,7 @@ export const breedsData = [
   {
     code: 'kerry_blue_terrier',
     group: 'Terriers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 16,
     energy: 4,
     playfulness: 3,
@@ -835,7 +835,7 @@ export const breedsData = [
   {
     code: 'norwich_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 4,
     playfulness: 4,
@@ -851,7 +851,7 @@ export const breedsData = [
   {
     code: 'norfolk_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 4,
     playfulness: 4,
@@ -867,7 +867,7 @@ export const breedsData = [
   {
     code: 'parson_russell_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 7,
     energy: 5,
     playfulness: 4,
@@ -883,7 +883,7 @@ export const breedsData = [
   {
     code: 'scottish_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 9,
     energy: 3,
     playfulness: 4,
@@ -899,7 +899,7 @@ export const breedsData = [
   {
     code: 'soft_coated_wheaten_terrier',
     group: 'Terriers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 16,
     energy: 4,
     playfulness: 3,
@@ -915,7 +915,7 @@ export const breedsData = [
   {
     code: 'staffordshire_bull_terrier',
     group: 'Terriers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 14,
     energy: 4,
     playfulness: 4,
@@ -931,7 +931,7 @@ export const breedsData = [
   {
     code: 'west_highland_white_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 7,
     energy: 4,
     playfulness: 5,
@@ -963,7 +963,7 @@ export const breedsData = [
   {
     code: 'dachshund_standard',
     group: 'Dachshunds',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 9,
     energy: 3,
     playfulness: 4,
@@ -979,7 +979,7 @@ export const breedsData = [
   {
     code: 'dachshund_miniature',
     group: 'Dachshunds',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 3,
     playfulness: 4,
@@ -1011,7 +1011,7 @@ export const breedsData = [
   {
     code: 'akita_inu',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 38,
     energy: null,
     playfulness: null,
@@ -1027,7 +1027,7 @@ export const breedsData = [
   {
     code: 'alaskan_malamute',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 36,
     energy: 4,
     playfulness: 3,
@@ -1043,7 +1043,7 @@ export const breedsData = [
   {
     code: 'american_akita',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 45,
     energy: null,
     playfulness: null,
@@ -1059,7 +1059,7 @@ export const breedsData = [
   {
     code: 'basenji',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 10,
     energy: 4,
     playfulness: 3,
@@ -1075,7 +1075,7 @@ export const breedsData = [
   {
     code: 'chow_chow',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: 3,
     playfulness: 3,
@@ -1091,7 +1091,7 @@ export const breedsData = [
   {
     code: 'eurasier',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 3,
     playfulness: 3,
@@ -1107,7 +1107,7 @@ export const breedsData = [
   {
     code: 'finnish_lapphund',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 19,
     energy: 3,
     playfulness: 3,
@@ -1123,7 +1123,7 @@ export const breedsData = [
   {
     code: 'finnish_spitz',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: 5,
     playfulness: 3,
@@ -1139,7 +1139,7 @@ export const breedsData = [
   {
     code: 'german_spitz_gro_spitz',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 15,
     energy: 3,
     playfulness: 4,
@@ -1155,7 +1155,7 @@ export const breedsData = [
   {
     code: 'german_spitz_klein',
     group: 'Spitz',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 3,
     playfulness: 4,
@@ -1171,7 +1171,7 @@ export const breedsData = [
   {
     code: 'german_spitz_mittel',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 10,
     energy: 3,
     playfulness: 4,
@@ -1187,7 +1187,7 @@ export const breedsData = [
   {
     code: 'italian_volpino',
     group: 'Spitz',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 4,
     energy: null,
     playfulness: null,
@@ -1203,7 +1203,7 @@ export const breedsData = [
   {
     code: 'japanese_spitz',
     group: 'Spitz',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 8,
     energy: 3,
     playfulness: 4,
@@ -1219,7 +1219,7 @@ export const breedsData = [
   {
     code: 'keeshond',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 18,
     energy: 4,
     playfulness: 5,
@@ -1235,7 +1235,7 @@ export const breedsData = [
   {
     code: 'korean_jindo',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: null,
     playfulness: null,
@@ -1251,7 +1251,7 @@ export const breedsData = [
   {
     code: 'norwegian_elkhound',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 22,
     energy: 4,
     playfulness: 4,
@@ -1283,7 +1283,7 @@ export const breedsData = [
   {
     code: 'samoyed',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 24,
     energy: 4,
     playfulness: 5,
@@ -1299,7 +1299,7 @@ export const breedsData = [
   {
     code: 'shiba_inu',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 10,
     energy: 3,
     playfulness: 3,
@@ -1315,7 +1315,7 @@ export const breedsData = [
   {
     code: 'siberian_husky',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 22,
     energy: 5,
     playfulness: 5,
@@ -1331,7 +1331,7 @@ export const breedsData = [
   {
     code: 'basset_hound',
     group: 'Scent Hounds',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 25,
     energy: 2,
     playfulness: 3,
@@ -1347,7 +1347,7 @@ export const breedsData = [
   {
     code: 'beagle',
     group: 'Scent Hounds',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 11,
     energy: 4,
     playfulness: 4,
@@ -1363,7 +1363,7 @@ export const breedsData = [
   {
     code: 'bloodhound',
     group: 'Scent Hounds',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 46,
     energy: 3,
     playfulness: 3,
@@ -1379,7 +1379,7 @@ export const breedsData = [
   {
     code: 'cirneco_dell_etna',
     group: 'Scent Hounds',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 10,
     energy: null,
     playfulness: null,
@@ -1395,7 +1395,7 @@ export const breedsData = [
   {
     code: 'dalmatian',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: 4,
     playfulness: 4,
@@ -1411,7 +1411,7 @@ export const breedsData = [
   {
     code: 'foxhound_english',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 4,
     playfulness: 3,
@@ -1427,7 +1427,7 @@ export const breedsData = [
   {
     code: 'italian_hound_pelo_raso',
     group: 'Scent Hounds',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: null,
     playfulness: null,
@@ -1443,7 +1443,7 @@ export const breedsData = [
   {
     code: 'italian_hound_pelo_forte',
     group: 'Scent Hounds',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 22,
     energy: null,
     playfulness: null,
@@ -1459,7 +1459,7 @@ export const breedsData = [
   {
     code: 'petit_basset_griffon_vend_en',
     group: 'Scent Hounds',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 15,
     energy: null,
     playfulness: null,
@@ -1475,7 +1475,7 @@ export const breedsData = [
   {
     code: 'rhodesian_ridgeback',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 36,
     energy: 3,
     playfulness: 3,
@@ -1491,7 +1491,7 @@ export const breedsData = [
   {
     code: 'bracco_italiano',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 32,
     energy: 4,
     playfulness: 3,
@@ -1507,7 +1507,7 @@ export const breedsData = [
   {
     code: 'brittany_spaniel',
     group: 'Pointing Dogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 17,
     energy: null,
     playfulness: null,
@@ -1523,7 +1523,7 @@ export const breedsData = [
   {
     code: 'english_pointer',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: null,
     playfulness: null,
@@ -1539,7 +1539,7 @@ export const breedsData = [
   {
     code: 'english_setter',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: 3,
     playfulness: 4,
@@ -1555,7 +1555,7 @@ export const breedsData = [
   {
     code: 'german_shorthaired_pointer',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 5,
     playfulness: 4,
@@ -1571,7 +1571,7 @@ export const breedsData = [
   {
     code: 'german_wirehaired_pointer',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 5,
     playfulness: 4,
@@ -1587,7 +1587,7 @@ export const breedsData = [
   {
     code: 'gordon_setter',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 5,
     playfulness: 3,
@@ -1603,7 +1603,7 @@ export const breedsData = [
   {
     code: 'hungarian_vizsla',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 24,
     energy: null,
     playfulness: null,
@@ -1619,7 +1619,7 @@ export const breedsData = [
   {
     code: 'irish_red_setter',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: null,
     playfulness: null,
@@ -1635,7 +1635,7 @@ export const breedsData = [
   {
     code: 'italian_spinone',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 34,
     energy: null,
     playfulness: null,
@@ -1651,7 +1651,7 @@ export const breedsData = [
   {
     code: 'weimaraner',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 32,
     energy: 5,
     playfulness: 5,
@@ -1667,7 +1667,7 @@ export const breedsData = [
   {
     code: 'american_cocker_spaniel',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: null,
     playfulness: null,
@@ -1683,7 +1683,7 @@ export const breedsData = [
   {
     code: 'chesapeake_bay_retriever',
     group: 'Retrievers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 4,
     playfulness: 3,
@@ -1699,7 +1699,7 @@ export const breedsData = [
   {
     code: 'clumber_spaniel',
     group: 'Retrievers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 3,
     playfulness: 3,
@@ -1715,7 +1715,7 @@ export const breedsData = [
   {
     code: 'cocker_spaniel_english',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 13,
     energy: 4,
     playfulness: 3,
@@ -1731,7 +1731,7 @@ export const breedsData = [
   {
     code: 'english_springer_spaniel',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 22,
     energy: 4,
     playfulness: 4,
@@ -1747,7 +1747,7 @@ export const breedsData = [
   {
     code: 'flat_coated_retriever',
     group: 'Retrievers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 5,
     playfulness: 5,
@@ -1763,7 +1763,7 @@ export const breedsData = [
   {
     code: 'golden_retriever',
     group: 'Retrievers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 3,
     playfulness: 4,
@@ -1779,7 +1779,7 @@ export const breedsData = [
   {
     code: 'irish_water_spaniel',
     group: 'Retrievers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 3,
     playfulness: 5,
@@ -1795,7 +1795,7 @@ export const breedsData = [
   {
     code: 'labrador_retriever',
     group: 'Retrievers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 5,
     playfulness: 5,
@@ -1811,7 +1811,7 @@ export const breedsData = [
   {
     code: 'lagotto_romagnolo',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 14,
     energy: 4,
     playfulness: 4,
@@ -1827,7 +1827,7 @@ export const breedsData = [
   {
     code: 'nova_scotia_duck_tolling_retriever',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: 5,
     playfulness: 5,
@@ -1843,7 +1843,7 @@ export const breedsData = [
   {
     code: 'portuguese_water_dog',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 22,
     energy: 5,
     playfulness: 5,
@@ -1859,7 +1859,7 @@ export const breedsData = [
   {
     code: 'spanish_water_dog',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: 4,
     playfulness: 4,
@@ -1875,7 +1875,7 @@ export const breedsData = [
   {
     code: 'welsh_springer_spaniel',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 18,
     energy: 4,
     playfulness: 3,
@@ -1891,7 +1891,7 @@ export const breedsData = [
   {
     code: 'bichon_fris',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 4,
     playfulness: 4,
@@ -1907,7 +1907,7 @@ export const breedsData = [
   {
     code: 'bolognese',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 4,
     energy: 4,
     playfulness: 4,
@@ -1923,7 +1923,7 @@ export const breedsData = [
   {
     code: 'boston_terrier',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 8,
     energy: 4,
     playfulness: 5,
@@ -1955,7 +1955,7 @@ export const breedsData = [
   {
     code: 'cavalier_king_charles_spaniel',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 7,
     energy: 3,
     playfulness: 3,
@@ -2003,7 +2003,7 @@ export const breedsData = [
   {
     code: 'coton_de_tul_ar',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 3,
     playfulness: 4,
@@ -2019,7 +2019,7 @@ export const breedsData = [
   {
     code: 'french_bulldog',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 11,
     energy: 3,
     playfulness: 5,
@@ -2035,7 +2035,7 @@ export const breedsData = [
   {
     code: 'english_bulldog',
     group: 'Companion',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 23,
     energy: null,
     playfulness: null,
@@ -2051,7 +2051,7 @@ export const breedsData = [
   {
     code: 'havanese',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 3,
     playfulness: 5,
@@ -2067,7 +2067,7 @@ export const breedsData = [
   {
     code: 'italian_greyhound',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 4,
     energy: 3,
     playfulness: 4,
@@ -2099,7 +2099,7 @@ export const breedsData = [
   {
     code: 'king_charles_spaniel',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 3,
     playfulness: 3,
@@ -2115,7 +2115,7 @@ export const breedsData = [
   {
     code: 'lhasa_apso',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 7,
     energy: 3,
     playfulness: 3,
@@ -2131,7 +2131,7 @@ export const breedsData = [
   {
     code: 'l_wchen',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: null,
     playfulness: null,
@@ -2179,7 +2179,7 @@ export const breedsData = [
   {
     code: 'pekingese',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 3,
     playfulness: 4,
@@ -2211,7 +2211,7 @@ export const breedsData = [
   {
     code: 'poodle_miniature',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 4,
     playfulness: 5,
@@ -2227,7 +2227,7 @@ export const breedsData = [
   {
     code: 'poodle_medium',
     group: 'Companion',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: 4,
     playfulness: 5,
@@ -2243,7 +2243,7 @@ export const breedsData = [
   {
     code: 'poodle_standard',
     group: 'Companion',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 4,
     playfulness: 5,
@@ -2259,7 +2259,7 @@ export const breedsData = [
   {
     code: 'pug',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 7,
     energy: 3,
     playfulness: 5,
@@ -2275,7 +2275,7 @@ export const breedsData = [
   {
     code: 'shih_tzu',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 6,
     energy: 3,
     playfulness: 3,
@@ -2291,7 +2291,7 @@ export const breedsData = [
   {
     code: 'tibetan_spaniel',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 6,
     energy: 3,
     playfulness: 4,
@@ -2307,7 +2307,7 @@ export const breedsData = [
   {
     code: 'tibetan_terrier',
     group: 'Companion',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 11,
     energy: 4,
     playfulness: 3,
@@ -2323,7 +2323,7 @@ export const breedsData = [
   {
     code: 'afghan_hound',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 26,
     energy: 4,
     playfulness: 3,
@@ -2339,7 +2339,7 @@ export const breedsData = [
   {
     code: 'azawakh',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 22,
     energy: 3,
     playfulness: 3,
@@ -2355,7 +2355,7 @@ export const breedsData = [
   {
     code: 'borzoi',
     group: 'Sighthounds',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 38,
     energy: 4,
     playfulness: 3,
@@ -2371,7 +2371,7 @@ export const breedsData = [
   {
     code: 'deerhound',
     group: 'Sighthounds',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 40,
     energy: 3,
     playfulness: 3,
@@ -2387,7 +2387,7 @@ export const breedsData = [
   {
     code: 'galgo_espa_ol',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: null,
     playfulness: null,
@@ -2403,7 +2403,7 @@ export const breedsData = [
   {
     code: 'greyhound',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 4,
     playfulness: 3,
@@ -2419,7 +2419,7 @@ export const breedsData = [
   {
     code: 'irish_wolfhound',
     group: 'Sighthounds',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 55,
     energy: 3,
     playfulness: 3,
@@ -2435,7 +2435,7 @@ export const breedsData = [
   {
     code: 'saluki',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 22,
     energy: 4,
     playfulness: 3,
@@ -2451,7 +2451,7 @@ export const breedsData = [
   {
     code: 'whippet',
     group: 'Sighthounds',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: 4,
     playfulness: 4,
@@ -2467,7 +2467,7 @@ export const breedsData = [
   {
     code: 'australian_kelpie',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 18,
     energy: 5,
     playfulness: 3,
@@ -2483,7 +2483,7 @@ export const breedsData = [
   {
     code: 'appenzeller_sennenhund',
     group: 'Molossoid',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 3,
     playfulness: 3,
@@ -2499,7 +2499,7 @@ export const breedsData = [
   {
     code: 'entlebucher_mountain_dog',
     group: 'Molossoid',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 23,
     energy: 5,
     playfulness: 3,
@@ -2515,7 +2515,7 @@ export const breedsData = [
   {
     code: 'portuguese_podengo_small',
     group: 'Spitz',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 5,
     energy: 4,
     playfulness: 4,
@@ -2531,7 +2531,7 @@ export const breedsData = [
   {
     code: 'portuguese_podengo_medium',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 16,
     energy: 4,
     playfulness: 4,
@@ -2547,7 +2547,7 @@ export const breedsData = [
   {
     code: 'portuguese_podengo_large',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 4,
     playfulness: 4,
@@ -2563,7 +2563,7 @@ export const breedsData = [
   {
     code: 'canaan_dog',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: 3,
     playfulness: 3,
@@ -2579,7 +2579,7 @@ export const breedsData = [
   {
     code: 'pharaoh_hound',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 22,
     energy: 4,
     playfulness: 3,
@@ -2595,7 +2595,7 @@ export const breedsData = [
   {
     code: 'peruvian_hairless_dog',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: null,
     playfulness: null,
@@ -2611,7 +2611,7 @@ export const breedsData = [
   {
     code: 'thai_ridgeback',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 4,
     playfulness: 4,
@@ -2627,7 +2627,7 @@ export const breedsData = [
   {
     code: 'american_pit_bull_terrier',
     group: 'Terriers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: null,
     playfulness: null,
@@ -2643,7 +2643,7 @@ export const breedsData = [
   {
     code: 'bedlington_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 9,
     energy: 4,
     playfulness: 3,
@@ -2659,7 +2659,7 @@ export const breedsData = [
   {
     code: 'cesky_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 8,
     energy: 3,
     playfulness: 3,
@@ -2675,7 +2675,7 @@ export const breedsData = [
   {
     code: 'dandie_dinmont_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 9,
     energy: 3,
     playfulness: 3,
@@ -2691,7 +2691,7 @@ export const breedsData = [
   {
     code: 'glen_of_imaal_terrier',
     group: 'Terriers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 16,
     energy: 3,
     playfulness: 3,
@@ -2707,7 +2707,7 @@ export const breedsData = [
   {
     code: 'lakeland_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 8,
     energy: 3,
     playfulness: 4,
@@ -2723,7 +2723,7 @@ export const breedsData = [
   {
     code: 'manchester_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 7,
     energy: 4,
     playfulness: 4,
@@ -2739,7 +2739,7 @@ export const breedsData = [
   {
     code: 'russian_black_terrier',
     group: 'Terriers',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 45,
     energy: null,
     playfulness: null,
@@ -2755,7 +2755,7 @@ export const breedsData = [
   {
     code: 'sealyham_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 9,
     energy: 3,
     playfulness: 3,
@@ -2771,7 +2771,7 @@ export const breedsData = [
   {
     code: 'skye_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 11,
     energy: 3,
     playfulness: 3,
@@ -2787,7 +2787,7 @@ export const breedsData = [
   {
     code: 'welsh_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 9,
     energy: 4,
     playfulness: 4,
@@ -2803,7 +2803,7 @@ export const breedsData = [
   {
     code: 'greenland_dog',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: null,
     playfulness: null,
@@ -2819,7 +2819,7 @@ export const breedsData = [
   {
     code: 'icelandic_sheepdog',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: 4,
     playfulness: 3,
@@ -2835,7 +2835,7 @@ export const breedsData = [
   {
     code: 'karelian_bear_dog',
     group: 'Spitz',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 23,
     energy: 3,
     playfulness: 3,
@@ -2851,7 +2851,7 @@ export const breedsData = [
   {
     code: 'norrbottenspets',
     group: 'Spitz',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 10,
     energy: 4,
     playfulness: 3,
@@ -2867,7 +2867,7 @@ export const breedsData = [
   {
     code: 'norwegian_buhund',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 14,
     energy: 4,
     playfulness: 3,
@@ -2883,7 +2883,7 @@ export const breedsData = [
   {
     code: 'norwegian_lundehund',
     group: 'Spitz',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 7,
     energy: 3,
     playfulness: 3,
@@ -2899,7 +2899,7 @@ export const breedsData = [
   {
     code: 'swedish_lapphund',
     group: 'Spitz',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 19,
     energy: 4,
     playfulness: 4,
@@ -2915,7 +2915,7 @@ export const breedsData = [
   {
     code: 'swedish_vallhund',
     group: 'Spitz',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 12,
     energy: 4,
     playfulness: 4,
@@ -2931,7 +2931,7 @@ export const breedsData = [
   {
     code: 'american_foxhound',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 4,
     playfulness: 3,
@@ -2947,7 +2947,7 @@ export const breedsData = [
   {
     code: 'bavarian_mountain_hound',
     group: 'Scent Hounds',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 22,
     energy: null,
     playfulness: null,
@@ -2963,7 +2963,7 @@ export const breedsData = [
   {
     code: 'black_and_tan_coonhound',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: 3,
     playfulness: 3,
@@ -2979,7 +2979,7 @@ export const breedsData = [
   {
     code: 'grand_basset_griffon_vend_en',
     group: 'Scent Hounds',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: null,
     playfulness: null,
@@ -2995,7 +2995,7 @@ export const breedsData = [
   {
     code: 'harrier',
     group: 'Scent Hounds',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 22,
     energy: 4,
     playfulness: 4,
@@ -3011,7 +3011,7 @@ export const breedsData = [
   {
     code: 'otterhound',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 40,
     energy: 3,
     playfulness: 3,
@@ -3027,7 +3027,7 @@ export const breedsData = [
   {
     code: 'plott_hound',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: null,
     playfulness: null,
@@ -3043,7 +3043,7 @@ export const breedsData = [
   {
     code: 'redbone_coonhound',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 3,
     playfulness: 3,
@@ -3059,7 +3059,7 @@ export const breedsData = [
   {
     code: 'treeing_walker_coonhound',
     group: 'Scent Hounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: 5,
     playfulness: 4,
@@ -3075,7 +3075,7 @@ export const breedsData = [
   {
     code: 'deutsch_langhaar',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: null,
     playfulness: null,
@@ -3091,7 +3091,7 @@ export const breedsData = [
   {
     code: 'irish_red_and_white_setter',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: 5,
     playfulness: 3,
@@ -3107,7 +3107,7 @@ export const breedsData = [
   {
     code: 'munsterlander_large',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 4,
     playfulness: 3,
@@ -3123,7 +3123,7 @@ export const breedsData = [
   {
     code: 'munsterlander_small',
     group: 'Pointing Dogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: 4,
     playfulness: 3,
@@ -3139,7 +3139,7 @@ export const breedsData = [
   {
     code: 'picardy_spaniel',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 22,
     energy: null,
     playfulness: null,
@@ -3155,7 +3155,7 @@ export const breedsData = [
   {
     code: 'pudelpointer',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 4,
     playfulness: 3,
@@ -3171,7 +3171,7 @@ export const breedsData = [
   {
     code: 'wirehaired_pointing_griffon',
     group: 'Pointing Dogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 5,
     playfulness: 4,
@@ -3187,7 +3187,7 @@ export const breedsData = [
   {
     code: 'boykin_spaniel',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 16,
     energy: 4,
     playfulness: 4,
@@ -3203,7 +3203,7 @@ export const breedsData = [
   {
     code: 'curly_coated_retriever',
     group: 'Retrievers',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 33,
     energy: 4,
     playfulness: 4,
@@ -3219,7 +3219,7 @@ export const breedsData = [
   {
     code: 'field_spaniel',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: 3,
     playfulness: 3,
@@ -3235,7 +3235,7 @@ export const breedsData = [
   {
     code: 'sussex_spaniel',
     group: 'Retrievers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 20,
     energy: 3,
     playfulness: 4,
@@ -3315,7 +3315,7 @@ export const breedsData = [
   {
     code: 'kromfohrl_nder',
     group: 'Companion',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: 4,
     playfulness: 4,
@@ -3347,7 +3347,7 @@ export const breedsData = [
   {
     code: 'chart_polski',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 30,
     energy: null,
     playfulness: null,
@@ -3363,7 +3363,7 @@ export const breedsData = [
   {
     code: 'hungarian_greyhound',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 27,
     energy: null,
     playfulness: null,
@@ -3379,7 +3379,7 @@ export const breedsData = [
   {
     code: 'ibizan_hound',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 22,
     energy: 5,
     playfulness: 4,
@@ -3395,7 +3395,7 @@ export const breedsData = [
   {
     code: 'sloughi',
     group: 'Sighthounds',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 25,
     energy: 4,
     playfulness: 3,
@@ -3411,7 +3411,7 @@ export const breedsData = [
   {
     code: 'australian_stumpy_tail_cattle_dog',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 18,
     energy: 5,
     playfulness: 3,
@@ -3427,7 +3427,7 @@ export const breedsData = [
   {
     code: 'catalan_sheepdog',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 20,
     energy: null,
     playfulness: null,
@@ -3443,7 +3443,7 @@ export const breedsData = [
   {
     code: 'croatian_sheepdog',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 16,
     energy: 3,
     playfulness: 3,
@@ -3459,7 +3459,7 @@ export const breedsData = [
   {
     code: 'dutch_shepherd',
     group: 'Sheepdogs',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 28,
     energy: 5,
     playfulness: 4,
@@ -3475,7 +3475,7 @@ export const breedsData = [
   {
     code: 'komondor',
     group: 'Sheepdogs',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 50,
     energy: 3,
     playfulness: 3,
@@ -3491,7 +3491,7 @@ export const breedsData = [
   {
     code: 'kuvasz',
     group: 'Sheepdogs',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 45,
     energy: 3,
     playfulness: 3,
@@ -3507,7 +3507,7 @@ export const breedsData = [
   {
     code: 'mudi',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: 5,
     playfulness: 5,
@@ -3523,7 +3523,7 @@ export const breedsData = [
   {
     code: 'polish_lowland_sheepdog',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 18,
     energy: 3,
     playfulness: 4,
@@ -3539,7 +3539,7 @@ export const breedsData = [
   {
     code: 'puli',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 13,
     energy: 3,
     playfulness: 3,
@@ -3555,7 +3555,7 @@ export const breedsData = [
   {
     code: 'pumi',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 12,
     energy: 5,
     playfulness: 4,
@@ -3571,7 +3571,7 @@ export const breedsData = [
   {
     code: 'pyrenean_mountain_dog',
     group: 'Sheepdogs',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 50,
     energy: null,
     playfulness: null,
@@ -3587,7 +3587,7 @@ export const breedsData = [
   {
     code: 'schapendoes',
     group: 'Sheepdogs',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 15,
     energy: 4,
     playfulness: 4,
@@ -3603,7 +3603,7 @@ export const breedsData = [
   {
     code: 'south_russian_ovcharka',
     group: 'Sheepdogs',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 48,
     energy: null,
     playfulness: null,
@@ -3619,7 +3619,7 @@ export const breedsData = [
   {
     code: 'tatra_shepherd_dog',
     group: 'Sheepdogs',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 45,
     energy: null,
     playfulness: null,
@@ -3635,7 +3635,7 @@ export const breedsData = [
   {
     code: 'boerboel',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 65,
     energy: 3,
     playfulness: 3,
@@ -3651,7 +3651,7 @@ export const breedsData = [
   {
     code: 'broholmer',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 55,
     energy: 2,
     playfulness: 3,
@@ -3667,7 +3667,7 @@ export const breedsData = [
   {
     code: 'fila_brasileiro',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 50,
     energy: null,
     playfulness: null,
@@ -3683,7 +3683,7 @@ export const breedsData = [
   {
     code: 'hovawart',
     group: 'Molossoid',
-    sizeCategory: 'grande',
+    sizeCategory: 'large',
     avgWeightKg: 35,
     energy: 3,
     playfulness: 4,
@@ -3699,7 +3699,7 @@ export const breedsData = [
   {
     code: 'landseer',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 60,
     energy: null,
     playfulness: null,
@@ -3715,7 +3715,7 @@ export const breedsData = [
   {
     code: 'perro_de_presa_canario',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 50,
     energy: 2,
     playfulness: 1,
@@ -3731,7 +3731,7 @@ export const breedsData = [
   {
     code: 'tosa_inu',
     group: 'Molossoid',
-    sizeCategory: 'gigante',
+    sizeCategory: 'giant',
     avgWeightKg: 55,
     energy: null,
     playfulness: null,
@@ -3747,7 +3747,7 @@ export const breedsData = [
   {
     code: 'australian_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 6,
     energy: 4,
     playfulness: 4,
@@ -3763,7 +3763,7 @@ export const breedsData = [
   {
     code: 'irish_soft_coated_wheaten_terrier',
     group: 'Terriers',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 17,
     energy: null,
     playfulness: null,
@@ -3779,7 +3779,7 @@ export const breedsData = [
   {
     code: 'japanese_terrier',
     group: 'Terriers',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 4,
     energy: 3,
     playfulness: null,
@@ -3795,7 +3795,7 @@ export const breedsData = [
   {
     code: 'xoloitzcuintli_standard',
     group: 'Companion',
-    sizeCategory: 'media',
+    sizeCategory: 'medium',
     avgWeightKg: 14,
     energy: 4,
     playfulness: 4,
@@ -3811,7 +3811,7 @@ export const breedsData = [
   {
     code: 'xoloitzcuintli_miniature',
     group: 'Companion',
-    sizeCategory: 'piccola',
+    sizeCategory: 'small',
     avgWeightKg: 7,
     energy: 4,
     playfulness: 4,

@@ -49,13 +49,13 @@ describe('discoverCandidates', () => {
         id: 'dog-3',
         ownerId: 'user-3',
         size: 'toy',
-        energyLevel: 'bassa',
-        behaviorWithDogs: 'reattivo',
-        leashBehavior: 'difficile',
-        walkPrefTime: ['sera_tardi'],
+        energyLevel: 'low',
+        behaviorWithDogs: 'reactive',
+        leashBehavior: 'difficult',
+        walkPrefTime: ['late_evening'],
         walkPrefDurationMin: 10,
         walkPrefDurationMax: 15,
-        walkPrefTerrain: ['spiaggia'],
+        walkPrefTerrain: ['beach'],
       }),
     });
 
@@ -186,7 +186,7 @@ describe('discoverCandidates', () => {
     const myDog = buildDog();
     const user = buildUser();
     const lowEnergy = buildCandidate({
-      dog: buildDog({ id: 'dog-low', ownerId: 'user-2', energyLevel: 'bassa', name: 'Lazy' }),
+      dog: buildDog({ id: 'dog-low', ownerId: 'user-2', energyLevel: 'low', name: 'Lazy' }),
     });
     const highEnergy = buildCandidate({
       dog: buildDog({ id: 'dog-high', ownerId: 'user-3', energyLevel: 'alta', name: 'Zoom' }),
@@ -216,10 +216,10 @@ describe('discoverCandidates', () => {
     const myDog = buildDog();
     const user = buildUser();
     const male = buildCandidate({
-      dog: buildDog({ id: 'dog-m', ownerId: 'user-2', gender: 'maschio', name: 'Max' }),
+      dog: buildDog({ id: 'dog-m', ownerId: 'user-2', gender: 'male', name: 'Max' }),
     });
     const female = buildCandidate({
-      dog: buildDog({ id: 'dog-f', ownerId: 'user-3', gender: 'femmina', name: 'Luna' }),
+      dog: buildDog({ id: 'dog-f', ownerId: 'user-3', gender: 'female', name: 'Luna' }),
     });
 
     const dogRepo = buildDogRepo({ findByIdAndOwner: vi.fn().mockResolvedValue(myDog) });
@@ -234,12 +234,12 @@ describe('discoverCandidates', () => {
       userRepo,
       followRepo: buildFollowRepo(),
     });
-    const filters: DiscoveryFilters = { gender: ['femmina'] };
+    const filters: DiscoveryFilters = { gender: ['female'] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.suggestions.every((s) => s.dog.gender === 'femmina')).toBe(true);
+    expect(result.data.suggestions.every((s) => s.dog.gender === 'female')).toBe(true);
     expect(result.data.suggestions.some((s) => s.dog.id === 'dog-m')).toBe(false);
   });
 
@@ -259,8 +259,8 @@ describe('discoverCandidates', () => {
       dog: buildDog({
         id: 'dog-size',
         ownerId: 'user-3',
-        size: 'grande',
-        energyLevel: 'bassa',
+        size: 'large',
+        energyLevel: 'low',
         name: 'BigSlow',
       }),
     });

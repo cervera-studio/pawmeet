@@ -8,53 +8,53 @@ import {
 
 describe('calculateSizeScore', () => {
   it('returns 1.0 for same size', () => {
-    expect(calculateSizeScore('media', 'media')).toBe(1.0);
+    expect(calculateSizeScore('medium', 'medium')).toBe(1.0);
     expect(calculateSizeScore('toy', 'toy')).toBe(1.0);
-    expect(calculateSizeScore('gigante', 'gigante')).toBe(1.0);
+    expect(calculateSizeScore('giant', 'giant')).toBe(1.0);
   });
 
   it('returns symmetric scores', () => {
-    expect(calculateSizeScore('piccola', 'grande')).toBe(calculateSizeScore('grande', 'piccola'));
+    expect(calculateSizeScore('small', 'large')).toBe(calculateSizeScore('large', 'small'));
   });
 
   it('returns 0.0 for extreme mismatch', () => {
-    expect(calculateSizeScore('toy', 'gigante')).toBe(0.0);
+    expect(calculateSizeScore('toy', 'giant')).toBe(0.0);
   });
 
   it('returns higher score for closer sizes', () => {
-    expect(calculateSizeScore('media', 'grande')).toBeGreaterThan(
-      calculateSizeScore('media', 'gigante'),
+    expect(calculateSizeScore('medium', 'large')).toBeGreaterThan(
+      calculateSizeScore('medium', 'giant'),
     );
   });
 });
 
 describe('calculateEnergyScore', () => {
   it('returns 1.0 for same energy level', () => {
-    expect(calculateEnergyScore('alta', 'alta')).toBe(1.0);
+    expect(calculateEnergyScore('high', 'high')).toBe(1.0);
   });
 
   it('returns 0.0 for extreme mismatch', () => {
-    expect(calculateEnergyScore('bassa', 'molto_alta')).toBe(0.0);
+    expect(calculateEnergyScore('low', 'very_high')).toBe(0.0);
   });
 
   it('returns higher score for closer levels', () => {
-    expect(calculateEnergyScore('media', 'alta')).toBeGreaterThan(
-      calculateEnergyScore('media', 'molto_alta'),
+    expect(calculateEnergyScore('medium', 'high')).toBeGreaterThan(
+      calculateEnergyScore('medium', 'very_high'),
     );
   });
 });
 
 describe('calculateBehaviorScore', () => {
   it('returns 1.0 for same behavior', () => {
-    expect(calculateBehaviorScore('molto_socievole', 'molto_socievole')).toBe(1.0);
+    expect(calculateBehaviorScore('very_friendly', 'very_friendly')).toBe(1.0);
   });
 
   it('returns 0.0 for two reactive dogs', () => {
-    expect(calculateBehaviorScore('reattivo', 'reattivo')).toBe(0.0);
+    expect(calculateBehaviorScore('reactive', 'reactive')).toBe(0.0);
   });
 
   it('penalizes reactive with social', () => {
-    expect(calculateBehaviorScore('molto_socievole', 'reattivo')).toBeLessThanOrEqual(0.2);
+    expect(calculateBehaviorScore('very_friendly', 'reactive')).toBeLessThanOrEqual(0.2);
   });
 });
 

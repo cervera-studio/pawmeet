@@ -4,7 +4,7 @@
 export interface DogPhotoAnalysisResult {
   breed: string;
   breedSecondary?: string;
-  size: 'toy' | 'piccola' | 'media' | 'grande' | 'gigante';
+  size: 'toy' | 'small' | 'medium' | 'large' | 'giant';
   ageEstimate?: string;
   confidence: number;
 }

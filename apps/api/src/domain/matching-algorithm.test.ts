@@ -17,14 +17,14 @@ describe('MatchingAlgorithm', () => {
 
   it('returns perfect score for identical dogs at zero distance', () => {
     const dog = buildDog({
-      size: 'grande',
-      energyLevel: 'alta',
-      behaviorWithDogs: 'socievole',
-      leashBehavior: 'buono',
-      walkPrefTime: ['mattina'],
+      size: 'large',
+      energyLevel: 'high',
+      behaviorWithDogs: 'friendly',
+      leashBehavior: 'good',
+      walkPrefTime: ['morning'],
       walkPrefDurationMin: 30,
       walkPrefDurationMax: 60,
-      walkPrefTerrain: ['parco'],
+      walkPrefTerrain: ['park'],
     });
 
     const result = algorithm.calculate(dog, dog, 0, DEFAULT_WEIGHTS);
@@ -40,7 +40,7 @@ describe('MatchingAlgorithm', () => {
 
   it('returns lower score for mismatched sizes', () => {
     const dogA = buildDog({ size: 'toy' });
-    const dogB = buildDog({ size: 'gigante' });
+    const dogB = buildDog({ size: 'giant' });
 
     const result = algorithm.calculate(dogA, dogB, 0, DEFAULT_WEIGHTS);
 
@@ -77,7 +77,7 @@ describe('MatchingAlgorithm', () => {
 
   it('respects custom weights', () => {
     const dogA = buildDog({ size: 'toy' });
-    const dogB = buildDog({ size: 'gigante' });
+    const dogB = buildDog({ size: 'giant' });
 
     // Size weight = 0 should ignore size mismatch
     const zeroSizeWeights = parseMatchWeights({

@@ -155,7 +155,7 @@ const listAuditLogSchema = z.object({
   search: z.string().optional(),
 });
 
-const sizeCategoryEnum = z.enum(['toy', 'piccola', 'media', 'grande', 'gigante']);
+const sizeCategoryEnum = z.enum(['toy', 'small', 'medium', 'large', 'giant']);
 
 const listBreedsSchema = z.object({
   page: z.number().int().min(1).default(1),

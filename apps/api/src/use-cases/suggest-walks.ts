@@ -22,27 +22,27 @@ type Deps = {
 
 // ── Hour → WalkTime bucket mapping ──────────────────────────────────────────
 
-type WalkTimeBucket = 'mattina_presto' | 'mattina' | 'pomeriggio' | 'sera' | 'sera_tardi';
+type WalkTimeBucket = 'early_morning' | 'morning' | 'afternoon' | 'evening' | 'late_evening';
 
 function hourToWalkTime(hour: number): WalkTimeBucket {
-  if (hour >= 5 && hour < 7) return 'mattina_presto';
-  if (hour >= 7 && hour < 12) return 'mattina';
-  if (hour >= 12 && hour < 17) return 'pomeriggio';
-  if (hour >= 17 && hour < 20) return 'sera';
-  return 'sera_tardi';
+  if (hour >= 5 && hour < 7) return 'early_morning';
+  if (hour >= 7 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 17) return 'afternoon';
+  if (hour >= 17 && hour < 20) return 'evening';
+  return 'late_evening';
 }
 
 function walkTimeBucketToHourRange(bucket: WalkTimeBucket): { start: number; end: number } {
   switch (bucket) {
-    case 'mattina_presto':
+    case 'early_morning':
       return { start: 5, end: 7 };
-    case 'mattina':
+    case 'morning':
       return { start: 7, end: 12 };
-    case 'pomeriggio':
+    case 'afternoon':
       return { start: 12, end: 17 };
-    case 'sera':
+    case 'evening':
       return { start: 17, end: 20 };
-    case 'sera_tardi':
+    case 'late_evening':
       return { start: 20, end: 23 };
   }
 }
@@ -201,7 +201,7 @@ export function createSuggestWalks({
       );
       if (compatibleDogs.length === 0) continue;
 
-      const terrainSuggestion = pickTopTerrain(terrainCounts, myDog.walkPrefTerrain[0] ?? 'parco');
+      const terrainSuggestion = pickTopTerrain(terrainCounts, myDog.walkPrefTerrain[0] ?? 'park');
       const compatibleDogIds = new Set(compatibleDogs.map((d) => d.dogId));
       const estimatedDurationMin = estimateDuration(candidates, compatibleDogIds, myDog);
       const avgCompatibility =

@@ -24,7 +24,7 @@ export const breeds = pgTable(
   (table) => [
     check(
       'breeds_size_category_valid',
-      sql`${table.sizeCategory} IS NULL OR ${table.sizeCategory} IN ('toy', 'piccola', 'media', 'grande', 'gigante')`,
+      sql`${table.sizeCategory} IS NULL OR ${table.sizeCategory} IN ('toy', 'small', 'medium', 'large', 'giant')`,
     ),
     check(
       'breeds_avg_weight_positive',

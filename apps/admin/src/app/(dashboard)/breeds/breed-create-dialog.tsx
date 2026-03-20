@@ -14,7 +14,7 @@ import { BREED_GROUPS, BreedFormFields, DEFAULT_SCORES } from './breed-form-fiel
 const DEFAULT_VALUES: BreedFormValues = {
   code: '',
   group: BREED_GROUPS[0],
-  sizeCategory: 'media',
+  sizeCategory: 'medium',
   avgWeightKg: 10,
   ...DEFAULT_SCORES,
 };

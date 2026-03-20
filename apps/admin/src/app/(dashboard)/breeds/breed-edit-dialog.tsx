@@ -15,7 +15,7 @@ import type { Breed } from './page.view-model';
 const DEFAULT_VALUES: BreedFormValues = {
   code: '',
   group: BREED_GROUPS[0],
-  sizeCategory: 'media',
+  sizeCategory: 'medium',
   avgWeightKg: 10,
   ...DEFAULT_SCORES,
 };
@@ -29,7 +29,7 @@ interface BreedEditDialogProps {
 
 function breedToFormValues(breed: Breed): BreedFormValues {
   const rawSize = breed.sizeCategory ?? '';
-  const sizeCategory = isSizeCategory(rawSize) ? rawSize : 'media';
+  const sizeCategory = isSizeCategory(rawSize) ? rawSize : 'medium';
   return {
     code: breed.code,
     group: (breed.group as BreedFormValues['group']) ?? BREED_GROUPS[0],

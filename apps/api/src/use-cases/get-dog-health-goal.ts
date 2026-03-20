@@ -10,13 +10,13 @@ type Deps = {
   activityRepo: ActivityRepository;
 };
 
-/** Map Italian dog size values to the health config size categories */
+/** Map dog size values to the health config size categories */
 const SIZE_MAP: Record<string, DogSizeCategory> = {
   toy: 'toy',
-  piccola: 'small',
-  media: 'medium',
-  grande: 'large',
-  gigante: 'giant',
+  small: 'small',
+  medium: 'medium',
+  large: 'large',
+  giant: 'giant',
 };
 
 export function createGetDogHealthGoal({ dogRepo, activityRepo }: Deps) {

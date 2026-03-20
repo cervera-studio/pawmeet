@@ -32,13 +32,13 @@ function getSizeBadgeVariant(size: string) {
   switch (size) {
     case 'toy':
       return 'outline' as const;
-    case 'piccola':
+    case 'small':
       return 'secondary' as const;
-    case 'media':
+    case 'medium':
       return 'default' as const;
-    case 'grande':
+    case 'large':
       return 'success' as const;
-    case 'gigante':
+    case 'giant':
       return 'destructive' as const;
     default:
       return 'outline' as const;
@@ -97,13 +97,13 @@ export function BreedsTable({ initialData, pageSize }: BreedsTableProps) {
         accessorKey: 'sizeCategory',
         header: t('columns.sizeCategory'),
         cell: ({ row }) => {
-          const size = row.original.sizeCategory ?? 'media';
+          const size = row.original.sizeCategory ?? 'medium';
           const key = `sizes.${size}` as
             | 'sizes.toy'
-            | 'sizes.piccola'
-            | 'sizes.media'
-            | 'sizes.grande'
-            | 'sizes.gigante';
+            | 'sizes.small'
+            | 'sizes.medium'
+            | 'sizes.large'
+            | 'sizes.giant';
           return <Badge variant={getSizeBadgeVariant(size)}>{t(key)}</Badge>;
         },
       },

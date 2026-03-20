@@ -18,18 +18,18 @@ function buildCreateDogInput(overrides: Partial<Record<string, unknown>> = {}) {
     name: 'Fido',
     birthDate: '2022-06-15',
     breed: 'Labrador',
-    size: 'grande',
+    size: 'large',
     weightKg: 30,
-    gender: 'maschio',
+    gender: 'male',
     isNeutered: true,
-    energyLevel: 'alta',
-    behaviorWithDogs: 'socievole',
-    behaviorWithPeople: 'molto_socievole',
-    leashBehavior: 'buono',
-    walkPrefTime: ['mattina'],
+    energyLevel: 'high',
+    behaviorWithDogs: 'friendly',
+    behaviorWithPeople: 'very_friendly',
+    leashBehavior: 'good',
+    walkPrefTime: ['morning'],
     walkPrefDurationMin: 30,
     walkPrefDurationMax: 60,
-    walkPrefTerrain: ['parco'],
+    walkPrefTerrain: ['park'],
     ...overrides,
   };
 }
@@ -37,7 +37,7 @@ function buildCreateDogInput(overrides: Partial<Record<string, unknown>> = {}) {
 // -- Enum schemas --
 
 describe('dogSizeEnum', () => {
-  it.each(['toy', 'piccola', 'media', 'grande', 'gigante'])('accepts "%s"', (value) => {
+  it.each(['toy', 'small', 'medium', 'large', 'giant'])('accepts "%s"', (value) => {
     expect(dogSizeEnum.safeParse(value).success).toBe(true);
   });
 
@@ -47,7 +47,7 @@ describe('dogSizeEnum', () => {
 });
 
 describe('energyLevelEnum', () => {
-  it.each(['bassa', 'media', 'alta', 'molto_alta'])('accepts "%s"', (value) => {
+  it.each(['low', 'medium', 'high', 'very_high'])('accepts "%s"', (value) => {
     expect(energyLevelEnum.safeParse(value).success).toBe(true);
   });
 
@@ -57,43 +57,43 @@ describe('energyLevelEnum', () => {
 });
 
 describe('behaviorWithDogsEnum', () => {
-  it.each(['molto_socievole', 'socievole', 'selettivo', 'reattivo'])('accepts "%s"', (value) => {
+  it.each(['very_friendly', 'friendly', 'selective', 'reactive'])('accepts "%s"', (value) => {
     expect(behaviorWithDogsEnum.safeParse(value).success).toBe(true);
   });
 });
 
 describe('behaviorWithPeopleEnum', () => {
-  it.each(['molto_socievole', 'socievole', 'timido', 'diffidente'])('accepts "%s"', (value) => {
+  it.each(['very_friendly', 'friendly', 'shy', 'wary'])('accepts "%s"', (value) => {
     expect(behaviorWithPeopleEnum.safeParse(value).success).toBe(true);
   });
 });
 
 describe('leashBehaviorEnum', () => {
-  it.each(['eccellente', 'buono', 'in_addestramento', 'difficile'])('accepts "%s"', (value) => {
+  it.each(['excellent', 'good', 'in_training', 'difficult'])('accepts "%s"', (value) => {
     expect(leashBehaviorEnum.safeParse(value).success).toBe(true);
   });
 });
 
 describe('walkTimeEnum', () => {
   it.each([
-    'mattina_presto',
-    'mattina',
-    'pomeriggio',
-    'sera',
-    'sera_tardi',
+    'early_morning',
+    'morning',
+    'afternoon',
+    'evening',
+    'late_evening',
   ])('accepts "%s"', (value) => {
     expect(walkTimeEnum.safeParse(value).success).toBe(true);
   });
 });
 
 describe('walkTerrainEnum', () => {
-  it.each(['urbano', 'parco', 'campagna', 'spiaggia', 'montagna'])('accepts "%s"', (value) => {
+  it.each(['urban', 'park', 'countryside', 'beach', 'mountain'])('accepts "%s"', (value) => {
     expect(walkTerrainEnum.safeParse(value).success).toBe(true);
   });
 });
 
 describe('genderEnum', () => {
-  it.each(['maschio', 'femmina'])('accepts "%s"', (value) => {
+  it.each(['male', 'female'])('accepts "%s"', (value) => {
     expect(genderEnum.safeParse(value).success).toBe(true);
   });
 });
@@ -110,7 +110,7 @@ describe('createDogSchema', () => {
     const result = createDogSchema.safeParse(
       buildCreateDogInput({
         breedSecondary: 'Golden Retriever',
-        recallReliability: 'affidabile',
+        recallReliability: 'reliable',
         bio: 'A friendly dog who loves parks.',
       }),
     );
@@ -207,11 +207,7 @@ describe('createDogSchema', () => {
 
   // -- recallReliability --
 
-  it.each([
-    'affidabile',
-    'parziale',
-    'non_affidabile',
-  ])('accepts recallReliability "%s"', (value) => {
+  it.each(['reliable', 'partial', 'unreliable'])('accepts recallReliability "%s"', (value) => {
     expect(
       createDogSchema.safeParse(buildCreateDogInput({ recallReliability: value })).success,
     ).toBe(true);
@@ -241,7 +237,8 @@ describe('createDogSchema', () => {
 
   it('accepts multiple walkPrefTime values', () => {
     expect(
-      createDogSchema.safeParse(buildCreateDogInput({ walkPrefTime: ['mattina', 'sera'] })).success,
+      createDogSchema.safeParse(buildCreateDogInput({ walkPrefTime: ['morning', 'evening'] }))
+        .success,
     ).toBe(true);
   });
 
@@ -303,7 +300,7 @@ describe('updateDogSchema', () => {
   it('accepts multiple valid fields together', () => {
     const result = updateDogSchema.safeParse({
       name: 'Bella',
-      size: 'piccola',
+      size: 'small',
       weightKg: 5,
     });
     expect(result.success).toBe(true);

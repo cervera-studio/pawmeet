@@ -4,69 +4,69 @@ type LabelMap<T extends string> = Record<T, string>;
 
 const sizeIt: LabelMap<DogSize> = {
   toy: 'Toy',
-  piccola: 'Piccola',
-  media: 'Media',
-  grande: 'Grande',
-  gigante: 'Gigante',
+  small: 'Piccola',
+  medium: 'Media',
+  large: 'Grande',
+  giant: 'Gigante',
 };
 
 const sizeLabels: Record<string, LabelMap<DogSize>> = {
   it: sizeIt,
-  en: { toy: 'Toy', piccola: 'Small', media: 'Medium', grande: 'Large', gigante: 'Giant' },
-  es: { toy: 'Toy', piccola: 'Pequeño', media: 'Mediano', grande: 'Grande', gigante: 'Gigante' },
-  ro: { toy: 'Toy', piccola: 'Mic', media: 'Mediu', grande: 'Mare', gigante: 'Gigant' },
+  en: { toy: 'Toy', small: 'Small', medium: 'Medium', large: 'Large', giant: 'Giant' },
+  es: { toy: 'Toy', small: 'Pequeño', medium: 'Mediano', large: 'Grande', giant: 'Gigante' },
+  ro: { toy: 'Toy', small: 'Mic', medium: 'Mediu', large: 'Mare', giant: 'Gigant' },
 };
 
 const energyIt: LabelMap<EnergyLevel> = {
-  bassa: 'Bassa',
-  media: 'Media',
-  alta: 'Alta',
-  molto_alta: 'Molto alta',
+  low: 'Bassa',
+  medium: 'Media',
+  high: 'Alta',
+  very_high: 'Molto alta',
 };
 
 const energyLabels: Record<string, LabelMap<EnergyLevel>> = {
   it: energyIt,
-  en: { bassa: 'Low', media: 'Medium', alta: 'High', molto_alta: 'Very high' },
-  es: { bassa: 'Baja', media: 'Media', alta: 'Alta', molto_alta: 'Muy alta' },
-  ro: { bassa: 'Scăzută', media: 'Medie', alta: 'Ridicată', molto_alta: 'Foarte ridicată' },
+  en: { low: 'Low', medium: 'Medium', high: 'High', very_high: 'Very high' },
+  es: { low: 'Baja', medium: 'Media', high: 'Alta', very_high: 'Muy alta' },
+  ro: { low: 'Scăzută', medium: 'Medie', high: 'Ridicată', very_high: 'Foarte ridicată' },
 };
 
 const behaviorIt: LabelMap<BehaviorWithDogs> = {
-  molto_socievole: 'Molto socievole',
-  socievole: 'Socievole',
-  selettivo: 'Selettivo',
-  reattivo: 'Reattivo',
+  very_friendly: 'Molto socievole',
+  friendly: 'Socievole',
+  selective: 'Selettivo',
+  reactive: 'Reattivo',
 };
 
 const behaviorLabels: Record<string, LabelMap<BehaviorWithDogs>> = {
   it: behaviorIt,
   en: {
-    molto_socievole: 'Very friendly',
-    socievole: 'Friendly',
-    selettivo: 'Selective',
-    reattivo: 'Reactive',
+    very_friendly: 'Very friendly',
+    friendly: 'Friendly',
+    selective: 'Selective',
+    reactive: 'Reactive',
   },
   es: {
-    molto_socievole: 'Muy sociable',
-    socievole: 'Sociable',
-    selettivo: 'Selectivo',
-    reattivo: 'Reactivo',
+    very_friendly: 'Muy sociable',
+    friendly: 'Sociable',
+    selective: 'Selectivo',
+    reactive: 'Reactivo',
   },
   ro: {
-    molto_socievole: 'Foarte sociabil',
-    socievole: 'Sociabil',
-    selettivo: 'Selectiv',
-    reattivo: 'Reactiv',
+    very_friendly: 'Foarte sociabil',
+    friendly: 'Sociabil',
+    selective: 'Selectiv',
+    reactive: 'Reactiv',
   },
 };
 
-const genderIt: LabelMap<Gender> = { maschio: 'Maschio', femmina: 'Femmina' };
+const genderIt: LabelMap<Gender> = { male: 'Maschio', female: 'Femmina' };
 
 const genderLabels: Record<string, LabelMap<Gender>> = {
   it: genderIt,
-  en: { maschio: 'Male', femmina: 'Female' },
-  es: { maschio: 'Macho', femmina: 'Hembra' },
-  ro: { maschio: 'Mascul', femmina: 'Femelă' },
+  en: { male: 'Male', female: 'Female' },
+  es: { male: 'Macho', female: 'Hembra' },
+  ro: { male: 'Mascul', female: 'Femelă' },
 };
 
 export function getSizeLabel(size: DogSize, locale: string): string {

@@ -30,7 +30,7 @@ describe('Breeds seed data', () => {
   });
 
   it('valid size categories for breeds with size', () => {
-    const validSizes = ['toy', 'piccola', 'media', 'grande', 'gigante', null];
+    const validSizes = ['toy', 'small', 'medium', 'large', 'giant', null];
     for (const breed of breedsData) {
       expect(validSizes).toContain(breed.sizeCategory);
     }

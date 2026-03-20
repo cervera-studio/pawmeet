@@ -509,10 +509,10 @@
     },
     "sizes": {
       "toy": "Toy",
-      "piccola": "Small",
-      "media": "Medium",
-      "grande": "Large",
-      "gigante": "Giant"
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "giant": "Giant"
     },
     "actions": {
       "edit": "Edit",

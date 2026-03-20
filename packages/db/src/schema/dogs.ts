@@ -47,29 +47,29 @@ export const dogProfiles = pgTable(
     index('idx_dog_profiles_owner_id').on(table.ownerId),
     check(
       'dog_profiles_size_valid',
-      sql`${table.size} IN ('toy', 'piccola', 'media', 'grande', 'gigante')`,
+      sql`${table.size} IN ('toy', 'small', 'medium', 'large', 'giant')`,
     ),
     check('dog_profiles_weight_range', sql`${table.weightKg} >= 0.5 AND ${table.weightKg} <= 100`),
-    check('dog_profiles_gender_valid', sql`${table.gender} IN ('maschio', 'femmina')`),
+    check('dog_profiles_gender_valid', sql`${table.gender} IN ('male', 'female')`),
     check(
       'dog_profiles_energy_level_valid',
-      sql`${table.energyLevel} IN ('bassa', 'media', 'alta', 'molto_alta')`,
+      sql`${table.energyLevel} IN ('low', 'medium', 'high', 'very_high')`,
     ),
     check(
       'dog_profiles_behavior_dogs_valid',
-      sql`${table.behaviorWithDogs} IN ('molto_socievole', 'socievole', 'selettivo', 'reattivo')`,
+      sql`${table.behaviorWithDogs} IN ('very_friendly', 'friendly', 'selective', 'reactive')`,
     ),
     check(
       'dog_profiles_behavior_people_valid',
-      sql`${table.behaviorWithPeople} IN ('molto_socievole', 'socievole', 'timido', 'diffidente')`,
+      sql`${table.behaviorWithPeople} IN ('very_friendly', 'friendly', 'shy', 'wary')`,
     ),
     check(
       'dog_profiles_leash_behavior_valid',
-      sql`${table.leashBehavior} IN ('eccellente', 'buono', 'in_addestramento', 'difficile')`,
+      sql`${table.leashBehavior} IN ('excellent', 'good', 'in_training', 'difficult')`,
     ),
     check(
       'dog_profiles_recall_valid',
-      sql`${table.recallReliability} IS NULL OR ${table.recallReliability} IN ('affidabile', 'parziale', 'non_affidabile')`,
+      sql`${table.recallReliability} IS NULL OR ${table.recallReliability} IN ('reliable', 'partial', 'unreliable')`,
     ),
     check(
       'dog_profiles_walk_duration_min_range',

@@ -1,30 +1,20 @@
 import { MAX_PHOTOS_PER_DOG } from '@pawmeet/config';
 import { z } from 'zod';
 
-export const dogSizeEnum = z.enum(['toy', 'piccola', 'media', 'grande', 'gigante']);
-export const energyLevelEnum = z.enum(['bassa', 'media', 'alta', 'molto_alta']);
-export const behaviorWithDogsEnum = z.enum([
-  'molto_socievole',
-  'socievole',
-  'selettivo',
-  'reattivo',
-]);
-export const behaviorWithPeopleEnum = z.enum([
-  'molto_socievole',
-  'socievole',
-  'timido',
-  'diffidente',
-]);
-export const leashBehaviorEnum = z.enum(['eccellente', 'buono', 'in_addestramento', 'difficile']);
+export const dogSizeEnum = z.enum(['toy', 'small', 'medium', 'large', 'giant']);
+export const energyLevelEnum = z.enum(['low', 'medium', 'high', 'very_high']);
+export const behaviorWithDogsEnum = z.enum(['very_friendly', 'friendly', 'selective', 'reactive']);
+export const behaviorWithPeopleEnum = z.enum(['very_friendly', 'friendly', 'shy', 'wary']);
+export const leashBehaviorEnum = z.enum(['excellent', 'good', 'in_training', 'difficult']);
 export const walkTimeEnum = z.enum([
-  'mattina_presto',
-  'mattina',
-  'pomeriggio',
-  'sera',
-  'sera_tardi',
+  'early_morning',
+  'morning',
+  'afternoon',
+  'evening',
+  'late_evening',
 ]);
-export const walkTerrainEnum = z.enum(['urbano', 'parco', 'campagna', 'spiaggia', 'montagna']);
-export const genderEnum = z.enum(['maschio', 'femmina']);
+export const walkTerrainEnum = z.enum(['urban', 'park', 'countryside', 'beach', 'mountain']);
+export const genderEnum = z.enum(['male', 'female']);
 
 export const createDogSchema = z.object({
   name: z.string().min(2).max(50),
@@ -39,7 +29,7 @@ export const createDogSchema = z.object({
   behaviorWithDogs: behaviorWithDogsEnum,
   behaviorWithPeople: behaviorWithPeopleEnum,
   leashBehavior: leashBehaviorEnum,
-  recallReliability: z.enum(['affidabile', 'parziale', 'non_affidabile']).optional(),
+  recallReliability: z.enum(['reliable', 'partial', 'unreliable']).optional(),
   bio: z.string().max(500).optional(),
   walkPrefTime: z.array(walkTimeEnum).min(1),
   walkPrefDurationMin: z.number().min(15).max(180),

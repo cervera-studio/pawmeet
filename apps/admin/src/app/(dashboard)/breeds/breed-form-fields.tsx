@@ -5,7 +5,7 @@ import type { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import type { BreedFormValues } from '@/lib/schemas/breed';
 
-export const SIZE_CATEGORIES = ['toy', 'piccola', 'media', 'grande', 'gigante'] as const;
+export const SIZE_CATEGORIES = ['toy', 'small', 'medium', 'large', 'giant'] as const;
 export type SizeCategory = (typeof SIZE_CATEGORIES)[number];
 
 export const BREED_GROUPS = [
@@ -144,10 +144,10 @@ export function BreedFormFields({ idPrefix, form }: BreedFormFieldsProps) {
               {t(
                 `sizes.${size}` as
                   | 'sizes.toy'
-                  | 'sizes.piccola'
-                  | 'sizes.media'
-                  | 'sizes.grande'
-                  | 'sizes.gigante',
+                  | 'sizes.small'
+                  | 'sizes.medium'
+                  | 'sizes.large'
+                  | 'sizes.giant',
               )}
             </option>
           ))}

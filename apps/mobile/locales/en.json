@@ -101,40 +101,40 @@
     },
     "sizeOptions": {
       "toy": "Toy",
-      "piccola": "Small",
-      "media": "Medium",
-      "grande": "Large",
-      "gigante": "Giant"
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "giant": "Giant"
     },
     "energyOptions": {
-      "bassa": "Low",
-      "media": "Medium",
-      "alta": "High",
-      "molto_alta": "Very high"
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "very_high": "Very high"
     },
     "genderOptions": {
-      "maschio": "Male",
-      "femmina": "Female"
+      "male": "Male",
+      "female": "Female"
     },
     "behaviorOptions": {
-      "molto_socievole": "Very friendly",
-      "socievole": "Friendly",
-      "selettivo": "Selective",
-      "reattivo": "Reactive"
+      "very_friendly": "Very friendly",
+      "friendly": "Friendly",
+      "selective": "Selective",
+      "reactive": "Reactive"
     },
     "scheduleOptions": {
-      "mattina_presto": "Early morning",
-      "mattina": "Morning",
-      "pomeriggio": "Afternoon",
-      "sera": "Evening",
-      "sera_tardi": "Late evening"
+      "early_morning": "Early morning",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "late_evening": "Late evening"
     },
     "terrainOptions": {
-      "urbano": "Urban",
-      "parco": "Park",
-      "campagna": "Countryside",
-      "spiaggia": "Beach",
-      "montagna": "Mountain"
+      "urban": "Urban",
+      "park": "Park",
+      "countryside": "Countryside",
+      "beach": "Beach",
+      "mountain": "Mountain"
     }
   },
 
@@ -773,38 +773,38 @@
 
   "labels": {
     "toy": "Toy",
-    "piccola": "Small",
-    "media": "Medium",
-    "grande": "Large",
-    "gigante": "Giant",
-    "bassa": "Low",
-    "alta": "High",
-    "molto_alta": "Very high",
-    "molto_socievole": "Very friendly",
-    "socievole": "Friendly",
-    "selettivo": "Selective",
-    "reattivo": "Reactive",
-    "timido": "Shy",
-    "diffidente": "Wary",
-    "eccellente": "Excellent",
-    "buono": "Good",
-    "in_addestramento": "In training",
-    "difficile": "Difficult",
-    "affidabile": "Reliable",
-    "parziale": "Partial",
-    "non_affidabile": "Unreliable",
-    "maschio": "Male",
-    "femmina": "Female",
-    "mattina_presto": "Early morning",
-    "mattina": "Morning",
-    "pomeriggio": "Afternoon",
-    "sera": "Evening",
-    "sera_tardi": "Late evening",
-    "urbano": "Urban",
-    "parco": "Park",
-    "campagna": "Countryside",
-    "spiaggia": "Beach",
-    "montagna": "Mountain"
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large",
+    "giant": "Giant",
+    "low": "Low",
+    "high": "High",
+    "very_high": "Very high",
+    "very_friendly": "Very friendly",
+    "friendly": "Friendly",
+    "selective": "Selective",
+    "reactive": "Reactive",
+    "shy": "Shy",
+    "wary": "Wary",
+    "excellent": "Excellent",
+    "good": "Good",
+    "in_training": "In training",
+    "difficult": "Difficult",
+    "reliable": "Reliable",
+    "partial": "Partial",
+    "unreliable": "Unreliable",
+    "male": "Male",
+    "female": "Female",
+    "early_morning": "Early morning",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "late_evening": "Late evening",
+    "urban": "Urban",
+    "park": "Park",
+    "countryside": "Countryside",
+    "beach": "Beach",
+    "mountain": "Mountain"
   },
 
   "dogForm": {

@@ -47,20 +47,20 @@ function buildDogProfile(overrides: Partial<DogProfile> = {}): DogProfile {
     birthDate: new Date('2022-03-15'),
     breed: 'Labrador Retriever',
     breedSecondary: null,
-    size: 'grande',
+    size: 'large',
     weightKg: 30,
-    gender: 'maschio',
+    gender: 'male',
     isNeutered: true,
-    energyLevel: 'alta',
-    behaviorWithDogs: 'socievole',
-    behaviorWithPeople: 'molto_socievole',
-    leashBehavior: 'buono',
-    recallReliability: 'parziale',
+    energyLevel: 'high',
+    behaviorWithDogs: 'friendly',
+    behaviorWithPeople: 'very_friendly',
+    leashBehavior: 'good',
+    recallReliability: 'partial',
     bio: null,
-    walkPrefTime: ['mattina', 'sera'],
+    walkPrefTime: ['morning', 'evening'],
     walkPrefDurationMin: 30,
     walkPrefDurationMax: 60,
-    walkPrefTerrain: ['parco', 'urbano'],
+    walkPrefTerrain: ['park', 'urban'],
     isActive: true,
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-06-01'),
@@ -174,15 +174,15 @@ describe('DogProfile', () => {
     expect(dog.name).toBe('Fido');
     expect(dog.breed).toBe('Labrador Retriever');
     expect(dog.breedSecondary).toBeNull();
-    expect(dog.size).toBe('grande');
+    expect(dog.size).toBe('large');
     expect(dog.weightKg).toBe(30);
-    expect(dog.gender).toBe('maschio');
+    expect(dog.gender).toBe('male');
     expect(dog.isNeutered).toBe(true);
     expect(dog.birthDate).toBeInstanceOf(Date);
   });
 
   it('accepts all DogSize variants', () => {
-    const sizes = ['toy', 'piccola', 'media', 'grande', 'gigante'] satisfies DogSize[];
+    const sizes = ['toy', 'small', 'medium', 'large', 'giant'] satisfies DogSize[];
 
     for (const size of sizes) {
       const dog = buildDogProfile({ size });
@@ -191,7 +191,7 @@ describe('DogProfile', () => {
   });
 
   it('accepts all EnergyLevel variants', () => {
-    const levels = ['bassa', 'media', 'alta', 'molto_alta'] satisfies EnergyLevel[];
+    const levels = ['low', 'medium', 'high', 'very_high'] satisfies EnergyLevel[];
 
     for (const level of levels) {
       const dog = buildDogProfile({ energyLevel: level });
@@ -201,10 +201,10 @@ describe('DogProfile', () => {
 
   it('accepts all BehaviorWithDogs variants', () => {
     const behaviors = [
-      'molto_socievole',
-      'socievole',
-      'selettivo',
-      'reattivo',
+      'very_friendly',
+      'friendly',
+      'selective',
+      'reactive',
     ] satisfies BehaviorWithDogs[];
 
     for (const b of behaviors) {
@@ -214,12 +214,7 @@ describe('DogProfile', () => {
   });
 
   it('accepts all BehaviorWithPeople variants', () => {
-    const behaviors = [
-      'molto_socievole',
-      'socievole',
-      'timido',
-      'diffidente',
-    ] satisfies BehaviorWithPeople[];
+    const behaviors = ['very_friendly', 'friendly', 'shy', 'wary'] satisfies BehaviorWithPeople[];
 
     for (const b of behaviors) {
       const dog = buildDogProfile({ behaviorWithPeople: b });
@@ -228,12 +223,7 @@ describe('DogProfile', () => {
   });
 
   it('accepts all LeashBehavior variants', () => {
-    const values = [
-      'eccellente',
-      'buono',
-      'in_addestramento',
-      'difficile',
-    ] satisfies LeashBehavior[];
+    const values = ['excellent', 'good', 'in_training', 'difficult'] satisfies LeashBehavior[];
 
     for (const v of values) {
       const dog = buildDogProfile({ leashBehavior: v });
@@ -242,7 +232,7 @@ describe('DogProfile', () => {
   });
 
   it('accepts all RecallReliability variants including null', () => {
-    const values = ['affidabile', 'parziale', 'non_affidabile'] satisfies RecallReliability[];
+    const values = ['reliable', 'partial', 'unreliable'] satisfies RecallReliability[];
 
     for (const v of values) {
       const dog = buildDogProfile({ recallReliability: v });
@@ -254,7 +244,7 @@ describe('DogProfile', () => {
   });
 
   it('accepts all Gender variants', () => {
-    const genders = ['maschio', 'femmina'] satisfies Gender[];
+    const genders = ['male', 'female'] satisfies Gender[];
 
     for (const g of genders) {
       const dog = buildDogProfile({ gender: g });
@@ -264,11 +254,11 @@ describe('DogProfile', () => {
 
   it('accepts all WalkTime variants', () => {
     const times = [
-      'mattina_presto',
-      'mattina',
-      'pomeriggio',
-      'sera',
-      'sera_tardi',
+      'early_morning',
+      'morning',
+      'afternoon',
+      'evening',
+      'late_evening',
     ] satisfies WalkTime[];
 
     const dog = buildDogProfile({ walkPrefTime: times });
@@ -277,13 +267,7 @@ describe('DogProfile', () => {
   });
 
   it('accepts all WalkTerrain variants', () => {
-    const terrains = [
-      'urbano',
-      'parco',
-      'campagna',
-      'spiaggia',
-      'montagna',
-    ] satisfies WalkTerrain[];
+    const terrains = ['urban', 'park', 'countryside', 'beach', 'mountain'] satisfies WalkTerrain[];
 
     const dog = buildDogProfile({ walkPrefTerrain: terrains });
     expect(dog.walkPrefTerrain).toEqual(terrains);

@@ -11,10 +11,10 @@ import type { MatchWeights } from '@pawmeet/validation';
  * Leash behavior compatibility matrix.
  */
 const LEASH_MATRIX: Record<string, Record<string, number>> = {
-  ottimo: { ottimo: 1.0, buono: 0.8, discreto: 0.5, scarso: 0.2 },
-  buono: { ottimo: 0.8, buono: 1.0, discreto: 0.7, scarso: 0.3 },
-  discreto: { ottimo: 0.5, buono: 0.7, discreto: 1.0, scarso: 0.5 },
-  scarso: { ottimo: 0.2, buono: 0.3, discreto: 0.5, scarso: 0.6 },
+  excellent: { excellent: 1.0, good: 0.8, in_training: 0.5, difficult: 0.2 },
+  good: { excellent: 0.8, good: 1.0, in_training: 0.7, difficult: 0.3 },
+  in_training: { excellent: 0.5, good: 0.7, in_training: 1.0, difficult: 0.5 },
+  difficult: { excellent: 0.2, good: 0.3, in_training: 0.5, difficult: 0.6 },
 };
 
 /**

@@ -23,7 +23,7 @@ describe('createGetMatchExplanation', () => {
     walkPrefTime: ['mattina', 'pomeriggio'],
     walkPrefDurationMin: 30,
     walkPrefDurationMax: 60,
-    walkPrefTerrain: ['parco', 'urbano'],
+    walkPrefTerrain: ['park', 'urban'],
   });
   const match = buildMatch({ id: 'match-1', dogAId: 'dog-1', dogBId: 'dog-2' });
   const ownerA = buildUser({ id: 'user-1', latitude: 41.9028, longitude: 12.4964 });

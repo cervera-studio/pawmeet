@@ -15,19 +15,19 @@ describe('createSuggestWalks', () => {
   const myDog = buildDog({
     id: 'dog-1',
     ownerId: 'user-1',
-    walkPrefTime: ['mattina', 'pomeriggio'],
+    walkPrefTime: ['morning', 'afternoon'],
     walkPrefDurationMin: 30,
     walkPrefDurationMax: 60,
-    walkPrefTerrain: ['parco', 'urbano'],
+    walkPrefTerrain: ['park', 'urban'],
   });
   const nearbyDog = buildDog({
     id: 'dog-2',
     ownerId: 'user-2',
     name: 'Bella',
-    walkPrefTime: ['mattina'],
+    walkPrefTime: ['morning'],
     walkPrefDurationMin: 20,
     walkPrefDurationMax: 50,
-    walkPrefTerrain: ['parco'],
+    walkPrefTerrain: ['park'],
   });
   const user = buildUser({ id: 'user-1', latitude: 41.9028, longitude: 12.4964 });
 

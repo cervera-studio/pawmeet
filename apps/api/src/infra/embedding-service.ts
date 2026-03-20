@@ -7,21 +7,21 @@ const MODEL_VERSION = 'local-v1';
 
 // ── Categorical mappings ────────────────────────────────────────────────────
 
-const SIZE_MAP = { toy: 0, piccola: 1, media: 2, grande: 3, gigante: 4 } as const;
-const ENERGY_MAP = { bassa: 0, media: 1, alta: 2, molto_alta: 3 } as const;
-const BEHAVIOR_DOG_MAP = { molto_socievole: 0, socievole: 1, selettivo: 2, reattivo: 3 } as const;
+const SIZE_MAP = { toy: 0, small: 1, medium: 2, large: 3, giant: 4 } as const;
+const ENERGY_MAP = { low: 0, medium: 1, high: 2, very_high: 3 } as const;
+const BEHAVIOR_DOG_MAP = { very_friendly: 0, friendly: 1, selective: 2, reactive: 3 } as const;
 const BEHAVIOR_PEOPLE_MAP = {
-  molto_socievole: 0,
-  socievole: 1,
-  timido: 2,
-  diffidente: 3,
+  very_friendly: 0,
+  friendly: 1,
+  shy: 2,
+  wary: 3,
 } as const;
-const LEASH_MAP = { eccellente: 0, buono: 1, in_addestramento: 2, difficile: 3 } as const;
-const GENDER_MAP = { maschio: 0, femmina: 1 } as const;
-const RECALL_MAP = { affidabile: 0, parziale: 1, non_affidabile: 2 } as const;
+const LEASH_MAP = { excellent: 0, good: 1, in_training: 2, difficult: 3 } as const;
+const GENDER_MAP = { male: 0, female: 1 } as const;
+const RECALL_MAP = { reliable: 0, partial: 1, unreliable: 2 } as const;
 
-const TIME_SLOTS = ['mattina', 'pomeriggio', 'sera', 'notte'] as const;
-const TERRAINS = ['urbano', 'parco', 'campagna', 'bosco', 'spiaggia', 'montagna'] as const;
+const TIME_SLOTS = ['morning', 'afternoon', 'evening', 'late_evening'] as const;
+const TERRAINS = ['urban', 'park', 'countryside', 'beach', 'mountain'] as const;
 
 // ── One-hot encoding helpers ────────────────────────────────────────────────
 

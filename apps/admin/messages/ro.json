@@ -509,10 +509,10 @@
     },
     "sizes": {
       "toy": "Toy",
-      "piccola": "Mica",
-      "media": "Medie",
-      "grande": "Mare",
-      "gigante": "Gigant"
+      "small": "Mica",
+      "medium": "Medie",
+      "large": "Mare",
+      "giant": "Gigant"
     },
     "actions": {
       "edit": "Editeaza",

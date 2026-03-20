@@ -101,40 +101,40 @@
     },
     "sizeOptions": {
       "toy": "Toy",
-      "piccola": "Mică",
-      "media": "Medie",
-      "grande": "Mare",
-      "gigante": "Gigant"
+      "small": "Mică",
+      "medium": "Medie",
+      "large": "Mare",
+      "giant": "Gigant"
     },
     "energyOptions": {
-      "bassa": "Scăzută",
-      "media": "Medie",
-      "alta": "Ridicată",
-      "molto_alta": "Foarte ridicată"
+      "low": "Scăzută",
+      "medium": "Medie",
+      "high": "Ridicată",
+      "very_high": "Foarte ridicată"
     },
     "genderOptions": {
-      "maschio": "Mascul",
-      "femmina": "Femelă"
+      "male": "Mascul",
+      "female": "Femelă"
     },
     "behaviorOptions": {
-      "molto_socievole": "Foarte sociabil",
-      "socievole": "Sociabil",
-      "selettivo": "Selectiv",
-      "reattivo": "Reactiv"
+      "very_friendly": "Foarte sociabil",
+      "friendly": "Sociabil",
+      "selective": "Selectiv",
+      "reactive": "Reactiv"
     },
     "scheduleOptions": {
-      "mattina_presto": "Dimineața devreme",
-      "mattina": "Dimineața",
-      "pomeriggio": "După-amiaza",
-      "sera": "Seara",
-      "sera_tardi": "Seara târziu"
+      "early_morning": "Dimineața devreme",
+      "morning": "Dimineața",
+      "afternoon": "După-amiaza",
+      "evening": "Seara",
+      "late_evening": "Seara târziu"
     },
     "terrainOptions": {
-      "urbano": "Urban",
-      "parco": "Parc",
-      "campagna": "Câmp",
-      "spiaggia": "Plajă",
-      "montagna": "Munte"
+      "urban": "Urban",
+      "park": "Parc",
+      "countryside": "Câmp",
+      "beach": "Plajă",
+      "mountain": "Munte"
     }
   },
 
@@ -773,38 +773,38 @@
 
   "labels": {
     "toy": "Toy",
-    "piccola": "Mică",
-    "media": "Medie",
-    "grande": "Mare",
-    "gigante": "Gigant",
-    "bassa": "Scăzută",
-    "alta": "Ridicată",
-    "molto_alta": "Foarte ridicată",
-    "molto_socievole": "Foarte sociabil",
-    "socievole": "Sociabil",
-    "selettivo": "Selectiv",
-    "reattivo": "Reactiv",
-    "timido": "Timid",
-    "diffidente": "Neîncrezător",
-    "eccellente": "Excelent",
-    "buono": "Bun",
-    "in_addestramento": "În dresaj",
-    "difficile": "Dificil",
-    "affidabile": "De încredere",
-    "parziale": "Parțial",
-    "non_affidabile": "Nefiabil",
-    "maschio": "Mascul",
-    "femmina": "Femelă",
-    "mattina_presto": "Dimineața devreme",
-    "mattina": "Dimineața",
-    "pomeriggio": "După-amiaza",
-    "sera": "Seara",
-    "sera_tardi": "Seara târziu",
-    "urbano": "Urban",
-    "parco": "Parc",
-    "campagna": "Câmp",
-    "spiaggia": "Plajă",
-    "montagna": "Munte"
+    "small": "Mică",
+    "medium": "Medie",
+    "large": "Mare",
+    "giant": "Gigant",
+    "low": "Scăzută",
+    "high": "Ridicată",
+    "very_high": "Foarte ridicată",
+    "very_friendly": "Foarte sociabil",
+    "friendly": "Sociabil",
+    "selective": "Selectiv",
+    "reactive": "Reactiv",
+    "shy": "Timid",
+    "wary": "Neîncrezător",
+    "excellent": "Excelent",
+    "good": "Bun",
+    "in_training": "În dresaj",
+    "difficult": "Dificil",
+    "reliable": "De încredere",
+    "partial": "Parțial",
+    "unreliable": "Nefiabil",
+    "male": "Mascul",
+    "female": "Femelă",
+    "early_morning": "Dimineața devreme",
+    "morning": "Dimineața",
+    "afternoon": "După-amiaza",
+    "evening": "Seara",
+    "late_evening": "Seara târziu",
+    "urban": "Urban",
+    "park": "Parc",
+    "countryside": "Câmp",
+    "beach": "Plajă",
+    "mountain": "Munte"
   },
 
   "dogForm": {

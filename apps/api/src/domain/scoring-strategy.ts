@@ -36,10 +36,10 @@ export interface ScoringStrategy {
 // ── Scoring helpers ──────────────────────────────────────────────────────────
 
 const LEASH_SCORES: Record<string, number> = {
-  eccellente: 1.0,
-  buono: 0.7,
-  in_addestramento: 0.4,
-  difficile: 0.1,
+  excellent: 1.0,
+  good: 0.7,
+  in_training: 0.4,
+  difficult: 0.1,
 };
 
 function calculateLeashScore(a: string, b: string): number {

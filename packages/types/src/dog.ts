@@ -1,12 +1,12 @@
-export type DogSize = 'toy' | 'piccola' | 'media' | 'grande' | 'gigante';
-export type EnergyLevel = 'bassa' | 'media' | 'alta' | 'molto_alta';
-export type BehaviorWithDogs = 'molto_socievole' | 'socievole' | 'selettivo' | 'reattivo';
-export type BehaviorWithPeople = 'molto_socievole' | 'socievole' | 'timido' | 'diffidente';
-export type LeashBehavior = 'eccellente' | 'buono' | 'in_addestramento' | 'difficile';
-export type RecallReliability = 'affidabile' | 'parziale' | 'non_affidabile';
-export type WalkTime = 'mattina_presto' | 'mattina' | 'pomeriggio' | 'sera' | 'sera_tardi';
-export type WalkTerrain = 'urbano' | 'parco' | 'campagna' | 'spiaggia' | 'montagna';
-export type Gender = 'maschio' | 'femmina';
+export type DogSize = 'toy' | 'small' | 'medium' | 'large' | 'giant';
+export type EnergyLevel = 'low' | 'medium' | 'high' | 'very_high';
+export type BehaviorWithDogs = 'very_friendly' | 'friendly' | 'selective' | 'reactive';
+export type BehaviorWithPeople = 'very_friendly' | 'friendly' | 'shy' | 'wary';
+export type LeashBehavior = 'excellent' | 'good' | 'in_training' | 'difficult';
+export type RecallReliability = 'reliable' | 'partial' | 'unreliable';
+export type WalkTime = 'early_morning' | 'morning' | 'afternoon' | 'evening' | 'late_evening';
+export type WalkTerrain = 'urban' | 'park' | 'countryside' | 'beach' | 'mountain';
+export type Gender = 'male' | 'female';
 
 export interface DogProfile {
   id: string;

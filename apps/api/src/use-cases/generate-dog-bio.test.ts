@@ -6,14 +6,14 @@ function buildInput() {
   return {
     name: 'Luna',
     breed: 'Labrador',
-    size: 'grande' as const,
-    gender: 'femmina' as const,
-    energyLevel: 'alta' as const,
-    behaviorWithDogs: 'molto_socievole' as const,
-    behaviorWithPeople: 'socievole' as const,
-    leashBehavior: 'buono' as const,
-    walkPrefTime: ['mattina' as const, 'sera' as const],
-    walkPrefTerrain: ['parco' as const],
+    size: 'large' as const,
+    gender: 'female' as const,
+    energyLevel: 'high' as const,
+    behaviorWithDogs: 'very_friendly' as const,
+    behaviorWithPeople: 'friendly' as const,
+    leashBehavior: 'good' as const,
+    walkPrefTime: ['morning' as const, 'evening' as const],
+    walkPrefTerrain: ['park' as const],
   };
 }
 

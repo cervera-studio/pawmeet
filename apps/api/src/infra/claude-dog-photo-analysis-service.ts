@@ -5,7 +5,7 @@ import type {
   DogPhotoAnalysisService,
 } from '../ports/dog-photo-analysis-service.js';
 
-const VALID_SIZES = ['toy', 'piccola', 'media', 'grande', 'gigante'] as const;
+const VALID_SIZES = ['toy', 'small', 'medium', 'large', 'giant'] as const;
 
 export class ClaudeDogPhotoAnalysisService implements DogPhotoAnalysisService {
   constructor(private client: Anthropic) {}
@@ -33,7 +33,7 @@ export class ClaudeDogPhotoAnalysisService implements DogPhotoAnalysisService {
                 '{\n' +
                 '  "breed": "primary breed name in Italian (e.g. Labrador Retriever, Pastore Tedesco)",\n' +
                 '  "breedSecondary": "secondary breed if mixed, or null",\n' +
-                '  "size": "one of: toy, piccola, media, grande, gigante",\n' +
+                '  "size": "one of: toy, small, medium, large, giant",\n' +
                 '  "ageEstimate": "estimated age range (e.g. 2-4 anni, cucciolo, anziano), or null if unclear",\n' +
                 '  "confidence": 0.0-1.0 (how confident you are in the breed identification)\n' +
                 '}\n' +
@@ -52,10 +52,10 @@ export class ClaudeDogPhotoAnalysisService implements DogPhotoAnalysisService {
 
       if (result.error === 'not_a_dog') return null;
 
-      const size = String(result.size ?? 'media');
+      const size = String(result.size ?? 'medium');
       const validSize = VALID_SIZES.includes(size as (typeof VALID_SIZES)[number])
         ? (size as DogPhotoAnalysisResult['size'])
-        : 'media';
+        : 'medium';
 
       return {
         breed: String(result.breed ?? ''),

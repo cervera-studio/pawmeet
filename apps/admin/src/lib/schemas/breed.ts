@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 type ValidationTranslationFn = ReturnType<typeof useTranslations<'validation'>>;
 
-const SIZE_CATEGORIES = ['toy', 'piccola', 'media', 'grande', 'gigante'] as const;
+const SIZE_CATEGORIES = ['toy', 'small', 'medium', 'large', 'giant'] as const;
 
 const BREED_GROUPS = [
   'Herding',

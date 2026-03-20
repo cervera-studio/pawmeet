@@ -57,6 +57,13 @@
       "when": 1773692931040,
       "tag": "0007_minor_jack_murdock",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1774017650829,
+      "tag": "0008_migrate_enums_to_english",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,7 @@
     "lint": "biome check src/",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/migrate.ts",
+    "db:post-migrate": "node scripts/post-migrate.mjs",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "seed:admin": "tsx src/seeds/seed-admin.ts",

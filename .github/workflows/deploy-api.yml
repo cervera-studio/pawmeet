@@ -33,8 +33,13 @@ jobs:
 
       - run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Push DB schema to Neon
-        run: pnpm --filter @pawmeet/db db:push
+      - name: Run DB migrations
+        run: pnpm --filter @pawmeet/db db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Apply post-migration indexes
+        run: node packages/db/scripts/post-migrate.mjs
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 

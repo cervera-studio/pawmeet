@@ -93,12 +93,10 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
-    // Get already-swiped dog IDs and blocked users
-    const swipedIds = new Set(await matchRepo.findSwipedDogIds(dogId));
-
-    // Get candidate dogs (bounded by PostGIS distance filter + limit)
+    // Get candidate dogs (bounded by PostGIS distance filter + excludes already-swiped)
     const candidates = await matchRepo.findCandidateDogs(
       userId,
+      dogId,
       user.latitude,
       user.longitude,
       radiusKm * 1000,
@@ -108,7 +106,6 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
     const scored = candidates
       .flatMap((c) => {
         if (!hasOwnerLocation(c)) return [];
-        if (swipedIds.has(c.dog.id)) return [];
         // Apply user-selected filters before expensive scoring
         if (filters && !matchesFilters(c.dog, filters)) return [];
 

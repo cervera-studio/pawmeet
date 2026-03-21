@@ -84,16 +84,15 @@ describe('discoverCandidates', () => {
     }
   });
 
-  it('excludes already-swiped dogs', async () => {
-    const candidate = buildCandidate();
+  it('excludes already-swiped dogs at DB level', async () => {
     const myDog = buildDog();
     const user = buildUser();
 
     const dogRepo = buildDogRepo({ findByIdAndOwner: vi.fn().mockResolvedValue(myDog) });
-    const matchRepo = buildMatchRepo({
-      findSwipedDogIds: vi.fn().mockResolvedValue(['dog-2']),
-      findCandidateDogs: vi.fn().mockResolvedValue([candidate]),
-    });
+    // Swipe exclusion now happens inside findCandidateDogs (NOT EXISTS subquery),
+    // so the mock returns no candidates when all have been swiped
+    const findCandidateDogs = vi.fn().mockResolvedValue([]);
+    const matchRepo = buildMatchRepo({ findCandidateDogs });
     const userRepo = buildUserRepo({ findById: vi.fn().mockResolvedValue(user) });
 
     const discover = createDiscoverCandidates({
@@ -106,7 +105,9 @@ describe('discoverCandidates', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.suggestions.every((s) => s.dog.id !== 'dog-2')).toBe(true);
+    expect(result.data.suggestions).toHaveLength(0);
+    // Verify swiperDogId is passed to the repository
+    expect(findCandidateDogs).toHaveBeenCalledWith('user-1', 'dog-1', 41.9028, 12.4964, 50000);
   });
 
   it('fails with DOG_NOT_FOUND when dog not owned by user', async () => {

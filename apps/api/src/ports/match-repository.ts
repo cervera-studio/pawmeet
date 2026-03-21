@@ -26,6 +26,7 @@ export interface MatchRepository {
   // Discovery
   findCandidateDogs(
     excludeOwnerId: string,
+    swiperDogId: string,
     ownerLat?: number | null,
     ownerLon?: number | null,
     radiusMeters?: number,

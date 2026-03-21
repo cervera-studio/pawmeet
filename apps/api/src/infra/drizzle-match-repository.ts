@@ -104,6 +104,7 @@ export class DrizzleMatchRepository implements MatchRepository {
 
   async findCandidateDogs(
     excludeOwnerId: string,
+    swiperDogId: string,
     ownerLat?: number | null,
     ownerLon?: number | null,
     radiusMeters?: number,
@@ -133,6 +134,12 @@ export class DrizzleMatchRepository implements MatchRepository {
             CAST(ST_Point(${users.longitude}, ${users.latitude}) AS geography),
             CAST(ST_Point(${ownerLon}, ${ownerLat}) AS geography),
             ${radius}
+          )`,
+          // Exclude dogs already swiped by this dog
+          sql`NOT EXISTS (
+            SELECT 1 FROM ${swipes}
+            WHERE ${swipes.swiperDogId} = ${swiperDogId}
+              AND ${swipes.swipedDogId} = ${dogProfiles.id}
           )`,
         ),
       )

@@ -183,6 +183,7 @@ export function createSuggestWalks({
     const radiusKm = user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
     const candidates = await matchRepo.findCandidateDogs(
       userId,
+      dogId,
       user.latitude,
       user.longitude,
       radiusKm * 1000,

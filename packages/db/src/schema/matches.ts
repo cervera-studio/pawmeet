@@ -54,6 +54,7 @@ export const swipes = pgTable(
   },
   (table) => [
     index('swipes_swiper_dog_id_idx').on(table.swiperDogId),
+    index('swipes_swiped_dog_id_idx').on(table.swipedDogId),
     check('swipes_direction_valid', sql`${table.direction} IN ('like', 'pass')`),
     // Prevent duplicate swipes: one swipe per pair
     unique('uq_swipes_pair').on(table.swiperDogId, table.swipedDogId),

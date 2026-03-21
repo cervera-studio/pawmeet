@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
+import { index, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
 import { dogProfiles } from './dogs';
 
 export const badges = pgTable(
@@ -11,5 +11,8 @@ export const badges = pgTable(
     type: text('type').notNull(),
     awardedAt: timestamp('awarded_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [unique('badges_dog_id_type_unique').on(t.dogId, t.type)],
+  (t) => [
+    index('badges_dog_id_idx').on(t.dogId),
+    unique('badges_dog_id_type_unique').on(t.dogId, t.type),
+  ],
 );

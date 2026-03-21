@@ -38,6 +38,32 @@ jobs:
       - name: Test
         run: pnpm test
 
+  migration-check:
+    name: Migration drift check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Generate migrations and check for drift
+        run: |
+          pnpm --filter @pawmeet/db db:generate
+          if [ -n "$(git status --porcelain packages/db/drizzle/)" ]; then
+            echo "::error::Schema drift detected! Run 'pnpm --filter @pawmeet/db db:generate' and commit the migration."
+            git diff packages/db/drizzle/
+            exit 1
+          fi
+
   a11y:
     name: Accessibility (Pa11y)
     runs-on: ubuntu-latest

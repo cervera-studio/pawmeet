@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   boolean,
   check,
+  index,
   pgTable,
   text,
   timestamp,
@@ -53,6 +54,7 @@ export const organizationMembers = pgTable(
   },
   (table) => [
     uniqueIndex('org_members_pair_idx').on(table.organizationId, table.userId),
+    index('org_members_user_id_idx').on(table.userId),
     check('organization_members_role_valid', sql`${table.role} IN ('owner', 'admin', 'member')`),
   ],
 );

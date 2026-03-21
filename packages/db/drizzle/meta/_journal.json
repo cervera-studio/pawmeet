@@ -29,6 +29,13 @@
       "when": 1774053374702,
       "tag": "0003_add_admin_refresh_token_hash",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774089104163,
+      "tag": "0005_add_missing_indexes_and_constraints",
+      "breakpoints": true
     }
   ]
 }

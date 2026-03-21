@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { check, index, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { check, index, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const TOKEN_TYPE = {
@@ -24,6 +24,7 @@ export const verificationTokens = pgTable(
   },
   (table) => [
     index('verification_tokens_user_idx').on(table.userId),
+    uniqueIndex('verification_tokens_hash_idx').on(table.tokenHash),
     check(
       'verification_tokens_type_valid',
       sql`${table.type} IN ('email_verification', 'password_reset')`,

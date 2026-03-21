@@ -23,6 +23,7 @@ export const walkFeedback = pgTable(
   },
   (table) => [
     unique('walk_feedback_walk_user_unique').on(table.walkId, table.fromUserId),
+    index('walk_feedback_walk_idx').on(table.walkId),
     index('walk_feedback_from_user_idx').on(table.fromUserId),
     index('walk_feedback_to_dog_idx').on(table.toDogId),
     check('walk_feedback_rating_range', sql`${table.rating} >= 1 AND ${table.rating} <= 5`),

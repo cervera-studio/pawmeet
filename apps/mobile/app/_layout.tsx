@@ -335,13 +335,8 @@ function RootLayout() {
               <Text className="mb-8 text-base text-neutral-400">
                 {t('biometric.lockedMessage')}
               </Text>
-              <Pressable
-                onPress={authenticate}
-                className="rounded-xl bg-emerald-600 px-8 py-4"
-              >
-                <Text className="text-base font-semibold text-white">
-                  {t('biometric.unlock')}
-                </Text>
+              <Pressable onPress={authenticate} className="rounded-xl bg-emerald-600 px-8 py-4">
+                <Text className="text-base font-semibold text-white">{t('biometric.unlock')}</Text>
               </Pressable>
             </View>
           )}

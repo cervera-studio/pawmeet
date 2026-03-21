@@ -46,7 +46,7 @@ export function useBiometricLock() {
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated || !biometricEnabled) {
+    if (!(isAuthenticated && biometricEnabled)) {
       setIsLocked(false);
       return;
     }

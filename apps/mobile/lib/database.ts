@@ -1,19 +1,37 @@
 import { logger } from '@pawmeet/utils';
+import { Directory, Paths } from 'expo-file-system';
+import * as SecureStore from 'expo-secure-store';
 import * as SQLite from 'expo-sqlite';
 
 const DB_NAME = 'pawmeet.db';
 const SCHEMA_VERSION = 2;
+const SQLITE_KEY_STORE_KEY = 'pawmeet_sqlite_enc_key';
 
 let db: SQLite.SQLiteDatabase | null = null;
 
+/** Get or generate the SQLCipher encryption key, stored in SecureStore. */
+async function getEncryptionKey(): Promise<string> {
+  const existing = await SecureStore.getItemAsync(SQLITE_KEY_STORE_KEY);
+  if (existing) return existing;
+
+  const key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  await SecureStore.setItemAsync(SQLITE_KEY_STORE_KEY, key);
+  return key;
+}
+
 /**
  * Get or create the SQLite database instance.
- * Initializes schema on first call.
+ * Encrypted with SQLCipher — key stored in SecureStore.
  */
 export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (db) return db;
 
+  const encKey = await getEncryptionKey();
   db = await SQLite.openDatabaseAsync(DB_NAME);
+  // SQLCipher: set key immediately after opening — before any other statement
+  await db.execAsync(`PRAGMA key = '${encKey}';`);
   await db.execAsync('PRAGMA journal_mode = WAL;');
   await db.execAsync('PRAGMA foreign_keys = ON;');
   await runMigrations(db);
@@ -140,5 +158,20 @@ export async function closeDatabase(): Promise<void> {
   if (db) {
     await db.closeAsync();
     db = null;
+  }
+}
+
+/**
+ * Delete the SQLite database file. Call on logout to wipe cached data.
+ */
+export async function wipeDatabase(): Promise<void> {
+  await closeDatabase();
+  try {
+    const sqliteDir = new Directory(Paths.document, 'SQLite');
+    if (sqliteDir.exists) {
+      sqliteDir.delete();
+    }
+  } catch (e) {
+    logger.warn('SQLite', 'Failed to wipe database files', e);
   }
 }

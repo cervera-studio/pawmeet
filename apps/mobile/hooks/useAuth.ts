@@ -1,7 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { useCallback } from 'react';
 import { container } from 'tsyringe';
-import { closeDatabase } from '@/lib/database';
+import { wipeDatabase } from '@/lib/database';
 import { storage } from '@/lib/storage';
 import type { AuthResult } from '@/repositories/interfaces/auth-repository';
 import { ANALYTICS_SERVICE, AUTH_REPOSITORY } from '@/repositories/tokens';
@@ -97,9 +97,9 @@ export function useAuth() {
 
     try {
       stopSyncEngine();
-      await closeDatabase();
+      await wipeDatabase();
     } catch (e) {
-      logger.warn('useAuth', 'Database close failed on logout', e);
+      logger.warn('useAuth', 'Database wipe failed on logout', e);
     }
 
     await storage.clear();

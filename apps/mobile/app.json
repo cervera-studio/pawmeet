@@ -48,6 +48,12 @@
       ],
       "./plugins/with-certificate-pinning",
       [
+        "expo-sqlite",
+        {
+          "useSQLCipher": true
+        }
+      ],
+      [
         "react-native-health-connect",
         {
           "isSdkExtensionPatched": true

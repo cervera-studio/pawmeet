@@ -92,7 +92,9 @@ export const storage = {
 
   async setRefreshToken(token: string): Promise<void> {
     try {
-      await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, token);
+      await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, token, {
+        requireAuthentication: true,
+      });
     } catch {
       logger.warn('Storage', 'SecureStore non disponibile');
     }

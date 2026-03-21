@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useGroupEvents } from '@/hooks/useGroupEvents';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 import { useDogsStore } from '@/stores/dogs';
@@ -18,7 +19,8 @@ export type { EventDetail };
 
 export function useEventDetailViewModel() {
   const { t } = useTranslation();
-  const { eventId } = useLocalSearchParams<{ eventId: string }>();
+  const { eventId: rawEventId } = useLocalSearchParams<{ eventId: string }>();
+  const eventId = rawEventId && isValidUUID(rawEventId) ? rawEventId : undefined;
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id) ?? '';
   const selectedDogId = useDogsStore((s) => s.selectedDogId);

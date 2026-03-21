@@ -26,6 +26,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
@@ -87,7 +88,7 @@ export {
 
 export function useEditDogViewModel() {
   const params = useLocalSearchParams<{ dogId: string }>();
-  const dogId = params.dogId ?? '';
+  const dogId = params.dogId && isValidUUID(params.dogId) ? params.dogId : undefined;
   const router = useRouter();
   const updateDogInStore = useDogsStore((s) => s.updateDog);
 

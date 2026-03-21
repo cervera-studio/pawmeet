@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFeed } from '@/hooks/useFeed';
+import { isValidUUID } from '@/lib/deep-link-validation';
 
 type PostDetail = RouterOutput['feed']['postDetail']['post'];
 type CommentWithAuthor = RouterOutput['feed']['getComments']['comments'][number];
@@ -16,7 +17,8 @@ export interface ReplyTarget {
 export type { CommentWithAuthor, PostDetail };
 
 export function usePostDetailViewModel() {
-  const { postId } = useLocalSearchParams<{ postId: string }>();
+  const { postId: rawPostId } = useLocalSearchParams<{ postId: string }>();
+  const postId = rawPostId && isValidUUID(rawPostId) ? rawPostId : undefined;
   const router = useRouter();
   const { likePost, fetchComments, createComment, reportContent } = useFeed();
 

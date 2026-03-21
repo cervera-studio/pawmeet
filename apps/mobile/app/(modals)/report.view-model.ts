@@ -6,6 +6,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { useFeed } from '@/hooks/useFeed';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import i18n from '@/lib/i18n';
 
 interface ReportReason {
@@ -25,10 +26,11 @@ function getReasons(): ReportReason[] {
 
 export function useReportViewModel() {
   const router = useRouter();
-  const { contentType, contentId } = useLocalSearchParams<{
+  const { contentType, contentId: rawContentId } = useLocalSearchParams<{
     contentType: 'post' | 'comment' | 'story';
     contentId: string;
   }>();
+  const contentId = rawContentId && isValidUUID(rawContentId) ? rawContentId : undefined;
   const { reportContent } = useFeed();
 
   const [selectedReason, setSelectedReason] = useState<ContentReportReason | null>(null);

@@ -4,21 +4,17 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FollowButton } from '@/components/follow-button';
 import { Avatar } from '@/components/ui/Avatar';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { useUserProfileViewModel } from './user-profile.view-model';
 
 export default function UserProfileScreen() {
-  const { userId, name, avatar } = useLocalSearchParams<{
-    userId: string;
-    name?: string;
-    avatar?: string;
-  }>();
+  const { userId } = useLocalSearchParams<{ userId: string }>();
 
   const { t } = useTranslation();
-  const vm = useUserProfileViewModel(userId);
+  const validUserId = userId && isValidUUID(userId) ? userId : undefined;
+  const vm = useUserProfileViewModel(validUserId);
 
-  // Set display data from route params
-  if (name && vm.displayName !== name) vm.setDisplayName(name);
-  if (avatar && vm.avatarUrl !== avatar) vm.setAvatarUrl(avatar);
+  // name/avatar fetched from backend via view model — never trust URL params
 
   if (vm.loading) {
     return (

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { useFeed } from '@/hooks/useFeed';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { useAuthStore } from '@/stores/auth';
 
 type CommentWithAuthor = RouterOutput['feed']['getComments']['comments'][number];
@@ -17,7 +18,8 @@ export interface ReplyTarget {
 export type { CommentWithAuthor };
 
 export function useCommentsViewModel() {
-  const { postId } = useLocalSearchParams<{ postId: string }>();
+  const { postId: rawPostId } = useLocalSearchParams<{ postId: string }>();
+  const postId = rawPostId && isValidUUID(rawPostId) ? rawPostId : undefined;
   const router = useRouter();
   const { t } = useTranslation();
   const currentUserId = useAuthStore((s) => s.user?.id);

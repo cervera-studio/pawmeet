@@ -1,6 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { api } from '@/lib/trpc';
 
 type StoryViewer = {
@@ -11,7 +12,8 @@ type StoryViewer = {
 };
 
 export function useStoryViewersViewModel() {
-  const { storyId } = useLocalSearchParams<{ storyId: string }>();
+  const { storyId: rawStoryId } = useLocalSearchParams<{ storyId: string }>();
+  const storyId = rawStoryId && isValidUUID(rawStoryId) ? rawStoryId : undefined;
   const [viewers, setViewers] = useState<StoryViewer[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

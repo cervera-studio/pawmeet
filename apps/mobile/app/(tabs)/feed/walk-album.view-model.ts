@@ -1,6 +1,7 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { isValidUUID } from '@/lib/deep-link-validation';
 
 type WalkAlbum = RouterOutput['feed']['walkAlbum'];
 type AlbumMedia = WalkAlbum['posts'][number]['media'][number];
@@ -8,7 +9,8 @@ type AlbumMedia = WalkAlbum['posts'][number]['media'][number];
 export type { AlbumMedia, WalkAlbum };
 
 export function useWalkAlbumViewModel() {
-  const { walkId } = useLocalSearchParams<{ walkId: string }>();
+  const { walkId: rawWalkId } = useLocalSearchParams<{ walkId: string }>();
+  const walkId = rawWalkId && isValidUUID(rawWalkId) ? rawWalkId : undefined;
 
   const [album, setAlbum] = useState<WalkAlbum | null>(null);
   const [loading, setLoading] = useState(true);

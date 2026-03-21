@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { StoryViewer } from '@/components/StoryViewer';
 import { useFeed } from '@/hooks/useFeed';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { useAuthStore } from '@/stores/auth';
 
 type StoryGroup = RouterOutput['feed']['stories']['groups'][number];
 
 export default function StoryViewerModal() {
-  const { authorId } = useLocalSearchParams<{ authorId: string }>();
+  const { authorId: rawAuthorId } = useLocalSearchParams<{ authorId: string }>();
+  const authorId = rawAuthorId && isValidUUID(rawAuthorId) ? rawAuthorId : undefined;
   const router = useRouter();
   const { storyGroups, fetchStories, viewStory } = useFeed();
   const [group, setGroup] = useState<StoryGroup | null>(null);

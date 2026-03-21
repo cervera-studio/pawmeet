@@ -4,12 +4,24 @@ import { Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 
+const VALID_MEDIA_TYPES = new Set(['image', 'video']);
+
+function isValidMediaUrl(raw: string): boolean {
+  try {
+    const parsed = new URL(decodeURIComponent(raw));
+    return parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 export default function MediaViewerScreen() {
   usePreventScreenCapture();
   const { url, mediaType } = useLocalSearchParams<{ url: string; mediaType: string }>();
   const router = useRouter();
 
-  const decodedUrl = url ? decodeURIComponent(url) : '';
+  const decodedUrl = url && isValidMediaUrl(url) ? decodeURIComponent(url) : '';
+  const validMediaType = mediaType && VALID_MEDIA_TYPES.has(mediaType) ? mediaType : 'image';
 
   return (
     <View className="flex-1 bg-black">
@@ -29,7 +41,7 @@ export default function MediaViewerScreen() {
 
       {/* Media content */}
       <View className="flex-1 items-center justify-center">
-        {mediaType === 'video' ? (
+        {validMediaType === 'video' ? (
           <Video
             source={{ uri: decodedUrl }}
             resizeMode={ResizeMode.CONTAIN}

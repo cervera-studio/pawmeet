@@ -4,6 +4,7 @@ import { logger } from '@pawmeet/utils';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getSharedWs, useWebSocketListener } from '@/hooks/useWebSocket';
+import { isValidUUID } from '@/lib/deep-link-validation';
 import { api } from '@/lib/trpc';
 import { enqueueMutation } from '@/services/sync-engine';
 
@@ -13,7 +14,8 @@ type MyTicket = RouterOutput['support']['listMyTickets'][number];
 const TYPING_DEBOUNCE_MS = 2000;
 
 export function useSupportChatViewModel() {
-  const { ticketId } = useLocalSearchParams<{ ticketId: string }>();
+  const { ticketId: rawTicketId } = useLocalSearchParams<{ ticketId: string }>();
+  const ticketId = rawTicketId && isValidUUID(rawTicketId) ? rawTicketId : undefined;
   const [messages, setMessages] = useState<Message[]>([]);
   const [ticket, setTicket] = useState<MyTicket | null>(null);
   const [loading, setLoading] = useState(true);

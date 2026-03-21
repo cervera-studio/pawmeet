@@ -10,7 +10,7 @@ import { FOLLOW_REPOSITORY } from '@/repositories/tokens';
 
 const followRepo = container.resolve(FOLLOW_REPOSITORY);
 
-export function useUserProfileViewModel(userId: string) {
+export function useUserProfileViewModel(userId: string | undefined) {
   const router = useRouter();
   const { user: currentUser } = useAuth();
   const [displayName, setDisplayName] = useState('');
@@ -26,7 +26,7 @@ export function useUserProfileViewModel(userId: string) {
   const isCurrentUser = currentUser?.id === userId;
 
   useEffect(() => {
-    if (isCurrentUser) return;
+    if (!userId || isCurrentUser) return;
 
     followRepo
       .getFollowStatus(userId)
@@ -36,7 +36,7 @@ export function useUserProfileViewModel(userId: string) {
   }, [userId, isCurrentUser]);
 
   const handleFollow = useCallback(async () => {
-    if (actionLoading) return;
+    if (!userId || actionLoading) return;
     setActionLoading(true);
     try {
       if (status.isFollowedByMe) {
@@ -65,6 +65,7 @@ export function useUserProfileViewModel(userId: string) {
           style: 'destructive',
           onPress: async () => {
             try {
+              if (!userId) return;
               await followRepo.block(userId);
               Alert.alert(i18n.t('userProfile.blockedTitle'), i18n.t('userProfile.blockedMessage'));
               router.back();

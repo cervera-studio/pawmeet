@@ -1,6 +1,7 @@
 import { TOKEN_TYPE } from '@pawmeet/db';
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { checkOtpRateLimit, recordOtpAttempt, resetOtpAttempts } from '../lib/otp-rate-limit.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -27,8 +28,15 @@ export function createResetPassword(deps: Deps) {
     const { userRepo, tokenRepo, authService } = deps;
     const { email, code, password } = input;
 
+    // Per-email OTP rate limiting to prevent brute-force
+    const allowed = await checkOtpRateLimit(email);
+    if (!allowed) {
+      return fail(new AppError('AUTH_RATE_LIMITED', 'Troppi tentativi, riprova più tardi', 429));
+    }
+
     const user = await userRepo.findByEmail(email);
     if (!user) {
+      await recordOtpAttempt(email);
       logSecurityEvent({
         event: SECURITY_EVENT.PasswordResetFailed,
         email,
@@ -45,6 +53,7 @@ export function createResetPassword(deps: Deps) {
     );
 
     if (!stored) {
+      await recordOtpAttempt(email);
       logSecurityEvent({
         event: SECURITY_EVENT.PasswordResetFailed,
         userId: user.id,
@@ -67,6 +76,7 @@ export function createResetPassword(deps: Deps) {
 
     // Revoke all refresh tokens for this user (force re-login)
     await tokenRepo.revokeAllUserRefreshTokens(user.id);
+    await resetOtpAttempts(email);
 
     logSecurityEvent({ event: SECURITY_EVENT.PasswordResetSuccess, userId: user.id, email });
 

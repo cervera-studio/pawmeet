@@ -21,6 +21,7 @@ interface Deps {
 }
 
 const MINIMUM_RESPONSE_MS = 500;
+const MAX_JITTER_MS = 500;
 
 export function createForgotPassword(deps: Deps) {
   return async (email: string): Promise<Result<ForgotPasswordOutput>> => {
@@ -52,10 +53,12 @@ export function createForgotPassword(deps: Deps) {
 
     logSecurityEvent({ event: SECURITY_EVENT.PasswordResetRequested, email });
 
-    // Constant-time delay to prevent email enumeration via response timing
+    // Constant-time delay + random jitter to prevent email enumeration via response timing
     const elapsed = Date.now() - startTime;
-    if (elapsed < MINIMUM_RESPONSE_MS) {
-      await new Promise((resolve) => setTimeout(resolve, MINIMUM_RESPONSE_MS - elapsed));
+    const jitter = Math.floor(Math.random() * MAX_JITTER_MS);
+    const targetMs = MINIMUM_RESPONSE_MS + jitter;
+    if (elapsed < targetMs) {
+      await new Promise((resolve) => setTimeout(resolve, targetMs - elapsed));
     }
 
     return succeed({ message: "Se l'email esiste, riceverai un codice per il reset" });

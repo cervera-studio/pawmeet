@@ -1,5 +1,5 @@
 import { userConsents } from '@pawmeet/db';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { ConsentRecord, ConsentRepository } from '../ports/consent-repository.js';
 
@@ -17,27 +17,9 @@ export class DrizzleConsentRepository implements ConsentRepository {
     userAgent: string | null,
   ): Promise<void> {
     const now = new Date();
-    const existing = await this.db
-      .select()
-      .from(userConsents)
-      .where(and(eq(userConsents.userId, userId), eq(userConsents.consentType, consentType)))
-      .then((rows) => rows[0]);
-
-    if (existing) {
-      await this.db
-        .update(userConsents)
-        .set({
-          granted,
-          grantedAt: granted ? now : existing.grantedAt,
-          withdrawnAt: granted ? null : now,
-          ipAddress,
-          userAgent,
-          source,
-          updatedAt: now,
-        })
-        .where(eq(userConsents.id, existing.id));
-    } else {
-      await this.db.insert(userConsents).values({
+    await this.db
+      .insert(userConsents)
+      .values({
         userId,
         consentType,
         granted,
@@ -46,8 +28,19 @@ export class DrizzleConsentRepository implements ConsentRepository {
         ipAddress,
         userAgent,
         source,
+      })
+      .onConflictDoUpdate({
+        target: [userConsents.userId, userConsents.consentType],
+        set: {
+          granted,
+          grantedAt: granted ? now : sql`${userConsents.grantedAt}`,
+          withdrawnAt: granted ? null : now,
+          ipAddress,
+          userAgent,
+          source,
+          updatedAt: now,
+        },
       });
-    }
   }
 
   async findByUser(userId: string): Promise<ConsentRecord[]> {

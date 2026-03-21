@@ -117,7 +117,9 @@ export class DrizzleUserRepository implements UserRepository {
   ): Promise<SearchResult[]> {
     // Use ILIKE for case-insensitive prefix/contains search
     // For production scale, add pg_trgm index: CREATE INDEX users_display_name_trgm ON users USING gin (display_name gin_trgm_ops);
-    const pattern = `%${query}%`;
+    // Escape ILIKE metacharacters to prevent information disclosure (searching "%" would match all)
+    const escaped = query.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+    const pattern = `%${escaped}%`;
     const rows = await this.db
       .select({
         id: users.id,

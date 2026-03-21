@@ -1,4 +1,5 @@
 import type { GroupEventStatus } from '@pawmeet/types';
+import { pushNotificationDataSchema } from '@pawmeet/validation';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { canTransitionTo } from '../../domain/group-event-state-machine.js';
@@ -823,7 +824,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
         z.object({
           title: z.string().min(1).max(100),
           body: z.string().min(1).max(500),
-          data: z.record(z.string(), z.string()).optional(),
+          data: pushNotificationDataSchema.optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -868,7 +869,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
           userIds: z.array(z.string().uuid()).min(1).max(100),
           title: z.string().min(1).max(100),
           body: z.string().min(1).max(500),
-          data: z.record(z.string(), z.string()).optional(),
+          data: pushNotificationDataSchema.optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {

@@ -143,7 +143,7 @@ async function detectRisingForUser(userId: string): Promise<boolean> {
       userId,
       title: 'Nuove compatibilità in crescita!',
       body: `Hai ${risingCount} nuovi match con compatibilità in aumento. Dai un'occhiata!`,
-      data: { screen: 'discover' },
+      data: { type: 'nearby_suggestion' },
     });
 
     trackEvent('rising_compatibility_notified', userId, { risingCount });

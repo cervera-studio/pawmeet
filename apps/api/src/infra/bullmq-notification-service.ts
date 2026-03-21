@@ -1,3 +1,4 @@
+import type { PushNotificationData } from '@pawmeet/validation';
 import { enqueueNotification } from '../jobs/queue.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -6,7 +7,7 @@ export class BullMQNotificationService implements NotificationService {
     userId: string;
     title: string;
     body: string;
-    data?: Record<string, string>;
+    data?: PushNotificationData;
   }): Promise<void> {
     await enqueueNotification(data);
   }

@@ -3,11 +3,14 @@ import { Queue } from 'bullmq';
 
 /** BullMQ Redis connection config — uses standard Redis (not Upstash REST) */
 export function getRedisConnection() {
+  const isProduction = process.env.NODE_ENV === 'production';
   return {
     host: process.env.REDIS_HOST || 'localhost',
     port: Number(process.env.REDIS_PORT) || 6379,
     password: process.env.REDIS_PASSWORD || undefined,
     maxRetriesPerRequest: null,
+    // Enable TLS in production (Redis Cloud, ElastiCache, etc.)
+    ...(isProduction && { tls: {} }),
   };
 }
 
@@ -200,7 +203,7 @@ export interface NotificationJobData {
   userId: string;
   title: string;
   body: string;
-  data?: Record<string, string>;
+  data?: import('@pawmeet/validation').PushNotificationData;
 }
 
 export interface EmailJobData {

@@ -36,6 +36,16 @@ let pubClient: IORedis | null = null;
 let subClient: IORedis | null = null;
 let redisReady = false;
 
+/** Expose SERVER_ID for cross-module use (e.g. admin-ws) */
+export function getServerId(): string {
+  return SERVER_ID;
+}
+
+/** Expose pub client for cross-module publishing (e.g. admin-ws) */
+export function getWsPubClient() {
+  return pubClient && redisReady ? pubClient : null;
+}
+
 function getRedisConnectionConfig() {
   const enableTls =
     process.env.REDIS_TLS === 'true' ||
@@ -66,7 +76,8 @@ export async function initWsRedisSubscription(): Promise<void> {
 
     await Promise.all([pubClient.connect(), subClient.connect()]);
 
-    await subClient.subscribe(WS_USER_CHANNEL, WS_ROOM_CHANNEL);
+    const WS_ADMIN_CHANNEL = 'ws:admin';
+    await subClient.subscribe(WS_USER_CHANNEL, WS_ROOM_CHANNEL, WS_ADMIN_CHANNEL);
 
     subClient.on('message', (channel: string, data: string) => {
       try {
@@ -79,6 +90,12 @@ export async function initWsRedisSubscription(): Promise<void> {
           const parsed = JSON.parse(data) as RoomBroadcast & { serverId: string };
           if (parsed.serverId === SERVER_ID) return;
           sendToLocalRoom(parsed.matchId, parsed.message, parsed.excludeUserId);
+        } else if (channel === WS_ADMIN_CHANNEL) {
+          const parsed = JSON.parse(data) as { serverId: string; message: unknown };
+          if (parsed.serverId === SERVER_ID) return;
+          import('./admin-registry.js').then(({ sendToLocalAdmins }) => {
+            sendToLocalAdmins(parsed.message as import('@pawmeet/types').AdminWsMessage);
+          });
         }
       } catch (err) {
         logger.error('WsRedis', 'Failed to handle pub/sub message', err);

@@ -41,6 +41,8 @@ import { createAppleAuthWebhook } from './routes/apple-auth-webhook.js';
 import { createSupportRoutes } from './routes/support.js';
 import { appRouter } from './trpc/root.js';
 import { createContext } from './trpc/trpc.js';
+import { handleAdminUpgrade, setupAdminWebSocket } from './ws/admin-ws.js';
+import { handleUpgrade } from './ws/auth.js';
 import { setupWebSocket } from './ws/chat.js';
 
 const app = new Hono();
@@ -164,8 +166,19 @@ appLogger.info('API', `PawMeet API running on port ${port}`);
 
 const server = serve({ fetch: app.fetch, port, hostname: '0.0.0.0' });
 
-// Attach WebSocket server to the HTTP server
-setupWebSocket(server);
+// Attach WebSocket servers to the HTTP server
+// Route upgrades by path: /ws → user chat, /ws/admin → admin moderation
+const userWss = setupWebSocket();
+const adminWss = setupAdminWebSocket();
+
+server.on('upgrade', (request, socket, head) => {
+  const url = new URL(request.url || '', `http://${request.headers.host}`);
+  if (url.pathname === '/ws/admin') {
+    handleAdminUpgrade(adminWss, request, socket, head);
+  } else {
+    handleUpgrade(userWss, request, socket, head);
+  }
+});
 
 // Initialize Redis pub/sub for cross-server WebSocket relay (multi-instance)
 import('./ws/registry.js').then(({ initWsRedisSubscription }) => {

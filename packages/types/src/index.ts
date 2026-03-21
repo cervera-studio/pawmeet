@@ -1,3 +1,4 @@
+export * from './admin-ws';
 export * from './analytics';
 export * from './badge';
 export * from './chat';

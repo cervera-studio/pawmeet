@@ -1,10 +1,9 @@
-import type { ServerType } from '@hono/node-server';
 import { WS_EVENT, type WsEvent, type WsMessage } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
-import { handleUpgrade } from './auth.js';
+// biome-ignore lint/suspicious/noImportCycles: re-export pattern for backward compat
 import { broadcastOnlineStatus, handleMessage } from './handlers.js';
 import {
   addConnection,
@@ -63,6 +62,7 @@ async function isConnectionAllowed(userId: string): Promise<boolean> {
   }
 }
 
+// biome-ignore lint/suspicious/noImportCycles: re-export pattern for backward compat
 export { parseWsMessage } from './handlers.js';
 // Re-export public API so existing imports keep working
 export {
@@ -81,13 +81,9 @@ export {
 /** How often the server sends a ping frame to each client (ms) */
 const HEARTBEAT_INTERVAL = 30_000;
 
-/** Set up the WebSocket server attached to an HTTP server */
-export function setupWebSocket(server: ServerType) {
+/** Set up the WebSocket server (noServer mode — upgrade routing handled externally) */
+export function setupWebSocket() {
   const wss = new WebSocketServer({ noServer: true });
-
-  server.on('upgrade', (request, socket, head) => {
-    handleUpgrade(wss, request, socket, head);
-  });
 
   wss.on('connection', (ws: WebSocket, userId: string) => {
     // Enforce connection rate and concurrency limits

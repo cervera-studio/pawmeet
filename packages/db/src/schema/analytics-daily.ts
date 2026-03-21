@@ -1,4 +1,11 @@
-import { index, integer, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
+import {
+  index,
+  integer,
+  pgTable,
+  primaryKey,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 /**
  * Pre-aggregated daily analytics metrics.
@@ -15,7 +22,7 @@ export const analyticsDailyMetrics = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [
-    uniqueIndex('analytics_daily_date_metric_idx').on(t.date, t.metricName),
+    primaryKey({ columns: [t.date, t.metricName] }),
     index('analytics_daily_metric_name_idx').on(t.metricName),
   ],
 );

@@ -273,19 +273,13 @@ export class DrizzleGroupMessageRepository implements GroupMessageRepository {
   }
 
   async markAsRead(eventId: string, userId: string): Promise<void> {
-    const [existing] = await this.db
-      .select()
-      .from(groupMessageReads)
-      .where(and(eq(groupMessageReads.eventId, eventId), eq(groupMessageReads.userId, userId)));
-
-    if (existing) {
-      await this.db
-        .update(groupMessageReads)
-        .set({ lastReadAt: new Date() })
-        .where(eq(groupMessageReads.id, existing.id));
-    } else {
-      await this.db.insert(groupMessageReads).values({ eventId, userId });
-    }
+    await this.db
+      .insert(groupMessageReads)
+      .values({ eventId, userId })
+      .onConflictDoUpdate({
+        target: [groupMessageReads.eventId, groupMessageReads.userId],
+        set: { lastReadAt: new Date() },
+      });
   }
 
   async isEventParticipant(eventId: string, userId: string): Promise<boolean> {

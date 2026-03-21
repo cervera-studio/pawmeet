@@ -47,13 +47,28 @@ export const logoutSchema = z.object({
 export const socialLoginSchema = z
   .object({
     provider: z.enum(['apple', 'google']),
-    idToken: z.string().min(1),
+    /** Apple: ID token from native Sign In. Google (legacy implicit): ID token. */
+    idToken: z.string().min(1).optional(),
+    /** Google PKCE: authorization code from AuthSession. */
+    code: z.string().min(1).optional(),
+    /** Google PKCE: PKCE code verifier for server-side token exchange. */
+    codeVerifier: z.string().min(1).optional(),
+    /** Redirect URI used in the auth request (needed for code exchange). */
+    redirectUri: z.string().url().optional(),
     nonce: z.string().min(1).optional(),
     displayName: z.string().min(2).max(50).optional(),
   })
-  .refine((data) => data.provider !== 'google' || data.nonce, {
-    message: 'social_nonce_required',
-    path: ['nonce'],
+  .refine((data) => data.idToken || data.code, {
+    message: 'social_token_or_code_required',
+    path: ['idToken'],
+  })
+  .refine((data) => !data.code || (data.codeVerifier && data.redirectUri), {
+    message: 'social_pkce_fields_required',
+    path: ['codeVerifier'],
+  })
+  .refine((data) => data.provider !== 'apple' || data.idToken, {
+    message: 'social_apple_requires_id_token',
+    path: ['idToken'],
   });
 
 export const forgotPasswordSchema = z.object({

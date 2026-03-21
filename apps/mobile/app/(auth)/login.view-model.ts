@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import i18n from '@/lib/i18n';
 import {
-  extractGoogleIdToken,
+  extractGoogleCode,
   type SocialAuthResult,
   signInWithApple,
   useGoogleAuth,
@@ -38,13 +38,26 @@ export function useLoginViewModel() {
     [socialLogin],
   );
 
-  // Handle Google auth response
+  // Handle Google auth response (PKCE: exchange code server-side)
   useEffect(() => {
-    const result = extractGoogleIdToken(google.response);
+    const result = extractGoogleCode(google.response, google.request, google.redirectUri);
     if (result) {
-      handleSocialAuth(result);
+      setApiError('');
+      setLoading(true);
+      socialLogin(
+        result.provider,
+        undefined,
+        undefined,
+        result.code,
+        result.codeVerifier,
+        result.redirectUri,
+      )
+        .catch((e) =>
+          setApiError(e instanceof Error ? e.message : i18n.t('auth.login.googleError')),
+        )
+        .finally(() => setLoading(false));
     }
-  }, [google.response, handleSocialAuth]);
+  }, [google.response, google.request, google.redirectUri, socialLogin]);
 
   const handleLogin = useCallback(async () => {
     setErrors({});

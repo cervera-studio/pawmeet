@@ -16,8 +16,11 @@ export interface AuthRepository {
   ): Promise<AuthResult>;
   socialLogin(
     provider: 'apple' | 'google',
-    idToken: string,
+    idToken?: string,
     displayName?: string,
+    code?: string,
+    codeVerifier?: string,
+    redirectUri?: string,
   ): Promise<AuthResult>;
   logout(refreshToken: string): Promise<void>;
   getProfile(): Promise<Serialized<SafeUser>>;

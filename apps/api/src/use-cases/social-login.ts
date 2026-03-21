@@ -28,12 +28,19 @@ const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 export function createSocialLogin(deps: Deps) {
   return async (input: SocialLoginInput): Promise<Result<SocialLoginOutput>> => {
     const { userRepo, tokenRepo, authService, socialAuthVerifier, oauthAccountRepo } = deps;
-    const { provider, idToken, nonce } = input;
+    const { provider, idToken, code, codeVerifier, redirectUri, nonce } = input;
 
-    // 1. Verify the social provider's ID token
+    // 1. Verify the social provider's ID token (or exchange code first for Google PKCE)
     let payload: SocialAuthPayload;
     try {
-      payload = await socialAuthVerifier.verify(provider, idToken, nonce);
+      if (code && codeVerifier && redirectUri) {
+        // Google PKCE flow: exchange auth code for tokens server-side
+        payload = await socialAuthVerifier.exchangeGoogleCode({ code, codeVerifier, redirectUri });
+      } else if (idToken) {
+        payload = await socialAuthVerifier.verify(provider, idToken, nonce);
+      } else {
+        return fail(new AppError('AUTH_INVALID_TOKEN', 'Missing token or authorization code', 400));
+      }
     } catch {
       logSecurityEvent({
         event: SECURITY_EVENT.SocialLoginFailed,

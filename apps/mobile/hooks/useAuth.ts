@@ -73,8 +73,22 @@ export function useAuth() {
   );
 
   const socialLogin = useCallback(
-    async (provider: 'apple' | 'google', idToken: string, displayName?: string) => {
-      const result = await authRepo.socialLogin(provider, idToken, displayName);
+    async (
+      provider: 'apple' | 'google',
+      idToken?: string,
+      displayName?: string,
+      code?: string,
+      codeVerifier?: string,
+      redirectUri?: string,
+    ) => {
+      const result = await authRepo.socialLogin(
+        provider,
+        idToken,
+        displayName,
+        code,
+        codeVerifier,
+        redirectUri,
+      );
       await persistAuthResult(result, storeLogin);
     },
     [storeLogin],

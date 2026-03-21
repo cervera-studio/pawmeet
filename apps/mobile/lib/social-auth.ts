@@ -90,46 +90,41 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
 export function useGoogleAuth() {
   const redirectUri = AuthSession.makeRedirectUri();
 
-  const nonce = Crypto.getRandomBytes(16).reduce((s, b) => s + b.toString(16).padStart(2, '0'), '');
-
-  // Persist nonce so it survives component lifecycle across auth redirect
-  persistNonce(nonce);
-
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: GOOGLE_CLIENT_ID,
       scopes: ['openid', 'profile', 'email'],
-      responseType: AuthSession.ResponseType.IdToken,
+      responseType: AuthSession.ResponseType.Code,
+      usePKCE: true,
       redirectUri,
-      extraParams: { nonce },
     },
     googleDiscovery,
   );
 
-  return { request, response, promptAsync, nonce };
+  return { request, response, promptAsync, redirectUri };
 }
 
-export function extractGoogleIdToken(
+export interface GooglePkceResult {
+  provider: 'google';
+  code: string;
+  codeVerifier: string;
+  redirectUri: string;
+}
+
+export function extractGoogleCode(
   response: AuthSession.AuthSessionResult | null,
-  nonce?: string,
-): SocialAuthResult | null {
+  request: AuthSession.AuthRequest | null,
+  redirectUri: string,
+): GooglePkceResult | null {
   if (response?.type !== 'success') return null;
 
-  const idToken = response.params?.id_token;
-  if (!idToken) return null;
+  const code = response.params?.code;
+  if (!code) return null;
 
-  // Resolve nonce: prefer explicit argument, fall back to persisted value
-  const expectedNonce = nonce ?? consumePersistedNonce();
-
-  // Validate that the nonce in the JWT matches the one we generated
-  const payload = decodeJwtPayload(idToken);
-  if (!expectedNonce || payload.nonce !== expectedNonce) {
-    throw new Error('Google Sign In: nonce mismatch — possible replay attack');
+  const codeVerifier = request?.codeVerifier;
+  if (!codeVerifier) {
+    throw new Error('Google Sign In: missing PKCE code verifier');
   }
 
-  return {
-    provider: 'google',
-    idToken,
-    nonce: expectedNonce,
-  };
+  return { provider: 'google', code, codeVerifier, redirectUri };
 }

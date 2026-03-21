@@ -1,6 +1,10 @@
 import { timingSafeEqual } from 'node:crypto';
 import * as jose from 'jose';
-import type { SocialAuthPayload, SocialAuthVerifier } from '../ports/social-auth-verifier.js';
+import type {
+  GoogleCodeExchange,
+  SocialAuthPayload,
+  SocialAuthVerifier,
+} from '../ports/social-auth-verifier.js';
 
 function constantTimeEquals(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
@@ -60,18 +64,41 @@ export class JwksSocialAuthVerifier implements SocialAuthVerifier {
     };
   }
 
-  private async verifyGoogle(idToken: string, nonce?: string): Promise<SocialAuthPayload> {
-    if (!nonce) {
-      throw new Error('Nonce is required for Google authentication');
+  async exchangeGoogleCode(exchange: GoogleCodeExchange): Promise<SocialAuthPayload> {
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code: exchange.code,
+        client_id: this.googleClientId,
+        code_verifier: exchange.codeVerifier,
+        redirect_uri: exchange.redirectUri,
+        grant_type: 'authorization_code',
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      const body = await tokenResponse.text();
+      throw new Error(`Google token exchange failed: ${tokenResponse.status} ${body}`);
     }
 
+    const tokens = (await tokenResponse.json()) as { id_token?: string };
+    if (!tokens.id_token) {
+      throw new Error('Google token exchange: no id_token in response');
+    }
+
+    // Verify the ID token from the exchange (no nonce — PKCE provides CSRF protection)
+    return this.verifyGoogle(tokens.id_token);
+  }
+
+  private async verifyGoogle(idToken: string, nonce?: string): Promise<SocialAuthPayload> {
     const { payload } = await jose.jwtVerify(idToken, this.googleJwks, {
       issuer: ['https://accounts.google.com', 'accounts.google.com'],
       audience: this.googleClientId,
     });
 
-    // Verify nonce to prevent replay attacks
-    if (typeof payload.nonce !== 'string' || !constantTimeEquals(payload.nonce, nonce)) {
+    // Verify nonce if provided (implicit flow). PKCE flow skips nonce.
+    if (nonce && (typeof payload.nonce !== 'string' || !constantTimeEquals(payload.nonce, nonce))) {
       throw new Error('Google ID token nonce mismatch');
     }
 

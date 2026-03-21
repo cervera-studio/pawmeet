@@ -14,8 +14,15 @@ export function createTrpcAuthRepository(api: ApiClient): AuthRepository {
         dateOfBirth,
       });
     },
-    async socialLogin(provider, idToken, displayName) {
-      return api.auth.socialLogin.mutate({ provider, idToken, displayName });
+    async socialLogin(provider, idToken, displayName, code, codeVerifier, redirectUri) {
+      return api.auth.socialLogin.mutate({
+        provider,
+        idToken,
+        displayName,
+        code,
+        codeVerifier,
+        redirectUri,
+      });
     },
     async logout(refreshToken) {
       await api.auth.logout.mutate({ refreshToken });

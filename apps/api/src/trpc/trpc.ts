@@ -47,35 +47,54 @@ const t = initTRPC.context<Context>().create();
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
-// ── Rate-limited public procedure for auth endpoints (10 req / 15 min) ──────
-let _authRateLimiter: Ratelimit | null = null;
+// ── Rate-limited public procedures with per-action buckets ──────────────────
 
-async function getAuthRateLimiter(): Promise<Ratelimit> {
-  if (!_authRateLimiter) {
+const rateLimiters: Record<string, Ratelimit> = {};
+
+async function getRateLimiter(
+  prefix: string,
+  maxRequests: number,
+  window: string,
+): Promise<Ratelimit> {
+  if (!rateLimiters[prefix]) {
     const { redis } = await import('../lib/redis.js');
-    _authRateLimiter = new Ratelimit({
+    rateLimiters[prefix] = new Ratelimit({
       redis,
-      limiter: Ratelimit.slidingWindow(10, '15m'),
-      prefix: 'rl:trpc:auth',
+      limiter: Ratelimit.slidingWindow(
+        maxRequests,
+        window as Parameters<typeof Ratelimit.slidingWindow>[1],
+      ),
+      prefix,
     });
   }
-  return _authRateLimiter;
+  return rateLimiters[prefix];
 }
 
-export const rateLimitedPublicProcedure = t.procedure.use(async ({ ctx, next }) => {
-  const identifier = ctx.userId ?? ctx.clientIp;
-  const limiter = await getAuthRateLimiter();
-  const { success } = await limiter.limit(identifier);
+function createRateLimitedProcedure(prefix: string, maxRequests: number, window: string) {
+  return t.procedure.use(async ({ ctx, next }) => {
+    const identifier = ctx.userId ?? ctx.clientIp;
+    const limiter = await getRateLimiter(prefix, maxRequests, window);
+    const { success } = await limiter.limit(identifier);
 
-  if (!success) {
-    throw new TRPCError({
-      code: 'TOO_MANY_REQUESTS',
-      message: 'Too many requests, please try again later',
-    });
-  }
+    if (!success) {
+      throw new TRPCError({
+        code: 'TOO_MANY_REQUESTS',
+        message: 'Too many requests, please try again later',
+      });
+    }
 
-  return next();
-});
+    return next();
+  });
+}
+
+/** General auth rate limit: 10 req / 15 min (login, social login) */
+export const rateLimitedPublicProcedure = createRateLimitedProcedure('rl:trpc:auth', 10, '15m');
+
+/** Strict rate limit for registration: 3 req / hour */
+export const registerRateLimitedProcedure = createRateLimitedProcedure('rl:trpc:register', 3, '1h');
+
+/** Higher rate limit for token refresh: 30 req / min (automated, multi-device) */
+export const refreshRateLimitedProcedure = createRateLimitedProcedure('rl:trpc:refresh', 30, '1m');
 
 /** Protected procedure — requires authenticated user. */
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {

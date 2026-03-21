@@ -39,6 +39,11 @@ export interface UserDataExport {
     followingCount: number;
     createdAt: string;
     lastLoginAt: string | null;
+    linkedProviders: {
+      provider: string;
+      providerEmail: string | null;
+      linkedAt: string;
+    }[];
   };
   dogs: {
     name: string;
@@ -239,10 +244,11 @@ export function createExportUserData(deps: Deps) {
   return async (userId: string): Promise<Result<UserDataExport>> => {
     const { gdprExportRepo } = deps;
 
-    // Phase 1: fetch profile + dogs in parallel
-    const [profile, dogs] = await Promise.all([
+    // Phase 1: fetch profile + dogs + linked providers in parallel
+    const [profile, dogs, oauthAccountsData] = await Promise.all([
       gdprExportRepo.getProfile(userId),
       gdprExportRepo.getDogsWithPhotos(userId),
+      gdprExportRepo.getOAuthAccounts(userId),
     ]);
 
     if (!profile) {
@@ -347,6 +353,11 @@ export function createExportUserData(deps: Deps) {
         followingCount: profile.followingCount,
         createdAt: toIso(profile.createdAt),
         lastLoginAt: toIsoOrNull(profile.lastLoginAt),
+        linkedProviders: oauthAccountsData.map((a) => ({
+          provider: a.provider,
+          providerEmail: a.providerEmail,
+          linkedAt: toIso(a.linkedAt),
+        })),
       },
       dogs: dogs.map((d) => ({
         name: d.name,

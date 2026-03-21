@@ -4,11 +4,13 @@ import { logger } from '@pawmeet/utils';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 import type { AnalyticsRepository } from '../ports/analytics-repository.js';
+import type { AppleAuthService } from '../ports/apple-auth-service.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { DogRepository } from '../ports/dog-repository.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { FeedRepository } from '../ports/feed-repository.js';
 import type { MatchRepository } from '../ports/match-repository.js';
+import type { OAuthAccountRepository } from '../ports/oauth-account-repository.js';
 import type { StorageService } from '../ports/storage-service.js';
 import type { StoryRepository } from '../ports/story-repository.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -33,6 +35,8 @@ interface Deps {
   storyRepo: StoryRepository;
   emailService: EmailService;
   analyticsProviders: AnalyticsProvider[];
+  oauthAccountRepo: OAuthAccountRepository;
+  appleAuthService?: AppleAuthService;
 }
 
 /**
@@ -182,6 +186,19 @@ export function createDeleteAccount(deps: Deps) {
 
     await userRepo.updatePushToken(userId, null);
     await tokenRepo.revokeAllUserRefreshTokens(userId);
+
+    // --- Phase 3b: Revoke Apple Sign In tokens (App Store requirement) ---
+    if (deps.appleAuthService) {
+      const oauthLinks = await deps.oauthAccountRepo.findByUserId(userId);
+      const appleLink = oauthLinks.find((l) => l.provider === 'apple');
+      if (appleLink) {
+        try {
+          await deps.appleAuthService.revokeTokens(appleLink.providerUserId);
+        } catch (err) {
+          logger.warn('DeleteAccount', 'Failed to revoke Apple tokens', err);
+        }
+      }
+    }
 
     // --- Phase 4: Send confirmation email ---
     try {

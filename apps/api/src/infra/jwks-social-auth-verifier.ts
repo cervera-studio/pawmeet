@@ -22,25 +22,34 @@ export class JwksSocialAuthVerifier implements SocialAuthVerifier {
     nonce?: string,
   ): Promise<SocialAuthPayload> {
     if (provider === 'apple') {
-      return this.verifyApple(idToken);
+      return this.verifyApple(idToken, nonce);
     }
     return this.verifyGoogle(idToken, nonce);
   }
 
-  private async verifyApple(idToken: string): Promise<SocialAuthPayload> {
+  private async verifyApple(idToken: string, nonce?: string): Promise<SocialAuthPayload> {
     const { payload } = await jose.jwtVerify(idToken, this.appleJwks, {
       issuer: 'https://appleid.apple.com',
       audience: this.appleBundleId,
     });
 
-    const email = payload.email as string | undefined;
-    if (!email) {
-      throw new Error('Apple ID token missing email claim');
+    // Verify nonce if provided (Apple includes nonce hash in the token)
+    if (nonce && payload.nonce !== nonce) {
+      throw new Error('Apple ID token nonce mismatch');
     }
+
+    if (!payload.sub) {
+      throw new Error('Apple ID token missing sub claim');
+    }
+
+    // Apple sends email only on first auth — it may be null on subsequent logins
+    const email = (payload.email as string | undefined) ?? null;
+    const emailVerified = payload.email_verified === 'true' || payload.email_verified === true;
 
     return {
       email,
-      providerUserId: payload.sub ?? '',
+      emailVerified: email ? emailVerified : false,
+      providerUserId: payload.sub,
       displayName: null, // Apple sends name only on first auth, passed separately
     };
   }
@@ -65,8 +74,15 @@ export class JwksSocialAuthVerifier implements SocialAuthVerifier {
       throw new Error('Google ID token missing email claim');
     }
 
+    // Reject unverified Google emails to prevent account linking attacks
+    const emailVerified = payload.email_verified === true;
+    if (!emailVerified) {
+      throw new Error('Google email is not verified');
+    }
+
     return {
       email,
+      emailVerified,
       providerUserId: payload.sub ?? '',
       displayName: (payload.name as string) ?? null,
     };

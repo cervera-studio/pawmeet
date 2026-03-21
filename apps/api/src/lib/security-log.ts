@@ -18,6 +18,8 @@ const SECURITY_EVENT = {
   GdprExportRequested: 'gdpr.export.requested',
   GdprExportCompleted: 'gdpr.export.completed',
   GdprExportFailed: 'gdpr.export.failed',
+  AccountLinked: 'auth.account.linked',
+  TokenFamilyCompromised: 'auth.token.family_compromised',
 } as const;
 
 type SecurityEvent = (typeof SECURITY_EVENT)[keyof typeof SECURITY_EVENT];

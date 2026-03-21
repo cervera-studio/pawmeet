@@ -657,6 +657,9 @@ export function buildTokenRepo(overrides: Partial<TokenRepository> = {}): TokenR
       id: 'rt-1',
       userId: 'user-1',
       tokenHash: 'hash',
+      familyId: 'family-1',
+      deviceName: null,
+      deviceOs: null,
       expiresAt: new Date('2027-01-01'),
       revoked: false,
       createdAt: new Date(),
@@ -665,6 +668,7 @@ export function buildTokenRepo(overrides: Partial<TokenRepository> = {}): TokenR
     revokeRefreshToken: vi.fn(),
     revokeRefreshTokenByHash: vi.fn(),
     revokeAllUserRefreshTokens: vi.fn(),
+    revokeTokenFamily: vi.fn(),
     createVerificationToken: vi.fn().mockResolvedValue({
       id: 'vt-1',
       userId: 'user-1',
@@ -1007,6 +1011,7 @@ export function buildGdprExportRepo(
     getContentReports: vi.fn().mockResolvedValue([]),
     getUserReports: vi.fn().mockResolvedValue([]),
     getAnalyticsEvents: vi.fn().mockResolvedValue([]),
+    getOAuthAccounts: vi.fn().mockResolvedValue([]),
     createExport: vi.fn().mockResolvedValue({
       id: 'export-1',
       status: 'pending',

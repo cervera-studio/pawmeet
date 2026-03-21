@@ -3,6 +3,7 @@ import { trpcServer } from '@hono/trpc-server';
 import { logger as appLogger } from '@pawmeet/utils';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
+import { registerDomainEventHandlers } from './app/event-handlers.js';
 import {
   adminDeps,
   experimentService,
@@ -10,8 +11,14 @@ import {
   onnxModelLoader,
   supportDeps,
 } from './container/index.js';
-import { chat, notificationService, supportRepo, userRepo } from './container/services.js';
-import { registerDomainEventHandlers } from './app/event-handlers.js';
+import {
+  chat,
+  notificationService,
+  oauthAccountRepo,
+  supportRepo,
+  tokenRepo,
+  userRepo,
+} from './container/services.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { cacheControlMiddleware } from './middleware/cache-control.js';
@@ -30,6 +37,7 @@ validateJwtSecrets();
 import process from 'node:process';
 import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { analytics } from './routes/analytics.js';
+import { createAppleAuthWebhook } from './routes/apple-auth-webhook.js';
 import { createSupportRoutes } from './routes/support.js';
 import { appRouter } from './trpc/root.js';
 import { createContext } from './trpc/trpc.js';
@@ -88,6 +96,12 @@ app.route('/admin/auth', createAdminAuthRoutes(adminDeps));
 
 // Support routes — public endpoint for guest ticket creation (web contact form)
 app.route('/api/support', createSupportRoutes(supportDeps));
+
+// Apple Sign In server-to-server notifications (consent revoked, account deleted)
+app.route(
+  '/webhooks/apple-auth',
+  createAppleAuthWebhook({ oauthAccountRepo, userRepo, tokenRepo }),
+);
 
 app.get('/health', async (c) => {
   const checks: Record<string, 'ok' | 'fail'> = {};

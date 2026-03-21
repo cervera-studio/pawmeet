@@ -4,6 +4,9 @@ export interface RefreshTokenRecord {
   id: string;
   userId: string;
   tokenHash: string;
+  familyId: string;
+  deviceName: string | null;
+  deviceOs: string | null;
   expiresAt: Date;
   revoked: boolean;
   createdAt: Date;
@@ -25,11 +28,15 @@ export interface TokenRepository {
     userId: string;
     tokenHash: string;
     expiresAt: Date;
+    familyId?: string;
+    deviceName?: string | null;
+    deviceOs?: string | null;
   }): Promise<RefreshTokenRecord>;
   findRefreshToken(tokenHash: string): Promise<RefreshTokenRecord | null>;
   revokeRefreshToken(id: string): Promise<void>;
   revokeRefreshTokenByHash(tokenHash: string): Promise<void>;
   revokeAllUserRefreshTokens(userId: string): Promise<void>;
+  revokeTokenFamily(familyId: string): Promise<void>;
 
   // Verification tokens
   createVerificationToken(input: {

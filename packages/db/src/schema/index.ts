@@ -20,6 +20,7 @@ export * from './matches';
 export * from './matching-ai';
 export * from './mood-logs';
 export * from './notifications';
+export * from './oauth-accounts';
 export * from './organizations';
 export * from './refresh-tokens';
 export * from './reports';

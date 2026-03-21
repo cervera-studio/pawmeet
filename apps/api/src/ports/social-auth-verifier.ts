@@ -1,5 +1,6 @@
 export interface SocialAuthPayload {
-  email: string;
+  email: string | null;
+  emailVerified: boolean;
   providerUserId: string;
   displayName: string | null;
 }

@@ -2,6 +2,9 @@
 
 import { createOrganizationAuthorizer } from '../domain/organization-authorizer.js';
 import { BullMQNotificationService } from '../infra/bullmq-notification-service.js';
+import { CachedBreedRepository } from '../infra/cached-breed-repository.js';
+import { CachedDogRepository } from '../infra/cached-dog-repository.js';
+import { CachedUserRepository } from '../infra/cached-user-repository.js';
 import { DrizzleActivityRepository } from '../infra/drizzle-activity-repository.js';
 import { DrizzleAdminAiMatchingRepository } from '../infra/drizzle-admin-ai-matching-repository.js';
 import { DrizzleAdminDataRepository } from '../infra/drizzle-admin-data-repository.js';
@@ -10,9 +13,6 @@ import { DrizzleAnalyticsJobRepository } from '../infra/drizzle-analytics-job-re
 import { DrizzleAnalyticsRepository } from '../infra/drizzle-analytics-repository.js';
 import { DrizzleAuditLogRepository } from '../infra/drizzle-audit-log-repository.js';
 import { DrizzleBadgeRepository } from '../infra/drizzle-badge-repository.js';
-import { CachedBreedRepository } from '../infra/cached-breed-repository.js';
-import { CachedDogRepository } from '../infra/cached-dog-repository.js';
-import { CachedUserRepository } from '../infra/cached-user-repository.js';
 import { DrizzleBreedRepository } from '../infra/drizzle-breed-repository.js';
 import { DrizzleConsentRepository } from '../infra/drizzle-consent-repository.js';
 import { DrizzleContentReportRepository } from '../infra/drizzle-content-report-repository.js';
@@ -39,6 +39,7 @@ import { DrizzleMlRecommendationsRepository } from '../infra/drizzle-ml-recommen
 import { DrizzleMlTrainingRepository } from '../infra/drizzle-ml-training-repository.js';
 import { DrizzleMoodLogRepository } from '../infra/drizzle-mood-log-repository.js';
 import { DrizzleNearbyJobRepository } from '../infra/drizzle-nearby-job-repository.js';
+import { DrizzleOAuthAccountRepository } from '../infra/drizzle-oauth-account-repository.js';
 import { DrizzleOrganizationRepository } from '../infra/drizzle-organization-repository.js';
 import { DrizzleRisingCompatibilityRepository } from '../infra/drizzle-rising-compatibility-repository.js';
 import { DrizzleStoryRepository } from '../infra/drizzle-story-repository.js';
@@ -111,6 +112,7 @@ export const moodLogRepo = new DrizzleMoodLogRepository(db);
 export const organizationRepo = new DrizzleOrganizationRepository(db);
 export const eventSponsorRepo = new DrizzleEventSponsorRepository(db);
 export const gdprExportRepo = new DrizzleGdprExportRepository(db);
+export const oauthAccountRepo = new DrizzleOAuthAccountRepository(db);
 export const emergencyContactRepo = new DrizzleEmergencyContactRepository(db);
 export const supportRepo = new DrizzleSupportRepository(db);
 
@@ -130,6 +132,21 @@ export const socialAuthVerifier = new JwksSocialAuthVerifier(
   process.env.APPLE_BUNDLE_ID ?? '',
   process.env.GOOGLE_CLIENT_ID ?? '',
 );
+
+// Apple token revocation — degrades gracefully if env vars missing
+// Lazy import to avoid adding to the import cycle in this file
+export const appleAuthService = await (async () => {
+  if (!process.env.APPLE_TEAM_ID) return undefined;
+  const { AppleTokenRevocationService } = await import(
+    '../infra/apple-token-revocation-service.js'
+  );
+  return new AppleTokenRevocationService(
+    process.env.APPLE_TEAM_ID,
+    process.env.APPLE_BUNDLE_ID ?? '',
+    process.env.APPLE_KEY_ID ?? '',
+    process.env.APPLE_PRIVATE_KEY ?? '',
+  );
+})();
 export const emailService = new ResendEmailService();
 export const adminNotificationService = new EmailAdminNotificationService(emailService);
 export const storage = new R2StorageService();

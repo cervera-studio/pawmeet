@@ -281,6 +281,14 @@ export interface GdprAnalyticsEvent {
   screenName: string | null;
 }
 
+// -- OAuth accounts --
+
+export interface GdprOAuthAccount {
+  provider: string;
+  providerEmail: string | null;
+  linkedAt: Date;
+}
+
 // -- Export status --
 
 export interface GdprExportRecord {
@@ -322,6 +330,7 @@ export interface GdprExportRepository {
   getContentReports(userId: string): Promise<GdprContentReport[]>;
   getUserReports(userId: string): Promise<GdprUserReport[]>;
   getAnalyticsEvents(userId: string): Promise<GdprAnalyticsEvent[]>;
+  getOAuthAccounts(userId: string): Promise<GdprOAuthAccount[]>;
 
   // Export status tracking
   createExport(userId: string): Promise<GdprExportRecord>;

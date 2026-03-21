@@ -20,6 +20,7 @@ import { createUploadAvatarUrl } from '../use-cases/upload-avatar-url.js';
 import {
   analyticsProviders,
   analyticsRepo,
+  appleAuthService,
   authService,
   consentRepo,
   dogRepo,
@@ -28,6 +29,7 @@ import {
   followRepo,
   gdprExportRepo,
   matchRepo,
+  oauthAccountRepo,
   storage,
   storyRepo,
   tokenRepo,
@@ -56,6 +58,8 @@ export const userDeps = {
     storyRepo,
     emailService,
     analyticsProviders,
+    oauthAccountRepo,
+    appleAuthService,
   }),
   exportUserData: createExportUserData({ gdprExportRepo }),
   requestDataExport: createRequestDataExport({

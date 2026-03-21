@@ -11,11 +11,17 @@ import {
 } from '@pawmeet/validation';
 import type { authDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
-import { rateLimitedPublicProcedure, router, unwrapResult } from '../trpc.js';
+import {
+  rateLimitedPublicProcedure,
+  refreshRateLimitedProcedure,
+  registerRateLimitedProcedure,
+  router,
+  unwrapResult,
+} from '../trpc.js';
 
 export function createAuthRouter(deps: typeof authDeps) {
   return router({
-    register: rateLimitedPublicProcedure.input(registerSchema).mutation(async ({ input }) => {
+    register: registerRateLimitedProcedure.input(registerSchema).mutation(async ({ input }) => {
       const startMs = Date.now();
       const result = unwrapResult(await deps.registerUser(input));
       trackEvent('auth_registration_completed', result.user.id, {
@@ -31,7 +37,7 @@ export function createAuthRouter(deps: typeof authDeps) {
       return result;
     }),
 
-    refresh: rateLimitedPublicProcedure
+    refresh: refreshRateLimitedProcedure
       .input(refreshSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.refreshTokens(input.refreshToken))),
 

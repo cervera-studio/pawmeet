@@ -13,6 +13,7 @@ import {
   groupMessages,
   matches,
   messages,
+  oauthAccounts,
   postComments,
   postLikes,
   postMedia,
@@ -44,6 +45,7 @@ import type {
   GdprExportRecord,
   GdprExportRepository,
   GdprMatchingPreferences,
+  GdprOAuthAccount,
   GdprPost,
   GdprPostLike,
   GdprProfile,
@@ -584,6 +586,19 @@ export class DrizzleGdprExportRepository implements GdprExportRepository {
       })
       .from(analyticsEvents)
       .where(eq(analyticsEvents.userId, userId));
+  }
+
+  // -- OAuth accounts --
+
+  async getOAuthAccounts(userId: string): Promise<GdprOAuthAccount[]> {
+    return this.db
+      .select({
+        provider: oauthAccounts.provider,
+        providerEmail: oauthAccounts.providerEmail,
+        linkedAt: oauthAccounts.linkedAt,
+      })
+      .from(oauthAccounts)
+      .where(eq(oauthAccounts.userId, userId)) as unknown as GdprOAuthAccount[];
   }
 
   // -- Export status tracking --

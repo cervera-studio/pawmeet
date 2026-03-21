@@ -17,8 +17,21 @@ export class DrizzleTokenRepository implements TokenRepository {
     userId: string;
     tokenHash: string;
     expiresAt: Date;
+    familyId?: string;
+    deviceName?: string | null;
+    deviceOs?: string | null;
   }): Promise<RefreshTokenRecord> {
-    const rows = await this.db.insert(refreshTokens).values(input).returning();
+    const rows = await this.db
+      .insert(refreshTokens)
+      .values({
+        userId: input.userId,
+        tokenHash: input.tokenHash,
+        expiresAt: input.expiresAt,
+        ...(input.familyId ? { familyId: input.familyId } : {}),
+        ...(input.deviceName === undefined ? {} : { deviceName: input.deviceName }),
+        ...(input.deviceOs === undefined ? {} : { deviceOs: input.deviceOs }),
+      })
+      .returning();
     return firstRow<RefreshTokenRecord>(rows);
   }
 
@@ -46,6 +59,13 @@ export class DrizzleTokenRepository implements TokenRepository {
       .update(refreshTokens)
       .set({ revoked: true })
       .where(eq(refreshTokens.userId, userId));
+  }
+
+  async revokeTokenFamily(familyId: string): Promise<void> {
+    await this.db
+      .update(refreshTokens)
+      .set({ revoked: true })
+      .where(eq(refreshTokens.familyId, familyId));
   }
 
   // Verification tokens

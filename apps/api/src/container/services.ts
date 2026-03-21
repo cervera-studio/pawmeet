@@ -10,6 +10,9 @@ import { DrizzleAnalyticsJobRepository } from '../infra/drizzle-analytics-job-re
 import { DrizzleAnalyticsRepository } from '../infra/drizzle-analytics-repository.js';
 import { DrizzleAuditLogRepository } from '../infra/drizzle-audit-log-repository.js';
 import { DrizzleBadgeRepository } from '../infra/drizzle-badge-repository.js';
+import { CachedBreedRepository } from '../infra/cached-breed-repository.js';
+import { CachedDogRepository } from '../infra/cached-dog-repository.js';
+import { CachedUserRepository } from '../infra/cached-user-repository.js';
 import { DrizzleBreedRepository } from '../infra/drizzle-breed-repository.js';
 import { DrizzleConsentRepository } from '../infra/drizzle-consent-repository.js';
 import { DrizzleContentReportRepository } from '../infra/drizzle-content-report-repository.js';
@@ -77,12 +80,18 @@ export const mlTrainingRepo = new DrizzleMlTrainingRepository(db);
 export const nearbyJobRepo = new DrizzleNearbyJobRepository(db);
 export const risingCompatibilityRepo = new DrizzleRisingCompatibilityRepository(db);
 export const walkJobRepo = new DrizzleWalkJobRepository(db);
-export const userRepo = new DrizzleUserRepository(db);
-export const dogRepo = new DrizzleDogRepository(db);
+const _userRepo = new DrizzleUserRepository(db);
+const _dogRepo = new DrizzleDogRepository(db);
+const _breedRepo = new DrizzleBreedRepository(db);
+
+// Wrap with cache-aside (lazy redis import to avoid import-time crash in tests)
+const { redis } = await import('../lib/redis.js');
+export const userRepo = new CachedUserRepository(_userRepo, redis);
+export const dogRepo = new CachedDogRepository(_dogRepo, redis);
 export const matchRepo = new DrizzleMatchRepository(db);
 export const messageRepo = new DrizzleMessageRepository(db);
 export const tokenRepo = new DrizzleTokenRepository(db);
-export const breedRepo = new DrizzleBreedRepository(db);
+export const breedRepo = new CachedBreedRepository(_breedRepo, redis);
 export const walkRepo = new DrizzleWalkRepository(db);
 export const feedbackRepo = new DrizzleFeedbackRepository(db);
 export const groupEventRepo = new DrizzleGroupEventRepository(db);

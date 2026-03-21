@@ -15,7 +15,7 @@ describe('createReactivateAccount', () => {
       passwordHash: 'hashed',
     });
     const userRepo = buildUserRepo({
-      findById: async () => user,
+      findByIdWithPassword: async () => user,
       update: async () => ({ ...user, isActive: true, deletionScheduledAt: null }),
     });
     const authService = buildAuthService({ verifyPassword: async () => true });
@@ -31,7 +31,7 @@ describe('createReactivateAccount', () => {
 
   it('should fail if account is already active', async () => {
     const user = buildUser({ id: 'user-1', isActive: true });
-    const userRepo = buildUserRepo({ findById: async () => user });
+    const userRepo = buildUserRepo({ findByIdWithPassword: async () => user });
     const authService = buildAuthService();
 
     const reactivate = createReactivateAccount({ userRepo, authService });
@@ -50,7 +50,7 @@ describe('createReactivateAccount', () => {
       deletionScheduledAt: pastDate,
       passwordHash: 'hashed',
     });
-    const userRepo = buildUserRepo({ findById: async () => user });
+    const userRepo = buildUserRepo({ findByIdWithPassword: async () => user });
     const authService = buildAuthService();
 
     const reactivate = createReactivateAccount({ userRepo, authService });
@@ -69,7 +69,7 @@ describe('createReactivateAccount', () => {
       deletionScheduledAt: futureDate,
       passwordHash: 'hashed',
     });
-    const userRepo = buildUserRepo({ findById: async () => user });
+    const userRepo = buildUserRepo({ findByIdWithPassword: async () => user });
     const authService = buildAuthService({ verifyPassword: async () => false });
 
     const reactivate = createReactivateAccount({ userRepo, authService });

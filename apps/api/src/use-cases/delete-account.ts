@@ -118,7 +118,7 @@ export function createDeleteAccount(deps: Deps) {
       emailService,
     } = deps;
 
-    const user = await userRepo.findById(userId);
+    const user = await userRepo.findByIdWithPassword(userId);
     if (!user) {
       return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }

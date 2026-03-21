@@ -330,6 +330,7 @@ export function buildUserRepo(overrides: Partial<UserRepository> = {}): UserRepo
   return {
     findByEmail: vi.fn(),
     findById: vi.fn(),
+    findByIdWithPassword: vi.fn(),
     findByIds: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),

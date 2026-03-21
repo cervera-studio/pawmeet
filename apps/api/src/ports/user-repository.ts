@@ -46,6 +46,8 @@ export interface SearchResult {
 export interface UserRepository {
   findByEmail(email: string): Promise<User | null>;
   findById(id: string): Promise<User | null>;
+  /** Includes passwordHash — only for auth flows (login, delete, reactivate) */
+  findByIdWithPassword(id: string): Promise<User | null>;
   findByIds(ids: string[]): Promise<User[]>;
   create(input: CreateUserInput): Promise<User>;
   update(

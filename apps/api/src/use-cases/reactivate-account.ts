@@ -23,7 +23,7 @@ export function createReactivateAccount(deps: Deps) {
   return async (userId: string, password: string): Promise<Result<ReactivateAccountOutput>> => {
     const { userRepo, authService } = deps;
 
-    const user = await userRepo.findById(userId);
+    const user = await userRepo.findByIdWithPassword(userId);
     if (!user) {
       return fail(new AppError('USER_NOT_FOUND', 'User not found', 404));
     }

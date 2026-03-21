@@ -1,11 +1,4 @@
-import {
-  index,
-  integer,
-  pgTable,
-  primaryKey,
-  timestamp,
-  varchar,
-} from 'drizzle-orm/pg-core';
+import { index, integer, pgTable, primaryKey, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 /**
  * Pre-aggregated daily analytics metrics.

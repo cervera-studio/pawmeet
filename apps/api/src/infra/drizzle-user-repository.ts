@@ -11,22 +11,52 @@ import type {
 } from '../ports/user-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
+/** Default column selection — excludes passwordHash to prevent leaking to clients */
+const safeUserColumns = {
+  id: users.id,
+  email: users.email,
+  displayName: users.displayName,
+  authProvider: users.authProvider,
+  avatarUrl: users.avatarUrl,
+  latitude: users.latitude,
+  longitude: users.longitude,
+  locationUpdatedAt: users.locationUpdatedAt,
+  searchRadiusKm: users.searchRadiusKm,
+  emailVerified: users.emailVerified,
+  isActive: users.isActive,
+  createdAt: users.createdAt,
+  notificationPrefs: users.notificationPrefs,
+  dateOfBirth: users.dateOfBirth,
+  locale: users.locale,
+  pushToken: users.pushToken,
+  lastLoginAt: users.lastLoginAt,
+  deletionScheduledAt: users.deletionScheduledAt,
+  followersCount: users.followersCount,
+  followingCount: users.followingCount,
+} as const;
+
 export class DrizzleUserRepository implements UserRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
 
   async findByEmail(email: string): Promise<User | null> {
+    // Include passwordHash — needed for login/password verification
     const rows = await this.db.select().from(users).where(eq(users.email, email));
     return firstRowOrNull<User>(rows);
   }
 
   async findById(id: string): Promise<User | null> {
+    const rows = await this.db.select(safeUserColumns).from(users).where(eq(users.id, id));
+    return firstRowOrNull<User>(rows);
+  }
+
+  async findByIdWithPassword(id: string): Promise<User | null> {
     const rows = await this.db.select().from(users).where(eq(users.id, id));
     return firstRowOrNull<User>(rows);
   }
 
   async findByIds(ids: string[]): Promise<User[]> {
     if (ids.length === 0) return [];
-    const rows = await this.db.select().from(users).where(inArray(users.id, ids));
+    const rows = await this.db.select(safeUserColumns).from(users).where(inArray(users.id, ids));
     return rowsAs<User>(rows);
   }
 

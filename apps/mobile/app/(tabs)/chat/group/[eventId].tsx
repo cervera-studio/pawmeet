@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { useGroupChatConversationViewModel } from './[eventId].view-model';
 
 // ── Loading skeleton ─────────────────────────────────────────────────────────
@@ -81,6 +82,7 @@ function GroupChatBubble({
 // ── Screen ───────────────────────────────────────────────────────────────────
 
 export default function GroupChatConversationScreen() {
+  usePreventScreenCapture();
   const vm = useGroupChatConversationViewModel();
 
   return (

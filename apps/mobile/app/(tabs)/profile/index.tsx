@@ -6,6 +6,7 @@ import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogProfileCard } from '@/components/DogProfileCard';
 import { Avatar } from '@/components/ui/Avatar';
+import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { formatDogAge, useProfileViewModel } from './index.view-model';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
@@ -45,6 +46,7 @@ function ProfileLoadingSkeleton() {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function ProfileScreen() {
+  usePreventScreenCapture();
   const { t } = useTranslation();
   const vm = useProfileViewModel();
 

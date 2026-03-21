@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { useSupportChatViewModel } from './support-chat.view-model';
 
 function formatTime(date: Date | string): string {
@@ -79,6 +80,7 @@ const SupportBubble = memo(function SupportBubble({ message }: { message: Suppor
 SupportBubble.displayName = 'SupportBubble';
 
 export default function SupportChatModal() {
+  usePreventScreenCapture();
   const { t } = useTranslation();
   const vm = useSupportChatViewModel();
 

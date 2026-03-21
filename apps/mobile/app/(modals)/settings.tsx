@@ -9,6 +9,7 @@ import { Linking, Modal, Platform, Pressable, ScrollView, Switch, Text, View } f
 import { ConsentModal } from '@/components/ConsentModal';
 import { syncSingleConsentToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';
+import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { useSettingsStore } from '@/stores/settings';
 import { useSettingsViewModel } from './settings.view-model';
 
@@ -22,6 +23,7 @@ const LANGUAGES = [
 const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'https://pawmeet.io';
 
 export default function SettingsModal() {
+  usePreventScreenCapture();
   const { t } = useTranslation();
   const vm = useSettingsViewModel();
   const router = useRouter();

@@ -39,7 +39,7 @@ jobs:
       - run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Run DB migrations
-        run: pnpm dlx tsx packages/db/src/migrate.ts
+        run: cd packages/db && pnpm dlx tsx src/migrate.ts
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 

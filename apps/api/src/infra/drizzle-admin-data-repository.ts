@@ -13,6 +13,7 @@ import {
   matches,
   organizationMembers,
   organizations,
+  passkeyCredentials,
   postMedia,
   posts,
   reports,
@@ -1013,6 +1014,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
   async getUser(id: string): Promise<{
     user: AdminUserDetail;
     dogs: AdminUserDog[];
+    passkeys: { id: string; friendlyName: string | null; deviceType: string; backedUp: boolean; createdAt: Date; lastUsedAt: Date | null }[];
     reportsCount: number;
     matchesCount: number;
   } | null> {
@@ -1044,6 +1046,18 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
       .from(dogProfiles)
       .where(eq(dogProfiles.ownerId, id));
 
+    const passkeys = await this.db
+      .select({
+        id: passkeyCredentials.id,
+        friendlyName: passkeyCredentials.friendlyName,
+        deviceType: passkeyCredentials.deviceType,
+        backedUp: passkeyCredentials.backedUp,
+        createdAt: passkeyCredentials.createdAt,
+        lastUsedAt: passkeyCredentials.lastUsedAt,
+      })
+      .from(passkeyCredentials)
+      .where(eq(passkeyCredentials.userId, id));
+
     const [reportsRow] = await this.db
       .select({ value: count() })
       .from(reports)
@@ -1063,6 +1077,7 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     return {
       user: user as AdminUserDetail,
       dogs: dogs as AdminUserDog[],
+      passkeys,
       reportsCount: reportsRow?.value ?? 0,
       matchesCount: matchesRow?.value ?? 0,
     };

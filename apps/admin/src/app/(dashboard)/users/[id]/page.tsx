@@ -50,7 +50,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
       </div>
 
       {/* Info Cards */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">{t('detail.information')}</CardTitle>
@@ -93,6 +93,38 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
                     </div>
                     <Badge variant={dog.isActive ? 'success' : 'outline'}>
                       {dog.isActive ? tc('active') : tc('inactive')}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {t('detail.passkeysCount', { count: user.passkeys?.length ?? 0 })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!user.passkeys?.length ? (
+              <p className="text-sm text-neutral-500">{t('detail.noPasskeys')}</p>
+            ) : (
+              <div className="space-y-3">
+                {user.passkeys.map((pk) => (
+                  <div key={pk.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-neutral-900">
+                        {pk.friendlyName ?? 'Passkey'}
+                      </p>
+                      <p className="text-xs text-neutral-500">
+                        {pk.deviceType === 'multiDevice' ? 'Sincronizzata' : 'Singolo dispositivo'}
+                        {pk.lastUsedAt ? ` · ${formatDate(pk.lastUsedAt)}` : ''}
+                      </p>
+                    </div>
+                    <Badge variant={pk.backedUp ? 'success' : 'outline'}>
+                      {pk.backedUp ? 'Backup' : 'Locale'}
                     </Badge>
                   </div>
                 ))}

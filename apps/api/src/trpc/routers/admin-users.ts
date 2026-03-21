@@ -112,7 +112,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
       }
 
-      const { user, dogs, reportsCount, matchesCount } = result;
+      const { user, dogs, passkeys, reportsCount, matchesCount } = result;
 
       return {
         id: user.id,
@@ -124,6 +124,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
         createdAt: user.createdAt,
         lastLoginAt: user.lastLoginAt,
         dogs,
+        passkeys,
         followersCount: user.followersCount,
         followingCount: user.followingCount,
         reportsReceived: reportsCount,

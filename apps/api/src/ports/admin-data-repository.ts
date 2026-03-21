@@ -267,6 +267,15 @@ export interface AdminUserDog {
   isActive: boolean;
 }
 
+export interface AdminUserPasskey {
+  id: string;
+  friendlyName: string | null;
+  deviceType: string;
+  backedUp: boolean;
+  createdAt: Date;
+  lastUsedAt: Date | null;
+}
+
 export interface AdminDeletionItem {
   id: string;
   displayName: string | null;
@@ -394,6 +403,7 @@ export interface AdminUserRepository {
   getUser(id: string): Promise<{
     user: AdminUserDetail;
     dogs: AdminUserDog[];
+    passkeys: AdminUserPasskey[];
     reportsCount: number;
     matchesCount: number;
   } | null>;

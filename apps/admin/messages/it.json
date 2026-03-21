@@ -147,6 +147,8 @@
       "totalMatches": "Match totali",
       "dogsCount": "Cani ({count})",
       "noDogs": "Nessun cane registrato",
+      "passkeysCount": "Passkey ({count})",
+      "noPasskeys": "Nessuna passkey registrata",
       "breed": "Razza",
       "quickActions": "Azioni rapide",
       "information": "Informazioni",

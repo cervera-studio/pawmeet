@@ -24,7 +24,9 @@
   },
   "pnpm": {
     "overrides": {
-      "@smithy/types": "^4.13.1"
+      "@smithy/types": "^4.13.1",
+      "fast-xml-parser": ">=5.5.7",
+      "undici": ">=6.24.0"
     }
   },
   "packageManager": "pnpm@10.6.0",

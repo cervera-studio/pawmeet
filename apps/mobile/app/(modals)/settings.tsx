@@ -7,9 +7,9 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Modal, Platform, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { ConsentModal } from '@/components/ConsentModal';
+import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { syncSingleConsentToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';
-import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { useSettingsStore } from '@/stores/settings';
 import { useSettingsViewModel } from './settings.view-model';
 

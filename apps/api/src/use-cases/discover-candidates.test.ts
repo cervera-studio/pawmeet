@@ -107,7 +107,7 @@ describe('discoverCandidates', () => {
     if (!isSuccess(result)) return;
     expect(result.data.suggestions).toHaveLength(0);
     // Verify swiperDogId is passed to the repository
-    expect(findCandidateDogs).toHaveBeenCalledWith('user-1', 'dog-1', 41.9028, 12.4964, 50000);
+    expect(findCandidateDogs).toHaveBeenCalledWith('user-1', 'dog-1', 41.9028, 12.4964, 50_000);
   });
 
   it('fails with DOG_NOT_FOUND when dog not owned by user', async () => {

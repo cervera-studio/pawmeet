@@ -216,7 +216,13 @@ export function createDiscoverCandidatesAi({
           user.longitude,
           radiusMeters,
         )
-      : await matchRepo.findCandidateDogs(userId, dogId, user.latitude, user.longitude, radiusMeters);
+      : await matchRepo.findCandidateDogs(
+          userId,
+          dogId,
+          user.latitude,
+          user.longitude,
+          radiusMeters,
+        );
 
     // Apply filters, score, and rank
     const scoredPromises = candidates.flatMap((c) => {

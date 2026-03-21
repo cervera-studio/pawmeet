@@ -195,6 +195,8 @@ export interface AnalyticsEventMap {
   admin_report_resolved: { reportId: string; action: string };
   admin_event_created: { eventId: string; category: string; maxParticipants: number };
   admin_settings_updated: { changedFields: string[] };
+  admin_user_session_revoked: { targetUserId: string; sessionId: string };
+  admin_user_all_sessions_revoked: { targetUserId: string };
 
   // ML Matching
   ml_score_served: {

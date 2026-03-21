@@ -8,6 +8,7 @@ import {
   auditLogRepo,
   gamificationRepo,
   gdprExportRepo,
+  tokenRepo,
 } from './services.js';
 
 export const adminDeps = {
@@ -17,6 +18,7 @@ export const adminDeps = {
   gamificationRepo,
   auditLogRepo,
   gdprExportRepo,
+  tokenRepo,
 };
 
 export const adminAiMatchingDeps = {

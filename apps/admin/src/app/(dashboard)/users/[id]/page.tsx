@@ -4,8 +4,9 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate, formatDateTime, formatNumber } from '@/lib/formatters';
-import { fetchUser } from '../actions';
+import { fetchUser, fetchUserSessions } from '../actions';
 import { UserActions } from './user-actions';
+import { UserSessions } from './user-sessions';
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -22,8 +23,9 @@ interface UserDetailPageProps {
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id } = await params;
-  const [user, t, tc] = await Promise.all([
+  const [user, sessions, t, tc] = await Promise.all([
     fetchUser(id),
+    fetchUserSessions(id),
     getTranslations('users'),
     getTranslations('common'),
   ]);
@@ -108,9 +110,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {!user.passkeys?.length ? (
-              <p className="text-sm text-neutral-500">{t('detail.noPasskeys')}</p>
-            ) : (
+            {user.passkeys?.length ? (
               <div className="space-y-3">
                 {user.passkeys.map((pk) => (
                   <div key={pk.id} className="flex items-center justify-between">
@@ -129,6 +129,8 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
                   </div>
                 ))}
               </div>
+            ) : (
+              <p className="text-sm text-neutral-500">{t('detail.noPasskeys')}</p>
             )}
           </CardContent>
         </Card>
@@ -152,6 +154,8 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
             </a>
           </CardContent>
         </Card>
+
+        <UserSessions userId={id} sessions={sessions} />
       </div>
     </div>
   );

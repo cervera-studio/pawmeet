@@ -13,6 +13,7 @@ import type {
 import type { AdminNotificationService } from '../../ports/admin-notification-service.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import type { GdprExportRepository } from '../../ports/gdpr-export-repository.js';
+import type { TokenRepository } from '../../ports/token-repository.js';
 import { createCreateAdminUser } from '../../use-cases/admin/create-admin-user.js';
 import { createUpdateAdminRole } from '../../use-cases/admin/update-admin-role.js';
 import { router, unwrapResult } from '../trpc.js';
@@ -64,11 +65,12 @@ interface UsersRouterDeps {
   adminNotificationService: AdminNotificationService;
   auditLogRepo: AuditLogRepository;
   gdprExportRepo?: GdprExportRepository;
+  tokenRepo?: TokenRepository;
 }
 
 export function createAdminUsersRouter(deps: UsersRouterDeps) {
   const adminProcedure = createAdminProcedure();
-  const { adminDataRepo, adminNotificationService, auditLogRepo, gdprExportRepo } = deps;
+  const { adminDataRepo, adminNotificationService, auditLogRepo, gdprExportRepo, tokenRepo } = deps;
   const createAdminUserUc = createCreateAdminUser({ adminDataRepo });
   const updateAdminRoleUc = createUpdateAdminRole({ adminDataRepo });
 
@@ -462,6 +464,98 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
           action: 'reset_admin_password',
           resourceType: RESOURCE_TYPE.admin,
           resourceId: input.adminId,
+        });
+
+        return { success: true };
+      }),
+
+    // ── User session management ───────────────────────────────────────────────
+
+    getUserSessions: adminProcedure
+      .input(z.object({ userId: z.uuid() }))
+      .query(async ({ input }) => {
+        if (!tokenRepo) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Token repository not configured',
+          });
+        }
+
+        const sessions = await tokenRepo.findActiveSessionsByUserId(input.userId);
+
+        return sessions.map((s) => ({
+          id: s.id,
+          deviceName: s.deviceName,
+          deviceOs: s.deviceOs,
+          createdAt: s.createdAt,
+        }));
+      }),
+
+    revokeUserSession: adminProcedure
+      .input(z.object({ userId: z.uuid(), sessionId: z.uuid() }))
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        if (!tokenRepo) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Token repository not configured',
+          });
+        }
+
+        const sessions = await tokenRepo.findActiveSessionsByUserId(input.userId);
+        const target = sessions.find((s) => s.id === input.sessionId);
+
+        if (!target) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Session not found' });
+        }
+
+        await tokenRepo.revokeTokenFamily(target.familyId);
+
+        void logAdminAction(auditLogRepo, {
+          adminId: ctx.userId,
+          action: 'user.revoke_session',
+          resourceType: RESOURCE_TYPE.user,
+          resourceId: input.userId,
+          changes: {
+            after: {
+              revokedSessionId: input.sessionId,
+              deviceName: target.deviceName,
+            },
+          },
+        });
+
+        trackEvent('admin_user_session_revoked', ctx.userId, {
+          targetUserId: input.userId,
+          sessionId: input.sessionId,
+        });
+
+        return { success: true };
+      }),
+
+    revokeAllUserSessions: adminProcedure
+      .input(z.object({ userId: z.uuid() }))
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        if (!tokenRepo) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Token repository not configured',
+          });
+        }
+
+        await tokenRepo.revokeAllUserRefreshTokens(input.userId);
+
+        void logAdminAction(auditLogRepo, {
+          adminId: ctx.userId,
+          action: 'user.revoke_all_sessions',
+          resourceType: RESOURCE_TYPE.user,
+          resourceId: input.userId,
+        });
+
+        trackEvent('admin_user_all_sessions_revoked', ctx.userId, {
+          targetUserId: input.userId,
         });
 
         return { success: true };

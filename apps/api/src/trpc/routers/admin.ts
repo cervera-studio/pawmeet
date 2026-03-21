@@ -3,6 +3,7 @@ import type { AdminNotificationService } from '../../ports/admin-notification-se
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import type { GamificationRepository } from '../../ports/gamification-repository.js';
 import type { GdprExportRepository } from '../../ports/gdpr-export-repository.js';
+import type { TokenRepository } from '../../ports/token-repository.js';
 import { router } from '../trpc.js';
 import { createAdminDashboardRouter } from './admin-dashboard.js';
 import { createAdminGamificationRouter } from './admin-gamification.js';
@@ -19,6 +20,7 @@ interface AdminRouterDeps {
   auditLogRepo: AuditLogRepository;
   gamificationRepo?: GamificationRepository;
   gdprExportRepo?: GdprExportRepository;
+  tokenRepo?: TokenRepository;
 }
 
 /**
@@ -35,6 +37,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
     auditLogRepo,
     gamificationRepo,
     gdprExportRepo,
+    tokenRepo,
   } = deps;
 
   const dashboard = createAdminDashboardRouter({ adminDataRepo, auditLogRepo });
@@ -43,6 +46,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
     adminNotificationService,
     auditLogRepo,
     gdprExportRepo,
+    tokenRepo,
   });
   const moderation = createAdminModerationRouter({ adminDataRepo, auditLogRepo });
   const settings = createAdminSettingsRouter({ auditLogRepo });

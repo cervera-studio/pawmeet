@@ -166,6 +166,16 @@
         "description": "Esta acción iniciará la exportación de todos los datos del usuario en cumplimiento con el GDPR. El usuario recibirá un correo con el enlace de descarga.",
         "confirm": "Iniciar exportación",
         "exporting": "Exportando..."
+      },
+      "sessionsCount": "Sesiones activas ({count})",
+      "noSessions": "Sin sesiones activas",
+      "unknownDevice": "Dispositivo desconocido",
+      "revokeSession": "Revocar",
+      "revokeAllSessions": "Revocar todas",
+      "revokeAllDialog": {
+        "title": "Revocar todas las sesiones?",
+        "description": "El usuario será desconectado de todos los dispositivos y deberá iniciar sesión de nuevo.",
+        "confirm": "Revocar todas"
       }
     }
   },
@@ -1064,7 +1074,11 @@
       "reactivateError": "Error al reactivar",
       "gdprExportSuccess": "Exportación de datos iniciada. El usuario recibirá un correo.",
       "gdprExportError": "Error al exportar los datos del usuario",
-      "loadError": "Error al cargar los usuarios"
+      "loadError": "Error al cargar los usuarios",
+      "sessionRevoked": "Sesión revocada",
+      "revokeSessionError": "Error al revocar la sesión",
+      "allSessionsRevoked": "Todas las sesiones revocadas",
+      "revokeAllSessionsError": "Error al revocar las sesiones"
     },
     "admins": {
       "createError": "Error al crear el administrador",

@@ -65,6 +65,47 @@ export async function requestGdprExport(
   }
 }
 
+export async function fetchUserSessions(userId: string) {
+  try {
+    const api = await getServerTrpcClient();
+    return await api.admin.getUserSessions.query({ userId });
+  } catch (error) {
+    logger.error('AdminUsers', 'fetchUserSessions failed', error);
+    return [];
+  }
+}
+
+export async function revokeUserSession(
+  userId: string,
+  sessionId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const api = await getServerTrpcClient();
+    await api.admin.revokeUserSession.mutate({ userId, sessionId });
+    revalidatePath(`/users/${userId}`);
+    return { success: true };
+  } catch (error) {
+    logger.error('AdminUsers', 'revokeUserSession failed', error);
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('users.revokeSessionError') };
+  }
+}
+
+export async function revokeAllUserSessions(
+  userId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const api = await getServerTrpcClient();
+    await api.admin.revokeAllUserSessions.mutate({ userId });
+    revalidatePath(`/users/${userId}`);
+    return { success: true };
+  } catch (error) {
+    logger.error('AdminUsers', 'revokeAllUserSessions failed', error);
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('users.revokeAllSessionsError') };
+  }
+}
+
 export async function fetchUser(id: string) {
   const api = await getServerTrpcClient();
   try {

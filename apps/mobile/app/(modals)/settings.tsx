@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Modal, Platform, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { ConsentModal } from '@/components/ConsentModal';
+import { usePasskeys } from '@/hooks/usePasskeys';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { syncSingleConsentToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';
@@ -27,6 +28,7 @@ export default function SettingsModal() {
   const { t } = useTranslation();
   const vm = useSettingsViewModel();
   const router = useRouter();
+  const pk = usePasskeys();
   const biometricEnabled = useSettingsStore((s) => s.biometricLockEnabled);
   const setBiometricEnabled = useSettingsStore((s) => s.setBiometricLockEnabled);
   const consents = useConsentStore((s) => s.consents);
@@ -350,6 +352,59 @@ export default function SettingsModal() {
             trackColor={{ true: '#065F46' }}
           />
         </View>
+
+        {pk.supported ? (
+          <View className="mt-2">
+            <View className="flex-row items-center justify-between py-3">
+              <View className="flex-1 pr-4">
+                <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+                  {t('passkey.settingsTitle')}
+                </Text>
+                <Text className="text-xs text-gray-400 dark:text-neutral-500">
+                  {t('passkey.settingsDescription')}
+                </Text>
+              </View>
+            </View>
+
+            {pk.error ? (
+              <View className="mb-2 rounded-lg bg-red-50 px-3 py-2">
+                <Text className="text-xs text-red-600">{pk.error}</Text>
+              </View>
+            ) : null}
+
+            {pk.passkeys.map((p) => (
+              <View
+                key={p.id}
+                className="flex-row items-center justify-between border-b border-gray-100 py-3 dark:border-[#38383A]"
+              >
+                <View className="flex-1">
+                  <Text className="text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+                    {p.friendlyName ?? t('passkey.defaultName')}
+                  </Text>
+                  <Text className="text-xs text-gray-400 dark:text-neutral-500">
+                    {p.backedUp ? t('passkey.synced') : t('passkey.thisDevice')}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => pk.deletePasskey(p.id)}
+                  className="rounded-lg px-3 py-1.5"
+                >
+                  <Text className="text-sm text-red-500">{t('common.delete')}</Text>
+                </Pressable>
+              </View>
+            ))}
+
+            <Pressable
+              onPress={() => pk.registerPasskey()}
+              disabled={pk.loading}
+              className="mt-2 items-center rounded-xl bg-gray-100 py-3 dark:bg-[#38383A]"
+            >
+              <Text className="text-sm font-medium text-primary">
+                {pk.loading ? t('common.loading') : t('passkey.addButton')}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
 
         <View className="mt-4 border-t border-gray-100 dark:border-[#38383A] pt-4">
           <View className="py-4">

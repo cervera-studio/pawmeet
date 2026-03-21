@@ -89,6 +89,15 @@
     "timeout": "Timeout (minuti)"
   },
 
+  "passkey": {
+    "settingsTitle": "Passkey",
+    "settingsDescription": "Accedi con impronta digitale o riconoscimento facciale senza password",
+    "addButton": "Aggiungi passkey",
+    "defaultName": "Passkey",
+    "synced": "Sincronizzata (iCloud/Google)",
+    "thisDevice": "Solo questo dispositivo"
+  },
+
   "discovery": {
     "title": "Scopri",
     "subtitle": "Cani nelle vicinanze",
@@ -645,6 +654,8 @@
       "loggingIn": "Accesso...",
       "continueWithGoogle": "Continua con Google",
       "continueWithApple": "Continua con Apple",
+      "continueWithPasskey": "Accedi con passkey",
+      "passkeyError": "Login con passkey fallito",
       "noAccount": "Non hai un account?",
       "registerLink": "Registrati",
       "loginError": "Errore durante il login",

@@ -28,6 +28,7 @@ import { createTrpcGroupEventRepository } from './remote/trpc-group-event-reposi
 import { createTrpcMatchRepository } from './remote/trpc-match-repository';
 import { createTrpcMediaRepository } from './remote/trpc-media-repository';
 import { createTrpcMoodLogRepository } from './remote/trpc-mood-log-repository';
+import { createTrpcPasskeyRepository } from './remote/trpc-passkey-repository';
 import { createTrpcSafetyRepository } from './remote/trpc-safety-repository';
 import { createTrpcSmartMatchingRepository } from './remote/trpc-smart-matching-repository';
 import { createTrpcUserRepository } from './remote/trpc-user-repository';
@@ -48,6 +49,7 @@ import {
   MATCH_REPOSITORY,
   MEDIA_REPOSITORY,
   MOOD_LOG_REPOSITORY,
+  PASSKEY_REPOSITORY,
   SAFETY_REPOSITORY,
   SMART_MATCHING_REPOSITORY,
   USER_REPOSITORY,
@@ -69,6 +71,7 @@ container.register(SMART_MATCHING_REPOSITORY, {
   useValue: createTrpcSmartMatchingRepository(api),
 });
 container.register(MOOD_LOG_REPOSITORY, { useValue: createTrpcMoodLogRepository(api) });
+container.register(PASSKEY_REPOSITORY, { useValue: createTrpcPasskeyRepository(api) });
 
 // Shared infrastructure for composite repositories (injected, not imported)
 const localCache = createSqliteLocalCache();

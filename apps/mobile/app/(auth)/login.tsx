@@ -78,10 +78,22 @@ export default function LoginScreen() {
               <Pressable
                 onPress={vm.handleAppleLogin}
                 disabled={vm.loading}
-                className="flex-row items-center justify-center rounded-2xl border border-gray-200 dark:border-[#38383A] py-4"
+                className="mb-3 flex-row items-center justify-center rounded-2xl border border-gray-200 dark:border-[#38383A] py-4"
               >
                 <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
                   {t('auth.login.continueWithApple')}
+                </Text>
+              </Pressable>
+            ) : null}
+
+            {vm.showPasskeyLogin ? (
+              <Pressable
+                onPress={vm.handlePasskeyLogin}
+                disabled={vm.loading}
+                className="flex-row items-center justify-center rounded-2xl border border-gray-200 dark:border-[#38383A] py-4"
+              >
+                <Text className="text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
+                  {t('auth.login.continueWithPasskey')}
                 </Text>
               </Pressable>
             ) : null}

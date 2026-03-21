@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
+import { usePasskeys } from '@/hooks/usePasskeys';
 import i18n from '@/lib/i18n';
 import {
   extractGoogleCode,
@@ -15,6 +16,7 @@ import { zodToFieldErrors } from '@/lib/validation';
 export function useLoginViewModel() {
   const router = useRouter();
   const { login, socialLogin } = useAuth();
+  const passkeys = usePasskeys();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -99,6 +101,18 @@ export function useLoginViewModel() {
     }
   }, [handleSocialAuth]);
 
+  const handlePasskeyLogin = useCallback(async () => {
+    setApiError('');
+    setLoading(true);
+    try {
+      await passkeys.loginWithPasskey(email || undefined);
+    } catch (e) {
+      setApiError(e instanceof Error ? e.message : i18n.t('auth.login.passkeyError'));
+    } finally {
+      setLoading(false);
+    }
+  }, [passkeys, email]);
+
   const navigateToRegister = useCallback(() => {
     router.push('/(auth)/register');
   }, [router]);
@@ -114,7 +128,9 @@ export function useLoginViewModel() {
     handleLogin,
     handleGoogleLogin,
     handleAppleLogin,
+    handlePasskeyLogin,
     showAppleLogin: Platform.OS === 'ios',
+    showPasskeyLogin: passkeys.supported,
     googleReady: google.request !== null,
     navigateToRegister,
   };

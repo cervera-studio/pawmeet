@@ -1,3 +1,4 @@
+import { LEGAL_VERSIONS } from '@pawmeet/config';
 import { TOKEN_TYPE } from '@pawmeet/db';
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
@@ -55,6 +56,12 @@ export function createRegisterUser(deps: Deps) {
       authProvider: 'email',
       dateOfBirth,
       locale,
+    });
+
+    // Record Terms/Privacy Policy acceptance (Art. 6(1)(b) GDPR)
+    await userRepo.update(user.id, {
+      termsAcceptedAt: new Date(),
+      privacyPolicyVersion: LEGAL_VERSIONS.PRIVACY_POLICY,
     });
 
     // Send verification OTP

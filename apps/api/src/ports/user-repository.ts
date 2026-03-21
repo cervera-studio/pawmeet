@@ -67,6 +67,8 @@ export interface UserRepository {
         | 'deletionScheduledAt'
         | 'notificationPrefs'
         | 'dateOfBirth'
+        | 'termsAcceptedAt'
+        | 'privacyPolicyVersion'
       >
     >,
   ): Promise<User>;

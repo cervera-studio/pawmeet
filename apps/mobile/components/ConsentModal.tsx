@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Linking, Modal, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { useConsentModalViewModel } from './ConsentModal.view-model';
 
 interface ConsentModalProps {
@@ -123,7 +123,10 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
           </Text>
         </Pressable>
 
-        <Pressable className="mt-4 items-center">
+        <Pressable
+          onPress={() => Linking.openURL(`${process.env.EXPO_PUBLIC_WEB_URL ?? 'https://pawmeet.io'}/privacy`)}
+          className="mt-4 items-center"
+        >
           <Text className="text-sm text-gray-400 dark:text-neutral-500 underline">
             {t('consent.readPrivacyPolicy')}
           </Text>

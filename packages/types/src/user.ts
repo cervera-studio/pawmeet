@@ -36,6 +36,8 @@ export interface User {
   lastLoginAt: Date | null;
   followersCount: number;
   followingCount: number;
+  termsAcceptedAt: Date | null;
+  privacyPolicyVersion: string | null;
 }
 
 /** User data without sensitive fields (passwordHash, pushToken). */

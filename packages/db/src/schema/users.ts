@@ -54,6 +54,8 @@ export const users = pgTable(
     deletionScheduledAt: timestamp('deletion_scheduled_at', { withTimezone: true }),
     followersCount: integer('followers_count').notNull().default(0),
     followingCount: integer('following_count').notNull().default(0),
+    termsAcceptedAt: timestamp('terms_accepted_at', { withTimezone: true }),
+    privacyPolicyVersion: varchar('privacy_policy_version', { length: 10 }),
   },
   (table) => [
     // GiST spatial index managed via SQL migration (0005_add_postgis.sql)

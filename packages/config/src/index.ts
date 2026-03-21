@@ -5,5 +5,6 @@ export * from './dog-options';
 export * from './feed';
 export * from './gamification';
 export * from './health';
+export * from './legal';
 export * from './matching-ai';
 export * from './mood';

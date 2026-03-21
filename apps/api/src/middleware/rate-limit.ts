@@ -1,5 +1,9 @@
+import process from 'node:process';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { MiddlewareHandler } from 'hono';
+
+/** Environment-namespaced prefix to prevent cross-env bleed when sharing Redis */
+const ENV_PREFIX = process.env.NODE_ENV === 'production' ? 'rl:prod' : `rl:${process.env.NODE_ENV ?? 'dev'}`;
 
 /** Lazy-initialized Redis for rate limiting — avoids import-time crash in tests */
 let _redis: InstanceType<typeof import('@upstash/redis').Redis> | null = null;
@@ -21,7 +25,7 @@ async function getAuthLimiter(): Promise<Ratelimit> {
     _authLimiter = new Ratelimit({
       redis: await getRedis(),
       limiter: Ratelimit.slidingWindow(10, '15m'),
-      prefix: 'rl:auth',
+      prefix: `${ENV_PREFIX}:auth`,
     });
   }
   return _authLimiter;
@@ -32,7 +36,7 @@ async function getApiLimiter(): Promise<Ratelimit> {
     _apiLimiter = new Ratelimit({
       redis: await getRedis(),
       limiter: Ratelimit.slidingWindow(100, '1m'),
-      prefix: 'rl:api',
+      prefix: `${ENV_PREFIX}:api`,
     });
   }
   return _apiLimiter;
@@ -74,7 +78,7 @@ async function getPasswordResetLimiter(): Promise<Ratelimit> {
     _passwordResetLimiter = new Ratelimit({
       redis: await getRedis(),
       limiter: Ratelimit.slidingWindow(3, '1h'),
-      prefix: 'rl:pwd-reset',
+      prefix: `${ENV_PREFIX}:pwd-reset`,
     });
   }
   return _passwordResetLimiter;
@@ -90,7 +94,7 @@ async function getPasswordResetEmailLimiter(): Promise<Ratelimit> {
     _passwordResetEmailLimiter = new Ratelimit({
       redis: await getRedis(),
       limiter: Ratelimit.slidingWindow(3, '24h'),
-      prefix: 'rl:pwd-reset-email',
+      prefix: `${ENV_PREFIX}:pwd-reset-email`,
     });
   }
   return _passwordResetEmailLimiter;
@@ -133,7 +137,7 @@ async function getAnalyticsLimiter(): Promise<Ratelimit> {
     _analyticsLimiter = new Ratelimit({
       redis: await getRedis(),
       limiter: Ratelimit.slidingWindow(500, '1m'),
-      prefix: 'rl:analytics',
+      prefix: `${ENV_PREFIX}:analytics`,
     });
   }
   return _analyticsLimiter;

@@ -1,8 +1,13 @@
+import process from 'node:process';
 import type { Result } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { Ratelimit } from '@upstash/ratelimit';
 import { verifyAccessToken, verifyAdminAccessToken } from '../lib/jwt.js';
+
+/** Environment-namespaced prefix to prevent cross-env bleed when sharing Redis */
+const ENV_PREFIX =
+  process.env.NODE_ENV === 'production' ? 'rl:prod' : `rl:${process.env.NODE_ENV ?? 'dev'}`;
 
 export interface Context {
   userId: string | null;
@@ -88,13 +93,13 @@ function createRateLimitedProcedure(prefix: string, maxRequests: number, window:
 }
 
 /** General auth rate limit: 10 req / 15 min (login, social login) */
-export const rateLimitedPublicProcedure = createRateLimitedProcedure('rl:trpc:auth', 10, '15m');
+export const rateLimitedPublicProcedure = createRateLimitedProcedure(`${ENV_PREFIX}:trpc:auth`, 10, '15m');
 
 /** Strict rate limit for registration: 3 req / hour */
-export const registerRateLimitedProcedure = createRateLimitedProcedure('rl:trpc:register', 3, '1h');
+export const registerRateLimitedProcedure = createRateLimitedProcedure(`${ENV_PREFIX}:trpc:register`, 3, '1h');
 
 /** Higher rate limit for token refresh: 30 req / min (automated, multi-device) */
-export const refreshRateLimitedProcedure = createRateLimitedProcedure('rl:trpc:refresh', 30, '1m');
+export const refreshRateLimitedProcedure = createRateLimitedProcedure(`${ENV_PREFIX}:trpc:refresh`, 30, '1m');
 
 /** Protected procedure — requires authenticated user. */
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
@@ -120,7 +125,7 @@ async function getGdprExportRateLimiter(): Promise<Ratelimit> {
     _gdprExportRateLimiter = new Ratelimit({
       redis,
       limiter: Ratelimit.slidingWindow(3, '24h'),
-      prefix: 'rl:trpc:gdpr-export',
+      prefix: `${ENV_PREFIX}:trpc:gdpr-export`,
     });
   }
   return _gdprExportRateLimiter;

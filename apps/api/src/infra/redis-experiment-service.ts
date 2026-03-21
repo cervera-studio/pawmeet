@@ -62,7 +62,8 @@ export class RedisExperimentService implements ExperimentService {
     if (existing) return existing;
 
     const variant = assignVariant(userId, experimentName, splitPercent);
-    await redis.set(key, variant);
+    // TTL 90 days — prevents zombie keys from completed experiments
+    await redis.set(key, variant, { ex: 90 * 24 * 60 * 60 });
     return variant;
   }
 

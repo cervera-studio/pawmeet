@@ -33,6 +33,8 @@ const safeUserColumns = {
   deletionScheduledAt: users.deletionScheduledAt,
   followersCount: users.followersCount,
   followingCount: users.followingCount,
+  termsAcceptedAt: users.termsAcceptedAt,
+  privacyPolicyVersion: users.privacyPolicyVersion,
 } as const;
 
 export class DrizzleUserRepository implements UserRepository {

@@ -29,8 +29,7 @@
         "android.permission.CAMERA",
         "android.permission.health.READ_STEPS",
         "android.permission.health.READ_DISTANCE",
-        "android.permission.health.READ_EXERCISE",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.health.READ_EXERCISE"
       ]
     },
     "plugins": [
@@ -48,7 +47,6 @@
         }
       ],
       "./plugins/with-certificate-pinning",
-      "./plugins/with-screen-security",
       [
         "react-native-health-connect",
         {

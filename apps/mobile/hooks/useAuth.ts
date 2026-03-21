@@ -9,6 +9,7 @@ import { stopSyncEngine } from '@/services/sync-engine';
 import type { AuthUser } from '@/stores/auth';
 import { useAuthStore } from '@/stores/auth';
 import { useConsentStore } from '@/stores/consent';
+import { useLocationStore } from '@/stores/location';
 
 const authRepo = container.resolve(AUTH_REPOSITORY);
 const analyticsService = container.resolve(ANALYTICS_SERVICE);
@@ -102,6 +103,7 @@ export function useAuth() {
     }
 
     await storage.clear();
+    useLocationStore.getState().clearCoordinates();
     storeLogout();
   }, [storeLogout]);
 

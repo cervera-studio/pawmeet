@@ -16,6 +16,8 @@ interface LocationState {
   setError: (error: string | null) => void;
   setPermissionGranted: (granted: boolean) => void;
   setSearchRadiusKm: (radius: number) => void;
+  /** Clear coordinates on logout to prevent stale location data */
+  clearCoordinates: () => void;
 }
 
 export const useLocationStore = create<LocationState>((set) => ({
@@ -30,4 +32,5 @@ export const useLocationStore = create<LocationState>((set) => ({
   setError: (error) => set({ error }),
   setPermissionGranted: (permissionGranted) => set({ permissionGranted }),
   setSearchRadiusKm: (searchRadiusKm) => set({ searchRadiusKm }),
+  clearCoordinates: () => set({ coordinates: null }),
 }));

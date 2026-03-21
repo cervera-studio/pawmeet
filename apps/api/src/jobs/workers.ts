@@ -158,6 +158,9 @@ export async function startWorkers() {
     ]);
     // Flush analytics providers after workers stop to prevent event loss on deploys
     await Promise.allSettled(analyticsProviders.map((p) => p.shutdown()));
+    // Flush pending Sentry events before exit
+    const { Sentry } = await import('../lib/sentry.js');
+    await Sentry.close(2000);
     logger.info('Workers', 'All workers stopped');
   };
 

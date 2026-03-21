@@ -15,7 +15,8 @@
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Per aggiornare la tua posizione",
         "NSCameraUsageDescription": "Per scattare foto del tuo cane",
         "NSPhotoLibraryUsageDescription": "Per caricare foto del tuo cane",
-        "NSHealthShareUsageDescription": "PawMeet utilizza i dati di Apple Salute per sincronizzare passi, distanza e attività con il tuo profilo."
+        "NSHealthShareUsageDescription": "PawMeet utilizza i dati di Apple Salute per sincronizzare passi, distanza e attività con il tuo profilo.",
+        "NSFaceIDUsageDescription": "Per proteggere l'accesso alla tua app PawMeet"
       }
     },
     "android": {

@@ -298,6 +298,9 @@ importers:
       expo-image-picker:
         specifier: ~55.0.13
         version: 55.0.13(expo@55.0.7)
+      expo-local-authentication:
+        specifier: ^55.0.9
+        version: 55.0.9(expo@55.0.7)
       expo-localization:
         specifier: ^55.0.9
         version: 55.0.9(expo@55.0.7)(react@19.2.4)
@@ -5774,6 +5777,11 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
+
+  expo-local-authentication@55.0.9:
+    resolution: {integrity: sha512-WeFmISIOpq3VOg1DkUf2J9xtj7FJuFOjSN5z+z+fNFCjCuFY1vw20UMApbiEz7bOvE2w6tDYpTF4GJhaatKJ/Q==}
+    peerDependencies:
+      expo: '*'
 
   expo-localization@55.0.9:
     resolution: {integrity: sha512-ABRg4wEt15OCp9/3XOLC4ltPVvXmJgeCKNTJ4Nb8N6byuHITJHvZ3PwcC2YGpTzlAqfGbcs3rJdfg1ObT54PJQ==}
@@ -15251,6 +15259,11 @@ snapshots:
       - expo
       - supports-color
       - typescript
+
+  expo-local-authentication@55.0.9(expo@55.0.7):
+    dependencies:
+      expo: 55.0.7(@babel/core@7.29.0)(@expo/dom-webview@55.0.3)(@expo/metro-runtime@55.0.6)(expo-router@55.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      invariant: 2.2.4
 
   expo-localization@55.0.9(expo@55.0.7)(react@19.2.4):
     dependencies:

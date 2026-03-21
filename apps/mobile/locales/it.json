@@ -81,6 +81,14 @@
     "ageGate": "Verifica età"
   },
 
+  "biometric": {
+    "lockedMessage": "App bloccata per la tua sicurezza",
+    "unlock": "Sblocca",
+    "settingsTitle": "Blocco biometrico",
+    "settingsDescription": "Richiedi Face ID o Touch ID per accedere all'app",
+    "timeout": "Timeout (minuti)"
+  },
+
   "discovery": {
     "title": "Scopri",
     "subtitle": "Cani nelle vicinanze",

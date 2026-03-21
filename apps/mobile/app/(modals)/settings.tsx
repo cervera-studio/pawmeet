@@ -9,6 +9,7 @@ import { Linking, Modal, Platform, Pressable, ScrollView, Switch, Text, View } f
 import { ConsentModal } from '@/components/ConsentModal';
 import { syncSingleConsentToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';
+import { useSettingsStore } from '@/stores/settings';
 import { useSettingsViewModel } from './settings.view-model';
 
 const LANGUAGES = [
@@ -24,6 +25,8 @@ export default function SettingsModal() {
   const { t } = useTranslation();
   const vm = useSettingsViewModel();
   const router = useRouter();
+  const biometricEnabled = useSettingsStore((s) => s.biometricLockEnabled);
+  const setBiometricEnabled = useSettingsStore((s) => s.setBiometricLockEnabled);
   const consents = useConsentStore((s) => s.consents);
   const storeSetConsent = useConsentStore((s) => s.setConsent);
   const [showConsentModal, setShowConsentModal] = useState(false);
@@ -326,6 +329,22 @@ export default function SettingsModal() {
           <Switch
             value={vm.darkMode}
             onValueChange={vm.setDarkMode}
+            trackColor={{ true: '#065F46' }}
+          />
+        </View>
+
+        <View className="flex-row items-center justify-between py-4">
+          <View className="flex-1 pr-4">
+            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
+              {t('biometric.settingsTitle')}
+            </Text>
+            <Text className="text-xs text-gray-400 dark:text-neutral-500">
+              {t('biometric.settingsDescription')}
+            </Text>
+          </View>
+          <Switch
+            value={biometricEnabled}
+            onValueChange={setBiometricEnabled}
             trackColor={{ true: '#065F46' }}
           />
         </View>

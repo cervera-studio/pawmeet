@@ -11,11 +11,12 @@ import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppState, useColorScheme } from 'react-native';
+import { AppState, Pressable, Text, useColorScheme, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ConsentModal } from '@/components/ConsentModal';
 import { useAuth } from '@/hooks/useAuth';
+import { useBiometricLock } from '@/hooks/useBiometricLock';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useWebSocketManager } from '@/hooks/useWebSocket';
 import { getExpiringPins, validatePinsInitialized } from '@/lib/certificate-pinning';
@@ -212,6 +213,9 @@ function RootLayout() {
   // Hydrate theme store (triggers Appearance.setColorScheme on rehydrate)
   useThemeStore();
 
+  // Biometric lock gate
+  const { isLocked, authenticate } = useBiometricLock();
+
   // Load server-side consents and show consent modal if not yet seen
   useEffect(() => {
     if (isAuthenticated) {
@@ -324,6 +328,23 @@ function RootLayout() {
           </Stack>
 
           <ConsentModal visible={showConsentModal} onDismiss={() => setShowConsentModal(false)} />
+
+          {isLocked && (
+            <View className="absolute inset-0 z-50 items-center justify-center bg-black/95">
+              <Text className="mb-2 text-2xl font-bold text-white">PawMeet</Text>
+              <Text className="mb-8 text-base text-neutral-400">
+                {t('biometric.lockedMessage')}
+              </Text>
+              <Pressable
+                onPress={authenticate}
+                className="rounded-xl bg-emerald-600 px-8 py-4"
+              >
+                <Text className="text-base font-semibold text-white">
+                  {t('biometric.unlock')}
+                </Text>
+              </Pressable>
+            </View>
+          )}
         </StatsigProviderExpo>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -38,7 +38,7 @@ const listDogsSchema = z.object({
 });
 
 const getDogSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
 });
 
 const listReportsSchema = z.object({
@@ -48,7 +48,7 @@ const listReportsSchema = z.object({
 });
 
 const resolveReportSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   action: z.enum(['dismiss', 'warn', 'suspend', 'ban']),
 });
 
@@ -60,7 +60,7 @@ const listFeedPostsSchema = z.object({
 });
 
 const updatePostModerationSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.uuid(),
   status: z.enum(['approved', 'rejected']),
 });
 
@@ -73,31 +73,31 @@ const listGroupEventsSchema = z.object({
 });
 
 const getGroupEventSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
 });
 
 const cancelGroupEventSchema = z.object({
-  eventId: z.string().uuid(),
+  eventId: z.uuid(),
 });
 
 const removeParticipantSchema = z.object({
-  participantId: z.string().uuid(),
+  participantId: z.uuid(),
 });
 
 const addSponsorSchema = z.object({
-  eventId: z.string().uuid(),
-  organizationId: z.string().uuid(),
+  eventId: z.uuid(),
+  organizationId: z.uuid(),
   tier: z.enum(['title', 'gold', 'silver', 'partner']),
   logoPlacement: z.enum(['header', 'footer', 'banner']).default('footer'),
 });
 
 const removeSponsorSchema = z.object({
-  eventId: z.string().uuid(),
-  organizationId: z.string().uuid(),
+  eventId: z.uuid(),
+  organizationId: z.uuid(),
 });
 
 const listEventSponsorsSchema = z.object({
-  eventId: z.string().uuid(),
+  eventId: z.uuid(),
 });
 
 const sizeCategoryEnum = z.enum(['toy', 'small', 'medium', 'large', 'giant']);
@@ -282,7 +282,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
       }),
 
     deleteStory: adminProcedure
-      .input(z.object({ storyId: z.string().uuid() }))
+      .input(z.object({ storyId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Moderator);
 
@@ -323,7 +323,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
     }),
 
     approvePhoto: adminProcedure
-      .input(z.object({ photoId: z.string().uuid() }))
+      .input(z.object({ photoId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Moderator);
 
@@ -349,7 +349,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
       }),
 
     rejectPhoto: adminProcedure
-      .input(z.object({ photoId: z.string().uuid() }))
+      .input(z.object({ photoId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Moderator);
 
@@ -523,7 +523,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
       }),
 
     getOrganization: adminProcedure
-      .input(z.object({ id: z.string().uuid() }))
+      .input(z.object({ id: z.uuid() }))
       .query(async ({ input }) => {
         const result = await adminDataRepo.getOrganization(input.id);
         if (!result) {
@@ -533,7 +533,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
       }),
 
     verifyOrganization: adminProcedure
-      .input(z.object({ organizationId: z.string().uuid() }))
+      .input(z.object({ organizationId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
@@ -555,7 +555,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
       }),
 
     revokeOrganization: adminProcedure
-      .input(z.object({ organizationId: z.string().uuid() }))
+      .input(z.object({ organizationId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
@@ -581,14 +581,14 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
         z.object({
           title: z.string().min(3).max(100),
           description: z.string().max(2000).optional(),
-          scheduledAt: z.string().datetime(),
+          scheduledAt: z.iso.datetime(),
           durationMin: z.number().int().min(15).max(180).default(60),
           location: z.string().min(1),
           latitude: z.number().min(-90).max(90),
           longitude: z.number().min(-180).max(180),
           maxParticipants: z.number().int().min(2).max(500).default(100),
-          organizationId: z.string().uuid(),
-          coverImageUrl: z.string().url().optional(),
+          organizationId: z.uuid(),
+          coverImageUrl: z.url().optional(),
           category: z.enum(['walk', 'meetup', 'training']).default('meetup'),
         }),
       )
@@ -866,7 +866,7 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
     sendTargetedNotification: adminProcedure
       .input(
         z.object({
-          userIds: z.array(z.string().uuid()).min(1).max(100),
+          userIds: z.array(z.uuid()).min(1).max(100),
           title: z.string().min(1).max(100),
           body: z.string().min(1).max(500),
           data: pushNotificationDataSchema.optional(),

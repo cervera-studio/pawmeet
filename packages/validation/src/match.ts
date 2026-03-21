@@ -2,12 +2,12 @@ import { z } from 'zod';
 import { discoveryFiltersSchema } from './dog';
 
 export const swipeSchema = z.object({
-  dogId: z.string().uuid(),
-  targetDogId: z.string().uuid(),
+  dogId: z.uuid(),
+  targetDogId: z.uuid(),
 });
 
 export const discoverSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
   limit: z.number().int().min(1).max(50).optional(),
   filters: discoveryFiltersSchema.optional(),
 });

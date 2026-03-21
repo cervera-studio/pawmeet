@@ -7,11 +7,11 @@ import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 const listByWalkSchema = z.object({
-  walkId: z.string().uuid(),
+  walkId: z.uuid(),
 });
 
 const getDogRatingSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
 });
 
 export function createFeedbackRouter(deps: typeof feedbackDeps) {

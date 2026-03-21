@@ -45,7 +45,7 @@ const analyticsEventSchema = z.object({
   clientEventId: z.string().min(1).max(64),
   eventName: clientEventNameSchema,
   properties: z.record(z.string(), z.unknown()).optional(),
-  clientTimestamp: z.string().datetime(),
+  clientTimestamp: z.iso.datetime(),
   sessionId: z.string().max(64).optional(),
   platform: z.enum(['ios', 'android', 'web']),
   appVersion: z.string().max(20).optional(),

@@ -39,7 +39,7 @@ export function createMatchesRouter(deps: typeof matchDeps) {
       ),
 
     unmatch: protectedProcedure
-      .input(z.object({ matchId: z.string().uuid() }))
+      .input(z.object({ matchId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         const result = unwrapResult(await deps.unmatch(ctx.userId, input.matchId));
         trackEvent('match_unmatched', ctx.userId, {

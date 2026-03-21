@@ -3,11 +3,11 @@ import type { badgeDeps } from '../../container/index.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 const listByDogSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
 });
 
 const checkAndAwardSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
 });
 
 export function createBadgesRouter(deps: typeof badgeDeps) {

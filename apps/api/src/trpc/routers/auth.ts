@@ -11,7 +11,7 @@ import {
 } from '@pawmeet/validation';
 import type { authDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
-import { publicProcedure, rateLimitedPublicProcedure, router, unwrapResult } from '../trpc.js';
+import { rateLimitedPublicProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createAuthRouter(deps: typeof authDeps) {
   return router({
@@ -31,11 +31,11 @@ export function createAuthRouter(deps: typeof authDeps) {
       return result;
     }),
 
-    refresh: publicProcedure
+    refresh: rateLimitedPublicProcedure
       .input(refreshSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.refreshTokens(input.refreshToken))),
 
-    logout: publicProcedure.input(logoutSchema).mutation(async ({ input }) => {
+    logout: rateLimitedPublicProcedure.input(logoutSchema).mutation(async ({ input }) => {
       const result = unwrapResult(await deps.logoutUser(input.refreshToken));
       trackEvent('auth_logout', null, { reason: 'manual' });
       return result;

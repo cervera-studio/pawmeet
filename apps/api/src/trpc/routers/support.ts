@@ -16,13 +16,13 @@ import { sendToUser } from '../../ws/registry.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 const getMessagesSchema = z.object({
-  ticketId: z.string().uuid(),
-  cursor: z.string().uuid().optional(),
+  ticketId: z.uuid(),
+  cursor: z.uuid().optional(),
   limit: z.number().int().min(1).max(50).default(20),
 });
 
 const adminReplySchema = z.object({
-  ticketId: z.string().uuid(),
+  ticketId: z.uuid(),
   content: z.string().min(1).max(5000),
   isInternal: z.boolean().default(false),
 });
@@ -87,7 +87,7 @@ export function createSupportRouter(deps: typeof supportDeps) {
 
     /** Mark admin messages as read (called by user when opening the chat) */
     markAsRead: protectedProcedure
-      .input(z.object({ ticketId: z.string().uuid() }))
+      .input(z.object({ ticketId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         // Verify the user owns this ticket (lightweight check, no message fetch)
         const ownerUserId = await deps.getTicketOwnerUserId(input.ticketId);
@@ -107,7 +107,7 @@ export function createSupportRouter(deps: typeof supportDeps) {
     }),
 
     getTicket: adminProcedure
-      .input(z.object({ ticketId: z.string().uuid() }))
+      .input(z.object({ ticketId: z.uuid() }))
       .query(async ({ input }) => {
         const result = unwrapResult(
           await deps.getMessages(input.ticketId, null, 1, {
@@ -156,7 +156,7 @@ export function createSupportRouter(deps: typeof supportDeps) {
 
     /** Mark user messages as read (called by admin when opening the ticket) */
     markAdminRead: adminProcedure
-      .input(z.object({ ticketId: z.string().uuid() }))
+      .input(z.object({ ticketId: z.uuid() }))
       .mutation(async ({ input }) => {
         const updated = await deps.markUserMessagesRead(input.ticketId);
 

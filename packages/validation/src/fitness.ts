@@ -1,28 +1,28 @@
 import { z } from 'zod';
 
 export const startTrackingSchema = z.object({
-  walkId: z.string().uuid().nullable().optional(),
+  walkId: z.uuid().nullable().optional(),
 });
 
 export const trackPointSchema = z.object({
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
   altitude: z.number().nullable().optional(),
-  timestamp: z.string().datetime(),
+  timestamp: z.iso.datetime(),
   speedKmh: z.number().min(0).nullable().optional(),
 });
 
 export const addTrackPointsSchema = z.object({
-  trackId: z.string().uuid(),
+  trackId: z.uuid(),
   points: z.array(trackPointSchema).min(1).max(50),
 });
 
 export const endTrackingSchema = z.object({
-  trackId: z.string().uuid(),
+  trackId: z.uuid(),
 });
 
 export const getTrackSchema = z.object({
-  trackId: z.string().uuid(),
+  trackId: z.uuid(),
 });
 
 export const syncHealthDataSchema = z.object({
@@ -50,7 +50,7 @@ export const getActivityStatsSchema = z.object({
 });
 
 export const getDogHealthGoalSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
 });
 
 export const getUserTracksSchema = z.object({

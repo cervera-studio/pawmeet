@@ -24,13 +24,13 @@ function createAdminProcedure() {
 
 const getExperimentMetricsSchema = z.object({
   experimentName: z.string(),
-  dateFrom: z.string().datetime().optional(),
-  dateTo: z.string().datetime().optional(),
+  dateFrom: z.iso.datetime().optional(),
+  dateTo: z.iso.datetime().optional(),
 });
 
 const getModelPerformanceSchema = z.object({
-  dateFrom: z.string().datetime().optional(),
-  dateTo: z.string().datetime().optional(),
+  dateFrom: z.iso.datetime().optional(),
+  dateTo: z.iso.datetime().optional(),
 });
 
 const updateFeatureFlagSchema = z.object({

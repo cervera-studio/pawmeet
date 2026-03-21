@@ -1,19 +1,19 @@
 import { z } from 'zod';
 
 export const addEventSponsorSchema = z.object({
-  eventId: z.string().uuid(),
-  organizationId: z.string().uuid(),
+  eventId: z.uuid(),
+  organizationId: z.uuid(),
   tier: z.enum(['title', 'gold', 'silver', 'partner']),
   logoPlacement: z.enum(['header', 'footer', 'banner']).default('footer'),
 });
 
 export const removeEventSponsorSchema = z.object({
-  eventId: z.string().uuid(),
-  organizationId: z.string().uuid(),
+  eventId: z.uuid(),
+  organizationId: z.uuid(),
 });
 
 export const listEventSponsorsSchema = z.object({
-  eventId: z.string().uuid(),
+  eventId: z.uuid(),
 });
 
 export type AddEventSponsorInput = z.infer<typeof addEventSponsorSchema>;

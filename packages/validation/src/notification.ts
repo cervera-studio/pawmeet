@@ -41,13 +41,13 @@ const pushNotificationTypes = Object.values(PUSH_NOTIFICATION_TYPE) as [string, 
 export const pushNotificationDataSchema = z
   .object({
     type: z.enum(pushNotificationTypes),
-    matchId: z.string().uuid().optional(),
-    walkId: z.string().uuid().optional(),
-    eventId: z.string().uuid().optional(),
-    ticketId: z.string().uuid().optional(),
-    postId: z.string().uuid().optional(),
-    commentId: z.string().uuid().optional(),
-    userId: z.string().uuid().optional(),
+    matchId: z.uuid().optional(),
+    walkId: z.uuid().optional(),
+    eventId: z.uuid().optional(),
+    ticketId: z.uuid().optional(),
+    postId: z.uuid().optional(),
+    commentId: z.uuid().optional(),
+    userId: z.uuid().optional(),
   })
   .strict();
 
@@ -56,12 +56,12 @@ export type PushNotificationData = z.infer<typeof pushNotificationDataSchema>;
 // ── Query schemas ──────────────────────────────────────────────────────────
 
 export const listNotificationsSchema = z.object({
-  cursor: z.string().uuid().optional(),
+  cursor: z.uuid().optional(),
   limit: z.number().int().min(1).max(50).default(20),
 });
 
 export const markNotificationReadSchema = z.object({
-  notificationId: z.string().uuid(),
+  notificationId: z.uuid(),
 });
 
 export type ListNotificationsInput = z.infer<typeof listNotificationsSchema>;

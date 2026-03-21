@@ -39,16 +39,16 @@ const createAdminUserSchema = z.object({
 });
 
 const updateAdminRoleSchema = z.object({
-  adminId: z.string().uuid(),
+  adminId: z.uuid(),
   newRole: adminRoleEnum,
 });
 
 const toggleAdminActiveSchema = z.object({
-  adminId: z.string().uuid(),
+  adminId: z.uuid(),
 });
 
 const resetAdminPasswordSchema = z.object({
-  adminId: z.string().uuid(),
+  adminId: z.uuid(),
   newPassword: z.string().min(8),
 });
 
@@ -106,7 +106,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
         );
       }),
 
-    getUser: adminProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ input }) => {
+    getUser: adminProcedure.input(z.object({ id: z.uuid() })).query(async ({ input }) => {
       const result = await adminDataRepo.getUser(input.id);
       if (!result) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
@@ -132,7 +132,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
     }),
 
     suspendUser: adminProcedure
-      .input(z.object({ userId: z.string().uuid() }))
+      .input(z.object({ userId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
@@ -157,7 +157,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
       }),
 
     banUser: adminProcedure
-      .input(z.object({ userId: z.string().uuid() }))
+      .input(z.object({ userId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
@@ -182,7 +182,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
       }),
 
     reactivateUser: adminProcedure
-      .input(z.object({ userId: z.string().uuid() }))
+      .input(z.object({ userId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
@@ -207,7 +207,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
       }),
 
     requestGdprExport: adminProcedure
-      .input(z.object({ userId: z.string().uuid() }))
+      .input(z.object({ userId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 
@@ -288,7 +288,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
       }),
 
     cancelDeletion: adminProcedure
-      .input(z.object({ userId: z.string().uuid() }))
+      .input(z.object({ userId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 

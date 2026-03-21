@@ -56,7 +56,7 @@ export const breedsSearchSchema = z.object({
 });
 
 export const photoReorderSchema = z.object({
-  photoIds: z.array(z.string().uuid()).min(1).max(MAX_PHOTOS_PER_DOG),
+  photoIds: z.array(z.uuid()).min(1).max(MAX_PHOTOS_PER_DOG),
 });
 
 export const analyzeDogPhotoSchema = z.object({

@@ -11,11 +11,11 @@ const wsMessageSchema = z.object({
 });
 
 const typingPayloadSchema = z.object({
-  matchId: z.string().uuid(),
+  matchId: z.uuid(),
 });
 
 const supportTypingPayloadSchema = z.object({
-  ticketId: z.string().uuid(),
+  ticketId: z.uuid(),
 });
 
 // ── Redis-backed rate limiter for WebSocket messages ──────────────────────────

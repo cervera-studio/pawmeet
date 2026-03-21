@@ -32,7 +32,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(1),
 });
 
@@ -57,11 +57,11 @@ export const socialLoginSchema = z
   });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 });
 
 export const verifyEmailOtpSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   code: z
     .string()
     .length(8)
@@ -69,11 +69,11 @@ export const verifyEmailOtpSchema = z.object({
 });
 
 export const resendVerificationSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 });
 
 export const resetPasswordOtpSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   code: z
     .string()
     .length(8)

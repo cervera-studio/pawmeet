@@ -12,11 +12,11 @@ import { createAdminProcedure } from './admin-procedure.js';
 const listAuditLogSchema = z.object({
   page: z.number().int().min(1).default(1),
   pageSize: z.number().int().min(1).max(100).default(20),
-  adminId: z.string().uuid().optional(),
+  adminId: z.uuid().optional(),
   resourceType: z.string().optional(),
   action: z.string().optional(),
-  from: z.string().datetime().optional(),
-  to: z.string().datetime().optional(),
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
   search: z.string().optional(),
 });
 

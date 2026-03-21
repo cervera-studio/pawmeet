@@ -11,14 +11,14 @@ export const scoreBreakdownSchema = z.object({
 });
 
 export const logSwipeScoreSchema = z.object({
-  dogId: z.string().uuid(),
-  targetDogId: z.string().uuid(),
+  dogId: z.uuid(),
+  targetDogId: z.uuid(),
   direction: z.enum(['like', 'pass']),
   scores: scoreBreakdownSchema,
 });
 
 export const recordMatchInteractionSchema = z.object({
-  matchId: z.string().uuid(),
+  matchId: z.uuid(),
   interactionType: z.enum([
     'walk_completed',
     'chat_started',
@@ -35,23 +35,23 @@ export const recordActivityWindowSchema = z.object({
 });
 
 export const getOptimalTimesSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
   limit: z.number().int().min(1).max(10).optional(),
 });
 
 export const getMatchingInsightsSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
 });
 
 export const getMatchExplanationSchema = z.object({
-  matchId: z.string().uuid(),
+  matchId: z.uuid(),
 });
 
 export const getNearbyActiveCountSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
 });
 
 export const suggestWalksSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
   limit: z.number().int().min(1).max(5).optional(),
 });

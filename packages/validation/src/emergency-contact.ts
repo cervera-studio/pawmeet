@@ -7,17 +7,17 @@ export const createEmergencyContactSchema = z.object({
 });
 
 export const deleteEmergencyContactSchema = z.object({
-  contactId: z.string().uuid(),
+  contactId: z.uuid(),
 });
 
 export const walkSosSchema = z.object({
-  walkId: z.string().uuid(),
+  walkId: z.uuid(),
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
 });
 
 export const walkCheckinSchema = z.object({
-  walkId: z.string().uuid(),
+  walkId: z.uuid(),
 });
 
 export type CreateEmergencyContactInput = z.infer<typeof createEmergencyContactSchema>;

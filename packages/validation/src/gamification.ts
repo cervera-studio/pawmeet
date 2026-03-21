@@ -2,7 +2,7 @@ import { DEFAULT_LEADERBOARD_LIMIT, MAX_LEADERBOARD_LIMIT } from '@pawmeet/confi
 import { z } from 'zod';
 
 export const awardXpSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   action: z.enum([
     'walk_completed',
     'match_made',
@@ -15,7 +15,7 @@ export const awardXpSchema = z.object({
 });
 
 export const getXpSummarySchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
 });
 
 export const getLeaderboardSchema = z.object({
@@ -24,17 +24,17 @@ export const getLeaderboardSchema = z.object({
 });
 
 export const listActiveChallengesSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
 });
 
 export const updateChallengeProgressSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   challengeType: z.enum(['walk_count', 'walk_distance_km', 'new_matches', 'group_events_joined']),
   incrementBy: z.number().int().min(1).default(1),
 });
 
 export const listAchievementsSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
 });
 
 export const getStreakSchema = z.object({

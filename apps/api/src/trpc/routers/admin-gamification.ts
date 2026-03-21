@@ -56,8 +56,8 @@ export function createAdminGamificationRouter(deps: GamificationRouterDeps) {
           description: z.string().min(1).max(1000),
           targetValue: z.number().int().positive(),
           xpReward: z.number().int().positive(),
-          startsAt: z.string().datetime(),
-          endsAt: z.string().datetime(),
+          startsAt: z.iso.datetime(),
+          endsAt: z.iso.datetime(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -116,13 +116,13 @@ export function createAdminGamificationRouter(deps: GamificationRouterDeps) {
     updateChallenge: adminProcedure
       .input(
         z.object({
-          challengeId: z.string().uuid(),
+          challengeId: z.uuid(),
           title: z.string().min(1).max(200).optional(),
           description: z.string().min(1).max(1000).optional(),
           targetValue: z.number().int().positive().optional(),
           xpReward: z.number().int().positive().optional(),
-          startsAt: z.string().datetime().optional(),
-          endsAt: z.string().datetime().optional(),
+          startsAt: z.iso.datetime().optional(),
+          endsAt: z.iso.datetime().optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -177,7 +177,7 @@ export function createAdminGamificationRouter(deps: GamificationRouterDeps) {
       }),
 
     deleteChallenge: adminProcedure
-      .input(z.object({ challengeId: z.string().uuid() }))
+      .input(z.object({ challengeId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         requireRole(ctx.adminRole, AdminRole.Admin);
 

@@ -53,7 +53,7 @@ async function saveSettings(settings: PersistedSettings): Promise<void> {
 
 const updateSettingsSchema = z.object({
   appName: z.string().min(1).max(100).optional(),
-  supportEmail: z.string().email().optional(),
+  supportEmail: z.email().optional(),
   photoConfidenceThreshold: z.number().int().min(0).max(100).optional(),
   maxReportsBeforeSuspension: z.number().int().min(1).optional(),
   matchWeightSize: z.number().min(0).max(1).optional(),

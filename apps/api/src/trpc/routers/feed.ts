@@ -47,7 +47,7 @@ export function createFeedRouter(deps: typeof feedDeps) {
     }),
 
     deletePost: protectedProcedure
-      .input(z.object({ postId: z.string().uuid() }))
+      .input(z.object({ postId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         const result = unwrapResult(await deps.deletePost(input.postId, ctx.userId));
         trackEvent('feed_post_deleted', ctx.userId, {
@@ -57,7 +57,7 @@ export function createFeedRouter(deps: typeof feedDeps) {
       }),
 
     postDetail: protectedProcedure
-      .input(z.object({ postId: z.string().uuid() }))
+      .input(z.object({ postId: z.uuid() }))
       .query(async ({ ctx, input }) =>
         unwrapResult(await deps.getPostDetail(input.postId, ctx.userId)),
       ),
@@ -141,7 +141,7 @@ export function createFeedRouter(deps: typeof feedDeps) {
       }),
 
     deleteComment: protectedProcedure
-      .input(z.object({ commentId: z.string().uuid() }))
+      .input(z.object({ commentId: z.uuid() }))
       .mutation(async ({ ctx, input }) => {
         unwrapResult(await deps.deleteComment(input.commentId, ctx.userId));
         trackEvent('feed_comment_deleted', ctx.userId, { commentAgeHours: 0 });
@@ -181,7 +181,7 @@ export function createFeedRouter(deps: typeof feedDeps) {
     }),
 
     storyViewers: protectedProcedure
-      .input(z.object({ storyId: z.string().uuid() }))
+      .input(z.object({ storyId: z.uuid() }))
       .query(async ({ ctx, input }) =>
         unwrapResult(await deps.getStoryViewers(input.storyId, ctx.userId)),
       ),
@@ -273,7 +273,7 @@ export function createFeedRouter(deps: typeof feedDeps) {
     // ── Walk albums ─────────────────────────────────────────────────────────
 
     walkAlbum: protectedProcedure
-      .input(z.object({ walkId: z.string().uuid() }))
+      .input(z.object({ walkId: z.uuid() }))
       .query(async ({ ctx, input }) =>
         unwrapResult(await deps.getWalkAlbum(input.walkId, ctx.userId)),
       ),

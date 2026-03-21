@@ -2,8 +2,8 @@ import { WALK_DURATION_MAX, WALK_DURATION_MIN } from '@pawmeet/config';
 import { z } from 'zod';
 
 export const proposeWalkSchema = z.object({
-  matchId: z.string().uuid(),
-  scheduledAt: z.string().datetime(),
+  matchId: z.uuid(),
+  scheduledAt: z.iso.datetime(),
   durationMin: z.number().int().min(WALK_DURATION_MIN).max(WALK_DURATION_MAX).default(30),
   title: z.string().max(100).optional(),
   location: z.string().max(200).optional(),
@@ -13,16 +13,16 @@ export const proposeWalkSchema = z.object({
 });
 
 export const respondWalkSchema = z.object({
-  walkId: z.string().uuid(),
+  walkId: z.uuid(),
   accept: z.boolean(),
 });
 
 export const cancelWalkSchema = z.object({
-  walkId: z.string().uuid(),
+  walkId: z.uuid(),
 });
 
 export const listByMatchSchema = z.object({
-  matchId: z.string().uuid(),
+  matchId: z.uuid(),
 });
 
 export type ProposeWalkInput = z.infer<typeof proposeWalkSchema>;

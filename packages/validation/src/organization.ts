@@ -13,30 +13,30 @@ export const createOrganizationSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'slug_format'),
   type: organizationTypeEnum,
   description: z.string().max(2000).optional(),
-  logoUrl: z.string().url().max(500).optional(),
-  websiteUrl: z.string().url().max(500).optional(),
-  contactEmail: z.string().email().max(255).optional(),
+  logoUrl: z.url().max(500).optional(),
+  websiteUrl: z.url().max(500).optional(),
+  contactEmail: z.email().max(255).optional(),
 });
 
 export type CreateOrganizationInput = z.infer<typeof createOrganizationSchema>;
 
 export const verifyOrganizationSchema = z.object({
-  organizationId: z.string().uuid(),
+  organizationId: z.uuid(),
 });
 
 export type VerifyOrganizationInput = z.infer<typeof verifyOrganizationSchema>;
 
 export const addOrganizationMemberSchema = z.object({
-  organizationId: z.string().uuid(),
-  userId: z.string().uuid(),
+  organizationId: z.uuid(),
+  userId: z.uuid(),
   role: organizationMemberRoleEnum,
 });
 
 export type AddOrganizationMemberInput = z.infer<typeof addOrganizationMemberSchema>;
 
 export const removeOrganizationMemberSchema = z.object({
-  organizationId: z.string().uuid(),
-  userId: z.string().uuid(),
+  organizationId: z.uuid(),
+  userId: z.uuid(),
 });
 
 export type RemoveOrganizationMemberInput = z.infer<typeof removeOrganizationMemberSchema>;
@@ -51,7 +51,7 @@ export const listOrganizationsSchema = z.object({
 export type ListOrganizationsInput = z.infer<typeof listOrganizationsSchema>;
 
 export const getOrganizationSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
 });
 
 export type GetOrganizationInput = z.infer<typeof getOrganizationSchema>;

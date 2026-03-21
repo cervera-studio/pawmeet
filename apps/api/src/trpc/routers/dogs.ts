@@ -15,19 +15,19 @@ import { trackEvent } from '../../lib/track-event.js';
 import { protectedProcedure, publicProcedure, router, unwrapResult } from '../trpc.js';
 
 const photoUploadUrlSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
   contentType: z.enum(ALLOWED_IMAGE_TYPES as unknown as [string, ...string[]]),
   fileSize: z.number().int().min(1).max(MAX_FILE_SIZE),
 });
 
 const photoConfirmSchema = z.object({
-  dogId: z.string().uuid(),
+  dogId: z.uuid(),
   key: z.string().min(1),
 });
 
 const photoDeleteSchema = z.object({
-  dogId: z.string().uuid(),
-  photoId: z.string().uuid(),
+  dogId: z.uuid(),
+  photoId: z.uuid(),
 });
 
 let _photoAnalysisRateLimiter: Ratelimit | null = null;
@@ -65,7 +65,7 @@ export function createDogsRouter(deps: typeof dogDeps) {
       .query(async ({ input }) => unwrapResult(await deps.searchBreeds(input.q))),
 
     getPublicProfile: publicProcedure
-      .input(z.object({ id: z.string().uuid() }))
+      .input(z.object({ id: z.uuid() }))
       .query(async ({ input }) => unwrapResult(await deps.getPublicDogProfile(input.id))),
 
     list: protectedProcedure.query(async ({ ctx }) =>
@@ -86,11 +86,11 @@ export function createDogsRouter(deps: typeof dogDeps) {
     }),
 
     get: protectedProcedure
-      .input(z.object({ id: z.string().uuid() }))
+      .input(z.object({ id: z.uuid() }))
       .query(async ({ input }) => unwrapResult(await deps.getDog(input.id))),
 
     update: protectedProcedure
-      .input(z.object({ id: z.string().uuid(), data: updateDogSchema }))
+      .input(z.object({ id: z.uuid(), data: updateDogSchema }))
       .mutation(async ({ ctx, input }) => {
         const result = unwrapResult(await deps.updateDog(input.id, ctx.userId, input.data));
         trackEvent('dog_profile_updated', ctx.userId, {
@@ -101,7 +101,7 @@ export function createDogsRouter(deps: typeof dogDeps) {
       }),
 
     delete: protectedProcedure
-      .input(z.object({ id: z.string().uuid() }))
+      .input(z.object({ id: z.uuid() }))
       .mutation(async ({ ctx, input }) => unwrapResult(await deps.deleteDog(input.id, ctx.userId))),
 
     uploadPhotoUrl: protectedProcedure
@@ -126,7 +126,7 @@ export function createDogsRouter(deps: typeof dogDeps) {
       ),
 
     reorderPhotos: protectedProcedure
-      .input(z.object({ dogId: z.string().uuid(), photoIds: photoReorderSchema.shape.photoIds }))
+      .input(z.object({ dogId: z.uuid(), photoIds: photoReorderSchema.shape.photoIds }))
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.reorderDogPhotos(input.dogId, ctx.userId, input.photoIds)),
       ),

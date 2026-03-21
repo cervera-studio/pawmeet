@@ -11,8 +11,8 @@ export interface EmergencyContactRepository {
     walkId: string;
     userId: string;
     type: SafetyCheckinType;
-    latitude?: string | null;
-    longitude?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
   }): Promise<WalkSafetyCheckin>;
   findCheckinsByWalk(walkId: string): Promise<WalkSafetyCheckin[]>;
 }

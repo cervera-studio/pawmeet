@@ -1069,9 +1069,12 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
   }
 
   async findUserById(id: string): Promise<{ id: string; isActive: boolean } | null> {
-    const [user] = await this.db.select().from(users).where(eq(users.id, id));
+    const [user] = await this.db
+      .select({ id: users.id, isActive: users.isActive })
+      .from(users)
+      .where(eq(users.id, id));
     if (!user) return null;
-    return { id: user.id, isActive: user.isActive };
+    return user;
   }
 
   async setUserActive(userId: string, isActive: boolean): Promise<void> {

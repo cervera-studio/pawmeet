@@ -59,7 +59,7 @@ export function createChatRouter(deps: typeof chatDeps) {
       .input(
         z.object({
           matchId: z.string().uuid(),
-          contentType: z.string(),
+          contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/quicktime']),
           fileSize: z.number().int().positive(),
         }),
       )

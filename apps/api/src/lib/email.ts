@@ -7,6 +7,16 @@ import emailRo from '@pawmeet/i18n/locales/ro/email.json' with { type: 'json' };
 import { Resend } from 'resend';
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'PawMeet <noreply@pawmeet.io>';
+
+/** Escape user-supplied text before inserting into HTML email templates. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
 const ADMIN_LOGIN_URL = process.env.ADMIN_URL || 'https://admin.pawmeet.io';
 const PRIVACY_EMAIL = 'privacy@pawmeet.io';
 
@@ -124,7 +134,7 @@ export async function sendGdprExportReady(
     to: email,
     subject: t.subject,
     html: `
-      <h2>${t.greeting.replace('{displayName}', displayName)}</h2>
+      <h2>${t.greeting.replace('{displayName}', escapeHtml(displayName))}</h2>
       <p>${t.body}</p>
       <p style="text-align: center; padding: 16px 0;">
         <a href="${downloadUrl}" style="background-color: #065F46; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">${t.cta}</a>
@@ -150,7 +160,7 @@ export async function sendGdprExportFailed(
     to: email,
     subject: t.subject,
     html: `
-      <h2>${t.greeting.replace('{displayName}', displayName)}</h2>
+      <h2>${t.greeting.replace('{displayName}', escapeHtml(displayName))}</h2>
       <p>${t.body}</p>
       <p>${t.retry} <a href="mailto:${PRIVACY_EMAIL}">${PRIVACY_EMAIL}</a>.</p>
     `,
@@ -197,12 +207,12 @@ export async function sendSupportTicketNotification(
   await getResend().emails.send({
     from: FROM_EMAIL,
     to,
-    subject: `[PawMeet Support] ${subject}`,
+    subject: `[PawMeet Support] ${escapeHtml(subject)}`,
     html: `
       <h2>Aggiornamento ticket di supporto</h2>
       <p><strong>Ticket:</strong> ${ticketId.slice(0, 8)}</p>
-      <p><strong>Oggetto:</strong> ${subject}</p>
-      <p><strong>Anteprima:</strong> ${preview}</p>
+      <p><strong>Oggetto:</strong> ${escapeHtml(subject)}</p>
+      <p><strong>Anteprima:</strong> ${escapeHtml(preview)}</p>
       <p>Accedi all'app per visualizzare la risposta completa.</p>
     `,
   });
@@ -222,7 +232,7 @@ export async function sendAccountDeletedConfirmation(
     to: email,
     subject: t.subject,
     html: `
-      <h2>${t.greeting.replace('{displayName}', displayName)}</h2>
+      <h2>${t.greeting.replace('{displayName}', escapeHtml(displayName))}</h2>
       <p>${t.body}</p>
       <p>${t.retention}</p>
       <p>${t.undo} <a href="mailto:${PRIVACY_EMAIL}">${PRIVACY_EMAIL}</a> ${t.undoSuffix}</p>

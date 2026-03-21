@@ -20,7 +20,7 @@ export interface WalkSafetyCheckin {
   walkId: string;
   userId: string;
   type: SafetyCheckinType;
-  latitude: string | null;
-  longitude: string | null;
+  latitude: number | null;
+  longitude: number | null;
   createdAt: Date;
 }

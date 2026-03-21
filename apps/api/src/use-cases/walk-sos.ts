@@ -48,8 +48,8 @@ export function createWalkSos({
       walkId,
       userId,
       type: SAFETY_CHECKIN_TYPE.SOS,
-      latitude: latitude?.toString() ?? null,
-      longitude: longitude?.toString() ?? null,
+      latitude: latitude ?? null,
+      longitude: longitude ?? null,
     });
 
     const locationText =

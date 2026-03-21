@@ -1,6 +1,16 @@
 import { sql } from 'drizzle-orm';
-import { check, index, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  check,
+  doublePrecision,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { users } from './users';
+import { walks } from './walks';
 
 export const emergencyContacts = pgTable(
   'emergency_contacts',
@@ -25,13 +35,15 @@ export const walkSafetyCheckins = pgTable(
   'walk_safety_checkins',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    walkId: uuid('walk_id').notNull(),
+    walkId: uuid('walk_id')
+      .notNull()
+      .references(() => walks.id, { onDelete: 'cascade' }),
     userId: uuid('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     type: text('type').notNull(),
-    latitude: text('latitude'),
-    longitude: text('longitude'),
+    latitude: doublePrecision('latitude'),
+    longitude: doublePrecision('longitude'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
@@ -40,6 +52,14 @@ export const walkSafetyCheckins = pgTable(
     check(
       'walk_safety_checkins_type_valid',
       sql`${table.type} IN ('checkin', 'sos', 'auto_alert')`,
+    ),
+    check(
+      'walk_safety_checkins_lat_range',
+      sql`${table.latitude} IS NULL OR (${table.latitude} BETWEEN -90 AND 90)`,
+    ),
+    check(
+      'walk_safety_checkins_lon_range',
+      sql`${table.longitude} IS NULL OR (${table.longitude} BETWEEN -180 AND 180)`,
     ),
   ],
 );

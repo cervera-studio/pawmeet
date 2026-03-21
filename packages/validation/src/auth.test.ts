@@ -117,9 +117,9 @@ describe('registerSchema', () => {
     }
   });
 
-  it('rejects underage users (< 14)', () => {
+  it('rejects underage users (< 18)', () => {
     const now = new Date();
-    const underage = new Date(now.getFullYear() - 13, now.getMonth(), now.getDate());
+    const underage = new Date(now.getFullYear() - 17, now.getMonth(), now.getDate());
     const result = registerSchema.safeParse(
       buildRegisterInput({ dateOfBirth: underage.toISOString() }),
     );
@@ -130,11 +130,11 @@ describe('registerSchema', () => {
     }
   });
 
-  it('accepts users exactly 14 years old', () => {
+  it('accepts users exactly 18 years old', () => {
     const now = new Date();
-    const exactly14 = new Date(now.getFullYear() - 14, now.getMonth(), now.getDate());
+    const exactly18 = new Date(now.getFullYear() - 18, now.getMonth(), now.getDate());
     const result = registerSchema.safeParse(
-      buildRegisterInput({ dateOfBirth: exactly14.toISOString() }),
+      buildRegisterInput({ dateOfBirth: exactly18.toISOString() }),
     );
     expect(result.success).toBe(true);
   });

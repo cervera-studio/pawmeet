@@ -30,6 +30,8 @@ const SECURITY_EVENT = {
   GdprExportFailed: 'gdpr.export.failed',
   AccountLinked: 'auth.account.linked',
   TokenFamilyCompromised: 'auth.token.family_compromised',
+  SessionRevoked: 'auth.session.revoked',
+  AllOtherSessionsRevoked: 'auth.session.all_others_revoked',
 } as const;
 
 type SecurityEvent = (typeof SECURITY_EVENT)[keyof typeof SECURITY_EVENT];

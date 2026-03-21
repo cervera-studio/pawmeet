@@ -1,12 +1,15 @@
-// Auth domain: registration, login, token refresh, password reset, social login
+// Auth domain: registration, login, token refresh, password reset, social login, session management
 
 import { createForgotPassword } from '../use-cases/forgot-password.js';
+import { createListSessions } from '../use-cases/list-sessions.js';
 import { createLoginUser } from '../use-cases/login-user.js';
 import { createLogoutUser } from '../use-cases/logout-user.js';
 import { createRefreshTokens } from '../use-cases/refresh-tokens.js';
 import { createRegisterUser } from '../use-cases/register-user.js';
 import { createResendVerification } from '../use-cases/resend-verification.js';
 import { createResetPassword } from '../use-cases/reset-password.js';
+import { createRevokeAllOtherSessions } from '../use-cases/revoke-all-other-sessions.js';
+import { createRevokeSession } from '../use-cases/revoke-session.js';
 import { createSocialLogin } from '../use-cases/social-login.js';
 import { createVerifyEmailOtp } from '../use-cases/verify-email-otp.js';
 import {
@@ -34,4 +37,7 @@ export const authDeps = {
   }),
   verifyEmailOtp: createVerifyEmailOtp({ userRepo, tokenRepo, authService }),
   resendVerification: createResendVerification({ userRepo, tokenRepo, authService, emailService }),
+  listSessions: createListSessions({ tokenRepo, authService }),
+  revokeSession: createRevokeSession({ tokenRepo, authService }),
+  revokeAllOtherSessions: createRevokeAllOtherSessions({ tokenRepo, authService }),
 };

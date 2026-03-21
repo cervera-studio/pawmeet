@@ -1,17 +1,21 @@
 import {
   forgotPasswordSchema,
+  listSessionsSchema,
   loginSchema,
   logoutSchema,
   refreshSchema,
   registerSchema,
   resendVerificationSchema,
   resetPasswordOtpSchema,
+  revokeAllOtherSessionsSchema,
+  revokeSessionSchema,
   socialLoginSchema,
   verifyEmailOtpSchema,
 } from '@pawmeet/validation';
 import type { authDeps } from '../../container/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import {
+  protectedProcedure,
   rateLimitedPublicProcedure,
   refreshRateLimitedProcedure,
   registerRateLimitedProcedure,
@@ -76,5 +80,23 @@ export function createAuthRouter(deps: typeof authDeps) {
     resendVerification: rateLimitedPublicProcedure
       .input(resendVerificationSchema)
       .mutation(async ({ input }) => unwrapResult(await deps.resendVerification(input.email))),
+
+    listSessions: protectedProcedure
+      .input(listSessionsSchema)
+      .query(async ({ ctx, input }) =>
+        unwrapResult(await deps.listSessions(ctx.userId, input.refreshToken)),
+      ),
+
+    revokeSession: protectedProcedure
+      .input(revokeSessionSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.revokeSession(ctx.userId, input.sessionId)),
+      ),
+
+    revokeAllOtherSessions: protectedProcedure
+      .input(revokeAllOtherSessionsSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.revokeAllOtherSessions(ctx.userId, input.refreshToken)),
+      ),
   });
 }

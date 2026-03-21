@@ -1,5 +1,5 @@
 import { refreshTokens, type TokenType, verificationTokens } from '@pawmeet/db';
-import { and, eq, gt, isNull } from 'drizzle-orm';
+import { and, eq, gt, isNull, not } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   RefreshTokenRecord,
@@ -75,6 +75,34 @@ export class DrizzleTokenRepository implements TokenRepository {
       .update(refreshTokens)
       .set({ revoked: true })
       .where(eq(refreshTokens.familyId, familyId));
+  }
+
+  async findActiveSessionsByUserId(userId: string): Promise<RefreshTokenRecord[]> {
+    return this.db
+      .select()
+      .from(refreshTokens)
+      .where(
+        and(
+          eq(refreshTokens.userId, userId),
+          eq(refreshTokens.revoked, false),
+          gt(refreshTokens.expiresAt, new Date()),
+        ),
+      );
+  }
+
+  async revokeAllOtherFamilies(userId: string, keepFamilyId: string): Promise<number> {
+    const rows = await this.db
+      .update(refreshTokens)
+      .set({ revoked: true })
+      .where(
+        and(
+          eq(refreshTokens.userId, userId),
+          eq(refreshTokens.revoked, false),
+          not(eq(refreshTokens.familyId, keepFamilyId)),
+        ),
+      )
+      .returning({ id: refreshTokens.id });
+    return rows.length;
   }
 
   // Verification tokens

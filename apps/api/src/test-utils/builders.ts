@@ -685,6 +685,8 @@ export function buildTokenRepo(overrides: Partial<TokenRepository> = {}): TokenR
     markVerificationTokenUsed: vi.fn(),
     revokeRefreshTokenAtomic: vi.fn().mockResolvedValue(true),
     markVerificationTokenUsedAtomic: vi.fn().mockResolvedValue(true),
+    findActiveSessionsByUserId: vi.fn().mockResolvedValue([]),
+    revokeAllOtherFamilies: vi.fn().mockResolvedValue(0),
     ...overrides,
   };
 }

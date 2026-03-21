@@ -96,6 +96,18 @@ export const resetPasswordOtpSchema = z.object({
   password: passwordSchema,
 });
 
+export const listSessionsSchema = z.object({
+  refreshToken: z.string().min(1),
+});
+
+export const revokeSessionSchema = z.object({
+  sessionId: z.string().uuid(),
+});
+
+export const revokeAllOtherSessionsSchema = z.object({
+  refreshToken: z.string().min(1),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RefreshInput = z.infer<typeof refreshSchema>;
@@ -105,3 +117,6 @@ export type VerifyEmailOtpInput = z.infer<typeof verifyEmailOtpSchema>;
 export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordOtpInput = z.infer<typeof resetPasswordOtpSchema>;
+export type ListSessionsInput = z.infer<typeof listSessionsSchema>;
+export type RevokeSessionInput = z.infer<typeof revokeSessionSchema>;
+export type RevokeAllOtherSessionsInput = z.infer<typeof revokeAllOtherSessionsSchema>;

@@ -38,6 +38,8 @@ export interface TokenRepository {
   revokeRefreshTokenByHash(tokenHash: string): Promise<void>;
   revokeAllUserRefreshTokens(userId: string): Promise<void>;
   revokeTokenFamily(familyId: string): Promise<void>;
+  findActiveSessionsByUserId(userId: string): Promise<RefreshTokenRecord[]>;
+  revokeAllOtherFamilies(userId: string, keepFamilyId: string): Promise<number>;
 
   // Verification tokens
   createVerificationToken(input: {

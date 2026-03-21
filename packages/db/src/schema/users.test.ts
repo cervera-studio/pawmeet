@@ -33,9 +33,11 @@ describe('users table', () => {
         'dateOfBirth',
         'followersCount',
         'followingCount',
+        'termsAcceptedAt',
+        'privacyPolicyVersion',
       ]),
     );
-    expect(columnNames).toHaveLength(21);
+    expect(columnNames).toHaveLength(23);
   });
 
   describe('id column', () => {

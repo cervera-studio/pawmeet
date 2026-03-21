@@ -41,10 +41,18 @@ export function createRegisterUser(deps: Deps) {
 
     // Enforce minimum age
     const today = new Date();
-    const ageCutoff = new Date(today.getFullYear() - MIN_USER_AGE, today.getMonth(), today.getDate());
+    const ageCutoff = new Date(
+      today.getFullYear() - MIN_USER_AGE,
+      today.getMonth(),
+      today.getDate(),
+    );
     if (dateOfBirth > ageCutoff) {
       return fail(
-        new AppError('AUTH_UNDERAGE', `Devi avere almeno ${MIN_USER_AGE} anni per registrarti.`, 400),
+        new AppError(
+          'AUTH_UNDERAGE',
+          `Devi avere almeno ${MIN_USER_AGE} anni per registrarti.`,
+          400,
+        ),
       );
     }
 

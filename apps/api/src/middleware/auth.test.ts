@@ -17,6 +17,8 @@ async function signToken(sub: string, options?: { expiresIn?: string; secret?: U
   let builder = new SignJWT({ type: 'access' })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(sub)
+    .setIssuer('pawmeet-api')
+    .setAudience('pawmeet:user')
     .setIssuedAt();
   if (options?.expiresIn) {
     builder = builder.setExpirationTime(options.expiresIn);

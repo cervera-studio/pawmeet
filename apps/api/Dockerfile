@@ -18,6 +18,7 @@ COPY packages/utils/package.json ./packages/utils/
 COPY packages/config/package.json ./packages/config/
 COPY packages/db/package.json ./packages/db/
 COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/i18n/package.json ./packages/i18n/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY tooling/vitest/package.json ./tooling/vitest/
 
@@ -48,6 +49,7 @@ COPY packages/utils/ ./packages/utils/
 COPY packages/config/ ./packages/config/
 COPY packages/db/ ./packages/db/
 COPY packages/api-client/ ./packages/api-client/
+COPY packages/i18n/ ./packages/i18n/
 COPY tooling/typescript/ ./tooling/typescript/
 
 # Build the API and its dependencies via Turborepo

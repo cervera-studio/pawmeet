@@ -578,6 +578,13 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
 
+        if (!user.isActive) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Cannot impersonate an inactive user',
+          });
+        }
+
         const token = await generateImpersonationToken(input.userId, ctx.userId);
 
         void logAdminAction(auditLogRepo, {

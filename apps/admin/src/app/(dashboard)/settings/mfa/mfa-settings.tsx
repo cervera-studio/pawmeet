@@ -25,24 +25,7 @@ export function MfaSettings() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check MFA status from user role info — we'll use an API call
-  const [mfaEnabled, setMfaEnabled] = useState(false);
-  const [statusLoaded, setStatusLoaded] = useState(false);
-
-  // Fetch MFA status on mount
-  const fetchStatus = useCallback(async () => {
-    try {
-      const res = await fetch('/api/auth/mfa-setup', { method: 'GET' });
-      // We don't have a GET endpoint yet. Let's use a simpler approach:
-      // The user object doesn't have mfaEnabled. We'll just try setup and see if it fails.
-      setStatusLoaded(true);
-    } catch {
-      setStatusLoaded(true);
-    }
-  }, []);
-
-  // Since we don't have a GET status endpoint, we check by attempting setup
-  // and handling the "already enabled" error. Or better, just show both options.
+  const [mfaEnabled, setMfaEnabled] = useState(user?.totpEnabled ?? false);
 
   const handleStartSetup = useCallback(async () => {
     setIsLoading(true);

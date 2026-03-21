@@ -15,6 +15,7 @@ export interface AdminUser {
   name: string;
   role: AdminRole;
   avatarUrl?: string;
+  totpEnabled?: boolean;
 }
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';

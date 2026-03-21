@@ -68,6 +68,9 @@ export function PhotoViewer({
     if (!open) return;
 
     function handleKeyDown(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
       switch (e.key) {
         case 'ArrowLeft':
           goPrev();

@@ -14,6 +14,7 @@ import {
   verifyAdminRefreshToken,
   verifyMfaPendingToken,
 } from '../lib/jwt.js';
+import { logger } from '@pawmeet/utils';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import { decryptSecret, encryptSecret, generateTotpSetup, verifyTotpCode } from '../lib/totp.js';
 import {
@@ -200,6 +201,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             email: admin.email,
             name: admin.displayName,
             role: admin.role,
+            totpEnabled: admin.totpEnabled,
           });
         } catch {
           return c.json({ error: 'Token non valido' }, 401);
@@ -377,6 +379,9 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
         return c.json({ message: 'Password reimpostata con successo' });
       })
       // ── MFA: Verify TOTP during login ──────────────────────────────────────
+      .use('/mfa/verify', authRateLimitMiddleware)
+      .use('/mfa/confirm', authRateLimitMiddleware)
+      .use('/mfa/disable', authRateLimitMiddleware)
       .post(
         '/mfa/verify',
         zValidator(
@@ -472,11 +477,13 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
 
           const { secret, uri } = generateTotpSetup(admin.email);
 
-          // Store encrypted secret (not yet enabled — needs verification)
-          await adminUserRepo.updateTotpSecret(admin.id, encryptSecret(secret));
+          // Store encrypted secret in Redis (10 min TTL) until confirmed
+          const redis = await getRedis();
+          await redis.set(`admin:mfa:setup:${admin.id}`, encryptSecret(secret), { ex: 600 });
 
           return c.json({ uri, secret });
-        } catch {
+        } catch (error) {
+          logger.error('AdminAuth', 'mfa/setup failed', error);
           return c.json({ error: 'Token non valido' }, 401);
         }
       })
@@ -498,33 +505,38 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
               return c.json({ error: 'Unauthorized' }, 401);
             }
 
-            const adminFull = await adminUserRepo.findByEmail(adminSafe.email);
-            if (!adminFull?.totpSecret) {
-              return c.json({ error: 'Avvia prima il setup MFA' }, 400);
-            }
-
-            if (adminFull.totpEnabled) {
+            if (adminSafe.totpEnabled) {
               return c.json({ error: 'MFA è già attivo' }, 400);
             }
 
+            // Read pending secret from Redis (stored by /mfa/setup)
+            const redis = await getRedis();
+            const pendingSecret = await redis.get<string>(`admin:mfa:setup:${adminSafe.id}`);
+            if (!pendingSecret) {
+              return c.json({ error: 'Avvia prima il setup MFA' }, 400);
+            }
+
             const { code } = c.req.valid('json');
-            const base32Secret = decryptSecret(adminFull.totpSecret);
+            const base32Secret = decryptSecret(pendingSecret);
 
             if (!verifyTotpCode(base32Secret, code)) {
               return c.json({ error: 'Codice TOTP non valido. Riprova.' }, 400);
             }
 
-            // Enable MFA
-            await adminUserRepo.enableTotp(adminFull.id);
+            // Confirmed — persist to DB and enable
+            await adminUserRepo.updateTotpSecret(adminSafe.id, pendingSecret);
+            await adminUserRepo.enableTotp(adminSafe.id);
+            await redis.del(`admin:mfa:setup:${adminSafe.id}`);
 
             logSecurityEvent({
               event: SECURITY_EVENT.MfaEnabled,
-              userId: adminFull.id,
+              userId: adminSafe.id,
               metadata: { source: 'admin_settings' },
             });
 
             return c.json({ success: true });
-          } catch {
+          } catch (error) {
+            logger.error('AdminAuth', 'mfa/confirm failed', error);
             return c.json({ error: 'Token non valido' }, 401);
           }
         },
@@ -581,7 +593,8 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             });
 
             return c.json({ success: true });
-          } catch {
+          } catch (error) {
+            logger.error('AdminAuth', 'mfa/disable failed', error);
             return c.json({ error: 'Token non valido' }, 401);
           }
         },

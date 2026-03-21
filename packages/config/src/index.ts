@@ -8,3 +8,4 @@ export * from './health';
 export * from './legal';
 export * from './matching-ai';
 export * from './mood';
+export * from './webauthn';

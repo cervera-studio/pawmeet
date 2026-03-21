@@ -22,6 +22,7 @@ export * from './mood-logs';
 export * from './notifications';
 export * from './oauth-accounts';
 export * from './organizations';
+export * from './passkey-credentials';
 export * from './refresh-tokens';
 export * from './reports';
 export * from './streaks';

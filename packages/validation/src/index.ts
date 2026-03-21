@@ -17,6 +17,7 @@ export * from './matching-ai';
 export * from './mood-log';
 export * from './notification';
 export * from './organization';
+export * from './passkey';
 export * from './search';
 export * from './support';
 export * from './user';

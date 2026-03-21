@@ -19,6 +19,7 @@ import {
   matchingAiDeps,
   moodLogDeps,
   organizationDeps,
+  passkeyDeps,
   supportDeps,
   userDeps,
   walkDeps,
@@ -42,6 +43,7 @@ import { createMatchesRouter } from './routers/matches.js';
 import { createMatchingAiRouter } from './routers/matching-ai.js';
 import { createMoodLogRouter } from './routers/mood-logs.js';
 import { createOrganizationsRouter } from './routers/organizations.js';
+import { createPasskeyRouter } from './routers/passkey.js';
 import { createSafetyRouter } from './routers/safety.js';
 import { createSupportRouter } from './routers/support.js';
 import { createUsersRouter } from './routers/users.js';
@@ -70,6 +72,7 @@ export const appRouter = router({
   groupChat: createGroupChatRouter(groupChatDeps),
   groupEvents: createGroupEventsRouter(groupEventDeps),
   organizations: createOrganizationsRouter(organizationDeps),
+  passkey: createPasskeyRouter(passkeyDeps),
   safety: createSafetyRouter(emergencyContactDeps),
   support: createSupportRouter(supportDeps),
 });

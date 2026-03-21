@@ -236,8 +236,8 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
   }
 
   async countActiveTemplates(userId: string): Promise<number> {
-    const rows = await this.db
-      .select({ id: groupEvents.id })
+    const [row] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
       .from(groupEvents)
       .where(
         and(
@@ -246,7 +246,7 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
           isNotNull(groupEvents.recurrenceRule),
         ),
       );
-    return rows.length;
+    return row?.count ?? 0;
   }
 
   // Participants
@@ -303,8 +303,8 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
   }
 
   async countParticipants(eventId: string): Promise<number> {
-    const rows = await this.db
-      .select({ id: groupEventParticipants.id })
+    const [row] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
       .from(groupEventParticipants)
       .where(
         and(
@@ -312,7 +312,7 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
           eq(groupEventParticipants.status, 'accepted'),
         ),
       );
-    return rows.length;
+    return row?.count ?? 0;
   }
 
   async findPendingParticipants(eventId: string): Promise<PendingParticipant[]> {

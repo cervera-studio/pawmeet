@@ -1,6 +1,6 @@
 import { dogPhotos, dogProfiles } from '@pawmeet/db';
 import type { DogPhoto, DogProfile } from '@pawmeet/types';
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CreateDogInput, DogRepository } from '../ports/dog-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
@@ -40,11 +40,11 @@ export class DrizzleDogRepository implements DogRepository {
   }
 
   async countByOwner(ownerId: string): Promise<number> {
-    const rows = await this.db
-      .select({ id: dogProfiles.id })
+    const [row] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
       .from(dogProfiles)
       .where(and(eq(dogProfiles.ownerId, ownerId), eq(dogProfiles.isActive, true)));
-    return rows.length;
+    return row?.count ?? 0;
   }
 
   async create(input: CreateDogInput): Promise<DogProfile> {
@@ -80,11 +80,11 @@ export class DrizzleDogRepository implements DogRepository {
   }
 
   async countPhotos(dogId: string): Promise<number> {
-    const rows = await this.db
-      .select({ id: dogPhotos.id })
+    const [row] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
       .from(dogPhotos)
       .where(eq(dogPhotos.dogId, dogId));
-    return rows.length;
+    return row?.count ?? 0;
   }
 
   async addPhoto(input: {

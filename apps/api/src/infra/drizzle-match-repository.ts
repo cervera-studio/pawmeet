@@ -62,11 +62,11 @@ export class DrizzleMatchRepository implements MatchRepository {
   }
 
   async countDailySwipes(swiperDogId: string, since: Date): Promise<number> {
-    const rows = await this.db
-      .select({ id: swipes.id })
+    const [row] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
       .from(swipes)
       .where(and(eq(swipes.swiperDogId, swiperDogId), gte(swipes.createdAt, since)));
-    return rows.length;
+    return row?.count ?? 0;
   }
 
   async findSwipe(swiperDogId: string, swipedDogId: string): Promise<Swipe | null> {

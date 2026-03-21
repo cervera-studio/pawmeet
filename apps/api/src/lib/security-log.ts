@@ -1,4 +1,14 @@
+import { createHash } from 'node:crypto';
 import { logger } from '@pawmeet/utils';
+
+/**
+ * Pseudonymize an email for audit logs (GDPR Art. 4(5)).
+ * Returns a truncated SHA-256 hex digest — sufficient for event correlation
+ * but not reversible to the original address.
+ */
+function pseudonymizeEmail(email: string): string {
+  return createHash('sha256').update(email.toLowerCase().trim()).digest('hex').slice(0, 16);
+}
 
 const SECURITY_EVENT = {
   LoginSuccess: 'auth.login.success',
@@ -42,7 +52,7 @@ interface SecurityLogEntry {
 function logSecurityEvent(entry: SecurityLogEntry): void {
   logger.info('SecurityAudit', entry.event, {
     userId: entry.userId,
-    email: entry.email,
+    emailHash: entry.email ? pseudonymizeEmail(entry.email) : undefined,
     ip: entry.ip,
     userAgent: entry.userAgent,
     ...entry.metadata,

@@ -1,11 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useModerationWs } from '@/hooks/use-moderation-ws';
+import { useAuthContext } from '@/lib/auth-store';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import { translateDynamic } from '@/lib/utils';
@@ -19,10 +21,31 @@ interface ContentListProps {
 export function ContentList({ initialData }: ContentListProps) {
   const t = useTranslations('content');
   const tt = useTranslations('toast');
+  const { user } = useAuthContext();
   const [reports, setReports] = useState<ContentReport[]>(initialData.reports);
   const [nextCursor, setNextCursor] = useState<string | null>(initialData.nextCursor);
   const [isLoading, setIsLoading] = useState(false);
   const [reviewingReportId, setReviewingReportId] = useState<string | null>(null);
+
+  useModerationWs({
+    onNewItem: useCallback(
+      (queue: string) => {
+        if (queue === 'content') {
+          toast.info(t('toast.newContentReportArrived'));
+        }
+      },
+      [t],
+    ),
+    onItemActioned: useCallback(
+      (queue: string, itemId: string, _action: string, adminId: string) => {
+        if (queue !== 'content') return;
+        if (adminId === user?.id) return;
+        setReports((prev) => prev.filter((r) => r.id !== itemId));
+        toast.info(t('toast.actionedByOther'));
+      },
+      [user?.id, t],
+    ),
+  });
 
   async function fetchReports(cursor?: string) {
     setIsLoading(true);

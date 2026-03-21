@@ -1,4 +1,4 @@
-import type { GroupEventStatus } from '@pawmeet/types';
+import { ADMIN_WS_EVENT, type GroupEventStatus } from '@pawmeet/types';
 import { pushNotificationDataSchema } from '@pawmeet/validation';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -13,6 +13,7 @@ import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import { createAddEventSponsor } from '../../use-cases/admin/add-event-sponsor.js';
 import { createResolveContentReport } from '../../use-cases/admin/resolve-content-report.js';
+import { sendToAllAdmins } from '../../ws/admin-ws.js';
 import { router, unwrapResult } from '../trpc.js';
 import { createAdminProcedure } from './admin-procedure.js';
 
@@ -209,6 +210,11 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
         action: input.action,
       });
 
+      sendToAllAdmins({
+        type: ADMIN_WS_EVENT.MODERATION_ITEM_ACTIONED,
+        payload: { queue: 'reports', itemId: input.id, action: input.action, adminId: ctx.userId },
+      });
+
       return { success: true };
     }),
 
@@ -266,6 +272,16 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
           },
         });
 
+        sendToAllAdmins({
+          type: ADMIN_WS_EVENT.MODERATION_ITEM_ACTIONED,
+          payload: {
+            queue: 'feed',
+            itemId: input.postId,
+            action: input.status,
+            adminId: ctx.userId,
+          },
+        });
+
         return { success: true };
       }),
 
@@ -298,6 +314,16 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
           action: 'story.delete',
           resourceType: RESOURCE_TYPE.story,
           resourceId: input.storyId,
+        });
+
+        sendToAllAdmins({
+          type: ADMIN_WS_EVENT.MODERATION_ITEM_ACTIONED,
+          payload: {
+            queue: 'stories',
+            itemId: input.storyId,
+            action: 'deleted',
+            adminId: ctx.userId,
+          },
         });
 
         return { success: true };
@@ -345,6 +371,16 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
           },
         });
 
+        sendToAllAdmins({
+          type: ADMIN_WS_EVENT.MODERATION_ITEM_ACTIONED,
+          payload: {
+            queue: 'photos',
+            itemId: input.photoId,
+            action: 'approved',
+            adminId: ctx.userId,
+          },
+        });
+
         return { success: true };
       }),
 
@@ -371,6 +407,16 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
           },
         });
 
+        sendToAllAdmins({
+          type: ADMIN_WS_EVENT.MODERATION_ITEM_ACTIONED,
+          payload: {
+            queue: 'photos',
+            itemId: input.photoId,
+            action: 'rejected',
+            adminId: ctx.userId,
+          },
+        });
+
         return { success: true };
       }),
 
@@ -383,6 +429,11 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
         adminId: ctx.userId,
         action: 'photo.approveAll',
         resourceType: RESOURCE_TYPE.photo,
+      });
+
+      sendToAllAdmins({
+        type: ADMIN_WS_EVENT.MODERATION_ITEM_ACTIONED,
+        payload: { queue: 'photos', itemId: '*', action: 'approved_all', adminId: ctx.userId },
       });
 
       return { success: true };

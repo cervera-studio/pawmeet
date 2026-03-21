@@ -1,3 +1,4 @@
+import { ADMIN_WS_EVENT } from '@pawmeet/types';
 import {
   addContentReactionSchema,
   addPostTagsSchema,
@@ -22,6 +23,7 @@ import { z } from 'zod';
 import type { feedDeps } from '../../container/index.js';
 import { enqueueCommentToxicityCheck } from '../../jobs/queue.js';
 import { trackEvent } from '../../lib/track-event.js';
+import { sendToAllAdmins } from '../../ws/admin-ws.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';
 
 export function createFeedRouter(deps: typeof feedDeps) {
@@ -42,6 +44,10 @@ export function createFeedRouter(deps: typeof feedDeps) {
         hasCaption: Boolean(input.caption),
         hasLocation: Boolean(input.latitude),
         tagCount: 0,
+      });
+      sendToAllAdmins({
+        type: ADMIN_WS_EVENT.MODERATION_NEW_POST,
+        payload: { postId: result.post.id },
       });
       return result;
     }),
@@ -166,6 +172,10 @@ export function createFeedRouter(deps: typeof feedDeps) {
       trackEvent('feed_story_created', ctx.userId, {
         mediaType: input.mediaType,
       });
+      sendToAllAdmins({
+        type: ADMIN_WS_EVENT.MODERATION_NEW_STORY,
+        payload: { storyId: result.story.id },
+      });
       return result;
     }),
 
@@ -203,6 +213,10 @@ export function createFeedRouter(deps: typeof feedDeps) {
         trackEvent('feed_content_reported', ctx.userId, {
           contentType: input.contentType,
           reason: input.reason,
+        });
+        sendToAllAdmins({
+          type: ADMIN_WS_EVENT.MODERATION_NEW_CONTENT_REPORT,
+          payload: { reportId: result.report.id, contentType: input.contentType },
         });
         return result;
       }),

@@ -1,3 +1,4 @@
+import { ADMIN_WS_EVENT } from '@pawmeet/types';
 import {
   analyzeDogPhotoSchema,
   breedsSearchSchema,
@@ -12,6 +13,7 @@ import type { dogDeps } from '../../container/index.js';
 import { enqueueEmbeddingGeneration } from '../../jobs/queue.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { trackEvent } from '../../lib/track-event.js';
+import { sendToAllAdmins } from '../../ws/admin-ws.js';
 import { protectedProcedure, publicProcedure, router, unwrapResult } from '../trpc.js';
 
 const photoUploadUrlSchema = z.object({
@@ -115,6 +117,10 @@ export function createDogsRouter(deps: typeof dogDeps) {
       trackEvent('dog_photo_uploaded', ctx.userId, {
         position: result.photo.position,
         fileSizeKb: 0, // size not available at confirm step
+      });
+      sendToAllAdmins({
+        type: ADMIN_WS_EVENT.MODERATION_NEW_PHOTO,
+        payload: { photoId: result.photo.id },
       });
       return result;
     }),

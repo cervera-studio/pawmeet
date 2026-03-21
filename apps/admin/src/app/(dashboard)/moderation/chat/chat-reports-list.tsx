@@ -2,7 +2,7 @@
 
 import type { PaginatedResult } from '@pawmeet/types';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useModerationWs } from '@/hooks/use-moderation-ws';
+import { useAuthContext } from '@/lib/auth-store';
 import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
@@ -26,10 +28,35 @@ interface ChatReportsListProps {
 export function ChatReportsList({ initialData }: ChatReportsListProps) {
   const t = useTranslations('chatModeration');
   const tt = useTranslations('toast');
+  const { user } = useAuthContext();
   const [statusFilter, setStatusFilter] = useState<ReportStatus | undefined>('pending');
   const [data, setData] = useState<PaginatedResult<AdminReportListItem>>(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+
+  useModerationWs({
+    onNewItem: useCallback(
+      (queue: string) => {
+        if (queue === 'chat') {
+          toast.info(t('toast.newChatReportArrived'));
+        }
+      },
+      [t],
+    ),
+    onItemActioned: useCallback(
+      (queue: string, itemId: string, _action: string, adminId: string) => {
+        if (queue !== 'chat') return;
+        if (adminId === user?.id) return;
+        setData((prev) => ({
+          ...prev,
+          data: prev.data.filter((r) => r.id !== itemId),
+          total: prev.total - 1,
+        }));
+        toast.info(t('toast.actionedByOther'));
+      },
+      [user?.id, t],
+    ),
+  });
 
   const STATUS_TABS: { label: string; value: ReportStatus | undefined }[] = [
     { label: t('tabs.all'), value: undefined },

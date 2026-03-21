@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useModerationWs } from '@/hooks/use-moderation-ws';
+import { useAuthContext } from '@/lib/auth-store';
 import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
@@ -35,12 +37,33 @@ export function StoryGrid({ initialData }: StoryGridProps) {
   const t = useTranslations('stories');
   const tt = useTranslations('toast');
   const tTable = useTranslations('table');
+  const { user } = useAuthContext();
   const [stories, setStories] = useState<AdminStory[]>(initialData.data);
   const [page, setPage] = useState(initialData.page);
   const [totalPages, setTotalPages] = useState(initialData.totalPages);
   const [total, setTotal] = useState(initialData.total);
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useModerationWs({
+    onNewItem: useCallback(
+      (queue: string) => {
+        if (queue === 'stories') {
+          toast.info(t('toast.newStoryArrived'));
+        }
+      },
+      [t],
+    ),
+    onItemActioned: useCallback(
+      (queue: string, itemId: string, _action: string, adminId: string) => {
+        if (queue !== 'stories') return;
+        if (adminId === user?.id) return;
+        setStories((prev) => prev.filter((s) => s.id !== itemId));
+        toast.info(t('toast.actionedByOther'));
+      },
+      [user?.id, t],
+    ),
+  });
 
   const fetchStories = useCallback(
     async (targetPage: number) => {

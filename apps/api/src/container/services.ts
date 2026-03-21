@@ -57,8 +57,8 @@ import { PostHogAnalyticsProvider } from '../infra/posthog-analytics-provider.js
 import { R2StorageService } from '../infra/r2-storage-service.js';
 import { RedisExperimentService } from '../infra/redis-experiment-service.js';
 import { ResendEmailService } from '../infra/resend-email-service.js';
-import { WsChatService } from '../infra/ws-chat-service.js';
-import { WsFeedRealtimeService } from '../infra/ws-feed-realtime-service.js';
+// WsChatService and WsFeedRealtimeService are lazy-imported below to break
+// the import cycle: services → ws-chat-service → ws/chat → ws/handlers → services
 import { db } from '../lib/db.js';
 import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 
@@ -136,7 +136,7 @@ export const socialAuthVerifier = new JwksSocialAuthVerifier(
 // Apple token revocation — degrades gracefully if env vars missing
 // Lazy import to avoid adding to the import cycle in this file
 export const appleAuthService = await (async () => {
-  if (!process.env.APPLE_TEAM_ID) return undefined;
+  if (!process.env.APPLE_TEAM_ID) return;
   const { AppleTokenRevocationService } = await import(
     '../infra/apple-token-revocation-service.js'
   );
@@ -150,9 +150,17 @@ export const appleAuthService = await (async () => {
 export const emailService = new ResendEmailService();
 export const adminNotificationService = new EmailAdminNotificationService(emailService);
 export const storage = new R2StorageService();
-export const chat = new WsChatService();
+export const chat = await (async () => {
+  // biome-ignore lint/suspicious/noImportCycles: intentional lazy import to break cycle (services→ws-chat→ws/chat→ws/handlers→services)
+  const { WsChatService } = await import('../infra/ws-chat-service.js');
+  return new WsChatService();
+})();
 export const notificationService = new BullMQNotificationService();
-export const feedRealtime = new WsFeedRealtimeService();
+export const feedRealtime = await (async () => {
+  // biome-ignore lint/suspicious/noImportCycles: intentional lazy import to break cycle (services→ws-feed→ws/chat→ws/handlers→services)
+  const { WsFeedRealtimeService } = await import('../infra/ws-feed-realtime-service.js');
+  return new WsFeedRealtimeService();
+})();
 export const organizationAuthorizer = createOrganizationAuthorizer();
 export const experimentService = new RedisExperimentService(consentRepo);
 

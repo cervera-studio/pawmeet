@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
+import { ExportAllButton } from '@/components/export-all-button';
 import { ExportButton } from '@/components/export-button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,7 @@ import { TIMING } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDate } from '@/lib/formatters';
 import type { AdminDogListItem } from '@/repositories';
-import { fetchDogs } from './actions';
+import { fetchAllDogsForExport, fetchDogs } from './actions';
 
 interface DogRow {
   id: string;
@@ -148,6 +149,11 @@ export function DogsTable({ initialData, pageSize }: DogsTableProps) {
           onChange={(e) => handleSearchChange(e.target.value)}
         />
         <ExportButton data={(data.data as DogRow[]) ?? []} filename="dogs-export" />
+        <ExportAllButton
+          fetchAll={() => fetchAllDogsForExport(debouncedSearch || undefined)}
+          filename="dogs-export-all"
+          label="Export All"
+        />
       </div>
 
       <DataTable

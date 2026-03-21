@@ -158,6 +158,24 @@
       "totalMatches": "Matches totales",
       "dogsCount": "Perros ({count})",
       "noDogs": "Ningún perro registrado",
+      "consentsTitle": "Consentimientos GDPR",
+      "consentType": {
+        "analytics": "Analytics",
+        "ab_testing": "A/B Testing",
+        "error_tracking": "Seguimiento de Errores",
+        "marketing": "Marketing",
+        "ai_training": "Entrenamiento IA"
+      },
+      "consentGranted": "Concedido",
+      "consentNotGranted": "No concedido",
+      "consentGrantedAt": "Concedido el",
+      "consentWithdrawnAt": "Revocado el",
+      "consentNeverSet": "Nunca establecido",
+      "consentSource": {
+        "mobile_onboarding": "Onboarding Movil",
+        "mobile_settings": "Ajustes Movil",
+        "web_banner": "Banner Web"
+      },
       "breed": "Raza",
       "quickActions": "Acciones rápidas",
       "information": "Información",
@@ -187,7 +205,12 @@
         "title": "Revocar todas las sesiones?",
         "description": "El usuario será desconectado de todos los dispositivos y deberá iniciar sesión de nuevo.",
         "confirm": "Revocar todas"
-      }
+      },
+      "impersonate": "Suplantar",
+      "impersonateTitle": "Token de Suplantacion",
+      "impersonateDescription": "Usa este token para acceder a la app como este usuario. El token expira en 30 minutos. Todas las acciones son registradas.",
+      "impersonateCopied": "Token copiado al portapapeles",
+      "impersonateClose": "Cerrar"
     }
   },
   "dogs": {
@@ -1118,7 +1141,8 @@
       "sessionRevoked": "Sesión revocada",
       "revokeSessionError": "Error al revocar la sesión",
       "allSessionsRevoked": "Todas las sesiones revocadas",
-      "revokeAllSessionsError": "Error al revocar las sesiones"
+      "revokeAllSessionsError": "Error al revocar las sesiones",
+      "impersonateError": "Error al generar el token de suplantacion"
     },
     "admins": {
       "createError": "Error al crear el administrador",

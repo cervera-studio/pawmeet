@@ -106,6 +106,30 @@ export async function revokeAllUserSessions(
   }
 }
 
+export async function fetchUserConsents(userId: string) {
+  try {
+    const api = await getServerTrpcClient();
+    return await api.admin.getUserConsents.query({ userId });
+  } catch (error) {
+    logger.error('AdminUsers', 'fetchUserConsents failed', error);
+    return [];
+  }
+}
+
+export async function impersonateUser(
+  userId: string,
+): Promise<{ success: boolean; token?: string; error?: string }> {
+  try {
+    const api = await getServerTrpcClient();
+    const result = await api.admin.impersonateUser.mutate({ userId });
+    return { success: true, token: result.token };
+  } catch (error) {
+    logger.error('AdminUsers', 'impersonateUser failed', error);
+    const tt = await getTranslations('toast');
+    return { success: false, error: tt('users.impersonateError') };
+  }
+}
+
 export async function fetchUser(id: string) {
   const api = await getServerTrpcClient();
   try {

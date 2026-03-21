@@ -276,6 +276,14 @@ export interface AdminUserPasskey {
   lastUsedAt: Date | null;
 }
 
+export interface AdminUserConsent {
+  consentType: string;
+  granted: boolean;
+  grantedAt: Date;
+  withdrawnAt: Date | null;
+  source: string;
+}
+
 export interface AdminDeletionItem {
   id: string;
   displayName: string | null;
@@ -415,6 +423,7 @@ export interface AdminUserRepository {
     pageSize: number;
   }): Promise<PaginatedResult<AdminDeletionItem>>;
   deactivateUser(userId: string): Promise<void>;
+  getUserConsents(userId: string): Promise<AdminUserConsent[]>;
 }
 
 export interface AdminDogRepository {

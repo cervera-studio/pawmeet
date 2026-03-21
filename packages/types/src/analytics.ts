@@ -197,6 +197,7 @@ export interface AnalyticsEventMap {
   admin_settings_updated: { changedFields: string[] };
   admin_user_session_revoked: { targetUserId: string; sessionId: string };
   admin_user_all_sessions_revoked: { targetUserId: string };
+  admin_user_impersonated: { targetUserId: string };
 
   // ML Matching
   ml_score_served: {

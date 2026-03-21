@@ -3,9 +3,10 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
+import { ExportAllButton } from '@/components/export-all-button';
 import { ExportButton } from '@/components/export-button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -15,12 +16,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useModerationWs } from '@/hooks/use-moderation-ws';
+import { useAuthContext } from '@/lib/auth-store';
 import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDate } from '@/lib/formatters';
 import { translateDynamic } from '@/lib/utils';
 import type { AdminReportListItem, ReportStatus, ResolveAction } from '@/repositories';
-import { fetchReports as fetchReportsAction, resolveReport } from './actions';
+import {
+  fetchAllReportsForExport,
+  fetchReports as fetchReportsAction,
+  resolveReport,
+} from './actions';
 
 interface ReportRow {
   id: string;
@@ -102,6 +109,7 @@ interface ReportsListProps {
 export function ReportsList({ initialData }: ReportsListProps) {
   const t = useTranslations('reports');
   const tt = useTranslations('toast');
+  const { user } = useAuthContext();
   const [statusFilter, setStatusFilter] = useState<ReportStatus | undefined>(undefined);
   const [pagination, setPagination] = useState<{ pageIndex: number; pageSize: number }>({
     pageIndex: 0,
@@ -109,6 +117,30 @@ export function ReportsList({ initialData }: ReportsListProps) {
   });
   const [data, setData] = useState<PaginatedResult<AdminReportListItem>>(initialData);
   const [isLoading, setIsLoading] = useState(false);
+
+  useModerationWs({
+    onNewItem: useCallback(
+      (queue: string) => {
+        if (queue === 'reports') {
+          toast.info(t('toast.newReportArrived'));
+        }
+      },
+      [t],
+    ),
+    onItemActioned: useCallback(
+      (queue: string, itemId: string, _action: string, adminId: string) => {
+        if (queue !== 'reports') return;
+        if (adminId === user?.id) return;
+        setData((prev) => ({
+          ...prev,
+          data: prev.data.filter((r) => r.id !== itemId),
+          total: prev.total - 1,
+        }));
+        toast.info(t('toast.actionedByOther'));
+      },
+      [user?.id, t],
+    ),
+  });
 
   const STATUS_TABS: { label: string; value: ReportStatus | undefined }[] = [
     { label: t('tabs.all'), value: undefined },
@@ -240,6 +272,11 @@ export function ReportsList({ initialData }: ReportsListProps) {
           ))}
         </div>
         <ExportButton data={(data.data as ReportRow[]) ?? []} filename="reports-export" />
+        <ExportAllButton
+          fetchAll={() => fetchAllReportsForExport(statusFilter ?? undefined)}
+          filename="reports-export-all"
+          label="Export All"
+        />
       </div>
 
       <DataTable

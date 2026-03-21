@@ -229,3 +229,23 @@ export async function verifyMfaPendingToken(token: string): Promise<AdminTokenPa
     jti: payload.jti,
   };
 }
+
+// ── Impersonation Token ──────────────────────────────────────────────────────
+
+const IMPERSONATION_TOKEN_EXPIRY = '30m';
+
+/** Generate a user access token for admin impersonation */
+export async function generateImpersonationToken(
+  targetUserId: string,
+  adminId: string,
+): Promise<string> {
+  return new SignJWT({ type: 'access', impersonatedBy: adminId })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setSubject(targetUserId)
+    .setJti(randomUUID())
+    .setIssuer(ISSUER)
+    .setAudience(AUDIENCE_USER)
+    .setIssuedAt()
+    .setExpirationTime(IMPERSONATION_TOKEN_EXPIRY)
+    .sign(getJwtSecret());
+}

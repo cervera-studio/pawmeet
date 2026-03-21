@@ -36,6 +36,7 @@ const SECURITY_EVENT = {
   MfaDisabled: 'auth.mfa.disabled',
   MfaVerified: 'auth.mfa.verified',
   MfaFailed: 'auth.mfa.failed',
+  ImpersonationStarted: 'admin.impersonation.started',
 } as const;
 
 type SecurityEvent = (typeof SECURITY_EVENT)[keyof typeof SECURITY_EVENT];

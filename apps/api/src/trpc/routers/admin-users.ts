@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { enqueueGdprExport } from '../../jobs/queue.js';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import { AdminRole, hasMinRole, requireRole } from '../../lib/admin-permissions.js';
+import { generateImpersonationToken } from '../../lib/jwt.js';
 import { paginate } from '../../lib/pagination.js';
 import { trackEvent } from '../../lib/track-event.js';
 import type {
@@ -133,6 +134,12 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
         matchesCount,
       };
     }),
+
+    getUserConsents: adminProcedure
+      .input(z.object({ userId: z.uuid() }))
+      .query(async ({ input }) => {
+        return adminDataRepo.getUserConsents(input.userId);
+      }),
 
     suspendUser: adminProcedure
       .input(z.object({ userId: z.uuid() }))
@@ -559,6 +566,32 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
         });
 
         return { success: true };
+      }),
+
+    impersonateUser: adminProcedure
+      .input(z.object({ userId: z.uuid() }))
+      .mutation(async ({ ctx, input }) => {
+        requireRole(ctx.adminRole, AdminRole.Admin);
+
+        const user = await adminDataRepo.findUserById(input.userId);
+        if (!user) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+        }
+
+        const token = await generateImpersonationToken(input.userId, ctx.userId);
+
+        void logAdminAction(auditLogRepo, {
+          adminId: ctx.userId,
+          action: 'user.impersonate',
+          resourceType: RESOURCE_TYPE.user,
+          resourceId: input.userId,
+        });
+
+        trackEvent('admin_user_impersonated', ctx.userId, {
+          targetUserId: input.userId,
+        });
+
+        return { token, expiresIn: '30m' };
       }),
   });
 }

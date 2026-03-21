@@ -160,6 +160,24 @@
       "noDogs": "No dogs registered",
       "passkeysCount": "Passkeys ({count})",
       "noPasskeys": "No passkeys registered",
+      "consentsTitle": "GDPR Consents",
+      "consentType": {
+        "analytics": "Analytics",
+        "ab_testing": "A/B Testing",
+        "error_tracking": "Error Tracking",
+        "marketing": "Marketing",
+        "ai_training": "AI Training"
+      },
+      "consentGranted": "Granted",
+      "consentNotGranted": "Not granted",
+      "consentGrantedAt": "Granted",
+      "consentWithdrawnAt": "Withdrawn",
+      "consentNeverSet": "Never set",
+      "consentSource": {
+        "mobile_onboarding": "Mobile Onboarding",
+        "mobile_settings": "Mobile Settings",
+        "web_banner": "Web Banner"
+      },
       "breed": "Breed",
       "quickActions": "Quick actions",
       "information": "Information",
@@ -189,7 +207,12 @@
         "title": "Revoke all sessions?",
         "description": "The user will be logged out from all devices and will need to log in again.",
         "confirm": "Revoke all"
-      }
+      },
+      "impersonate": "Impersonate",
+      "impersonateTitle": "Impersonation Token",
+      "impersonateDescription": "Use this token to access the app as this user. Token expires in 30 minutes. All actions are logged.",
+      "impersonateCopied": "Token copied to clipboard",
+      "impersonateClose": "Close"
     }
   },
   "dogs": {
@@ -1120,7 +1143,8 @@
       "sessionRevoked": "Session revoked",
       "revokeSessionError": "Error revoking session",
       "allSessionsRevoked": "All sessions revoked",
-      "revokeAllSessionsError": "Error revoking sessions"
+      "revokeAllSessionsError": "Error revoking sessions",
+      "impersonateError": "Error generating impersonation token"
     },
     "admins": {
       "createError": "Error creating administrator",

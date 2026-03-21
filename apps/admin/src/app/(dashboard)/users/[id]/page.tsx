@@ -4,8 +4,9 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate, formatDateTime, formatNumber } from '@/lib/formatters';
-import { fetchUser, fetchUserSessions } from '../actions';
+import { fetchUser, fetchUserConsents, fetchUserSessions } from '../actions';
 import { UserActions } from './user-actions';
+import { UserConsents } from './user-consents';
 import { UserSessions } from './user-sessions';
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -23,9 +24,10 @@ interface UserDetailPageProps {
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id } = await params;
-  const [user, sessions, t, tc] = await Promise.all([
+  const [user, sessions, consents, t, tc] = await Promise.all([
     fetchUser(id),
     fetchUserSessions(id),
+    fetchUserConsents(id),
     getTranslations('users'),
     getTranslations('common'),
   ]);
@@ -157,6 +159,8 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
 
         <UserSessions userId={id} sessions={sessions} />
       </div>
+
+      <UserConsents consents={consents} />
     </div>
   );
 }

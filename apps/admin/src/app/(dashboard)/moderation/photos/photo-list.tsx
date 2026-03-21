@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useModerationWs } from '@/hooks/use-moderation-ws';
+import { useAuthContext } from '@/lib/auth-store';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { PendingPhoto } from '@/repositories';
@@ -30,10 +32,35 @@ function getGridCols(): number {
 
 export function PhotoList({ initialPhotos }: PhotoListProps) {
   const t = useTranslations('photos');
+  const { user } = useAuthContext();
   const [photos, setPhotos] = useState<PendingPhoto[]>(initialPhotos);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+
+  useModerationWs({
+    onNewItem: useCallback(
+      (queue: string) => {
+        if (queue === 'photos') {
+          toast.info(t('toast.newPhotoArrived'));
+        }
+      },
+      [t],
+    ),
+    onItemActioned: useCallback(
+      (queue: string, itemId: string, _action: string, adminId: string) => {
+        if (queue !== 'photos') return;
+        if (adminId === user?.id) return;
+        if (itemId === '*') {
+          setPhotos([]);
+        } else {
+          setPhotos((prev) => prev.filter((p) => p.id !== itemId));
+        }
+        toast.info(t('toast.actionedByOther'));
+      },
+      [user?.id, t],
+    ),
+  });
 
   async function handleApprove(photoId: string) {
     try {

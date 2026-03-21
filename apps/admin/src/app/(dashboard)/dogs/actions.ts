@@ -17,3 +17,21 @@ export async function fetchDogs(
     hasMore: result.page < result.totalPages,
   };
 }
+
+/** Fetch all dogs (unpaginated) for CSV export */
+export async function fetchAllDogsForExport(search?: string): Promise<AdminDogListItem[]> {
+  const api = await getServerTrpcClient();
+  const allData: AdminDogListItem[] = [];
+  let page = 1;
+  const pageSize = 200;
+
+  let hasMore = true;
+  while (hasMore) {
+    const result = await api.admin.listDogs.query({ page, pageSize, search });
+    allData.push(...result.data);
+    hasMore = page < result.totalPages;
+    page++;
+  }
+
+  return allData;
+}

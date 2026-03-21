@@ -13,7 +13,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { usePermission } from '@/hooks/use-permission';
-import { banUser, reactivateUser, requestGdprExport, suspendUser } from '../actions';
+import {
+  banUser,
+  impersonateUser,
+  reactivateUser,
+  requestGdprExport,
+  suspendUser,
+} from '../actions';
 
 type UserStatus = 'active' | 'suspended' | 'banned';
 
@@ -29,6 +35,9 @@ export function UserActions({ userId, initialStatus }: UserActionsProps) {
   const tc = useTranslations('common');
   const [gdprDialogOpen, setGdprDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [impersonateDialogOpen, setImpersonateDialogOpen] = useState(false);
+  const [impersonationToken, setImpersonationToken] = useState<string | null>(null);
+  const [isImpersonating, setIsImpersonating] = useState(false);
 
   if (!isAdmin) {
     return null;
@@ -76,8 +85,33 @@ export function UserActions({ userId, initialStatus }: UserActionsProps) {
     }
   }
 
+  async function handleImpersonate() {
+    setIsImpersonating(true);
+    try {
+      const result = await impersonateUser(userId);
+      if (result.success && result.token) {
+        setImpersonationToken(result.token);
+        setImpersonateDialogOpen(true);
+      } else {
+        toast.error(result.error ?? tt('users.impersonateError'));
+      }
+    } finally {
+      setIsImpersonating(false);
+    }
+  }
+
+  function handleCopyToken() {
+    if (impersonationToken) {
+      navigator.clipboard.writeText(impersonationToken);
+      toast.success(t('impersonateCopied'));
+    }
+  }
+
   return (
     <>
+      <Button variant="outline" size="sm" onClick={handleImpersonate} disabled={isImpersonating}>
+        {t('impersonate')}
+      </Button>
       <Button variant="outline" size="sm" onClick={() => setGdprDialogOpen(true)}>
         {t('exportData')}
       </Button>
@@ -110,6 +144,34 @@ export function UserActions({ userId, initialStatus }: UserActionsProps) {
             <Button onClick={handleGdprExport} disabled={isExporting}>
               {isExporting ? t('gdprExportDialog.exporting') : t('gdprExportDialog.confirm')}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={impersonateDialogOpen}
+        onOpenChange={(open) => {
+          setImpersonateDialogOpen(open);
+          if (!open) setImpersonationToken(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('impersonateTitle')}</DialogTitle>
+            <DialogDescription>{t('impersonateDescription')}</DialogDescription>
+          </DialogHeader>
+          {impersonationToken && (
+            <div className="my-2">
+              <code className="block w-full break-all rounded-md bg-muted p-3 text-xs">
+                {impersonationToken}
+              </code>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCopyToken}>
+              Copy
+            </Button>
+            <Button onClick={() => setImpersonateDialogOpen(false)}>{t('impersonateClose')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -34,3 +34,30 @@ export async function fetchReports(
     hasMore: result.page < result.totalPages,
   };
 }
+
+/** Fetch all reports (unpaginated) for CSV export */
+export async function fetchAllReportsForExport(
+  status?: ReportStatus,
+): Promise<AdminReportListItem[]> {
+  const api = await getServerTrpcClient();
+  const allData: AdminReportListItem[] = [];
+  let page = 1;
+  const pageSize = 200;
+
+  let hasMore = true;
+  while (hasMore) {
+    const result = await api.admin.listReports.query({ page, pageSize, status });
+    allData.push(
+      ...result.data.map((r) => ({
+        ...r,
+        status: r.status as ReportStatus,
+        resolvedAt: r.resolvedAt ? String(r.resolvedAt) : null,
+        createdAt: String(r.createdAt),
+      })),
+    );
+    hasMore = page < result.totalPages;
+    page++;
+  }
+
+  return allData;
+}

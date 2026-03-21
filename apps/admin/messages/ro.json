@@ -158,6 +158,24 @@
       "totalMatches": "Match-uri totale",
       "dogsCount": "Caini ({count})",
       "noDogs": "Niciun caine inregistrat",
+      "consentsTitle": "Consimtaminte GDPR",
+      "consentType": {
+        "analytics": "Analytics",
+        "ab_testing": "A/B Testing",
+        "error_tracking": "Urmarire Erori",
+        "marketing": "Marketing",
+        "ai_training": "Antrenare IA"
+      },
+      "consentGranted": "Acordat",
+      "consentNotGranted": "Neacordat",
+      "consentGrantedAt": "Acordat la",
+      "consentWithdrawnAt": "Revocat la",
+      "consentNeverSet": "Niciodata setat",
+      "consentSource": {
+        "mobile_onboarding": "Onboarding Mobil",
+        "mobile_settings": "Setari Mobil",
+        "web_banner": "Banner Web"
+      },
       "breed": "Rasa",
       "quickActions": "Actiuni rapide",
       "information": "Informatii",
@@ -187,7 +205,12 @@
         "title": "Revocați toate sesiunile?",
         "description": "Utilizatorul va fi deconectat de pe toate dispozitivele și va trebui să se autentifice din nou.",
         "confirm": "Revocă toate"
-      }
+      },
+      "impersonate": "Impersoneaza",
+      "impersonateTitle": "Token de Impersonare",
+      "impersonateDescription": "Foloseste acest token pentru a accesa aplicatia ca acest utilizator. Tokenul expira in 30 de minute. Toate actiunile sunt inregistrate.",
+      "impersonateCopied": "Token copiat in clipboard",
+      "impersonateClose": "Inchide"
     }
   },
   "dogs": {
@@ -1118,7 +1141,8 @@
       "sessionRevoked": "Sesiune revocată",
       "revokeSessionError": "Eroare la revocarea sesiunii",
       "allSessionsRevoked": "Toate sesiunile revocate",
-      "revokeAllSessionsError": "Eroare la revocarea sesiunilor"
+      "revokeAllSessionsError": "Eroare la revocarea sesiunilor",
+      "impersonateError": "Eroare la generarea tokenului de impersonare"
     },
     "admins": {
       "createError": "Eroare la crearea administratorului",

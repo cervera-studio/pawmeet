@@ -160,6 +160,24 @@
       "noDogs": "Nessun cane registrato",
       "passkeysCount": "Passkey ({count})",
       "noPasskeys": "Nessuna passkey registrata",
+      "consentsTitle": "Consensi GDPR",
+      "consentType": {
+        "analytics": "Analytics",
+        "ab_testing": "A/B Testing",
+        "error_tracking": "Tracciamento Errori",
+        "marketing": "Marketing",
+        "ai_training": "Addestramento IA"
+      },
+      "consentGranted": "Concesso",
+      "consentNotGranted": "Non concesso",
+      "consentGrantedAt": "Concesso il",
+      "consentWithdrawnAt": "Revocato il",
+      "consentNeverSet": "Mai impostato",
+      "consentSource": {
+        "mobile_onboarding": "Onboarding Mobile",
+        "mobile_settings": "Impostazioni Mobile",
+        "web_banner": "Banner Web"
+      },
       "breed": "Razza",
       "quickActions": "Azioni rapide",
       "information": "Informazioni",
@@ -189,7 +207,12 @@
         "title": "Revocare tutte le sessioni?",
         "description": "L'utente verrà disconnesso da tutti i dispositivi e dovrà effettuare nuovamente il login.",
         "confirm": "Revoca tutte"
-      }
+      },
+      "impersonate": "Impersona",
+      "impersonateTitle": "Token di Impersonazione",
+      "impersonateDescription": "Usa questo token per accedere all'app come questo utente. Il token scade in 30 minuti. Tutte le azioni sono registrate.",
+      "impersonateCopied": "Token copiato negli appunti",
+      "impersonateClose": "Chiudi"
     }
   },
   "dogs": {
@@ -1120,7 +1143,8 @@
       "sessionRevoked": "Sessione revocata",
       "revokeSessionError": "Errore durante la revoca della sessione",
       "allSessionsRevoked": "Tutte le sessioni revocate",
-      "revokeAllSessionsError": "Errore durante la revoca delle sessioni"
+      "revokeAllSessionsError": "Errore durante la revoca delle sessioni",
+      "impersonateError": "Errore nella generazione del token di impersonazione"
     },
     "admins": {
       "createError": "Errore durante la creazione dell'amministratore",

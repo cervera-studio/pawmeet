@@ -18,6 +18,7 @@ import {
   posts,
   reports,
   stories,
+  userConsents,
   users,
   walkSafetyCheckins,
   walks,
@@ -58,6 +59,7 @@ import type {
   AdminReportUserInfo,
   AdminSosAlertItem,
   AdminStoryItem,
+  AdminUserConsent,
   AdminUserDetail,
   AdminUserDog,
   AdminUserListItem,
@@ -372,6 +374,21 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
 
   async deactivateUser(userId: string): Promise<void> {
     await this.db.update(users).set({ isActive: false }).where(eq(users.id, userId));
+  }
+
+  async getUserConsents(userId: string): Promise<AdminUserConsent[]> {
+    const rows = await this.db
+      .select({
+        consentType: userConsents.consentType,
+        granted: userConsents.granted,
+        grantedAt: userConsents.grantedAt,
+        withdrawnAt: userConsents.withdrawnAt,
+        source: userConsents.source,
+      })
+      .from(userConsents)
+      .where(eq(userConsents.userId, userId))
+      .orderBy(asc(userConsents.consentType));
+    return rows;
   }
 
   // ── Feed ────────────────────────────────────────────────────────────────────

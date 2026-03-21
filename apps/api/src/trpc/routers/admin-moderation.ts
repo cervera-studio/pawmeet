@@ -522,15 +522,13 @@ export function createAdminModerationRouter(deps: ModerationRouterDeps) {
         );
       }),
 
-    getOrganization: adminProcedure
-      .input(z.object({ id: z.uuid() }))
-      .query(async ({ input }) => {
-        const result = await adminDataRepo.getOrganization(input.id);
-        if (!result) {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
-        }
-        return { ...result.organization, members: result.members };
-      }),
+    getOrganization: adminProcedure.input(z.object({ id: z.uuid() })).query(async ({ input }) => {
+      const result = await adminDataRepo.getOrganization(input.id);
+      if (!result) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Organization not found' });
+      }
+      return { ...result.organization, members: result.members };
+    }),
 
     verifyOrganization: adminProcedure
       .input(z.object({ organizationId: z.uuid() }))

@@ -682,12 +682,7 @@ export class DrizzleGdprExportRepository implements GdprExportRepository {
           createdAt: supportMessages.createdAt,
         })
         .from(supportMessages)
-        .where(
-          and(
-            eq(supportMessages.ticketId, t.id),
-            eq(supportMessages.isInternal, false),
-          ),
-        );
+        .where(and(eq(supportMessages.ticketId, t.id), eq(supportMessages.isInternal, false)));
 
       result.push({
         subject: t.subject,
@@ -729,10 +724,7 @@ export class DrizzleGdprExportRepository implements GdprExportRepository {
       })
       .from(mlTrainingSamples)
       .where(
-        or(
-          inArray(mlTrainingSamples.dogAId, dogIds),
-          inArray(mlTrainingSamples.dogBId, dogIds),
-        ),
+        or(inArray(mlTrainingSamples.dogAId, dogIds), inArray(mlTrainingSamples.dogBId, dogIds)),
       ) as unknown as GdprMlTrainingSample[];
   }
 

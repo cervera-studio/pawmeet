@@ -136,3 +136,22 @@ export async function fetchUsers(
     hasMore: result.page < result.totalPages,
   };
 }
+
+/** Fetch all users (unpaginated) for CSV export */
+export async function fetchAllUsersForExport(search?: string): Promise<AdminUserListItem[]> {
+  const api = await getServerTrpcClient();
+  const allData: AdminUserListItem[] = [];
+  let page = 1;
+  const pageSize = 200;
+
+  // Paginate through all results
+  let hasMore = true;
+  while (hasMore) {
+    const result = await api.admin.listUsers.query({ page, pageSize, search });
+    allData.push(...(result.data as AdminUserListItem[]));
+    hasMore = page < result.totalPages;
+    page++;
+  }
+
+  return allData;
+}

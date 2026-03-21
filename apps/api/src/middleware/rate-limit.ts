@@ -3,7 +3,8 @@ import { Ratelimit } from '@upstash/ratelimit';
 import type { MiddlewareHandler } from 'hono';
 
 /** Environment-namespaced prefix to prevent cross-env bleed when sharing Redis */
-const ENV_PREFIX = process.env.NODE_ENV === 'production' ? 'rl:prod' : `rl:${process.env.NODE_ENV ?? 'dev'}`;
+const ENV_PREFIX =
+  process.env.NODE_ENV === 'production' ? 'rl:prod' : `rl:${process.env.NODE_ENV ?? 'dev'}`;
 
 /** Lazy-initialized Redis for rate limiting — avoids import-time crash in tests */
 let _redis: InstanceType<typeof import('@upstash/redis').Redis> | null = null;

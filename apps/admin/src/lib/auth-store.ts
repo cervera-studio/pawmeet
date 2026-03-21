@@ -7,7 +7,9 @@ interface AuthContextValue {
   user: AdminUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  /** Returns 'mfa_required' if MFA challenge is needed, undefined on success */
+  login: (email: string, password: string) => Promise<'mfa_required' | undefined>;
+  verifyMfa: (code: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -15,7 +17,8 @@ export const AuthContext = createContext<AuthContextValue>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  login: async () => {
+  login: async () => undefined,
+  verifyMfa: async () => {
     /* noop */
   },
   logout: () => {

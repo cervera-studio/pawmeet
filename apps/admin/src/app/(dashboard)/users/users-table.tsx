@@ -5,11 +5,13 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
+import { ExportAllButton } from '@/components/export-all-button';
 import { ExportButton } from '@/components/export-button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Input } from '@/components/ui/input';
 import { formatDate } from '@/lib/formatters';
 import type { AdminUserListItem } from '@/repositories';
+import { fetchAllUsersForExport } from './actions';
 import { useUsersViewModel } from './page.view-model';
 
 interface UsersTableProps {
@@ -83,6 +85,11 @@ export function UsersTable({ initialData, initialSearch }: UsersTableProps) {
           onChange={(e) => vm.setGlobalFilter(e.target.value)}
         />
         <ExportButton data={vm.data} filename="users-export" />
+        <ExportAllButton
+          fetchAll={() => fetchAllUsersForExport(vm.globalFilter || undefined)}
+          filename="users-export-all"
+          label="Export All"
+        />
       </div>
 
       {/* Table */}

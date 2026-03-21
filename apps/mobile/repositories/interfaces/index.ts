@@ -30,9 +30,9 @@ export type {
   NearbyEventWithStatus,
 } from './group-event-repository';
 export type { LikeResult, MatchRepository, MatchSuggestion } from './match-repository';
-export type { PasskeyRepository, PasskeySummary } from './passkey-repository';
 export type { MediaContentType, MediaRepository, UploadResult } from './media-repository';
 export type { MoodLogRepository } from './mood-log-repository';
+export type { PasskeyRepository, PasskeySummary } from './passkey-repository';
 export type {
   CheckinInput,
   EmergencyContact,

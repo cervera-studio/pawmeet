@@ -93,13 +93,25 @@ function createRateLimitedProcedure(prefix: string, maxRequests: number, window:
 }
 
 /** General auth rate limit: 10 req / 15 min (login, social login) */
-export const rateLimitedPublicProcedure = createRateLimitedProcedure(`${ENV_PREFIX}:trpc:auth`, 10, '15m');
+export const rateLimitedPublicProcedure = createRateLimitedProcedure(
+  `${ENV_PREFIX}:trpc:auth`,
+  10,
+  '15m',
+);
 
 /** Strict rate limit for registration: 3 req / hour */
-export const registerRateLimitedProcedure = createRateLimitedProcedure(`${ENV_PREFIX}:trpc:register`, 3, '1h');
+export const registerRateLimitedProcedure = createRateLimitedProcedure(
+  `${ENV_PREFIX}:trpc:register`,
+  3,
+  '1h',
+);
 
 /** Higher rate limit for token refresh: 30 req / min (automated, multi-device) */
-export const refreshRateLimitedProcedure = createRateLimitedProcedure(`${ENV_PREFIX}:trpc:refresh`, 30, '1m');
+export const refreshRateLimitedProcedure = createRateLimitedProcedure(
+  `${ENV_PREFIX}:trpc:refresh`,
+  30,
+  '1m',
+);
 
 /** Protected procedure — requires authenticated user. */
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {

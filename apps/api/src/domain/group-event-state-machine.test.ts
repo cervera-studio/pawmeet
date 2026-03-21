@@ -1,6 +1,10 @@
 import { AppError } from '@pawmeet/types';
 import { describe, expect, it } from 'vitest';
-import { canTransitionTo, checkTransition, getValidTransitions } from './group-event-state-machine.js';
+import {
+  canTransitionTo,
+  checkTransition,
+  getValidTransitions,
+} from './group-event-state-machine.js';
 
 describe('group-event-state-machine', () => {
   describe('canTransitionTo', () => {

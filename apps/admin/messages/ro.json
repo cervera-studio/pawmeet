@@ -33,9 +33,19 @@
     "loginButton": "Conecteaza-te",
     "loggingIn": "Conectare in curs...",
     "logout": "Deconecteaza-te",
+    "mfa": {
+      "subtitle": "Introdu codul din aplicatia ta de autentificare",
+      "codeLabel": "Cod de verificare",
+      "codeHint": "Introdu codul din 6 cifre din aplicatia ta de autentificare",
+      "verifyButton": "Verifica",
+      "backToLogin": "Inapoi la autentificare"
+    },
     "errors": {
       "invalidCredentials": "Email sau parola invalide",
       "accountDisabled": "Cont dezactivat. Contacteaza un administrator.",
+      "accountLocked": "Cont blocat temporar. Incearca din nou in 30 de minute.",
+      "mfaInvalid": "Cod de verificare invalid. Incearca din nou.",
+      "mfaExpired": "Sesiune expirata. Autentifica-te din nou.",
       "serverError": "Eroare de server. Incearca din nou mai tarziu.",
       "generic": "Eroare la autentificare"
     }
@@ -72,6 +82,7 @@
     "fitness": "Fitness",
     "settingsRoles": "Roluri si Permisiuni",
     "settingsRateLimits": "Limite de Rata",
+    "settingsMfa": "Autentificare in doi pasi",
     "support": "Suport"
   },
   "header": {
@@ -246,6 +257,35 @@
       "leash": "Pondere lesa",
       "sum": "Suma totala",
       "validationError": "Ponderile trebuie sa insumeze 1.0"
+    },
+    "mfa": {
+      "title": "Autentificare in doi pasi",
+      "subtitle": "Gestioneaza securitatea contului tau cu TOTP",
+      "cardTitle": "Autentificare in doi pasi (TOTP)",
+      "cardDescription": "Adauga un nivel suplimentar de securitate contului tau de administrator",
+      "notEnabled": "Autentificarea in doi pasi nu este activata.",
+      "requiredForSuperAdmin": "Obligatorie pentru conturile Super Admin.",
+      "enabled": "Autentificarea in doi pasi este activata",
+      "enableButton": "Activeaza MFA",
+      "disableButton": "Dezactiveaza MFA",
+      "settingUp": "Configurare...",
+      "scanQr": "Scaneaza acest cod QR cu aplicatia ta de autentificare (Google Authenticator, Authy, 1Password, etc.)",
+      "manualEntry": "Sau introdu manual acest secret:",
+      "verifyLabel": "Introdu codul din 6 cifre pentru a confirma",
+      "verifying": "Verificare...",
+      "confirmButton": "Confirma si Activeaza",
+      "cancelButton": "Anuleaza",
+      "setupError": "Eroare la initierea configurarii MFA",
+      "confirmError": "Eroare la verificarea codului",
+      "enabledSuccess": "Autentificarea in doi pasi activata cu succes",
+      "alreadyEnabled": "MFA este deja activat pe contul tau",
+      "disableDescription": "Pentru a dezactiva MFA, introdu parola si un cod de verificare curent.",
+      "passwordLabel": "Parola",
+      "codeLabel": "Cod de verificare",
+      "disabling": "Dezactivare...",
+      "confirmDisable": "Dezactiveaza MFA",
+      "disableError": "Eroare la dezactivarea MFA",
+      "disabledSuccess": "Autentificarea in doi pasi dezactivata"
     },
     "dangerZone": {
       "title": "Zona Periculoasa",

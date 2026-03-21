@@ -4,11 +4,13 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
+import { ExportAllButton } from '@/components/export-all-button';
 import { ExportButton } from '@/components/export-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatDateTime } from '@/lib/formatters';
+import { fetchAllAuditLogForExport } from './actions';
 import {
   type AuditLogData,
   type AuditLogEntry,
@@ -204,6 +206,16 @@ export function AuditLogTable({ initialData, pageSize }: AuditLogTableProps) {
           ))}
         </select>
         <ExportButton data={vm.data ?? []} filename="audit-log-export" />
+        <ExportAllButton
+          fetchAll={() =>
+            fetchAllAuditLogForExport({
+              search: vm.search || undefined,
+              resourceType: vm.resourceFilter,
+            })
+          }
+          filename="audit-log-export-all"
+          label="Export All"
+        />
       </div>
 
       <DataTable

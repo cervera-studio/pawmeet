@@ -6,7 +6,7 @@ Social app for dog owners to find compatible walking companions through behavior
 
 ```
 apps/
-  api/        → Hono + tRPC on Node.js (Fly.io)
+  api/        → Hono + tRPC on Node.js (Azure Container Apps)
   mobile/     → Expo SDK 55 + Expo Router + NativeWind
   web/        → Astro landing page (Cloudflare Pages)
   admin/      → Next.js 16 backoffice + shadcn/ui (Cloudflare Pages)

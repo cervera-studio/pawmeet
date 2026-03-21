@@ -8,6 +8,8 @@
  * Usage: npx tsx scripts/validate-cert-pins.ts
  */
 
+import process from 'node:process';
+
 const PLACEHOLDER_PATTERN = /^sha256\/[A-B]{43}=$/;
 
 // Inline the pin config to avoid importing modules that require React Native
@@ -24,7 +26,7 @@ const PINNED_DOMAINS: Record<string, { pins: readonly string[] }> = {
 async function loadPins(): Promise<Record<string, { pins: readonly string[] }>> {
   const fs = await import('node:fs');
   const path = await import('node:path');
-  const filePath = path.resolve(__dirname, '../lib/certificate-pinning.ts');
+  const filePath = path.resolve(import.meta.dirname, '../lib/certificate-pinning.ts');
   const content = fs.readFileSync(filePath, 'utf-8');
 
   // Extract pins from the source file using regex

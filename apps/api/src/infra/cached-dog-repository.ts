@@ -58,7 +58,12 @@ export class CachedDogRepository implements DogRepository {
     return this.inner.countPhotos(dogId);
   }
 
-  addPhoto(input: { dogId: string; url: string; position: number; isPrimary: boolean }): Promise<DogPhoto> {
+  addPhoto(input: {
+    dogId: string;
+    url: string;
+    position: number;
+    isPrimary: boolean;
+  }): Promise<DogPhoto> {
     return this.inner.addPhoto(input);
   }
 
@@ -70,7 +75,9 @@ export class CachedDogRepository implements DogRepository {
     return this.inner.deletePhoto(photoId);
   }
 
-  updatePhotoPositions(updates: { id: string; position: number; isPrimary: boolean }[]): Promise<void> {
+  updatePhotoPositions(
+    updates: { id: string; position: number; isPrimary: boolean }[],
+  ): Promise<void> {
     return this.inner.updatePhotoPositions(updates);
   }
 

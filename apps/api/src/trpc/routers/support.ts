@@ -106,16 +106,14 @@ export function createSupportRouter(deps: typeof supportDeps) {
       return paginate(result, input);
     }),
 
-    getTicket: adminProcedure
-      .input(z.object({ ticketId: z.uuid() }))
-      .query(async ({ input }) => {
-        const result = unwrapResult(
-          await deps.getMessages(input.ticketId, null, 1, {
-            isAdmin: true,
-          }),
-        );
-        return result;
-      }),
+    getTicket: adminProcedure.input(z.object({ ticketId: z.uuid() })).query(async ({ input }) => {
+      const result = unwrapResult(
+        await deps.getMessages(input.ticketId, null, 1, {
+          isAdmin: true,
+        }),
+      );
+      return result;
+    }),
 
     getAdminTicketMessages: adminProcedure.input(getMessagesSchema).query(async ({ input }) =>
       unwrapResult(

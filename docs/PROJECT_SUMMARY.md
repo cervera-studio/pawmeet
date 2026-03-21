@@ -23,7 +23,7 @@ Il mercato italiano conta ~8,8 milioni di cani domestici. L'obiettivo è diventa
 | Layer | Tecnologia |
 |-------|-----------|
 | **Mobile** | Expo SDK 55, React Native, Expo Router, NativeWind |
-| **API** | Hono + tRPC su Node.js 22 (Fly.io, Frankfurt) |
+| **API** | Hono + tRPC su Node.js 22 (Azure Container Apps, West Europe) |
 | **Database** | Neon PostgreSQL + PostGIS, Drizzle ORM |
 | **Cache/Queue** | Upstash Redis, BullMQ |
 | **Storage** | Cloudflare R2 (S3-compatible) |
@@ -53,7 +53,7 @@ Sprint attuali (Fase 3): matching AI-enhanced con A/B testing completato, GPS wa
 
 ```
 apps/
-  api/        → Hono + tRPC (Fly.io)
+  api/        → Hono + tRPC (Azure Container Apps)
   mobile/     → Expo + React Native
   web/        → Astro landing (Cloudflare Pages)
   admin/      → Next.js backoffice (Cloudflare Pages)

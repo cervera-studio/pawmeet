@@ -33,7 +33,7 @@ importers:
         version: 2.8.17
       vitest:
         specifier: ^4.1.0
-        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(jsdom@29.0.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
+        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(jsdom@29.0.0(@noble/hashes@2.0.1))(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
 
   apps/admin:
     dependencies:
@@ -200,6 +200,9 @@ importers:
       jose:
         specifier: ^6.2.0
         version: 6.2.1
+      otpauth:
+        specifier: ^9.5.0
+        version: 9.5.0
       posthog-node:
         specifier: ^5.28.3
         version: 5.28.3
@@ -552,7 +555,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(jsdom@29.0.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
+        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(jsdom@29.0.0(@noble/hashes@2.0.1))(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
 
   packages/utils:
     dependencies:
@@ -595,7 +598,7 @@ importers:
     dependencies:
       vitest:
         specifier: ^4.1.0
-        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(jsdom@29.0.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
+        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(jsdom@29.0.0(@noble/hashes@2.0.1))(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
 
 packages:
 
@@ -2691,6 +2694,10 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@noble/hashes@2.0.1':
+    resolution: {integrity: sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==}
+    engines: {node: '>= 20.19.0'}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -7521,6 +7528,9 @@ packages:
     resolution: {integrity: sha512-eNwHudNbO1folBP3JsZ19v9azXWtQZjICdr3Q0TDPIaeBQ3mXLrh54wM+er0+hSp+dWKf+Z8KM58CYzEyIYxYg==}
     engines: {node: '>=6'}
 
+  otpauth@9.5.0:
+    resolution: {integrity: sha512-Ldhc6UYl4baR5toGr8nfKC+L/b8/RgHKoIixAebgoNGzUUCET02g04rMEZ2ZsPfeVQhMHcuaOgb28nwMr81zCA==}
+
   p-limit@2.3.0:
     resolution: {integrity: sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==}
     engines: {node: '>=6'}
@@ -11239,7 +11249,9 @@ snapshots:
   '@esbuild/win32-x64@0.27.4':
     optional: true
 
-  '@exodus/bytes@1.15.0':
+  '@exodus/bytes@1.15.0(@noble/hashes@2.0.1)':
+    optionalDependencies:
+      '@noble/hashes': 2.0.1
     optional: true
 
   '@expo-google-fonts/material-symbols@0.4.25': {}
@@ -11893,6 +11905,8 @@ snapshots:
 
   '@next/swc-win32-x64-msvc@16.1.7':
     optional: true
+
+  '@noble/hashes@2.0.1': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -15035,10 +15049,10 @@ snapshots:
 
   data-uri-to-buffer@6.0.2: {}
 
-  data-urls@7.0.0:
+  data-urls@7.0.0(@noble/hashes@2.0.1):
     dependencies:
       whatwg-mimetype: 5.0.0
-      whatwg-url: 16.0.1
+      whatwg-url: 16.0.1(@noble/hashes@2.0.1)
     transitivePeerDependencies:
       - '@noble/hashes'
     optional: true
@@ -16002,9 +16016,9 @@ snapshots:
     dependencies:
       lru-cache: 10.4.3
 
-  html-encoding-sniffer@6.0.0:
+  html-encoding-sniffer@6.0.0(@noble/hashes@2.0.1):
     dependencies:
-      '@exodus/bytes': 1.15.0
+      '@exodus/bytes': 1.15.0(@noble/hashes@2.0.1)
     transitivePeerDependencies:
       - '@noble/hashes'
     optional: true
@@ -16318,17 +16332,17 @@ snapshots:
 
   jsc-safe-url@0.2.4: {}
 
-  jsdom@29.0.0:
+  jsdom@29.0.0(@noble/hashes@2.0.1):
     dependencies:
       '@asamuzakjp/css-color': 5.0.1
       '@asamuzakjp/dom-selector': 7.0.4
       '@bramus/specificity': 2.4.2
       '@csstools/css-syntax-patches-for-csstree': 1.1.1(css-tree@3.2.1)
-      '@exodus/bytes': 1.15.0
+      '@exodus/bytes': 1.15.0(@noble/hashes@2.0.1)
       css-tree: 3.2.1
-      data-urls: 7.0.0
+      data-urls: 7.0.0(@noble/hashes@2.0.1)
       decimal.js: 10.6.0
-      html-encoding-sniffer: 6.0.0
+      html-encoding-sniffer: 6.0.0(@noble/hashes@2.0.1)
       is-potential-custom-element-name: 1.0.1
       lru-cache: 11.2.7
       parse5: 8.0.0
@@ -16339,7 +16353,7 @@ snapshots:
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
-      whatwg-url: 16.0.1
+      whatwg-url: 16.0.1(@noble/hashes@2.0.1)
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - '@noble/hashes'
@@ -17600,6 +17614,10 @@ snapshots:
       log-symbols: 2.2.0
       strip-ansi: 5.2.0
       wcwidth: 1.0.1
+
+  otpauth@9.5.0:
+    dependencies:
+      '@noble/hashes': 2.0.1
 
   p-limit@2.3.0:
     dependencies:
@@ -19287,7 +19305,7 @@ snapshots:
     optionalDependencies:
       vite: 7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
 
-  vitest@4.1.0(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(jsdom@29.0.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)):
+  vitest@4.1.0(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(jsdom@29.0.0(@noble/hashes@2.0.1))(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)):
     dependencies:
       '@vitest/expect': 4.1.0
       '@vitest/mocker': 4.1.0(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -19312,7 +19330,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 24.12.0
-      jsdom: 29.0.0
+      jsdom: 29.0.0(@noble/hashes@2.0.1)
     transitivePeerDependencies:
       - msw
 
@@ -19493,9 +19511,9 @@ snapshots:
 
   whatwg-url-minimum@0.1.1: {}
 
-  whatwg-url@16.0.1:
+  whatwg-url@16.0.1(@noble/hashes@2.0.1):
     dependencies:
-      '@exodus/bytes': 1.15.0
+      '@exodus/bytes': 1.15.0(@noble/hashes@2.0.1)
       tr46: 6.0.0
       webidl-conversions: 8.0.1
     transitivePeerDependencies:

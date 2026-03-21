@@ -85,6 +85,24 @@ export function PhotoViewer({
         case '-':
           zoomOut();
           break;
+        case 'a':
+        case 'A':
+          if (photo) {
+            onApprove(photo.id);
+            if (index >= photos.length - 1 && index > 0) {
+              setIndex((i) => i - 1);
+            }
+          }
+          break;
+        case 'r':
+        case 'R':
+          if (photo) {
+            onReject(photo.id);
+            if (index >= photos.length - 1 && index > 0) {
+              setIndex((i) => i - 1);
+            }
+          }
+          break;
       }
     }
 

@@ -4,7 +4,7 @@ import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { AdminUser, AdminUserRepository } from '../ports/admin-user-repository.js';
 import { firstRowOrNull } from './drizzle-helpers.js';
 
-/** Columns without passwordHash — safe for non-auth queries */
+/** Columns without passwordHash/totpSecret — safe for non-auth queries */
 const safeAdminColumns = {
   id: adminUsers.id,
   email: adminUsers.email,
@@ -12,6 +12,7 @@ const safeAdminColumns = {
   role: adminUsers.role,
   isActive: adminUsers.isActive,
   refreshTokenHash: adminUsers.refreshTokenHash,
+  totpEnabled: adminUsers.totpEnabled,
   lastLoginAt: adminUsers.lastLoginAt,
   createdAt: adminUsers.createdAt,
   updatedAt: adminUsers.updatedAt,
@@ -49,6 +50,27 @@ export class DrizzleAdminUserRepository implements AdminUserRepository {
     await this.db
       .update(adminUsers)
       .set({ refreshTokenHash: hash, updatedAt: new Date() })
+      .where(eq(adminUsers.id, id));
+  }
+
+  async updateTotpSecret(id: string, secret: string | null): Promise<void> {
+    await this.db
+      .update(adminUsers)
+      .set({ totpSecret: secret, updatedAt: new Date() })
+      .where(eq(adminUsers.id, id));
+  }
+
+  async enableTotp(id: string): Promise<void> {
+    await this.db
+      .update(adminUsers)
+      .set({ totpEnabled: true, updatedAt: new Date() })
+      .where(eq(adminUsers.id, id));
+  }
+
+  async disableTotp(id: string): Promise<void> {
+    await this.db
+      .update(adminUsers)
+      .set({ totpEnabled: false, totpSecret: null, updatedAt: new Date() })
       .where(eq(adminUsers.id, id));
   }
 }

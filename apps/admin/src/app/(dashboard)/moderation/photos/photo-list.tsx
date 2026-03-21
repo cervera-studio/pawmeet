@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,11 +16,24 @@ interface PhotoListProps {
   initialPhotos: PendingPhoto[];
 }
 
+/** Number of columns per breakpoint — must match the grid classes */
+const GRID_COLS = { base: 1, sm: 2, lg: 3, xl: 4 };
+
+function getGridCols(): number {
+  if (typeof window === 'undefined') return GRID_COLS.base;
+  const w = window.innerWidth;
+  if (w >= 1280) return GRID_COLS.xl;
+  if (w >= 1024) return GRID_COLS.lg;
+  if (w >= 640) return GRID_COLS.sm;
+  return GRID_COLS.base;
+}
+
 export function PhotoList({ initialPhotos }: PhotoListProps) {
   const t = useTranslations('photos');
   const [photos, setPhotos] = useState<PendingPhoto[]>(initialPhotos);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
   async function handleApprove(photoId: string) {
     try {
@@ -46,6 +59,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
     try {
       await approveAllPhotos();
       setPhotos([]);
+      setSelectedIndex(-1);
       toast.success(t('toast.allApproved'));
     } catch (error) {
       toast.error(handleError(error, t('toast.allApproveError')));
@@ -57,6 +71,78 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
     setViewerOpen(true);
   }
 
+  // Clamp selected index when photos change (e.g. after approve/reject)
+  useEffect(() => {
+    if (selectedIndex >= photos.length) {
+      setSelectedIndex(photos.length > 0 ? photos.length - 1 : -1);
+    }
+  }, [photos.length, selectedIndex]);
+
+  // Keyboard shortcuts for the grid (only when viewer is closed)
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (viewerOpen || photos.length === 0) return;
+      // Don't intercept when typing in an input/textarea
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+      const cols = getGridCols();
+
+      switch (e.key.toLowerCase()) {
+        case 'a': {
+          const photoToApprove = photos[selectedIndex];
+          if (selectedIndex >= 0 && photoToApprove) {
+            e.preventDefault();
+            handleApprove(photoToApprove.id);
+          }
+          break;
+        }
+        case 'r': {
+          const photoToReject = photos[selectedIndex];
+          if (selectedIndex >= 0 && photoToReject) {
+            e.preventDefault();
+            handleReject(photoToReject.id);
+          }
+          break;
+        }
+        case 'arrowleft': {
+          e.preventDefault();
+          setSelectedIndex((i) => Math.max(0, i - 1));
+          break;
+        }
+        case 'arrowright': {
+          e.preventDefault();
+          setSelectedIndex((i) => (i < 0 ? 0 : Math.min(photos.length - 1, i + 1)));
+          break;
+        }
+        case 'arrowup': {
+          e.preventDefault();
+          setSelectedIndex((i) => Math.max(0, i - cols));
+          break;
+        }
+        case 'arrowdown': {
+          e.preventDefault();
+          setSelectedIndex((i) => (i < 0 ? 0 : Math.min(photos.length - 1, i + cols)));
+          break;
+        }
+        case 'enter': {
+          if (selectedIndex >= 0 && photos[selectedIndex]) {
+            e.preventDefault();
+            setViewerIndex(selectedIndex);
+            setViewerOpen(true);
+          }
+          break;
+        }
+      }
+    },
+    [viewerOpen, photos, selectedIndex],
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -66,9 +152,21 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
         </div>
         <div className="flex items-center gap-2">
           {photos.length > 0 && (
-            <Button variant="outline" size="sm" onClick={() => handleApproveAll()}>
-              {t('approveAll')}
-            </Button>
+            <>
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-neutral-400">
+                <kbd className="rounded border border-neutral-300 bg-neutral-100 px-1.5 py-0.5 font-mono text-[10px]">
+                  A
+                </kbd>
+                {t('actions.approve')}
+                <kbd className="ml-1 rounded border border-neutral-300 bg-neutral-100 px-1.5 py-0.5 font-mono text-[10px]">
+                  R
+                </kbd>
+                {t('actions.reject')}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => handleApproveAll()}>
+                {t('approveAll')}
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -82,19 +180,20 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {photos.map((photo, idx) => (
-            <Card key={photo.id} className="overflow-hidden">
+            <Card
+              key={photo.id}
+              className={`overflow-hidden cursor-pointer transition-shadow ${
+                idx === selectedIndex ? 'ring-2 ring-primary-600 shadow-md' : 'hover:shadow-sm'
+              }`}
+              onClick={() => setSelectedIndex(idx)}
+              onDoubleClick={() => openViewer(idx)}
+            >
               {photo.imageUrl ? (
-                <button
-                  type="button"
-                  className="w-full cursor-pointer"
-                  onClick={() => openViewer(idx)}
-                >
-                  <img
-                    src={photo.imageUrl}
-                    alt={t('photoOf', { name: photo.userName ?? '' })}
-                    className="aspect-square w-full object-cover hover:opacity-90 transition-opacity"
-                  />
-                </button>
+                <img
+                  src={photo.imageUrl}
+                  alt={t('photoOf', { name: photo.userName ?? '' })}
+                  className="aspect-square w-full object-cover"
+                />
               ) : (
                 <div className="aspect-square bg-neutral-100 flex items-center justify-center">
                   <span className="text-neutral-300 text-sm">{t('photo')}</span>
@@ -105,6 +204,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
                   <a
                     href={`/users/${photo.userId}`}
                     className="text-sm font-medium text-neutral-900 truncate hover:text-primary-600"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     {photo.userName}
                   </a>
@@ -123,7 +223,10 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
                     variant="secondary"
                     size="sm"
                     className="flex-1"
-                    onClick={() => handleApprove(photo.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleApprove(photo.id);
+                    }}
                   >
                     {t('actions.approve')}
                   </Button>
@@ -131,7 +234,10 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
                     variant="destructive"
                     size="sm"
                     className="flex-1"
-                    onClick={() => handleReject(photo.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleReject(photo.id);
+                    }}
                   >
                     {t('actions.reject')}
                   </Button>

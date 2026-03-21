@@ -1,4 +1,4 @@
-import type { AuthRepository, AuthResponse } from '../interfaces';
+import type { AuthRepository, AuthResponse, LoginResponse } from '../interfaces';
 
 /**
  * Auth repository that uses same-origin Next.js API routes as proxy.
@@ -10,7 +10,7 @@ import type { AuthRepository, AuthResponse } from '../interfaces';
  */
 export function createRestAuthRepository(): AuthRepository {
   return {
-    async login(email: string, password: string): Promise<AuthResponse> {
+    async login(email: string, password: string): Promise<LoginResponse> {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -20,6 +20,22 @@ export function createRestAuthRepository(): AuthRepository {
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error ?? 'Login failed');
+      }
+
+      const data: unknown = await response.json();
+      return data as LoginResponse;
+    },
+
+    async verifyMfa(mfaToken: string, code: string): Promise<AuthResponse> {
+      const response = await fetch('/api/auth/mfa-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mfaToken, code }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error ?? 'MFA verification failed');
       }
 
       const data: unknown = await response.json();

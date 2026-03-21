@@ -33,9 +33,19 @@
     "loginButton": "Accedi",
     "loggingIn": "Accesso in corso...",
     "logout": "Esci",
+    "mfa": {
+      "subtitle": "Inserisci il codice dalla tua app di autenticazione",
+      "codeLabel": "Codice di verifica",
+      "codeHint": "Inserisci il codice a 6 cifre dalla tua app di autenticazione",
+      "verifyButton": "Verifica",
+      "backToLogin": "Torna al login"
+    },
     "errors": {
       "invalidCredentials": "Email o password non validi",
       "accountDisabled": "Account disattivato. Contatta un amministratore.",
+      "accountLocked": "Account temporaneamente bloccato. Riprova tra 30 minuti.",
+      "mfaInvalid": "Codice di verifica non valido. Riprova.",
+      "mfaExpired": "Sessione scaduta. Effettua nuovamente il login.",
       "serverError": "Errore del server. Riprova più tardi.",
       "generic": "Errore durante il login"
     }
@@ -72,6 +82,7 @@
     "fitness": "Fitness",
     "settingsRoles": "Ruoli e Permessi",
     "settingsRateLimits": "Rate Limit",
+    "settingsMfa": "Autenticazione a due fattori",
     "support": "Supporto"
   },
   "header": {
@@ -248,6 +259,35 @@
       "leash": "Peso guinzaglio",
       "sum": "Somma totale",
       "validationError": "I pesi devono sommare a 1.0"
+    },
+    "mfa": {
+      "title": "Autenticazione a due fattori",
+      "subtitle": "Gestisci la sicurezza del tuo account con TOTP",
+      "cardTitle": "Autenticazione a due fattori (TOTP)",
+      "cardDescription": "Aggiungi un livello di sicurezza extra al tuo account admin",
+      "notEnabled": "L'autenticazione a due fattori non è attiva.",
+      "requiredForSuperAdmin": "Obbligatoria per gli account Super Admin.",
+      "enabled": "L'autenticazione a due fattori è attiva",
+      "enableButton": "Abilita MFA",
+      "disableButton": "Disabilita MFA",
+      "settingUp": "Configurazione...",
+      "scanQr": "Scansiona questo codice QR con la tua app di autenticazione (Google Authenticator, Authy, 1Password, ecc.)",
+      "manualEntry": "Oppure inserisci manualmente questo segreto:",
+      "verifyLabel": "Inserisci il codice a 6 cifre per confermare",
+      "verifying": "Verifica in corso...",
+      "confirmButton": "Conferma e Abilita",
+      "cancelButton": "Annulla",
+      "setupError": "Errore nell'avvio della configurazione MFA",
+      "confirmError": "Errore nella verifica del codice",
+      "enabledSuccess": "Autenticazione a due fattori abilitata con successo",
+      "alreadyEnabled": "MFA è già attivo sul tuo account",
+      "disableDescription": "Per disabilitare MFA, inserisci la tua password e un codice di verifica corrente.",
+      "passwordLabel": "Password",
+      "codeLabel": "Codice di verifica",
+      "disabling": "Disattivazione...",
+      "confirmDisable": "Disabilita MFA",
+      "disableError": "Errore nella disattivazione MFA",
+      "disabledSuccess": "Autenticazione a due fattori disabilitata"
     },
     "dangerZone": {
       "title": "Zona Pericolosa",

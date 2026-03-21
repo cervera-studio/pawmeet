@@ -33,9 +33,19 @@
     "loginButton": "Iniciar sesión",
     "loggingIn": "Iniciando sesión...",
     "logout": "Cerrar sesión",
+    "mfa": {
+      "subtitle": "Introduce el código de tu aplicación de autenticación",
+      "codeLabel": "Código de verificación",
+      "codeHint": "Introduce el código de 6 dígitos de tu aplicación de autenticación",
+      "verifyButton": "Verificar",
+      "backToLogin": "Volver al inicio de sesión"
+    },
     "errors": {
       "invalidCredentials": "Correo electrónico o contraseña no válidos",
       "accountDisabled": "Cuenta desactivada. Contacta a un administrador.",
+      "accountLocked": "Cuenta temporalmente bloqueada. Inténtalo en 30 minutos.",
+      "mfaInvalid": "Código de verificación no válido. Inténtalo de nuevo.",
+      "mfaExpired": "Sesión expirada. Inicia sesión de nuevo.",
       "serverError": "Error del servidor. Inténtalo de nuevo más tarde.",
       "generic": "Error al iniciar sesión"
     }
@@ -72,6 +82,7 @@
     "fitness": "Fitness",
     "settingsRoles": "Roles y Permisos",
     "settingsRateLimits": "Límites de Tasa",
+    "settingsMfa": "Autenticación de dos factores",
     "support": "Soporte"
   },
   "header": {
@@ -246,6 +257,35 @@
       "leash": "Peso correa",
       "sum": "Suma total",
       "validationError": "Los pesos deben sumar 1.0"
+    },
+    "mfa": {
+      "title": "Autenticación de dos factores",
+      "subtitle": "Gestiona la seguridad de tu cuenta con TOTP",
+      "cardTitle": "Autenticación de dos factores (TOTP)",
+      "cardDescription": "Añade una capa adicional de seguridad a tu cuenta de administrador",
+      "notEnabled": "La autenticación de dos factores no está activada.",
+      "requiredForSuperAdmin": "Obligatoria para cuentas Super Admin.",
+      "enabled": "La autenticación de dos factores está activada",
+      "enableButton": "Activar MFA",
+      "disableButton": "Desactivar MFA",
+      "settingUp": "Configurando...",
+      "scanQr": "Escanea este código QR con tu aplicación de autenticación (Google Authenticator, Authy, 1Password, etc.)",
+      "manualEntry": "O introduce este secreto manualmente:",
+      "verifyLabel": "Introduce el código de 6 dígitos para confirmar",
+      "verifying": "Verificando...",
+      "confirmButton": "Confirmar y Activar",
+      "cancelButton": "Cancelar",
+      "setupError": "Error al iniciar la configuración MFA",
+      "confirmError": "Error al verificar el código",
+      "enabledSuccess": "Autenticación de dos factores activada correctamente",
+      "alreadyEnabled": "MFA ya está activado en tu cuenta",
+      "disableDescription": "Para desactivar MFA, introduce tu contraseña y un código de verificación actual.",
+      "passwordLabel": "Contraseña",
+      "codeLabel": "Código de verificación",
+      "disabling": "Desactivando...",
+      "confirmDisable": "Desactivar MFA",
+      "disableError": "Error al desactivar MFA",
+      "disabledSuccess": "Autenticación de dos factores desactivada"
     },
     "dangerZone": {
       "title": "Zona peligrosa",

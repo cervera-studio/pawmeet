@@ -167,7 +167,7 @@ const server = serve({ fetch: app.fetch, port, hostname: '0.0.0.0' });
 // Attach WebSocket server to the HTTP server
 setupWebSocket(server);
 
-// Initialize Redis pub/sub for cross-server WebSocket relay (Fly.io multi-instance)
+// Initialize Redis pub/sub for cross-server WebSocket relay (multi-instance)
 import('./ws/registry.js').then(({ initWsRedisSubscription }) => {
   initWsRedisSubscription().then(() => {
     appLogger.info('API', 'WebSocket Redis pub/sub relay initialized');

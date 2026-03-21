@@ -1014,7 +1014,14 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
   async getUser(id: string): Promise<{
     user: AdminUserDetail;
     dogs: AdminUserDog[];
-    passkeys: { id: string; friendlyName: string | null; deviceType: string; backedUp: boolean; createdAt: Date; lastUsedAt: Date | null }[];
+    passkeys: {
+      id: string;
+      friendlyName: string | null;
+      deviceType: string;
+      backedUp: boolean;
+      createdAt: Date;
+      lastUsedAt: Date | null;
+    }[];
     reportsCount: number;
     matchesCount: number;
   } | null> {

@@ -41,10 +41,7 @@ export class CachedUserRepository implements UserRepository {
     return this.inner.create(input);
   }
 
-  async update(
-    id: string,
-    data: Parameters<UserRepository['update']>[1],
-  ): Promise<User> {
+  async update(id: string, data: Parameters<UserRepository['update']>[1]): Promise<User> {
     const result = await this.inner.update(id, data);
     await this.cache.invalidate(id);
     return result;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { container } from 'tsyringe';
 import { create, get, isSupported } from 'react-native-passkeys';
+import { container } from 'tsyringe';
 import { storage } from '@/lib/storage';
 import type { PasskeySummary } from '@/repositories/interfaces';
 import { ANALYTICS_SERVICE, PASSKEY_REPOSITORY } from '@/repositories/tokens';
@@ -41,7 +41,10 @@ export function usePasskeys() {
           setLoading(false);
           return;
         }
-        await passkeyRepo.verifyRegistration(credential as unknown as Record<string, unknown>, friendlyName);
+        await passkeyRepo.verifyRegistration(
+          credential as unknown as Record<string, unknown>,
+          friendlyName,
+        );
         await loadPasskeys();
         analyticsService.track('passkey_registered', {});
       } catch (e) {
@@ -56,57 +59,51 @@ export function usePasskeys() {
     [loadPasskeys],
   );
 
-  const loginWithPasskey = useCallback(
-    async (email?: string) => {
-      setError('');
-      setLoading(true);
-      try {
-        const options = await passkeyRepo.getLoginOptions(email);
-        const assertion = await get(options as Parameters<typeof get>[0]);
-        if (!assertion) {
-          setLoading(false);
-          return;
-        }
-        const result = await passkeyRepo.verifyLogin(assertion as unknown as Record<string, unknown>);
-
-        // Persist tokens — same as email/social login
-        await storage.setToken(result.accessToken);
-        await storage.setRefreshToken(result.refreshToken);
-        useAuthStore.getState().login(
-          {
-            id: result.user.id,
-            email: result.user.email,
-            displayName: result.user.displayName ?? result.user.email,
-            avatarUrl: null,
-            dateOfBirth: null,
-          },
-          result.accessToken,
-        );
-        analyticsService.identify(result.user.id);
-      } catch (e) {
-        const message = e instanceof Error ? e.message : '';
-        if (!message.includes('cancel')) {
-          setError(message || 'Login con passkey fallito');
-        }
-      } finally {
+  const loginWithPasskey = useCallback(async (email?: string) => {
+    setError('');
+    setLoading(true);
+    try {
+      const options = await passkeyRepo.getLoginOptions(email);
+      const assertion = await get(options as Parameters<typeof get>[0]);
+      if (!assertion) {
         setLoading(false);
+        return;
       }
-    },
-    [],
-  );
+      const result = await passkeyRepo.verifyLogin(assertion as unknown as Record<string, unknown>);
 
-  const deletePasskey = useCallback(
-    async (id: string) => {
-      setError('');
-      try {
-        await passkeyRepo.remove(id);
-        setPasskeys((prev) => prev.filter((p) => p.id !== id));
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Eliminazione fallita');
+      // Persist tokens — same as email/social login
+      await storage.setToken(result.accessToken);
+      await storage.setRefreshToken(result.refreshToken);
+      useAuthStore.getState().login(
+        {
+          id: result.user.id,
+          email: result.user.email,
+          displayName: result.user.displayName ?? result.user.email,
+          avatarUrl: null,
+          dateOfBirth: null,
+        },
+        result.accessToken,
+      );
+      analyticsService.identify(result.user.id);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : '';
+      if (!message.includes('cancel')) {
+        setError(message || 'Login con passkey fallito');
       }
-    },
-    [],
-  );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const deletePasskey = useCallback(async (id: string) => {
+    setError('');
+    try {
+      await passkeyRepo.remove(id);
+      setPasskeys((prev) => prev.filter((p) => p.id !== id));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Eliminazione fallita');
+    }
+  }, []);
 
   return {
     passkeys,

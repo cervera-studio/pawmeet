@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLoginViewModel } from './login.view-model';
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const vm = useLoginViewModel();
   const t = useTranslations('auth');
   const tc = useTranslations('common');
+  const mfaInputRef = useRef<HTMLInputElement>(null);
 
   // Redirect to dashboard if already authenticated
   useEffect(() => {
@@ -19,6 +20,13 @@ export default function LoginPage() {
       router.push('/');
     }
   }, [vm.isAuthLoading, vm.isAuthenticated, router]);
+
+  // Auto-focus MFA input
+  useEffect(() => {
+    if (vm.step === 'mfa') {
+      mfaInputRef.current?.focus();
+    }
+  }, [vm.step]);
 
   if (vm.isAuthLoading) {
     return (
@@ -36,47 +44,78 @@ export default function LoginPage() {
             PM
           </div>
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{t('title')}</h1>
-          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('subtitle')}</p>
+          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+            {vm.step === 'mfa' ? t('mfa.subtitle') : t('subtitle')}
+          </p>
         </div>
 
         <form onSubmit={vm.handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('emailLabel')}
-            </label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="admin@pawmeet.io"
-              value={vm.email}
-              onChange={(e) => vm.setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              disabled={vm.isSubmitting}
-            />
-          </div>
+          {vm.step === 'credentials' ? (
+            <>
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                >
+                  {t('emailLabel')}
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@pawmeet.io"
+                  value={vm.email}
+                  onChange={(e) => vm.setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  disabled={vm.isSubmitting}
+                />
+              </div>
 
-          <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-            >
-              {t('passwordLabel')}
-            </label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={vm.password}
-              onChange={(e) => vm.setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              disabled={vm.isSubmitting}
-            />
-          </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                >
+                  {t('passwordLabel')}
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={vm.password}
+                  onChange={(e) => vm.setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  disabled={vm.isSubmitting}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="space-y-2">
+              <label
+                htmlFor="mfaCode"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                {t('mfa.codeLabel')}
+              </label>
+              <Input
+                ref={mfaInputRef}
+                id="mfaCode"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                placeholder="000000"
+                value={vm.mfaCode}
+                onChange={(e) => vm.setMfaCode(e.target.value.replace(/\D/g, ''))}
+                required
+                autoComplete="one-time-code"
+                disabled={vm.isSubmitting}
+                className="text-center text-2xl tracking-[0.3em] font-mono"
+              />
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">{t('mfa.codeHint')}</p>
+            </div>
+          )}
 
           {vm.error && (
             <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-600 dark:text-red-400">
@@ -85,8 +124,20 @@ export default function LoginPage() {
           )}
 
           <Button type="submit" className="w-full" disabled={vm.isSubmitting}>
-            {vm.isSubmitting ? t('loggingIn') : t('loginButton')}
+            {vm.isSubmitting
+              ? t('loggingIn')
+              : t(vm.step === 'mfa' ? 'mfa.verifyButton' : 'loginButton')}
           </Button>
+
+          {vm.step === 'mfa' && (
+            <button
+              type="button"
+              onClick={vm.goBackToCredentials}
+              className="w-full text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+            >
+              {t('mfa.backToLogin')}
+            </button>
+          )}
         </form>
       </div>
     </div>

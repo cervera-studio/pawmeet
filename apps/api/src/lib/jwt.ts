@@ -196,3 +196,36 @@ export async function generateAdminTokenPair(adminId: string, role: string) {
   ]);
   return { accessToken, refreshToken };
 }
+
+// ── MFA Pending Token ────────────────────────────────────────────────────────
+
+const MFA_PENDING_TOKEN_EXPIRY = '5m';
+
+/** Short-lived token issued after password verification when MFA is required */
+export async function generateMfaPendingToken(adminId: string, role: string): Promise<string> {
+  return new SignJWT({ type: 'admin_mfa_pending', role })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setSubject(adminId)
+    .setJti(randomUUID())
+    .setIssuer(ISSUER)
+    .setAudience(AUDIENCE_ADMIN)
+    .setIssuedAt()
+    .setExpirationTime(MFA_PENDING_TOKEN_EXPIRY)
+    .sign(getAdminJwtSecret());
+}
+
+export async function verifyMfaPendingToken(token: string): Promise<AdminTokenPayload> {
+  const { payload } = await jwtVerify(token, getAdminJwtSecret(), {
+    issuer: ISSUER,
+    audience: AUDIENCE_ADMIN,
+  });
+  if (payload.type !== 'admin_mfa_pending') {
+    throw new Error('Invalid token type: expected MFA pending token');
+  }
+  return {
+    sub: payload.sub as string,
+    role: payload.role as string,
+    type: 'admin',
+    jti: payload.jti,
+  };
+}

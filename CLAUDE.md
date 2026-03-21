@@ -8,7 +8,7 @@ Social app for dog owners to find compatible walking companions through behavior
 
 ```
 apps/
-  api/        → Hono on Node.js (deploys to Fly.io, Frankfurt)
+  api/        → Hono on Node.js (deploys to Azure Container Apps, West Europe)
   web/        → Astro landing page (SSG, deploys to Cloudflare Pages)
   admin/      → Next.js 16 backoffice + shadcn/ui (deploys to Cloudflare Pages)
   mobile/     → Expo SDK 55 + Expo Router + NativeWind
@@ -105,7 +105,7 @@ Every new feature/issue MUST consider analytics tracking:
 
 ## Key Design Decisions (see docs/ for details)
 
-- Fly.io for API (not serverless/Workers) — real Node.js server for WebSocket, BullMQ, long-running processes
+- Azure Container Apps for API (not serverless/Workers) — real Node.js server for WebSocket, BullMQ, long-running processes. Infra managed via Terraform in `infra/`
 - Astro for landing (SSG, SEO) — NOT Next.js, keeps it simple and fast
 - Next.js + shadcn/ui for admin — NOT Refine/Ant Design, same React ecosystem
 - Matching algorithm: weighted scoring (size 25%, energy 25%, behavior 20%, walk prefs 15%, distance 10%, leash 5%)

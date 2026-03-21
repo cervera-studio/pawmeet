@@ -32,6 +32,10 @@ const SECURITY_EVENT = {
   TokenFamilyCompromised: 'auth.token.family_compromised',
   SessionRevoked: 'auth.session.revoked',
   AllOtherSessionsRevoked: 'auth.session.all_others_revoked',
+  MfaEnabled: 'auth.mfa.enabled',
+  MfaDisabled: 'auth.mfa.disabled',
+  MfaVerified: 'auth.mfa.verified',
+  MfaFailed: 'auth.mfa.failed',
 } as const;
 
 type SecurityEvent = (typeof SECURITY_EVENT)[keyof typeof SECURITY_EVENT];

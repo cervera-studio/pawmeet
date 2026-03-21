@@ -1,4 +1,10 @@
-export type { AuthRepository, AuthResponse } from './auth-repository';
+export type {
+  AuthRepository,
+  AuthResponse,
+  LoginResponse,
+  MfaChallengeResponse,
+} from './auth-repository';
+export { isMfaChallenge } from './auth-repository';
 export type {
   ContentModerationRepository,
   ContentReport,

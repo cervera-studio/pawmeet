@@ -21,6 +21,12 @@ export async function POST(request: Request) {
   }
 
   const data = await response.json();
+
+  // If MFA is required, pass through the challenge without setting cookies
+  if (data.mfaRequired) {
+    return NextResponse.json({ mfaRequired: true, mfaToken: data.mfaToken });
+  }
+
   const cookieStore = await cookies();
 
   // Store tokens as same-origin HttpOnly cookies

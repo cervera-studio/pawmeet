@@ -78,6 +78,7 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
         { name: t('settingsAdmins'), href: '/settings/admins' },
         { name: t('settingsRoles'), href: '/settings/roles' },
         { name: t('settingsRateLimits'), href: '/settings/rate-limits' },
+        { name: t('settingsMfa'), href: '/settings/mfa' },
       ],
     },
     { name: t('auditLog'), href: '/audit-log', icon: ScrollTextIcon },

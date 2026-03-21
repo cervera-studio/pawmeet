@@ -382,8 +382,8 @@ function getItalianSections(): PrivacySection[] {
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Tracciati GPS passeggiata</td>
                 <td className="py-2">
-                  Punti GPS dettagliati eliminati dopo 90 gg. I metadati della passeggiata
-                  (durata, distanza) sono conservati per la durata dell'account.
+                  Punti GPS dettagliati eliminati dopo 90 gg. I metadati della passeggiata (durata,
+                  distanza) sono conservati per la durata dell'account.
                 </td>
               </tr>
               <tr className="border-b border-neutral-200">
@@ -413,9 +413,7 @@ function getItalianSections(): PrivacySection[] {
               </tr>
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Notifiche</td>
-                <td className="py-2">
-                  Storico notifiche eliminato dopo 90 gg.
-                </td>
+                <td className="py-2">Storico notifiche eliminato dopo 90 gg.</td>
               </tr>
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Audit log amministrativo</td>
@@ -427,8 +425,8 @@ function getItalianSections(): PrivacySection[] {
                 <td className="py-2 pr-4">Contatti di emergenza</td>
                 <td className="py-2">
                   Conservati per la durata dell'account. Trattati ai sensi dell'Art. 6(1)(f) GDPR
-                  (legittimo interesse: sicurezza dell'utente durante le passeggiate). Dati di
-                  terzi (nome e telefono) raccolti su iniziativa dell'utente.
+                  (legittimo interesse: sicurezza dell'utente durante le passeggiate). Dati di terzi
+                  (nome e telefono) raccolti su iniziativa dell'utente.
                 </td>
               </tr>
               <tr className="border-b border-neutral-200">
@@ -967,9 +965,7 @@ function getEnglishSections(): PrivacySection[] {
               </tr>
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Safety check-ins</td>
-                <td className="py-2">
-                  Safety check-in GPS coordinates deleted after 90 days.
-                </td>
+                <td className="py-2">Safety check-in GPS coordinates deleted after 90 days.</td>
               </tr>
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Refresh/verification tokens</td>
@@ -991,9 +987,7 @@ function getEnglishSections(): PrivacySection[] {
               </tr>
               <tr>
                 <td className="py-2 pr-4">Notifications</td>
-                <td className="py-2">
-                  Notification history deleted after 90 days.
-                </td>
+                <td className="py-2">Notification history deleted after 90 days.</td>
               </tr>
               <tr className="border-b border-neutral-200">
                 <td className="py-2 pr-4">Admin audit log</td>

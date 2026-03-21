@@ -1,6 +1,5 @@
 import type { ApiClient } from '@pawmeet/api-client';
-import type { AuthResult } from '../interfaces';
-import type { PasskeyRepository } from '../interfaces';
+import type { AuthResult, PasskeyRepository } from '../interfaces';
 
 export function createTrpcPasskeyRepository(api: ApiClient): PasskeyRepository {
   return {

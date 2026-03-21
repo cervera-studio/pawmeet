@@ -1,5 +1,14 @@
 import { sql } from 'drizzle-orm';
-import { check, index, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  check,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const TOKEN_TYPE = {

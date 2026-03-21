@@ -20,7 +20,7 @@ import type {
   UserChallenge,
   XpTransaction,
 } from '@pawmeet/types';
-import { and, desc, eq, gte, inArray, lt, lte, or, sql, sum } from 'drizzle-orm';
+import { and, count, desc, eq, gte, inArray, lt, lte, or, sql, sum } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
@@ -234,7 +234,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
         .orderBy(desc(challenges.startsAt))
         .limit(limit)
         .offset(offset),
-      this.db.select({ count: sql<number>`count(*)::int` }).from(challenges),
+      this.db.select({ count: count() }).from(challenges),
     ]);
     return { data: rowsAs<Challenge>(rows), total: countResult[0]?.count ?? 0 };
   }
@@ -322,7 +322,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
 
   async countCompletedWalks(userId: string): Promise<number> {
     const result = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(walks)
       .where(and(eq(walks.createdBy, userId), eq(walks.status, 'completed')));
     return result[0]?.count ?? 0;
@@ -331,7 +331,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
   async countMatches(userId: string): Promise<number> {
     // Count matches where user owns either dog A or dog B
     const result = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(matches)
       .innerJoin(
         dogProfiles,
@@ -343,7 +343,7 @@ export class DrizzleGamificationRepository implements GamificationRepository {
 
   async countGroupEventsJoined(userId: string): Promise<number> {
     const result = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(groupEventParticipants)
       .where(eq(groupEventParticipants.userId, userId));
     return result[0]?.count ?? 0;

@@ -1,6 +1,6 @@
 import { dogPhotos, dogProfiles } from '@pawmeet/db';
 import type { DogPhoto, DogProfile } from '@pawmeet/types';
-import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CreateDogInput, DogRepository } from '../ports/dog-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
@@ -41,7 +41,7 @@ export class DrizzleDogRepository implements DogRepository {
 
   async countByOwner(ownerId: string): Promise<number> {
     const [row] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(dogProfiles)
       .where(and(eq(dogProfiles.ownerId, ownerId), eq(dogProfiles.isActive, true)));
     return row?.count ?? 0;
@@ -81,7 +81,7 @@ export class DrizzleDogRepository implements DogRepository {
 
   async countPhotos(dogId: string): Promise<number> {
     const [row] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(dogPhotos)
       .where(eq(dogPhotos.dogId, dogId));
     return row?.count ?? 0;

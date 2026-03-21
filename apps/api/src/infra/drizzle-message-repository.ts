@@ -1,6 +1,6 @@
 import { dogProfiles, matches, messages, users } from '@pawmeet/db';
 import type { ChatMessage, ChatMessageReplyPreview } from '@pawmeet/types';
-import { aliasedTable, and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
+import { aliasedTable, and, count, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { maybeDecrypt, maybeEncrypt } from '../lib/message-encryption.js';
 import type {
@@ -55,7 +55,7 @@ export class DrizzleMessageRepository implements MessageRepository {
       this.db
         .select({
           matchId: messages.matchId,
-          count: sql<number>`count(*)::int`,
+          count: count(),
         })
         .from(messages)
         .where(
@@ -345,7 +345,7 @@ export class DrizzleMessageRepository implements MessageRepository {
 
   async countByMatch(matchId: string): Promise<number> {
     const [result] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(messages)
       .where(and(eq(messages.matchId, matchId), eq(messages.isDeleted, false)));
     return result?.count ?? 0;

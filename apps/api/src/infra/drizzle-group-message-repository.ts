@@ -4,7 +4,7 @@ import type {
   GroupConversationSummary,
   PaginatedGroupMessages,
 } from '@pawmeet/types';
-import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
@@ -39,7 +39,7 @@ async function fetchParticipantCounts(db: NeonHttpDatabase, activeEventIds: stri
   const rows = await db
     .select({
       eventId: groupEventParticipants.eventId,
-      count: sql<number>`count(*)::int`,
+      count: count(),
     })
     .from(groupEventParticipants)
     .where(
@@ -111,7 +111,7 @@ async function fetchUnreadCounts(
     const rows = await db
       .select({
         eventId: groupMessages.eventId,
-        count: sql<number>`count(*)::int`,
+        count: count(),
       })
       .from(groupMessages)
       .where(
@@ -132,7 +132,7 @@ async function fetchUnreadCounts(
     const rows = await db
       .select({
         eventId: groupMessages.eventId,
-        count: sql<number>`count(*)::int`,
+        count: count(),
       })
       .from(groupMessages)
       .where(

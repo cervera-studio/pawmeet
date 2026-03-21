@@ -5,7 +5,7 @@ import type {
   SupportTicketListItem,
   SupportTicketStatus,
 } from '@pawmeet/types';
-import { and, desc, eq, isNull, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, isNull, lt, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { maybeDecrypt, maybeEncrypt } from '../lib/message-encryption.js';
 import type {
@@ -117,7 +117,7 @@ export class DrizzleSupportRepository implements SupportRepository {
 
     // Count total
     const [countResult] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(supportTickets)
       .where(whereClause);
     const total = countResult?.count ?? 0;
@@ -261,7 +261,7 @@ export class DrizzleSupportRepository implements SupportRepository {
 
   async countMessagesByTicket(ticketId: string): Promise<number> {
     const [result] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(supportMessages)
       .where(eq(supportMessages.ticketId, ticketId));
     return result?.count ?? 0;

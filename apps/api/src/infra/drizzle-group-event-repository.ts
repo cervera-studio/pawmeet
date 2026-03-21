@@ -1,6 +1,6 @@
 import { dogProfiles, groupEventParticipants, groupEvents, users } from '@pawmeet/db';
 import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
-import { and, desc, eq, inArray, isNotNull, lte, ne, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNotNull, lte, ne, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   CreateGroupEventInput,
@@ -237,7 +237,7 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
 
   async countActiveTemplates(userId: string): Promise<number> {
     const [row] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(groupEvents)
       .where(
         and(
@@ -304,7 +304,7 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
 
   async countParticipants(eventId: string): Promise<number> {
     const [row] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(groupEventParticipants)
       .where(
         and(

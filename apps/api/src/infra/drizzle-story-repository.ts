@@ -1,6 +1,6 @@
 import { stories, storyViews, users } from '@pawmeet/db';
 import type { Story, StoryGroup, StoryView } from '@pawmeet/types';
-import { and, desc, eq, gt, inArray, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, inArray, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CreateStoryInput, StoryRepository } from '../ports/story-repository.js';
 
@@ -82,7 +82,7 @@ export class DrizzleStoryRepository implements StoryRepository {
     startOfDay.setHours(0, 0, 0, 0);
 
     const [row] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(stories)
       .where(and(eq(stories.authorId, authorId), gt(stories.createdAt, startOfDay)));
     return row?.count ?? 0;

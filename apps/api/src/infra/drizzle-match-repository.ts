@@ -1,6 +1,6 @@
 import { dogProfiles, matches, swipes, users } from '@pawmeet/db';
 import type { DogProfile, Match, Swipe } from '@pawmeet/types';
-import { and, eq, gte, ne, or, sql } from 'drizzle-orm';
+import { and, count, eq, gte, ne, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { CandidateDog, MatchRepository } from '../ports/match-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
@@ -63,7 +63,7 @@ export class DrizzleMatchRepository implements MatchRepository {
 
   async countDailySwipes(swiperDogId: string, since: Date): Promise<number> {
     const [row] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(swipes)
       .where(and(eq(swipes.swiperDogId, swiperDogId), gte(swipes.createdAt, since)));
     return row?.count ?? 0;

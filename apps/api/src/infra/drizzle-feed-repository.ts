@@ -22,7 +22,7 @@ import type {
   PostTag,
   ResolvedPostTag,
 } from '@pawmeet/types';
-import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type {
   AddPostMediaInput,
@@ -300,7 +300,7 @@ export class DrizzleFeedRepository implements FeedRepository {
 
   async countMediaByPost(postId: string): Promise<number> {
     const [row] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
+      .select({ count: count() })
       .from(postMedia)
       .where(eq(postMedia.postId, postId));
     return row?.count ?? 0;

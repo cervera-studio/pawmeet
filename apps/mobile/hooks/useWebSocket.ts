@@ -22,6 +22,7 @@ const listeners = new Set<WsListener>();
 const connectionListeners = new Set<ConnectionListener>();
 let sharedWs: WebSocket | null = null;
 let isConnected = false;
+let isConnecting = false;
 
 function setConnectedState(value: boolean) {
   isConnected = value;
@@ -42,15 +43,17 @@ function getReconnectDelay(): number {
 }
 
 function connect(token: string) {
-  if (sharedWs?.readyState === WebSocket.OPEN || sharedWs?.readyState === WebSocket.CONNECTING) {
+  if (isConnecting || sharedWs?.readyState === WebSocket.OPEN) {
     return;
   }
 
+  isConnecting = true;
   sharedToken = token;
   const ws = new WebSocket(WS_URL);
   sharedWs = ws;
 
   ws.onopen = () => {
+    isConnecting = false;
     // Send auth token as first message instead of exposing it in the subprotocol/URL
     ws.send(JSON.stringify({ type: 'auth', payload: { token } }));
     reconnectAttempt = 0;
@@ -70,10 +73,12 @@ function connect(token: string) {
   };
 
   ws.onerror = (e) => {
+    isConnecting = false;
     logger.debug('useWebSocket', 'WS error', e);
   };
 
   ws.onclose = () => {
+    isConnecting = false;
     sharedWs = null;
     setConnectedState(false);
     if (sharedToken && listeners.size > 0) {
@@ -104,6 +109,7 @@ function disconnect() {
     reconnectTimer = null;
   }
   reconnectAttempt = 0;
+  isConnecting = false;
   sharedToken = null;
   if (sharedWs) {
     sharedWs.close();
@@ -124,6 +130,17 @@ export function getSharedWs(): WebSocket | null {
  */
 export function getIsConnected(): boolean {
   return isConnected;
+}
+
+/**
+ * Subscribe to connection state changes. Returns an unsubscribe function.
+ * Useful outside of hooks (e.g. useChat) to avoid polling.
+ */
+export function onConnectionChange(listener: ConnectionListener): () => void {
+  connectionListeners.add(listener);
+  return () => {
+    connectionListeners.delete(listener);
+  };
 }
 
 /**

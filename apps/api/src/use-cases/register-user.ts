@@ -1,4 +1,4 @@
-import { LEGAL_VERSIONS } from '@pawmeet/config';
+import { LEGAL_VERSIONS, MIN_USER_AGE } from '@pawmeet/config';
 import { TOKEN_TYPE } from '@pawmeet/db';
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
@@ -38,6 +38,15 @@ export function createRegisterUser(deps: Deps) {
     const { userRepo, tokenRepo, authService, emailService } = deps;
     const { password, displayName, dateOfBirth, locale } = input;
     const email = parseEmail(input.email);
+
+    // Enforce minimum age
+    const today = new Date();
+    const ageCutoff = new Date(today.getFullYear() - MIN_USER_AGE, today.getMonth(), today.getDate());
+    if (dateOfBirth > ageCutoff) {
+      return fail(
+        new AppError('AUTH_UNDERAGE', `Devi avere almeno ${MIN_USER_AGE} anni per registrarti.`, 400),
+      );
+    }
 
     // Check if email already exists
     const existing = await userRepo.findByEmail(email);

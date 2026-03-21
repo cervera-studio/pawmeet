@@ -78,6 +78,9 @@ export {
   type WsMessage,
 };
 
+/** How often the server sends a ping frame to each client (ms) */
+const HEARTBEAT_INTERVAL = 30_000;
+
 /** Set up the WebSocket server attached to an HTTP server */
 export function setupWebSocket(server: ServerType) {
   const wss = new WebSocketServer({ noServer: true });
@@ -102,11 +105,36 @@ export function setupWebSocket(server: ServerType) {
       });
   });
 
+  // Heartbeat: ping all clients periodically, terminate unresponsive ones
+  const heartbeatInterval = setInterval(() => {
+    for (const ws of wss.clients) {
+      const sock = ws as WebSocket & { isAlive?: boolean };
+      if (sock.isAlive === false) {
+        // No pong received since last ping — connection is dead
+        sock.terminate();
+        continue;
+      }
+      sock.isAlive = false;
+      sock.ping();
+    }
+  }, HEARTBEAT_INTERVAL);
+
+  wss.on('close', () => {
+    clearInterval(heartbeatInterval);
+  });
+
   return wss;
 }
 
 /** Configure event handlers for an accepted WebSocket connection */
 function setupConnection(ws: WebSocket, userId: string) {
+  // Mark connection as alive for heartbeat
+  const sock = ws as WebSocket & { isAlive?: boolean };
+  sock.isAlive = true;
+  ws.on('pong', () => {
+    sock.isAlive = true;
+  });
+
   addConnection(userId, ws);
 
   // Notify room peers about online status

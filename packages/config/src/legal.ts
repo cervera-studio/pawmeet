@@ -8,6 +8,3 @@ export const LEGAL_VERSIONS = {
   PRIVACY_POLICY: 'v1.0',
   CONSENT_SCHEMA: 'v1.0',
 } as const;
-
-/** Minimum age to use PawMeet (no parental consent flow for now). */
-export const MIN_AGE_YEARS = 14;

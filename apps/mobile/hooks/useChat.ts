@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react';
-import { getSharedWs } from '@/hooks/useWebSocket';
+import { getIsConnected, onConnectionChange } from '@/hooks/useWebSocket';
 import { useConversations } from './useConversations';
 import { useMessageSender } from './useMessageSender';
 import { useMessages } from './useMessages';
 import { useTypingIndicator } from './useTypingIndicator';
 
 export function useChat(matchId?: string) {
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(getIsConnected);
 
-  // Track shared WS connection state
+  // Subscribe to connection state changes (no polling)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setConnected(getSharedWs()?.readyState === WebSocket.OPEN);
-    }, 1000);
-    return () => clearInterval(interval);
+    return onConnectionChange(setConnected);
   }, []);
 
   const {

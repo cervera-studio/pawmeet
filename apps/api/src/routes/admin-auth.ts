@@ -25,7 +25,7 @@ const adminLoginSchema = z.object({
     .string()
     .email()
     .transform((e) => e.toLowerCase().trim()),
-  password: z.string().min(1),
+  password: z.string().min(8),
 });
 
 const adminForgotPasswordSchema = z.object({
@@ -145,6 +145,10 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
 
       const { accessToken, refreshToken } = await generateAdminTokenPair(admin.id, admin.role);
 
+      // Store a hash of the refresh token in DB for revocation on logout
+      const rtHash = await hashToken(refreshToken);
+      await adminUserRepo.updateRefreshTokenHash(admin.id, rtHash);
+
       // Set refresh token as HttpOnly cookie
       // SameSite=None required for cross-origin cookie (admin on Vercel, API on Fly.io)
       setCookie(c, REFRESH_COOKIE_NAME, refreshToken, {
@@ -214,10 +218,21 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
           return c.json({ error: 'Unauthorized' }, 401);
         }
 
+        // Verify the refresh token hash matches the one stored in DB
+        const rtHash = await hashToken(refreshToken);
+        if (!admin.refreshTokenHash || admin.refreshTokenHash !== rtHash) {
+          return c.json({ error: 'Refresh token revoked' }, 401);
+        }
+
         const accessToken = await generateAdminAccessToken(admin.id, admin.role);
 
         // Issue a new refresh token as well (rotation)
         const newRefreshToken = await generateAdminRefreshToken(admin.id, admin.role);
+
+        // Store the new refresh token hash in DB
+        const newRtHash = await hashToken(newRefreshToken);
+        await adminUserRepo.updateRefreshTokenHash(admin.id, newRtHash);
+
         setCookie(c, REFRESH_COOKIE_NAME, newRefreshToken, {
           httpOnly: true,
           secure: true,
@@ -244,6 +259,17 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
       const xrw = c.req.header('x-requested-with');
       if (xrw !== 'XMLHttpRequest') {
         return c.json({ error: 'CSRF check failed' }, 403);
+      }
+
+      // Invalidate the refresh token in DB if we can identify the admin
+      const refreshToken = getCookie(c, REFRESH_COOKIE_NAME) ?? null;
+      if (refreshToken) {
+        try {
+          const payload = await verifyAdminRefreshToken(refreshToken);
+          await adminUserRepo.updateRefreshTokenHash(payload.sub, null);
+        } catch {
+          // Token may be expired/invalid — still clear cookie below
+        }
       }
 
       // Clear the refresh token cookie

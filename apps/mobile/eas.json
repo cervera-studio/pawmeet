@@ -12,10 +12,12 @@
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "prebuildCommand": "npx tsx scripts/validate-cert-pins.ts"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "prebuildCommand": "npx tsx scripts/validate-cert-pins.ts"
     }
   }
 }

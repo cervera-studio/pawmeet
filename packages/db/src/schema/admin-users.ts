@@ -10,6 +10,7 @@ export const adminUsers = pgTable(
     displayName: varchar('display_name', { length: 100 }).notNull(),
     role: varchar('role', { length: 20 }).notNull().default('viewer'),
     isActive: boolean('is_active').notNull().default(true),
+    refreshTokenHash: varchar('refresh_token_hash', { length: 64 }),
     lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

@@ -30,7 +30,7 @@ export const confirmUploadSchema = z.object({
 });
 
 export const registerPushTokenSchema = z.object({
-  token: z.string().min(1),
+  token: z.string().regex(/^ExponentPushToken\[.+\]$/, 'invalid_push_token'),
 });
 
 export const updateNotificationPrefsSchema = z.object({

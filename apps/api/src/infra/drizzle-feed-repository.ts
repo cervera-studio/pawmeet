@@ -77,9 +77,11 @@ export class DrizzleFeedRepository implements FeedRepository {
 
     if (!row) return null;
 
-    const media = await this.findMediaByPost(id);
-    const liked = await this.hasLiked(id, currentUserId);
-    const tags = await this.getResolvedTags(id);
+    const [media, liked, tags] = await Promise.all([
+      this.findMediaByPost(id),
+      this.hasLiked(id, currentUserId),
+      this.getResolvedTags(id),
+    ]);
 
     return {
       ...(row.post as Post),
@@ -160,19 +162,19 @@ export class DrizzleFeedRepository implements FeedRepository {
     const pageRows = hasMore ? rows.slice(0, limit) : rows;
 
     const postIds = pageRows.map((r) => r.post.id);
-    const allMedia =
+    const [allMedia, likedPostIds, tagsByPost] = await Promise.all([
       postIds.length > 0
-        ? await this.db.select().from(postMedia).where(inArray(postMedia.postId, postIds))
-        : [];
-
-    const likedPostIds =
+        ? this.db.select().from(postMedia).where(inArray(postMedia.postId, postIds))
+        : Promise.resolve([]),
       postIds.length > 0
-        ? await this.db
+        ? this.db
             .select({ postId: postLikes.postId })
             .from(postLikes)
             .where(and(inArray(postLikes.postId, postIds), eq(postLikes.userId, userId)))
             .then((rows) => new Set(rows.map((r) => r.postId)))
-        : new Set<string>();
+        : Promise.resolve(new Set<string>()),
+      this.getResolvedTagsForPosts(postIds),
+    ]);
 
     const mediaByPost = new Map<string, PostMedia[]>();
     for (const m of allMedia) {
@@ -180,8 +182,6 @@ export class DrizzleFeedRepository implements FeedRepository {
       list.push(m as PostMedia);
       mediaByPost.set(m.postId, list);
     }
-
-    const tagsByPost = await this.getResolvedTagsForPosts(postIds);
 
     const items: FeedItem[] = pageRows.map((row) => ({
       ...(row.post as Post),
@@ -245,19 +245,19 @@ export class DrizzleFeedRepository implements FeedRepository {
     const pageRows = hasMore ? rows.slice(0, limit) : rows;
 
     const postIds = pageRows.map((r) => r.post.id);
-    const allMedia =
+    const [allMedia, likedPostIds, tagsByPost] = await Promise.all([
       postIds.length > 0
-        ? await this.db.select().from(postMedia).where(inArray(postMedia.postId, postIds))
-        : [];
-
-    const likedPostIds =
+        ? this.db.select().from(postMedia).where(inArray(postMedia.postId, postIds))
+        : Promise.resolve([]),
       postIds.length > 0
-        ? await this.db
+        ? this.db
             .select({ postId: postLikes.postId })
             .from(postLikes)
             .where(and(inArray(postLikes.postId, postIds), eq(postLikes.userId, currentUserId)))
             .then((rows) => new Set(rows.map((r) => r.postId)))
-        : new Set<string>();
+        : Promise.resolve(new Set<string>()),
+      this.getResolvedTagsForPosts(postIds),
+    ]);
 
     const mediaByPost = new Map<string, PostMedia[]>();
     for (const m of allMedia) {
@@ -265,8 +265,6 @@ export class DrizzleFeedRepository implements FeedRepository {
       list.push(m as PostMedia);
       mediaByPost.set(m.postId, list);
     }
-
-    const tagsByPost = await this.getResolvedTagsForPosts(postIds);
 
     const items: FeedItem[] = pageRows.map((row) => ({
       ...(row.post as Post),
@@ -649,10 +647,12 @@ export class DrizzleFeedRepository implements FeedRepository {
     const pageRows = hasMore ? rows.slice(0, limit) : rows;
 
     const postIds = pageRows.map((r) => r.post.id);
-    const allMedia =
+    const [allMedia, tagsByPost] = await Promise.all([
       postIds.length > 0
-        ? await this.db.select().from(postMedia).where(inArray(postMedia.postId, postIds))
-        : [];
+        ? this.db.select().from(postMedia).where(inArray(postMedia.postId, postIds))
+        : Promise.resolve([]),
+      this.getResolvedTagsForPosts(postIds),
+    ]);
 
     const mediaByPost = new Map<string, PostMedia[]>();
     for (const m of allMedia) {
@@ -660,8 +660,6 @@ export class DrizzleFeedRepository implements FeedRepository {
       list.push(m as PostMedia);
       mediaByPost.set(m.postId, list);
     }
-
-    const tagsByPost = await this.getResolvedTagsForPosts(postIds);
 
     const items: FeedItem[] = pageRows.map((row) => ({
       ...(row.post as Post),

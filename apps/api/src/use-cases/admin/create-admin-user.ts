@@ -34,7 +34,7 @@ export function createCreateAdminUser({ adminDataRepo }: Deps) {
       );
     }
 
-    const passwordHash = await hash(input.temporaryPassword, 10);
+    const passwordHash = await hash(input.temporaryPassword, 12);
 
     const created = await adminDataRepo.createAdminUser({
       email: input.email,

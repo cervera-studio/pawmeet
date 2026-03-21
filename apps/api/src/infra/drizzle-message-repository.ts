@@ -30,23 +30,58 @@ export class DrizzleMessageRepository implements MessageRepository {
     if (userMatches.length === 0) return [];
 
     const matchIds = userMatches.map((m) => m.id);
+    const otherDogIds = userMatches.map((m) => (dogIds.includes(m.dogAId) ? m.dogBId : m.dogAId));
+    const uniqueOtherDogIds = [...new Set(otherDogIds)];
 
-    // DISTINCT ON to get only the last message per match (instead of fetching ALL messages)
-    const lastMessagesRows = await this.db
-      .selectDistinctOn([messages.matchId], {
-        id: messages.id,
-        matchId: messages.matchId,
-        senderId: messages.senderId,
-        content: messages.content,
-        mediaUrl: messages.mediaUrl,
-        replyToId: messages.replyToId,
-        status: messages.status,
-        isDeleted: messages.isDeleted,
-        createdAt: messages.createdAt,
-      })
-      .from(messages)
-      .where(and(inArray(messages.matchId, matchIds), eq(messages.isDeleted, false)))
-      .orderBy(messages.matchId, desc(messages.createdAt));
+    // Run last messages, unread counts, and dog/owner lookups in parallel
+    const [lastMessagesRows, unreadRows, dogUserRows] = await Promise.all([
+      // DISTINCT ON to get only the last message per match (instead of fetching ALL messages)
+      this.db
+        .selectDistinctOn([messages.matchId], {
+          id: messages.id,
+          matchId: messages.matchId,
+          senderId: messages.senderId,
+          content: messages.content,
+          mediaUrl: messages.mediaUrl,
+          replyToId: messages.replyToId,
+          status: messages.status,
+          isDeleted: messages.isDeleted,
+          createdAt: messages.createdAt,
+        })
+        .from(messages)
+        .where(and(inArray(messages.matchId, matchIds), eq(messages.isDeleted, false)))
+        .orderBy(messages.matchId, desc(messages.createdAt)),
+      // Batch-fetch unread counts for all matches
+      this.db
+        .select({
+          matchId: messages.matchId,
+          count: sql<number>`count(*)::int`,
+        })
+        .from(messages)
+        .where(
+          and(
+            inArray(messages.matchId, matchIds),
+            eq(messages.status, 'sent'),
+            eq(messages.isDeleted, false),
+            sql`${messages.senderId} != ${userId}`,
+          ),
+        )
+        .groupBy(messages.matchId),
+      // Single query: get other dogs + their owners via JOIN
+      uniqueOtherDogIds.length > 0
+        ? this.db
+            .select({
+              dogId: dogProfiles.id,
+              dogName: dogProfiles.name,
+              ownerId: dogProfiles.ownerId,
+              ownerDisplayName: users.displayName,
+              ownerAvatarUrl: users.avatarUrl,
+            })
+            .from(dogProfiles)
+            .innerJoin(users, eq(dogProfiles.ownerId, users.id))
+            .where(inArray(dogProfiles.id, uniqueOtherDogIds))
+        : Promise.resolve([]),
+    ]);
 
     const lastMessageByMatch = new Map<string, ChatMessage>();
     for (const row of lastMessagesRows) {
@@ -64,46 +99,10 @@ export class DrizzleMessageRepository implements MessageRepository {
       } satisfies ChatMessage);
     }
 
-    // Batch-fetch unread counts for all matches
-    const unreadRows = await this.db
-      .select({
-        matchId: messages.matchId,
-        count: sql<number>`count(*)::int`,
-      })
-      .from(messages)
-      .where(
-        and(
-          inArray(messages.matchId, matchIds),
-          eq(messages.status, 'sent'),
-          eq(messages.isDeleted, false),
-          sql`${messages.senderId} != ${userId}`,
-        ),
-      )
-      .groupBy(messages.matchId);
-
     const unreadByMatch = new Map<string, number>();
     for (const row of unreadRows) {
       unreadByMatch.set(row.matchId, row.count);
     }
-
-    // Single query: get other dogs + their owners via JOIN
-    const otherDogIds = userMatches.map((m) => (dogIds.includes(m.dogAId) ? m.dogBId : m.dogAId));
-    const uniqueOtherDogIds = [...new Set(otherDogIds)];
-
-    const dogUserRows =
-      uniqueOtherDogIds.length > 0
-        ? await this.db
-            .select({
-              dogId: dogProfiles.id,
-              dogName: dogProfiles.name,
-              ownerId: dogProfiles.ownerId,
-              ownerDisplayName: users.displayName,
-              ownerAvatarUrl: users.avatarUrl,
-            })
-            .from(dogProfiles)
-            .innerJoin(users, eq(dogProfiles.ownerId, users.id))
-            .where(inArray(dogProfiles.id, uniqueOtherDogIds))
-        : [];
 
     const dogById = new Map<string, { ownerId: string; name: string }>();
     const userById = new Map<

@@ -27,4 +27,11 @@ export class DrizzleAdminUserRepository implements AdminUserRepository {
       .set({ passwordHash, updatedAt: new Date() })
       .where(eq(adminUsers.id, id));
   }
+
+  async updateRefreshTokenHash(id: string, hash: string | null): Promise<void> {
+    await this.db
+      .update(adminUsers)
+      .set({ refreshTokenHash: hash, updatedAt: new Date() })
+      .where(eq(adminUsers.id, id));
+  }
 }

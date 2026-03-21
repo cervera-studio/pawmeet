@@ -5,6 +5,7 @@ export interface AdminUser {
   displayName: string;
   role: string;
   isActive: boolean;
+  refreshTokenHash: string | null;
   lastLoginAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -15,4 +16,5 @@ export interface AdminUserRepository {
   findById(id: string): Promise<AdminUser | null>;
   updateLastLogin(id: string): Promise<void>;
   updatePasswordHash(id: string, passwordHash: string): Promise<void>;
+  updateRefreshTokenHash(id: string, hash: string | null): Promise<void>;
 }

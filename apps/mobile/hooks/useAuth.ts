@@ -32,7 +32,7 @@ function toAuthUser(user: {
 async function persistAuthResult(result: AuthResult, storeLogin: AuthStore['login']) {
   await storage.setToken(result.accessToken);
   await storage.setRefreshToken(result.refreshToken);
-  storeLogin(toAuthUser(result.user), result.accessToken, result.refreshToken);
+  storeLogin(toAuthUser(result.user), result.accessToken);
 
   // Initialize analytics for this user session
   analyticsService.identify(result.user.id);
@@ -88,7 +88,7 @@ export function useAuth() {
     }
 
     try {
-      const rt = useAuthStore.getState().refreshToken;
+      const rt = await storage.getRefreshToken();
       if (rt) await authRepo.logout(rt);
     } catch (e) {
       logger.warn('useAuth', 'Server logout failed, continuing local logout', e);
@@ -114,9 +114,8 @@ export function useAuth() {
         return false;
       }
       useAuthStore.getState().setToken(savedToken);
-      const savedRefreshToken = await storage.getRefreshToken();
       const profile = await authRepo.getProfile();
-      storeLogin(toAuthUser(profile), savedToken, savedRefreshToken ?? '');
+      storeLogin(toAuthUser(profile), savedToken);
 
       analyticsService.identify(profile.id);
       if (useConsentStore.getState().consents.analytics) {

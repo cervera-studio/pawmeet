@@ -453,7 +453,7 @@ export function createAdminUsersRouter(deps: UsersRouterDeps) {
           });
         }
 
-        const passwordHash = await hash(input.newPassword, 10);
+        const passwordHash = await hash(input.newPassword, 12);
         await adminDataRepo.updateAdminPassword(input.adminId, passwordHash);
 
         void logAdminAction(auditLogRepo, {

@@ -110,19 +110,16 @@ export class DrizzleStoryRepository implements StoryRepository {
 
   async deleteExpiredStories(): Promise<{ deletedCount: number; mediaUrls: string[] }> {
     const now = new Date();
-    const expired = await this.db
-      .select({ id: stories.id, mediaUrl: stories.mediaUrl })
-      .from(stories)
-      .where(sql`${stories.expiresAt} <= ${now}`);
 
-    if (expired.length === 0) return { deletedCount: 0, mediaUrls: [] };
-
-    const expiredIds = expired.map((s) => s.id);
-    await this.db.delete(stories).where(inArray(stories.id, expiredIds));
+    // Single DELETE ... RETURNING instead of SELECT then DELETE
+    const deleted = await this.db
+      .delete(stories)
+      .where(sql`${stories.expiresAt} <= ${now}`)
+      .returning({ mediaUrl: stories.mediaUrl });
 
     return {
-      deletedCount: expired.length,
-      mediaUrls: expired.map((s) => s.mediaUrl),
+      deletedCount: deleted.length,
+      mediaUrls: deleted.map((s) => s.mediaUrl),
     };
   }
 

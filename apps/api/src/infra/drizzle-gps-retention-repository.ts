@@ -20,4 +20,25 @@ export class DrizzleGpsRetentionRepository implements GpsRetentionRepository {
           AND latitude IS NOT NULL`,
     );
   }
+
+  async purgeOldSafetyCheckins(retentionDays: number): Promise<void> {
+    await this.db.execute(
+      sql`DELETE FROM walk_safety_checkins
+          WHERE created_at < NOW() - INTERVAL '${sql.raw(String(retentionDays))} days'`,
+    );
+  }
+
+  async purgeOldNotifications(retentionDays: number): Promise<void> {
+    await this.db.execute(
+      sql`DELETE FROM notification_log
+          WHERE created_at < NOW() - INTERVAL '${sql.raw(String(retentionDays))} days'`,
+    );
+  }
+
+  async purgeOldAuditLogs(retentionDays: number): Promise<void> {
+    await this.db.execute(
+      sql`DELETE FROM admin_audit_log
+          WHERE created_at < NOW() - INTERVAL '${sql.raw(String(retentionDays))} days'`,
+    );
+  }
 }

@@ -1012,6 +1012,12 @@ export function buildGdprExportRepo(
     getUserReports: vi.fn().mockResolvedValue([]),
     getAnalyticsEvents: vi.fn().mockResolvedValue([]),
     getOAuthAccounts: vi.fn().mockResolvedValue([]),
+    getEmergencyContacts: vi.fn().mockResolvedValue([]),
+    getSafetyCheckins: vi.fn().mockResolvedValue([]),
+    getMoodLogs: vi.fn().mockResolvedValue([]),
+    getSupportTickets: vi.fn().mockResolvedValue([]),
+    getNotifications: vi.fn().mockResolvedValue([]),
+    getMlTrainingSamples: vi.fn().mockResolvedValue([]),
     createExport: vi.fn().mockResolvedValue({
       id: 'export-1',
       status: 'pending',

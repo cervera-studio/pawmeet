@@ -5,14 +5,18 @@ import {
   challenges,
   contentReports,
   dailyActivity,
+  dogMoodLogs,
   dogPhotos,
   dogProfiles,
+  emergencyContacts,
   gdprExports,
   groupEventParticipants,
   groupEvents,
   groupMessages,
   matches,
   messages,
+  mlTrainingSamples,
+  notificationLog,
   oauthAccounts,
   postComments,
   postLikes,
@@ -20,6 +24,8 @@ import {
   posts,
   reports,
   stories,
+  supportMessages,
+  supportTickets,
   swipeScoreLogs,
   swipes,
   userBlocks,
@@ -29,6 +35,7 @@ import {
   userMatchingPreferences,
   users,
   walkFeedback,
+  walkSafetyCheckins,
   walks,
   walkTrackPoints,
   walkTracks,
@@ -42,13 +49,19 @@ import type {
   GdprDailyActivity,
   GdprDmMessage,
   GdprDog,
+  GdprEmergencyContact,
   GdprExportRecord,
   GdprExportRepository,
   GdprMatchingPreferences,
+  GdprMlTrainingSample,
+  GdprMoodLog,
+  GdprNotification,
   GdprOAuthAccount,
   GdprPost,
   GdprPostLike,
   GdprProfile,
+  GdprSafetyCheckin,
+  GdprSupportTicket,
   GdprSwipeScoreLog,
   GdprUserReport,
   GdprWalkTrack,
@@ -599,6 +612,128 @@ export class DrizzleGdprExportRepository implements GdprExportRepository {
       })
       .from(oauthAccounts)
       .where(eq(oauthAccounts.userId, userId)) as unknown as GdprOAuthAccount[];
+  }
+
+  // -- Emergency contacts --
+
+  async getEmergencyContacts(userId: string): Promise<GdprEmergencyContact[]> {
+    return this.db
+      .select({
+        name: emergencyContacts.name,
+        phone: emergencyContacts.phone,
+        relationship: emergencyContacts.relationship,
+        createdAt: emergencyContacts.createdAt,
+      })
+      .from(emergencyContacts)
+      .where(eq(emergencyContacts.userId, userId)) as unknown as GdprEmergencyContact[];
+  }
+
+  // -- Walk safety check-ins --
+
+  async getSafetyCheckins(userId: string): Promise<GdprSafetyCheckin[]> {
+    return this.db
+      .select({
+        walkId: walkSafetyCheckins.walkId,
+        type: walkSafetyCheckins.type,
+        latitude: walkSafetyCheckins.latitude,
+        longitude: walkSafetyCheckins.longitude,
+        createdAt: walkSafetyCheckins.createdAt,
+      })
+      .from(walkSafetyCheckins)
+      .where(eq(walkSafetyCheckins.userId, userId)) as unknown as GdprSafetyCheckin[];
+  }
+
+  // -- Dog mood logs --
+
+  async getMoodLogs(userId: string): Promise<GdprMoodLog[]> {
+    return this.db
+      .select({
+        dogId: dogMoodLogs.dogId,
+        trackId: dogMoodLogs.trackId,
+        rating: dogMoodLogs.rating,
+        tags: dogMoodLogs.tags,
+        notes: dogMoodLogs.notes,
+        createdAt: dogMoodLogs.createdAt,
+      })
+      .from(dogMoodLogs)
+      .where(eq(dogMoodLogs.userId, userId)) as unknown as GdprMoodLog[];
+  }
+
+  // -- Support tickets --
+
+  async getSupportTickets(userId: string): Promise<GdprSupportTicket[]> {
+    const tickets = await this.db
+      .select({
+        id: supportTickets.id,
+        subject: supportTickets.subject,
+        category: supportTickets.category,
+        status: supportTickets.status,
+        createdAt: supportTickets.createdAt,
+      })
+      .from(supportTickets)
+      .where(eq(supportTickets.userId, userId));
+
+    const result: GdprSupportTicket[] = [];
+    for (const t of tickets) {
+      const msgs = await this.db
+        .select({
+          senderType: supportMessages.senderType,
+          content: supportMessages.content,
+          createdAt: supportMessages.createdAt,
+        })
+        .from(supportMessages)
+        .where(
+          and(
+            eq(supportMessages.ticketId, t.id),
+            eq(supportMessages.isInternal, false),
+          ),
+        );
+
+      result.push({
+        subject: t.subject,
+        category: t.category,
+        status: t.status,
+        createdAt: t.createdAt,
+        messages: msgs as unknown as GdprSupportTicket['messages'],
+      });
+    }
+    return result;
+  }
+
+  // -- Notifications --
+
+  async getNotifications(userId: string): Promise<GdprNotification[]> {
+    return this.db
+      .select({
+        type: notificationLog.type,
+        title: notificationLog.title,
+        body: notificationLog.body,
+        readAt: notificationLog.readAt,
+        createdAt: notificationLog.createdAt,
+      })
+      .from(notificationLog)
+      .where(eq(notificationLog.userId, userId)) as unknown as GdprNotification[];
+  }
+
+  // -- ML training samples --
+
+  async getMlTrainingSamples(dogIds: string[]): Promise<GdprMlTrainingSample[]> {
+    if (dogIds.length === 0) return [];
+    return this.db
+      .select({
+        matchId: mlTrainingSamples.matchId,
+        outcomeLabel: mlTrainingSamples.outcomeLabel,
+        labelVersion: mlTrainingSamples.labelVersion,
+        maturedAt: mlTrainingSamples.maturedAt,
+        createdAt: mlTrainingSamples.createdAt,
+      })
+      .from(mlTrainingSamples)
+      .where(
+        or(
+          inArray(mlTrainingSamples.dogAId, dogIds),
+          inArray(mlTrainingSamples.dogBId, dogIds),
+        ),
+      ) as unknown as GdprMlTrainingSample[];
   }
 
   // -- Export status tracking --

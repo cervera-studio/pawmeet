@@ -211,6 +211,48 @@ export interface UserDataExport {
     platform: string;
     screenName: string | null;
   }[];
+  emergencyContacts: {
+    name: string;
+    phone: string;
+    relationship: string | null;
+    createdAt: string;
+  }[];
+  safetyCheckins: {
+    walkId: string;
+    type: string;
+    latitude: number | null;
+    longitude: number | null;
+    createdAt: string;
+  }[];
+  moodLogs: {
+    dogId: string;
+    trackId: string;
+    rating: number;
+    tags: string[];
+    notes: string | null;
+    createdAt: string;
+  }[];
+  supportTickets: {
+    subject: string;
+    category: string;
+    status: string;
+    createdAt: string;
+    messages: { senderType: string; content: string; createdAt: string }[];
+  }[];
+  notifications: {
+    type: string;
+    title: string;
+    body: string;
+    readAt: string | null;
+    createdAt: string;
+  }[];
+  mlTrainingSamples: {
+    matchId: string;
+    outcomeLabel: number;
+    labelVersion: number;
+    maturedAt: string;
+    createdAt: string;
+  }[];
 }
 
 interface Deps {
@@ -288,6 +330,12 @@ export function createExportUserData(deps: Deps) {
       contentReportsData,
       userReportsData,
       analyticsEventsData,
+      emergencyContactsData,
+      safetyCheckinsData,
+      moodLogsData,
+      supportTicketsData,
+      notificationsData,
+      mlTrainingSamplesData,
     ] = await Promise.all([
       gdprExportRepo.getPostsWithMedia(userId),
       gdprExportRepo.getSwipes(dogIds),
@@ -314,6 +362,12 @@ export function createExportUserData(deps: Deps) {
       gdprExportRepo.getContentReports(userId),
       gdprExportRepo.getUserReports(userId),
       gdprExportRepo.getAnalyticsEvents(userId),
+      gdprExportRepo.getEmergencyContacts(userId),
+      gdprExportRepo.getSafetyCheckins(userId),
+      gdprExportRepo.getMoodLogs(userId),
+      gdprExportRepo.getSupportTickets(userId),
+      gdprExportRepo.getNotifications(userId),
+      gdprExportRepo.getMlTrainingSamples(dogIds),
     ]);
 
     return succeed({
@@ -548,6 +602,52 @@ export function createExportUserData(deps: Deps) {
         serverTimestamp: toIso(e.serverTimestamp),
         platform: e.platform,
         screenName: e.screenName,
+      })),
+      emergencyContacts: emergencyContactsData.map((c) => ({
+        name: c.name,
+        phone: c.phone,
+        relationship: c.relationship,
+        createdAt: toIso(c.createdAt),
+      })),
+      safetyCheckins: safetyCheckinsData.map((s) => ({
+        walkId: s.walkId,
+        type: s.type,
+        latitude: s.latitude,
+        longitude: s.longitude,
+        createdAt: toIso(s.createdAt),
+      })),
+      moodLogs: moodLogsData.map((m) => ({
+        dogId: m.dogId,
+        trackId: m.trackId,
+        rating: m.rating,
+        tags: m.tags,
+        notes: m.notes,
+        createdAt: toIso(m.createdAt),
+      })),
+      supportTickets: supportTicketsData.map((t) => ({
+        subject: t.subject,
+        category: t.category,
+        status: t.status,
+        createdAt: toIso(t.createdAt),
+        messages: t.messages.map((m) => ({
+          senderType: m.senderType,
+          content: m.content,
+          createdAt: toIso(m.createdAt),
+        })),
+      })),
+      notifications: notificationsData.map((n) => ({
+        type: n.type,
+        title: n.title,
+        body: n.body,
+        readAt: toIsoOrNull(n.readAt),
+        createdAt: toIso(n.createdAt),
+      })),
+      mlTrainingSamples: mlTrainingSamplesData.map((s) => ({
+        matchId: s.matchId,
+        outcomeLabel: s.outcomeLabel,
+        labelVersion: s.labelVersion,
+        maturedAt: toIso(s.maturedAt),
+        createdAt: toIso(s.createdAt),
       })),
     });
   };

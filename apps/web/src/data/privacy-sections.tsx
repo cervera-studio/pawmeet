@@ -373,10 +373,23 @@ function getItalianSections(): PrivacySection[] {
                 </td>
               </tr>
               <tr className="border-b border-neutral-200">
-                <td className="py-2 pr-4">Geolocalizzazione</td>
+                <td className="py-2 pr-4">Geolocalizzazione (posizione utente)</td>
                 <td className="py-2">
                   Ultimo aggiornamento fino a cancellazione. Auto-eliminata dopo 90 gg di
                   inattività.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Tracciati GPS passeggiata</td>
+                <td className="py-2">
+                  Punti GPS dettagliati eliminati dopo 90 gg. I metadati della passeggiata
+                  (durata, distanza) sono conservati per la durata dell'account.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Check-in di sicurezza</td>
+                <td className="py-2">
+                  Coordinate GPS dei check-in di sicurezza eliminate dopo 90 gg.
                 </td>
               </tr>
               <tr className="border-b border-neutral-200">
@@ -396,6 +409,33 @@ function getItalianSections(): PrivacySection[] {
                 <td className="py-2">
                   Eventi grezzi: 90 gg. Dati aggregati: 24 mesi. Anonimizzazione alla cancellazione
                   account.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Notifiche</td>
+                <td className="py-2">
+                  Storico notifiche eliminato dopo 90 gg.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Audit log amministrativo</td>
+                <td className="py-2">
+                  Log delle azioni amministrative conservati per 2 anni, poi eliminati.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Contatti di emergenza</td>
+                <td className="py-2">
+                  Conservati per la durata dell'account. Trattati ai sensi dell'Art. 6(1)(f) GDPR
+                  (legittimo interesse: sicurezza dell'utente durante le passeggiate). Dati di
+                  terzi (nome e telefono) raccolti su iniziativa dell'utente.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Campioni di addestramento ML</td>
+                <td className="py-2">
+                  Vettori di feature anonimizzati derivati dalle interazioni. Conservati per la
+                  durata dell'account. Non contengono dati personali direttamente identificabili.
                 </td>
               </tr>
               <tr>
@@ -913,9 +953,22 @@ function getEnglishSections(): PrivacySection[] {
                 <td className="py-2">Duration of active account. Deleted upon account deletion.</td>
               </tr>
               <tr className="border-b border-neutral-200">
-                <td className="py-2 pr-4">Geolocation</td>
+                <td className="py-2 pr-4">Geolocation (user position)</td>
                 <td className="py-2">
                   Last update until deletion. Auto-deleted after 90 days of inactivity.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Walk GPS tracks</td>
+                <td className="py-2">
+                  Detailed GPS points deleted after 90 days. Walk metadata (duration, distance)
+                  retained for account lifetime.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Safety check-ins</td>
+                <td className="py-2">
+                  Safety check-in GPS coordinates deleted after 90 days.
                 </td>
               </tr>
               <tr className="border-b border-neutral-200">
@@ -934,6 +987,33 @@ function getEnglishSections(): PrivacySection[] {
                 <td className="py-2 pr-4">Analytics (PostHog EU)</td>
                 <td className="py-2">
                   Raw events: 90 days. Aggregated data: 24 months. Anonymized upon account deletion.
+                </td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4">Notifications</td>
+                <td className="py-2">
+                  Notification history deleted after 90 days.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Admin audit log</td>
+                <td className="py-2">
+                  Administrative action logs retained for 2 years, then deleted.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">Emergency contacts</td>
+                <td className="py-2">
+                  Retained for account lifetime. Processed under Art. 6(1)(f) GDPR (legitimate
+                  interest: user safety during walks). Third-party data (name and phone) collected
+                  at user's initiative.
+                </td>
+              </tr>
+              <tr className="border-b border-neutral-200">
+                <td className="py-2 pr-4">ML training samples</td>
+                <td className="py-2">
+                  Anonymized feature vectors derived from interactions. Retained for account
+                  lifetime. Do not contain directly identifiable personal data.
                 </td>
               </tr>
               <tr>

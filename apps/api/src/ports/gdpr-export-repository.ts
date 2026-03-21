@@ -281,6 +281,66 @@ export interface GdprAnalyticsEvent {
   screenName: string | null;
 }
 
+// -- Emergency contacts --
+
+export interface GdprEmergencyContact {
+  name: string;
+  phone: string;
+  relationship: string | null;
+  createdAt: Date;
+}
+
+// -- Walk safety check-ins --
+
+export interface GdprSafetyCheckin {
+  walkId: string;
+  type: string;
+  latitude: number | null;
+  longitude: number | null;
+  createdAt: Date;
+}
+
+// -- Dog mood logs --
+
+export interface GdprMoodLog {
+  dogId: string;
+  trackId: string;
+  rating: number;
+  tags: string[];
+  notes: string | null;
+  createdAt: Date;
+}
+
+// -- Support tickets --
+
+export interface GdprSupportTicket {
+  subject: string;
+  category: string;
+  status: string;
+  createdAt: Date;
+  messages: { senderType: string; content: string; createdAt: Date }[];
+}
+
+// -- Notifications --
+
+export interface GdprNotification {
+  type: string;
+  title: string;
+  body: string;
+  readAt: Date | null;
+  createdAt: Date;
+}
+
+// -- ML training samples --
+
+export interface GdprMlTrainingSample {
+  matchId: string;
+  outcomeLabel: number;
+  labelVersion: number;
+  maturedAt: Date;
+  createdAt: Date;
+}
+
 // -- OAuth accounts --
 
 export interface GdprOAuthAccount {
@@ -331,6 +391,12 @@ export interface GdprExportRepository {
   getUserReports(userId: string): Promise<GdprUserReport[]>;
   getAnalyticsEvents(userId: string): Promise<GdprAnalyticsEvent[]>;
   getOAuthAccounts(userId: string): Promise<GdprOAuthAccount[]>;
+  getEmergencyContacts(userId: string): Promise<GdprEmergencyContact[]>;
+  getSafetyCheckins(userId: string): Promise<GdprSafetyCheckin[]>;
+  getMoodLogs(userId: string): Promise<GdprMoodLog[]>;
+  getSupportTickets(userId: string): Promise<GdprSupportTicket[]>;
+  getNotifications(userId: string): Promise<GdprNotification[]>;
+  getMlTrainingSamples(dogIds: string[]): Promise<GdprMlTrainingSample[]>;
 
   // Export status tracking
   createExport(userId: string): Promise<GdprExportRecord>;

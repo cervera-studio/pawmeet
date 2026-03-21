@@ -7,15 +7,24 @@ interface GpsRetentionDeps {
   gpsRetentionRepo: GpsRetentionRepository;
 }
 
-/** GPS data retention period in days */
+/** GPS and location data retention period in days */
 const GPS_RETENTION_DAYS = 90;
 
+/** Notification log retention period in days */
+const NOTIFICATION_RETENTION_DAYS = 90;
+
+/** Admin audit log retention period in days (2 years) */
+const AUDIT_LOG_RETENTION_DAYS = 730;
+
 /**
- * Purge GPS track points older than 90 days.
+ * Purge location-related data and time-limited logs.
  * GDPR Art. 5(1)(e) — Storage limitation.
  *
- * Walk tracks are kept (metadata), but detailed GPS points
- * are purged to minimize location data retention.
+ * - GPS track points: 90 days
+ * - Safety check-in GPS coordinates: 90 days
+ * - Stale user locations: 90 days inactivity
+ * - Notification log: 90 days
+ * - Admin audit log: 2 years
  */
 export function createGpsRetentionWorker(deps: GpsRetentionDeps) {
   const { gpsRetentionRepo } = deps;
@@ -23,14 +32,22 @@ export function createGpsRetentionWorker(deps: GpsRetentionDeps) {
   const worker = new Worker(
     QUEUE_NAMES.GPS_RETENTION,
     async () => {
-      logger.info('GpsRetention', `Running GPS data purge (>${GPS_RETENTION_DAYS} days)...`);
+      logger.info('GpsRetention', 'Running data retention purge...');
 
       await gpsRetentionRepo.purgeOldTrackPoints(GPS_RETENTION_DAYS);
       logger.info('GpsRetention', 'Purged old GPS track points');
 
-      // Also clear precise location from users who haven't updated in 90+ days
+      await gpsRetentionRepo.purgeOldSafetyCheckins(GPS_RETENTION_DAYS);
+      logger.info('GpsRetention', 'Purged old safety check-in GPS data');
+
       await gpsRetentionRepo.clearStaleUserLocations(GPS_RETENTION_DAYS);
       logger.info('GpsRetention', 'Cleared stale user locations');
+
+      await gpsRetentionRepo.purgeOldNotifications(NOTIFICATION_RETENTION_DAYS);
+      logger.info('GpsRetention', 'Purged old notification logs');
+
+      await gpsRetentionRepo.purgeOldAuditLogs(AUDIT_LOG_RETENTION_DAYS);
+      logger.info('GpsRetention', 'Purged old admin audit logs');
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );

@@ -57,10 +57,7 @@ export function createAppleAuthWebhook(deps: Deps) {
 
       // Replay protection: reject events older than 5 minutes
       const MAX_EVENT_AGE_MS = 5 * 60 * 1000;
-      if (
-        event.event_time &&
-        Math.abs(Date.now() - event.event_time * 1000) > MAX_EVENT_AGE_MS
-      ) {
+      if (event.event_time && Math.abs(Date.now() - event.event_time * 1000) > MAX_EVENT_AGE_MS) {
         logger.warn('AppleWebhook', `Stale event rejected (event_time: ${event.event_time})`);
         return c.json({ error: 'Event too old' }, 400);
       }

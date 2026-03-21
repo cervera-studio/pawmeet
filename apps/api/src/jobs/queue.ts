@@ -3,14 +3,15 @@ import { Queue } from 'bullmq';
 
 /** BullMQ Redis connection config — uses standard Redis (not Upstash REST) */
 export function getRedisConnection() {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const enableTls =
+    process.env.REDIS_TLS === 'true' ||
+    (process.env.NODE_ENV === 'production' && process.env.REDIS_TLS !== 'false');
   return {
     host: process.env.REDIS_HOST || 'localhost',
     port: Number(process.env.REDIS_PORT) || 6379,
     password: process.env.REDIS_PASSWORD || undefined,
     maxRetriesPerRequest: null,
-    // Enable TLS in production (Redis Cloud, ElastiCache, etc.)
-    ...(isProduction && { tls: {} }),
+    ...(enableTls && { tls: {} }),
   };
 }
 

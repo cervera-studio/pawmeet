@@ -26,8 +26,9 @@ export function createAccountLockout(): AccountLockoutService {
         await redis.expire(key, LOCKOUT_DURATION_SECONDS);
         return attempts;
       } catch (err) {
-        logger.warn('AccountLockout', 'Failed to record attempt, allowing login', err);
-        return 0;
+        // Fail-closed: treat as max attempts to prevent brute-force when Redis is down
+        logger.error('AccountLockout', 'Redis unavailable, treating as locked (fail-closed)', err);
+        return MAX_FAILED_ATTEMPTS;
       }
     },
 
@@ -38,9 +39,9 @@ export function createAccountLockout(): AccountLockoutService {
         const attempts = await redis.get<number>(key);
         return (attempts ?? 0) >= MAX_FAILED_ATTEMPTS;
       } catch (err) {
-        // Fail-open: if Redis is unavailable, don't lock anyone out
-        logger.warn('AccountLockout', 'Failed to check lock status, allowing login', err);
-        return false;
+        // Fail-closed: if Redis is unavailable, deny login to prevent brute-force
+        logger.error('AccountLockout', 'Redis unavailable, denying login (fail-closed)', err);
+        return true;
       }
     },
 

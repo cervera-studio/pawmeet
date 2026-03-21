@@ -47,6 +47,15 @@ export class DrizzleTokenRepository implements TokenRepository {
     await this.db.update(refreshTokens).set({ revoked: true }).where(eq(refreshTokens.id, id));
   }
 
+  async revokeRefreshTokenAtomic(id: string): Promise<boolean> {
+    const rows = await this.db
+      .update(refreshTokens)
+      .set({ revoked: true })
+      .where(and(eq(refreshTokens.id, id), eq(refreshTokens.revoked, false)))
+      .returning({ id: refreshTokens.id });
+    return rows.length > 0;
+  }
+
   async revokeRefreshTokenByHash(tokenHash: string): Promise<void> {
     await this.db
       .update(refreshTokens)
@@ -118,5 +127,14 @@ export class DrizzleTokenRepository implements TokenRepository {
       .update(verificationTokens)
       .set({ usedAt: new Date() })
       .where(eq(verificationTokens.id, id));
+  }
+
+  async markVerificationTokenUsedAtomic(id: string): Promise<boolean> {
+    const rows = await this.db
+      .update(verificationTokens)
+      .set({ usedAt: new Date() })
+      .where(and(eq(verificationTokens.id, id), isNull(verificationTokens.usedAt)))
+      .returning({ id: verificationTokens.id });
+    return rows.length > 0;
   }
 }

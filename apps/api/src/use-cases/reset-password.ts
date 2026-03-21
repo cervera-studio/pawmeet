@@ -54,8 +54,12 @@ export function createResetPassword(deps: Deps) {
       return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid or expired code', 400));
     }
 
-    // Mark token as used
-    await tokenRepo.markVerificationTokenUsed(stored.id);
+    // Atomically mark token as used — prevents race condition where two
+    // concurrent requests both see the token as valid (usedAt IS NULL)
+    const claimed = await tokenRepo.markVerificationTokenUsedAtomic(stored.id);
+    if (!claimed) {
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid or expired code', 400));
+    }
 
     // Update user password
     const passwordHash = await authService.hashPassword(password);

@@ -57,8 +57,19 @@ export function createRefreshTokens(deps: Deps) {
       return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid token', 401));
     }
 
-    // Revoke the old refresh token (rotation)
-    await tokenRepo.revokeRefreshToken(storedToken.id);
+    // Atomically revoke the old refresh token (rotation) — prevents race condition
+    // where two concurrent refreshes both see the token as not revoked
+    const claimed = await tokenRepo.revokeRefreshTokenAtomic(storedToken.id);
+    if (!claimed) {
+      // Another request already claimed this token — treat as reuse
+      await tokenRepo.revokeTokenFamily(storedToken.familyId);
+      logSecurityEvent({
+        event: SECURITY_EVENT.TokenRefreshFailed,
+        userId: payload.sub,
+        metadata: { reason: 'token_reuse_race', familyId: storedToken.familyId },
+      });
+      return fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid token', 401));
+    }
 
     // Generate new token pair
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } =

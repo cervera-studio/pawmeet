@@ -1,5 +1,11 @@
+import { timingSafeEqual } from 'node:crypto';
 import * as jose from 'jose';
 import type { SocialAuthPayload, SocialAuthVerifier } from '../ports/social-auth-verifier.js';
+
+function constantTimeEquals(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 const APPLE_JWKS_URI = 'https://appleid.apple.com/auth/keys';
 const GOOGLE_JWKS_URI = 'https://www.googleapis.com/oauth2/v3/certs';
@@ -34,7 +40,7 @@ export class JwksSocialAuthVerifier implements SocialAuthVerifier {
     });
 
     // Verify nonce if provided (Apple includes nonce hash in the token)
-    if (nonce && payload.nonce !== nonce) {
+    if (nonce && (typeof payload.nonce !== 'string' || !constantTimeEquals(payload.nonce, nonce))) {
       throw new Error('Apple ID token nonce mismatch');
     }
 
@@ -65,7 +71,7 @@ export class JwksSocialAuthVerifier implements SocialAuthVerifier {
     });
 
     // Verify nonce to prevent replay attacks
-    if (payload.nonce !== nonce) {
+    if (typeof payload.nonce !== 'string' || !constantTimeEquals(payload.nonce, nonce)) {
       throw new Error('Google ID token nonce mismatch');
     }
 

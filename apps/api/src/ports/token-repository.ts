@@ -34,6 +34,7 @@ export interface TokenRepository {
   }): Promise<RefreshTokenRecord>;
   findRefreshToken(tokenHash: string): Promise<RefreshTokenRecord | null>;
   revokeRefreshToken(id: string): Promise<void>;
+  revokeRefreshTokenAtomic(id: string): Promise<boolean>;
   revokeRefreshTokenByHash(tokenHash: string): Promise<void>;
   revokeAllUserRefreshTokens(userId: string): Promise<void>;
   revokeTokenFamily(familyId: string): Promise<void>;
@@ -52,4 +53,5 @@ export interface TokenRepository {
   ): Promise<VerificationTokenRecord | null>;
   revokeAllVerificationTokens(userId: string, type: TokenType): Promise<void>;
   markVerificationTokenUsed(id: string): Promise<void>;
+  markVerificationTokenUsedAtomic(id: string): Promise<boolean>;
 }

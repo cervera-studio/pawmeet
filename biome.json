@@ -267,6 +267,20 @@
       }
     },
     {
+      "includes": ["apps/mobile/**/*.ts", "apps/mobile/**/*.tsx", "apps/mobile/**/*.js"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noGlobalDirnameFilename": "off",
+            "noProcessGlobal": "off"
+          },
+          "style": {
+            "noProcessEnv": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/*.test.ts", "**/*.test.tsx"],
       "linter": {
         "rules": {

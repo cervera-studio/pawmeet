@@ -1,13 +1,14 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
-import * as Crypto from 'expo-crypto';
 import { useCallback, useRef, useState } from 'react';
 import { container } from 'tsyringe';
 import { useWebSocketListener } from '@/hooks/useWebSocket';
 import { CHAT_REPOSITORY } from '@/repositories/tokens';
 import { useAuthStore } from '@/stores/auth';
 
-const chatRepo = container.resolve(CHAT_REPOSITORY);
+function getChatRepo() {
+  return container.resolve(CHAT_REPOSITORY);
+}
 
 type Message = RouterOutput['chat']['getMessages']['messages'][number];
 
@@ -80,7 +81,7 @@ export function useMessages(matchId?: string) {
     if (!matchId) return;
     setLoadingMessages(true);
     try {
-      const { messages: data } = await chatRepo.getMessages(matchId);
+      const { messages: data } = await getChatRepo().getMessages(matchId);
       setMessages(data as Message[]);
     } catch (e) {
       logger.warn('useMessages', 'Failed to fetch messages', e);
@@ -93,7 +94,7 @@ export function useMessages(matchId?: string) {
   const markAsRead = useCallback(async () => {
     if (!matchId) return;
     try {
-      await chatRepo.markMessagesRead(matchId);
+      await getChatRepo().markMessagesRead(matchId);
     } catch (e) {
       logger.debug('useMessages', 'Failed to mark as read', e);
     }

@@ -1,5 +1,5 @@
-import { ResizeMode, Video } from 'expo-av';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
@@ -23,6 +23,10 @@ export default function MediaViewerScreen() {
   const decodedUrl = url && isValidMediaUrl(url) ? decodeURIComponent(url) : '';
   const validMediaType = mediaType && VALID_MEDIA_TYPES.has(mediaType) ? mediaType : 'image';
 
+  const player = useVideoPlayer(validMediaType === 'video' ? decodedUrl : null, (p) => {
+    p.play();
+  });
+
   return (
     <View className="flex-1 bg-black">
       <Stack.Screen options={{ headerShown: false, animation: 'fade' }} />
@@ -42,11 +46,10 @@ export default function MediaViewerScreen() {
       {/* Media content */}
       <View className="flex-1 items-center justify-center">
         {validMediaType === 'video' ? (
-          <Video
-            source={{ uri: decodedUrl }}
-            resizeMode={ResizeMode.CONTAIN}
-            shouldPlay
-            useNativeControls
+          <VideoView
+            player={player}
+            nativeControls
+            contentFit="contain"
             style={{ width: '100%', height: '100%' }}
           />
         ) : (

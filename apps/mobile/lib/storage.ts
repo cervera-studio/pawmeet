@@ -1,4 +1,5 @@
 import { logger } from '@pawmeet/utils';
+import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import { createMMKV } from 'react-native-mmkv';
 import type { StateStorage } from 'zustand/middleware';
@@ -15,7 +16,7 @@ function getOrCreateEncryptionKey(): string {
   const existing = SecureStore.getItem(MMKV_ENCRYPTION_KEY);
   if (existing) return existing;
 
-  const key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+  const key = Array.from(Crypto.getRandomValues(new Uint8Array(32)))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
   SecureStore.setItem(MMKV_ENCRYPTION_KEY, key);

@@ -1,4 +1,3 @@
-import { ResizeMode, Video } from 'expo-av';
 import { memo, useState } from 'react';
 import { Image, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { HashtagText } from '@/components/HashtagText';
@@ -138,13 +137,7 @@ export const PostCard = memo(function PostCard({
             <Pressable key={media.id} onPress={onPress}>
               {media.mediaType === 'video' ? (
                 <View>
-                  <Video
-                    source={{ uri: media.url }}
-                    resizeMode={ResizeMode.COVER}
-                    shouldPlay={false}
-                    useNativeControls
-                    className="h-72 w-screen"
-                  />
+                  <Image source={{ uri: media.url }} className="h-72 w-screen" resizeMode="cover" />
                   <View className="absolute inset-0 items-center justify-center">
                     <View className="h-12 w-12 items-center justify-center rounded-full bg-black/50">
                       <Text className="ml-1 text-lg text-white">▶</Text>

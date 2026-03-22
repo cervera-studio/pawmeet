@@ -1,5 +1,4 @@
-import type { AVPlaybackStatus } from 'expo-av';
-import { ResizeMode, Video } from 'expo-av';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, Image, Pressable, Text, View } from 'react-native';
@@ -49,9 +48,14 @@ export function StoryViewer({
   const [currentIndex, setCurrentIndex] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const videoRef = useRef<Video>(null);
-
   const currentStory = stories[currentIndex];
+
+  const player = useVideoPlayer(
+    currentStory?.mediaType === 'video' ? currentStory.mediaUrl : null,
+    (p) => {
+      p.play();
+    },
+  );
 
   const startProgress = useCallback(() => {
     progressAnim.setValue(0);
@@ -90,14 +94,13 @@ export function StoryViewer({
     }
   }, [currentIndex, stories.length, progressAnim, onClose]);
 
-  const handlePlaybackStatusUpdate = useCallback(
-    (status: AVPlaybackStatus) => {
-      if (status.isLoaded && status.didJustFinish) {
-        advanceToNext();
-      }
-    },
-    [advanceToNext],
-  );
+  useEffect(() => {
+    if (!player) return;
+    const subscription = player.addListener('playToEnd', () => {
+      advanceToNext();
+    });
+    return () => subscription.remove();
+  }, [player, advanceToNext]);
 
   const goNext = () => {
     progressAnim.stopAnimation();
@@ -153,15 +156,11 @@ export function StoryViewer({
 
       {/* Story media */}
       {currentStory.mediaType === 'video' ? (
-        <Video
-          ref={videoRef}
-          source={{ uri: currentStory.mediaUrl }}
-          resizeMode={ResizeMode.CONTAIN}
-          shouldPlay
-          isLooping={false}
-          onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
-          className="flex-1"
-          style={{ width: SCREEN_WIDTH }}
+        <VideoView
+          player={player}
+          nativeControls={false}
+          contentFit="contain"
+          style={{ flex: 1, width: SCREEN_WIDTH }}
         />
       ) : (
         <Image

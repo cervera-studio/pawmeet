@@ -1,4 +1,3 @@
-import process from 'node:process';
 import { createApiClient } from '@pawmeet/api-client';
 import { useAuthStore } from '@/stores/auth';
 import { createMobileAuthRefreshLink } from './auth-link';

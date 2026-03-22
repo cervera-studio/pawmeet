@@ -1,7 +1,6 @@
 import '../global.css';
 import '@/lib/i18n';
 
-import process from 'node:process';
 import { logger } from '@pawmeet/utils';
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';

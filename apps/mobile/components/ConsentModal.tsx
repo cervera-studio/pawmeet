@@ -1,4 +1,3 @@
-import process from 'node:process';
 import { useTranslation } from 'react-i18next';
 import { Linking, Modal, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { useConsentModalViewModel } from './ConsentModal.view-model';

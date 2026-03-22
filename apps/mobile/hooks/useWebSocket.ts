@@ -1,4 +1,3 @@
-import process from 'node:process';
 import type { WsMessage } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useEffect, useRef, useState } from 'react';

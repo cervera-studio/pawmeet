@@ -72,9 +72,8 @@ jobs:
         run: az acr login --name "$ACR_NAME"
 
       - name: Build and push image
-        env:
-          FULL_IMAGE: ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}
         run: |
+          FULL_IMAGE="${ACR_NAME}.azurecr.io/${IMAGE_NAME}"
           docker build \
             --file apps/api/Dockerfile \
             --build-arg "APP_VERSION=${RELEASE_VERSION}" \
@@ -86,17 +85,15 @@ jobs:
 
       # ── Deploy to Container Apps ──────────────────────────────
       - name: Deploy new revision
-        env:
-          FULL_IMAGE: ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}
         run: |
           az containerapp update \
             --name ca-pawmeet-api-prod \
             --resource-group rg-pawmeet-prod \
-            --image "${FULL_IMAGE}:${IMAGE_TAG}"
+            --image "${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
 
       # ── Sentry release ────────────────────────────────────────
       - name: Create Sentry release
-        if: env.SENTRY_AUTH_TOKEN != ''
+        if: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
         run: |
           npx @sentry/cli@3.3.3 releases new "${RELEASE_VERSION}"
           npx @sentry/cli@3.3.3 releases set-commits "${RELEASE_VERSION}" --auto

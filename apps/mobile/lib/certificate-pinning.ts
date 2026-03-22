@@ -37,12 +37,10 @@ export const PINNED_DOMAINS = {
     // Pin the public key hash, not the certificate itself,
     // so renewals with the same key pair don't break pinning.
     pins: [
-      // Primary pin — current leaf certificate SPKI SHA-256
-      // TODO(#220): Replace with actual hash after first production deploy
-      'sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-      // Backup pin — pre-generated backup key SPKI SHA-256
-      // TODO(#220): Replace with actual backup hash
-      'sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=',
+      // Primary pin — Azure managed cert leaf SPKI SHA-256 (2026-03-21)
+      'sha256/QawYz97HZlViUUrBejo2rDKc3ORcuil3O3Zwj1ySMeQ=',
+      // Backup pin — pre-generated EC P-256 key (stored in infra/backup-pin.key)
+      'sha256/tmSbNE/31YOQQ7uZWklFltWn8Ry0asjZ+MxzppOtl5A=',
     ],
     includeSubdomains: true,
   },

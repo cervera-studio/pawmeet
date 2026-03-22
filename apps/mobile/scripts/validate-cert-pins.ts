@@ -16,8 +16,8 @@ const PLACEHOLDER_PATTERN = /^sha256\/[A-B]{43}=$/;
 const PINNED_DOMAINS: Record<string, { pins: readonly string[] }> = {
   'api.pawmeet.io': {
     pins: [
-      'sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-      'sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=',
+      'sha256/QawYz97HZlViUUrBejo2rDKc3ORcuil3O3Zwj1ySMeQ=',
+      'sha256/tmSbNE/31YOQQ7uZWklFltWn8Ry0asjZ+MxzppOtl5A=',
     ],
   },
 };

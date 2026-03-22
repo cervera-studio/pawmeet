@@ -354,6 +354,10 @@
       "status": "Status",
       "action": "Action",
       "date": "Date"
+    },
+    "toast": {
+      "newReportArrived": "New report received",
+      "actionedByOther": "Another moderator handled this item"
     }
   },
   "content": {
@@ -378,7 +382,11 @@
     "review": "Review",
     "dismissed": "Report dismissed",
     "reviewed": "Report reviewed",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "toast": {
+      "newContentReportArrived": "New content report received",
+      "actionedByOther": "Another moderator handled this item"
+    }
   },
   "photos": {
     "title": "Photo Moderation",
@@ -401,7 +409,9 @@
       "rejected": "Photo rejected",
       "rejectError": "Error rejecting photo",
       "allApproved": "All photos approved",
-      "allApproveError": "Error approving photos"
+      "allApproveError": "Error approving photos",
+      "newPhotoArrived": "New photo pending moderation",
+      "actionedByOther": "Another moderator handled this item"
     }
   },
   "chatModeration": {
@@ -423,6 +433,10 @@
       "suspend": "Suspend user",
       "completed": "Action completed",
       "error": "Error performing action"
+    },
+    "toast": {
+      "newChatReportArrived": "New chat report received",
+      "actionedByOther": "Another moderator handled this item"
     }
   },
   "stories": {
@@ -438,7 +452,9 @@
     "deleteAction": "Delete",
     "toast": {
       "deleted": "Story deleted",
-      "deleteError": "Error deleting story"
+      "deleteError": "Error deleting story",
+      "newStoryArrived": "New story pending moderation",
+      "actionedByOther": "Another moderator handled this item"
     },
     "count": "{count, plural, one {# story} other {# stories}}",
     "views": "views"
@@ -474,7 +490,11 @@
     "reject": "Reject",
     "postApproved": "Post approved",
     "postRejected": "Post rejected",
-    "reportCount": "{count, plural, one {# report} other {# reports}}"
+    "reportCount": "{count, plural, one {# report} other {# reports}}",
+    "toast": {
+      "newPostArrived": "New post pending moderation",
+      "actionedByOther": "Another moderator handled this item"
+    }
   },
   "organizations": {
     "title": "Organizations",

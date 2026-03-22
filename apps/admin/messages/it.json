@@ -354,6 +354,10 @@
       "status": "Stato",
       "action": "Azione",
       "date": "Data"
+    },
+    "toast": {
+      "newReportArrived": "Nuova segnalazione in arrivo",
+      "actionedByOther": "Un altro moderatore ha gestito questo elemento"
     }
   },
   "content": {
@@ -378,7 +382,11 @@
     "review": "Revisiona",
     "dismissed": "Segnalazione archiviata",
     "reviewed": "Segnalazione revisionata",
-    "loadMore": "Carica altri"
+    "loadMore": "Carica altri",
+    "toast": {
+      "newContentReportArrived": "Nuova segnalazione contenuto in arrivo",
+      "actionedByOther": "Un altro moderatore ha gestito questo elemento"
+    }
   },
   "photos": {
     "title": "Moderazione Foto",
@@ -401,7 +409,9 @@
       "rejected": "Foto rifiutata",
       "rejectError": "Errore durante il rifiuto",
       "allApproved": "Tutte le foto approvate",
-      "allApproveError": "Errore durante l'approvazione"
+      "allApproveError": "Errore durante l'approvazione",
+      "newPhotoArrived": "Nuova foto in attesa di moderazione",
+      "actionedByOther": "Un altro moderatore ha gestito questo elemento"
     }
   },
   "chatModeration": {
@@ -423,6 +433,10 @@
       "suspend": "Sospendi utente",
       "completed": "Azione completata",
       "error": "Errore durante l'azione"
+    },
+    "toast": {
+      "newChatReportArrived": "Nuova segnalazione chat in arrivo",
+      "actionedByOther": "Un altro moderatore ha gestito questo elemento"
     }
   },
   "stories": {
@@ -438,7 +452,9 @@
     "deleteAction": "Elimina",
     "toast": {
       "deleted": "Storia eliminata",
-      "deleteError": "Errore durante l'eliminazione"
+      "deleteError": "Errore durante l'eliminazione",
+      "newStoryArrived": "Nuova storia in attesa di moderazione",
+      "actionedByOther": "Un altro moderatore ha gestito questo elemento"
     },
     "count": "{count, plural, one {# storia} other {# storie}}",
     "views": "visualizzazioni"
@@ -474,7 +490,11 @@
     "reject": "Rifiuta",
     "postApproved": "Post approvato",
     "postRejected": "Post rifiutato",
-    "reportCount": "{count, plural, one {# segnalazione} other {# segnalazioni}}"
+    "reportCount": "{count, plural, one {# segnalazione} other {# segnalazioni}}",
+    "toast": {
+      "newPostArrived": "Nuovo post in attesa di moderazione",
+      "actionedByOther": "Un altro moderatore ha gestito questo elemento"
+    }
   },
   "organizations": {
     "title": "Organizzazioni",

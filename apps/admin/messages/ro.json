@@ -352,6 +352,10 @@
       "status": "Stare",
       "action": "Actiune",
       "date": "Data"
+    },
+    "toast": {
+      "newReportArrived": "Raportare noua primita",
+      "actionedByOther": "Alt moderator a gestionat acest element"
     }
   },
   "content": {
@@ -376,7 +380,11 @@
     "review": "Revizuieste",
     "dismissed": "Raportare arhivata",
     "reviewed": "Raportare revizuita",
-    "loadMore": "Incarca mai multe"
+    "loadMore": "Incarca mai multe",
+    "toast": {
+      "newContentReportArrived": "Raportare de continut noua primita",
+      "actionedByOther": "Alt moderator a gestionat acest element"
+    }
   },
   "photos": {
     "title": "Moderare Fotografii",
@@ -399,7 +407,9 @@
       "rejected": "Fotografie respinsa",
       "rejectError": "Eroare la respingerea fotografiei",
       "allApproved": "Toate fotografiile aprobate",
-      "allApproveError": "Eroare la aprobarea fotografiilor"
+      "allApproveError": "Eroare la aprobarea fotografiilor",
+      "newPhotoArrived": "Fotografie noua in asteptarea moderarii",
+      "actionedByOther": "Alt moderator a gestionat acest element"
     }
   },
   "chatModeration": {
@@ -421,6 +431,10 @@
       "suspend": "Suspenda utilizatorul",
       "completed": "Actiune finalizata",
       "error": "Eroare la efectuarea actiunii"
+    },
+    "toast": {
+      "newChatReportArrived": "Raportare de chat noua primita",
+      "actionedByOther": "Alt moderator a gestionat acest element"
     }
   },
   "stories": {
@@ -436,7 +450,9 @@
     "deleteAction": "Sterge",
     "toast": {
       "deleted": "Poveste stearsa",
-      "deleteError": "Eroare la stergerea povestii"
+      "deleteError": "Eroare la stergerea povestii",
+      "newStoryArrived": "Poveste noua in asteptarea moderarii",
+      "actionedByOther": "Alt moderator a gestionat acest element"
     },
     "count": "{count, plural, one {# poveste} other {# povesti}}",
     "views": "vizualizari"
@@ -472,7 +488,11 @@
     "reject": "Respinge",
     "postApproved": "Postare aprobata",
     "postRejected": "Postare respinsa",
-    "reportCount": "{count, plural, one {# raportare} other {# raportari}}"
+    "reportCount": "{count, plural, one {# raportare} other {# raportari}}",
+    "toast": {
+      "newPostArrived": "Postare noua in asteptarea moderarii",
+      "actionedByOther": "Alt moderator a gestionat acest element"
+    }
   },
   "organizations": {
     "title": "Organizatii",

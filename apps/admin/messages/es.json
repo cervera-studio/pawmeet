@@ -352,6 +352,10 @@
       "status": "Estado",
       "action": "Acción",
       "date": "Fecha"
+    },
+    "toast": {
+      "newReportArrived": "Nuevo reporte recibido",
+      "actionedByOther": "Otro moderador gestionó este elemento"
     }
   },
   "content": {
@@ -376,7 +380,11 @@
     "review": "Revisar",
     "dismissed": "Reporte archivado",
     "reviewed": "Reporte revisado",
-    "loadMore": "Cargar más"
+    "loadMore": "Cargar más",
+    "toast": {
+      "newContentReportArrived": "Nuevo reporte de contenido recibido",
+      "actionedByOther": "Otro moderador gestionó este elemento"
+    }
   },
   "photos": {
     "title": "Moderación de fotos",
@@ -399,7 +407,9 @@
       "rejected": "Foto rechazada",
       "rejectError": "Error al rechazar la foto",
       "allApproved": "Todas las fotos aprobadas",
-      "allApproveError": "Error al aprobar las fotos"
+      "allApproveError": "Error al aprobar las fotos",
+      "newPhotoArrived": "Nueva foto pendiente de moderación",
+      "actionedByOther": "Otro moderador gestionó este elemento"
     }
   },
   "chatModeration": {
@@ -421,6 +431,10 @@
       "suspend": "Suspender usuario",
       "completed": "Acción completada",
       "error": "Error al realizar la acción"
+    },
+    "toast": {
+      "newChatReportArrived": "Nuevo reporte de chat recibido",
+      "actionedByOther": "Otro moderador gestionó este elemento"
     }
   },
   "stories": {
@@ -436,7 +450,9 @@
     "deleteAction": "Eliminar",
     "toast": {
       "deleted": "Historia eliminada",
-      "deleteError": "Error al eliminar la historia"
+      "deleteError": "Error al eliminar la historia",
+      "newStoryArrived": "Nueva historia pendiente de moderación",
+      "actionedByOther": "Otro moderador gestionó este elemento"
     },
     "count": "{count, plural, one {# historia} other {# historias}}",
     "views": "visualizaciones"
@@ -472,7 +488,11 @@
     "reject": "Rechazar",
     "postApproved": "Publicación aprobada",
     "postRejected": "Publicación rechazada",
-    "reportCount": "{count, plural, one {# reporte} other {# reportes}}"
+    "reportCount": "{count, plural, one {# reporte} other {# reportes}}",
+    "toast": {
+      "newPostArrived": "Nueva publicación pendiente de moderación",
+      "actionedByOther": "Otro moderador gestionó este elemento"
+    }
   },
   "organizations": {
     "title": "Organizaciones",

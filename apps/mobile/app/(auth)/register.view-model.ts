@@ -12,7 +12,7 @@ export function useRegisterViewModel() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,7 +27,13 @@ export function useRegisterViewModel() {
       return;
     }
 
-    const result = registerSchema.safeParse({ displayName, email, password, dateOfBirth });
+    const dobString = dateOfBirth ? dateOfBirth.toISOString().split('T')[0] ?? '' : '';
+    const result = registerSchema.safeParse({
+      displayName,
+      email,
+      password,
+      dateOfBirth: dobString,
+    });
     if (!result.success) {
       setErrors(zodToFieldErrors(result.error));
       return;
@@ -35,7 +41,7 @@ export function useRegisterViewModel() {
 
     setLoading(true);
     try {
-      await register(displayName, email, password, dateOfBirth);
+      await register(displayName, email, password, dobString);
     } catch (e) {
       setApiError(e instanceof Error ? e.message : i18n.t('auth.register.registerError'));
     } finally {

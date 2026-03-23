@@ -1089,5 +1089,17 @@
       "resolved": "Risolto",
       "closed": "Chiuso"
     }
+  },
+
+  "validation": {
+    "email_invalid": "Inserisci un indirizzo email valido",
+    "password_min_length": "La password deve avere almeno 8 caratteri",
+    "password_uppercase_required": "La password deve contenere almeno una lettera maiuscola",
+    "password_digit_required": "La password deve contenere almeno un numero",
+    "date_of_birth_required": "Inserisci la tua data di nascita",
+    "date_of_birth_future": "La data di nascita non può essere nel futuro",
+    "date_of_birth_min_age": "Devi avere almeno 18 anni per registrarti",
+    "display_name_min": "Il nome deve avere almeno 2 caratteri",
+    "display_name_max": "Il nome non può superare i 50 caratteri"
   }
 }

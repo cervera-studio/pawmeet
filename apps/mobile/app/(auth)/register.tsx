@@ -1,3 +1,5 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +10,7 @@ import { useRegisterViewModel } from './register.view-model';
 export default function RegisterScreen() {
   const { t } = useTranslation();
   const vm = useRegisterViewModel();
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
@@ -64,14 +67,48 @@ export default function RegisterScreen() {
             error={vm.errors.confirmPassword}
           />
 
-          <FormField
-            placeholder={t('auth.register.dateOfBirthPlaceholder')}
-            value={vm.dateOfBirth}
-            onChangeText={vm.setDateOfBirth}
-            keyboardType="numbers-and-punctuation"
-            error={vm.errors.dateOfBirth}
-            spacingClassName="mb-8"
-          />
+          <View>
+            <Pressable
+              onPress={() => setShowDatePicker(true)}
+              className="mb-1 min-h-[52px] justify-center rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 dark:border-[#38383A] dark:bg-[#2C2C2E]"
+            >
+              <Text
+                className={
+                  vm.dateOfBirth
+                    ? 'text-base text-gray-900 dark:text-[#F5F5F7]'
+                    : 'text-base text-[#9CA3AF]'
+                }
+              >
+                {vm.dateOfBirth
+                  ? vm.dateOfBirth.toLocaleDateString('it-IT', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                    })
+                  : t('auth.register.dateOfBirthPlaceholder')}
+              </Text>
+            </Pressable>
+            {vm.errors.dateOfBirth ? (
+              <Text className="mb-3 px-1 text-sm text-red-500">{vm.errors.dateOfBirth}</Text>
+            ) : (
+              <View className="mb-8" />
+            )}
+            {showDatePicker ? (
+              <DateTimePicker
+                value={vm.dateOfBirth ?? new Date(2000, 0, 1)}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                maximumDate={new Date()}
+                minimumDate={new Date(1920, 0, 1)}
+                onChange={(_event, selectedDate) => {
+                  setShowDatePicker(Platform.OS === 'ios');
+                  if (selectedDate) {
+                    vm.setDateOfBirth(selectedDate);
+                  }
+                }}
+              />
+            ) : null}
+          </View>
 
           <Button
             onPress={vm.handleRegister}

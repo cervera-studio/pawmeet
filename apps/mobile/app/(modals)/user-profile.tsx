@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FollowButton } from '@/components/follow-button';
 import { Avatar } from '@/components/ui/Avatar';
 import { isValidUUID } from '@/lib/deep-link-validation';
-import { useUserProfileViewModel } from './user-profile.view-model';
+import { useUserProfileViewModel } from './_user-profile.view-model';
 
 export default function UserProfileScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();

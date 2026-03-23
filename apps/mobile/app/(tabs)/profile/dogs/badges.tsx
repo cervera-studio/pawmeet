@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { type BadgeCardData, useBadgesGridViewModel } from './badges.view-model';
+import { type BadgeCardData, useBadgesGridViewModel } from './_badges.view-model';
 
 const SKELETON_KEYS_4 = ['a', 'b', 'c', 'd'] as const;
 

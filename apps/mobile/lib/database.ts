@@ -1,4 +1,5 @@
 import { logger } from '@pawmeet/utils';
+import * as ExpoCrypto from 'expo-crypto';
 import { Directory, Paths } from 'expo-file-system';
 import * as SecureStore from 'expo-secure-store';
 import * as SQLite from 'expo-sqlite';
@@ -14,7 +15,7 @@ async function getEncryptionKey(): Promise<string> {
   const existing = await SecureStore.getItemAsync(SQLITE_KEY_STORE_KEY);
   if (existing) return existing;
 
-  const key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+  const key = Array.from(ExpoCrypto.getRandomValues(new Uint8Array(32)))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
   await SecureStore.setItemAsync(SQLITE_KEY_STORE_KEY, key);

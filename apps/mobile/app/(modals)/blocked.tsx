@@ -4,7 +4,7 @@ import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import type { BlockedUser } from '@/repositories/interfaces/follow-repository';
-import { useBlockedViewModel } from './blocked.view-model';
+import { useBlockedViewModel } from './_blocked.view-model';
 
 // ── Loading Skeleton ──────────────────────────────────────────────────────
 

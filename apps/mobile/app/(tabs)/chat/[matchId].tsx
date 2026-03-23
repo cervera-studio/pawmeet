@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChatBubble } from '@/components/ChatBubble';
 import { ProposeWalkModal } from '@/components/ProposeWalkModal';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
-import { useChatConversationViewModel } from './[matchId].view-model';
+import { useChatConversationViewModel } from './_[matchId].view-model';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
 

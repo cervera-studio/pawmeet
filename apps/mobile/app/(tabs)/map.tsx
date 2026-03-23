@@ -6,8 +6,8 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import MapView, { Circle, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import type { GroupEvent, NearbyUser } from './map.view-model';
-import { useMapViewModel } from './map.view-model';
+import type { GroupEvent, NearbyUser } from './_map.view-model';
+import { useMapViewModel } from './_map.view-model';
 
 function formatEventDate(date: Date | string): string {
   const d = new Date(date);

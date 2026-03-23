@@ -12,7 +12,7 @@ import {
 import { useCallback, useMemo, useState } from 'react';
 import { useWalks } from '@/hooks/useWalks';
 import { useDogsStore } from '@/stores/dogs';
-import type { Walk } from './index.view-model';
+import type { Walk } from './_index.view-model';
 
 export type ViewMode = 'week' | 'month';
 

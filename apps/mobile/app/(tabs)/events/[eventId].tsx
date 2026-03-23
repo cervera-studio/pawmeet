@@ -14,8 +14,8 @@ import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import i18n from '@/lib/i18n';
-import { useEventDetailViewModel } from './[eventId].view-model';
-import { useEventRequestsViewModel } from './requests.view-model';
+import { useEventDetailViewModel } from './_[eventId].view-model';
+import { useEventRequestsViewModel } from './_requests.view-model';
 
 const HERO_HEIGHT = 250;
 const SCREEN_WIDTH = Dimensions.get('window').width;

@@ -614,32 +614,31 @@
   },
 
   "consent": {
-    "title": "Confidențialitate și consimțăminte",
+    "simpleTitle": "Ajută-ne să îmbunătățim PawMeet",
+    "simpleDescription": "Activând serviciile opționale ne ajuți să facem aplicația mai bună pentru tine și câinele tău. Poți schimba oricând din Setări.",
+    "acceptAll": "Activează tot",
+    "rejectAllShort": "Nu, mulțumesc",
+    "customize": "Personalizează",
+    "title": "Gestionează preferințele",
     "description": "Alege ce servicii opționale să activezi. Poți modifica preferințele oricând din Setări.",
     "analytics": {
-      "title": "Analiză de utilizare",
-      "description": "Ne ajută să înțelegem cum folosești aplicația pentru a o îmbunătăți. Date anonime și agregate."
-    },
-    "abTesting": {
-      "title": "Experimente A/B",
-      "description": "Participă la teste comparative pentru a ne ajuta să alegem cele mai bune funcționalități. Configurația de bază a aplicației funcționează întotdeauna, chiar și fără acest consimțământ."
+      "title": "Ajută-ne să îmbunătățim aplicația",
+      "description": "Date anonime și agregate despre cum folosești aplicația."
     },
     "errorTracking": {
-      "title": "Raportare erori",
-      "description": "Trimite rapoarte detaliate când ceva nu funcționează. Fără acest consimțământ, rapoartele sunt oricum trimise în formă anonimă."
+      "title": "Raportează problemele automat",
+      "description": "Trimite rapoarte detaliate când ceva nu funcționează."
     },
     "aiTraining": {
-      "title": "Antrenare AI",
-      "description": "Ajută la îmbunătățirea match-ului prin antrenarea modelelor AI pe profilul anonimizat al câinelui tău"
+      "title": "Îmbunătățește matching-ul pentru toți",
+      "description": "Antrenează modele AI pe profilul anonimizat al câinelui tău."
     },
     "marketing": {
-      "title": "Comunicări de marketing",
-      "description": "Primește actualizări despre noutăți, evenimente și promoții prin email."
+      "title": "Ține-mă la curent prin email",
+      "description": "Primește noutăți, evenimente și promoții."
     },
-    "acceptSelected": "Acceptă selectate",
-    "rejectAll": "Refuză tot",
-    "readPrivacyPolicy": "Citește Politica de Confidențialitate completă",
-    "manageAll": "Gestionează toate consimțămintele"
+    "savePreferences": "Salvează preferințele",
+    "readPrivacyPolicy": "Citește Politica de Confidențialitate completă"
   },
 
   "settings": {

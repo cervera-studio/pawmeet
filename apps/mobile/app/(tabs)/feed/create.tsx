@@ -3,8 +3,8 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 import { Stack } from 'expo-router';
 import { Image, Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { TagOption } from './create.view-model';
-import { useCreatePostViewModel } from './create.view-model';
+import type { TagOption } from './_create.view-model';
+import { useCreatePostViewModel } from './_create.view-model';
 
 export default function CreatePostScreen() {
   const vm = useCreatePostViewModel();

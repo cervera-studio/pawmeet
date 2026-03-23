@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
 import { Button } from '@/components/ui/Button';
-import { useLoginViewModel } from './login.view-model';
+import { useLoginViewModel } from './_login.view-model';
 
 export default function LoginScreen() {
   const { t } = useTranslation();

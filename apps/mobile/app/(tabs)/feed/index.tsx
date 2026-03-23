@@ -6,8 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PostCard } from '@/components/PostCard';
 import { StoriesRow } from '@/components/StoriesRow';
 import { TrendingHashtags } from '@/components/TrendingHashtags';
-import type { FeedItem } from './index.view-model';
-import { useFeedViewModel } from './index.view-model';
+import type { FeedItem } from './_index.view-model';
+import { useFeedViewModel } from './_index.view-model';
 
 // ── Loading Skeleton ──────────────────────────────────────────────────────
 

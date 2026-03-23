@@ -17,7 +17,7 @@ import {
   TERRAIN_OPTIONS,
   useEditDogViewModel,
   WALK_TIME_OPTIONS,
-} from './edit-dog.view-model';
+} from './_edit-dog.view-model';
 
 export default function EditDogScreen() {
   const { t } = useTranslation();

@@ -4,8 +4,8 @@ import { useRouter } from 'expo-router';
 import { memo } from 'react';
 import { Dimensions, FlatList, Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { AlbumMedia } from './walk-album.view-model';
-import { useWalkAlbumViewModel } from './walk-album.view-model';
+import type { AlbumMedia } from './_walk-album.view-model';
+import { useWalkAlbumViewModel } from './_walk-album.view-model';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const NUM_COLUMNS = 3;

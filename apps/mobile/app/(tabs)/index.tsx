@@ -13,7 +13,7 @@ import { RequireDogModal } from '@/components/RequireDogModal';
 import { SwipeCard } from '@/components/SwipeCard';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useRequireDog } from '@/hooks/useRequireDog';
-import { useDiscoveryViewModel } from './index.view-model';
+import { useDiscoveryViewModel } from './_index.view-model';
 
 // ── Filter configuration ────────────────────────────────────────────────────
 

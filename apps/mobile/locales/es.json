@@ -614,32 +614,31 @@
   },
 
   "consent": {
-    "title": "Privacidad y consentimientos",
+    "simpleTitle": "Ayúdanos a mejorar PawMeet",
+    "simpleDescription": "Activando los servicios opcionales nos ayudas a mejorar la app para ti y tu perro. Puedes cambiar de opinión en cualquier momento desde los Ajustes.",
+    "acceptAll": "Activar todo",
+    "rejectAllShort": "No, gracias",
+    "customize": "Personalizar",
+    "title": "Gestionar preferencias",
     "description": "Elige qué servicios opcionales activar. Puedes modificar tus preferencias en cualquier momento desde los Ajustes.",
     "analytics": {
-      "title": "Análisis de uso",
-      "description": "Nos ayuda a entender cómo usas la app para mejorarla. Datos anónimos y agregados."
-    },
-    "abTesting": {
-      "title": "Experimentos A/B",
-      "description": "Participa en pruebas comparativas para ayudarnos a elegir las mejores funcionalidades. La configuración base de la app funciona siempre, incluso sin este consentimiento."
+      "title": "Ayúdanos a mejorar la app",
+      "description": "Datos anónimos y agregados sobre cómo usas la app."
     },
     "errorTracking": {
-      "title": "Informe de errores",
-      "description": "Envía informes detallados cuando algo no funciona. Sin este consentimiento, los informes se envían de forma anónima."
+      "title": "Reportar problemas automáticamente",
+      "description": "Envía informes detallados cuando algo no funciona."
     },
     "aiTraining": {
-      "title": "Entrenamiento AI",
-      "description": "Ayuda a mejorar el matching entrenando modelos AI con el perfil anonimizado de tu perro"
+      "title": "Mejora el matching para todos",
+      "description": "Entrena modelos AI con el perfil anonimizado de tu perro."
     },
     "marketing": {
-      "title": "Comunicaciones de marketing",
-      "description": "Recibe novedades sobre actualizaciones, eventos y promociones por email."
+      "title": "Mantenme informado por email",
+      "description": "Recibe novedades, eventos y promociones."
     },
-    "acceptSelected": "Aceptar seleccionados",
-    "rejectAll": "Rechazar todo",
-    "readPrivacyPolicy": "Leer la Política de Privacidad completa",
-    "manageAll": "Gestionar todos los consentimientos"
+    "savePreferences": "Guardar preferencias",
+    "readPrivacyPolicy": "Leer la Política de Privacidad completa"
   },
 
   "settings": {

@@ -6,8 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RequireDogModal } from '@/components/RequireDogModal';
 import { Avatar } from '@/components/ui/Avatar';
 import { useRequireDog } from '@/hooks/useRequireDog';
-import type { Conversation, GroupConversation, Tab } from './index.view-model';
-import { TABS, useChatListViewModel } from './index.view-model';
+import type { Conversation, GroupConversation, Tab } from './_index.view-model';
+import { TABS, useChatListViewModel } from './_index.view-model';
 
 // ── Segment control ──────────────────────────────────────────────────────────
 

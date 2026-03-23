@@ -614,32 +614,31 @@
   },
 
   "consent": {
-    "title": "Privacy and consent",
+    "simpleTitle": "Help us improve PawMeet",
+    "simpleDescription": "By enabling optional services you help us make the app better for you and your dog. You can change your mind at any time from Settings.",
+    "acceptAll": "Enable all",
+    "rejectAllShort": "No, thanks",
+    "customize": "Customize",
+    "title": "Manage preferences",
     "description": "Choose which optional services to enable. You can change your preferences at any time from Settings.",
     "analytics": {
-      "title": "Usage analytics",
-      "description": "Helps us understand how you use the app to improve it. Anonymous and aggregated data."
-    },
-    "abTesting": {
-      "title": "A/B experiments",
-      "description": "Participate in comparative tests to help us choose the best features. The base app configuration always works, even without this consent."
+      "title": "Help us improve the app",
+      "description": "Anonymous and aggregated data about how you use the app."
     },
     "errorTracking": {
-      "title": "Error reporting",
-      "description": "Sends detailed reports when something goes wrong. Without this consent, reports are still sent anonymously."
+      "title": "Report problems automatically",
+      "description": "Sends detailed reports when something goes wrong."
     },
     "aiTraining": {
-      "title": "AI training",
-      "description": "Help improve matching by training AI models on your dog's anonymized profile"
+      "title": "Improve matching for everyone",
+      "description": "Train AI models on your dog's anonymized profile."
     },
     "marketing": {
-      "title": "Marketing communications",
-      "description": "Receive updates about news, events, and promotions via email."
+      "title": "Keep me updated via email",
+      "description": "Receive news, events, and promotions."
     },
-    "acceptSelected": "Accept selected",
-    "rejectAll": "Reject all",
-    "readPrivacyPolicy": "Read the full Privacy Policy",
-    "manageAll": "Manage all consents"
+    "savePreferences": "Save preferences",
+    "readPrivacyPolicy": "Read the full Privacy Policy"
   },
 
   "settings": {

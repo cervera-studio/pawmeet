@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeedbackModal } from '@/components/FeedbackModal';
-import type { Walk } from './index.view-model';
-import { useWalksViewModel } from './index.view-model';
+import type { Walk } from './_index.view-model';
+import { useWalksViewModel } from './_index.view-model';
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);

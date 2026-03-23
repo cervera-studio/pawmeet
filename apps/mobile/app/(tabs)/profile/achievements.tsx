@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { type AchievementCardData, useAchievementsViewModel } from './achievements.view-model';
+import { type AchievementCardData, useAchievementsViewModel } from './_achievements.view-model';
 
 const SKELETON_KEYS_8 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 

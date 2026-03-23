@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { memo } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, Image, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useWalkAlbumViewModel } from './[walkId].view-model';
+import { useWalkAlbumViewModel } from './_[walkId].view-model';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const COLUMN_COUNT = 3;

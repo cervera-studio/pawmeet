@@ -4,7 +4,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
 import { Button } from '@/components/ui/Button';
-import { useAgeGateViewModel } from './age-gate.view-model';
+import { useAgeGateViewModel } from './_age-gate.view-model';
 
 export default function AgeGateScreen() {
   const { t } = useTranslation();

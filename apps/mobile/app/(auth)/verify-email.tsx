@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
-import { useVerifyEmailViewModel } from './verify-email.view-model';
+import { useVerifyEmailViewModel } from './_verify-email.view-model';
 
 export default function VerifyEmailScreen() {
   const { t } = useTranslation();

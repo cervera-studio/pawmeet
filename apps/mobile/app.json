@@ -60,7 +60,9 @@
           "isSdkExtensionPatched": true
         }
       ],
-      "expo-video"
+      "expo-video",
+      "@react-native-community/datetimepicker",
+      "@sentry/react-native"
     ],
     "extra": {
       "router": {},

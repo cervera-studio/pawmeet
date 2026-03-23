@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
 import { Button } from '@/components/ui/Button';
-import { useForgotPasswordViewModel } from './forgot-password.view-model';
+import { useForgotPasswordViewModel } from './_forgot-password.view-model';
 
 export default function ForgotPasswordScreen() {
   const { t } = useTranslation();

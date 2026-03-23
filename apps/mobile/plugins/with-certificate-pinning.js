@@ -26,12 +26,10 @@ const path = require('node:path');
 const PINNED_DOMAINS = {
   'api.pawmeet.io': {
     pins: [
-      // Primary pin — current leaf certificate SPKI SHA-256
-      // TODO(#220): Replace with actual hash after first production deploy
-      'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-      // Backup pin — pre-generated backup key SPKI SHA-256
-      // TODO(#220): Replace with actual backup hash
-      'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=',
+      // Primary pin — Azure managed cert leaf SPKI SHA-256 (2026-03-21)
+      'QawYz97HZlViUUrBejo2rDKc3ORcuil3O3Zwj1ySMeQ=',
+      // Backup pin — pre-generated EC P-256 key (stored in infra/backup-pin.key)
+      'tmSbNE/31YOQQ7uZWklFltWn8Ry0asjZ+MxzppOtl5A=',
     ],
     includeSubdomains: true,
   },

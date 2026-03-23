@@ -726,32 +726,31 @@
   },
 
   "consent": {
-    "title": "Privacy e consensi",
+    "simpleTitle": "Aiutaci a migliorare PawMeet",
+    "simpleDescription": "Attivando i servizi opzionali ci aiuti a rendere l'app migliore per te e il tuo cane. Puoi cambiare idea in qualsiasi momento dalle Impostazioni.",
+    "acceptAll": "Attiva tutto",
+    "rejectAllShort": "No, grazie",
+    "customize": "Scegli tu",
+    "title": "Gestisci preferenze",
     "description": "Scegli quali servizi opzionali attivare. Puoi modificare le tue preferenze in qualsiasi momento dalle Impostazioni.",
     "analytics": {
-      "title": "Analisi di utilizzo",
-      "description": "Ci aiuta a capire come usi l'app per migliorarla. Dati anonimi e aggregati."
-    },
-    "abTesting": {
-      "title": "Esperimenti A/B",
-      "description": "Partecipa a test comparativi per aiutarci a scegliere le funzionalità migliori. La configurazione base dell'app funziona sempre, anche senza questo consenso."
+      "title": "Aiutaci a migliorare l'app",
+      "description": "Dati anonimi e aggregati su come usi l'app."
     },
     "errorTracking": {
-      "title": "Segnalazione errori",
-      "description": "Invia report dettagliati quando qualcosa non funziona. Senza questo consenso, le segnalazioni sono comunque inviate in forma anonima."
+      "title": "Segnala problemi automaticamente",
+      "description": "Invia report dettagliati quando qualcosa non funziona."
     },
     "aiTraining": {
-      "title": "Addestramento AI",
-      "description": "Aiuta a migliorare il matching addestrando modelli AI sul profilo anonimizzato del tuo cane"
+      "title": "Migliora il matching per tutti",
+      "description": "Addestra modelli AI sul profilo anonimizzato del tuo cane."
     },
     "marketing": {
-      "title": "Comunicazioni marketing",
-      "description": "Ricevi aggiornamenti su novità, eventi e promozioni via email."
+      "title": "Tienimi aggiornato via email",
+      "description": "Ricevi novità, eventi e promozioni."
     },
-    "acceptSelected": "Accetta selezionati",
-    "rejectAll": "Rifiuta tutto",
-    "readPrivacyPolicy": "Leggi la Privacy Policy completa",
-    "manageAll": "Gestisci tutti i consensi"
+    "savePreferences": "Salva preferenze",
+    "readPrivacyPolicy": "Leggi la Privacy Policy completa"
   },
 
   "privacy": {

@@ -8,8 +8,8 @@ import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeaturedEventsCarousel } from '@/components/FeaturedEventsCarousel';
 import i18n from '@/lib/i18n';
-import type { NearbyEvent } from './index.view-model';
-import { useEventDiscoveryViewModel } from './index.view-model';
+import type { NearbyEvent } from './_index.view-model';
+import { useEventDiscoveryViewModel } from './_index.view-model';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

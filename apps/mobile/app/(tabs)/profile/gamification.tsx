@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useGamificationViewModel } from './gamification.view-model';
+import { useGamificationViewModel } from './_gamification.view-model';
 
 // ── Skeleton ────────────────────────────────────────────────────────────────
 

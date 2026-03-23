@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useMoodHistoryViewModel } from './mood-history.view-model';
+import { useMoodHistoryViewModel } from './_mood-history.view-model';
 
 const SKELETON_KEYS = ['a', 'b', 'c', 'd', 'e'] as const;
 const STAR_FILLED = '\u2605';

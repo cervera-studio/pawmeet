@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCreateEventViewModel } from './create.view-model';
+import { useCreateEventViewModel } from './_create.view-model';
 
 // ── Stepper component ────────────────────────────────────────────────────────
 

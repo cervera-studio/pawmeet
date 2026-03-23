@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import type { CommentWithAuthor } from './[postId].view-model';
-import { usePostDetailViewModel } from './[postId].view-model';
+import type { CommentWithAuthor } from './_[postId].view-model';
+import { usePostDetailViewModel } from './_[postId].view-model';
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
-import { useReportViewModel } from './report.view-model';
+import { useReportViewModel } from './_report.view-model';
 
 export default function ReportModal() {
   const { t } = useTranslation();

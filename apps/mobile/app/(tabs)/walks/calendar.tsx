@@ -6,8 +6,8 @@ import { memo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogSelector } from '@/components/DogSelector';
-import type { ViewMode } from './calendar.view-model';
-import { useCalendarViewModel } from './calendar.view-model';
+import type { ViewMode } from './_calendar.view-model';
+import { useCalendarViewModel } from './_calendar.view-model';
 
 const WEEKDAY_LABELS = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
 

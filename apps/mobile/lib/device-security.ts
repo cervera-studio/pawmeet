@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
 import { Platform } from 'react-native';
 
 interface DeviceIntegrityResult {
@@ -47,8 +47,8 @@ const IOS_JAILBREAK_PATHS = [
  */
 async function fileExists(path: string): Promise<boolean> {
   try {
-    const info = await FileSystem.getInfoAsync(`file://${path}`);
-    return info.exists;
+    const file = new File(`file://${path}`);
+    return file.exists;
   } catch {
     return false;
   }

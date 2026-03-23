@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useChallengesViewModel } from './challenges.view-model';
+import { useChallengesViewModel } from './_challenges.view-model';
 
 const SKELETON_KEYS = ['a', 'b', 'c', 'd'] as const;
 

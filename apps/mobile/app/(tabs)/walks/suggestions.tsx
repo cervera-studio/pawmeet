@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { WalkSuggestion } from '@/hooks/useWalkSuggestions';
-import { useWalkSuggestionsViewModel } from './suggestions.view-model';
+import { useWalkSuggestionsViewModel } from './_suggestions.view-model';
 
 // ── Day-of-week labels ──────────────────────────────────────────────────────
 

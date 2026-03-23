@@ -338,9 +338,9 @@ export interface ConsentState {
 }
 
 export const DEFAULT_CONSENT_STATE: ConsentState = {
-  analytics: false,
-  abTesting: false,
-  errorTracking: false,
+  analytics: true,
+  abTesting: true,
+  errorTracking: true,
   marketing: false,
   aiTraining: false,
 };

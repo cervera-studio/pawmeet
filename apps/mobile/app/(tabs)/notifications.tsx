@@ -7,7 +7,7 @@ import {
   type NotificationItem,
   TYPE_ICONS,
   useNotificationsViewModel,
-} from './notifications.view-model';
+} from './_notifications.view-model';
 
 const SKELETON_KEYS = ['a', 'b', 'c', 'd', 'e', 'f'] as const;
 

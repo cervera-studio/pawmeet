@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PostCard } from '@/components/PostCard';
-import type { HashtagPost } from './hashtag.view-model';
-import { useHashtagViewModel } from './hashtag.view-model';
+import type { HashtagPost } from './_hashtag.view-model';
+import { useHashtagViewModel } from './_hashtag.view-model';
 
 // ── Loading Skeleton ──────────────────────────────────────────────────────
 

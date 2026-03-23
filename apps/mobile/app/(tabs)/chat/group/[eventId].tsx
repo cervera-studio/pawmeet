@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
-import { useGroupChatConversationViewModel } from './[eventId].view-model';
+import { useGroupChatConversationViewModel } from './_[eventId].view-model';
 
 // ── Loading skeleton ─────────────────────────────────────────────────────────
 

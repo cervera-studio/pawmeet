@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FollowButton } from '@/components/follow-button';
 import { Avatar } from '@/components/ui/Avatar';
 import type { FollowUser } from '@/repositories/interfaces/follow-repository';
-import { useSearchUsersViewModel } from './search-users.view-model';
+import { useSearchUsersViewModel } from './_search-users.view-model';
 
 const UserRow = memo(function UserRow({
   user,

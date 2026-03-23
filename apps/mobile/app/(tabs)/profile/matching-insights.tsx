@@ -1,6 +1,6 @@
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useMatchingInsightsViewModel } from './matching-insights.view-model';
+import { useMatchingInsightsViewModel } from './_matching-insights.view-model';
 
 export default function MatchingInsightsScreen() {
   const vm = useMatchingInsightsViewModel();

@@ -12,8 +12,8 @@ import { RequireDogModal } from '@/components/RequireDogModal';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useRequireDog } from '@/hooks/useRequireDog';
 import { api } from '@/lib/trpc';
-import type { EnrichedMatch } from './matches.view-model';
-import { useMatchesViewModel } from './matches.view-model';
+import type { EnrichedMatch } from './_matches.view-model';
+import { useMatchesViewModel } from './_matches.view-model';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
 

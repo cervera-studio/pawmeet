@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogProfileCard } from '@/components/DogProfileCard';
 import { Avatar } from '@/components/ui/Avatar';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
-import { formatDogAge, useProfileViewModel } from './index.view-model';
+import { formatDogAge, useProfileViewModel } from './_index.view-model';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
 

@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MoodLogModal } from '@/components/MoodLogModal';
 import { useDogsStore } from '@/stores/dogs';
-import { useTrackingViewModel } from './tracking.view-model';
+import { useTrackingViewModel } from './_tracking.view-model';
 
 function StatBox({ label, value }: { label: string; value: string }) {
   return (

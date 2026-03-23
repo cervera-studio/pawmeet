@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { FormField } from '@/components/FormField';
 import { Button } from '@/components/ui/Button';
-import { useSafetyViewModel } from './safety.view-model';
+import { useSafetyViewModel } from './_safety.view-model';
 
 export default function SafetyModal() {
   const { t } = useTranslation();

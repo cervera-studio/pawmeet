@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import { useStoryViewersViewModel } from './story-viewers.view-model';
+import { useStoryViewersViewModel } from './_story-viewers.view-model';
 
 // ── Time formatting ─────────────────────────────────────────────────────
 

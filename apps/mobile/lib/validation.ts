@@ -8,9 +8,7 @@ export function zodToFieldErrors(error: ZodError): Record<string, string> {
     const key = String(issue.path[0]);
     if (!fieldErrors[key]) {
       const translationKey = `validation.${issue.message}`;
-      fieldErrors[key] = i18n.exists(translationKey)
-        ? i18n.t(translationKey)
-        : issue.message;
+      fieldErrors[key] = i18n.exists(translationKey) ? i18n.t(translationKey) : issue.message;
     }
   }
   return fieldErrors;

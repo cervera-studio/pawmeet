@@ -27,7 +27,7 @@ export function useRegisterViewModel() {
       return;
     }
 
-    const dobString = dateOfBirth ? dateOfBirth.toISOString().split('T')[0] ?? '' : '';
+    const dobString = dateOfBirth ? (dateOfBirth.toISOString().split('T')[0] ?? '') : '';
     const result = registerSchema.safeParse({
       displayName,
       email,

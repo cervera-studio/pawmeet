@@ -59,7 +59,8 @@
         {
           "isSdkExtensionPatched": true
         }
-      ]
+      ],
+      "expo-video"
     ],
     "extra": {
       "router": {},

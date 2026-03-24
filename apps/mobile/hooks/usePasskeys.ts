@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { logger } from '@pawmeet/utils';
+import * as LocalAuthentication from 'expo-local-authentication';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 import { create, get, isSupported } from 'react-native-passkeys';
 import { container } from 'tsyringe';
-import { storage } from '@/lib/storage';
+import { passkeyFlag, storage } from '@/lib/storage';
 import type { PasskeySummary } from '@/repositories/interfaces';
 import { ANALYTICS_SERVICE, PASSKEY_REPOSITORY } from '@/repositories/tokens';
 import { useAuthStore } from '@/stores/auth';
@@ -9,11 +12,50 @@ import { useAuthStore } from '@/stores/auth';
 const passkeyRepo = container.resolve(PASSKEY_REPOSITORY);
 const analyticsService = container.resolve(ANALYTICS_SERVICE);
 
+/** Detect biometric type label key for i18n. */
+async function detectBiometricLabelKey(): Promise<string> {
+  try {
+    const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    if (Platform.OS === 'ios') {
+      if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+        return 'auth.login.loginWithFaceId';
+      }
+      if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+        return 'auth.login.loginWithTouchId';
+      }
+    }
+    if (Platform.OS === 'android') {
+      if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+        return 'auth.login.loginWithFingerprint';
+      }
+      if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+        return 'auth.login.loginWithFaceId';
+      }
+    }
+  } catch {
+    // Fall through to generic
+  }
+  return 'auth.login.loginWithBiometrics';
+}
+
 export function usePasskeys() {
   const [passkeys, setPasskeys] = useState<PasskeySummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [hasRegisteredPasskey, setHasRegisteredPasskey] = useState(() => passkeyFlag.get());
+  const [passkeyHiddenForSession, setPasskeyHiddenForSession] = useState(false);
+  const [biometricLabelKey, setBiometricLabelKey] = useState('auth.login.loginWithBiometrics');
   const supported = isSupported();
+
+  // Detect biometric type on mount
+  useEffect(() => {
+    detectBiometricLabelKey().then(setBiometricLabelKey);
+  }, []);
+
+  const showPasskeyOnLogin = useMemo(
+    () => supported && hasRegisteredPasskey && !passkeyHiddenForSession,
+    [supported, hasRegisteredPasskey, passkeyHiddenForSession],
+  );
 
   const loadPasskeys = useCallback(async () => {
     try {
@@ -46,6 +88,8 @@ export function usePasskeys() {
           friendlyName,
         );
         await loadPasskeys();
+        passkeyFlag.set(true);
+        setHasRegisteredPasskey(true);
         analyticsService.track('passkey_registered', {});
       } catch (e) {
         const message = e instanceof Error ? e.message : '';
@@ -88,7 +132,10 @@ export function usePasskeys() {
     } catch (e) {
       const message = e instanceof Error ? e.message : '';
       if (!message.includes('cancel')) {
-        setError(message || 'Login con passkey fallito');
+        // Silently hide the passkey button for this session (e.g. new phone,
+        // credential not transferred). No user-facing error toast.
+        logger.warn('usePasskeys', 'Passkey login failed, hiding button for session', message);
+        setPasskeyHiddenForSession(true);
       }
     } finally {
       setLoading(false);
@@ -110,6 +157,9 @@ export function usePasskeys() {
     loading,
     error,
     supported,
+    showPasskeyOnLogin,
+    hasRegisteredPasskey,
+    biometricLabelKey,
     registerPasskey,
     loginWithPasskey,
     deletePasskey,

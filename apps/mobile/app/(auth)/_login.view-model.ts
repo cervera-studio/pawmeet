@@ -13,15 +13,19 @@ import {
 } from '@/lib/social-auth';
 import { zodToFieldErrors } from '@/lib/validation';
 
+type LoginStep = 'email' | 'credentials';
+
 export function useLoginViewModel() {
   const router = useRouter();
   const { login, socialLogin } = useAuth();
   const passkeys = usePasskeys();
+  const [step, setStep] = useState<LoginStep>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passkeyAttempted, setPasskeyAttempted] = useState(false);
 
   const google = useGoogleAuth();
 
@@ -60,6 +64,45 @@ export function useLoginViewModel() {
         .finally(() => setLoading(false));
     }
   }, [google.response, google.request, google.redirectUri, socialLogin]);
+
+  // Step 1: user enters email and taps "Continue"
+  // If passkey is available → auto-trigger passkey auth
+  // If not → show password field
+  const handleContinue = useCallback(async () => {
+    setErrors({});
+    setApiError('');
+
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setErrors({ email: i18n.t('validation.required') });
+      return;
+    }
+
+    // If user has a registered passkey, try it automatically
+    if (passkeys.showPasskeyOnLogin && !passkeyAttempted) {
+      setLoading(true);
+      setPasskeyAttempted(true);
+      try {
+        await passkeys.loginWithPasskey(trimmed);
+        return; // success — auth hook will navigate
+      } catch {
+        // Passkey failed (cancelled, new device, etc.) — fall through to password
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Show password step
+    setStep('credentials');
+  }, [email, passkeys, passkeyAttempted]);
+
+  const handleBack = useCallback(() => {
+    setStep('email');
+    setPassword('');
+    setErrors({});
+    setApiError('');
+    setPasskeyAttempted(false);
+  }, []);
 
   const handleLogin = useCallback(async () => {
     setErrors({});
@@ -106,8 +149,6 @@ export function useLoginViewModel() {
     setLoading(true);
     try {
       await passkeys.loginWithPasskey(email || undefined);
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('auth.login.passkeyError'));
     } finally {
       setLoading(false);
     }
@@ -118,6 +159,12 @@ export function useLoginViewModel() {
   }, [router]);
 
   return {
+    // Step state
+    step,
+    handleContinue,
+    handleBack,
+
+    // Form fields
     email,
     setEmail,
     password,
@@ -125,12 +172,14 @@ export function useLoginViewModel() {
     errors,
     apiError,
     loading,
+
+    // Actions
     handleLogin,
     handleGoogleLogin,
     handleAppleLogin,
-    handlePasskeyLogin,
+
+    // Feature flags
     showAppleLogin: Platform.OS === 'ios',
-    showPasskeyLogin: passkeys.supported,
     googleReady: google.request !== null,
     navigateToRegister,
   };

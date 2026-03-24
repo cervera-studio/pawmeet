@@ -7,6 +7,7 @@ import type { StateStorage } from 'zustand/middleware';
 const TOKEN_KEY = 'pawmeet_auth_token';
 const REFRESH_TOKEN_KEY = 'pawmeet_refresh_token';
 const MMKV_ENCRYPTION_KEY = 'pawmeet_mmkv_enc_key';
+const HAS_REGISTERED_PASSKEY_KEY = 'has_registered_passkey';
 
 // ---------------------------------------------------------------------------
 // MMKV — fast synchronous key-value storage for caching & Zustand persistence
@@ -41,6 +42,19 @@ export const cache = {
   },
   delete(key: string): void {
     mmkv.remove(key);
+  },
+};
+
+/** Passkey registration flag — synchronous MMKV helpers. */
+export const passkeyFlag = {
+  get(): boolean {
+    return mmkv.getBoolean(HAS_REGISTERED_PASSKEY_KEY) === true;
+  },
+  set(value: boolean): void {
+    mmkv.set(HAS_REGISTERED_PASSKEY_KEY, value);
+  },
+  clear(): void {
+    mmkv.remove(HAS_REGISTERED_PASSKEY_KEY);
   },
 };
 

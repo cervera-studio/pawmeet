@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { useCallback } from 'react';
 import { container } from 'tsyringe';
 import { wipeDatabase } from '@/lib/database';
-import { storage } from '@/lib/storage';
+import { passkeyFlag, storage } from '@/lib/storage';
 import type { AuthResult } from '@/repositories/interfaces/auth-repository';
 import { ANALYTICS_SERVICE, AUTH_REPOSITORY } from '@/repositories/tokens';
 import { stopSyncEngine } from '@/services/sync-engine';
@@ -117,6 +117,7 @@ export function useAuth() {
     }
 
     await storage.clear();
+    passkeyFlag.clear();
     useLocationStore.getState().clearCoordinates();
     storeLogout();
   }, [storeLogout]);

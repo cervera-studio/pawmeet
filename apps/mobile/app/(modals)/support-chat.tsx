@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
-import { useSupportChatViewModel } from './_support-chat.view-model';
+import { useSupportChatViewModel } from './_vm/support-chat.view-model';
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);

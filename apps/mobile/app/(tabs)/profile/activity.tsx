@@ -5,7 +5,7 @@ import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { useHealthConnect } from '@/hooks/useHealthConnect';
-import { useActivityViewModel } from './_activity.view-model';
+import { useActivityViewModel } from './_vm/activity.view-model';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 

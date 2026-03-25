@@ -1,13 +1,13 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { useEffect } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RequireDogModal } from '@/components/RequireDogModal';
 import { Avatar } from '@/components/ui/Avatar';
 import { useRequireDog } from '@/hooks/useRequireDog';
-import type { Conversation, GroupConversation, Tab } from './_index.view-model';
-import { TABS, useChatListViewModel } from './_index.view-model';
+import type { Conversation, EnrichedMatch, GroupConversation, Tab } from './_vm/index.view-model';
+import { TABS, useChatListViewModel } from './_vm/index.view-model';
 
 // ── Segment control ──────────────────────────────────────────────────────────
 
@@ -171,6 +171,46 @@ function GroupChatRow({
   );
 }
 
+// ── Matches rail (horizontal, like Instagram DM stories) ────────────────────
+
+function MatchesRail({
+  matches,
+  onPress,
+}: {
+  matches: EnrichedMatch[];
+  onPress: (matchId: string) => void;
+}) {
+  if (matches.length === 0) return null;
+
+  return (
+    <View className="border-b border-gray-100 dark:border-[#38383A] py-3">
+      <Text className="mb-2 px-4 text-xs font-semibold uppercase text-gray-400 dark:text-neutral-500">
+        Nuovi match
+      </Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerClassName="px-4 gap-4"
+      >
+        {matches.map((match) => (
+          <Pressable key={match.id} onPress={() => onPress(match.id)} className="items-center">
+            <View className="rounded-full border-2 border-primary p-0.5">
+              <Avatar name={match.otherDog.name} size="md" />
+            </View>
+            <Text
+              className="mt-1 text-xs font-medium text-gray-700 dark:text-[#D1D1D6]"
+              numberOfLines={1}
+              style={{ maxWidth: 64 }}
+            >
+              {match.otherDog.name}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
 // ── Empty states ─────────────────────────────────────────────────────────────
 
 function MessagesEmptyState() {
@@ -213,6 +253,8 @@ export default function ChatListScreen() {
       <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
         <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Chat</Text>
       </View>
+
+      <MatchesRail matches={vm.newMatches} onPress={vm.navigateToChat} />
 
       <SegmentControl activeTab={vm.activeTab} onTabChange={vm.setActiveTab} />
 

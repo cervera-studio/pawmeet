@@ -5,7 +5,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } fro
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
 import { Button } from '@/components/ui/Button';
-import { useRegisterViewModel } from './_register.view-model';
+import { useRegisterViewModel } from './_vm/register.view-model';
 
 export default function RegisterScreen() {
   const { t } = useTranslation();

@@ -17,7 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChipSelect } from '@/components/ChipSelect';
 import { Button } from '@/components/ui/Button';
-import { useSupportViewModel } from './_support.view-model';
+import { useSupportViewModel } from './_vm/support.view-model';
 
 const STATUS_COLORS: Record<SupportTicketStatus, { bg: string; text: string }> = {
   open: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300' },

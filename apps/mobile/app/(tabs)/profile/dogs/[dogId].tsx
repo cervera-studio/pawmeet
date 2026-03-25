@@ -8,7 +8,7 @@ import { BadgeDisplay } from '@/components/BadgeDisplay';
 import { DogReviews } from '@/components/DogReviews';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { label, MAX_PHOTOS, useDogDetailViewModel } from './_[dogId].view-model';
+import { label, MAX_PHOTOS, useDogDetailViewModel } from './_vm/[dogId].view-model';
 
 type Dog = RouterOutput['dogs']['get']['dog'];
 type DogPhoto = RouterOutput['dogs']['get']['photos'][number];

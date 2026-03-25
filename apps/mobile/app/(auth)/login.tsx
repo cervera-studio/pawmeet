@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { FormField } from '@/components/FormField';
 import { Button } from '@/components/ui/Button';
-import { useLoginViewModel } from './_login.view-model';
+import { useLoginViewModel } from './_vm/login.view-model';
 
 function AppleIcon() {
   return (
@@ -126,9 +126,7 @@ export default function LoginScreen() {
             <>
               {/* Step 2: Password (email shown as context, editable via back) */}
               <Pressable onPress={vm.handleBack} className="mb-4">
-                <Text className="text-base text-primary font-medium">
-                  ← {vm.email}
-                </Text>
+                <Text className="text-base text-primary font-medium">← {vm.email}</Text>
               </Pressable>
 
               <FormField
@@ -142,9 +140,7 @@ export default function LoginScreen() {
               />
 
               <Pressable className="mb-8 self-end">
-                <Text className="text-sm text-primary">
-                  {t('auth.login.forgotPassword')}
-                </Text>
+                <Text className="text-sm text-primary">{t('auth.login.forgotPassword')}</Text>
               </Pressable>
 
               <Button

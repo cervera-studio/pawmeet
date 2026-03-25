@@ -2,7 +2,7 @@ import type { LeaderboardEntry } from '@pawmeet/types';
 import { Stack } from 'expo-router';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLeaderboardViewModel } from './_leaderboard.view-model';
+import { useLeaderboardViewModel } from './_vm/leaderboard.view-model';
 
 const SKELETON_KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 

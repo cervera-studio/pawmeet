@@ -11,7 +11,7 @@ import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { syncSingleConsentToApi } from '@/lib/consent-sync';
 import { useConsentStore } from '@/stores/consent';
 import { useSettingsStore } from '@/stores/settings';
-import { useSettingsViewModel } from './_settings.view-model';
+import { useSettingsViewModel } from './_vm/settings.view-model';
 
 const LANGUAGES = [
   { code: 'it', label: 'Italiano' },

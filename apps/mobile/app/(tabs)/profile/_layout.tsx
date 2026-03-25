@@ -109,6 +109,14 @@ export default function ProfileLayout() {
           headerBackTitle: 'Dettaglio',
         }}
       />
+      <Stack.Screen
+        name="notifications"
+        options={{
+          headerShown: true,
+          title: 'Notifiche',
+          headerBackTitle: 'Profilo',
+        }}
+      />
     </Stack>
   );
 }

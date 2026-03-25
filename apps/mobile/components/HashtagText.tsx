@@ -24,7 +24,7 @@ export const HashtagText = memo(function HashtagText({
 
   const handleHashtagPress = useCallback(
     (hashtag: string) => {
-      router.push(`/(tabs)/feed/hashtag?hashtag=${encodeURIComponent(hashtag)}`);
+      router.push(`/(tabs)/discover/feed/hashtag?hashtag=${encodeURIComponent(hashtag)}`);
     },
     [router],
   );
@@ -53,7 +53,7 @@ export const HashtagText = memo(function HashtagText({
           <Text
             key={part.text}
             className="font-semibold text-emerald-700 dark:text-emerald-400"
-            onPress={() => handleHashtagPress(part.tag!)}
+            onPress={() => handleHashtagPress(part.tag ?? '')}
           >
             {part.text}
           </Text>

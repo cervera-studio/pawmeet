@@ -48,17 +48,17 @@ export function usePushNotifications() {
       const data = response.notification.request.content.data;
 
       if (data?.type === 'walk_overdue' && data?.walkId) {
-        router.push('/(tabs)/walks');
+        router.push('/(tabs)/map/walks');
         return;
       }
 
       if (data?.type === 'walk_sos' && data?.walkId) {
-        router.push('/(tabs)/walks');
+        router.push('/(tabs)/map/walks');
         return;
       }
 
       if (data?.type === 'event_reminder' && data?.eventId) {
-        router.push(`/(tabs)/events/${data.eventId}`);
+        router.push(`/(tabs)/map/events/${data.eventId}`);
         return;
       }
 

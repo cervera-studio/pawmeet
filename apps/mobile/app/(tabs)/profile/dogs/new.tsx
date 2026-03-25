@@ -26,7 +26,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChipSelect } from '@/components/ChipSelect';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { useNewDogViewModel } from './_new.view-model';
+import { useNewDogViewModel } from './_vm/new.view-model';
 
 // -- Step sub-components --
 

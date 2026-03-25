@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
-import { usePrivacyViewModel } from './_privacy.view-model';
+import { usePrivacyViewModel } from './_vm/privacy.view-model';
 
 export default function PrivacyModal() {
   const { t } = useTranslation();

@@ -32,7 +32,7 @@ export const TrendingHashtags = memo(function TrendingHashtags() {
 
   const navigateToHashtag = useCallback(
     (hashtag: string) => {
-      router.push(`/(tabs)/feed/hashtag?hashtag=${encodeURIComponent(hashtag)}`);
+      router.push(`/(tabs)/discover/feed/hashtag?hashtag=${encodeURIComponent(hashtag)}`);
     },
     [router],
   );

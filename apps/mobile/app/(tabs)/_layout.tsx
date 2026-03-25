@@ -26,7 +26,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="discover"
         options={{
           title: t('tabs.discover'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>🐾</Text>,
@@ -40,20 +40,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="feed"
-        options={{
-          title: t('tabs.feed'),
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>📸</Text>,
-        }}
-      />
-      <Tabs.Screen
-        name="matches"
-        options={{
-          title: t('tabs.match'),
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>💛</Text>,
-        }}
-      />
-      <Tabs.Screen
         name="chat"
         options={{
           title: t('tabs.chat'),
@@ -62,31 +48,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="events"
-        options={{
-          title: t('tabs.events'),
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>📅</Text>,
-        }}
-      />
-      <Tabs.Screen
-        name="walks"
-        options={{
-          title: t('tabs.walks'),
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>🗓️</Text>,
-        }}
-      />
-      <Tabs.Screen
         name="profile"
         options={{
           title: t('tabs.profile'),
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>👤</Text>,
-        }}
-      />
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          href: null,
-          headerShown: false,
         }}
       />
     </Tabs>

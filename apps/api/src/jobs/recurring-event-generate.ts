@@ -2,7 +2,10 @@ import { GROUP_EVENT_OCCURRENCES_AHEAD } from '@pawmeet/config';
 import { GROUP_EVENT_STATUS } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { RRule } from 'rrule';
+import * as rruleLib from 'rrule';
+
+const RRule = ('default' in rruleLib ? (rruleLib.default as typeof rruleLib) : rruleLib).RRule;
+
 import type { GroupEventRecurrenceRepository, GroupEventRepository } from '../ports/index.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
 

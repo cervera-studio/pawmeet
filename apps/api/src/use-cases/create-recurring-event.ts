@@ -10,7 +10,10 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
-import { RRule } from 'rrule';
+import * as rruleLib from 'rrule';
+
+const RRule = ('default' in rruleLib ? (rruleLib.default as typeof rruleLib) : rruleLib).RRule;
+
 import type {
   DogRepository,
   GroupEventParticipationRepository,

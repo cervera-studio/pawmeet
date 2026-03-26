@@ -84,7 +84,12 @@
     "settingsRateLimits": "Rate Limit",
     "settingsMfa": "Autenticazione a due fattori",
     "support": "Supporto",
-    "waitlist": "Waitlist"
+    "waitlist": "Waitlist",
+    "sectionOperations": "Operazioni",
+    "sectionPeople": "Persone",
+    "sectionAnimals": "Animali",
+    "sectionCommunity": "Community",
+    "sectionSystem": "Sistema"
   },
   "header": {
     "searchPlaceholder": "Cerca utenti, cani, segnalazioni...",

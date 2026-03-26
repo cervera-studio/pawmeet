@@ -1,14 +1,24 @@
 import { waitlistSubscribers } from '@pawmeet/db';
-import { and, count, desc, eq, gte, ilike, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, ilike } from 'drizzle-orm';
 import { z } from 'zod';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
-import { requireRole, AdminRole } from '../../lib/admin-permissions.js';
+import { AdminRole, requireRole } from '../../lib/admin-permissions.js';
 import { db } from '../../lib/db.js';
 import { paginate } from '../../lib/pagination.js';
 import { trackEvent } from '../../lib/track-event.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
 import { router } from '../trpc.js';
 import { createAdminProcedure } from './admin-procedure.js';
+
+function getWaitlistOrderBy(sortBy?: string, sortOrder?: string) {
+  if (sortBy === 'email') {
+    return sortOrder === 'asc' ? waitlistSubscribers.email : desc(waitlistSubscribers.email);
+  }
+  if (sortBy === 'locale') {
+    return sortOrder === 'asc' ? waitlistSubscribers.locale : desc(waitlistSubscribers.locale);
+  }
+  return desc(waitlistSubscribers.subscribedAt);
+}
 
 interface WaitlistRouterDeps {
   auditLogRepo: AuditLogRepository;
@@ -49,17 +59,7 @@ export function createAdminWaitlistRouter(deps: WaitlistRouterDeps) {
             })
             .from(waitlistSubscribers)
             .where(where)
-            .orderBy(
-              input.sortBy === 'email'
-                ? input.sortOrder === 'asc'
-                  ? waitlistSubscribers.email
-                  : desc(waitlistSubscribers.email)
-                : input.sortBy === 'locale'
-                  ? input.sortOrder === 'asc'
-                    ? waitlistSubscribers.locale
-                    : desc(waitlistSubscribers.locale)
-                  : desc(waitlistSubscribers.subscribedAt),
-            )
+            .orderBy(getWaitlistOrderBy(input.sortBy, input.sortOrder))
             .limit(input.pageSize)
             .offset((input.page - 1) * input.pageSize),
           db.select({ count: count() }).from(waitlistSubscribers).where(where),
@@ -94,15 +94,11 @@ export function createAdminWaitlistRouter(deps: WaitlistRouterDeps) {
         db
           .select({ count: count() })
           .from(waitlistSubscribers)
-          .where(
-            and(activeCondition, gte(waitlistSubscribers.subscribedAt, startOfWeek)),
-          ),
+          .where(and(activeCondition, gte(waitlistSubscribers.subscribedAt, startOfWeek))),
         db
           .select({ count: count() })
           .from(waitlistSubscribers)
-          .where(
-            and(activeCondition, gte(waitlistSubscribers.subscribedAt, startOfMonth)),
-          ),
+          .where(and(activeCondition, gte(waitlistSubscribers.subscribedAt, startOfMonth))),
       ]);
 
       return {

@@ -84,7 +84,12 @@
     "settingsRateLimits": "Rate Limits",
     "settingsMfa": "Two-Factor Auth",
     "support": "Support",
-    "waitlist": "Waitlist"
+    "waitlist": "Waitlist",
+    "sectionOperations": "Operations",
+    "sectionPeople": "People",
+    "sectionAnimals": "Animals",
+    "sectionCommunity": "Community",
+    "sectionSystem": "System"
   },
   "header": {
     "searchPlaceholder": "Search users, dogs, reports...",

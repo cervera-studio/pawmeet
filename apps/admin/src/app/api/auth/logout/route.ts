@@ -14,6 +14,7 @@ export async function POST() {
       await fetch(`${API_URL}/admin/auth/logout`, {
         method: 'POST',
         headers: {
+          'X-Requested-With': 'XMLHttpRequest',
           Cookie: `admin_refresh_token=${refreshToken}`,
         },
       });

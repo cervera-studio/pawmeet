@@ -84,7 +84,12 @@
     "settingsRateLimits": "Limite de Rata",
     "settingsMfa": "Autentificare in doi pasi",
     "support": "Suport",
-    "waitlist": "Lista de asteptare"
+    "waitlist": "Lista de asteptare",
+    "sectionOperations": "Operațiuni",
+    "sectionPeople": "Persoane",
+    "sectionAnimals": "Animale",
+    "sectionCommunity": "Comunitate",
+    "sectionSystem": "Sistem"
   },
   "header": {
     "searchPlaceholder": "Cauta utilizatori, caini, raportari...",

@@ -19,6 +19,7 @@ export async function POST() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
       Cookie: `admin_refresh_token=${refreshToken}`,
     },
   });

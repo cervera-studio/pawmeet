@@ -84,7 +84,12 @@
     "settingsRateLimits": "Límites de Tasa",
     "settingsMfa": "Autenticación de dos factores",
     "support": "Soporte",
-    "waitlist": "Lista de espera"
+    "waitlist": "Lista de espera",
+    "sectionOperations": "Operaciones",
+    "sectionPeople": "Personas",
+    "sectionAnimals": "Animales",
+    "sectionCommunity": "Comunidad",
+    "sectionSystem": "Sistema"
   },
   "header": {
     "searchPlaceholder": "Buscar usuarios, perros, reportes...",

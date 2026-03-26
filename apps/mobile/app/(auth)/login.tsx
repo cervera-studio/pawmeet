@@ -79,7 +79,7 @@ export default function LoginScreen() {
                 spacingClassName="mb-2"
               />
 
-              <Pressable className="mb-8 self-end">
+              <Pressable onPress={() => router.push('/(auth)/forgot-password')} className="mb-8 self-end">
                 <Text className="text-sm text-primary">{t('auth.login.forgotPassword')}</Text>
               </Pressable>
 

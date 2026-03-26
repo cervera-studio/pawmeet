@@ -144,16 +144,6 @@ export function useLoginViewModel() {
     }
   }, [handleSocialAuth]);
 
-  const _handlePasskeyLogin = useCallback(async () => {
-    setApiError('');
-    setLoading(true);
-    try {
-      await passkeys.loginWithPasskey(email || undefined);
-    } finally {
-      setLoading(false);
-    }
-  }, [passkeys, email]);
-
   const navigateToRegister = useCallback(() => {
     router.replace('/(auth)/register');
   }, [router]);

@@ -83,7 +83,8 @@
     "settingsRoles": "Roles y Permisos",
     "settingsRateLimits": "Límites de Tasa",
     "settingsMfa": "Autenticación de dos factores",
-    "support": "Soporte"
+    "support": "Soporte",
+    "waitlist": "Lista de espera"
   },
   "header": {
     "searchPlaceholder": "Buscar usuarios, perros, reportes...",
@@ -1221,6 +1222,27 @@
     },
     "auditLog": {
       "loadError": "Error al cargar el registro de auditoría"
+    },
+    "waitlist": {
+      "loadError": "Error al cargar la lista de espera",
+      "removeError": "Error al eliminar el contacto",
+      "removed": "Contacto eliminado de la lista de espera"
+    }
+  },
+  "waitlist": {
+    "title": "Lista de espera",
+    "subtitle": "Gestionar suscriptores de la lista de espera",
+    "searchPlaceholder": "Buscar por email...",
+    "columns": {
+      "email": "Email",
+      "locale": "Idioma",
+      "subscribedAt": "Suscrito el",
+      "source": "Fuente"
+    },
+    "stats": {
+      "total": "Suscriptores totales",
+      "thisWeek": "Esta semana",
+      "thisMonth": "Este mes"
     }
   }
 }

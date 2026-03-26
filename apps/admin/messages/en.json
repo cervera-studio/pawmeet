@@ -83,7 +83,8 @@
     "settingsRoles": "Roles & Permissions",
     "settingsRateLimits": "Rate Limits",
     "settingsMfa": "Two-Factor Auth",
-    "support": "Support"
+    "support": "Support",
+    "waitlist": "Waitlist"
   },
   "header": {
     "searchPlaceholder": "Search users, dogs, reports...",
@@ -1223,6 +1224,27 @@
     },
     "auditLog": {
       "loadError": "Error loading audit log"
+    },
+    "waitlist": {
+      "loadError": "Error loading waitlist",
+      "removeError": "Error removing contact",
+      "removed": "Contact removed from waitlist"
+    }
+  },
+  "waitlist": {
+    "title": "Waitlist",
+    "subtitle": "Manage waitlist subscribers",
+    "searchPlaceholder": "Search by email...",
+    "columns": {
+      "email": "Email",
+      "locale": "Locale",
+      "subscribedAt": "Subscribed on",
+      "source": "Source"
+    },
+    "stats": {
+      "total": "Total subscribers",
+      "thisWeek": "This week",
+      "thisMonth": "This month"
     }
   }
 }

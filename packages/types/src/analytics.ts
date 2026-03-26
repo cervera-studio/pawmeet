@@ -277,6 +277,7 @@ export interface AnalyticsEventMap {
   admin_challenge_created: { challengeId: string; type: string };
   admin_challenge_updated: { challengeId: string };
   admin_gdpr_export_requested: { targetUserId: string };
+  admin_waitlist_removed: { waitlistId: string };
 
   // Support
   support_ticket_created: { category: string; source: 'mobile' | 'web' };

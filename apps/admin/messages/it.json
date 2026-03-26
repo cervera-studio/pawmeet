@@ -83,7 +83,8 @@
     "settingsRoles": "Ruoli e Permessi",
     "settingsRateLimits": "Rate Limit",
     "settingsMfa": "Autenticazione a due fattori",
-    "support": "Supporto"
+    "support": "Supporto",
+    "waitlist": "Waitlist"
   },
   "header": {
     "searchPlaceholder": "Cerca utenti, cani, segnalazioni...",
@@ -1223,6 +1224,27 @@
     },
     "auditLog": {
       "loadError": "Errore nel caricamento del registro"
+    },
+    "waitlist": {
+      "loadError": "Errore nel caricamento della waitlist",
+      "removeError": "Errore nella rimozione del contatto",
+      "removed": "Contatto rimosso dalla waitlist"
+    }
+  },
+  "waitlist": {
+    "title": "Waitlist",
+    "subtitle": "Gestisci gli iscritti alla waitlist",
+    "searchPlaceholder": "Cerca per email...",
+    "columns": {
+      "email": "Email",
+      "locale": "Lingua",
+      "subscribedAt": "Iscritto il",
+      "source": "Fonte"
+    },
+    "stats": {
+      "total": "Iscritti totali",
+      "thisWeek": "Questa settimana",
+      "thisMonth": "Questo mese"
     }
   }
 }

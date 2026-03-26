@@ -83,7 +83,8 @@
     "settingsRoles": "Roluri si Permisiuni",
     "settingsRateLimits": "Limite de Rata",
     "settingsMfa": "Autentificare in doi pasi",
-    "support": "Suport"
+    "support": "Suport",
+    "waitlist": "Lista de asteptare"
   },
   "header": {
     "searchPlaceholder": "Cauta utilizatori, caini, raportari...",
@@ -1221,6 +1222,27 @@
     },
     "auditLog": {
       "loadError": "Eroare la incarcarea registrului"
+    },
+    "waitlist": {
+      "loadError": "Eroare la incarcarea listei de asteptare",
+      "removeError": "Eroare la eliminarea contactului",
+      "removed": "Contact eliminat din lista de asteptare"
+    }
+  },
+  "waitlist": {
+    "title": "Lista de asteptare",
+    "subtitle": "Gestioneaza abonatii listei de asteptare",
+    "searchPlaceholder": "Cauta dupa email...",
+    "columns": {
+      "email": "Email",
+      "locale": "Limba",
+      "subscribedAt": "Abonat pe",
+      "source": "Sursa"
+    },
+    "stats": {
+      "total": "Total abonati",
+      "thisWeek": "Saptamana aceasta",
+      "thisMonth": "Luna aceasta"
     }
   }
 }

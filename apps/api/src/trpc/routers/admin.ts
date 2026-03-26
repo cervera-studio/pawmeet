@@ -10,6 +10,7 @@ import { createAdminGamificationRouter } from './admin-gamification.js';
 import { createAdminModerationRouter } from './admin-moderation.js';
 import { createAdminSettingsRouter } from './admin-settings.js';
 import { createAdminUsersRouter } from './admin-users.js';
+import { createAdminWaitlistRouter } from './admin-waitlist.js';
 
 // Re-export PersistedSettings so existing imports keep working
 export type { PersistedSettings } from './admin-settings.js';
@@ -51,6 +52,7 @@ export function createAdminRouter(deps: AdminRouterDeps) {
   const moderation = createAdminModerationRouter({ adminDataRepo, auditLogRepo });
   const settings = createAdminSettingsRouter({ auditLogRepo });
   const gamification = createAdminGamificationRouter({ auditLogRepo, gamificationRepo });
+  const waitlist = createAdminWaitlistRouter({ auditLogRepo });
 
   return router({
     ...dashboard._def.procedures,
@@ -58,5 +60,6 @@ export function createAdminRouter(deps: AdminRouterDeps) {
     ...moderation._def.procedures,
     ...settings._def.procedures,
     ...gamification._def.procedures,
+    ...waitlist._def.procedures,
   });
 }

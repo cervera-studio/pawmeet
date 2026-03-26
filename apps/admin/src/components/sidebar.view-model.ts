@@ -11,6 +11,7 @@ import {
   CalendarIcon,
   LayoutDashboardIcon,
   ListIcon,
+  MailIcon,
   MessageCircleIcon,
   PawPrintIcon,
   ScrollTextIcon,
@@ -69,6 +70,7 @@ function getNavigation(t: ReturnType<typeof useTranslations<'nav'>>) {
     { name: t('notifications'), href: '/notifications', icon: BellIcon },
     { name: t('support'), href: '/support', icon: MessageCircleIcon },
     { name: t('accountDeletions'), href: '/account-deletions', icon: UserXIcon },
+    { name: t('waitlist'), href: '/waitlist', icon: MailIcon },
     {
       name: t('settings'),
       href: '/settings',

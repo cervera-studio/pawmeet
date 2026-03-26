@@ -49,11 +49,11 @@ function MessageBubble({
     >
       <div className="mb-1 flex items-center gap-2">
         <span className="text-xs font-semibold text-neutral-700">
-          {isSystem
-            ? t('systemMessage')
-            : isInternal
-              ? t('internalNote')
-              : (message.senderId ?? message.senderType)}
+          {(() => {
+            if (isSystem) return t('systemMessage');
+            if (isInternal) return t('internalNote');
+            return message.senderId ?? message.senderType;
+          })()}
         </span>
         <span className="text-xs text-neutral-400">{formatDateTime(message.createdAt)}</span>
         {isInternal ? (

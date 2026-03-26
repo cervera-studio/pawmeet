@@ -3,7 +3,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, useColorScheme, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormField } from '@/components/FormField';
 import { Button } from '@/components/ui/Button';
@@ -122,7 +130,9 @@ export default function RegisterEmailScreen() {
 
             <Button
               onPress={vm.handleRegister}
-              label={vm.loading ? t('auth.register.registering') : t('auth.register.registerButton')}
+              label={
+                vm.loading ? t('auth.register.registering') : t('auth.register.registerButton')
+              }
               disabled={vm.loading}
             />
 

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -160,11 +161,12 @@ export function MfaSettings() {
 
             {/* QR code via Google Charts API (no extra dependency) */}
             <div className="flex justify-center">
-              <img
+              <Image
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(setupData.uri)}`}
                 alt="TOTP QR Code"
                 width={200}
                 height={200}
+                unoptimized
                 className="rounded-lg border border-neutral-200"
               />
             </div>

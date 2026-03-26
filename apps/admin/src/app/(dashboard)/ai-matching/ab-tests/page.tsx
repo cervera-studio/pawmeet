@@ -61,6 +61,7 @@ export default async function AbTestsPage({ searchParams }: AbTestsPageProps) {
   // Derive the earliest date from time series data
   const earliestDate =
     data.timeSeries.length > 0
+      // biome-ignore lint/style/noNonNullAssertion: length check above guarantees [0] exists
       ? new Date(data.timeSeries[0]!.date).toLocaleDateString('it-IT', {
           day: '2-digit',
           month: '2-digit',

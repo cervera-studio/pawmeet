@@ -82,7 +82,9 @@ jobs:
       - run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Install Chrome for Puppeteer
-        run: npx puppeteer browsers install chrome
+        uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
 
       - name: Build web
         run: pnpm --filter @pawmeet/web build

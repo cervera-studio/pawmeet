@@ -14,18 +14,18 @@
   },
   "hero": {
     "eyebrow": "Lancio Giugno 2026",
-    "headlinePart1": "Trova il compagno",
-    "headlinePart2": "di passeggiata",
-    "headlineHighlight": "perfetto",
-    "subtitle": "Connettiti con altri proprietari nella tua zona. Organizza passeggiate e rendi ogni uscita un'avventura.",
+    "headlinePart1": "L'app per passeggiare",
+    "headlinePart2": "col tuo cane,",
+    "headlineHighlight": "finalmente.",
+    "subtitle": "Connettiti con altri proprietari nella tua zona. Organizza passeggiate, trova amici per il tuo cane e rendi ogni uscita un'avventura.",
     "ctaPrimary": "Unisciti alla waitlist",
     "ctaSecondary": "Scopri di più",
     "ctaHref": "/waitlist",
     "ctaSecondaryHref": "#come-funziona"
   },
   "features": {
-    "heading": "Tutto quello che ti serve",
-    "description": "Funzionalita pensate per rendere ogni passeggiata un'esperienza migliore.",
+    "heading": "Passeggiare con il cane non è mai stato così bello",
+    "description": "Ogni funzionalità di PawMeet è pensata per trasformare la passeggiata quotidiana in un momento da ricordare.",
     "comingSoonLabel": "Presto",
     "items": {
       "smartMatch": {
@@ -55,8 +55,8 @@
     }
   },
   "steps": {
-    "heading": "Come funziona",
-    "description": "Tre semplici passi per iniziare a passeggiare in compagnia.",
+    "heading": "Come funziona l'app",
+    "description": "Tre semplici passi per trovare amici per la passeggiata del tuo cane.",
     "stepLabel": "Passo",
     "sectionId": "come-funziona",
     "items": {
@@ -75,8 +75,8 @@
     }
   },
   "downloadCta": {
-    "heading": "Pronto a passeggiare?",
-    "description": "Scarica l'app e unisciti a migliaia di proprietari di cani che hanno gia trovato i loro compagni di passeggiata.",
+    "heading": "Pronto a trovare il compagno di passeggiata del tuo cane?",
+    "description": "Scarica l'app e unisciti a migliaia di proprietari di cani che hanno già trovato i loro compagni di passeggiata.",
     "appStoreLabel": "Scarica su",
     "googlePlayLabel": "Disponibile su",
     "comingSoon": "Disponibile a breve su iOS e Android."
@@ -120,7 +120,7 @@
     "directEmail": "Puoi anche scriverci direttamente a"
   },
   "footer": {
-    "tagline": "La community per chi ama passeggiare con il proprio cane. Trova compagni di passeggiata compatibili nella tua zona.",
+    "tagline": "La community per chi ama passeggiare con il proprio cane. Trova amici per il tuo cane e compagni di passeggiata compatibili, vicino a te.",
     "exploreHeading": "Esplora",
     "legalHeading": "Legale",
     "copyright": "Cervera Studio",
@@ -128,8 +128,8 @@
     "termsLabel": "Termini e Condizioni"
   },
   "meta": {
-    "homeTitle": "App per passeggiare con il cane in compagnia",
-    "homeDescription": "PawMeet trova compagni di passeggiata compatibili per il tuo cane in base a taglia, energia e temperamento. Unisciti a 1.200+ proprietari in Italia.",
+    "homeTitle": "App passeggiata cani — PawMeet",
+    "homeDescription": "Trova il compagno di passeggiata ideale per il tuo amico a quattro zampe. PawMeet abbina i cani per carattere, taglia ed energia. Iscriviti alla waitlist.",
     "aboutTitle": "Chi siamo — Il team di PawMeet",
     "aboutDescription": "Siamo proprietari di cani che hanno creato PawMeet per trasformare la passeggiata quotidiana in un momento di socializzazione. Scopri la nostra missione.",
     "blogTitle": "Blog — Guide e consigli per proprietari di cani",

@@ -14,18 +14,18 @@
   },
   "hero": {
     "eyebrow": "Launching June 2026",
-    "headlinePart1": "Find the perfect",
-    "headlinePart2": "walking",
-    "headlineHighlight": "companion",
-    "subtitle": "Connect with other dog owners in your area. Organize walks and turn every outing into an adventure.",
+    "headlinePart1": "The app to walk",
+    "headlinePart2": "with your dog,",
+    "headlineHighlight": "finally.",
+    "subtitle": "Connect with other dog owners in your area. Organize walks, find friends for your dog, and turn every outing into an adventure.",
     "ctaPrimary": "Join the waitlist",
     "ctaSecondary": "Learn more",
     "ctaHref": "/en/waitlist",
     "ctaSecondaryHref": "#how-it-works"
   },
   "features": {
-    "heading": "Everything you need",
-    "description": "Features designed to make every walk a better experience.",
+    "heading": "Walking your dog has never felt this good",
+    "description": "Every feature in PawMeet is designed to turn the daily walk into something worth remembering.",
     "comingSoonLabel": "Soon",
     "items": {
       "smartMatch": {
@@ -55,8 +55,8 @@
     }
   },
   "steps": {
-    "heading": "How it works",
-    "description": "Three simple steps to start walking together.",
+    "heading": "How the app works",
+    "description": "Three simple steps to find the perfect walking companions for your dog.",
     "stepLabel": "Step",
     "sectionId": "how-it-works",
     "items": {
@@ -75,7 +75,7 @@
     }
   },
   "downloadCta": {
-    "heading": "Ready to walk?",
+    "heading": "Ready to find your dog's perfect walking companion?",
     "description": "Download the app and join thousands of dog owners who have already found their walking companions.",
     "appStoreLabel": "Download on",
     "googlePlayLabel": "Get it on",
@@ -120,7 +120,7 @@
     "directEmail": "You can also write to us directly at"
   },
   "footer": {
-    "tagline": "The community for dog lovers who enjoy walking with their furry friends. Find compatible walking companions in your area.",
+    "tagline": "The community for dog owners who love walking together. Find compatible walking companions for your dog, right in your neighborhood.",
     "exploreHeading": "Explore",
     "legalHeading": "Legal",
     "copyright": "Cervera Studio",
@@ -128,8 +128,8 @@
     "termsLabel": "Terms & Conditions"
   },
   "meta": {
-    "homeTitle": "Dog walking companion app — Find your match",
-    "homeDescription": "PawMeet matches your dog with compatible walking companions by size, energy and temperament. Join 1,200+ dog owners already waiting.",
+    "homeTitle": "Dog Walking App — PawMeet",
+    "homeDescription": "Find the perfect walking companion for your four-legged friend. PawMeet matches dogs by personality, size, and energy. Join the waitlist.",
     "aboutTitle": "About us — The PawMeet team",
     "aboutDescription": "We are dog owners who built PawMeet to turn the daily walk into a social experience. Discover our mission.",
     "blogTitle": "Blog — Tips and guides for dog owners",

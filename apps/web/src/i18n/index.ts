@@ -1,4 +1,4 @@
-import { LOCALE_CODES, isLocale } from '@pawmeet/i18n';
+import { isLocale, LOCALE_CODES } from '@pawmeet/i18n';
 import en from './en.json';
 import es from './es.json';
 import it from './it.json';
@@ -33,7 +33,8 @@ export function getLocalizedPath(path: string, locale: Locale): string {
 
 /** Static paths for non-default locales — used by [locale] dynamic routes */
 export function getLocaleStaticPaths() {
-  return LOCALE_CODES
-    .filter((l) => l !== DEFAULT_LOCALE)
-    .map((locale) => ({ params: { locale }, props: { locale } }));
+  return LOCALE_CODES.filter((l) => l !== DEFAULT_LOCALE).map((locale) => ({
+    params: { locale },
+    props: { locale },
+  }));
 }

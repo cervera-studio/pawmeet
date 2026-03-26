@@ -87,6 +87,28 @@ export function createWebRoutes(deps: typeof SupportDeps) {
         await resend.contacts.create({ audienceId: AUDIENCE_ID, email });
       }
 
+      // Welcome email to the subscriber
+      await resend.emails.send({
+        from: 'PawMeet <noreply@pawmeet.io>',
+        to: email,
+        subject: 'Benvenuto nella community PawMeet! 🐾',
+        text: [
+          'Ciao!',
+          '',
+          'Grazie per esserti unito alla waitlist di PawMeet. Sei ufficialmente dentro — e non vediamo l\'ora di farti scoprire come trovare i compagni di passeggiata perfetti per il tuo amico a quattro zampe.',
+          '',
+          'Quello che stiamo costruendo è semplice ma speciale: un posto dove i cani (e i loro umani) si connettono in base a quello che veramente conta — il carattere, l\'energia, il tipo di avventure che amate insieme.',
+          '',
+          'Il lancio arriva a giugno. Nel frattempo, tieni d\'occhio la tua inbox — potremmo avere qualche sorpresa per te.',
+          '',
+          'Grazie di crederci fin da ora.',
+          '',
+          'Con stima,',
+          'Il team di PawMeet',
+        ].join('\n'),
+      });
+
+      // Notify team
       await resend.emails.send({
         from: 'PawMeet <noreply@pawmeet.io>',
         to: NOTIFY_EMAIL,

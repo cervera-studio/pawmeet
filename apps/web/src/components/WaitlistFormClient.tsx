@@ -22,7 +22,7 @@ export default function WaitlistFormClient({ strings }: Props) {
     setErrorMessage('');
 
     try {
-      const res = await fetch('/api/waitlist', {
+      const res = await fetch('https://api.pawmeet.io/api/web/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

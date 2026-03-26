@@ -38,7 +38,7 @@ export default function ContactFormClient({ strings }: Props) {
     };
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('https://api.pawmeet.io/api/web/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

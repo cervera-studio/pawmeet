@@ -39,6 +39,7 @@ import { createAdminAuthRoutes } from './routes/admin-auth.js';
 import { analytics } from './routes/analytics.js';
 import { createAppleAuthWebhook } from './routes/apple-auth-webhook.js';
 import { createSupportRoutes } from './routes/support.js';
+import { createWebRoutes } from './routes/web.js';
 import { appRouter } from './trpc/root.js';
 import { createContext } from './trpc/trpc.js';
 import { handleAdminUpgrade, setupAdminWebSocket } from './ws/admin-ws.js';
@@ -98,6 +99,9 @@ app.route('/admin/auth', createAdminAuthRoutes(adminDeps));
 
 // Support routes — public endpoint for guest ticket creation (web contact form)
 app.route('/api/support', createSupportRoutes(supportDeps));
+
+// Web landing page routes — contact form and waitlist (no auth required)
+app.route('/api/web', createWebRoutes(supportDeps));
 
 // Apple Sign In server-to-server notifications (consent revoked, account deleted)
 app.route(

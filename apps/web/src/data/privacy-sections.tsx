@@ -27,7 +27,7 @@ function getItalianSections(): PrivacySection[] {
             <li>P.IVA: 04904730167</li>
             <li>
               Email:{' '}
-              <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+              <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
                 privacy@pawmeet.io
               </a>
             </li>
@@ -303,7 +303,7 @@ function getItalianSections(): PrivacySection[] {
           </div>
           <p className="mt-3 text-[13px]">
             Elenco aggiornato disponibile su richiesta a{' '}
-            <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+            <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
               privacy@pawmeet.io
             </a>
             .
@@ -332,7 +332,7 @@ function getItalianSections(): PrivacySection[] {
           </ul>
           <p className="mt-3 text-[13px]">
             Copia delle SCC disponibile su richiesta a{' '}
-            <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+            <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
               privacy@pawmeet.io
             </a>
             .
@@ -477,7 +477,7 @@ function getItalianSections(): PrivacySection[] {
           </ul>
           <p className="mt-4">
             <strong>Come esercitare i tuoi diritti:</strong> scrivi a{' '}
-            <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+            <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
               privacy@pawmeet.io
             </a>
             . Riscontro entro un mese (prorogabile di due mesi per complessità).
@@ -485,7 +485,7 @@ function getItalianSections(): PrivacySection[] {
           <p className="mt-3">
             <strong>Diritto di reclamo:</strong> Garante per la protezione dei dati personali,
             Piazza Venezia 11, 00187 Roma —{' '}
-            <a href="mailto:protocollo@gpdp.it" className="text-primary underline">
+            <a href="mailto:protocollo@gpdp.it" className="text-primary-text underline">
               protocollo@gpdp.it
             </a>
           </p>
@@ -500,7 +500,7 @@ function getItalianSections(): PrivacySection[] {
           L'app mobile non utilizza cookie. Il sito web utilizza esclusivamente cookie tecnici
           strettamente necessari (esenzione dal consenso ai sensi dell'art. 122 D.Lgs. 196/2003).
           Dettagli nella nostra{' '}
-          <a href="/cookie" className="text-primary underline">
+          <a href="/cookie" className="text-primary-text underline">
             Cookie Policy
           </a>
           .
@@ -567,13 +567,13 @@ function getItalianSections(): PrivacySection[] {
         <ul className="list-disc pl-6 space-y-1">
           <li>
             Email:{' '}
-            <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+            <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
               privacy@pawmeet.io
             </a>
           </li>
           <li>
             PEC:{' '}
-            <a href="mailto:edson.cervera@pec.it" className="text-primary underline">
+            <a href="mailto:edson.cervera@pec.it" className="text-primary-text underline">
               edson.cervera@pec.it
             </a>
           </li>
@@ -581,7 +581,7 @@ function getItalianSections(): PrivacySection[] {
             Web:{' '}
             <a
               href="https://cervera.studio"
-              className="text-primary underline"
+              className="text-primary-text underline"
               target="_blank"
               rel="noopener"
             >
@@ -609,7 +609,7 @@ function getEnglishSections(): PrivacySection[] {
             <li>VAT: IT04904730167</li>
             <li>
               Email:{' '}
-              <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+              <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
                 privacy@pawmeet.io
               </a>
             </li>
@@ -883,7 +883,7 @@ function getEnglishSections(): PrivacySection[] {
           </div>
           <p className="mt-3 text-[13px]">
             Updated list available upon request at{' '}
-            <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+            <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
               privacy@pawmeet.io
             </a>
             .
@@ -911,7 +911,7 @@ function getEnglishSections(): PrivacySection[] {
           </ul>
           <p className="mt-3 text-[13px]">
             Copy of SCCs available upon request at{' '}
-            <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+            <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
               privacy@pawmeet.io
             </a>
             .
@@ -1050,7 +1050,7 @@ function getEnglishSections(): PrivacySection[] {
           </ul>
           <p className="mt-4">
             <strong>How to exercise your rights:</strong> write to{' '}
-            <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+            <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
               privacy@pawmeet.io
             </a>
             . Response within one month (extendable by two months for complexity).
@@ -1058,7 +1058,7 @@ function getEnglishSections(): PrivacySection[] {
           <p className="mt-3">
             <strong>Right to lodge a complaint:</strong> Italian Data Protection Authority (Garante
             per la protezione dei dati personali), Piazza Venezia 11, 00187 Rome —{' '}
-            <a href="mailto:protocollo@gpdp.it" className="text-primary underline">
+            <a href="mailto:protocollo@gpdp.it" className="text-primary-text underline">
               protocollo@gpdp.it
             </a>
           </p>
@@ -1073,7 +1073,7 @@ function getEnglishSections(): PrivacySection[] {
           The mobile app does not use cookies. The website uses only strictly necessary technical
           cookies (exempt from consent under Art. 122 of Italian Legislative Decree 196/2003).
           Details in our{' '}
-          <a href="/en/cookie" className="text-primary underline">
+          <a href="/en/cookie" className="text-primary-text underline">
             Cookie Policy
           </a>
           .
@@ -1137,13 +1137,13 @@ function getEnglishSections(): PrivacySection[] {
         <ul className="list-disc pl-6 space-y-1">
           <li>
             Email:{' '}
-            <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
+            <a href="mailto:privacy@pawmeet.io" className="text-primary-text underline">
               privacy@pawmeet.io
             </a>
           </li>
           <li>
             PEC:{' '}
-            <a href="mailto:edson.cervera@pec.it" className="text-primary underline">
+            <a href="mailto:edson.cervera@pec.it" className="text-primary-text underline">
               edson.cervera@pec.it
             </a>
           </li>
@@ -1151,7 +1151,7 @@ function getEnglishSections(): PrivacySection[] {
             Web:{' '}
             <a
               href="https://cervera.studio"
-              className="text-primary underline"
+              className="text-primary-text underline"
               target="_blank"
               rel="noopener"
             >

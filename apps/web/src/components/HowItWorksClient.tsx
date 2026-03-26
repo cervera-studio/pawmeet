@@ -62,14 +62,14 @@ export default function HowItWorksClient({ strings }: Props) {
                   </div>
 
                   {/* Step number */}
-                  <div className="text-[13px] font-semibold text-primary uppercase tracking-wider mb-2">
+                  <div className="text-[13px] font-semibold text-primary-text uppercase tracking-wider mb-2">
                     {strings.stepLabel} {step.number}
                   </div>
 
                   <h3 className="text-[20px] font-semibold text-neutral-900 mb-3">
                     {stepStrings.title}
                   </h3>
-                  <p className="text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-500 max-w-xs mx-auto">
+                  <p className="text-[15px] leading-relaxed text-neutral-600 max-w-xs mx-auto">
                     {stepStrings.description}
                   </p>
                 </motion.div>

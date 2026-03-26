@@ -136,7 +136,7 @@ export default function WaitlistFormClient({ strings, locale = 'it' }: Props) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mt-4 text-[15px] text-primary font-medium"
+              className="mt-4 text-[15px] text-primary-text font-medium"
             >
               {strings.successMessage}
             </motion.p>

@@ -664,7 +664,8 @@
       "loginError": "Errore durante il login",
       "socialLoginError": "Errore durante il login social",
       "googleError": "Errore con Google Sign In",
-      "appleError": "Errore con Apple Sign In"
+      "appleError": "Errore con Apple Sign In",
+      "discoverLink": "Scopri PawMeet"
     },
     "register": {
       "title": "Crea account",
@@ -680,7 +681,8 @@
       "hasAccount": "Hai già un account?",
       "loginLink": "Accedi",
       "registerError": "Errore durante la registrazione",
-      "passwordMismatch": "Le password non coincidono"
+      "passwordMismatch": "Le password non coincidono",
+      "signUpWithEmail": "Registrati con email"
     },
     "ageGate": {
       "title": "Verifica età",

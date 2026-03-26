@@ -13,6 +13,7 @@
     "validate:pins": "npx tsx scripts/validate-cert-pins.ts"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^5.2.8",
     "@pawmeet/api-client": "workspace:*",
     "@pawmeet/config": "workspace:^",
     "@pawmeet/i18n": "workspace:*",

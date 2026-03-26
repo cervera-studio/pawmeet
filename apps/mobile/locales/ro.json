@@ -590,7 +590,8 @@
       "loginError": "Eroare la autentificare",
       "socialLoginError": "Eroare la autentificarea social",
       "googleError": "Eroare cu Google Sign In",
-      "appleError": "Eroare cu Apple Sign In"
+      "appleError": "Eroare cu Apple Sign In",
+      "discoverLink": "Descoperă PawMeet"
     },
     "register": {
       "title": "Creează cont",
@@ -606,7 +607,8 @@
       "hasAccount": "Ai deja un cont?",
       "loginLink": "Autentifică-te",
       "registerError": "Eroare la înregistrare",
-      "passwordMismatch": "Parolele nu se potrivesc"
+      "passwordMismatch": "Parolele nu se potrivesc",
+      "signUpWithEmail": "Înregistrează-te cu email"
     },
     "ageGate": {
       "title": "Verificare vârstă",

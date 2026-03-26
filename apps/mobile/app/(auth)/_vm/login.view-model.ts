@@ -155,7 +155,7 @@ export function useLoginViewModel() {
   }, [passkeys, email]);
 
   const navigateToRegister = useCallback(() => {
-    router.push('/(auth)/register');
+    router.replace('/(auth)/register');
   }, [router]);
 
   return {

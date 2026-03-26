@@ -11,4 +11,4 @@ const { locale = 'it' } = Astro.props;
 const strings = t(locale);
 ---
 
-<WaitlistFormClient client:visible strings={strings.waitlist} />
+<WaitlistFormClient client:visible strings={strings.waitlist} locale={locale} />

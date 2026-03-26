@@ -32,4 +32,5 @@ export * from './user-consents';
 export * from './user-follows';
 export * from './users';
 export * from './verification-tokens';
+export * from './waitlist';
 export * from './walks';

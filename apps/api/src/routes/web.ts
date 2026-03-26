@@ -1,9 +1,83 @@
 import process from 'node:process';
+import { waitlistSubscribers } from '@pawmeet/db';
+import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { Resend } from 'resend';
 import type { supportDeps as SupportDeps } from '../container/index.js';
+import { db } from '../lib/db.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const WAITLIST_EMAILS: Record<string, { subject: string; body: string[] }> = {
+  it: {
+    subject: 'Benvenuto nella community PawMeet! 🐾',
+    body: [
+      'Ciao!',
+      '',
+      "Grazie per esserti unito alla waitlist di PawMeet. Sei ufficialmente dentro — e non vediamo l'ora di farti scoprire come trovare i compagni di passeggiata perfetti per il tuo amico a quattro zampe.",
+      '',
+      "Quello che stiamo costruendo è semplice ma speciale: un posto dove i cani (e i loro umani) si connettono in base a quello che veramente conta — il carattere, l'energia, il tipo di avventure che amate insieme.",
+      '',
+      "Il lancio arriva a giugno. Nel frattempo, tieni d'occhio la tua inbox — potremmo avere qualche sorpresa per te.",
+      '',
+      'Grazie di crederci fin da ora.',
+      '',
+      'Con stima,',
+      'Il team di PawMeet',
+    ],
+  },
+  en: {
+    subject: 'Welcome to the PawMeet community! 🐾',
+    body: [
+      'Hey!',
+      '',
+      "Thanks for joining the PawMeet waitlist. You're officially in — and we can't wait to show you how to find the perfect walking companions for your four-legged friend.",
+      '',
+      "What we're building is simple but special: a place where dogs (and their humans) connect based on what truly matters — personality, energy, and the kind of adventures you love together.",
+      '',
+      'Launch is coming in June. In the meantime, keep an eye on your inbox — we might have a few surprises for you.',
+      '',
+      'Thanks for believing in us from the start.',
+      '',
+      'Warm regards,',
+      'The PawMeet Team',
+    ],
+  },
+  es: {
+    subject: '¡Bienvenido a la comunidad PawMeet! 🐾',
+    body: [
+      '¡Hola!',
+      '',
+      'Gracias por unirte a la waitlist de PawMeet. Ya estás dentro — y no vemos la hora de mostrarte cómo encontrar los compañeros de paseo perfectos para tu amigo de cuatro patas.',
+      '',
+      'Lo que estamos construyendo es simple pero especial: un lugar donde los perros (y sus humanos) se conectan por lo que realmente importa — el carácter, la energía, el tipo de aventuras que aman juntos.',
+      '',
+      'El lanzamiento llega en junio. Mientras tanto, estate atento a tu bandeja de entrada — podríamos tener alguna sorpresa para ti.',
+      '',
+      'Gracias por creer en nosotros desde el principio.',
+      '',
+      'Con cariño,',
+      'El equipo de PawMeet',
+    ],
+  },
+  ro: {
+    subject: 'Bine ai venit în comunitatea PawMeet! 🐾',
+    body: [
+      'Salut!',
+      '',
+      'Mulțumim că te-ai înscris pe lista de așteptare PawMeet. Ești oficial pe listă — și abia așteptăm să îți arătăm cum să găsești companionii de plimbare perfecți pentru prietenul tău cu patru labe.',
+      '',
+      'Ceea ce construim este simplu, dar special: un loc unde câinii (și oamenii lor) se conectează pe baza a ceea ce contează cu adevărat — personalitatea, energia și tipul de aventuri pe care le iubiți împreună.',
+      '',
+      'Lansarea vine în iunie. Între timp, fii cu ochii pe inbox — s-ar putea să avem câteva surprize pentru tine.',
+      '',
+      'Mulțumim că ai crezut în noi de la început.',
+      '',
+      'Cu drag,',
+      'Echipa PawMeet',
+    ],
+  },
+};
 
 /**
  * Public web routes — called by the landing page (pawmeet.io).
@@ -14,7 +88,6 @@ export function createWebRoutes(deps: typeof SupportDeps) {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'info@cervera.studio';
   const NOTIFY_EMAIL = process.env.WAITLIST_NOTIFY_EMAIL || 'info@cervera.studio';
-  const AUDIENCE_ID = process.env.RESEND_WAITLIST_AUDIENCE_ID;
 
   // ── Contact form ────────────────────────────────────────────────────
   web.post('/contact', async (c) => {
@@ -77,35 +150,39 @@ export function createWebRoutes(deps: typeof SupportDeps) {
   web.post('/waitlist', async (c) => {
     const body = await c.req.json().catch(() => null);
     const email = typeof body?.email === 'string' ? body.email.trim() : '';
+    const locale = typeof body?.locale === 'string' ? body.locale : 'it';
 
     if (!EMAIL_RE.test(email)) {
       return c.json({ error: 'Email non valida' }, 400);
     }
 
     try {
-      if (AUDIENCE_ID) {
-        await resend.contacts.create({ audienceId: AUDIENCE_ID, email });
+      // Check if already subscribed
+      const existing = await db
+        .select({ id: waitlistSubscribers.id })
+        .from(waitlistSubscribers)
+        .where(eq(waitlistSubscribers.email, email.toLowerCase()))
+        .limit(1);
+
+      if (existing.length > 0) {
+        // Already subscribed — respond OK silently
+        return c.json({ ok: true });
       }
 
-      // Welcome email to the subscriber
+      // Save to database
+      await db.insert(waitlistSubscribers).values({
+        email: email.toLowerCase(),
+        locale,
+        source: 'landing',
+      });
+
+      // Welcome email to the subscriber (localized)
+      const welcomeEmail = WAITLIST_EMAILS[locale] ?? WAITLIST_EMAILS['it']!;
       await resend.emails.send({
         from: 'PawMeet <noreply@pawmeet.io>',
         to: email,
-        subject: 'Benvenuto nella community PawMeet! 🐾',
-        text: [
-          'Ciao!',
-          '',
-          'Grazie per esserti unito alla waitlist di PawMeet. Sei ufficialmente dentro — e non vediamo l\'ora di farti scoprire come trovare i compagni di passeggiata perfetti per il tuo amico a quattro zampe.',
-          '',
-          'Quello che stiamo costruendo è semplice ma speciale: un posto dove i cani (e i loro umani) si connettono in base a quello che veramente conta — il carattere, l\'energia, il tipo di avventure che amate insieme.',
-          '',
-          'Il lancio arriva a giugno. Nel frattempo, tieni d\'occhio la tua inbox — potremmo avere qualche sorpresa per te.',
-          '',
-          'Grazie di crederci fin da ora.',
-          '',
-          'Con stima,',
-          'Il team di PawMeet',
-        ].join('\n'),
+        subject: welcomeEmail.subject,
+        text: welcomeEmail.body.join('\n'),
       });
 
       // Notify team
@@ -116,7 +193,6 @@ export function createWebRoutes(deps: typeof SupportDeps) {
         text: `Nuova iscrizione alla waitlist PawMeet.\n\nEmail: ${email}\nData: ${new Date().toISOString()}`,
       });
 
-      // TODO: add waitlist_signup to AnalyticsEventMap
       return c.json({ ok: true });
     } catch {
       return c.json({ error: 'Errore interno' }, 500);

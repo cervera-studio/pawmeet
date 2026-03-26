@@ -7,9 +7,10 @@ type FormState = 'idle' | 'loading' | 'success' | 'error';
 
 interface Props {
   strings: TranslationDictionary['waitlist'];
+  locale?: string;
 }
 
-export default function WaitlistFormClient({ strings }: Props) {
+export default function WaitlistFormClient({ strings, locale = 'it' }: Props) {
   const [email, setEmail] = useState('');
   const [state, setState] = useState<FormState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -25,7 +26,7 @@ export default function WaitlistFormClient({ strings }: Props) {
       const res = await fetch('https://api.pawmeet.io/api/web/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, locale }),
       });
 
       if (!res.ok) throw new Error('Submission error');

@@ -219,8 +219,8 @@ export default function ContactFormClient({ strings }: Props) {
       >
         <p>
           {strings.directEmail}{' '}
-          <a href="mailto:info@pawmeet.io" className="text-primary hover:underline font-medium">
-            info@pawmeet.io
+          <a href="mailto:info@cervera.studio" className="text-primary hover:underline font-medium">
+            info@cervera.studio
           </a>
         </p>
       </motion.div>

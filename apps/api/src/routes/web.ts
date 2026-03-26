@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import { Resend } from 'resend';
 import type { supportDeps as SupportDeps } from '../container/index.js';
 
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
@@ -13,8 +12,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function createWebRoutes(deps: typeof SupportDeps) {
   const web = new Hono();
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'info@pawmeet.io';
-  const NOTIFY_EMAIL = process.env.WAITLIST_NOTIFY_EMAIL || 'team@pawmeet.io';
+  const CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'info@cervera.studio';
+  const NOTIFY_EMAIL = process.env.WAITLIST_NOTIFY_EMAIL || 'info@cervera.studio';
   const AUDIENCE_ID = process.env.RESEND_WAITLIST_AUDIENCE_ID;
 
   // ── Contact form ────────────────────────────────────────────────────

@@ -22,20 +22,13 @@ function getItalianSections(): PrivacySection[] {
           <p>Il titolare del trattamento dei dati personali è:</p>
           <ul className="list-none pl-0 space-y-1 mt-3">
             <li>
-              <strong>PawMeet S.r.l.</strong>
+              <strong>Cervera Studio</strong>
             </li>
-            <li>Sede legale: Via Roma 1, 20121 Milano (MI), Italia</li>
-            <li>P.IVA: 12345678901</li>
+            <li>P.IVA: 04904730167</li>
             <li>
               Email:{' '}
               <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
                 privacy@pawmeet.io
-              </a>
-            </li>
-            <li>
-              PEC:{' '}
-              <a href="mailto:pawmeet@pec.it" className="text-primary underline">
-                pawmeet@pec.it
               </a>
             </li>
           </ul>
@@ -486,10 +479,6 @@ function getItalianSections(): PrivacySection[] {
             <strong>Come esercitare i tuoi diritti:</strong> scrivi a{' '}
             <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
               privacy@pawmeet.io
-            </a>{' '}
-            o via PEC a{' '}
-            <a href="mailto:pawmeet@pec.it" className="text-primary underline">
-              pawmeet@pec.it
             </a>
             . Riscontro entro un mese (prorogabile di due mesi per complessità).
           </p>
@@ -584,11 +573,16 @@ function getItalianSections(): PrivacySection[] {
           </li>
           <li>
             PEC:{' '}
-            <a href="mailto:pawmeet@pec.it" className="text-primary underline">
-              pawmeet@pec.it
+            <a href="mailto:edson.cervera@pec.it" className="text-primary underline">
+              edson.cervera@pec.it
             </a>
           </li>
-          <li>Posta: PawMeet S.r.l., Via Roma 1, 20121 Milano (MI), Italia</li>
+          <li>
+            Web:{' '}
+            <a href="https://cervera.studio" className="text-primary underline" target="_blank" rel="noopener">
+              cervera.studio
+            </a>
+          </li>
         </ul>
       ),
     },
@@ -605,20 +599,13 @@ function getEnglishSections(): PrivacySection[] {
           <p>The data controller for personal data is:</p>
           <ul className="list-none pl-0 space-y-1 mt-3">
             <li>
-              <strong>PawMeet S.r.l.</strong>
+              <strong>Cervera Studio</strong>
             </li>
-            <li>Registered office: Via Roma 1, 20121 Milan (MI), Italy</li>
-            <li>VAT: IT12345678901</li>
+            <li>VAT: IT04904730167</li>
             <li>
               Email:{' '}
               <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
                 privacy@pawmeet.io
-              </a>
-            </li>
-            <li>
-              PEC:{' '}
-              <a href="mailto:pawmeet@pec.it" className="text-primary underline">
-                pawmeet@pec.it
               </a>
             </li>
           </ul>
@@ -1060,10 +1047,6 @@ function getEnglishSections(): PrivacySection[] {
             <strong>How to exercise your rights:</strong> write to{' '}
             <a href="mailto:privacy@pawmeet.io" className="text-primary underline">
               privacy@pawmeet.io
-            </a>{' '}
-            or via PEC at{' '}
-            <a href="mailto:pawmeet@pec.it" className="text-primary underline">
-              pawmeet@pec.it
             </a>
             . Response within one month (extendable by two months for complexity).
           </p>
@@ -1155,11 +1138,16 @@ function getEnglishSections(): PrivacySection[] {
           </li>
           <li>
             PEC:{' '}
-            <a href="mailto:pawmeet@pec.it" className="text-primary underline">
-              pawmeet@pec.it
+            <a href="mailto:edson.cervera@pec.it" className="text-primary underline">
+              edson.cervera@pec.it
             </a>
           </li>
-          <li>Mail: PawMeet S.r.l., Via Roma 1, 20121 Milan (MI), Italy</li>
+          <li>
+            Web:{' '}
+            <a href="https://cervera.studio" className="text-primary underline" target="_blank" rel="noopener">
+              cervera.studio
+            </a>
+          </li>
         </ul>
       ),
     },

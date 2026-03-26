@@ -23,7 +23,7 @@ export function useCommentsViewModel() {
   const router = useRouter();
   const { t } = useTranslation();
   const currentUserId = useAuthStore((s) => s.user?.id);
-  const { fetchComments, createComment, deleteComment, reportContent } = useFeed();
+  const { fetchComments, createComment, deleteComment } = useFeed();
 
   const [comments, setComments] = useState<CommentWithAuthor[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);

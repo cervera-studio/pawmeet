@@ -37,7 +37,7 @@ export function PhotoViewer({
   useEffect(() => {
     setIndex(currentIndex);
     setZoom(1);
-  }, [currentIndex, open]);
+  }, [currentIndex]);
 
   const photo = photos[index];
 
@@ -67,6 +67,7 @@ export function PhotoViewer({
   useEffect(() => {
     if (!open) return;
 
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard shortcuts handler for navigation and actions
     function handleKeyDown(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -111,7 +112,19 @@ export function PhotoViewer({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, goNext, goPrev, zoomIn, zoomOut, onOpenChange]);
+  }, [
+    open,
+    goNext,
+    goPrev,
+    zoomIn,
+    zoomOut,
+    onOpenChange,
+    index,
+    onReject,
+    photos.length,
+    photo,
+    onApprove,
+  ]);
 
   // Scroll wheel zoom
   function handleWheel(e: React.WheelEvent) {
@@ -169,6 +182,7 @@ export function PhotoViewer({
             </button>
           )}
 
+          {/* biome-ignore lint/performance/noImgElement: image viewer with dynamic zoom transform requires native img */}
           <img
             src={photo.imageUrl}
             alt={photo.userName ?? ''}

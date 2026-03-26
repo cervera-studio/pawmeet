@@ -26,6 +26,7 @@ export interface SocialLoginOutput {
 const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export function createSocialLogin(deps: Deps) {
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: multi-provider OAuth flow requires sequential branching
   return async (input: SocialLoginInput): Promise<Result<SocialLoginOutput>> => {
     const { userRepo, tokenRepo, authService, socialAuthVerifier, oauthAccountRepo } = deps;
     const { provider, idToken, code, codeVerifier, redirectUri, nonce } = input;

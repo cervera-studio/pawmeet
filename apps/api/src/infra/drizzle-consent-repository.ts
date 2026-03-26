@@ -1,5 +1,5 @@
 import { userConsents } from '@pawmeet/db';
-import { and, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import type { ConsentRecord, ConsentRepository } from '../ports/consent-repository.js';
 

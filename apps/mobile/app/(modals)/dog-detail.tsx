@@ -149,7 +149,7 @@ export default function DogDetailModal() {
       </View>
 
       {/* Reviews */}
-      <DogReviews dogId={dogId!} dogRating={null} />
+      {dogId && <DogReviews dogId={dogId} dogRating={null} />}
 
       {/* Owner info */}
       <View className="mt-4 flex-row items-center rounded-2xl bg-gray-50 p-4 dark:bg-[#2C2C2E]">

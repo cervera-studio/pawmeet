@@ -36,7 +36,7 @@ export function createCreateSupportTicket({ supportRepo, emailService, userRepo 
     });
 
     // Send notification email to support team (non-blocking)
-    const user = await userRepo.findById(userId);
+    const _user = await userRepo.findById(userId);
     const preview =
       sanitizedMessage.length > 100 ? `${sanitizedMessage.slice(0, 97)}...` : sanitizedMessage;
 

@@ -13,6 +13,7 @@ type MyTicket = RouterOutput['support']['listMyTickets'][number];
 
 const TYPING_DEBOUNCE_MS = 2000;
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: support chat view model coordinates messages, typing, and WS events
 export function useSupportChatViewModel() {
   const { ticketId: rawTicketId } = useLocalSearchParams<{ ticketId: string }>();
   const ticketId = rawTicketId && isValidUUID(rawTicketId) ? rawTicketId : undefined;
@@ -80,11 +81,10 @@ export function useSupportChatViewModel() {
           const incoming: Message = {
             ...raw,
             createdAt: typeof raw.createdAt === 'string' ? raw.createdAt : String(raw.createdAt),
-            readAt: raw.readAt
-              ? typeof raw.readAt === 'string'
-                ? raw.readAt
-                : String(raw.readAt)
-              : null,
+            readAt: (() => {
+              if (!raw.readAt) return null;
+              return typeof raw.readAt === 'string' ? raw.readAt : String(raw.readAt);
+            })(),
           };
           setMessages((prev) => {
             if (prev.some((m) => m.id === incoming.id)) return prev;

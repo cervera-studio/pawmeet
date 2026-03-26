@@ -15,7 +15,7 @@ function buildDeps() {
       findByIds: vi.fn().mockResolvedValue([]),
     },
     notificationService: { send: vi.fn().mockResolvedValue(undefined) },
-    supportRepo: {} as any,
+    supportRepo: {} as Record<string, never>,
     awardXp: vi.fn().mockResolvedValue(
       succeed({
         xpAwarded: 10,

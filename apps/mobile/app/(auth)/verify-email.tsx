@@ -59,11 +59,12 @@ export default function VerifyEmailScreen() {
                   : 'font-semibold text-primary'
               }`}
             >
-              {vm.resending
-                ? t('auth.verifyEmail.resending')
-                : vm.countdown > 0
-                  ? t('auth.verifyEmail.resendCountdown', { seconds: vm.countdown })
-                  : t('auth.verifyEmail.resendCode')}
+              {(() => {
+                if (vm.resending) return t('auth.verifyEmail.resending');
+                if (vm.countdown > 0)
+                  return t('auth.verifyEmail.resendCountdown', { seconds: vm.countdown });
+                return t('auth.verifyEmail.resendCode');
+              })()}
             </Text>
           </Pressable>
         </View>

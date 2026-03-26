@@ -63,9 +63,10 @@ export function decryptContent(encrypted: string): string {
   }
 
   try {
-    const iv = Buffer.from(parts[0]!, ENCODING);
-    const authTag = Buffer.from(parts[1]!, ENCODING);
-    const ciphertext = Buffer.from(parts[2]!, ENCODING);
+    const [ivPart, authTagPart, ciphertextPart] = parts as [string, string, string];
+    const iv = Buffer.from(ivPart, ENCODING);
+    const authTag = Buffer.from(authTagPart, ENCODING);
+    const ciphertext = Buffer.from(ciphertextPart, ENCODING);
 
     const decipher = createDecipheriv(ALGORITHM, key, iv, { authTagLength: AUTH_TAG_LENGTH });
     decipher.setAuthTag(authTag);

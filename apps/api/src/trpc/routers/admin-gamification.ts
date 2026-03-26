@@ -15,6 +15,7 @@ interface GamificationRouterDeps {
   gamificationRepo?: GamificationRepository;
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: tRPC router groups related procedures
 export function createAdminGamificationRouter(deps: GamificationRouterDeps) {
   const adminProcedure = createAdminProcedure();
   const { auditLogRepo, gamificationRepo } = deps;

@@ -69,6 +69,7 @@ interface UsersRouterDeps {
   tokenRepo?: TokenRepository;
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: tRPC router groups related procedures
 export function createAdminUsersRouter(deps: UsersRouterDeps) {
   const adminProcedure = createAdminProcedure();
   const { adminDataRepo, adminNotificationService, auditLogRepo, gdprExportRepo, tokenRepo } = deps;

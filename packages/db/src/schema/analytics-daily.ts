@@ -1,3 +1,4 @@
+// biome-ignore lint/suspicious/noDeprecatedImports: primaryKey function is required for composite keys
 import { index, integer, pgTable, primaryKey, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 /**

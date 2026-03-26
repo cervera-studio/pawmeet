@@ -42,7 +42,6 @@ function formatDate(date: Date | string): string {
 }
 
 const ReviewRow = memo(function ReviewRow({ review }: { review: ReviewItem }) {
-  const { t } = useTranslation();
   return (
     <View className="mb-3 rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
       <View className="flex-row items-center gap-3 mb-2">

@@ -170,17 +170,22 @@ function canGenerateBioFromState(state: DogFormState): boolean {
   );
 }
 
+/** Asserts non-null for fields guaranteed present by step validation. */
+function required<T>(val: T | null | undefined): T {
+  return val as T;
+}
+
 function buildBioMutationInput(state: DogFormState) {
   return {
     name: state.name,
     breed: state.breed,
     breedSecondary: state.breedSecondary || undefined,
-    size: state.size!,
-    gender: state.gender!,
-    energyLevel: state.energyLevel!,
-    behaviorWithDogs: state.behaviorWithDogs!,
-    behaviorWithPeople: state.behaviorWithPeople!,
-    leashBehavior: state.leashBehavior!,
+    size: required(state.size),
+    gender: required(state.gender),
+    energyLevel: required(state.energyLevel),
+    behaviorWithDogs: required(state.behaviorWithDogs),
+    behaviorWithPeople: required(state.behaviorWithPeople),
+    leashBehavior: required(state.leashBehavior),
     walkPrefTime: state.walkPrefTime,
     walkPrefTerrain: state.walkPrefTerrain,
   };
@@ -246,6 +251,7 @@ function buildFormData(state: DogFormState) {
 
 // -- Hook --
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: multi-step dog creation wizard coordinates form state, validation, and API calls
 export function useNewDogViewModel() {
   const router = useRouter();
   const addDog = useDogsStore((s) => s.addDog);

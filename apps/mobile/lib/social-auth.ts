@@ -34,12 +34,12 @@ function decodeJwtPayload(token: string): Record<string, unknown> {
 }
 
 /** Persist nonce to SecureStore so it survives component remounts. */
-function persistNonce(nonce: string): void {
+function _persistNonce(nonce: string): void {
   SecureStore.setItem(NONCE_KEY, nonce);
 }
 
 /** Retrieve and delete the persisted nonce (one-time use). */
-function consumePersistedNonce(): string | null {
+function _consumePersistedNonce(): string | null {
   const nonce = SecureStore.getItem(NONCE_KEY);
   if (nonce) {
     SecureStore.deleteItemAsync(NONCE_KEY).catch(() => {

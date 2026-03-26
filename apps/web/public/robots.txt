@@ -1,3 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /_astro/
+
+# Canonical locale: Italian (no prefix). English alternate: /en/
+
 Sitemap: https://pawmeet.io/sitemap-index.xml

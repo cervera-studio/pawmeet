@@ -1,11 +1,26 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { t } from '../../../i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t, getLocalizedPath } from '../../i18n';
+import type { Locale } from '../../i18n';
 
-const strings = t('en');
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const waitlistHref = getLocalizedPath('/waitlist', locale);
 ---
 
-<BaseLayout title={strings.meta.blogTitle} description={strings.meta.blogDescription} locale="en">
+<BaseLayout title={strings.meta.blogTitle} description={strings.meta.blogDescription} locale={locale}>
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": `https://pawmeet.io${getLocalizedPath('/', locale)}` },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": `https://pawmeet.io${getLocalizedPath('/blog', locale)}` }
+    ]
+  })} />
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
     <div class="text-center">
       <h1 class="text-[32px] sm:text-[40px] font-bold text-neutral-900">{strings.blog.heading}</h1>
@@ -27,7 +42,7 @@ const strings = t('en');
         {strings.blog.emptyText}
       </p>
       <a
-        href="/en/waitlist"
+        href={waitlistHref}
         class="inline-block mt-8 px-6 py-3 rounded-full bg-primary text-white font-semibold text-[15px] hover:bg-primary-600 transition-colors"
       >
         {strings.blog.emptyCta}

@@ -13,7 +13,7 @@
     "langLabel": "RO"
   },
   "hero": {
-    "eyebrow": "Lansare 2027",
+    "eyebrow": "Lansare Iunie 2026",
     "headlinePart1": "Găsește companionul",
     "headlinePart2": "de plimbare",
     "headlineHighlight": "perfect",
@@ -95,8 +95,11 @@
     "pageHeading": "Alătură-te listei de așteptare",
     "pageDescription": "PawMeet vine! Înscrie-te pentru a fi printre primii care descoperă aplicația și primesc acces anticipat exclusiv.",
     "statsSubscribers": "Înscriși pe lista de așteptare",
+    "statsSubscribersCount": "1.200+",
     "statsCities": "Orașe acoperite",
-    "statsLaunch": "Lansare prevăzută"
+    "statsCitiesCount": "15+",
+    "statsLaunch": "Lansare prevăzută",
+    "statsLaunchDate": "Iun 2026"
   },
   "contact": {
     "heading": "Contactează-ne",

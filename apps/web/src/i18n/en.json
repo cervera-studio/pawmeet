@@ -13,7 +13,7 @@
     "langLabel": "EN"
   },
   "hero": {
-    "eyebrow": "Launching 2027",
+    "eyebrow": "Launching June 2026",
     "headlinePart1": "Find the perfect",
     "headlinePart2": "walking",
     "headlineHighlight": "companion",
@@ -95,8 +95,11 @@
     "pageHeading": "Join the waitlist",
     "pageDescription": "PawMeet is coming! Sign up to be among the first to discover the app and get exclusive early access.",
     "statsSubscribers": "Waitlist subscribers",
+    "statsSubscribersCount": "1,200+",
     "statsCities": "Cities covered",
-    "statsLaunch": "Expected launch"
+    "statsCitiesCount": "15+",
+    "statsLaunch": "Expected launch",
+    "statsLaunchDate": "Jun 2026"
   },
   "contact": {
     "heading": "Contact us",
@@ -125,19 +128,19 @@
     "termsLabel": "Terms & Conditions"
   },
   "meta": {
-    "homeTitle": "Walk together with your dog",
-    "homeDescription": "PawMeet - Find the perfect walking companion for your dog. Connect with other dog owners in your area.",
-    "aboutTitle": "About us",
-    "aboutDescription": "Discover the team behind PawMeet and our mission.",
-    "blogTitle": "Blog",
-    "blogDescription": "Tips, guides, and stories from the PawMeet world.",
-    "contactTitle": "Contact",
-    "contactDescription": "Contact us for any questions or suggestions about PawMeet.",
-    "waitlistTitle": "Waitlist",
-    "waitlistDescription": "Join the PawMeet waitlist and be among the first to try the app.",
-    "privacyTitle": "Privacy Policy",
-    "termsTitle": "Terms & Conditions of Use",
-    "cookieTitle": "Cookie Policy"
+    "homeTitle": "Dog walking companion app — Find your match",
+    "homeDescription": "PawMeet matches your dog with compatible walking companions by size, energy and temperament. Join 1,200+ dog owners already waiting.",
+    "aboutTitle": "About us — The PawMeet team",
+    "aboutDescription": "We are dog owners who built PawMeet to turn the daily walk into a social experience. Discover our mission.",
+    "blogTitle": "Blog — Tips and guides for dog owners",
+    "blogDescription": "Dog socialization tips, dog-friendly parks, and safe walking guides. Everything for you and your dog.",
+    "contactTitle": "Contact — PawMeet",
+    "contactDescription": "Have a question about PawMeet? Get in touch — we reply fast.",
+    "waitlistTitle": "Join the waitlist — PawMeet launches June 2026",
+    "waitlistDescription": "Be among the first to try PawMeet, the dog walking companion app. Sign up now for exclusive early access.",
+    "privacyTitle": "Privacy Policy — PawMeet",
+    "termsTitle": "Terms & Conditions of Use — PawMeet",
+    "cookieTitle": "Cookie Policy — PawMeet"
   },
   "about": {
     "heading": "About us",

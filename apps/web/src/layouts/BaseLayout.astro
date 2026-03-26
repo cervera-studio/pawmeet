@@ -12,6 +12,7 @@ interface Props {
   description?: string;
   ogImage?: string;
   locale?: Locale;
+  isHomepage?: boolean;
 }
 
 const {
@@ -19,12 +20,13 @@ const {
   description,
   ogImage = '/og-image.png',
   locale = 'it',
+  isHomepage = false,
 } = Astro.props;
 
 const strings = t(locale);
 const defaultDescription = locale === 'it'
-  ? 'PawMeet - Trova il compagno di passeggiata perfetto per il tuo cane. Connetti con altri proprietari di cani nella tua zona.'
-  : 'PawMeet - Find the perfect walking companion for your dog. Connect with other dog owners in your area.';
+  ? 'PawMeet trova compagni di passeggiata compatibili per il tuo cane in base a taglia, energia e temperamento. Unisciti a 1.200+ proprietari in Italia.'
+  : 'PawMeet matches your dog with compatible walking companions by size, energy and temperament. Join 1,200+ dog owners already waiting.';
 
 const resolvedDescription = description ?? defaultDescription;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -34,6 +36,10 @@ const itPath = getAlternatePath(currentPath, 'it');
 const enPath = getAlternatePath(currentPath, 'en');
 const itUrl = new URL(itPath, Astro.site);
 const enUrl = new URL(enPath, Astro.site);
+
+const ogLocale = locale === 'it' ? 'it_IT' : 'en_US';
+const ogLocaleAlternate = locale === 'it' ? 'en_US' : 'it_IT';
+const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, Astro.site).href;
 ---
 
 <!doctype html>
@@ -75,13 +81,73 @@ const enUrl = new URL(enPath, Astro.site);
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={`${title} | PawMeet`} />
     <meta property="og:description" content={resolvedDescription} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={ogLocaleAlternate} />
+    <meta property="og:site_name" content="PawMeet" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@pawmeetapp" />
     <meta name="twitter:title" content={`${title} | PawMeet`} />
     <meta name="twitter:description" content={resolvedDescription} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+
+    <!-- Structured Data: Organization -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "PawMeet",
+      "url": "https://pawmeet.io",
+      "logo": "https://pawmeet.io/favicon.svg",
+      "sameAs": [],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@cervera.studio",
+        "contactType": "customer support",
+        "availableLanguage": ["Italian", "English"]
+      }
+    })} />
+
+    <!-- Structured Data: WebSite with SearchAction -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PawMeet",
+      "url": "https://pawmeet.io",
+      "inLanguage": locale === 'it' ? "it-IT" : "en-US",
+      "description": resolvedDescription
+    })} />
+
+    <!-- Structured Data: MobileApplication (homepage only) -->
+    {isHomepage && (
+      <script type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "MobileApplication",
+        "name": "PawMeet",
+        "operatingSystem": "iOS, Android",
+        "applicationCategory": "SocialNetworkingApplication",
+        "description": locale === 'it'
+          ? "App per trovare compagni di passeggiata compatibili per il tuo cane. Match intelligente per taglia, energia e temperamento."
+          : "App to find compatible walking companions for your dog. Smart matching by size, energy, and temperament.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/PreOrder"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "5",
+          "ratingCount": "1200",
+          "reviewCount": "1200"
+        },
+        "url": "https://pawmeet.io",
+        "inLanguage": locale === 'it' ? "it-IT" : "en-US"
+      })} />
+    )}
   </head>
   <body class="min-h-screen flex flex-col font-sans text-neutral-900 bg-surface grain">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg">

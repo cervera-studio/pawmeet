@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContactFormClient from '../ContactFormClient';
+import { t } from '../../i18n';
+import type { Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+---
+
+<BaseLayout title={strings.meta.contactTitle} description={strings.meta.contactDescription} locale={locale}>
+  <ContactFormClient client:visible strings={strings.contact} />
+</BaseLayout>

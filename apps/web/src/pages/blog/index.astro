@@ -1,37 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { t } from '../../i18n';
-
-const strings = t('it');
+import BlogPage from '../../components/pages/BlogPage.astro';
 ---
 
-<BaseLayout title={strings.meta.blogTitle} description={strings.meta.blogDescription} locale="it">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-    <div class="text-center">
-      <h1 class="text-[32px] sm:text-[40px] font-bold text-neutral-900">{strings.blog.heading}</h1>
-      <p class="mt-4 text-[17px] text-neutral-700 max-w-lg mx-auto">
-        {strings.blog.description}
-      </p>
-    </div>
-
-    <div class="mt-16 max-w-md mx-auto text-center">
-      <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary-50 flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
-          <path d="M12 20h9" /><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
-        </svg>
-      </div>
-      <h2 class="text-[20px] font-semibold text-neutral-900 mb-3">
-        {strings.blog.emptyHeading}
-      </h2>
-      <p class="text-[15px] text-neutral-700 leading-relaxed">
-        {strings.blog.emptyText}
-      </p>
-      <a
-        href="/waitlist"
-        class="inline-block mt-8 px-6 py-3 rounded-full bg-primary text-white font-semibold text-[15px] hover:bg-primary-600 transition-colors"
-      >
-        {strings.blog.emptyCta}
-      </a>
-    </div>
-  </div>
-</BaseLayout>
+<BlogPage locale="it" />

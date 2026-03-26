@@ -1,12 +1,18 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import WaitlistForm from '../../components/WaitlistForm.astro';
+import WaitlistForm from '../WaitlistForm.astro';
 import { t } from '../../i18n';
+import type { Locale } from '../../i18n';
 
-const strings = t('en');
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
 ---
 
-<BaseLayout title={strings.meta.waitlistTitle} description={strings.meta.waitlistDescription} locale="en">
+<BaseLayout title={strings.meta.waitlistTitle} description={strings.meta.waitlistDescription} locale={locale}>
   <div class="py-16 sm:py-24">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
       <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900">
@@ -17,20 +23,20 @@ const strings = t('en');
       </p>
     </div>
 
-    <WaitlistForm locale="en" />
+    <WaitlistForm locale={locale} />
 
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
         <div>
-          <div class="text-3xl font-bold text-primary">1,200+</div>
+          <div class="text-3xl font-bold text-primary">{strings.waitlist.statsSubscribersCount}</div>
           <div class="text-sm text-neutral-500 mt-1">{strings.waitlist.statsSubscribers}</div>
         </div>
         <div>
-          <div class="text-3xl font-bold text-primary">15+</div>
+          <div class="text-3xl font-bold text-primary">{strings.waitlist.statsCitiesCount}</div>
           <div class="text-sm text-neutral-500 mt-1">{strings.waitlist.statsCities}</div>
         </div>
         <div>
-          <div class="text-3xl font-bold text-primary">2026</div>
+          <div class="text-3xl font-bold text-primary">{strings.waitlist.statsLaunchDate}</div>
           <div class="text-sm text-neutral-500 mt-1">{strings.waitlist.statsLaunch}</div>
         </div>
       </div>

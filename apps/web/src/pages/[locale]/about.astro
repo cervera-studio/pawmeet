@@ -1,0 +1,11 @@
+---
+import AboutPage from '../../components/pages/AboutPage.astro';
+import { getLocaleStaticPaths } from '../../i18n';
+import type { Locale } from '../../i18n';
+
+export const getStaticPaths = getLocaleStaticPaths;
+
+const { locale } = Astro.props as { locale: Locale };
+---
+
+<AboutPage locale={locale} />

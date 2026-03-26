@@ -13,7 +13,7 @@
     "langLabel": "ES"
   },
   "hero": {
-    "eyebrow": "Lanzamiento 2027",
+    "eyebrow": "Lanzamiento Junio 2026",
     "headlinePart1": "Encuentra el compañero",
     "headlinePart2": "de paseo",
     "headlineHighlight": "perfecto",
@@ -95,8 +95,11 @@
     "pageHeading": "Únete a la lista de espera",
     "pageDescription": "¡PawMeet está en camino! Regístrate para ser de los primeros en descubrir la app y obtener acceso anticipado exclusivo.",
     "statsSubscribers": "Inscritos en la lista de espera",
+    "statsSubscribersCount": "1.200+",
     "statsCities": "Ciudades cubiertas",
-    "statsLaunch": "Lanzamiento previsto"
+    "statsCitiesCount": "15+",
+    "statsLaunch": "Lanzamiento previsto",
+    "statsLaunchDate": "Jun 2026"
   },
   "contact": {
     "heading": "Contáctanos",

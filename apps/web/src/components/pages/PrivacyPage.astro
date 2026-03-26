@@ -1,19 +1,25 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PrivacyAccordionClient from '../../components/PrivacyAccordionClient';
+import PrivacyAccordionClient from '../PrivacyAccordionClient';
 import { t } from '../../i18n';
+import type { Locale } from '../../i18n';
 
-const strings = t('en');
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
 ---
 
-<BaseLayout title={strings.meta.privacyTitle} locale="en">
+<BaseLayout title={strings.meta.privacyTitle} locale={locale}>
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
     <h1 class="text-[32px] sm:text-[40px] font-bold text-neutral-900 mb-2">{strings.privacy.heading}</h1>
     <p class="text-[13px] text-neutral-500 mb-8">{strings.privacy.lastUpdated}</p>
 
     <p class="text-[15px] text-neutral-700 mb-8 leading-relaxed" set:html={strings.privacy.intro} />
 
-    <PrivacyAccordionClient locale="en" client:visible />
+    <PrivacyAccordionClient locale={locale} client:visible />
 
     <p class="text-[13px] text-neutral-500 mt-12 border-t border-neutral-200 pt-6">
       {strings.privacy.footer}

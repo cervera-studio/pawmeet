@@ -579,7 +579,12 @@ function getItalianSections(): PrivacySection[] {
           </li>
           <li>
             Web:{' '}
-            <a href="https://cervera.studio" className="text-primary underline" target="_blank" rel="noopener">
+            <a
+              href="https://cervera.studio"
+              className="text-primary underline"
+              target="_blank"
+              rel="noopener"
+            >
               cervera.studio
             </a>
           </li>
@@ -1144,7 +1149,12 @@ function getEnglishSections(): PrivacySection[] {
           </li>
           <li>
             Web:{' '}
-            <a href="https://cervera.studio" className="text-primary underline" target="_blank" rel="noopener">
+            <a
+              href="https://cervera.studio"
+              className="text-primary underline"
+              target="_blank"
+              rel="noopener"
+            >
               cervera.studio
             </a>
           </li>

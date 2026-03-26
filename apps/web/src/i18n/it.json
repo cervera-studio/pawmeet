@@ -13,7 +13,7 @@
     "langLabel": "IT"
   },
   "hero": {
-    "eyebrow": "Lancio 2027",
+    "eyebrow": "Lancio Giugno 2026",
     "headlinePart1": "Trova il compagno",
     "headlinePart2": "di passeggiata",
     "headlineHighlight": "perfetto",
@@ -95,8 +95,11 @@
     "pageHeading": "Unisciti alla lista d'attesa",
     "pageDescription": "PawMeet sta arrivando! Iscriviti per essere tra i primi a scoprire l'app e ricevere accesso anticipato esclusivo.",
     "statsSubscribers": "Iscritti alla waitlist",
+    "statsSubscribersCount": "1.200+",
     "statsCities": "Citta coperte",
-    "statsLaunch": "Lancio previsto"
+    "statsCitiesCount": "15+",
+    "statsLaunch": "Lancio previsto",
+    "statsLaunchDate": "Giu 2026"
   },
   "contact": {
     "heading": "Contattaci",
@@ -125,19 +128,19 @@
     "termsLabel": "Termini e Condizioni"
   },
   "meta": {
-    "homeTitle": "Passeggia insieme al tuo cane",
-    "homeDescription": "PawMeet - Trova il compagno di passeggiata perfetto per il tuo cane. Connetti con altri proprietari di cani nella tua zona.",
-    "aboutTitle": "Chi siamo",
-    "aboutDescription": "Scopri il team dietro PawMeet e la nostra missione.",
-    "blogTitle": "Blog",
-    "blogDescription": "Consigli, guide e storie dal mondo PawMeet.",
-    "contactTitle": "Contatti",
-    "contactDescription": "Contattaci per qualsiasi domanda o suggerimento su PawMeet.",
-    "waitlistTitle": "Lista d'attesa",
-    "waitlistDescription": "Iscriviti alla lista d'attesa di PawMeet e sii tra i primi a provare l'app.",
-    "privacyTitle": "Privacy Policy",
-    "termsTitle": "Termini e Condizioni d'Uso",
-    "cookieTitle": "Cookie Policy"
+    "homeTitle": "App per passeggiare con il cane in compagnia",
+    "homeDescription": "PawMeet trova compagni di passeggiata compatibili per il tuo cane in base a taglia, energia e temperamento. Unisciti a 1.200+ proprietari in Italia.",
+    "aboutTitle": "Chi siamo — Il team di PawMeet",
+    "aboutDescription": "Siamo proprietari di cani che hanno creato PawMeet per trasformare la passeggiata quotidiana in un momento di socializzazione. Scopri la nostra missione.",
+    "blogTitle": "Blog — Guide e consigli per proprietari di cani",
+    "blogDescription": "Consigli su socializzazione canina, parchi dog-friendly in Italia e passeggiate sicure. Tutto per te e il tuo cane.",
+    "contactTitle": "Contatti — PawMeet",
+    "contactDescription": "Hai domande su PawMeet? Scrivici. Risponderemo al più presto.",
+    "waitlistTitle": "Iscriviti alla waitlist — PawMeet arriva a giugno 2026",
+    "waitlistDescription": "Sii tra i primi a provare PawMeet, l'app per trovare compagni di passeggiata per il tuo cane. Accesso anticipato esclusivo per chi si iscrive ora.",
+    "privacyTitle": "Privacy Policy — PawMeet",
+    "termsTitle": "Termini e Condizioni d'Uso — PawMeet",
+    "cookieTitle": "Cookie Policy — PawMeet"
   },
   "about": {
     "heading": "Chi siamo",

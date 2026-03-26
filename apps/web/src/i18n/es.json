@@ -14,18 +14,18 @@
   },
   "hero": {
     "eyebrow": "Lanzamiento Junio 2026",
-    "headlinePart1": "Encuentra el compañero",
-    "headlinePart2": "de paseo",
-    "headlineHighlight": "perfecto",
-    "subtitle": "Conéctate con otros dueños de perros en tu zona. Organiza paseos y convierte cada salida en una aventura.",
+    "headlinePart1": "La app para pasear",
+    "headlinePart2": "con tu perro,",
+    "headlineHighlight": "por fin.",
+    "subtitle": "Conéctate con otros dueños en tu zona. Organiza paseos, encuentra amigos para tu perro y convierte cada salida en una aventura.",
     "ctaPrimary": "Únete a la lista de espera",
     "ctaSecondary": "Descubre más",
     "ctaHref": "/es/waitlist",
     "ctaSecondaryHref": "#como-funciona"
   },
   "features": {
-    "heading": "Todo lo que necesitas",
-    "description": "Funcionalidades pensadas para hacer de cada paseo una mejor experiencia.",
+    "heading": "Pasear con tu perro nunca fue tan bonito",
+    "description": "Cada funcionalidad de PawMeet está pensada para transformar el paseo diario en un momento para recordar.",
     "comingSoonLabel": "Pronto",
     "items": {
       "smartMatch": {
@@ -55,8 +55,8 @@
     }
   },
   "steps": {
-    "heading": "Cómo funciona",
-    "description": "Tres simples pasos para empezar a pasear en compañía.",
+    "heading": "Cómo funciona la app",
+    "description": "Tres simples pasos para encontrar amigos para el paseo de tu perro.",
     "stepLabel": "Paso",
     "sectionId": "como-funciona",
     "items": {
@@ -75,7 +75,7 @@
     }
   },
   "downloadCta": {
-    "heading": "¿Listo para pasear?",
+    "heading": "¿Listo para encontrar el compañero de paseo de tu perro?",
     "description": "Descarga la app y únete a miles de dueños de perros que ya encontraron sus compañeros de paseo.",
     "appStoreLabel": "Descargar en",
     "googlePlayLabel": "Disponible en",
@@ -120,7 +120,7 @@
     "directEmail": "También puedes escribirnos directamente a"
   },
   "footer": {
-    "tagline": "La comunidad para quienes aman pasear con su perro. Encuentra compañeros de paseo compatibles en tu zona.",
+    "tagline": "La comunidad para quienes aman pasear con su perro. Encuentra amigos para tu perro y compañeros de paseo compatibles, cerca de ti.",
     "exploreHeading": "Explorar",
     "legalHeading": "Legal",
     "copyright": "Cervera Studio",
@@ -128,8 +128,8 @@
     "termsLabel": "Términos y Condiciones"
   },
   "meta": {
-    "homeTitle": "Pasea junto a tu perro",
-    "homeDescription": "PawMeet - Encuentra el compañero de paseo perfecto para tu perro. Conéctate con otros dueños en tu zona.",
+    "homeTitle": "App paseo de perros — PawMeet",
+    "homeDescription": "Encuentra el compañero de paseo ideal para tu amigo de cuatro patas. PawMeet empareja perros por carácter, tamaño y energía. Únete a la lista de espera.",
     "aboutTitle": "Quiénes somos",
     "aboutDescription": "Descubre el equipo detrás de PawMeet y nuestra misión.",
     "blogTitle": "Blog",

@@ -14,18 +14,18 @@
   },
   "hero": {
     "eyebrow": "Lansare Iunie 2026",
-    "headlinePart1": "Găsește companionul",
-    "headlinePart2": "de plimbare",
-    "headlineHighlight": "perfect",
-    "subtitle": "Conectează-te cu alți proprietari de câini din zona ta. Organizează plimbări și transformă fiecare ieșire într-o aventură.",
+    "headlinePart1": "Aplicația pentru plimbări",
+    "headlinePart2": "cu câinele tău,",
+    "headlineHighlight": "în sfârșit.",
+    "subtitle": "Conectează-te cu alți proprietari din zona ta. Organizează plimbări, găsește prieteni pentru câinele tău și transformă fiecare ieșire într-o aventură.",
     "ctaPrimary": "Înscrie-te pe lista de așteptare",
     "ctaSecondary": "Află mai multe",
     "ctaHref": "/ro/waitlist",
     "ctaSecondaryHref": "#cum-functioneaza"
   },
   "features": {
-    "heading": "Tot ce ai nevoie",
-    "description": "Funcționalități gândite pentru a face din fiecare plimbare o experiență mai bună.",
+    "heading": "Plimbarea cu câinele nu a fost niciodată atât de frumoasă",
+    "description": "Fiecare funcționalitate PawMeet este gândită pentru a transforma plimbarea zilnică într-un moment de neuitat.",
     "comingSoonLabel": "În curând",
     "items": {
       "smartMatch": {
@@ -55,8 +55,8 @@
     }
   },
   "steps": {
-    "heading": "Cum funcționează",
-    "description": "Trei pași simpli pentru a începe să te plimbi în companie.",
+    "heading": "Cum funcționează aplicația",
+    "description": "Trei pași simpli pentru a găsi prieteni pentru plimbarea câinelui tău.",
     "stepLabel": "Pasul",
     "sectionId": "cum-functioneaza",
     "items": {
@@ -75,7 +75,7 @@
     }
   },
   "downloadCta": {
-    "heading": "Pregătit de plimbare?",
+    "heading": "Pregătit să găsești companionul de plimbare al câinelui tău?",
     "description": "Descarcă aplicația și alătură-te miilor de proprietari de câini care și-au găsit deja companionii de plimbare.",
     "appStoreLabel": "Descarcă de pe",
     "googlePlayLabel": "Disponibil pe",
@@ -120,7 +120,7 @@
     "directEmail": "Ne poți scrie și direct la"
   },
   "footer": {
-    "tagline": "Comunitatea pentru cei care iubesc să se plimbe cu câinele lor. Găsește companioni de plimbare compatibili din zona ta.",
+    "tagline": "Comunitatea pentru cei care iubesc să se plimbe cu câinele lor. Găsește prieteni pentru câinele tău și companioni de plimbare compatibili, aproape de tine.",
     "exploreHeading": "Explorează",
     "legalHeading": "Legal",
     "copyright": "Cervera Studio",
@@ -128,8 +128,8 @@
     "termsLabel": "Termeni și Condiții"
   },
   "meta": {
-    "homeTitle": "Plimbă-te împreună cu câinele tău",
-    "homeDescription": "PawMeet - Găsește companionul de plimbare perfect pentru câinele tău. Conectează-te cu alți proprietari din zona ta.",
+    "homeTitle": "Aplicație plimbare câini — PawMeet",
+    "homeDescription": "Găsește companionul de plimbare ideal pentru prietenul tău cu patru labe. PawMeet potrivește câinii după caracter, mărime și energie. Înscrie-te pe lista de așteptare.",
     "aboutTitle": "Despre noi",
     "aboutDescription": "Descoperă echipa din spatele PawMeet și misiunea noastră.",
     "blogTitle": "Blog",

@@ -50,7 +50,6 @@
     "uploadPhotoError": "Fotografia nu a putut fi încărcată. Reîncearcă.",
     "uploadAvatarError": "Imaginea de profil nu a putut fi încărcată. Reîncearcă."
   },
-
   "tabs": {
     "discover": "Descoperă",
     "map": "Hartă",
@@ -61,7 +60,6 @@
     "walks": "Plimbări",
     "profile": "Profil"
   },
-
   "modals": {
     "dogDetail": "Detalii câine",
     "settings": "Setări",
@@ -73,7 +71,6 @@
     "newStory": "Poveste nouă",
     "ageGate": "Verificare vârstă"
   },
-
   "discovery": {
     "title": "Descoperă",
     "subtitle": "Câini din apropiere",
@@ -137,7 +134,6 @@
       "mountain": "Munte"
     }
   },
-
   "walks": {
     "title": "Plimbări",
     "calendar": "Calendar",
@@ -240,7 +236,6 @@
       }
     }
   },
-
   "feed": {
     "title": "Feed",
     "noPostsYet": "Nicio postare încă",
@@ -282,7 +277,6 @@
       "noViewsDescription": "Nimeni nu a văzut încă această poveste."
     }
   },
-
   "profile": {
     "title": "Profil",
     "defaultName": "Utilizator",
@@ -391,7 +385,6 @@
       "noFriendsSubtitle": "Prietenii sunt persoanele pe care le urmărești și care te urmăresc la rândul lor."
     }
   },
-
   "events": {
     "title": "Evenimente",
     "createButton": "Creează eveniment",
@@ -477,7 +470,6 @@
       "noOfficialEvents": "Niciun eveniment oficial"
     }
   },
-
   "matches": {
     "title": "Match-urile tale",
     "noMatches": "Niciun match încă",
@@ -534,7 +526,6 @@
       "tier4": "Lesă de gestionat"
     }
   },
-
   "chat": {
     "title": "Chat",
     "groupChat": "Chat de grup",
@@ -556,7 +547,6 @@
     },
     "tapToRetry": "Atinge pentru a reincerca"
   },
-
   "auth": {
     "welcome": {
       "slide1Title": "Găsește parteneri de plimbare",
@@ -619,7 +609,6 @@
       "invalidDate": "Dată invalidă"
     }
   },
-
   "consent": {
     "simpleTitle": "Ajută-ne să îmbunătățim PawMeet",
     "simpleDescription": "Activând serviciile opționale ne ajuți să facem aplicația mai bună pentru tine și câinele tău. Poți schimba oricând din Setări.",
@@ -647,7 +636,6 @@
     "savePreferences": "Salvează preferințele",
     "readPrivacyPolicy": "Citește Politica de Confidențialitate completă"
   },
-
   "settings": {
     "title": "Setări",
     "privacySection": "Confidențialitate și consimțăminte",
@@ -710,7 +698,6 @@
       "deleteError": "Eroare la ștergere. Reîncearcă mai târziu."
     }
   },
-
   "report": {
     "title": "Raportează",
     "subtitle": "Selectează motivul raportării",
@@ -728,7 +715,6 @@
       "other": "Altele"
     }
   },
-
   "blocked": {
     "title": "Utilizatori blocați",
     "noBlocked": "Niciun utilizator blocat",
@@ -738,7 +724,6 @@
     "unblockButton": "Deblochează",
     "unblockError": "Utilizatorul nu a putut fi deblocat. Reîncearcă."
   },
-
   "userProfile": {
     "blockTitle": "Blochează utilizatorul",
     "blockMessage": "Vrei să blochezi pe {{name}}?",
@@ -748,19 +733,16 @@
     "blockError": "Utilizatorul nu a putut fi blocat. Reîncearcă.",
     "followError": "Acțiunea nu a putut fi finalizată. Reîncearcă."
   },
-
   "searchUsers": {
     "placeholder": "Caută utilizatori...",
     "noResults": "Niciun rezultat",
     "noResultsDescription": "Încearcă să cauți cu un alt nume."
   },
-
   "errorBoundary": {
     "title": "Ceva nu a mers bine",
     "description": "A apărut o eroare neașteptată. Încearcă să reîncarci ecranul.",
     "retryButton": "Reîncearcă"
   },
-
   "location": {
     "permissionTitle": "Locație necesară",
     "permissionMessage": "PawMeet are nevoie de locația ta pentru a arăta câinii din apropiere. Activează locația din setări.",
@@ -769,7 +751,6 @@
     "notGranted": "Permisiunea de locație nu a fost acordată",
     "fetchError": "Eroare la obținerea locației"
   },
-
   "badges": {
     "firstMeeting": "Prima întâlnire",
     "regularWalker": "Plimbăreț regulat",
@@ -777,7 +758,6 @@
     "friendlyDog": "Câine prietenos",
     "noBadges": "Niciun badge încă"
   },
-
   "labels": {
     "toy": "Toy",
     "small": "Mică",
@@ -813,7 +793,6 @@
     "beach": "Plajă",
     "mountain": "Munte"
   },
-
   "dogForm": {
     "validation": {
       "selectSize": "Selectează mărimea",
@@ -829,7 +808,6 @@
     "createError": "Eroare la creare",
     "addPhotos": "Adaugă fotografii"
   },
-
   "moodLog": {
     "title": "Starea câinelui",
     "ratingLabel": "Cum a fost câinele tău în timpul plimbării?",
@@ -858,5 +836,16 @@
     "submit": "Salvează starea",
     "submitting": "Se salvează...",
     "submitError": "Starea nu a putut fi salvată. Încearcă din nou."
+  },
+  "validation": {
+    "email_invalid": "Please enter a valid email address",
+    "password_min_length": "Password must be at least 8 characters",
+    "password_uppercase_required": "Password must contain at least one uppercase letter",
+    "password_digit_required": "Password must contain at least one number",
+    "date_of_birth_required": "Please enter your date of birth",
+    "date_of_birth_future": "Date of birth cannot be in the future",
+    "date_of_birth_min_age": "You must be at least 18 years old to sign up",
+    "display_name_min": "Name must be at least 2 characters",
+    "display_name_max": "Name cannot exceed 50 characters"
   }
 }

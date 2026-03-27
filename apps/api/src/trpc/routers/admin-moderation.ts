@@ -143,7 +143,6 @@ interface ModerationRouterDeps {
   auditLogRepo: AuditLogRepository;
 }
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: tRPC router groups related procedures
 export function createAdminModerationRouter(deps: ModerationRouterDeps) {
   const adminProcedure = createAdminProcedure();
   const { adminDataRepo, auditLogRepo } = deps;

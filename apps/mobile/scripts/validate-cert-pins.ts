@@ -65,18 +65,14 @@ async function main() {
   }
 
   if (errors.length > 0) {
-    // biome-ignore lint/suspicious/noConsole: build script uses console for output
     console.error('\n[CertificatePinning] Build blocked:\n');
     for (const err of errors) {
-      // biome-ignore lint/suspicious/noConsole: build script uses console for output
       console.error(`  - ${err}`);
     }
-    // biome-ignore lint/suspicious/noConsole: build script uses console for output
     console.error('');
     process.exit(1);
   }
 
-  // biome-ignore lint/suspicious/noConsole: build script uses console for output
   console.log('[CertificatePinning] All pins validated successfully.');
 }
 

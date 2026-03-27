@@ -172,7 +172,8 @@ function canGenerateBioFromState(state: DogFormState): boolean {
 
 /** Asserts non-null for fields guaranteed present by step validation. */
 function required<T>(val: T | null | undefined): T {
-  return val as T;
+  if (val == null) throw new Error('Required field is missing');
+  return val;
 }
 
 function buildBioMutationInput(state: DogFormState) {
@@ -251,7 +252,6 @@ function buildFormData(state: DogFormState) {
 
 // -- Hook --
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: multi-step dog creation wizard coordinates form state, validation, and API calls
 export function useNewDogViewModel() {
   const router = useRouter();
   const addDog = useDogsStore((s) => s.addDog);

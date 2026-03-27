@@ -13,7 +13,6 @@ type MyTicket = RouterOutput['support']['listMyTickets'][number];
 
 const TYPING_DEBOUNCE_MS = 2000;
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: support chat view model coordinates messages, typing, and WS events
 export function useSupportChatViewModel() {
   const { ticketId: rawTicketId } = useLocalSearchParams<{ ticketId: string }>();
   const ticketId = rawTicketId && isValidUUID(rawTicketId) ? rawTicketId : undefined;

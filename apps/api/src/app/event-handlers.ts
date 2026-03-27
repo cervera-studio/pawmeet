@@ -60,7 +60,6 @@ export interface EventHandlerDeps {
 }
 
 /** Register all domain event handlers. Call once at startup. */
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: event handler registry is inherently long — each handler is independent
 export function registerDomainEventHandlers(deps: EventHandlerDeps): void {
   const {
     chat,

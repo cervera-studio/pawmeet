@@ -10,7 +10,6 @@ import { useWalks } from '@/hooks/useWalks';
 import { isValidUUID } from '@/lib/deep-link-validation';
 import { useAuthStore } from '@/stores/auth';
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: chat view model coordinates messages, typing, and WS events
 export function useChatConversationViewModel() {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
   const [paramError, setParamError] = useState<string | null>(null);

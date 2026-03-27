@@ -4,15 +4,13 @@ import { logger } from '@pawmeet/utils';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { SupportRepository } from '../ports/support-repository.js';
-import type { UserRepository } from '../ports/user-repository.js';
 
 type Deps = {
   supportRepo: SupportRepository;
   emailService: EmailService;
-  userRepo: UserRepository;
 };
 
-export function createCreateSupportTicket({ supportRepo, emailService, userRepo }: Deps) {
+export function createCreateSupportTicket({ supportRepo, emailService }: Deps) {
   return async (
     userId: string,
     subject: string,
@@ -36,7 +34,6 @@ export function createCreateSupportTicket({ supportRepo, emailService, userRepo 
     });
 
     // Send notification email to support team (non-blocking)
-    const _user = await userRepo.findById(userId);
     const preview =
       sanitizedMessage.length > 100 ? `${sanitizedMessage.slice(0, 97)}...` : sanitizedMessage;
 

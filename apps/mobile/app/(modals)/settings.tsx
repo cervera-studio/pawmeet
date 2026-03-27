@@ -22,7 +22,6 @@ const LANGUAGES = [
 
 const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'https://pawmeet.io';
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: settings screen contains many sections
 export default function SettingsModal() {
   usePreventScreenCapture();
   const { t } = useTranslation();

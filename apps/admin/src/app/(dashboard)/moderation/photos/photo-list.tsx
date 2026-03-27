@@ -31,7 +31,6 @@ function getGridCols(): number {
   return GRID_COLS.base;
 }
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: photo moderation grid with keyboard navigation, WS, and inline actions
 export function PhotoList({ initialPhotos }: PhotoListProps) {
   const t = useTranslations('photos');
   const { user } = useAuthContext();

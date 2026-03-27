@@ -34,10 +34,11 @@ export function PhotoViewer({
   const [zoom, setZoom] = useState(1);
 
   // Sync index when opened on a new photo
+  // biome-ignore lint/correctness/useExhaustiveDependencies: open triggers zoom reset when viewer reopens on same photo
   useEffect(() => {
     setIndex(currentIndex);
     setZoom(1);
-  }, [currentIndex]);
+  }, [currentIndex, open]);
 
   const photo = photos[index];
 

@@ -50,7 +50,6 @@
     "uploadPhotoError": "No se pudo subir la foto. Inténtalo de nuevo.",
     "uploadAvatarError": "No se pudo subir la imagen de perfil. Inténtalo de nuevo."
   },
-
   "tabs": {
     "discover": "Descubrir",
     "map": "Mapa",
@@ -61,7 +60,6 @@
     "walks": "Paseos",
     "profile": "Perfil"
   },
-
   "modals": {
     "dogDetail": "Detalle del perro",
     "settings": "Ajustes",
@@ -73,7 +71,6 @@
     "newStory": "Nueva historia",
     "ageGate": "Verificación de edad"
   },
-
   "discovery": {
     "title": "Descubrir",
     "subtitle": "Perros cercanos",
@@ -137,7 +134,6 @@
       "mountain": "Montaña"
     }
   },
-
   "walks": {
     "title": "Paseos",
     "calendar": "Calendario",
@@ -240,7 +236,6 @@
       }
     }
   },
-
   "feed": {
     "title": "Feed",
     "noPostsYet": "Aún no hay publicaciones",
@@ -282,7 +277,6 @@
       "noViewsDescription": "Nadie ha visto esta historia todavía."
     }
   },
-
   "profile": {
     "title": "Perfil",
     "defaultName": "Usuario",
@@ -391,7 +385,6 @@
       "noFriendsSubtitle": "Los amigos son las personas que sigues y que también te siguen."
     }
   },
-
   "events": {
     "title": "Eventos",
     "createButton": "Crear evento",
@@ -477,7 +470,6 @@
       "noOfficialEvents": "No hay eventos oficiales"
     }
   },
-
   "matches": {
     "title": "Tus Match",
     "noMatches": "Aún no hay match",
@@ -534,7 +526,6 @@
       "tier4": "Correa por gestionar"
     }
   },
-
   "chat": {
     "title": "Chat",
     "groupChat": "Chat de grupo",
@@ -556,7 +547,6 @@
     },
     "tapToRetry": "Toca para reintentar"
   },
-
   "auth": {
     "welcome": {
       "slide1Title": "Encuentra compañeros de paseo",
@@ -619,7 +609,6 @@
       "invalidDate": "Fecha no válida"
     }
   },
-
   "consent": {
     "simpleTitle": "Ayúdanos a mejorar PawMeet",
     "simpleDescription": "Activando los servicios opcionales nos ayudas a mejorar la app para ti y tu perro. Puedes cambiar de opinión en cualquier momento desde los Ajustes.",
@@ -647,7 +636,6 @@
     "savePreferences": "Guardar preferencias",
     "readPrivacyPolicy": "Leer la Política de Privacidad completa"
   },
-
   "settings": {
     "title": "Ajustes",
     "privacySection": "Privacidad y consentimientos",
@@ -710,7 +698,6 @@
       "deleteError": "Error al eliminar la cuenta. Inténtalo más tarde."
     }
   },
-
   "report": {
     "title": "Reportar",
     "subtitle": "Selecciona el motivo del reporte",
@@ -728,7 +715,6 @@
       "other": "Otro"
     }
   },
-
   "blocked": {
     "title": "Usuarios bloqueados",
     "noBlocked": "Ningún usuario bloqueado",
@@ -738,7 +724,6 @@
     "unblockButton": "Desbloquear",
     "unblockError": "No se pudo desbloquear al usuario. Inténtalo de nuevo."
   },
-
   "userProfile": {
     "blockTitle": "Bloquear usuario",
     "blockMessage": "¿Quieres bloquear a {{name}}?",
@@ -748,19 +733,16 @@
     "blockError": "No se pudo bloquear al usuario. Inténtalo de nuevo.",
     "followError": "No se pudo completar la acción. Inténtalo de nuevo."
   },
-
   "searchUsers": {
     "placeholder": "Buscar usuarios...",
     "noResults": "Sin resultados",
     "noResultsDescription": "Prueba a buscar con otro nombre."
   },
-
   "errorBoundary": {
     "title": "Algo salió mal",
     "description": "Se produjo un error inesperado. Intenta recargar la pantalla.",
     "retryButton": "Reintentar"
   },
-
   "location": {
     "permissionTitle": "Ubicación requerida",
     "permissionMessage": "PawMeet necesita tu ubicación para mostrar perros cercanos. Activa la ubicación en los ajustes.",
@@ -769,7 +751,6 @@
     "notGranted": "Permiso de ubicación no concedido",
     "fetchError": "Error al obtener la ubicación"
   },
-
   "badges": {
     "firstMeeting": "Primer encuentro",
     "regularWalker": "Paseador habitual",
@@ -777,7 +758,6 @@
     "friendlyDog": "Perro amigable",
     "noBadges": "Aún no hay insignias"
   },
-
   "labels": {
     "toy": "Toy",
     "small": "Pequeño",
@@ -813,7 +793,6 @@
     "beach": "Playa",
     "mountain": "Montaña"
   },
-
   "dogForm": {
     "validation": {
       "selectSize": "Selecciona el tamaño",
@@ -829,7 +808,6 @@
     "createError": "Error al crear",
     "addPhotos": "Añade fotos"
   },
-
   "moodLog": {
     "title": "Estado del perro",
     "ratingLabel": "¿Cómo estuvo tu perro durante el paseo?",
@@ -858,5 +836,16 @@
     "submit": "Guardar estado",
     "submitting": "Guardando...",
     "submitError": "No se pudo guardar el estado. Inténtalo de nuevo."
+  },
+  "validation": {
+    "email_invalid": "Please enter a valid email address",
+    "password_min_length": "Password must be at least 8 characters",
+    "password_uppercase_required": "Password must contain at least one uppercase letter",
+    "password_digit_required": "Password must contain at least one number",
+    "date_of_birth_required": "Please enter your date of birth",
+    "date_of_birth_future": "Date of birth cannot be in the future",
+    "date_of_birth_min_age": "You must be at least 18 years old to sign up",
+    "display_name_min": "Name must be at least 2 characters",
+    "display_name_max": "Name cannot exceed 50 characters"
   }
 }

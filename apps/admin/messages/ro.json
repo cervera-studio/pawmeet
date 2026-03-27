@@ -164,6 +164,8 @@
       "totalMatches": "Match-uri totale",
       "dogsCount": "Caini ({count})",
       "noDogs": "Niciun caine inregistrat",
+      "passkeysCount": "Passkeys ({count})",
+      "noPasskeys": "No passkeys registered",
       "consentsTitle": "Consimtaminte GDPR",
       "consentType": {
         "analytics": "Analytics",

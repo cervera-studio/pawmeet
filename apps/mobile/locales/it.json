@@ -50,14 +50,6 @@
     "uploadPhotoError": "Impossibile caricare la foto. Riprova.",
     "uploadAvatarError": "Impossibile caricare l'immagine del profilo. Riprova."
   },
-
-  "requireDog": {
-    "title": "Aggiungi il tuo cane",
-    "description": "Per scoprire compagni di passeggiata, organizzare incontri e chattare, devi prima creare il profilo del tuo cane.",
-    "addDog": "Aggiungi cane",
-    "later": "Esplora prima"
-  },
-
   "tabs": {
     "discover": "Scopri",
     "map": "Mappa",
@@ -68,7 +60,6 @@
     "walks": "Passeggiate",
     "profile": "Profilo"
   },
-
   "modals": {
     "dogDetail": "Dettaglio Cane",
     "settings": "Impostazioni",
@@ -80,24 +71,6 @@
     "newStory": "Nuova storia",
     "ageGate": "Verifica età"
   },
-
-  "biometric": {
-    "lockedMessage": "App bloccata per la tua sicurezza",
-    "unlock": "Sblocca",
-    "settingsTitle": "Blocco biometrico",
-    "settingsDescription": "Richiedi Face ID o Touch ID per accedere all'app",
-    "timeout": "Timeout (minuti)"
-  },
-
-  "passkey": {
-    "settingsTitle": "Passkey",
-    "settingsDescription": "Accedi con impronta digitale o riconoscimento facciale senza password",
-    "addButton": "Aggiungi passkey",
-    "defaultName": "Passkey",
-    "synced": "Sincronizzata (iCloud/Google)",
-    "thisDevice": "Solo questo dispositivo"
-  },
-
   "discovery": {
     "title": "Scopri",
     "subtitle": "Cani nelle vicinanze",
@@ -161,7 +134,6 @@
       "mountain": "Montagna"
     }
   },
-
   "walks": {
     "title": "Passeggiate",
     "calendar": "Calendario",
@@ -264,7 +236,6 @@
       }
     }
   },
-
   "feed": {
     "title": "Feed",
     "noPostsYet": "Nessun post ancora",
@@ -289,19 +260,10 @@
     "comments": {
       "title": "Commenti",
       "noComments": "Nessun commento ancora",
-      "noCommentsDescription": "Sii il primo a commentare questo post!",
       "writePlaceholder": "Scrivi un commento...",
       "replyPlaceholder": "Scrivi una risposta...",
       "replyTo": "Rispondi a",
-      "sendButton": "Invia",
-      "deleteTitle": "Elimina commento",
-      "deleteConfirm": "Sei sicuro di voler eliminare questo commento?",
-      "deleteError": "Impossibile eliminare il commento. Riprova.",
-      "report": "Segnala"
-    },
-    "reactions": {
-      "addReaction": "Aggiungi reazione",
-      "removeReaction": "Rimuovi reazione"
+      "sendButton": "Invia"
     },
     "actions": {
       "deletePost": "Elimina post",
@@ -312,28 +274,9 @@
       "publishError": "Impossibile pubblicare la storia",
       "tapToSelect": "Tocca per selezionare",
       "noViews": "Nessuna visualizzazione",
-      "noViewsDescription": "Nessuno ha ancora visto questa storia.",
-      "viewsCount": "{{count}} visualizzazioni",
-      "viewsCountOne": "1 visualizzazione"
-    },
-    "hashtag": {
-      "title": "#{{hashtag}}",
-      "noPosts": "Nessun post con questo hashtag",
-      "noPostsDescription": "Non ci sono ancora post con #{{hashtag}}.",
-      "trending": "Di tendenza",
-      "trendingTitle": "Hashtag di tendenza",
-      "postsCount": "{{count}} post",
-      "loadError": "Impossibile caricare i post"
-    },
-    "reviews": {
-      "title": "Recensioni",
-      "noReviews": "Nessuna recensione ancora",
-      "noReviewsDescription": "Le recensioni appariranno dopo le passeggiate.",
-      "anonymous": "Utente",
-      "loadError": "Impossibile caricare le recensioni"
+      "noViewsDescription": "Nessuno ha ancora visto questa storia."
     }
   },
-
   "profile": {
     "title": "Profilo",
     "defaultName": "Utente",
@@ -351,7 +294,6 @@
     "activate": "Attiva",
     "xpToNextLevel": "{{count}} XP al prossimo livello",
     "menu": {
-      "notifications": "Notifiche",
       "gamification": "Gamification",
       "activity": "Attività e Statistiche",
       "matchingInsights": "Statistiche Matching",
@@ -400,14 +342,7 @@
       "deactivateProfile": "Disattiva profilo",
       "activateProfile": "Attiva profilo",
       "deleteProfile": "Elimina profilo cane",
-      "addPhotos": "Aggiungi delle foto",
-      "viewAllBadges": "Vedi tutti",
-      "moodHistory": "Storico umore",
-      "moodHistorySubtitle": "Visualizza l'umore del tuo cane nel tempo"
-    },
-    "dogBadges": {
-      "title": "Badge",
-      "locked": "Bloccato"
+      "addPhotos": "Aggiungi delle foto"
     },
     "activity": {
       "title": "Attività",
@@ -439,10 +374,7 @@
       "title": "Sfide",
       "backButton": "Gamification",
       "completed": "Completata!",
-      "noChallenges": "Nessuna sfida attiva al momento.\nTorna presto per nuove sfide!",
-      "expired": "Scaduta",
-      "hoursLeft": "{{count}}h rimaste",
-      "daysLeft": "{{count}}g rimasti"
+      "noChallenges": "Nessuna sfida attiva al momento.\nTorna presto per nuove sfide!"
     },
     "followList": {
       "noFollowers": "Nessun follower",
@@ -450,17 +382,9 @@
       "notFollowing": "Non segui nessuno",
       "notFollowingSubtitle": "Inizia a seguire altri proprietari per restare aggiornato!",
       "noFriends": "Nessun amico ancora",
-      "noFriendsSubtitle": "Gli amici sono le persone che segui e che ti seguono a loro volta.",
-      "followsYou": "Ti segue"
+      "noFriendsSubtitle": "Gli amici sono le persone che segui e che ti seguono a loro volta."
     }
   },
-
-  "followButton": {
-    "follow": "Segui",
-    "following": "Seguendo",
-    "followBack": "Segui anche tu"
-  },
-
   "events": {
     "title": "Eventi",
     "createButton": "Crea evento",
@@ -546,7 +470,6 @@
       "noOfficialEvents": "Nessun evento ufficiale"
     }
   },
-
   "matches": {
     "title": "I tuoi Match",
     "noMatches": "Nessun match ancora",
@@ -603,7 +526,6 @@
       "tier4": "Guinzaglio da gestire"
     }
   },
-
   "chat": {
     "title": "Chat",
     "groupChat": "Chat di gruppo",
@@ -623,14 +545,8 @@
       "meetingPoint": "Punto di incontro",
       "openMap": "Tocca per aprire la mappa"
     },
-    "tapToRetry": "Tocca per riprovare",
-    "reply": "Rispondi",
-    "replyingTo": "Rispondendo a",
-    "you": "Tu",
-    "searchPlaceholder": "Cerca nei messaggi...",
-    "searchNoResults": "Nessun messaggio trovato"
+    "tapToRetry": "Tocca per riprovare"
   },
-
   "auth": {
     "welcome": {
       "slide1Title": "Trova compagni di passeggiata",
@@ -691,45 +607,8 @@
       "submitButton": "Conferma",
       "submitting": "Invio...",
       "invalidDate": "Data non valida"
-    },
-    "forgotPassword": {
-      "title": "Recupera password",
-      "subtitle": "Inserisci la tua email per ricevere un codice di verifica",
-      "emailPlaceholder": "Email",
-      "sendCode": "Invia codice",
-      "sending": "Invio in corso...",
-      "sendError": "Errore nell'invio del codice. Riprova più tardi.",
-      "resetTitle": "Reimposta password",
-      "resetSubtitle": "Inserisci il codice ricevuto e la nuova password",
-      "otpPlaceholder": "Codice di verifica (6 cifre)",
-      "newPasswordPlaceholder": "Nuova password",
-      "confirmPasswordPlaceholder": "Conferma password",
-      "resetButton": "Reimposta password",
-      "resetting": "Reimpostazione...",
-      "resetError": "Errore nel reset della password. Riprova più tardi.",
-      "resendCode": "Reinvia codice",
-      "backToLogin": "Torna al login",
-      "codeSent": "Codice inviato!",
-      "invalidEmail": "Inserisci un indirizzo email valido",
-      "codeRequired": "Il codice deve essere di 6 cifre",
-      "passwordRequired": "Inserisci la nuova password",
-      "passwordTooShort": "La password deve avere almeno 8 caratteri",
-      "passwordMismatch": "Le password non corrispondono"
-    },
-    "verifyEmail": {
-      "title": "Verifica la tua email",
-      "subtitle": "Abbiamo inviato un codice a 6 cifre a {{email}}",
-      "otpPlaceholder": "000000",
-      "verifyButton": "Verifica",
-      "verifying": "Verificando...",
-      "verifyError": "Errore di verifica. Riprova.",
-      "resendCode": "Reinvia codice",
-      "resendCountdown": "Reinvia codice ({{seconds}}s)",
-      "resendError": "Errore nel reinvio del codice",
-      "resending": "Invio in corso..."
     }
   },
-
   "consent": {
     "simpleTitle": "Aiutaci a migliorare PawMeet",
     "simpleDescription": "Attivando i servizi opzionali ci aiuti a rendere l'app migliore per te e il tuo cane. Puoi cambiare idea in qualsiasi momento dalle Impostazioni.",
@@ -757,52 +636,6 @@
     "savePreferences": "Salva preferenze",
     "readPrivacyPolicy": "Leggi la Privacy Policy completa"
   },
-
-  "privacy": {
-    "title": "Privacy e sicurezza",
-    "visibilitySection": "Visibilità",
-    "profileActive": "Profilo attivo",
-    "profileActiveDescription": "Rendi il tuo profilo visibile agli altri utenti",
-    "approximateDistance": "Distanza approssimativa",
-    "approximateDistanceDescription": "Mostra una distanza approssimativa invece di quella esatta",
-    "showLastSeen": "Ultimo accesso",
-    "showLastSeenDescription": "Mostra quando sei stato online l'ultima volta nelle chat",
-    "blockedSection": "Utenti bloccati",
-    "blockedUsers": "Gestisci utenti bloccati",
-    "blockedCount": "{{count}} bloccati",
-    "dataSection": "I tuoi dati",
-    "exportData": "Esporta i miei dati",
-    "exportDataDescription": "Ai sensi del GDPR (Art. 20), hai il diritto di ricevere una copia dei tuoi dati personali in un formato leggibile.",
-    "exportConfirmTitle": "Esporta i tuoi dati",
-    "exportConfirmMessage": "Riceverai una email con tutti i tuoi dati personali in formato leggibile. Vuoi procedere?",
-    "exportButton": "Esporta",
-    "exportSuccess": "Richiesta inviata",
-    "exportSuccessMessage": "Riceverai una email con i tuoi dati entro 48 ore.",
-    "exportError": "Impossibile esportare i dati. Riprova più tardi.",
-    "dangerSection": "Zona pericolosa",
-    "deleteAccount": "Elimina account",
-    "deleteWarning": "Il tuo account verrà disattivato immediatamente. Tutti i tuoi dati verranno eliminati definitivamente entro 30 giorni. Questa azione non può essere annullata."
-  },
-
-  "safety": {
-    "title": "Sicurezza e emergenza",
-    "description": "Gestisci i tuoi contatti di emergenza. In caso di bisogno durante una passeggiata, potrai inviare rapidamente la tua posizione a queste persone.",
-    "contactsSection": "Contatti di emergenza",
-    "noContacts": "Nessun contatto di emergenza aggiunto.\nAggiungi fino a 3 contatti che potranno essere avvisati in caso di emergenza.",
-    "maxContacts": "Massimo 3 contatti",
-    "addContact": "Aggiungi contatto",
-    "adding": "Aggiunta in corso...",
-    "namePlaceholder": "Nome",
-    "phonePlaceholder": "Numero di telefono",
-    "nameRequired": "Il nome è obbligatorio",
-    "phoneRequired": "Inserisci un numero di telefono valido",
-    "deleteConfirmTitle": "Rimuovi contatto",
-    "deleteConfirmMessage": "Vuoi rimuovere {{name}} dai contatti di emergenza?",
-    "deleteButton": "Rimuovi",
-    "howSosWorks": "Come funziona SOS",
-    "sosDescription": "Durante una passeggiata, il pulsante SOS invierà la tua posizione GPS ai tuoi contatti di emergenza."
-  },
-
   "settings": {
     "title": "Impostazioni",
     "privacySection": "Privacy e consensi",
@@ -814,7 +647,6 @@
     "errorTrackingDescription": "Report dettagliati (sempre anonimi senza consenso)",
     "marketingTitle": "Comunicazioni marketing",
     "marketingDescription": "Novità, eventi e promozioni via email",
-    "manageConsents": "Gestisci tutti i consensi",
     "notifications": {
       "title": "Notifiche",
       "newMatches": "Nuovi match",
@@ -833,21 +665,15 @@
       "enable": "Attiva orari silenziosi",
       "description": "Disattiva le notifiche in determinati orari",
       "from": "Dalle",
-      "to": "Alle",
-      "confirm": "Conferma"
+      "to": "Alle"
     },
     "general": {
       "title": "Generali",
       "shareLocation": "Condividi posizione",
       "darkMode": "Tema scuro",
       "searchRadius": "Raggio di ricerca",
-      "searchRadiusUnit": "km",
-      "searchRadiusMin": "Min 1 km — Max 25 km",
-      "selectLanguage": "Seleziona lingua",
       "language": "Lingua",
-      "italian": "Italiano",
-      "safetyAndEmergency": "Sicurezza e emergenza",
-      "contactSupport": "Contatta il supporto"
+      "italian": "Italiano"
     },
     "legal": {
       "termsOfService": "Termini di servizio",
@@ -872,7 +698,6 @@
       "deleteError": "Errore durante la cancellazione. Riprova più tardi."
     }
   },
-
   "report": {
     "title": "Segnala",
     "subtitle": "Seleziona il motivo della segnalazione",
@@ -890,7 +715,6 @@
       "other": "Altro"
     }
   },
-
   "blocked": {
     "title": "Utenti bloccati",
     "noBlocked": "Nessun utente bloccato",
@@ -900,7 +724,6 @@
     "unblockButton": "Sblocca",
     "unblockError": "Impossibile sbloccare l'utente. Riprova."
   },
-
   "userProfile": {
     "blockTitle": "Blocca utente",
     "blockMessage": "Vuoi bloccare {{name}}?",
@@ -910,19 +733,16 @@
     "blockError": "Impossibile bloccare l'utente. Riprova.",
     "followError": "Impossibile completare l'azione. Riprova."
   },
-
   "searchUsers": {
     "placeholder": "Cerca utenti...",
     "noResults": "Nessun risultato",
     "noResultsDescription": "Prova a cercare con un nome diverso."
   },
-
   "errorBoundary": {
     "title": "Qualcosa è andato storto",
     "description": "Si è verificato un errore imprevisto. Prova a ricaricare la schermata.",
     "retryButton": "Riprova"
   },
-
   "location": {
     "permissionTitle": "Posizione richiesta",
     "permissionMessage": "PawMeet ha bisogno della tua posizione per mostrare cani nelle vicinanze. Abilita la posizione nelle impostazioni.",
@@ -931,7 +751,6 @@
     "notGranted": "Permesso di posizione non concesso",
     "fetchError": "Errore nel recuperare la posizione"
   },
-
   "badges": {
     "firstMeeting": "Primo incontro",
     "regularWalker": "Camminatore regolare",
@@ -939,7 +758,6 @@
     "friendlyDog": "Cane amichevole",
     "noBadges": "Nessun badge ancora"
   },
-
   "labels": {
     "toy": "Toy",
     "small": "Piccola",
@@ -975,39 +793,7 @@
     "beach": "Spiaggia",
     "mountain": "Montagna"
   },
-
   "dogForm": {
-    "editTitle": "Modifica {{name}}",
-    "saveChanges": "Salva modifiche",
-    "saving": "Salvataggio...",
-    "saveError": "Errore nel salvataggio. Riprova.",
-    "sections": {
-      "basicInfo": "Info base",
-      "temperament": "Temperamento",
-      "walks": "Passeggiate",
-      "photos": "Foto"
-    },
-    "fields": {
-      "name": "Nome",
-      "breed": "Razza",
-      "breedSecondary": "Seconda razza (opzionale)",
-      "size": "Taglia",
-      "gender": "Sesso",
-      "bio": "Bio (opzionale)",
-      "energy": "Energia",
-      "behaviorDogs": "Con altri cani",
-      "behaviorPeople": "Con le persone",
-      "leash": "Guinzaglio",
-      "recall": "Richiamo",
-      "walkTimes": "Orari",
-      "walkTerrain": "Terreno",
-      "durationMin": "Min (min)",
-      "durationMax": "Max (min)"
-    },
-    "photosPrimary": "Principale",
-    "photosAdd": "Aggiungi",
-    "photosHint": "Aggiungi fino a 6 foto. La prima sarà la foto principale.",
-    "photosPostCreate": "Puoi anche aggiungere foto dopo la creazione del profilo.",
     "validation": {
       "selectSize": "Seleziona la taglia",
       "selectGender": "Seleziona il sesso",
@@ -1022,18 +808,6 @@
     "createError": "Errore durante la creazione",
     "addPhotos": "Aggiungi delle foto"
   },
-
-  "notifications": {
-    "title": "Notifiche",
-    "empty": "Nessuna notifica.\nLe notifiche delle tue attività appariranno qui.",
-    "noTitle": "Notifica"
-  },
-
-  "moodHistory": {
-    "title": "Storico umore",
-    "empty": "Nessun registro dell'umore.\nDopo una passeggiata, registra l'umore del tuo cane per visualizzarlo qui."
-  },
-
   "moodLog": {
     "title": "Umore del cane",
     "ratingLabel": "Com'era il tuo cane durante la passeggiata?",
@@ -1063,38 +837,6 @@
     "submitting": "Salvataggio...",
     "submitError": "Impossibile salvare l'umore. Riprova."
   },
-
-  "support": {
-    "title": "Supporto",
-    "newTicket": "Nuovo ticket",
-    "subjectLabel": "Oggetto",
-    "subjectPlaceholder": "Descrivi brevemente il problema",
-    "categoryLabel": "Categoria",
-    "messageLabel": "Messaggio",
-    "messagePlaceholder": "Descrivi il tuo problema in dettaglio...",
-    "inputPlaceholder": "Scrivi un messaggio...",
-    "send": "Invia",
-    "sending": "Invio...",
-    "empty": "Nessuna conversazione di supporto",
-    "chatEmpty": "Scrivi un messaggio per iniziare la conversazione con il supporto.",
-    "ticketClosed": "Questo ticket è stato chiuso",
-    "typing": "Il supporto sta scrivendo...",
-    "categories": {
-      "general": "Generale",
-      "bug": "Bug",
-      "account": "Account",
-      "safety": "Sicurezza",
-      "billing": "Fatturazione",
-      "other": "Altro"
-    },
-    "status": {
-      "open": "Aperto",
-      "in_progress": "In corso",
-      "resolved": "Risolto",
-      "closed": "Chiuso"
-    }
-  },
-
   "validation": {
     "email_invalid": "Inserisci un indirizzo email valido",
     "password_min_length": "La password deve avere almeno 8 caratteri",

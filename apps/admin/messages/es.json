@@ -164,6 +164,8 @@
       "totalMatches": "Matches totales",
       "dogsCount": "Perros ({count})",
       "noDogs": "Ningún perro registrado",
+      "passkeysCount": "Passkeys ({count})",
+      "noPasskeys": "No passkeys registered",
       "consentsTitle": "Consentimientos GDPR",
       "consentType": {
         "analytics": "Analytics",

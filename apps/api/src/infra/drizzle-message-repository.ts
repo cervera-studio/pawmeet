@@ -8,7 +8,6 @@ import type {
   MessageRepository,
   PaginatedMessages,
 } from '../ports/message-repository.js';
-import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleMessageRepository implements MessageRepository {
   constructor(private readonly db: NeonHttpDatabase) {}
@@ -250,7 +249,8 @@ export class DrizzleMessageRepository implements MessageRepository {
       })
       .returning();
 
-    const row = rows[0]!;
+    const row = rows[0];
+    if (!row) throw new Error('INSERT RETURNING yielded no rows');
     const replyToId = input.replyToId ?? null;
 
     // If replying, fetch the replied-to message preview

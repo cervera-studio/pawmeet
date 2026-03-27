@@ -218,16 +218,17 @@
         "rules": {
           "performance": {
             "noImgElement": "off"
+          },
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
           }
         }
       }
     },
     {
       "includes": [
-        "apps/api/src/trpc/routers/admin.ts",
-        "apps/api/src/trpc/routers/feed.ts",
-        "apps/api/src/trpc/routers/group-events.ts",
-        "apps/api/src/trpc/routers/admin-ai-matching.ts",
+        "apps/api/src/trpc/routers/**",
+        "apps/api/src/app/event-handlers.ts",
         "apps/api/src/use-cases/export-user-data.ts",
         "apps/api/src/routes/admin-auth.ts"
       ],
@@ -257,7 +258,17 @@
       }
     },
     {
-      "includes": ["apps/mobile/plugins/*.js"],
+      "includes": ["apps/mobile/**/_vm/*.ts", "apps/mobile/app/(modals)/settings.tsx"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/mobile/plugins/*.js", "**/scripts/*"],
       "linter": {
         "rules": {
           "suspicious": {

@@ -1,6 +1,5 @@
 import type { GroupChatMessage } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import { logger } from '@pawmeet/utils';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';

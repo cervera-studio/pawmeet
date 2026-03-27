@@ -30,13 +30,13 @@ function AccordionSection({
         aria-expanded={isOpen}
         className="w-full flex items-center justify-between py-5 px-1 text-left group"
       >
-        <span className="text-[17px] sm:text-[20px] font-semibold text-neutral-900 group-hover:text-primary transition-colors">
+        <span className="text-[17px] sm:text-[20px] font-semibold text-neutral-900 group-hover:text-primary-text transition-colors">
           {item.title}
         </span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          className="flex-shrink-0 ml-4 text-neutral-500"
+          className="flex-shrink-0 ml-4 text-neutral-600"
         >
           <ChevronDown size={20} />
         </motion.span>

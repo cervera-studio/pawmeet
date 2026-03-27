@@ -177,7 +177,8 @@ export function createWebRoutes(deps: typeof SupportDeps) {
       });
 
       // Welcome email to the subscriber (localized)
-      const welcomeEmail = WAITLIST_EMAILS[locale] ?? WAITLIST_EMAILS['it']!;
+      // biome-ignore lint/style/noNonNullAssertion: 'it' key is always defined in WAITLIST_EMAILS
+      const welcomeEmail = WAITLIST_EMAILS[locale] ?? WAITLIST_EMAILS.it!;
       await resend.emails.send({
         from: 'PawMeet <noreply@pawmeet.io>',
         to: email,

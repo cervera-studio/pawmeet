@@ -131,6 +131,7 @@ export function useMessageSender(matchId: string | undefined, deps: MessageSende
         let msg: Message;
         switch (meta.kind) {
           case 'image': {
+            // biome-ignore lint/style/noNonNullAssertion: imageUri is always set when kind === 'image'
             const { mediaUrl } = await chatRepo.uploadImage(matchId, meta.imageUri!);
             const result = await chatRepo.sendMessage({ matchId, content: '', mediaUrl });
             msg = result.message as Message;

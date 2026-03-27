@@ -123,8 +123,8 @@ export function usePasskeys() {
           id: result.user.id,
           email: result.user.email,
           displayName: result.user.displayName ?? result.user.email,
-          avatarUrl: null,
-          dateOfBirth: null,
+          avatarUrl: result.user.avatarUrl ?? null,
+          dateOfBirth: result.user.dateOfBirth ?? null,
         },
         result.accessToken,
       );

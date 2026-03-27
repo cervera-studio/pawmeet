@@ -75,7 +75,7 @@ export default function ContactFormClient({ strings }: Props) {
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
             >
-              <Check size={32} className="text-primary" />
+              <Check size={32} className="text-primary-text" />
             </motion.div>
             <h2 className="text-[24px] font-bold text-neutral-900">{strings.successHeading}</h2>
             <p className="mt-3 text-[17px] text-neutral-700">{strings.successMessage}</p>
@@ -213,13 +213,16 @@ export default function ContactFormClient({ strings }: Props) {
       </AnimatePresence>
 
       <motion.div
-        className="mt-12 text-center text-neutral-500 text-[13px]"
+        className="mt-12 text-center text-neutral-600 text-[13px]"
         {...fadeUp}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <p>
           {strings.directEmail}{' '}
-          <a href="mailto:info@cervera.studio" className="text-primary hover:underline font-medium">
+          <a
+            href="mailto:info@cervera.studio"
+            className="text-primary-text hover:underline font-medium"
+          >
             info@cervera.studio
           </a>
         </p>

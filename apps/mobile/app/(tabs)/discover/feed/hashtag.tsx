@@ -54,7 +54,15 @@ const HashtagPostRow = memo(function HashtagPostRow({
   item: HashtagPost;
   onPress: (postId: string) => void;
 }) {
-  return <PostCard post={item} onLike={() => {}} onPress={() => onPress(item.id)} />;
+  return (
+    <PostCard
+      post={item}
+      onLike={() => {
+        /* no-op: like from hashtag view not supported */
+      }}
+      onPress={() => onPress(item.id)}
+    />
+  );
 });
 
 // ── Screen ────────────────────────────────────────────────────────────────

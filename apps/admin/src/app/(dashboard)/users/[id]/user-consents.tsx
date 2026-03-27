@@ -44,7 +44,7 @@ export function UserConsents({ consents }: UserConsentsProps) {
               <div key={type} className="rounded-lg border border-neutral-200 p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-neutral-900">
-                    {t(`consentType.${type}` as any)}
+                    {t(`consentType.${type}` as string)}
                   </span>
                   <Badge variant={granted ? 'success' : 'outline'}>
                     {granted ? t('consentGranted') : t('consentNotGranted')}
@@ -62,7 +62,7 @@ export function UserConsents({ consents }: UserConsentsProps) {
                         {t('consentWithdrawnAt')}: {formatDateTime(consent.withdrawnAt)}
                       </p>
                     )}
-                    <p>{t(`consentSource.${consent.source}` as any)}</p>
+                    <p>{t(`consentSource.${consent.source}` as string)}</p>
                   </div>
                 )}
                 {!consent && <p className="text-xs text-neutral-400">{t('consentNeverSet')}</p>}

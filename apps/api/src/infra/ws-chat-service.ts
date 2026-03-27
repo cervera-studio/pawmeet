@@ -1,5 +1,6 @@
 import type { WsMessage } from '@pawmeet/types';
 import type { ChatService } from '../ports/chat-service.js';
+// biome-ignore lint/suspicious/noImportCycles: ws ↔ infra cycle requires architectural refactor
 import { joinRoom, sendToRoom } from '../ws/chat.js';
 
 export class WsChatService implements ChatService {

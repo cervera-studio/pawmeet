@@ -81,6 +81,7 @@ function LocationCard({ location, isMine }: { location: LocationData; isMine: bo
   );
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: chat bubble handles multiple message types, states, and gestures
 export const ChatBubble = memo(function ChatBubble({
   text,
   isMine,
@@ -160,13 +161,11 @@ export const ChatBubble = memo(function ChatBubble({
         {isMine && status === 'sending' && <ActivityIndicator size={10} color="#9CA3AF" />}
         {isMine && status && status !== 'sending' && (
           <Text
-            className={`text-xs ${
-              status === 'read'
-                ? 'text-blue-500'
-                : status === 'failed'
-                  ? 'text-red-500'
-                  : 'text-gray-400 dark:text-neutral-500'
-            }`}
+            className={`text-xs ${(() => {
+              if (status === 'read') return 'text-blue-500';
+              if (status === 'failed') return 'text-red-500';
+              return 'text-gray-400 dark:text-neutral-500';
+            })()}`}
           >
             {STATUS_ICONS[status]}
           </Text>

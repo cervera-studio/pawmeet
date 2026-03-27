@@ -10,7 +10,7 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
-import { RRule } from 'rrule';
+import { RRule } from '../lib/rrule.js';
 import type {
   DogRepository,
   GroupEventParticipationRepository,

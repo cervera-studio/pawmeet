@@ -112,7 +112,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {user.passkeys?.length ? (
+            {user.passkeys?.length > 0 ? (
               <div className="space-y-3">
                 {user.passkeys.map((pk) => (
                   <div key={pk.id} className="flex items-center justify-between">

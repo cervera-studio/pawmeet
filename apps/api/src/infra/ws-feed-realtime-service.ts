@@ -1,5 +1,6 @@
 import { WS_EVENT } from '@pawmeet/types';
 import type { FeedRealtimeService } from '../ports/feed-realtime-service.js';
+// biome-ignore lint/suspicious/noImportCycles: ws ↔ infra cycle requires architectural refactor
 import { sendToUser } from '../ws/chat.js';
 
 export class WsFeedRealtimeService implements FeedRealtimeService {

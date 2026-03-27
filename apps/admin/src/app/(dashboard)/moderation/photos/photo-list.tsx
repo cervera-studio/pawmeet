@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -62,25 +63,31 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
     ),
   });
 
-  async function handleApprove(photoId: string) {
-    try {
-      await approvePhoto(photoId);
-      setPhotos((prev) => prev.filter((p) => p.id !== photoId));
-      toast.success(t('toast.approved'));
-    } catch (error) {
-      toast.error(handleError(error, t('toast.approveError')));
-    }
-  }
+  const handleApprove = useCallback(
+    async (photoId: string) => {
+      try {
+        await approvePhoto(photoId);
+        setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+        toast.success(t('toast.approved'));
+      } catch (error) {
+        toast.error(handleError(error, t('toast.approveError')));
+      }
+    },
+    [t],
+  );
 
-  async function handleReject(photoId: string) {
-    try {
-      await rejectPhoto(photoId);
-      setPhotos((prev) => prev.filter((p) => p.id !== photoId));
-      toast.success(t('toast.rejected'));
-    } catch (error) {
-      toast.error(handleError(error, t('toast.rejectError')));
-    }
-  }
+  const handleReject = useCallback(
+    async (photoId: string) => {
+      try {
+        await rejectPhoto(photoId);
+        setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+        toast.success(t('toast.rejected'));
+      } catch (error) {
+        toast.error(handleError(error, t('toast.rejectError')));
+      }
+    },
+    [t],
+  );
 
   async function handleApproveAll() {
     try {
@@ -162,7 +169,7 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
         }
       }
     },
-    [viewerOpen, photos, selectedIndex],
+    [viewerOpen, photos, selectedIndex, handleApprove, handleReject],
   );
 
   useEffect(() => {
@@ -216,9 +223,12 @@ export function PhotoList({ initialPhotos }: PhotoListProps) {
               onDoubleClick={() => openViewer(idx)}
             >
               {photo.imageUrl ? (
-                <img
+                <Image
                   src={photo.imageUrl}
                   alt={t('photoOf', { name: photo.userName ?? '' })}
+                  width={400}
+                  height={400}
+                  unoptimized
                   className="aspect-square w-full object-cover"
                 />
               ) : (

@@ -61,6 +61,7 @@ async function getTicketOwnerCached(ticketId: string): Promise<string | null> {
     return cached.ownerUserId;
   }
 
+  // biome-ignore lint/suspicious/noImportCycles: lazy import to break ws ↔ container cycle
   const { supportRepo } = await import('../container/services.js');
   const ownerUserId = await supportRepo.getTicketOwnerUserId(ticketId);
 
@@ -113,7 +114,7 @@ export async function handleSupportTyping(
     return;
   }
 
-  // Check if sender is an admin (lazy-import to avoid circular dependency)
+  // biome-ignore lint/suspicious/noImportCycles: lazy import to break ws ↔ container cycle
   const { adminUserRepo } = await import('../container/services.js');
   const admin = await adminUserRepo.findById(userId);
   if (!admin) {

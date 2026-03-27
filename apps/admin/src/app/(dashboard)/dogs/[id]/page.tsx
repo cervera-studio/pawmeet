@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/badge';
@@ -34,9 +35,12 @@ export default async function DogDetailPage({ params }: DogDetailPageProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           {dog.photos.length > 0 ? (
-            <img
-              src={dog.photos[0]?.url}
+            <Image
+              src={dog.photos[0]?.url ?? ''}
               alt={dog.name}
+              width={64}
+              height={64}
+              unoptimized
               className="h-16 w-16 rounded-full object-cover"
             />
           ) : (
@@ -70,7 +74,10 @@ export default async function DogDetailPage({ params }: DogDetailPageProps) {
             <InfoRow label={t('detail.gender')} value={dog.gender ?? '-'} />
             <InfoRow
               label={t('detail.neutered')}
-              value={dog.isNeutered == null ? '-' : dog.isNeutered ? tc('yes') : tc('no')}
+              value={(() => {
+                if (dog.isNeutered == null) return '-';
+                return dog.isNeutered ? tc('yes') : tc('no');
+              })()}
             />
             <InfoRow label={t('detail.addedAt')} value={formatDate(dog.createdAt)} />
           </CardContent>
@@ -131,7 +138,13 @@ export default async function DogDetailPage({ params }: DogDetailPageProps) {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {dog.photos.map((photo) => (
                 <div key={photo.id} className="relative aspect-square overflow-hidden rounded-lg">
-                  <img src={photo.url} alt={dog.name} className="h-full w-full object-cover" />
+                  <Image
+                    src={photo.url}
+                    alt={dog.name}
+                    fill
+                    unoptimized
+                    className="h-full w-full object-cover"
+                  />
                   <Badge
                     variant={photo.moderationStatus === 'approved' ? 'success' : 'secondary'}
                     className="absolute bottom-2 left-2 text-xs"

@@ -2,10 +2,8 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as AuthSession from 'expo-auth-session';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
-import * as SecureStore from 'expo-secure-store';
 
 const GOOGLE_CLIENT_ID = Constants.expoConfig?.extra?.googleClientId ?? '';
-const NONCE_KEY = 'pawmeet_oauth_nonce';
 
 const googleDiscovery: AuthSession.DiscoveryDocument = {
   authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -31,22 +29,6 @@ function decodeJwtPayload(token: string): Record<string, unknown> {
   const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
   const json = atob(padded);
   return JSON.parse(json) as Record<string, unknown>;
-}
-
-/** Persist nonce to SecureStore so it survives component remounts. */
-function persistNonce(nonce: string): void {
-  SecureStore.setItem(NONCE_KEY, nonce);
-}
-
-/** Retrieve and delete the persisted nonce (one-time use). */
-function consumePersistedNonce(): string | null {
-  const nonce = SecureStore.getItem(NONCE_KEY);
-  if (nonce) {
-    SecureStore.deleteItemAsync(NONCE_KEY).catch(() => {
-      /* fire-and-forget */
-    });
-  }
-  return nonce;
 }
 
 export async function signInWithApple(): Promise<SocialAuthResult> {

@@ -101,7 +101,7 @@ export class DrizzleSupportRepository implements SupportRepository {
   }
 
   async listTickets(query: ListTicketsQuery): Promise<PaginatedTickets> {
-    const conditions = [];
+    const conditions: ReturnType<typeof eq>[] = [];
 
     if (query.status) {
       conditions.push(eq(supportTickets.status, query.status));

@@ -80,11 +80,10 @@ export function useSupportChatViewModel() {
           const incoming: Message = {
             ...raw,
             createdAt: typeof raw.createdAt === 'string' ? raw.createdAt : String(raw.createdAt),
-            readAt: raw.readAt
-              ? typeof raw.readAt === 'string'
-                ? raw.readAt
-                : String(raw.readAt)
-              : null,
+            readAt: (() => {
+              if (!raw.readAt) return null;
+              return typeof raw.readAt === 'string' ? raw.readAt : String(raw.readAt);
+            })(),
           };
           setMessages((prev) => {
             if (prev.some((m) => m.id === incoming.id)) return prev;

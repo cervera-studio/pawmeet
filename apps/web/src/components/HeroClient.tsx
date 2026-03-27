@@ -28,7 +28,7 @@ export default function HeroClient({ strings }: Props) {
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <span className="inline-flex items-center gap-2.5 text-[13px] font-medium tracking-[0.08em] uppercase text-neutral-500">
+            <span className="inline-flex items-center gap-2.5 text-[13px] font-medium tracking-[0.08em] uppercase text-neutral-600">
               <span className="w-8 h-[1px] bg-secondary" aria-hidden="true" />
               {strings.eyebrow}
             </span>
@@ -43,7 +43,7 @@ export default function HeroClient({ strings }: Props) {
           >
             {strings.headlinePart1}
             <br className="hidden sm:block" /> {strings.headlinePart2}{' '}
-            <em className="relative not-italic text-primary">
+            <em className="relative not-italic text-primary-text">
               {strings.headlineHighlight}
               <motion.span
                 className="absolute -bottom-1 left-0 w-full h-[2px] bg-secondary origin-left"
@@ -96,7 +96,7 @@ export default function HeroClient({ strings }: Props) {
             {/* Secondary — text link, editorial */}
             <a
               href={strings.ctaSecondaryHref}
-              className="group inline-flex items-center gap-1.5 text-[15px] font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-300"
+              className="group inline-flex items-center gap-1.5 text-[15px] font-medium text-neutral-600 hover:text-neutral-900 transition-colors duration-300"
             >
               {strings.ctaSecondary}
               <span

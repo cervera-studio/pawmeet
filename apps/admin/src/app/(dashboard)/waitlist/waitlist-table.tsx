@@ -3,7 +3,7 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useMemo, useTransition } from 'react';
+import { useCallback, useMemo, useTransition } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
 import { ExportAllButton } from '@/components/export-all-button';
@@ -28,17 +28,20 @@ export function WaitlistTable({ initialData, initialSearch }: WaitlistTableProps
   const vm = useWaitlistViewModel(initialData, initialSearch);
   const [isPending, startTransition] = useTransition();
 
-  function handleRemove(id: string) {
-    startTransition(async () => {
-      const result = await removeWaitlistContact(id);
-      if (result.success) {
-        toast.success(tt('waitlist.removed'));
-        void vm.refetch();
-      } else {
-        toast.error(handleError(result.error, tt('waitlist.removeError')));
-      }
-    });
-  }
+  const handleRemove = useCallback(
+    (id: string) => {
+      startTransition(async () => {
+        const result = await removeWaitlistContact(id);
+        if (result.success) {
+          toast.success(tt('waitlist.removed'));
+          void vm.refetch();
+        } else {
+          toast.error(handleError(result.error, tt('waitlist.removeError')));
+        }
+      });
+    },
+    [tt, vm],
+  );
 
   const columns: ColumnDef<WaitlistContact>[] = useMemo(
     () => [
@@ -75,7 +78,7 @@ export function WaitlistTable({ initialData, initialSearch }: WaitlistTableProps
         ),
       },
     ],
-    [t, tc, isPending],
+    [t, tc, isPending, handleRemove],
   );
 
   return (

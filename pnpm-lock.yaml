@@ -136,7 +136,7 @@ importers:
         version: 1.19.11(hono@4.12.8)
       '@hono/trpc-server':
         specifier: ^0.4.2
-        version: 0.4.2(@trpc/server@11.13.4(typescript@5.9.3))(hono@4.12.8)
+        version: 0.4.2(@trpc/server@11.15.1(typescript@5.9.3))(hono@4.12.8)
       '@hono/zod-validator':
         specifier: ^0.7.0
         version: 0.7.6(hono@4.12.8)(zod@4.3.6)
@@ -171,8 +171,8 @@ importers:
         specifier: ^0.16.5
         version: 0.16.5
       '@trpc/server':
-        specifier: ^11.13.4
-        version: 11.13.4(typescript@5.9.3)
+        specifier: ^11.15.1
+        version: 11.15.1(typescript@5.9.3)
       '@upstash/ratelimit':
         specifier: ^2.0.0
         version: 2.0.8(@upstash/redis@1.37.0)
@@ -484,14 +484,14 @@ importers:
         version: link:../../apps/api
       '@trpc/client':
         specifier: ^11.12.0
-        version: 11.13.4(@trpc/server@11.13.4(typescript@5.9.3))(typescript@5.9.3)
+        version: 11.13.4(@trpc/server@11.15.1(typescript@5.9.3))(typescript@5.9.3)
     devDependencies:
       '@pawmeet/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@trpc/server':
-        specifier: ^11.13.4
-        version: 11.13.4(typescript@5.9.3)
+        specifier: ^11.15.1
+        version: 11.15.1(typescript@5.9.3)
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
@@ -4511,8 +4511,9 @@ packages:
       '@trpc/server': 11.13.4
       typescript: '>=5.7.2'
 
-  '@trpc/server@11.13.4':
-    resolution: {integrity: sha512-SZmLwi43KSp1D3jp2aPuzqhC644gIy87hgFuD9xWCTwFspH9Pr5DO2/JmpWjCqybTG2fTuKYzxFYLUGjTY5LGg==}
+  '@trpc/server@11.15.1':
+    resolution: {integrity: sha512-0A1fIBU0zDLXaSOhuHOChqM4mCCCi233FcPdPNXJ+FIVMd5VEGe33u6cehUavZMquIi6uIec9xymac2P4LgqMA==}
+    hasBin: true
     peerDependencies:
       typescript: '>=5.7.2'
 
@@ -11989,9 +11990,9 @@ snapshots:
     dependencies:
       hono: 4.12.8
 
-  '@hono/trpc-server@0.4.2(@trpc/server@11.13.4(typescript@5.9.3))(hono@4.12.8)':
+  '@hono/trpc-server@0.4.2(@trpc/server@11.15.1(typescript@5.9.3))(hono@4.12.8)':
     dependencies:
-      '@trpc/server': 11.13.4(typescript@5.9.3)
+      '@trpc/server': 11.15.1(typescript@5.9.3)
       hono: 4.12.8
 
   '@hono/zod-validator@0.7.6(hono@4.12.8)(zod@4.3.6)':
@@ -14565,12 +14566,12 @@ snapshots:
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
-  '@trpc/client@11.13.4(@trpc/server@11.13.4(typescript@5.9.3))(typescript@5.9.3)':
+  '@trpc/client@11.13.4(@trpc/server@11.15.1(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
-      '@trpc/server': 11.13.4(typescript@5.9.3)
+      '@trpc/server': 11.15.1(typescript@5.9.3)
       typescript: 5.9.3
 
-  '@trpc/server@11.13.4(typescript@5.9.3)':
+  '@trpc/server@11.15.1(typescript@5.9.3)':
     dependencies:
       typescript: 5.9.3
 

@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@pawmeet/typescript-config": "workspace:*",
-    "@trpc/server": "^11.13.4",
+    "@trpc/server": "^11.15.1",
     "typescript": "^5.9.0"
   }
 }

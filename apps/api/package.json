@@ -47,7 +47,7 @@
     "resend": "^6.9.4",
     "rrule": "^2.8.1",
     "ts-pattern": "^5.9.0",
-    "ws": "^8.19.0",
+    "ws": "^8.20.0",
     "zod": "^4.3.0"
   },
   "devDependencies": {

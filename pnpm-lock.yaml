@@ -274,8 +274,8 @@ importers:
         specifier: ^7.11.0
         version: 7.11.0(expo@55.0.7)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
       '@statsig/expo-bindings':
-        specifier: ^3.32.1
-        version: 3.32.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)))(expo-application@55.0.10(expo@55.0.7))(expo-device@55.0.10(expo@55.0.7))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
+        specifier: ^3.32.3
+        version: 3.32.3(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)))(expo-application@55.0.10(expo@55.0.7))(expo-device@55.0.10(expo@55.0.7))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
       '@statsig/js-client':
         specifier: ^3.32.1
         version: 3.32.1
@@ -4234,8 +4234,11 @@ packages:
   '@statsig/client-core@3.32.1':
     resolution: {integrity: sha512-KdagyAkuTi1Gr+TJkg7fyK+3kSraG+z3/x0Uyi88zE+QLfYBwZW4zmqy64/qZCZjixlSLuw/BZ4hCLzhv+/mTw==}
 
-  '@statsig/expo-bindings@3.32.1':
-    resolution: {integrity: sha512-MjsIik89GqV01b4cepFvc5Rtk21vyXv6vWBsSfk5qlAF9qS1P7fxq3CNbJAbr4+dZtTkqVZ+609EJrv0Yx3vPw==}
+  '@statsig/client-core@3.32.3':
+    resolution: {integrity: sha512-mNLwDOB1Wqwhto1DmYX0WJnrhSrAbE030CSgd/BHNN9qPKB/tSn3o629i4rrrdPI014LyuqNH4ZDm7WgOosdzg==}
+
+  '@statsig/expo-bindings@3.32.3':
+    resolution: {integrity: sha512-4Uxnz+p4QkzUnGeHTcGW7Wve/fFbHJXNPaW0TG7Ga/R2Uq+Po8S8+TJiYXzNUTtPvHnCY3XI9/JilZQUeU3Bqw==}
     peerDependencies:
       expo-application: 5.* || 6.* || 7.*
       expo-device: 5.* || 6.* || 7.* || 8.*
@@ -4245,13 +4248,16 @@ packages:
   '@statsig/js-client@3.32.1':
     resolution: {integrity: sha512-NVmHVDLo7akD2iMxhPEDF7kjkOvMwsnZY6g0Jgn5pbmDUBBlAUtAecNVJCmQjywq3EAYNkb7jCw90OpcWwQbJw==}
 
-  '@statsig/react-bindings@3.32.1':
-    resolution: {integrity: sha512-iGHmMet4SgDaKNpw9i7KW8LE+SZAy68zmP1ySb49x9v8+/woHYW6jrMhNsHuDr1QQ7GuBGTj4kMtJH02loX99A==}
+  '@statsig/js-client@3.32.3':
+    resolution: {integrity: sha512-auavf10iHFntmI7k7bIvvvikE1IAUbrbnjCrBrRkU5RNCuAXgWdtK0X8DqV3OIOTYsZYkqdIIqlHE2YxnM14Jw==}
+
+  '@statsig/react-bindings@3.32.3':
+    resolution: {integrity: sha512-5s5J3e0yEYza4P1D9zJPy9NVTrcP4rWWaNhDWl9dPx78RhR2DyqHG0WIB/TzIHR+rW1+T7Veq+KK8NYgIOlTlw==}
     peerDependencies:
       react: ^16.6.3 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  '@statsig/react-native-core@3.32.1':
-    resolution: {integrity: sha512-SQfkB13jisbBSs7Uyt+Lie0Rk69GKZaKLblh6q9M9tRJ8YGs0KE71nAJpM0zlHLM/cBlbvzJ2RCZc7a1IstAag==}
+  '@statsig/react-native-core@3.32.3':
+    resolution: {integrity: sha512-Ohi+obEsXb1U5arGgz3qXDl8hWDodCr4yPVgyzckvBkjnF6peLnhBqqYVOJ3uHTWbNDbXc1jJesiUTIRXNJOmA==}
     peerDependencies:
       '@react-native-async-storage/async-storage': 1.* || 2.*
       react-native: 0.*
@@ -14336,12 +14342,14 @@ snapshots:
 
   '@statsig/client-core@3.32.1': {}
 
-  '@statsig/expo-bindings@3.32.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)))(expo-application@55.0.10(expo@55.0.7))(expo-device@55.0.10(expo@55.0.7))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)':
+  '@statsig/client-core@3.32.3': {}
+
+  '@statsig/expo-bindings@3.32.3(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)))(expo-application@55.0.10(expo@55.0.7))(expo-device@55.0.10(expo@55.0.7))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)':
     dependencies:
-      '@statsig/client-core': 3.32.1
-      '@statsig/js-client': 3.32.1
-      '@statsig/react-bindings': 3.32.1(react@19.2.0)
-      '@statsig/react-native-core': 3.32.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))
+      '@statsig/client-core': 3.32.3
+      '@statsig/js-client': 3.32.3
+      '@statsig/react-bindings': 3.32.3(react@19.2.0)
+      '@statsig/react-native-core': 3.32.3(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))
       expo-application: 55.0.10(expo@55.0.7)
       expo-device: 55.0.10(expo@55.0.7)
       react: 19.2.0
@@ -14353,16 +14361,20 @@ snapshots:
     dependencies:
       '@statsig/client-core': 3.32.1
 
-  '@statsig/react-bindings@3.32.1(react@19.2.0)':
+  '@statsig/js-client@3.32.3':
     dependencies:
-      '@statsig/client-core': 3.32.1
-      '@statsig/js-client': 3.32.1
+      '@statsig/client-core': 3.32.3
+
+  '@statsig/react-bindings@3.32.3(react@19.2.0)':
+    dependencies:
+      '@statsig/client-core': 3.32.3
+      '@statsig/js-client': 3.32.3
       react: 19.2.0
 
-  '@statsig/react-native-core@3.32.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))':
+  '@statsig/react-native-core@3.32.3(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))':
     dependencies:
       '@react-native-async-storage/async-storage': 2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))
-      '@statsig/client-core': 3.32.1
+      '@statsig/client-core': 3.32.3
       react-native: 0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)
 
   '@statsig/statsig-node-core-darwin-arm64@0.16.5':

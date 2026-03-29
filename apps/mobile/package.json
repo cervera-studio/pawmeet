@@ -22,7 +22,7 @@
     "@pawmeet/validation": "workspace:*",
     "@react-native-community/datetimepicker": "^8.6.0",
     "@react-native-community/netinfo": "^11.5.2",
-    "@sentry/react-native": "^7.11.0",
+    "@sentry/react-native": "^8.6.0",
     "@statsig/expo-bindings": "^3.32.3",
     "@statsig/js-client": "^3.32.1",
     "expo": "~55.0.7",

@@ -71,7 +71,7 @@ COPY --from=builder /app/apps/api/dist/ ./dist/
 
 # Install external dependencies not bundled by tsup (native/binary packages)
 # Must match tsup.config.ts noExternal exclusions: bullmq, @sentry/*, @statsig/*, @opentelemetry/*
-RUN echo '{"type":"module","dependencies":{"bullmq":"^5.70.0","@sentry/node":"^10.43.0","@statsig/statsig-node-core":"^0.16.3","onnxruntime-node":"^1.22.0"},"pnpm":{"onlyBuiltDependencies":["onnxruntime-node","msgpackr-extract"]}}' > package.json && \
+RUN echo '{"type":"module","dependencies":{"bullmq":"^5.70.0","pg":"^8.16.0","@sentry/node":"^10.43.0","@statsig/statsig-node-core":"^0.16.3","onnxruntime-node":"^1.22.0"},"pnpm":{"onlyBuiltDependencies":["onnxruntime-node","msgpackr-extract"]}}' > package.json && \
     pnpm install --prod --no-lockfile
 
 # Run as non-root user

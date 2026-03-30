@@ -13,7 +13,7 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const pool = new pg.default.Pool({ connectionString: DATABASE_URL });
+const pool = new pg.Pool({ connectionString: DATABASE_URL });
 
 const statements = [
   'CREATE EXTENSION IF NOT EXISTS postgis',

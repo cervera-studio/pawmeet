@@ -45,3 +45,16 @@ variable "api_secrets" {
   default     = {}
   sensitive   = true
 }
+
+variable "admin_image_tag" {
+  description = "Docker image tag for the admin container"
+  type        = string
+  default     = "latest"
+}
+
+variable "admin_secrets" {
+  description = "Secret environment variables for the admin app (name → value)"
+  type        = map(string)
+  default     = {}
+  sensitive   = true
+}

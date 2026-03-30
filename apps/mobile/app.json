@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "scheme": "pawmeet",
     "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "io.pawmeet.mobile",
@@ -16,11 +17,13 @@
         "NSCameraUsageDescription": "Per scattare foto del tuo cane",
         "NSPhotoLibraryUsageDescription": "Per caricare foto del tuo cane",
         "NSHealthShareUsageDescription": "PawMeet utilizza i dati di Apple Salute per sincronizzare passi, distanza e attività con il tuo profilo.",
-        "NSFaceIDUsageDescription": "Per proteggere l'accesso alla tua app PawMeet"
+        "NSFaceIDUsageDescription": "Per proteggere l'accesso alla tua app PawMeet",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#065F46"
       },
       "package": "io.pawmeet.mobile",

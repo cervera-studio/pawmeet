@@ -104,6 +104,45 @@ module "api" {
   tags = local.tags
 }
 
+# ── Container App (Admin) ─────────────────────────────────────
+module "admin" {
+  source = "./modules/container-app"
+
+  name                         = "admin"
+  project                      = var.project
+  environment                  = var.environment
+  resource_group_name          = azurerm_resource_group.main.name
+  location                     = azurerm_resource_group.main.location
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  container_registry_id        = azurerm_container_registry.main.id
+  container_registry_server    = azurerm_container_registry.main.login_server
+
+  image_tag = var.admin_image_tag
+
+  cpu    = 0.25
+  memory = "0.5Gi"
+
+  min_replicas = 1
+  max_replicas = 2
+
+  http_concurrency_threshold = 50
+
+  health_check_path = "/"
+  port              = 3000
+
+  env_vars = {
+    NODE_ENV                 = "production"
+    PORT                     = "3000"
+    APP_VERSION              = var.admin_image_tag
+    NEXT_PUBLIC_API_URL      = "https://${module.api.fqdn}"
+    NEXT_PUBLIC_SENTRY_DSN   = "https://30044a6df7d42e0d81113a39b20cfb69@o4511031773822976.ingest.de.sentry.io/4511031860199504"
+  }
+
+  secret_env_vars = var.admin_secrets
+
+  tags = local.tags
+}
+
 # ── Outputs ─────────────────────────────────────────────────────
 output "api_fqdn" {
   description = "API fully qualified domain name"
@@ -113,6 +152,16 @@ output "api_fqdn" {
 output "api_url" {
   description = "API base URL"
   value       = "https://${module.api.fqdn}"
+}
+
+output "admin_fqdn" {
+  description = "Admin fully qualified domain name"
+  value       = module.admin.fqdn
+}
+
+output "admin_url" {
+  description = "Admin base URL"
+  value       = "https://${module.admin.fqdn}"
 }
 
 output "container_registry_server" {

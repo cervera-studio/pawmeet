@@ -5,12 +5,18 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
-const releaseVersion = process.env.VERCEL_GIT_COMMIT_SHA
-  ? `pawmeet-admin@${process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7)}`
+const releaseVersion = process.env.APP_VERSION
+  ? `pawmeet-admin@${process.env.APP_VERSION}`
   : undefined;
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
+  typescript: {
+    // Type checking runs in CI (pnpm typecheck) — skip during Docker build where
+    // tRPC inferred types break without full project references
+    ignoreBuildErrors: !!process.env.DOCKER_BUILD,
+  },
   transpilePackages: ['@pawmeet/types', '@pawmeet/validation', '@pawmeet/i18n'],
   env: {
     NEXT_PUBLIC_SENTRY_RELEASE: releaseVersion,

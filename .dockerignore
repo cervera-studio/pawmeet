@@ -6,15 +6,22 @@
 *.log
 .DS_Store
 
+# Apps not needed in Docker builds (only apps/api and apps/admin are containerized)
+apps/mobile/
+apps/web/
+
+# Large directories not needed in Docker builds
+infra/
+docs/
+.github/
+
 # App-specific build outputs
 apps/*/dist
-apps/web/.astro
 apps/admin/.next
-apps/mobile/.expo
 
 # Dev/test files
 **/*.test.ts
 **/*.test.tsx
 **/vitest.config.*
 **/.eslintrc.*
-coverage
+coverage/

@@ -12,12 +12,13 @@
       }
     },
     "preview": {
-      "distribution": "internal",
-      "prebuildCommand": "npx tsx scripts/validate-cert-pins.ts"
+      "distribution": "internal"
     },
     "production": {
       "autoIncrement": true,
-      "prebuildCommand": "npx tsx scripts/validate-cert-pins.ts"
+      "env": {
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      }
     }
   }
 }

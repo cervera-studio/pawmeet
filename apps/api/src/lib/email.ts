@@ -60,7 +60,7 @@ export async function hashToken(token: string): Promise<string> {
 }
 
 /**
- * Generate an 8-digit OTP code (100M combinations vs 1M for 6-digit).
+ * Generate a 6-digit OTP code (1M combinations, industry standard).
  */
 export function generateOtp(): string {
   const array = new Uint8Array(4);
@@ -68,9 +68,8 @@ export function generateOtp(): string {
   const b0 = array[0] ?? 0;
   const b1 = array[1] ?? 0;
   const b2 = array[2] ?? 0;
-  const b3 = array[3] ?? 0;
-  const num = ((b0 << 24) | (b1 << 16) | (b2 << 8) | b3) >>> 0;
-  return String(num % 100_000_000).padStart(8, '0');
+  const num = ((b0 << 16) | (b1 << 8) | b2) >>> 0;
+  return String(num % 1_000_000).padStart(6, '0');
 }
 
 /**

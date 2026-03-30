@@ -5,7 +5,7 @@ import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { zodToFieldErrors } from '@/lib/validation';
 
-type Phase = 'request' | 'reset';
+type Phase = 'request' | 'sent' | 'reset';
 
 const requestSchema = z.object({
   email: z.string().email(i18n.t('auth.forgotPassword.invalidEmail')),
@@ -52,7 +52,7 @@ export function useForgotPasswordViewModel() {
     setLoading(true);
     try {
       await api.auth.forgotPassword.mutate({ email });
-      setPhase('reset');
+      setPhase('sent');
     } catch (e) {
       setApiError(e instanceof Error ? e.message : i18n.t('auth.forgotPassword.sendError'));
     } finally {
@@ -100,6 +100,10 @@ export function useForgotPasswordViewModel() {
     }, 60_000);
   }, [email, resendDisabled]);
 
+  const goToReset = useCallback(() => {
+    setPhase('reset');
+  }, []);
+
   const navigateToLogin = useCallback(() => {
     router.back();
   }, [router]);
@@ -121,6 +125,7 @@ export function useForgotPasswordViewModel() {
     handleRequestReset,
     handleResetPassword,
     handleResendCode,
+    goToReset,
     navigateToLogin,
   };
 }

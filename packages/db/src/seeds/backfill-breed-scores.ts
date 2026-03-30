@@ -6,9 +6,9 @@
  */
 
 import process from 'node:process';
-import pg from 'pg';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import pg from 'pg';
 import { breeds } from '../schema/breeds';
 import { breedsData } from './breeds';
 

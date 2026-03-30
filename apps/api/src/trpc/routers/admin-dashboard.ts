@@ -37,8 +37,11 @@ export function createAdminDashboardRouter(deps: DashboardRouterDeps) {
 
     getAnalyticsKpis: adminProcedure.query(async () => {
       const [posthogMetrics, domainMetrics] = await Promise.all([
-        posthogQueryService?.getDauMauMetrics(30) ??
-          { dauToday: 0, mauCurrent: 0, dauTimeSeries: [] },
+        posthogQueryService?.getDauMauMetrics(30) ?? {
+          dauToday: 0,
+          mauCurrent: 0,
+          dauTimeSeries: [],
+        },
         adminDataRepo.getTodayDomainMetrics(),
       ]);
 

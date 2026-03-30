@@ -1,7 +1,7 @@
 import process from 'node:process';
-import pg from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import pg from 'pg';
 
 /**
  * Run pending Drizzle migrations against the database.

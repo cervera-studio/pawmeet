@@ -17,14 +17,16 @@ export default function ForgotPasswordScreen() {
       >
         <View className="flex-1 justify-center px-8">
           <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-            {vm.phase === 'request'
-              ? t('auth.forgotPassword.title')
-              : t('auth.forgotPassword.resetTitle')}
+            {vm.phase === 'reset'
+              ? t('auth.forgotPassword.resetTitle')
+              : t('auth.forgotPassword.title')}
           </Text>
           <Text className="mb-8 text-lg text-gray-500 dark:text-neutral-500">
             {vm.phase === 'request'
               ? t('auth.forgotPassword.subtitle')
-              : t('auth.forgotPassword.resetSubtitle')}
+              : vm.phase === 'sent'
+                ? t('auth.forgotPassword.sentSubtitle')
+                : t('auth.forgotPassword.resetSubtitle')}
           </Text>
 
           {vm.apiError ? (
@@ -51,6 +53,19 @@ export default function ForgotPasswordScreen() {
                 }
                 disabled={vm.loading}
               />
+            </>
+          ) : vm.phase === 'sent' ? (
+            <>
+              <Button
+                onPress={vm.goToReset}
+                label={t('auth.forgotPassword.iReceivedCode')}
+              />
+
+              <Pressable onPress={vm.handleRequestReset} className="mt-4 items-center py-2">
+                <Text className="text-base text-gray-500 dark:text-neutral-500">
+                  {t('auth.forgotPassword.didNotReceive')}
+                </Text>
+              </Pressable>
             </>
           ) : (
             <>

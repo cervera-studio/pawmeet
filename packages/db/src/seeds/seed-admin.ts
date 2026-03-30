@@ -1,7 +1,7 @@
 import process from 'node:process';
-import pg from 'pg';
 import { hash } from 'bcryptjs';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import pg from 'pg';
 import { adminUsers } from '../schema/admin-users';
 
 async function seed() {

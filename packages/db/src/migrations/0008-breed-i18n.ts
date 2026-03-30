@@ -11,7 +11,9 @@ async function migrate() {
   await pool.query('ALTER TABLE "breeds" ADD COLUMN IF NOT EXISTS "code" varchar(100)');
 
   console.log('[DB] 2. Populate code from name (slugify)...');
-  await pool.query(`UPDATE "breeds" SET "code" = regexp_replace(regexp_replace(regexp_replace(lower("name"), '[^a-z0-9]+', '_', 'g'), '^_|_$', '', 'g'), '_+', '_', 'g') WHERE "code" IS NULL`);
+  await pool.query(
+    `UPDATE "breeds" SET "code" = regexp_replace(regexp_replace(regexp_replace(lower("name"), '[^a-z0-9]+', '_', 'g'), '^_|_$', '', 'g'), '_+', '_', 'g') WHERE "code" IS NULL`,
+  );
 
   console.log('[DB] 3. Make code NOT NULL...');
   await pool.query('ALTER TABLE "breeds" ALTER COLUMN "code" SET NOT NULL');

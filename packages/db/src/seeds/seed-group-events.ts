@@ -1,7 +1,7 @@
 import process from 'node:process';
-import pg from 'pg';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import pg from 'pg';
 import { dogProfiles } from '../schema/dogs';
 import { groupEventParticipants, groupEvents } from '../schema/group-events';
 import { users } from '../schema/users';

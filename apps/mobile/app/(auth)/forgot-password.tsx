@@ -56,10 +56,7 @@ export default function ForgotPasswordScreen() {
             </>
           ) : vm.phase === 'sent' ? (
             <>
-              <Button
-                onPress={vm.goToReset}
-                label={t('auth.forgotPassword.iReceivedCode')}
-              />
+              <Button onPress={vm.goToReset} label={t('auth.forgotPassword.iReceivedCode')} />
 
               <Pressable onPress={vm.handleRequestReset} className="mt-4 items-center py-2">
                 <Text className="text-base text-gray-500 dark:text-neutral-500">

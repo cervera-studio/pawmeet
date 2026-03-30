@@ -62,7 +62,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@pawmeet.io"
+                  placeholder="email@example.com"
                   value={vm.email}
                   onChange={(e) => vm.setEmail(e.target.value)}
                   required

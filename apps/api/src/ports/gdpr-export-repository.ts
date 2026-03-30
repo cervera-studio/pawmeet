@@ -270,17 +270,6 @@ export interface GdprUserReport {
   createdAt: Date;
 }
 
-// -- Analytics --
-
-export interface GdprAnalyticsEvent {
-  eventName: string;
-  properties: Record<string, unknown> | null;
-  clientTimestamp: Date;
-  serverTimestamp: Date;
-  platform: string;
-  screenName: string | null;
-}
-
 // -- Emergency contacts --
 
 export interface GdprEmergencyContact {
@@ -389,7 +378,6 @@ export interface GdprExportRepository {
   getSwipeScoreLogs(dogIds: string[]): Promise<GdprSwipeScoreLog[]>;
   getContentReports(userId: string): Promise<GdprContentReport[]>;
   getUserReports(userId: string): Promise<GdprUserReport[]>;
-  getAnalyticsEvents(userId: string): Promise<GdprAnalyticsEvent[]>;
   getOAuthAccounts(userId: string): Promise<GdprOAuthAccount[]>;
   getEmergencyContacts(userId: string): Promise<GdprEmergencyContact[]>;
   getSafetyCheckins(userId: string): Promise<GdprSafetyCheckin[]>;

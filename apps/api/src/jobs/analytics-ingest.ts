@@ -4,7 +4,6 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { ConsentRepository } from '../infra/drizzle-consent-repository.js';
 import { PostHogAnalyticsProvider } from '../infra/posthog-analytics-provider.js';
-import type { AnalyticsJobRepository } from '../ports/analytics-job-repository.js';
 import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 import type { AnalyticsJobData } from './queue.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
@@ -12,12 +11,11 @@ import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js'
 interface AnalyticsWorkerDeps {
   providers?: AnalyticsProvider[];
   consentRepo: ConsentRepository;
-  analyticsJobRepo: AnalyticsJobRepository;
 }
 
 export function createAnalyticsWorker(deps: AnalyticsWorkerDeps): Worker<AnalyticsJobData>;
 /**
- * @deprecated Pass `{ providers, consentRepo, analyticsJobRepo }` object instead.
+ * @deprecated Pass `{ providers, consentRepo }` object instead.
  */
 export function createAnalyticsWorker(providers: AnalyticsProvider[]): Worker<AnalyticsJobData>;
 export function createAnalyticsWorker(
@@ -27,7 +25,6 @@ export function createAnalyticsWorker(
     ? depsOrProviders
     : (depsOrProviders.providers ?? []);
   const consentRepo = Array.isArray(depsOrProviders) ? null : depsOrProviders.consentRepo;
-  const analyticsJobRepo = Array.isArray(depsOrProviders) ? null : depsOrProviders.analyticsJobRepo;
   const maxAgeMs = ANALYTICS_MAX_EVENT_AGE_DAYS * 24 * 60 * 60 * 1000;
 
   const worker = new Worker<AnalyticsJobData>(
@@ -44,25 +41,7 @@ export function createAnalyticsWorker(
 
       if (valid.length === 0) return;
 
-      // Batch insert into Neon (source of truth) with deduplication
-      const values = valid.map((e) => ({
-        clientEventId: e.clientEventId,
-        userId: e.userId,
-        sessionId: e.sessionId ?? null,
-        eventName: e.eventName,
-        properties: e.properties ?? null,
-        clientTimestamp: new Date(e.clientTimestamp),
-        platform: e.platform,
-        appVersion: e.appVersion ?? null,
-        screenName: e.screenName ?? null,
-        schemaVersion: 1,
-      }));
-
-      if (analyticsJobRepo) {
-        await analyticsJobRepo.insertEvents(values);
-      }
-
-      // Forward to external providers (PostHog, future OpenPanel) — best-effort
+      // Forward to external providers (PostHog) — sole analytics sink
       // Only forward events from users who have granted analytics consent
       if (providers.length > 0) {
         let consentedEvents = valid;

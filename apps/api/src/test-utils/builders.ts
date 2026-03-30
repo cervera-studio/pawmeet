@@ -1016,7 +1016,6 @@ export function buildGdprExportRepo(
     getSwipeScoreLogs: vi.fn().mockResolvedValue([]),
     getContentReports: vi.fn().mockResolvedValue([]),
     getUserReports: vi.fn().mockResolvedValue([]),
-    getAnalyticsEvents: vi.fn().mockResolvedValue([]),
     getOAuthAccounts: vi.fn().mockResolvedValue([]),
     getEmergencyContacts: vi.fn().mockResolvedValue([]),
     getSafetyCheckins: vi.fn().mockResolvedValue([]),

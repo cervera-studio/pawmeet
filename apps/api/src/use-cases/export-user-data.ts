@@ -203,14 +203,6 @@ export interface UserDataExport {
     status: string;
     createdAt: string;
   }[];
-  analyticsEvents: {
-    eventName: string;
-    properties: Record<string, unknown> | null;
-    clientTimestamp: string;
-    serverTimestamp: string;
-    platform: string;
-    screenName: string | null;
-  }[];
   emergencyContacts: {
     name: string;
     phone: string;
@@ -329,7 +321,6 @@ export function createExportUserData(deps: Deps) {
       swipeScoreLogsData,
       contentReportsData,
       userReportsData,
-      analyticsEventsData,
       emergencyContactsData,
       safetyCheckinsData,
       moodLogsData,
@@ -361,7 +352,6 @@ export function createExportUserData(deps: Deps) {
       gdprExportRepo.getSwipeScoreLogs(dogIds),
       gdprExportRepo.getContentReports(userId),
       gdprExportRepo.getUserReports(userId),
-      gdprExportRepo.getAnalyticsEvents(userId),
       gdprExportRepo.getEmergencyContacts(userId),
       gdprExportRepo.getSafetyCheckins(userId),
       gdprExportRepo.getMoodLogs(userId),
@@ -594,14 +584,6 @@ export function createExportUserData(deps: Deps) {
         description: r.description,
         status: r.status,
         createdAt: toIso(r.createdAt),
-      })),
-      analyticsEvents: analyticsEventsData.map((e) => ({
-        eventName: e.eventName,
-        properties: e.properties,
-        clientTimestamp: toIso(e.clientTimestamp),
-        serverTimestamp: toIso(e.serverTimestamp),
-        platform: e.platform,
-        screenName: e.screenName,
       })),
       emergencyContacts: emergencyContactsData.map((c) => ({
         name: c.name,

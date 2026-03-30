@@ -1,7 +1,6 @@
 import process from 'node:process';
 import { logger } from '@pawmeet/utils';
 import {
-  analyticsAggregationDeps,
   analyticsProviders,
   analyticsWorkerDeps,
   contentModerationWorkerDeps,
@@ -28,7 +27,6 @@ import {
   walkSafetyAlertDeps,
   weeklyChallengeRotationDeps,
 } from '../container/index.js';
-import { createAnalyticsAggregationWorker } from './analytics-aggregation.js';
 import { createAnalyticsWorker } from './analytics-ingest.js';
 import { createContentModerationWorker } from './content-moderation.js';
 import { createDataCleanupWorker } from './data-cleanup.js';
@@ -46,7 +44,6 @@ import { createMlTrainingLabelsWorker } from './ml-training-labels.js';
 import { createNearbySuggestionWorker, scheduleNearbySuggestions } from './nearby-suggestion.js';
 import { createPhotoModerationWorker } from './photo-moderation.js';
 import {
-  scheduleAnalyticsAggregation,
   scheduleDataCleanup,
   scheduleExperimentGuardrails,
   scheduleExperimentMetrics,
@@ -80,7 +77,6 @@ export async function startWorkers() {
   const emailWorker = createEmailWorker();
   const eventStatusWorker = createEventStatusWorker(eventStatusDeps);
   const analyticsWorker = createAnalyticsWorker(analyticsWorkerDeps);
-  const aggregationWorker = createAnalyticsAggregationWorker(analyticsAggregationDeps);
   const dataCleanupWorker = createDataCleanupWorker(dataCleanupDeps);
   const gdprExportWorker = createGdprExportWorker(gdprExportWorkerDeps);
   const storyCleanupWorker = createStoryCleanupWorker(storyCleanupWorkerDeps);
@@ -106,7 +102,6 @@ export async function startWorkers() {
 
   // Schedule repeatable jobs
   await scheduleEventStatusCheck();
-  await scheduleAnalyticsAggregation();
   await scheduleDataCleanup();
   await scheduleStoryCleanup();
   await scheduleRecurringEventGeneration();
@@ -134,7 +129,6 @@ export async function startWorkers() {
       emailWorker.close(),
       eventStatusWorker.close(),
       analyticsWorker.close(),
-      aggregationWorker.close(),
       dataCleanupWorker.close(),
       gdprExportWorker.close(),
       storyCleanupWorker.close(),

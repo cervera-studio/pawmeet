@@ -19,7 +19,6 @@ import { createUpdatePreferences } from '../use-cases/update-preferences.js';
 import { createUploadAvatarUrl } from '../use-cases/upload-avatar-url.js';
 import {
   analyticsProviders,
-  analyticsRepo,
   appleAuthService,
   authService,
   consentRepo,
@@ -47,7 +46,6 @@ export const userDeps = {
   registerPushToken: createRegisterPushToken({ userRepo }),
   updateNotificationPrefs: createUpdateNotificationPrefs({ userRepo }),
   deleteAccount: createDeleteAccount({
-    analyticsRepo,
     userRepo,
     tokenRepo,
     authService,

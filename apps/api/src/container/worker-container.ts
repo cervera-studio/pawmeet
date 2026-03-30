@@ -2,7 +2,6 @@
 
 import { createExportUserData } from '../use-cases/export-user-data.js';
 import {
-  analyticsJobRepo,
   analyticsProviders,
   badgeRepo,
   breedDetectionService,
@@ -37,11 +36,6 @@ import {
 export const analyticsWorkerDeps = {
   providers: analyticsProviders,
   consentRepo,
-  analyticsJobRepo,
-};
-
-export const analyticsAggregationDeps = {
-  analyticsJobRepo,
 };
 
 export const dataCleanupDeps = {

@@ -1,7 +1,6 @@
 export type { ActivityRepository } from './activity-repository.js';
 export type { AdminUser, AdminUserRepository } from './admin-user-repository.js';
 export type { AnalyticsProvider, AnalyticsProviderEvent } from './analytics-provider.js';
-export type { AnalyticsRepository } from './analytics-repository.js';
 export type { AuthService, TokenPair } from './auth-service.js';
 export type { BadgeRepository } from './badge-repository.js';
 export type { BioGenerationService } from './bio-generation-service.js';

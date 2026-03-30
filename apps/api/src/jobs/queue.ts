@@ -27,7 +27,6 @@ export const QUEUE_NAMES = {
   DATA_CLEANUP: 'data-cleanup',
   GPS_RETENTION: 'gps-retention',
   ANALYTICS: 'analytics',
-  ANALYTICS_AGGREGATION: 'analytics-aggregation',
   ANALYTICS_DLQ: 'analytics-dlq',
   GDPR_EXPORT: 'gdpr-export',
   RECURRING_EVENT: 'recurring-event',
@@ -346,35 +345,6 @@ export function getAnalyticsQueue(): Queue {
 
 export async function enqueueAnalyticsEvents(data: AnalyticsJobData) {
   return getAnalyticsQueue().add('ingest', data);
-}
-
-// --- Analytics Aggregation Queue ---
-
-let _analyticsAggregationQueue: Queue | null = null;
-
-export function getAnalyticsAggregationQueue(): Queue {
-  if (!_analyticsAggregationQueue) {
-    _analyticsAggregationQueue = new Queue(QUEUE_NAMES.ANALYTICS_AGGREGATION, {
-      connection: getRedisConnection(),
-      defaultJobOptions: {
-        attempts: 3,
-        backoff: { type: 'exponential', delay: 5000 },
-        removeOnComplete: 30,
-        removeOnFail: 100,
-      },
-    });
-  }
-  return _analyticsAggregationQueue;
-}
-
-/** Schedule daily analytics aggregation at 02:00 UTC. */
-export async function scheduleAnalyticsAggregation() {
-  const queue = getAnalyticsAggregationQueue();
-  await queue.upsertJobScheduler(
-    'daily-aggregation',
-    { pattern: '0 2 * * *' },
-    { name: 'aggregate' },
-  );
 }
 
 // ── Analytics Dead-Letter Queue ──────────────────────────────────────────────

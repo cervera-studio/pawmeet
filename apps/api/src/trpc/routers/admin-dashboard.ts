@@ -35,20 +35,16 @@ export function createAdminDashboardRouter(deps: DashboardRouterDeps) {
     }),
 
     getAnalyticsKpis: adminProcedure.query(async () => {
-      const [dauToday, dauTimeSeries, dbMetrics] = await Promise.all([
+      const [dauToday, dauTimeSeries, domainMetrics] = await Promise.all([
         getDauCount(new Date().toISOString().slice(0, 10)),
         getDauTimeSeries(30),
-        adminDataRepo.getAnalyticsDbMetrics(),
+        adminDataRepo.getTodayDomainMetrics(),
       ]);
-
-      const todayMap = new Map(dbMetrics.todayMetrics.map((m) => [m.eventName, m.value]));
 
       return {
         dauToday,
-        registrationsToday: todayMap.get('auth_registration_completed') ?? 0,
-        matchesToday: todayMap.get('match_created') ?? 0,
-        totalEvents: dbMetrics.totalEvents,
-        eventsLast24h: dbMetrics.eventsLast24h,
+        registrationsToday: domainMetrics.registrationsToday,
+        matchesToday: domainMetrics.matchesToday,
         dauTimeSeries,
       };
     }),

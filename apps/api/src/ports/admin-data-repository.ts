@@ -22,10 +22,9 @@ export interface DashboardStats {
   dailyMatches: TimeSeriesPoint[];
 }
 
-export interface AnalyticsDbMetrics {
-  todayMetrics: { eventName: string; value: number }[];
-  totalEvents: number;
-  eventsLast24h: number;
+export interface TodayDomainMetrics {
+  registrationsToday: number;
+  matchesToday: number;
 }
 
 export interface AuditLogEntry {
@@ -389,7 +388,7 @@ export interface NotificationStats {
 
 export interface AdminDashboardRepository {
   getStats(): Promise<DashboardStats>;
-  getAnalyticsDbMetrics(): Promise<AnalyticsDbMetrics>;
+  getTodayDomainMetrics(): Promise<TodayDomainMetrics>;
 }
 
 export interface AdminAuditLogRepository {

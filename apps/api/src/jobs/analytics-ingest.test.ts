@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { AnalyticsJobRepository } from '../ports/analytics-job-repository.js';
 import type { AnalyticsProvider, AnalyticsProviderEvent } from '../ports/analytics-provider.js';
 import type { AnalyticsJobData } from './queue.js';
 
@@ -72,46 +71,23 @@ function buildProvider(overrides: Partial<AnalyticsProvider> = {}): AnalyticsPro
   };
 }
 
-function buildAnalyticsJobRepo(
-  overrides: Partial<AnalyticsJobRepository> = {},
-): AnalyticsJobRepository {
-  return {
-    insertEvents: vi.fn().mockResolvedValue(undefined),
-    getEventCountForDay: vi.fn().mockResolvedValue(0),
-    getUniqueUsersForDay: vi.fn().mockResolvedValue(0),
-    getEventCountsByName: vi.fn().mockResolvedValue([]),
-    upsertDailyMetrics: vi.fn().mockResolvedValue(undefined),
-    ...overrides,
-  };
-}
-
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 describe('createAnalyticsWorker', () => {
   let provider: AnalyticsProvider;
-  let analyticsJobRepo: AnalyticsJobRepository;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     provider = buildProvider();
-    analyticsJobRepo = buildAnalyticsJobRepo();
 
     const { createAnalyticsWorker } = await import('./analytics-ingest.js');
     createAnalyticsWorker({
       providers: [provider],
       consentRepo: null as never,
-      analyticsJobRepo,
     });
   });
 
-  it('inserts valid events via analyticsJobRepo', async () => {
-    const event = buildEvent();
-    await capturedProcessor({ data: { events: [event] } });
-
-    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
-  });
-
-  it('forwards events to provider after insert', async () => {
+  it('forwards events to provider', async () => {
     const event = buildEvent();
     await capturedProcessor({ data: { events: [event] } });
 
@@ -145,9 +121,6 @@ describe('createAnalyticsWorker', () => {
     const event = buildEvent({ userId: null });
     await capturedProcessor({ data: { events: [event] } });
 
-    // Repository still gets the insert
-    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
-    // But provider gets nothing (can't pseudonymize null)
     expect(provider.capture).not.toHaveBeenCalled();
   });
 
@@ -157,20 +130,14 @@ describe('createAnalyticsWorker', () => {
     });
 
     vi.clearAllMocks();
-    analyticsJobRepo = buildAnalyticsJobRepo();
     const { createAnalyticsWorker } = await import('./analytics-ingest.js');
     createAnalyticsWorker({
       providers: [failingProvider],
       consentRepo: null as never,
-      analyticsJobRepo,
     });
 
     const event = buildEvent();
-    // Should not throw
     await expect(capturedProcessor({ data: { events: [event] } })).resolves.toBeUndefined();
-
-    // Insert still happened
-    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
   });
 
   it('filters out events older than max age', async () => {
@@ -180,26 +147,20 @@ describe('createAnalyticsWorker', () => {
 
     await capturedProcessor({ data: { events: [staleEvent] } });
 
-    // No insert because all events were filtered
-    expect(analyticsJobRepo.insertEvents).not.toHaveBeenCalled();
     expect(provider.capture).not.toHaveBeenCalled();
   });
 
   it('works with no providers configured', async () => {
     vi.clearAllMocks();
-    analyticsJobRepo = buildAnalyticsJobRepo();
     const { createAnalyticsWorker } = await import('./analytics-ingest.js');
     createAnalyticsWorker({
       providers: [],
       consentRepo: null as never,
-      analyticsJobRepo,
     });
 
     const event = buildEvent();
-    await capturedProcessor({ data: { events: [event] } });
-
-    // Insert still works
-    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
+    // Should complete without error even with no providers
+    await expect(capturedProcessor({ data: { events: [event] } })).resolves.toBeUndefined();
   });
 
   it('handles mixed valid and stale events', async () => {
@@ -210,10 +171,9 @@ describe('createAnalyticsWorker', () => {
 
     await capturedProcessor({ data: { events: [valid, stale] } });
 
-    // Only 1 event inserted (the valid one)
-    expect(analyticsJobRepo.insertEvents).toHaveBeenCalledTimes(1);
-    const insertedValues = (analyticsJobRepo.insertEvents as ReturnType<typeof vi.fn>).mock
-      .calls[0][0];
-    expect(insertedValues).toHaveLength(1);
+    // Only valid event forwarded to provider
+    const captured = (provider.capture as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as AnalyticsProviderEvent[];
+    expect(captured).toHaveLength(1);
   });
 });

@@ -3,22 +3,15 @@ import { Worker } from 'bullmq';
 import type { ExperimentMetricsJobRepository } from '../ports/experiment-metrics-job-repository.js';
 import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
 
-const EXPERIMENT_NAME = 'matching_algorithm_v1';
-const AI_VARIANT = 'ai';
-
 interface ExperimentMetricsDeps {
   experimentMetricsJobRepo: ExperimentMetricsJobRepository;
 }
 
 /**
- * BullMQ worker that computes daily A/B experiment metrics snapshots.
+ * BullMQ worker that computes daily ML model performance metrics.
  * Scheduled daily at 03:30 UTC via repeatable job.
  *
- * 1. Aggregates analytics_events by experiment_variant for yesterday
- * 2. Upserts into experiment_metrics_snapshots (one row per variant)
- * 3. Computes model_performance_daily for AI variant (score buckets, weight distribution)
- * 4. Upserts into model_performance_daily
- *
+ * Computes model_performance_daily from swipe_score_logs and matching preferences.
  * Idempotent: uses onConflictDoUpdate so re-runs overwrite with fresh values.
  */
 export function createExperimentMetricsWorker(deps: ExperimentMetricsDeps) {
@@ -34,46 +27,13 @@ export function createExperimentMetricsWorker(deps: ExperimentMetricsDeps) {
       const nextDayStart = new Date(dayStart);
       nextDayStart.setDate(nextDayStart.getDate() + 1);
 
-      logger.info('experiment-metrics', `Computing snapshot for ${dateStr}`);
+      logger.info('experiment-metrics', `Computing model performance for ${dateStr}`);
 
-      // ── 1. Per-variant metrics from analytics_events ──────────────────────
-
-      const variantRows = await experimentMetricsJobRepo.getVariantMetricsForDay(
-        { dayStart, nextDayStart },
-        EXPERIMENT_NAME,
-      );
-
-      // ── 2. Upsert experiment_metrics_snapshots ────────────────────────────
-
-      if (variantRows.length > 0) {
-        const snapshotValues = variantRows.map((row) => ({
-          experimentName: EXPERIMENT_NAME,
-          snapshotDate: dayStart,
-          variant: row.variant,
-          userCount: row.userCount,
-          totalDiscoveries: row.totalDiscoveries,
-          totalLikes: row.totalLikes,
-          totalMatches: row.totalMatches,
-          totalWalksCompleted: row.totalWalksCompleted,
-          totalMessages: row.totalMessages,
-          avgCompatibilityScore: row.avgCompatibilityScore,
-          avgMatchRate: row.totalLikes > 0 ? row.totalMatches / row.totalLikes : 0,
-        }));
-
-        await experimentMetricsJobRepo.upsertExperimentSnapshots(snapshotValues);
-      }
-
-      // ── 3. Model performance daily (AI variant only) ──────────────────────
-
-      // Total predictions & avg score
+      // Total predictions & avg score from swipe_score_logs
       const predictionStats = await experimentMetricsJobRepo.getPredictionStatsForDay(
         dayStart,
         nextDayStart,
       );
-
-      // AI variant match count from analytics
-      const aiVariantRow = variantRows.find((r) => r.variant === AI_VARIANT);
-      const aiTotalMatches = aiVariantRow?.totalMatches ?? 0;
 
       // Score buckets (10 bins: 0.0-0.1, 0.1-0.2, ..., 0.9-1.0)
       const bucketRows = await experimentMetricsJobRepo.getScoreBucketsForDay(
@@ -87,19 +47,17 @@ export function createExperimentMetricsWorker(deps: ExperimentMetricsDeps) {
       // Success rate distribution (histogram of successRate)
       const successRateRows = await experimentMetricsJobRepo.getSuccessRateDistribution();
 
-      // ── 4. Upsert model_performance_daily ─────────────────────────────────
-
       await experimentMetricsJobRepo.upsertModelPerformance({
         snapshotDate: dayStart,
         totalPredictions: predictionStats?.totalPredictions ?? 0,
-        totalMatches: aiTotalMatches,
+        totalMatches: 0,
         avgOverallScore: predictionStats?.avgOverallScore ?? null,
         scoreBuckets: bucketRows as unknown as Record<string, unknown>,
         weightDistribution: weightRows as unknown as Record<string, unknown>,
         successRateDistribution: successRateRows as unknown as Record<string, unknown>,
       });
 
-      logger.info('experiment-metrics', `Snapshot computed for ${dateStr}`);
+      logger.info('experiment-metrics', `Model performance computed for ${dateStr}`);
     },
     { connection: getRedisConnection(), concurrency: 1 },
   );

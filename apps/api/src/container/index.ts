@@ -24,7 +24,6 @@ export {
   walkDeps,
 } from './walk-container.js';
 export {
-  analyticsAggregationDeps,
   analyticsWorkerDeps,
   contentModerationWorkerDeps,
   dataCleanupDeps,

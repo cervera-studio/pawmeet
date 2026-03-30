@@ -18,8 +18,6 @@ export interface AnalyticsKpis {
   dauToday: number;
   registrationsToday: number;
   matchesToday: number;
-  totalEvents: number;
-  eventsLast24h: number;
   dauTimeSeries: TimeSeriesPoint[];
 }
 

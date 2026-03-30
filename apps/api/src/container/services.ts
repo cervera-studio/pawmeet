@@ -9,8 +9,6 @@ import { DrizzleActivityRepository } from '../infra/drizzle-activity-repository.
 import { DrizzleAdminAiMatchingRepository } from '../infra/drizzle-admin-ai-matching-repository.js';
 import { DrizzleAdminDataRepository } from '../infra/drizzle-admin-data-repository.js';
 import { DrizzleAdminUserRepository } from '../infra/drizzle-admin-user-repository.js';
-import { DrizzleAnalyticsJobRepository } from '../infra/drizzle-analytics-job-repository.js';
-import { DrizzleAnalyticsRepository } from '../infra/drizzle-analytics-repository.js';
 import { DrizzleAuditLogRepository } from '../infra/drizzle-audit-log-repository.js';
 import { DrizzleBadgeRepository } from '../infra/drizzle-badge-repository.js';
 import { DrizzleBreedRepository } from '../infra/drizzle-breed-repository.js';
@@ -65,11 +63,9 @@ import type { AnalyticsProvider } from '../ports/analytics-provider.js';
 // ── Repositories ────────────────────────────────────────────────────────────────
 
 export const adminAiMatchingRepo = new DrizzleAdminAiMatchingRepository(db);
-export const analyticsJobRepo = new DrizzleAnalyticsJobRepository(db);
 export const auditLogRepo = new DrizzleAuditLogRepository(db);
 export const adminDataRepo = new DrizzleAdminDataRepository(db);
 export const adminUserRepo = new DrizzleAdminUserRepository(db);
-export const analyticsRepo = new DrizzleAnalyticsRepository(db);
 export const dataCleanupRepo = new DrizzleDataCleanupRepository(db);
 export const experimentGuardrailsRepo = new DrizzleExperimentGuardrailsRepository(db);
 export const experimentMetricsJobRepo = new DrizzleExperimentMetricsJobRepository(db);

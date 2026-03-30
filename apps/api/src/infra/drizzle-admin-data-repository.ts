@@ -1,7 +1,6 @@
 import {
   adminAuditLog,
   adminUsers,
-  analyticsEvents,
   breeds,
   contentReports,
   dogPhotos,
@@ -64,7 +63,7 @@ import type {
   AdminUserDog,
   AdminUserListItem,
   AdminUserRow,
-  AnalyticsDbMetrics,
+  TodayDomainMetrics,
   AuditLogEntry,
   AuditLogFilters,
   DashboardStats,
@@ -140,32 +139,17 @@ export class DrizzleAdminDataRepository implements AdminDataRepository {
     };
   }
 
-  async getAnalyticsDbMetrics(): Promise<AnalyticsDbMetrics> {
-    const today = new Date().toISOString().slice(0, 10);
-    const todayStart = new Date(`${today}T00:00:00.000Z`);
+  async getTodayDomainMetrics(): Promise<TodayDomainMetrics> {
+    const todayStart = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
 
-    const [todayMetrics, [totalEventsRow], [eventsLast24hRow]] = await Promise.all([
-      this.db
-        .select({
-          eventName: analyticsEvents.eventName,
-          value: count(),
-        })
-        .from(analyticsEvents)
-        .where(
-          sql`${analyticsEvents.serverTimestamp} >= ${todayStart} AND ${analyticsEvents.eventName} IN ('auth_registration_completed', 'match_created')`,
-        )
-        .groupBy(analyticsEvents.eventName),
-      this.db.select({ value: count() }).from(analyticsEvents),
-      this.db
-        .select({ value: count() })
-        .from(analyticsEvents)
-        .where(gte(analyticsEvents.serverTimestamp, new Date(Date.now() - 24 * 60 * 60 * 1000))),
+    const [[regRow], [matchRow]] = await Promise.all([
+      this.db.select({ value: count() }).from(users).where(gte(users.createdAt, todayStart)),
+      this.db.select({ value: count() }).from(matches).where(gte(matches.createdAt, todayStart)),
     ]);
 
     return {
-      todayMetrics: todayMetrics.map((m) => ({ eventName: m.eventName, value: m.value })),
-      totalEvents: totalEventsRow?.value ?? 0,
-      eventsLast24h: eventsLast24hRow?.value ?? 0,
+      registrationsToday: regRow?.value ?? 0,
+      matchesToday: matchRow?.value ?? 0,
     };
   }
 

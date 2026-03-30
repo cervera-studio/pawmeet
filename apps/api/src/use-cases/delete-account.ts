@@ -3,7 +3,6 @@ import { AppError, fail, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AnalyticsProvider } from '../ports/analytics-provider.js';
-import type { AnalyticsRepository } from '../ports/analytics-repository.js';
 import type { AppleAuthService } from '../ports/apple-auth-service.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { DogRepository } from '../ports/dog-repository.js';
@@ -24,7 +23,6 @@ export interface DeleteAccountOutput {
 }
 
 interface Deps {
-  analyticsRepo: AnalyticsRepository;
   userRepo: UserRepository;
   tokenRepo: TokenRepository;
   authService: AuthService;
@@ -44,7 +42,7 @@ interface Deps {
  *
  * 1. Re-verify password (re-auth gate — prevents accidental or CSRF-based deletion)
  * 2. Delete all R2 objects (avatar, dog photos, post media, story media)
- * 3. Anonymize analytics_events immediately (SET userId = NULL)
+ * 3. Delete person records from external analytics providers (PostHog)
  * 4. Deactivate account + revoke tokens
  * 5. Send confirmation email
  *
@@ -111,7 +109,6 @@ async function deleteAllPostMedia(
 export function createDeleteAccount(deps: Deps) {
   return async (userId: string, password: string): Promise<Result<DeleteAccountOutput>> => {
     const {
-      analyticsRepo,
       userRepo,
       tokenRepo,
       authService,
@@ -162,14 +159,7 @@ export function createDeleteAccount(deps: Deps) {
     // but we should clean R2 proactively for stories still active)
     // Stories have CASCADE on authorId, so they'll be deleted in hard-delete phase.
 
-    // --- Phase 2: Anonymize analytics immediately (don't wait 30 days) ---
-    try {
-      await analyticsRepo.anonymizeUserEvents(userId);
-    } catch (err) {
-      logger.warn('DeleteAccount', 'Failed to anonymize analytics events', err);
-    }
-
-    // Fire-and-forget: delete person records from external analytics providers
+    // --- Phase 2: Delete person records from analytics providers (PostHog) ---
     Promise.allSettled(deps.analyticsProviders.map((p) => p.deletePerson(userId))).catch(() => {
       /* fire-and-forget */
     });

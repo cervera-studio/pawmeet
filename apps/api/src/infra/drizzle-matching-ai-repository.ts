@@ -12,7 +12,7 @@ import type {
   UserMatchingPreferences,
 } from '@pawmeet/types';
 import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
@@ -34,7 +34,7 @@ function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
 }
 
 export class DrizzleMatchingAiRepository implements MatchingAiRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   // ── Swipe Score Logs ─────────────────────────────────────────────────────
 

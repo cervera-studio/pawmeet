@@ -7,11 +7,11 @@ import {
   walks,
 } from '@pawmeet/db';
 import { avg, count, eq, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { DogFeatureRow, MlFeatureRepository } from '../ports/ml-feature-repository.js';
 
 export class DrizzleMlFeatureRepository implements MlFeatureRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async getActiveDogsBatch(limit: number, offset: number): Promise<DogFeatureRow[]> {
     const dogs = await this.db

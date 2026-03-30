@@ -1,11 +1,11 @@
 /**
  * Post-migration script: creates extensions and spatial/vector indexes
- * that can't be expressed in Drizzle migrations (neon-http doesn't support :: cast).
+ * that can't be expressed in Drizzle migrations.
  *
  * All statements are idempotent (IF NOT EXISTS / IF EXISTS).
  * Run after drizzle migrate in CI and local setup.
  */
-import { neon } from '@neondatabase/serverless';
+import pg from 'pg';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {
@@ -13,7 +13,7 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const sql = neon(DATABASE_URL);
+const pool = new pg.default.Pool({ connectionString: DATABASE_URL });
 
 const statements = [
   'CREATE EXTENSION IF NOT EXISTS postgis',
@@ -26,7 +26,7 @@ const statements = [
 let ok = 0;
 for (const stmt of statements) {
   try {
-    await sql.query(stmt);
+    await pool.query(stmt);
     ok++;
   } catch (e) {
     console.error(`WARN: ${stmt.substring(0, 60)}... — ${e.message}`);
@@ -34,3 +34,4 @@ for (const stmt of statements) {
 }
 
 console.log(`Post-migration: ${ok}/${statements.length} statements applied`);
+await pool.end();

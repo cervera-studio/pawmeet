@@ -1,10 +1,10 @@
 import { passkeyCredentials } from '@pawmeet/db';
 import { and, eq, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { PasskeyCredentialRecord, PasskeyRepository } from '../ports/passkey-repository.js';
 
 export class DrizzlePasskeyRepository implements PasskeyRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async findById(id: string): Promise<PasskeyCredentialRecord | null> {
     const rows = await this.db

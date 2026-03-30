@@ -1,7 +1,7 @@
 import { eventSponsors, organizations } from '@pawmeet/db';
 import type { EventSponsor } from '@pawmeet/types';
 import { and, count, eq } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   CreateEventSponsorInput,
   EventSponsorRepository,
@@ -9,7 +9,7 @@ import type {
 import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleEventSponsorRepository implements EventSponsorRepository {
-  constructor(private db: NeonHttpDatabase) {}
+  constructor(private db: NodePgDatabase) {}
 
   async add(input: CreateEventSponsorInput): Promise<EventSponsor> {
     const rows = await this.db.insert(eventSponsors).values(input).returning();

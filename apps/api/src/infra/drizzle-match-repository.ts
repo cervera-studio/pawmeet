@@ -1,7 +1,7 @@
 import { dogProfiles, matches, swipes, users } from '@pawmeet/db';
 import type { DogProfile, Match, Swipe } from '@pawmeet/types';
 import { and, count, eq, gte, ne, or, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { CandidateDog, MatchRepository } from '../ports/match-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
@@ -12,7 +12,7 @@ const MAX_CANDIDATES = 100;
 const DEFAULT_SEARCH_RADIUS_M = 50_000;
 
 export class DrizzleMatchRepository implements MatchRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async findActiveByDogIds(dogIds: string[]): Promise<Match[]> {
     if (dogIds.length === 0) return [];

@@ -6,7 +6,7 @@ import {
   userMatchingPreferences,
 } from '@pawmeet/db';
 import { sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   ExperimentMetricsJobRepository,
   PredictionStats,
@@ -16,7 +16,7 @@ import type {
 } from '../ports/experiment-metrics-job-repository.js';
 
 export class DrizzleExperimentMetricsJobRepository implements ExperimentMetricsJobRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async getVariantMetricsForDay(
     tsFilter: { dayStart: Date; nextDayStart: Date },

@@ -1,6 +1,6 @@
 import { userActivityWindows, users } from '@pawmeet/db';
 import { and, eq, gt, isNotNull, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   ActivityWindowRow,
   MlOptimalTimesRepository,
@@ -9,7 +9,7 @@ import type {
 } from '../ports/ml-optimal-times-repository.js';
 
 export class DrizzleMlOptimalTimesRepository implements MlOptimalTimesRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async getActiveUsersWithLocationBatch(
     activeThreshold: Date,

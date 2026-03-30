@@ -1,6 +1,6 @@
 import { dogProfiles, matches, walks } from '@pawmeet/db';
 import { and, eq, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   OverdueWalkRow,
   UpcomingWalkRow,
@@ -8,7 +8,7 @@ import type {
 } from '../ports/walk-job-repository.js';
 
 export class DrizzleWalkJobRepository implements WalkJobRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async findUpcomingAcceptedWalks(windows: { from: Date; to: Date }[]): Promise<UpcomingWalkRow[]> {
     const windowConditions = windows.map(

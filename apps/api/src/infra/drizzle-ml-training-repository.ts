@@ -1,6 +1,6 @@
 import { mlTrainingSamples } from '@pawmeet/db';
 import { sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   MatureMatchRow,
   MlTrainingRepository,
@@ -8,7 +8,7 @@ import type {
 } from '../ports/ml-training-repository.js';
 
 export class DrizzleMlTrainingRepository implements MlTrainingRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async findMatureMatchesForLabeling(cutoff: Date): Promise<MatureMatchRow[]> {
     const result = await this.db.execute<MatureMatchRow>(sql`

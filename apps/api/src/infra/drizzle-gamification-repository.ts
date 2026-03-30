@@ -21,12 +21,12 @@ import type {
   XpTransaction,
 } from '@pawmeet/types';
 import { and, count, desc, eq, gte, inArray, lt, lte, or, sql, sum } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleGamificationRepository implements GamificationRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   // ── XP ──────────────────────────────────────────────────────────────────
 

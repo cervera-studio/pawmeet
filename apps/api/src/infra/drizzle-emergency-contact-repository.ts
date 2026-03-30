@@ -1,12 +1,12 @@
 import { emergencyContacts, walkSafetyCheckins } from '@pawmeet/db';
 import type { EmergencyContact, SafetyCheckinType, WalkSafetyCheckin } from '@pawmeet/types';
 import { and, eq } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { EmergencyContactRepository } from '../ports/emergency-contact-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleEmergencyContactRepository implements EmergencyContactRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async create(
     userId: string,

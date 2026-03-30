@@ -1,12 +1,12 @@
 import { matches, walkFeedback, walks } from '@pawmeet/db';
 import type { Walk, WalkStatus } from '@pawmeet/types';
 import { and, avg, count, eq, inArray, or, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { WalkRepository } from '../ports/walk-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleWalkRepository implements WalkRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async create(walk: Omit<Walk, 'id' | 'createdAt' | 'updatedAt'>): Promise<Walk> {
     const rows = await this.db.insert(walks).values(walk).returning();

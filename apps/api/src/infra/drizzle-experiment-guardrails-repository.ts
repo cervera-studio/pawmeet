@@ -1,6 +1,6 @@
 import { analyticsEvents } from '@pawmeet/db';
 import { sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   ExperimentGuardrailsRepository,
   VariantFeedRow,
@@ -9,7 +9,7 @@ import type {
 } from '../ports/experiment-guardrails-repository.js';
 
 export class DrizzleExperimentGuardrailsRepository implements ExperimentGuardrailsRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async getVariantUnmatchRates(baseFilter: {
     dayStart: Date;

@@ -1,10 +1,10 @@
 import { breeds } from '@pawmeet/db';
 import { asc, ilike } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { Breed, BreedRepository } from '../ports/breed-repository.js';
 
 export class DrizzleBreedRepository implements BreedRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async search(query?: string): Promise<Breed[]> {
     if (!query) {

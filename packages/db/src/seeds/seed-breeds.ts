@@ -1,6 +1,6 @@
 import process from 'node:process';
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import pg from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { breeds } from '../schema/breeds';
 import { breedsData } from './breeds';
 
@@ -10,8 +10,8 @@ async function seed() {
     throw new Error('DATABASE_URL is required');
   }
 
-  const sql = neon(DATABASE_URL);
-  const db = drizzle(sql);
+  const pool = new pg.Pool({ connectionString: DATABASE_URL });
+  const db = drizzle(pool);
 
   console.log(`[Seed] Seeding ${breedsData.length} breeds...`);
 

@@ -1,10 +1,10 @@
 import { users } from '@pawmeet/db';
 import { and, eq, gt, isNotNull } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { RisingCompatibilityRepository } from '../ports/rising-compatibility-repository.js';
 
 export class DrizzleRisingCompatibilityRepository implements RisingCompatibilityRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async getActiveUsersWithLocationBatch(
     activeThreshold: Date,

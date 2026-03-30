@@ -1,10 +1,10 @@
 import { gdprExports, messages, users } from '@pawmeet/db';
 import { and, eq, inArray, isNotNull, lt, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { DataCleanupRepository } from '../ports/data-cleanup-repository.js';
 
 export class DrizzleDataCleanupRepository implements DataCleanupRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async purgeDeactivatedAccounts(now: Date): Promise<{ id: string; email: string }[]> {
     const deleted = await this.db

@@ -1,6 +1,6 @@
 import { adminUsers } from '@pawmeet/db';
 import { eq } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { AdminUser, AdminUserRepository } from '../ports/admin-user-repository.js';
 import { firstRowOrNull } from './drizzle-helpers.js';
 
@@ -19,7 +19,7 @@ const safeAdminColumns = {
 } as const;
 
 export class DrizzleAdminUserRepository implements AdminUserRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async findByEmail(email: string): Promise<AdminUser | null> {
     // Include passwordHash — needed for login

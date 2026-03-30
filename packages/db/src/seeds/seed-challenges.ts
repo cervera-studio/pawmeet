@@ -1,6 +1,6 @@
 import process from 'node:process';
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import pg from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { challenges } from '../schema/gamification';
 
 async function seed() {
@@ -9,8 +9,8 @@ async function seed() {
     throw new Error('DATABASE_URL is required');
   }
 
-  const sql = neon(DATABASE_URL);
-  const db = drizzle(sql);
+  const pool = new pg.Pool({ connectionString: DATABASE_URL });
+  const db = drizzle(pool);
 
   const now = new Date();
   const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);

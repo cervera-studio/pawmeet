@@ -1,12 +1,12 @@
 import { dogMoodLogs } from '@pawmeet/db';
 import type { MoodLog } from '@pawmeet/types';
 import { and, desc, eq, lt } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { MoodLogRepository } from '../ports/mood-log-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleMoodLogRepository implements MoodLogRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async create(input: Omit<MoodLog, 'id' | 'createdAt'>): Promise<MoodLog> {
     const rows = await this.db.insert(dogMoodLogs).values(input).returning();

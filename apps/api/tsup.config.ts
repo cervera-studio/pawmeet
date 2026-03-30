@@ -6,7 +6,7 @@ export default defineConfig({
   target: 'node22',
   platform: 'node',
   // Bundle all dependencies into the output except native ones
-  noExternal: [/^(?!bullmq$|@statsig\/statsig-node-core$|@sentry\/.*$|@opentelemetry\/.*$).*/],
+  noExternal: [/^(?!bullmq$|pg$|@statsig\/statsig-node-core$|@sentry\/.*$|@opentelemetry\/.*$).*/],
   splitting: true,
   clean: true,
   // Shim require() for CJS packages that use dynamic require of Node built-ins

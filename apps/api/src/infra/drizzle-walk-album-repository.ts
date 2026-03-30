@@ -1,11 +1,11 @@
 import { walkAlbums } from '@pawmeet/db';
 import type { WalkAlbum } from '@pawmeet/types';
 import { eq } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { WalkAlbumRepository } from '../ports/walk-album-repository.js';
 
 export class DrizzleWalkAlbumRepository implements WalkAlbumRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async createAlbum(walkId: string, title: string): Promise<WalkAlbum> {
     const rows = await this.db.insert(walkAlbums).values({ walkId, title }).returning();

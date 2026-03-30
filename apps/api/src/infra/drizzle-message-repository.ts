@@ -1,7 +1,7 @@
 import { dogProfiles, matches, messages, users } from '@pawmeet/db';
 import type { ChatMessage, ChatMessageReplyPreview } from '@pawmeet/types';
 import { aliasedTable, and, count, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { maybeDecrypt, maybeEncrypt } from '../lib/message-encryption.js';
 import type {
   ConversationSummary,
@@ -10,7 +10,7 @@ import type {
 } from '../ports/message-repository.js';
 
 export class DrizzleMessageRepository implements MessageRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async getConversationsForUser(userId: string, dogIds: string[]): Promise<ConversationSummary[]> {
     if (dogIds.length === 0) return [];

@@ -62,6 +62,19 @@ resource "azurerm_container_app_environment" "main" {
   tags = local.tags
 }
 
+# ── PostgreSQL (Azure Flexible Server) ─────────────────────────
+module "postgres" {
+  source = "./modules/postgres"
+
+  project             = var.project
+  environment         = var.environment
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  admin_password      = var.postgres_password
+
+  tags = local.tags
+}
+
 # ── Container App (API) ────────────────────────────────────────
 module "api" {
   source = "./modules/container-app"
@@ -167,4 +180,15 @@ output "admin_url" {
 output "container_registry_server" {
   description = "ACR login server"
   value       = azurerm_container_registry.main.login_server
+}
+
+output "database_url" {
+  description = "PostgreSQL connection string (pooled via PgBouncer)"
+  value       = module.postgres.database_url_pooled
+  sensitive   = true
+}
+
+output "database_fqdn" {
+  description = "PostgreSQL server FQDN"
+  value       = module.postgres.fqdn
 }

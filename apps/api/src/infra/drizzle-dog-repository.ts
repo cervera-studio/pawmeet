@@ -1,12 +1,12 @@
 import { dogPhotos, dogProfiles } from '@pawmeet/db';
 import type { DogPhoto, DogProfile } from '@pawmeet/types';
 import { and, asc, count, eq, inArray } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { CreateDogInput, DogRepository } from '../ports/dog-repository.js';
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleDogRepository implements DogRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async findById(id: string): Promise<DogProfile | null> {
     const rows = await this.db.select().from(dogProfiles).where(eq(dogProfiles.id, id));

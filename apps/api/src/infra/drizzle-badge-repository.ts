@@ -1,12 +1,12 @@
 import { badges } from '@pawmeet/db';
 import type { Badge, BadgeType } from '@pawmeet/types';
 import { and, eq } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { BadgeRepository } from '../ports/badge-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleBadgeRepository implements BadgeRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async findByDog(dogId: string): Promise<Badge[]> {
     const rows = await this.db.select().from(badges).where(eq(badges.dogId, dogId));

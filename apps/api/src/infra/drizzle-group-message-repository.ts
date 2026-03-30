@@ -5,13 +5,13 @@ import type {
   PaginatedGroupMessages,
 } from '@pawmeet/types';
 import { and, count, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 // -- Query helpers for getConversationsForUser --
 
-async function fetchUserParticipations(db: NeonHttpDatabase, userId: string) {
+async function fetchUserParticipations(db: NodePgDatabase, userId: string) {
   return db
     .select({ eventId: groupEventParticipants.eventId })
     .from(groupEventParticipants)
@@ -20,7 +20,7 @@ async function fetchUserParticipations(db: NeonHttpDatabase, userId: string) {
     );
 }
 
-async function fetchActiveEvents(db: NeonHttpDatabase, eventIds: string[]) {
+async function fetchActiveEvents(db: NodePgDatabase, eventIds: string[]) {
   const rows = await db
     .select({ id: groupEvents.id, title: groupEvents.title })
     .from(groupEvents)
@@ -35,7 +35,7 @@ async function fetchActiveEvents(db: NeonHttpDatabase, eventIds: string[]) {
   return { eventById, activeEventIds };
 }
 
-async function fetchParticipantCounts(db: NeonHttpDatabase, activeEventIds: string[]) {
+async function fetchParticipantCounts(db: NodePgDatabase, activeEventIds: string[]) {
   const rows = await db
     .select({
       eventId: groupEventParticipants.eventId,
@@ -57,7 +57,7 @@ async function fetchParticipantCounts(db: NeonHttpDatabase, activeEventIds: stri
   return map;
 }
 
-async function fetchLastMessages(db: NeonHttpDatabase, activeEventIds: string[]) {
+async function fetchLastMessages(db: NodePgDatabase, activeEventIds: string[]) {
   const rows = await db
     .selectDistinctOn([groupMessages.eventId])
     .from(groupMessages)
@@ -79,7 +79,7 @@ async function fetchLastMessages(db: NeonHttpDatabase, activeEventIds: string[])
   return map;
 }
 
-async function fetchReadRecords(db: NeonHttpDatabase, activeEventIds: string[], userId: string) {
+async function fetchReadRecords(db: NodePgDatabase, activeEventIds: string[], userId: string) {
   const rows = await db
     .select({
       eventId: groupMessageReads.eventId,
@@ -98,7 +98,7 @@ async function fetchReadRecords(db: NeonHttpDatabase, activeEventIds: string[], 
 }
 
 async function fetchUnreadCounts(
-  db: NeonHttpDatabase,
+  db: NodePgDatabase,
   activeEventIds: string[],
   userId: string,
   lastReadByEvent: Map<string, Date>,
@@ -191,7 +191,7 @@ function assembleConversations(
 // -- Repository --
 
 export class DrizzleGroupMessageRepository implements GroupMessageRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async create(input: {
     eventId: string;

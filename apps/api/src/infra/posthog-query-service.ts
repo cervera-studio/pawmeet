@@ -19,9 +19,7 @@ export class PostHogQueryService {
 
   async getDauMauMetrics(timeSeriesDays = 30): Promise<DauMauMetrics> {
     const [dauToday, mauCurrent, dauTimeSeries] = await Promise.all([
-      this.queryScalar(
-        `SELECT count(DISTINCT person_id) FROM events WHERE timestamp >= today()`,
-      ),
+      this.queryScalar(`SELECT count(DISTINCT person_id) FROM events WHERE timestamp >= today()`),
       this.queryScalar(
         `SELECT count(DISTINCT person_id) FROM events WHERE timestamp >= now() - INTERVAL 30 DAY`,
       ),
@@ -55,9 +53,7 @@ export class PostHogQueryService {
     }
   }
 
-  private async queryTimeSeries(
-    days: number,
-  ): Promise<Array<{ date: string; count: number }>> {
+  private async queryTimeSeries(days: number): Promise<Array<{ date: string; count: number }>> {
     const hogql = `
       SELECT
         toDate(timestamp) AS day,

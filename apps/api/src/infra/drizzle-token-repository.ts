@@ -1,6 +1,6 @@
 import { refreshTokens, type TokenType, verificationTokens } from '@pawmeet/db';
 import { and, eq, gt, isNull, not } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   RefreshTokenRecord,
   TokenRepository,
@@ -9,7 +9,7 @@ import type {
 import { firstRow, firstRowOrNull } from './drizzle-helpers.js';
 
 export class DrizzleTokenRepository implements TokenRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   // Refresh tokens
 

@@ -1,7 +1,7 @@
 import process from 'node:process';
-import { neon } from '@neondatabase/serverless';
+import pg from 'pg';
 import { hash } from 'bcryptjs';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { adminUsers } from '../schema/admin-users';
 
 async function seed() {
@@ -10,8 +10,8 @@ async function seed() {
     throw new Error('DATABASE_URL is required');
   }
 
-  const sql = neon(DATABASE_URL);
-  const db = drizzle(sql);
+  const pool = new pg.Pool({ connectionString: DATABASE_URL });
+  const db = drizzle(pool);
 
   const passwordHash = await hash('Admin123!', 12);
 

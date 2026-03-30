@@ -41,7 +41,7 @@ import {
   xpTransactions,
 } from '@pawmeet/db';
 import { and, eq, inArray, or } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   GdprContentReport,
   GdprDailyActivity,
@@ -66,7 +66,7 @@ import type {
 } from '../ports/gdpr-export-repository.js';
 
 export class DrizzleGdprExportRepository implements GdprExportRepository {
-  constructor(private db: NeonHttpDatabase) {}
+  constructor(private db: NodePgDatabase) {}
 
   // -- Profile --
 

@@ -1,7 +1,7 @@
 import { dogProfiles, users } from '@pawmeet/db';
 import type { User } from '@pawmeet/types';
 import { and, eq, inArray, isNotNull, ne, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   CreateUserInput,
   NearbyQuery,
@@ -38,7 +38,7 @@ const safeUserColumns = {
 } as const;
 
 export class DrizzleUserRepository implements UserRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async findByEmail(email: string): Promise<User | null> {
     // Include passwordHash — needed for login/password verification

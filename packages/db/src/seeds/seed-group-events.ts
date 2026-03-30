@@ -1,7 +1,7 @@
 import process from 'node:process';
-import { neon } from '@neondatabase/serverless';
+import pg from 'pg';
 import { eq } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { dogProfiles } from '../schema/dogs';
 import { groupEventParticipants, groupEvents } from '../schema/group-events';
 import { users } from '../schema/users';
@@ -12,8 +12,8 @@ async function seed() {
     throw new Error('DATABASE_URL is required');
   }
 
-  const sql = neon(DATABASE_URL);
-  const db = drizzle(sql);
+  const pool = new pg.Pool({ connectionString: DATABASE_URL });
+  const db = drizzle(pool);
 
   // Find existing users with dogs to create realistic events
   const allUsers = await db

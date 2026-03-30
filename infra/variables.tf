@@ -58,3 +58,9 @@ variable "admin_secrets" {
   default     = {}
   sensitive   = true
 }
+
+variable "postgres_password" {
+  description = "PostgreSQL administrator password"
+  type        = string
+  sensitive   = true
+}

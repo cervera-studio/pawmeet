@@ -1,10 +1,10 @@
 import { adminAuditLog } from '@pawmeet/db';
 import { logger } from '@pawmeet/utils';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { AuditEntry, AuditLogRepository } from '../ports/audit-log-repository.js';
 
 export class DrizzleAuditLogRepository implements AuditLogRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async logAction(entry: AuditEntry): Promise<void> {
     try {

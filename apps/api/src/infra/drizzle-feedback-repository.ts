@@ -1,12 +1,12 @@
 import { walkFeedback } from '@pawmeet/db';
 import type { WalkFeedback } from '@pawmeet/types';
 import { and, avg, count, eq } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { FeedbackRepository } from '../ports/feedback-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleFeedbackRepository implements FeedbackRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async create(feedback: Omit<WalkFeedback, 'id' | 'createdAt'>): Promise<WalkFeedback> {
     const rows = await this.db.insert(walkFeedback).values(feedback).returning();

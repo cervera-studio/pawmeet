@@ -1,7 +1,7 @@
 import process from 'node:process';
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
-import { migrate } from 'drizzle-orm/neon-http/migrator';
+import pg from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
 
 /**
  * Run pending Drizzle migrations against the database.
@@ -14,10 +14,14 @@ import { migrate } from 'drizzle-orm/neon-http/migrator';
  * and stored in `packages/db/drizzle/`.
  */
 export async function runMigrations(databaseUrl: string) {
-  const sql = neon(databaseUrl);
-  const db = drizzle(sql);
+  const pool = new pg.Pool({ connectionString: databaseUrl });
+  const db = drizzle(pool);
 
-  await migrate(db, { migrationsFolder: './drizzle' });
+  try {
+    await migrate(db, { migrationsFolder: './drizzle' });
+  } finally {
+    await pool.end();
+  }
 }
 
 // CLI entry point

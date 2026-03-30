@@ -1,11 +1,11 @@
 import { dailyActivity } from '@pawmeet/db';
 import type { ActivitySummary, DailyActivity } from '@pawmeet/types';
 import { and, asc, eq, gte, lte, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { ActivityRepository } from '../ports/activity-repository.js';
 
 export class DrizzleActivityRepository implements ActivityRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async upsertDaily(
     userId: string,

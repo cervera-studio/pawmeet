@@ -20,13 +20,14 @@
     "seed:backfill-breed-scores": "tsx src/seeds/backfill-breed-scores.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.0",
     "bcryptjs": "^3.0.3",
-    "drizzle-orm": "^0.45.2"
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.16.0"
   },
   "devDependencies": {
     "@pawmeet/typescript-config": "workspace:*",
     "@pawmeet/vitest-config": "workspace:*",
+    "@types/pg": "^8.15.0",
     "drizzle-kit": "^0.31.10",
     "typescript": "^5.9.0"
   }

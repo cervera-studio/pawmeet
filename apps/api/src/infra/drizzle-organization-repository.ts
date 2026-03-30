@@ -1,7 +1,7 @@
 import { organizationMembers, organizations } from '@pawmeet/db';
 import type { Organization, OrganizationMember, OrganizationMemberRole } from '@pawmeet/types';
 import { and, count, eq, ilike, or, type SQL } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   CreateOrganizationInput,
   ListOrganizationsQuery,
@@ -10,7 +10,7 @@ import type {
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleOrganizationRepository implements OrganizationRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async create(input: CreateOrganizationInput): Promise<Organization> {
     const rows = await this.db.insert(organizations).values(input).returning();

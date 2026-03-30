@@ -23,7 +23,7 @@ import type {
   ResolvedPostTag,
 } from '@pawmeet/types';
 import { and, count, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   AddPostMediaInput,
   CommentsPage,
@@ -50,7 +50,7 @@ function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
 }
 
 export class DrizzleFeedRepository implements FeedRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async createPost(input: CreatePostInput): Promise<Post> {
     const rows = await this.db.insert(posts).values(input).returning();

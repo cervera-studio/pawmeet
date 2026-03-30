@@ -6,7 +6,7 @@ import type {
   SupportTicketStatus,
 } from '@pawmeet/types';
 import { and, count, desc, eq, isNull, lt, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { maybeDecrypt, maybeEncrypt } from '../lib/message-encryption.js';
 import type {
   AddMessageInput,
@@ -20,7 +20,7 @@ import type {
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleSupportRepository implements SupportRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async createTicket(input: CreateTicketInput): Promise<SupportTicket> {
     const rows = await this.db

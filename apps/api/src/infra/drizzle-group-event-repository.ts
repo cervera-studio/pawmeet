@@ -1,7 +1,7 @@
 import { dogProfiles, groupEventParticipants, groupEvents, users } from '@pawmeet/db';
 import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
 import { and, count, desc, eq, inArray, isNotNull, lte, ne, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   CreateGroupEventInput,
   FullGroupEventRepository,
@@ -12,7 +12,7 @@ import type {
 import { firstRow, firstRowOrNull, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleGroupEventRepository implements FullGroupEventRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async create(input: CreateGroupEventInput): Promise<GroupEvent> {
     const rows = await this.db.insert(groupEvents).values(input).returning();

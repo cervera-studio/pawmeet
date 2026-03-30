@@ -1,6 +1,6 @@
 import { experimentMetricsSnapshots, mlModelRegistry, modelPerformanceDaily } from '@pawmeet/db';
 import { and, asc, desc, eq, gte, lte, type SQL } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   AdminAiMatchingRepository,
   ExperimentMetricsRow,
@@ -9,7 +9,7 @@ import type {
 } from '../ports/admin-ai-matching-repository.js';
 
 export class DrizzleAdminAiMatchingRepository implements AdminAiMatchingRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async getExperimentMetrics(
     experimentName: string,

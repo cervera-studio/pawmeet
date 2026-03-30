@@ -2,7 +2,7 @@ import { contentReports } from '@pawmeet/db';
 import type { ContentReport } from '@pawmeet/types';
 import type { SQL } from 'drizzle-orm';
 import { and, desc, eq, lt, or } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   ContentReportRepository,
   CreateReportInput,
@@ -26,7 +26,7 @@ function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
 }
 
 export class DrizzleContentReportRepository implements ContentReportRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async createReport(input: CreateReportInput): Promise<ContentReport> {
     const rows = await this.db.insert(contentReports).values(input).returning();

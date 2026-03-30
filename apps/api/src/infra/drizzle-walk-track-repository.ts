@@ -1,7 +1,7 @@
 import { walkTrackPoints, walkTracks } from '@pawmeet/db';
 import type { WalkTrack, WalkTrackPoint } from '@pawmeet/types';
 import { and, asc, desc, eq, lt, or } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { WalkTrackRepository } from '../ports/walk-track-repository.js';
 
 function encodeCursor(createdAt: Date, id: string): string {
@@ -22,7 +22,7 @@ function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
 }
 
 export class DrizzleWalkTrackRepository implements WalkTrackRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async startTrack(userId: string, walkId: string | null): Promise<WalkTrack> {
     const rows = await this.db.insert(walkTracks).values({ userId, walkId }).returning();

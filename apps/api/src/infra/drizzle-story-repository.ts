@@ -1,11 +1,11 @@
 import { stories, storyViews, users } from '@pawmeet/db';
 import type { Story, StoryGroup, StoryView } from '@pawmeet/types';
 import { and, count, desc, eq, gt, inArray, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { CreateStoryInput, StoryRepository } from '../ports/story-repository.js';
 
 export class DrizzleStoryRepository implements StoryRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async createStory(input: CreateStoryInput): Promise<Story> {
     const rows = await this.db.insert(stories).values(input).returning();

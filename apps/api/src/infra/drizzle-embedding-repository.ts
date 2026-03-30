@@ -1,11 +1,11 @@
 import { dogEmbeddings } from '@pawmeet/db';
 import { eq, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { EmbeddingRepository, VectorCandidate } from '../ports/embedding-repository.js';
 import { firstRowOrNull } from './drizzle-helpers.js';
 
 export class DrizzleEmbeddingRepository implements EmbeddingRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async upsert(dogId: string, embedding: number[], modelVersion: string): Promise<void> {
     const vectorLiteral = `[${embedding.join(',')}]`;

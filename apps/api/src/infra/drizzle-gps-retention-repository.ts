@@ -1,9 +1,9 @@
 import { sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { GpsRetentionRepository } from '../ports/gps-retention-repository.js';
 
 export class DrizzleGpsRetentionRepository implements GpsRetentionRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async purgeOldTrackPoints(retentionDays: number): Promise<void> {
     await this.db.execute(

@@ -1,12 +1,12 @@
 import { userConsents } from '@pawmeet/db';
 import { eq, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { ConsentRecord, ConsentRepository } from '../ports/consent-repository.js';
 
 export type { ConsentRecord, ConsentRepository };
 
 export class DrizzleConsentRepository implements ConsentRepository {
-  constructor(private db: NeonHttpDatabase) {}
+  constructor(private db: NodePgDatabase) {}
 
   async upsert(
     userId: string,

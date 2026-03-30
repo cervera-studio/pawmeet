@@ -1,12 +1,12 @@
 import { userBlocks, userFollows, users } from '@pawmeet/db';
 import type { FollowSummary, FriendSummary, UserBlock, UserFollow } from '@pawmeet/types';
 import { and, eq, or, sql } from 'drizzle-orm';
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { FollowRepository, PaginatedQuery } from '../ports/follow-repository.js';
 import { firstRow, rowsAs } from './drizzle-helpers.js';
 
 export class DrizzleFollowRepository implements FollowRepository {
-  constructor(private readonly db: NeonHttpDatabase) {}
+  constructor(private readonly db: NodePgDatabase) {}
 
   async follow(followerId: string, followingId: string): Promise<UserFollow> {
     const rows = await this.db.insert(userFollows).values({ followerId, followingId }).returning();

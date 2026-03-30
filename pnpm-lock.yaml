@@ -483,8 +483,8 @@ importers:
         specifier: workspace:*
         version: link:../../apps/api
       '@trpc/client':
-        specifier: ^11.12.0
-        version: 11.13.4(@trpc/server@11.15.1(typescript@5.9.3))(typescript@5.9.3)
+        specifier: ^11.16.0
+        version: 11.16.0(@trpc/server@11.15.1(typescript@5.9.3))(typescript@5.9.3)
     devDependencies:
       '@pawmeet/typescript-config':
         specifier: workspace:*
@@ -4501,10 +4501,11 @@ packages:
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
 
-  '@trpc/client@11.13.4':
-    resolution: {integrity: sha512-AOM7u2blAjjpAzEyDXm4bk8f1HML0sFLuSXPsqZHQX3XCIVo7+mlArEAGMbwEtTwW8hUocI0i3/9tVYUF4Nu0g==}
+  '@trpc/client@11.16.0':
+    resolution: {integrity: sha512-TxIzm7OoK3baKZ0XCbuMUbI3GhgjcbKHIc4nWVKaRpCRnbSh0T31BT6fTPYwtnA/Nur8pBCGqC2B4J5hEPiPFQ==}
+    hasBin: true
     peerDependencies:
-      '@trpc/server': 11.13.4
+      '@trpc/server': 11.16.0
       typescript: '>=5.7.2'
 
   '@trpc/server@11.15.1':
@@ -4783,6 +4784,7 @@ packages:
   '@xmldom/xmldom@0.8.11':
     resolution: {integrity: sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -14553,7 +14555,7 @@ snapshots:
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
-  '@trpc/client@11.13.4(@trpc/server@11.15.1(typescript@5.9.3))(typescript@5.9.3)':
+  '@trpc/client@11.16.0(@trpc/server@11.15.1(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
       '@trpc/server': 11.15.1(typescript@5.9.3)
       typescript: 5.9.3

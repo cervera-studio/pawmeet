@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { z } from 'zod';
+import { useApiError } from '@/hooks/useApiError';
 import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { zodToFieldErrors } from '@/lib/validation';
@@ -27,78 +28,81 @@ const resetSchema = z
 
 export function useForgotPasswordViewModel() {
   const router = useRouter();
+  const { apiError, fieldErrors: serverFieldErrors, clearErrors, execute } = useApiError();
 
   const [phase, setPhase] = useState<Phase>('request');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [apiError, setApiError] = useState('');
+  const [localFieldErrors, setLocalFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(false);
   const resendTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const errors = { ...localFieldErrors, ...serverFieldErrors };
+
   const handleRequestReset = useCallback(async () => {
-    setErrors({});
-    setApiError('');
+    setLocalFieldErrors({});
+    clearErrors();
 
     const result = requestSchema.safeParse({ email });
     if (!result.success) {
-      setErrors(zodToFieldErrors(result.error));
+      setLocalFieldErrors(zodToFieldErrors(result.error));
       return;
     }
 
     setLoading(true);
-    try {
-      await api.auth.forgotPassword.mutate({ email });
+    const response = await execute(
+      () => api.auth.forgotPassword.mutate({ email }),
+      'forgotPassword.request',
+    );
+    setLoading(false);
+
+    if (response !== undefined) {
       setPhase('sent');
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('auth.forgotPassword.sendError'));
-    } finally {
-      setLoading(false);
     }
-  }, [email]);
+  }, [email, clearErrors, execute]);
 
   const handleResetPassword = useCallback(async () => {
-    setErrors({});
-    setApiError('');
+    setLocalFieldErrors({});
+    clearErrors();
 
     const result = resetSchema.safeParse({ otp, newPassword, confirmPassword });
     if (!result.success) {
-      setErrors(zodToFieldErrors(result.error));
+      setLocalFieldErrors(zodToFieldErrors(result.error));
       return;
     }
 
     setLoading(true);
-    try {
-      await api.auth.resetPassword.mutate({ email, code: otp, password: newPassword });
+    const response = await execute(
+      () => api.auth.resetPassword.mutate({ email, code: otp, password: newPassword }),
+      'forgotPassword.reset',
+    );
+    setLoading(false);
+
+    if (response !== undefined) {
       router.replace('/(auth)/login');
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('auth.forgotPassword.resetError'));
-    } finally {
-      setLoading(false);
     }
-  }, [email, otp, newPassword, confirmPassword, router]);
+  }, [email, otp, newPassword, confirmPassword, router, clearErrors, execute]);
 
   const handleResendCode = useCallback(async () => {
     if (resendDisabled) return;
 
-    setApiError('');
+    clearErrors();
     setResendDisabled(true);
 
-    try {
-      await api.auth.forgotPassword.mutate({ email });
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('auth.forgotPassword.sendError'));
-    }
+    await execute(
+      () => api.auth.forgotPassword.mutate({ email }),
+      'forgotPassword.resend',
+    );
 
     // Disable resend for 60 seconds
     if (resendTimerRef.current) clearTimeout(resendTimerRef.current);
     resendTimerRef.current = setTimeout(() => {
       setResendDisabled(false);
     }, 60_000);
-  }, [email, resendDisabled]);
+  }, [email, resendDisabled, clearErrors, execute]);
 
   const goToReset = useCallback(() => {
     setPhase('reset');

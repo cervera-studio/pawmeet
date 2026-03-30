@@ -1,5 +1,6 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { useCallback, useState } from 'react';
+import { handleApiError } from '@/lib/error-handler';
 import { api } from '@/lib/trpc';
 import { useLocationStore } from '@/stores/location';
 
@@ -23,7 +24,7 @@ export function useNearbyUsers() {
       });
       setUsers(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Errore nel caricamento');
+      setError(handleApiError(e, 'nearbyUsers').message);
     } finally {
       setLoading(false);
     }

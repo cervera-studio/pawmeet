@@ -1,4 +1,30 @@
 {
+  "errors": {
+    "generic": "Something went wrong. Please try again shortly.",
+    "offline": "You're offline. Check your connection and try again.",
+    "network": "Unable to reach the server. Check your connection.",
+    "timeout": "The request is taking too long. Please try again.",
+    "badRequest": "Invalid request. Please check your input.",
+    "server": "Something went wrong on our end. Please try again later.",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "forbidden": "You don't have permission for this action.",
+    "notFound": "Resource not found.",
+    "conflict": "This action conflicts with another operation.",
+    "rateLimited": "Too many requests. Please try again in a few minutes.",
+    "preconditionFailed": "This action can no longer be completed.",
+    "unknown": "An unexpected error occurred.",
+    "validationFields": "Please check the highlighted fields and try again.",
+    "invalidField": "This field is invalid.",
+    "swipeLimitReached": "You've reached the daily swipe limit.",
+    "auth": {
+      "invalidCredentials": "Incorrect email or password.",
+      "accountDisabled": "This account has been disabled.",
+      "accountLocked": "Too many login attempts. Please try again later.",
+      "emailTaken": "This email is already associated with an account. Try logging in.",
+      "invalidToken": "The code you entered is invalid or expired.",
+      "sessionExpired": "Your session has expired. Please log in again."
+    }
+  },
   "common": {
     "error": "Error",
     "cancel": "Cancel",

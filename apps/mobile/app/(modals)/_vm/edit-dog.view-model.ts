@@ -27,6 +27,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { isValidUUID } from '@/lib/deep-link-validation';
+import { handleApiError } from '@/lib/error-handler';
 import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { useDogsStore } from '@/stores/dogs';
@@ -150,7 +151,7 @@ export function useEditDogViewModel() {
       updateDogInStore(dogId, { name: form.name, breed: form.breed });
       router.back();
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('dogForm.saveError'));
+      setApiError(handleApiError(e, 'editDog').message);
     } finally {
       setSaving(false);
     }

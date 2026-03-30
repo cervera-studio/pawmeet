@@ -15,6 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useCallback, useReducer, useState } from 'react';
 import { Alert } from 'react-native';
+import { handleApiError } from '@/lib/error-handler';
 import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { zodToFieldErrors } from '@/lib/validation';
@@ -277,7 +278,7 @@ export function useNewDogViewModel() {
       const { bio } = await api.dogs.generateBio.mutate(buildBioMutationInput(state));
       dispatch({ type: 'SET_FIELD', field: 'bio', value: bio });
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('dogForm.bioGenerationError'));
+      setApiError(handleApiError(e, 'generateBio').message);
     } finally {
       setGeneratingBio(false);
     }
@@ -349,7 +350,7 @@ export function useNewDogViewModel() {
       });
       applyPhotoAnalysis(dispatch, analysis);
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : "Errore durante l'analisi della foto");
+      setApiError(handleApiError(e, 'analyzePhoto').message);
     } finally {
       setAnalyzingPhoto(false);
     }
@@ -424,7 +425,7 @@ export function useNewDogViewModel() {
       addDog(dog);
       router.back();
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('dogForm.createError'));
+      setApiError(handleApiError(e, 'createDog').message);
     } finally {
       setLoading(false);
     }

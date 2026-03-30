@@ -1,4 +1,30 @@
 {
+  "errors": {
+    "generic": "Algo salió mal. Inténtalo de nuevo en un momento.",
+    "offline": "Estás sin conexión. Revisa tu conexión e inténtalo de nuevo.",
+    "network": "No se puede conectar con el servidor. Revisa tu conexión.",
+    "timeout": "La solicitud está tardando demasiado. Inténtalo de nuevo.",
+    "badRequest": "Solicitud no válida. Revisa los datos introducidos.",
+    "server": "Ocurrió un error. Inténtalo más tarde.",
+    "sessionExpired": "Tu sesión ha expirado. Inicia sesión de nuevo.",
+    "forbidden": "No tienes permiso para esta acción.",
+    "notFound": "Recurso no encontrado.",
+    "conflict": "Esta acción entra en conflicto con otra operación.",
+    "rateLimited": "Demasiadas solicitudes. Inténtalo en unos minutos.",
+    "preconditionFailed": "Esta acción ya no se puede completar.",
+    "unknown": "Ocurrió un error inesperado.",
+    "validationFields": "Revisa los campos marcados e inténtalo de nuevo.",
+    "invalidField": "Este campo no es válido.",
+    "swipeLimitReached": "Has alcanzado el límite diario de swipes.",
+    "auth": {
+      "invalidCredentials": "Email o contraseña incorrectos.",
+      "accountDisabled": "Esta cuenta ha sido desactivada.",
+      "accountLocked": "Demasiados intentos de acceso. Inténtalo más tarde.",
+      "emailTaken": "Este email ya está asociado a una cuenta. Prueba a iniciar sesión.",
+      "invalidToken": "El código introducido no es válido o ha expirado.",
+      "sessionExpired": "Tu sesión ha expirado. Inicia sesión de nuevo."
+    }
+  },
   "common": {
     "error": "Error",
     "cancel": "Cancelar",

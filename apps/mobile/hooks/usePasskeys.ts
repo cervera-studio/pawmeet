@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { create, get, isSupported } from 'react-native-passkeys';
 import { container } from 'tsyringe';
+import { handleApiError } from '@/lib/error-handler';
 import { passkeyFlag, storage } from '@/lib/storage';
 import type { PasskeySummary } from '@/repositories/interfaces';
 import { ANALYTICS_SERVICE, PASSKEY_REPOSITORY } from '@/repositories/tokens';
@@ -92,9 +93,9 @@ export function usePasskeys() {
         setHasRegisteredPasskey(true);
         analyticsService.track('passkey_registered', {});
       } catch (e) {
-        const message = e instanceof Error ? e.message : '';
-        if (!message.includes('cancel')) {
-          setError(message || 'Registrazione passkey fallita');
+        const isCancellation = e instanceof Error && e.message.includes('cancel');
+        if (!isCancellation) {
+          setError(handleApiError(e, 'registerPasskey').message);
         }
       } finally {
         setLoading(false);
@@ -130,11 +131,12 @@ export function usePasskeys() {
       );
       analyticsService.identify(result.user.id);
     } catch (e) {
-      const message = e instanceof Error ? e.message : '';
-      if (!message.includes('cancel')) {
+      const isCancellation = e instanceof Error && e.message.includes('cancel');
+      if (!isCancellation) {
         // Silently hide the passkey button for this session (e.g. new phone,
         // credential not transferred). No user-facing error toast.
-        logger.warn('usePasskeys', 'Passkey login failed, hiding button for session', message);
+        // handleApiError ensures Sentry logging.
+        handleApiError(e, 'loginWithPasskey');
         setPasskeyHiddenForSession(true);
       }
     } finally {
@@ -148,7 +150,7 @@ export function usePasskeys() {
       await passkeyRepo.remove(id);
       setPasskeys((prev) => prev.filter((p) => p.id !== id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Eliminazione fallita');
+      setError(handleApiError(e, 'deletePasskey').message);
     }
   }, []);
 

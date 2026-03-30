@@ -1,5 +1,5 @@
 import process from 'node:process';
-import type { Result } from '@pawmeet/types';
+import { AppError, type Result } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { Ratelimit } from '@upstash/ratelimit';
@@ -47,7 +47,40 @@ export async function createContext(opts: { req: Request }): Promise<Context> {
   }
 }
 
-const t = initTRPC.context<Context>().create();
+/**
+ * Extract only field names from Zod errors — NEVER expose regex, min/max, or constraints.
+ * Returns an array of field names that failed validation (e.g. ['email', 'password']).
+ */
+function extractZodFieldNames(shape: Record<string, unknown>): string[] {
+  const zodError = shape.zodError as
+    | { fieldErrors?: Record<string, unknown> }
+    | null
+    | undefined;
+  return Object.keys(zodError?.fieldErrors ?? {});
+}
+
+const t = initTRPC.context<Context>().create({
+  errorFormatter({ shape, error }) {
+    const cause = error.cause;
+    const isAppError = cause instanceof AppError;
+    const hasZodError = error.code === 'BAD_REQUEST' && shape.data && 'zodError' in shape.data;
+
+    return {
+      ...shape,
+      // Replace raw Zod JSON message with a generic string
+      message: hasZodError ? 'Validation failed' : shape.message,
+      data: {
+        ...shape.data,
+        // Expose machine-readable AppError code for client-side i18n mapping
+        appCode: isAppError ? cause.code : undefined,
+        // Only field names — no regex, no min/max, no constraints
+        zodFieldErrors: hasZodError ? extractZodFieldNames(shape.data as Record<string, unknown>) : undefined,
+        // Strip raw Zod error details from the response
+        zodError: undefined,
+      },
+    };
+  },
+});
 
 export const router = t.router;
 export const publicProcedure = t.procedure;

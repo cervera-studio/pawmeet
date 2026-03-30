@@ -1,4 +1,30 @@
 {
+  "errors": {
+    "generic": "Qualcosa non ha funzionato. Riprova tra poco.",
+    "offline": "Sei offline. Controlla la connessione e riprova.",
+    "network": "Impossibile raggiungere il server. Controlla la connessione.",
+    "timeout": "La richiesta sta impiegando troppo tempo. Riprova.",
+    "badRequest": "Richiesta non valida. Controlla i dati inseriti.",
+    "server": "Si è verificato un errore. Riprova più tardi.",
+    "sessionExpired": "La sessione è scaduta. Accedi di nuovo.",
+    "forbidden": "Non hai i permessi per questa azione.",
+    "notFound": "Risorsa non trovata.",
+    "conflict": "Questa azione è in conflitto con un'altra operazione.",
+    "rateLimited": "Troppe richieste. Riprova tra qualche minuto.",
+    "preconditionFailed": "Questa azione non può più essere completata.",
+    "unknown": "Si è verificato un errore imprevisto.",
+    "validationFields": "Controlla i campi evidenziati e riprova.",
+    "invalidField": "Questo campo non è valido.",
+    "swipeLimitReached": "Hai raggiunto il limite giornaliero di swipe.",
+    "auth": {
+      "invalidCredentials": "Email o password non corretta.",
+      "accountDisabled": "Questo account è stato disattivato.",
+      "accountLocked": "Troppi tentativi di accesso. Riprova più tardi.",
+      "emailTaken": "Questa email è già associata a un account. Prova ad accedere.",
+      "invalidToken": "Il codice inserito non è valido o è scaduto.",
+      "sessionExpired": "La sessione è scaduta. Accedi di nuovo."
+    }
+  },
   "common": {
     "error": "Errore",
     "cancel": "Annulla",

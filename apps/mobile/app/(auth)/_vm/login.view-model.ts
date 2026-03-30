@@ -2,6 +2,7 @@ import { loginSchema } from '@pawmeet/validation';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import { useApiError } from '@/hooks/useApiError';
 import { useAuth } from '@/hooks/useAuth';
 import { usePasskeys } from '@/hooks/usePasskeys';
 import i18n from '@/lib/i18n';
@@ -19,11 +20,11 @@ export function useLoginViewModel() {
   const router = useRouter();
   const { login, socialLogin } = useAuth();
   const passkeys = usePasskeys();
+  const { apiError, clearErrors, execute } = useApiError();
   const [step, setStep] = useState<LoginStep>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
   const [passkeyAttempted, setPasskeyAttempted] = useState(false);
 
@@ -31,46 +32,44 @@ export function useLoginViewModel() {
 
   const handleSocialAuth = useCallback(
     async (result: SocialAuthResult) => {
-      setApiError('');
+      clearErrors();
       setLoading(true);
-      try {
-        await socialLogin(result.provider, result.idToken, result.displayName);
-      } catch (e) {
-        setApiError(e instanceof Error ? e.message : i18n.t('auth.login.socialLoginError'));
-      } finally {
-        setLoading(false);
-      }
+      await execute(
+        () => socialLogin(result.provider, result.idToken, result.displayName),
+        'login.social',
+      );
+      setLoading(false);
     },
-    [socialLogin],
+    [socialLogin, clearErrors, execute],
   );
 
   // Handle Google auth response (PKCE: exchange code server-side)
   useEffect(() => {
     const result = extractGoogleCode(google.response, google.request, google.redirectUri);
     if (result) {
-      setApiError('');
+      clearErrors();
       setLoading(true);
-      socialLogin(
-        result.provider,
-        undefined,
-        undefined,
-        result.code,
-        result.codeVerifier,
-        result.redirectUri,
-      )
-        .catch((e) =>
-          setApiError(e instanceof Error ? e.message : i18n.t('auth.login.googleError')),
-        )
-        .finally(() => setLoading(false));
+      execute(
+        () =>
+          socialLogin(
+            result.provider,
+            undefined,
+            undefined,
+            result.code,
+            result.codeVerifier,
+            result.redirectUri,
+          ),
+        'login.google',
+      ).finally(() => setLoading(false));
     }
-  }, [google.response, google.request, google.redirectUri, socialLogin]);
+  }, [google.response, google.request, google.redirectUri, socialLogin, clearErrors, execute]);
 
   // Step 1: user enters email and taps "Continue"
   // If passkey is available → auto-trigger passkey auth
   // If not → show password field
   const handleContinue = useCallback(async () => {
     setErrors({});
-    setApiError('');
+    clearErrors();
 
     const trimmed = email.trim();
     if (!trimmed) {
@@ -94,19 +93,19 @@ export function useLoginViewModel() {
 
     // Show password step
     setStep('credentials');
-  }, [email, passkeys, passkeyAttempted]);
+  }, [email, passkeys, passkeyAttempted, clearErrors]);
 
   const handleBack = useCallback(() => {
     setStep('email');
     setPassword('');
     setErrors({});
-    setApiError('');
+    clearErrors();
     setPasskeyAttempted(false);
-  }, []);
+  }, [clearErrors]);
 
   const handleLogin = useCallback(async () => {
     setErrors({});
-    setApiError('');
+    clearErrors();
 
     const result = loginSchema.safeParse({ email, password });
     if (!result.success) {
@@ -115,34 +114,29 @@ export function useLoginViewModel() {
     }
 
     setLoading(true);
-    try {
-      await login(email, password);
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('auth.login.loginError'));
-    } finally {
-      setLoading(false);
-    }
-  }, [email, password, login]);
+    await execute(() => login(email, password), 'login.email');
+    setLoading(false);
+  }, [email, password, login, clearErrors, execute]);
 
   const handleGoogleLogin = useCallback(async () => {
-    setApiError('');
+    clearErrors();
     try {
       await google.promptAsync();
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('auth.login.googleError'));
+    } catch {
+      // Google prompt failure is handled via the useEffect above
     }
-  }, [google]);
+  }, [google, clearErrors]);
 
   const handleAppleLogin = useCallback(async () => {
     try {
       const result = await signInWithApple();
       await handleSocialAuth(result);
     } catch (e) {
-      const message = e instanceof Error ? e.message : '';
-      if (message.includes('ERR_REQUEST_CANCELED')) return;
-      setApiError(message || i18n.t('auth.login.appleError'));
+      // Apple cancellation is not an error
+      if (e instanceof Error && e.message.includes('ERR_REQUEST_CANCELED')) return;
+      await execute(() => Promise.reject(e), 'login.apple');
     }
-  }, [handleSocialAuth]);
+  }, [handleSocialAuth, execute]);
 
   const navigateToRegister = useCallback(() => {
     router.replace('/(auth)/register');

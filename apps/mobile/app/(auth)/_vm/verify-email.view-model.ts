@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import i18n from '@/lib/i18n';
+import { useApiError } from '@/hooks/useApiError';
 import { api } from '@/lib/trpc';
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -8,10 +8,10 @@ const RESEND_COOLDOWN_SECONDS = 60;
 export function useVerifyEmailViewModel() {
   const router = useRouter();
   const { email } = useLocalSearchParams<{ email: string }>();
+  const { apiError, clearErrors, execute } = useApiError();
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const [apiError, setApiError] = useState('');
   const [countdown, setCountdown] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -48,32 +48,34 @@ export function useVerifyEmailViewModel() {
   const handleVerify = useCallback(async () => {
     if (otp.length !== 6 || !email) return;
 
-    setApiError('');
+    clearErrors();
     setLoading(true);
-    try {
-      await api.auth.verifyEmailOtp.mutate({ email, code: otp });
+    const response = await execute(
+      () => api.auth.verifyEmailOtp.mutate({ email, code: otp }),
+      'verifyEmail',
+    );
+    setLoading(false);
+
+    if (response !== undefined) {
       router.replace('/(tabs)');
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('auth.verifyEmail.verifyError'));
-    } finally {
-      setLoading(false);
     }
-  }, [otp, email, router]);
+  }, [otp, email, router, clearErrors, execute]);
 
   const handleResend = useCallback(async () => {
     if (countdown > 0 || !email) return;
 
-    setApiError('');
+    clearErrors();
     setResending(true);
-    try {
-      await api.auth.resendVerification.mutate({ email });
+    const response = await execute(
+      () => api.auth.resendVerification.mutate({ email }),
+      'verifyEmail.resend',
+    );
+    setResending(false);
+
+    if (response !== undefined) {
       setCountdown(RESEND_COOLDOWN_SECONDS);
-    } catch (e) {
-      setApiError(e instanceof Error ? e.message : i18n.t('auth.verifyEmail.resendError'));
-    } finally {
-      setResending(false);
     }
-  }, [countdown, email]);
+  }, [countdown, email, clearErrors, execute]);
 
   return {
     email: email ?? '',

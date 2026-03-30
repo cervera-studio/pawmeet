@@ -2,6 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { dateOfBirthSchema } from '@pawmeet/validation';
 import { useCallback, useState } from 'react';
 import { container } from 'tsyringe';
+import { handleApiError } from '@/lib/error-handler';
 import { USER_REPOSITORY } from '@/repositories/tokens';
 import { useAuthStore } from '@/stores/auth';
 
@@ -31,9 +32,7 @@ export function useAgeGateViewModel() {
       }
       store.clearAgeVerification();
     } catch (e) {
-      logger.warn('AgeGateVM', 'Submit failed', e);
-      const message = e instanceof Error ? e.message : 'Errore imprevisto';
-      setError(message);
+      setError(handleApiError(e, 'ageGate').message);
     } finally {
       setLoading(false);
     }

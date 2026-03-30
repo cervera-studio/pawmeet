@@ -1,4 +1,30 @@
 {
+  "errors": {
+    "generic": "Ceva nu a funcționat. Încearcă din nou în curând.",
+    "offline": "Ești offline. Verifică conexiunea și încearcă din nou.",
+    "network": "Nu se poate contacta serverul. Verifică conexiunea.",
+    "timeout": "Cererea durează prea mult. Încearcă din nou.",
+    "badRequest": "Cerere invalidă. Verifică datele introduse.",
+    "server": "A apărut o eroare. Încearcă mai târziu.",
+    "sessionExpired": "Sesiunea ta a expirat. Autentifică-te din nou.",
+    "forbidden": "Nu ai permisiunea pentru această acțiune.",
+    "notFound": "Resursa nu a fost găsită.",
+    "conflict": "Această acțiune este în conflict cu o altă operațiune.",
+    "rateLimited": "Prea multe cereri. Încearcă din nou în câteva minute.",
+    "preconditionFailed": "Această acțiune nu mai poate fi finalizată.",
+    "unknown": "A apărut o eroare neașteptată.",
+    "validationFields": "Verifică câmpurile evidențiate și încearcă din nou.",
+    "invalidField": "Acest câmp nu este valid.",
+    "swipeLimitReached": "Ai atins limita zilnică de swipe-uri.",
+    "auth": {
+      "invalidCredentials": "Email sau parolă incorectă.",
+      "accountDisabled": "Acest cont a fost dezactivat.",
+      "accountLocked": "Prea multe încercări de autentificare. Încearcă mai târziu.",
+      "emailTaken": "Acest email este deja asociat unui cont. Încearcă să te autentifici.",
+      "invalidToken": "Codul introdus nu este valid sau a expirat.",
+      "sessionExpired": "Sesiunea ta a expirat. Autentifică-te din nou."
+    }
+  },
   "common": {
     "error": "Eroare",
     "cancel": "Anulează",

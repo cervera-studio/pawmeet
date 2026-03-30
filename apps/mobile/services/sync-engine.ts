@@ -128,21 +128,23 @@ export async function drainQueue(): Promise<void> {
         await db.runAsync('DELETE FROM sync_queue WHERE id = ?', [entry.id]);
         logger.debug('SyncEngine', `Synced: ${entry.entity_type}/${entry.operation}`);
       } catch (e) {
-        const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+        const safeMsg = `sync_failed:${entry.entity_type}/${entry.operation}`;
         const nextRetry = entry.retry_count + 1;
+
+        // Log the real error for debugging but store only a generic message in SQLite
+        logger.warn('SyncEngine', `${safeMsg} (attempt ${nextRetry})`, e);
 
         if (nextRetry >= entry.max_retries) {
           // Max retries exceeded — mark as permanently failed
           await db.runAsync(
             `UPDATE sync_queue SET status = 'failed', retry_count = ?, last_error = ?, updated_at = datetime('now') WHERE id = ?`,
-            [nextRetry, errorMsg, entry.id],
+            [nextRetry, safeMsg, entry.id],
           );
-          logger.warn('SyncEngine', `Permanently failed: ${entry.entity_type} — ${errorMsg}`);
         } else {
           // Exponential backoff: wait before next attempt
           await db.runAsync(
             `UPDATE sync_queue SET status = 'pending', retry_count = ?, last_error = ?, updated_at = datetime('now') WHERE id = ?`,
-            [nextRetry, errorMsg, entry.id],
+            [nextRetry, safeMsg, entry.id],
           );
 
           const backoffMs = BASE_BACKOFF_MS * 2 ** nextRetry;

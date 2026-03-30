@@ -93,6 +93,28 @@ jobs:
             --resource-group rg-pawmeet-prod \
             --image "${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
 
+      # ── Verify new revision is healthy ────────────────────────
+      - name: Health check
+        run: |
+          echo "Waiting 30s for new revision to start..."
+          sleep 30
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.pawmeet.io/health)
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "⏳ Attempt $i: got HTTP $STATUS, retrying in 10s..."
+            sleep 10
+          done
+          echo "❌ Health check failed after 5 attempts"
+          az containerapp revision list \
+            --name ca-pawmeet-api-prod \
+            --resource-group rg-pawmeet-prod \
+            --query "[0:3].{name:name,active:properties.active,healthy:properties.runningState}" \
+            -o table
+          exit 1
+
       # ── Sentry release ────────────────────────────────────────
       - name: Create Sentry release
         if: env.SENTRY_AUTH_TOKEN != ''

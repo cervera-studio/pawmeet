@@ -279,6 +279,10 @@ export interface AnalyticsEventMap {
   admin_gdpr_export_requested: { targetUserId: string };
   admin_waitlist_removed: { waitlistId: string };
 
+  // Web
+  web_contact_submitted: { hasSubject: boolean };
+  web_waitlist_signed_up: { locale: string };
+
   // Support
   support_ticket_created: { category: string; source: 'mobile' | 'web' };
   support_message_sent: { ticketId: string };

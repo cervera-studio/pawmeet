@@ -5,6 +5,7 @@ import { Hono } from 'hono';
 import { Resend } from 'resend';
 import type { supportDeps as SupportDeps } from '../container/index.js';
 import { db } from '../lib/db.js';
+import { trackEvent } from '../lib/track-event.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -139,7 +140,7 @@ export function createWebRoutes(deps: typeof SupportDeps) {
         // non-blocking
       }
 
-      // TODO: add web_contact_submitted to AnalyticsEventMap
+      trackEvent('web_contact_submitted', null, { hasSubject: !!subject });
       return c.json({ ok: true });
     } catch {
       return c.json({ error: 'Errore interno' }, 500);
@@ -194,6 +195,7 @@ export function createWebRoutes(deps: typeof SupportDeps) {
         text: `Nuova iscrizione alla waitlist PawMeet.\n\nEmail: ${email}\nData: ${new Date().toISOString()}`,
       });
 
+      trackEvent('web_waitlist_signed_up', null, { locale });
       return c.json({ ok: true });
     } catch {
       return c.json({ error: 'Errore interno' }, 500);

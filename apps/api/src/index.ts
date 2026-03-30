@@ -20,7 +20,6 @@ import {
   userRepo,
 } from './container/services.js';
 import { initSentry, Sentry } from './lib/sentry.js';
-import { analyticsCountersMiddleware } from './middleware/analytics-counters.js';
 import { cacheControlMiddleware } from './middleware/cache-control.js';
 import { corsMiddleware } from './middleware/cors.js';
 import { rateLimitMiddleware } from './middleware/rate-limit.js';
@@ -54,7 +53,6 @@ app.use('*', corsMiddleware);
 app.use('/api/*', rateLimitMiddleware);
 app.use('/trpc/*', rateLimitMiddleware);
 app.use('/trpc/*', cacheControlMiddleware);
-app.use('/trpc/*', analyticsCountersMiddleware);
 
 /** Scrub PostgreSQL connection strings from error messages */
 const PG_CONN_RE = /postgresql:\/\/[^\s]+@[^\s/]+\/[^\s]*/gi;

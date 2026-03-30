@@ -16,6 +16,7 @@ export interface DashboardStats {
 
 export interface AnalyticsKpis {
   dauToday: number;
+  mauCurrent: number;
   registrationsToday: number;
   matchesToday: number;
   dauTimeSeries: TimeSeriesPoint[];

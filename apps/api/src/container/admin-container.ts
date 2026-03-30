@@ -8,6 +8,7 @@ import {
   auditLogRepo,
   gamificationRepo,
   gdprExportRepo,
+  posthogQueryService,
   tokenRepo,
 } from './services.js';
 
@@ -19,6 +20,7 @@ export const adminDeps = {
   auditLogRepo,
   gdprExportRepo,
   tokenRepo,
+  posthogQueryService,
 };
 
 export const adminAiMatchingDeps = {

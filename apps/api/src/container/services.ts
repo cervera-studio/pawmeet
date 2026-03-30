@@ -160,18 +160,33 @@ export const feedRealtime = await (async () => {
 export const organizationAuthorizer = createOrganizationAuthorizer();
 export const experimentService = new RedisExperimentService(consentRepo);
 
-// ── Analytics providers (dual-write: Neon + external) ───────────────────────
+// ── Analytics providers (PostHog is sole analytics sink) ──────────────────
+
+const posthogHost = process.env.POSTHOG_HOST ?? 'https://eu.i.posthog.com';
 
 export const analyticsProviders: AnalyticsProvider[] = process.env.POSTHOG_API_KEY
   ? [
       new PostHogAnalyticsProvider(
         process.env.POSTHOG_API_KEY,
-        process.env.POSTHOG_HOST ?? 'https://eu.i.posthog.com',
+        posthogHost,
         process.env.POSTHOG_PERSONAL_API_KEY,
         process.env.POSTHOG_PROJECT_ID,
       ),
     ]
   : [];
+
+// ── PostHog query service (DAU/MAU for admin dashboard) ──────────────────
+
+import { PostHogQueryService } from '../infra/posthog-query-service.js';
+
+export const posthogQueryService =
+  process.env.POSTHOG_PERSONAL_API_KEY && process.env.POSTHOG_PROJECT_ID
+    ? new PostHogQueryService(
+        posthogHost,
+        process.env.POSTHOG_PERSONAL_API_KEY,
+        process.env.POSTHOG_PROJECT_ID,
+      )
+    : undefined;
 
 // ── Anthropic client (shared, optional) ──────────────────────────────────────
 

@@ -63,7 +63,6 @@ import type {
   AdminUserDog,
   AdminUserListItem,
   AdminUserRow,
-  TodayDomainMetrics,
   AuditLogEntry,
   AuditLogFilters,
   DashboardStats,
@@ -71,6 +70,7 @@ import type {
   NotificationStats,
   PaginatedResult,
   PendingPhotoItem,
+  TodayDomainMetrics,
 } from '../ports/admin-data-repository.js';
 
 export class DrizzleAdminDataRepository implements AdminDataRepository {

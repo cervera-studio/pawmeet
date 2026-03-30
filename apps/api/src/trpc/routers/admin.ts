@@ -1,3 +1,4 @@
+import type { PostHogQueryService } from '../../infra/posthog-query-service.js';
 import type { AdminDataRepository } from '../../ports/admin-data-repository.js';
 import type { AdminNotificationService } from '../../ports/admin-notification-service.js';
 import type { AuditLogRepository } from '../../ports/audit-log-repository.js';
@@ -22,6 +23,7 @@ interface AdminRouterDeps {
   gamificationRepo?: GamificationRepository;
   gdprExportRepo?: GdprExportRepository;
   tokenRepo?: TokenRepository;
+  posthogQueryService?: PostHogQueryService;
 }
 
 /**
@@ -41,7 +43,11 @@ export function createAdminRouter(deps: AdminRouterDeps) {
     tokenRepo,
   } = deps;
 
-  const dashboard = createAdminDashboardRouter({ adminDataRepo, auditLogRepo });
+  const dashboard = createAdminDashboardRouter({
+    adminDataRepo,
+    auditLogRepo,
+    posthogQueryService: deps.posthogQueryService,
+  });
   const users = createAdminUsersRouter({
     adminDataRepo,
     adminNotificationService,

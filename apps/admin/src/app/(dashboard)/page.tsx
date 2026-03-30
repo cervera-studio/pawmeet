@@ -22,6 +22,7 @@ export default async function DashboardPage() {
 
   const analyticsCards = [
     { title: t('dauToday'), value: analyticsKpis.dauToday },
+    { title: 'MAU', value: analyticsKpis.mauCurrent },
     { title: t('registrationsToday'), value: analyticsKpis.registrationsToday },
     { title: t('matchesToday'), value: analyticsKpis.matchesToday },
   ];
@@ -50,7 +51,7 @@ export default async function DashboardPage() {
       {/* Analytics KPI Cards */}
       <div>
         <h2 className="mb-3 text-lg font-semibold text-neutral-700">{t('analyticsRealtime')}</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {analyticsCards.map((kpi) => (
             <Card key={kpi.title}>
               <CardHeader className="pb-2">

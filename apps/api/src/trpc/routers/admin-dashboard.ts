@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import type { PostHogQueryService } from '../../infra/posthog-query-service.js';
 import { paginate } from '../../lib/pagination.js';
-import { getDauCount, getDauTimeSeries } from '../../middleware/analytics-counters.js';
 import type {
   AdminAuditLogRepository,
   AdminDashboardRepository,
@@ -23,11 +23,12 @@ const listAuditLogSchema = z.object({
 interface DashboardRouterDeps {
   adminDataRepo: AdminDashboardRepository & AdminAuditLogRepository;
   auditLogRepo: AuditLogRepository;
+  posthogQueryService?: PostHogQueryService;
 }
 
 export function createAdminDashboardRouter(deps: DashboardRouterDeps) {
   const adminProcedure = createAdminProcedure();
-  const { adminDataRepo } = deps;
+  const { adminDataRepo, posthogQueryService } = deps;
 
   return router({
     getStats: adminProcedure.query(async () => {
@@ -35,17 +36,18 @@ export function createAdminDashboardRouter(deps: DashboardRouterDeps) {
     }),
 
     getAnalyticsKpis: adminProcedure.query(async () => {
-      const [dauToday, dauTimeSeries, domainMetrics] = await Promise.all([
-        getDauCount(new Date().toISOString().slice(0, 10)),
-        getDauTimeSeries(30),
+      const [posthogMetrics, domainMetrics] = await Promise.all([
+        posthogQueryService?.getDauMauMetrics(30) ??
+          { dauToday: 0, mauCurrent: 0, dauTimeSeries: [] },
         adminDataRepo.getTodayDomainMetrics(),
       ]);
 
       return {
-        dauToday,
+        dauToday: posthogMetrics.dauToday,
+        mauCurrent: posthogMetrics.mauCurrent,
         registrationsToday: domainMetrics.registrationsToday,
         matchesToday: domainMetrics.matchesToday,
-        dauTimeSeries,
+        dauTimeSeries: posthogMetrics.dauTimeSeries,
       };
     }),
 

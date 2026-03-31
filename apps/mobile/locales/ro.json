@@ -660,6 +660,12 @@
       "invalidDate": "Dată invalidă"
     }
   },
+  "requireDog": {
+    "title": "Adaugă câinele tău",
+    "description": "Pentru a folosi această funcție trebuie mai întâi să adaugi un profil al câinelui tău.",
+    "addDog": "Adaugă câine",
+    "later": "O fac mai târziu"
+  },
   "consent": {
     "simpleTitle": "Ajută-ne să îmbunătățim PawMeet",
     "simpleDescription": "Activând serviciile opționale ne ajuți să facem aplicația mai bună pentru tine și câinele tău. Poți schimba oricând din Setări.",

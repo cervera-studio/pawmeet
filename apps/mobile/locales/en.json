@@ -671,6 +671,12 @@
     }
   },
 
+  "requireDog": {
+    "title": "Add your dog",
+    "description": "To use this feature you need to add a dog profile first.",
+    "addDog": "Add dog",
+    "later": "I'll do it later"
+  },
   "consent": {
     "simpleTitle": "Help us improve PawMeet",
     "simpleDescription": "By enabling optional services you help us make the app better for you and your dog. You can change your mind at any time from Settings.",

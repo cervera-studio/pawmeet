@@ -660,6 +660,12 @@
       "invalidDate": "Fecha no válida"
     }
   },
+  "requireDog": {
+    "title": "Añade tu perro",
+    "description": "Para usar esta función primero debes añadir un perfil de tu perro.",
+    "addDog": "Añadir perro",
+    "later": "Lo haré después"
+  },
   "consent": {
     "simpleTitle": "Ayúdanos a mejorar PawMeet",
     "simpleDescription": "Activando los servicios opcionales nos ayudas a mejorar la app para ti y tu perro. Puedes cambiar de opinión en cualquier momento desde los Ajustes.",

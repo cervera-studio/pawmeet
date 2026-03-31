@@ -320,14 +320,14 @@ describe('auth router', () => {
 
       const result = await caller.auth.resetPassword({
         email: 'test@example.com',
-        code: '12345678',
+        code: '123456',
         password: 'NewStr0ng!',
       });
 
       expect(result.message).toBe('Password reimpostata con successo');
       expect(deps.resetPassword).toHaveBeenCalledWith({
         email: 'test@example.com',
-        code: '12345678',
+        code: '123456',
         password: 'NewStr0ng!',
       });
     });
@@ -345,7 +345,7 @@ describe('auth router', () => {
       await expect(
         caller.auth.resetPassword({
           email: 'test@example.com',
-          code: '00000000',
+          code: '000000',
           password: 'NewStr0ng!',
         }),
       ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
@@ -358,7 +358,7 @@ describe('auth router', () => {
       await expect(
         caller.auth.resetPassword({
           email: 'test@example.com',
-          code: '12345678',
+          code: '123456',
           password: 'weak',
         }),
       ).rejects.toThrow(TRPCError);

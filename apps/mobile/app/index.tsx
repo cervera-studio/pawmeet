@@ -7,7 +7,7 @@ export default function Index() {
   const requiresAgeVerification = useAuthStore((s) => s.requiresAgeVerification);
 
   if (!isAuthenticated) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/(auth)/welcome" />;
   }
 
   if (requiresAgeVerification) {

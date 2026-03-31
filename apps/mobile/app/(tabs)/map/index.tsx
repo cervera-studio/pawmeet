@@ -157,7 +157,7 @@ export default function MapScreen() {
     <View className="flex-1">
       <MapView
         ref={vm.mapRef}
-        className="flex-1"
+        style={{ flex: 1 }}
         initialRegion={{
           latitude: vm.coordinates.latitude,
           longitude: vm.coordinates.longitude,

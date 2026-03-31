@@ -27,7 +27,7 @@ export function usePrivacyViewModel() {
   // Load blocked users count
   useEffect(() => {
     api.follows.listBlocked
-      .query({ limit: 100, offset: 0 })
+      .query({ limit: 50, offset: 0 })
       .then((data) => {
         const result = data as { users?: unknown[] };
         setBlockedCount(result.users?.length ?? 0);

@@ -23,7 +23,7 @@ async function doRefresh(apiUrl: string, callbacks: AuthRefreshCallbacks): Promi
       const response = await fetch(`${apiUrl}/trpc/auth.refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ json: { refreshToken } }),
+        body: JSON.stringify({ refreshToken }),
       });
 
       if (!response.ok) {
@@ -32,9 +32,9 @@ async function doRefresh(apiUrl: string, callbacks: AuthRefreshCallbacks): Promi
       }
 
       const data = (await response.json()) as {
-        result?: { data?: { json?: { accessToken?: string; refreshToken?: string } } };
+        result?: { data?: { accessToken?: string; refreshToken?: string } };
       };
-      const result = data.result?.data?.json;
+      const result = data.result?.data;
       if (!(result?.accessToken && result?.refreshToken)) return false;
 
       await callbacks.onTokensRefreshed(result.accessToken, result.refreshToken);

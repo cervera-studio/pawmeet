@@ -1,5 +1,5 @@
-import { logger } from '@pawmeet/utils';
 import { createAuthRefreshLink } from '@pawmeet/api-client';
+import { logger } from '@pawmeet/utils';
 import { useAuthStore } from '@/stores/auth';
 import { storage } from './storage';
 

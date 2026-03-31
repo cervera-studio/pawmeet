@@ -22,12 +22,23 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+export interface UpdateLocationResult {
+  latitude: number;
+  longitude: number;
+  updatedAt: string;
+  forced?: boolean;
+  distanceKm?: number;
+  speedKmh?: number;
+  elapsedHours?: number;
+}
+
 export function createUpdateLocation({ userRepo }: Deps) {
   return async (
     userId: string,
     latitude: number,
     longitude: number,
-  ): Promise<Result<{ latitude: number; longitude: number; updatedAt: string }>> => {
+    force?: boolean,
+  ): Promise<Result<UpdateLocationResult>> => {
     // Validate coordinate bounds using value object
     const coordsResult = safeParseCoordinates(latitude, longitude);
     if (!coordsResult.success) {
@@ -43,7 +54,25 @@ export function createUpdateLocation({ userRepo }: Deps) {
         const distanceKm = haversineKm(user.latitude, user.longitude, latitude, longitude);
         const speedKmh = distanceKm / elapsedHours;
         if (speedKmh > MAX_SPEED_KMH) {
-          return fail(new AppError('SUSPICIOUS_LOCATION', 'Aggiornamento posizione sospetto', 400));
+          if (!force) {
+            return fail(
+              new AppError('SUSPICIOUS_LOCATION', 'Aggiornamento posizione sospetto', 409, {
+                distanceKm: Math.round(distanceKm),
+              }),
+            );
+          }
+          // force=true: accept the update and return metadata for analytics
+          const now = new Date();
+          await userRepo.update(userId, { latitude, longitude, locationUpdatedAt: now });
+          return succeed({
+            latitude,
+            longitude,
+            updatedAt: now.toISOString(),
+            forced: true,
+            distanceKm: Math.round(distanceKm),
+            speedKmh: Math.round(speedKmh),
+            elapsedHours: Math.round(elapsedHours * 100) / 100,
+          });
         }
       }
     }

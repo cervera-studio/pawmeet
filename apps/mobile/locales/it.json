@@ -876,7 +876,12 @@
     "openSettings": "Apri Impostazioni",
     "permissionError": "Errore nel richiedere i permessi di posizione",
     "notGranted": "Permesso di posizione non concesso",
-    "fetchError": "Errore nel recuperare la posizione"
+    "fetchError": "Errore nel recuperare la posizione",
+    "suspiciousTitle": "Spostamento rilevato",
+    "suspiciousMessage": "La tua posizione sembra cambiata di circa {{distance}} km rispetto all'ultima volta. Vuoi aggiornare la tua posizione?",
+    "suspiciousMessageGeneric": "La tua posizione sembra cambiata molto rispetto all'ultima volta. Vuoi aggiornare la tua posizione?",
+    "keepPrevious": "Mantieni precedente",
+    "update": "Aggiorna"
   },
   "badges": {
     "firstMeeting": "Primo incontro",

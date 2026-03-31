@@ -876,7 +876,12 @@
     "openSettings": "Deschide Setări",
     "permissionError": "Eroare la solicitarea permisiunilor de locație",
     "notGranted": "Permisiunea de locație nu a fost acordată",
-    "fetchError": "Eroare la obținerea locației"
+    "fetchError": "Eroare la obținerea locației",
+    "suspiciousTitle": "Schimbare de locație detectată",
+    "suspiciousMessage": "Locația ta pare să se fi schimbat cu aproximativ {{distance}} km față de ultima dată. Vrei să îți actualizezi locația?",
+    "suspiciousMessageGeneric": "Locația ta pare să se fi schimbat semnificativ față de ultima dată. Vrei să îți actualizezi locația?",
+    "keepPrevious": "Păstrează anterioara",
+    "update": "Actualizează"
   },
   "badges": {
     "firstMeeting": "Prima întâlnire",

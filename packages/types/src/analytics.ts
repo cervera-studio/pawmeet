@@ -184,6 +184,9 @@ export interface AnalyticsEventMap {
   };
   app_backgrounded: { sessionDurationMs: number; screenCount: number };
 
+  // Location
+  location_force_updated: { distanceKm: number; speedKmh: number; elapsedHours: number };
+
   // Permissions
   permission_location_changed: { newStatus: string; wasPrompted: boolean };
   permission_notification_changed: { newStatus: string; wasPrompted: boolean };

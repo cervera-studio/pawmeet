@@ -28,9 +28,19 @@ export function createUsersRouter(deps: typeof userDeps) {
 
     updateLocation: protectedProcedure
       .input(updateLocationSchema)
-      .mutation(async ({ ctx, input }) =>
-        unwrapResult(await deps.updateLocation(ctx.userId, input.latitude, input.longitude)),
-      ),
+      .mutation(async ({ ctx, input }) => {
+        const result = unwrapResult(
+          await deps.updateLocation(ctx.userId, input.latitude, input.longitude, input.force),
+        );
+        if (result.forced) {
+          trackEvent('location_force_updated', ctx.userId, {
+            distanceKm: result.distanceKm ?? 0,
+            speedKmh: result.speedKmh ?? 0,
+            elapsedHours: result.elapsedHours ?? 0,
+          });
+        }
+        return result;
+      }),
 
     updatePreferences: protectedProcedure
       .input(updatePreferencesSchema)

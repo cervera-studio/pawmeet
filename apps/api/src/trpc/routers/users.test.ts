@@ -144,7 +144,7 @@ describe('users router', () => {
 
       expect(result.latitude).toBe(41.9028);
       expect(result.longitude).toBe(12.4964);
-      expect(deps.updateLocation).toHaveBeenCalledWith('user-1', 41.9028, 12.4964);
+      expect(deps.updateLocation).toHaveBeenCalledWith('user-1', 41.9028, 12.4964, undefined);
     });
 
     it('rejects latitude out of range', async () => {

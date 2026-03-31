@@ -876,7 +876,12 @@
     "openSettings": "Open Settings",
     "permissionError": "Error requesting location permissions",
     "notGranted": "Location permission not granted",
-    "fetchError": "Error fetching location"
+    "fetchError": "Error fetching location",
+    "suspiciousTitle": "Location change detected",
+    "suspiciousMessage": "Your location appears to have changed by about {{distance}} km since last time. Do you want to update your location?",
+    "suspiciousMessageGeneric": "Your location appears to have changed significantly since last time. Do you want to update your location?",
+    "keepPrevious": "Keep previous",
+    "update": "Update"
   },
   "badges": {
     "firstMeeting": "First meeting",

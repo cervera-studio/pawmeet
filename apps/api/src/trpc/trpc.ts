@@ -70,6 +70,7 @@ const t = initTRPC.context<Context>().create({
         ...shape.data,
         // Expose machine-readable AppError code for client-side i18n mapping
         appCode: isAppError ? cause.code : undefined,
+        appData: isAppError ? cause.data : undefined,
         // Only field names — no regex, no min/max, no constraints
         zodFieldErrors: hasZodError
           ? extractZodFieldNames(shape.data as Record<string, unknown>)

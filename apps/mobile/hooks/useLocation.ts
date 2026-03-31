@@ -2,8 +2,28 @@ import { logger } from '@pawmeet/utils';
 import * as Location from 'expo-location';
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
-import { api } from '@/lib/trpc';
+import { container } from '@/repositories/container';
+import { USER_REPOSITORY } from '@/repositories/tokens';
 import { useLocationStore } from '@/stores/location';
+
+const userRepo = container.resolve(USER_REPOSITORY);
+
+function showLocationConfirmAlert(distanceKm?: number): Promise<boolean> {
+  const distance = distanceKm ?? 0;
+  return new Promise((resolve) => {
+    Alert.alert(
+      'Spostamento rilevato',
+      distance > 0
+        ? `La tua posizione sembra cambiata di circa ${distance} km rispetto all'ultima volta. Vuoi aggiornare la tua posizione?`
+        : "La tua posizione sembra cambiata molto rispetto all'ultima volta. Vuoi aggiornare la tua posizione?",
+      [
+        { text: 'Mantieni precedente', style: 'cancel', onPress: () => resolve(false) },
+        { text: 'Aggiorna', onPress: () => resolve(true) },
+      ],
+      { cancelable: false },
+    );
+  });
+}
 
 export function useLocation() {
   const {
@@ -70,16 +90,24 @@ export function useLocation() {
         longitude: location.coords.longitude,
       };
 
+      // Sync location to server via repository
+      try {
+        const result = await userRepo.updateLocation(coords.latitude, coords.longitude);
+
+        if (result.suspicious) {
+          const confirmed = await showLocationConfirmAlert(result.distanceKm);
+          if (confirmed) {
+            await userRepo.updateLocation(coords.latitude, coords.longitude, true);
+            setCoordinates(coords);
+          }
+          // If not confirmed, keep old coordinates
+          return confirmed ? coords : coordinates;
+        }
+      } catch (e) {
+        logger.warn('useLocation', 'Failed to sync location to server', e);
+      }
+
       setCoordinates(coords);
-
-      // Send location to API in background
-      api.users.updateLocation
-        .mutate({
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        })
-        .catch((e) => logger.warn('useLocation', 'Failed to sync location to server', e));
-
       return coords;
     } catch {
       setError('Errore nel recuperare la posizione');
@@ -87,7 +115,7 @@ export function useLocation() {
     } finally {
       setLoading(false);
     }
-  }, [requestPermission, setCoordinates, setLoading, setError]);
+  }, [requestPermission, setCoordinates, setLoading, setError, coordinates]);
 
   return {
     coordinates,

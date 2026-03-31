@@ -876,7 +876,12 @@
     "openSettings": "Abrir Ajustes",
     "permissionError": "Error al solicitar los permisos de ubicación",
     "notGranted": "Permiso de ubicación no concedido",
-    "fetchError": "Error al obtener la ubicación"
+    "fetchError": "Error al obtener la ubicación",
+    "suspiciousTitle": "Cambio de ubicación detectado",
+    "suspiciousMessage": "Tu ubicación parece haber cambiado unos {{distance}} km desde la última vez. ¿Quieres actualizar tu ubicación?",
+    "suspiciousMessageGeneric": "Tu ubicación parece haber cambiado mucho desde la última vez. ¿Quieres actualizar tu ubicación?",
+    "keepPrevious": "Mantener anterior",
+    "update": "Actualizar"
   },
   "badges": {
     "firstMeeting": "Primer encuentro",

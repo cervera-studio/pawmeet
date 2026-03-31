@@ -289,7 +289,11 @@
       "writePlaceholder": "Scrie un comentariu...",
       "replyPlaceholder": "Scrie un răspuns...",
       "replyTo": "Răspunde la",
-      "sendButton": "Trimite"
+      "sendButton": "Trimite",
+      "deleteConfirm": "Ești sigur că vrei să ștergi acest comentariu?",
+      "deleteTitle": "Șterge comentariu",
+      "noCommentsDescription": "Fii primul care lasă un comentariu!",
+      "report": "Raportează comentariu"
     },
     "actions": {
       "deletePost": "Șterge postarea",
@@ -300,7 +304,17 @@
       "publishError": "Povestea nu a putut fi publicată",
       "tapToSelect": "Atinge pentru a selecta",
       "noViews": "Nicio vizualizare",
-      "noViewsDescription": "Nimeni nu a văzut încă această poveste."
+      "noViewsDescription": "Nimeni nu a văzut încă această poveste.",
+      "viewsCountOne": "{{count}} vizualizare"
+    },
+    "hashtag": {
+      "noPosts": "Nicio postare cu acest hashtag încă",
+      "trending": "În tendințe"
+    },
+    "reviews": {
+      "noReviews": "Nicio recenzie încă",
+      "noReviewsDescription": "Fii primul care lasă o recenzie!",
+      "title": "Recenzii"
     }
   },
   "profile": {
@@ -369,7 +383,10 @@
       "deactivateProfile": "Dezactivează profil",
       "activateProfile": "Activează profil",
       "deleteProfile": "Șterge profilul câinelui",
-      "addPhotos": "Adaugă fotografii"
+      "addPhotos": "Adaugă fotografii",
+      "moodHistory": "Istoric dispoziție",
+      "moodHistorySubtitle": "Urmărește dispoziția câinelui tău în timp",
+      "viewAllBadges": "Vezi toate insignele"
     },
     "activity": {
       "title": "Activitate",
@@ -401,7 +418,8 @@
       "title": "Provocări",
       "backButton": "Gamification",
       "completed": "Finalizată!",
-      "noChallenges": "Nicio provocare activă momentan.\nRevino curând pentru provocări noi!"
+      "noChallenges": "Nicio provocare activă momentan.\nRevino curând pentru provocări noi!",
+      "expired": "Expirat"
     },
     "followList": {
       "noFollowers": "Niciun urmăritor",
@@ -409,7 +427,12 @@
       "notFollowing": "Nu urmărești pe nimeni",
       "notFollowingSubtitle": "Începe să urmărești alți proprietari pentru a fi la curent!",
       "noFriends": "Niciun prieten încă",
-      "noFriendsSubtitle": "Prietenii sunt persoanele pe care le urmărești și care te urmăresc la rândul lor."
+      "noFriendsSubtitle": "Prietenii sunt persoanele pe care le urmărești și care te urmăresc la rândul lor.",
+      "followsYou": "Te urmărește"
+    },
+    "dogBadges": {
+      "locked": "Blocat",
+      "title": "Insigne"
     }
   },
   "events": {
@@ -572,7 +595,9 @@
       "meetingPoint": "Punct de întâlnire",
       "openMap": "Atinge pentru a deschide harta"
     },
-    "tapToRetry": "Atinge pentru a reincerca"
+    "tapToRetry": "Atinge pentru a reincerca",
+    "searchNoResults": "Niciun rezultat găsit",
+    "searchPlaceholder": "Caută conversații..."
   },
   "auth": {
     "login": {
@@ -646,6 +671,14 @@
       "submitButton": "Confirmă",
       "submitting": "Se trimite...",
       "invalidDate": "Dată invalidă"
+    },
+    "verifyEmail": {
+      "otpPlaceholder": "Introdu codul de 6 cifre",
+      "resendCode": "Retrimite codul",
+      "resending": "Se retrimite...",
+      "title": "Verifică-ți emailul",
+      "verifyButton": "Verifică",
+      "verifying": "Se verifică..."
     }
   },
   "dogForm": {
@@ -753,7 +786,8 @@
       "enable": "Activează orele de liniște",
       "description": "Dezactivează notificările la anumite ore",
       "from": "De la",
-      "to": "Până la"
+      "to": "Până la",
+      "confirm": "Salvează orele de liniște"
     },
     "general": {
       "title": "Generale",
@@ -788,7 +822,8 @@
       "deletedMessage": "Contul tău a fost dezactivat. Vei primi un email de confirmare.",
       "invalidPassword": "Parolă invalidă. Reîncearcă.",
       "deleteError": "Eroare la ștergere. Reîncearcă mai târziu."
-    }
+    },
+    "manageConsents": "Gestionează consimțămintele"
   },
   "report": {
     "title": "Raportează",
@@ -923,7 +958,8 @@
     "date_of_birth_future": "Date of birth cannot be in the future",
     "date_of_birth_min_age": "You must be at least 18 years old to sign up",
     "display_name_min": "Name must be at least 2 characters",
-    "display_name_max": "Name cannot exceed 50 characters"
+    "display_name_max": "Name cannot exceed 50 characters",
+    "required": "Acest câmp este obligatoriu"
   },
   "onboarding": {
     "slide1Title": "Găsește parteneri de plimbare",
@@ -949,5 +985,82 @@
     "synced": "Sincronizată",
     "thisDevice": "Doar pe acest dispozitiv",
     "addButton": "Adaugă passkey"
+  },
+  "match": {
+    "close": "Închide",
+    "compatibility": "Compatibilitate"
+  },
+  "moodHistory": {
+    "empty": "Nicio înregistrare a dispoziției. Începe să înregistrezi dispoziția câinelui tău!",
+    "title": "Istoric dispoziție"
+  },
+  "notifications": {
+    "empty": "Nicio notificare încă",
+    "noTitle": "Notificare"
+  },
+  "privacy": {
+    "approximateDistance": "Distanță aproximativă",
+    "approximateDistanceDescription": "Afișează distanța aproximativă în loc de locația exactă",
+    "blockedSection": "Blocați",
+    "blockedUsers": "Utilizatori blocați",
+    "dangerSection": "Zonă periculoasă",
+    "dataSection": "Datele tale",
+    "deleteAccount": "Șterge contul",
+    "deleteWarning": "Această acțiune este ireversibilă. Toate datele tale vor fi șterse definitiv.",
+    "exportButton": "Exportă",
+    "exportConfirmMessage": "Vom pregăti un fișier cu toate datele tale și îl vom trimite pe email.",
+    "exportConfirmTitle": "Exportă datele tale?",
+    "exportData": "Exportă datele",
+    "exportDataDescription": "Descarcă o copie a tuturor datelor tale",
+    "exportError": "Datele nu au putut fi exportate. Reîncearcă.",
+    "exportSuccess": "Export solicitat",
+    "exportSuccessMessage": "Vei primi un email cu datele tale în curând.",
+    "profileActive": "Profil vizibil",
+    "profileActiveDescription": "Profilul tău este vizibil pentru alți utilizatori",
+    "showLastSeen": "Arată ultima activitate",
+    "showLastSeenDescription": "Permite altora să vadă când ai fost activ ultima dată",
+    "title": "Confidențialitate",
+    "visibilitySection": "Vizibilitate"
+  },
+  "safety": {
+    "addContact": "Adaugă contact",
+    "adding": "Se adaugă...",
+    "contactsSection": "Contacte de urgență",
+    "deleteButton": "Elimină",
+    "deleteConfirmTitle": "Elimini acest contact?",
+    "description": "Configurează contactele de urgență care vor fi notificate dacă activezi un SOS în timpul unei plimbări.",
+    "howSosWorks": "Cum funcționează SOS",
+    "maxContacts": "Poți adăuga până la {{max}} contacte de urgență.",
+    "namePlaceholder": "Numele contactului",
+    "nameRequired": "Numele este obligatoriu",
+    "noContacts": "Niciun contact de urgență adăugat încă",
+    "phonePlaceholder": "Număr de telefon",
+    "phoneRequired": "Numărul de telefon este obligatoriu",
+    "sosDescription": "În timpul unei plimbări, ține apăsat butonul SOS. Contactele tale de urgență vor primi un SMS cu locația ta în timp real.",
+    "title": "Siguranță"
+  },
+  "support": {
+    "categories": {
+      "account": "Cont",
+      "billing": "Facturare",
+      "bug": "Raport de eroare",
+      "general": "General",
+      "other": "Altele",
+      "safety": "Siguranță"
+    },
+    "categoryLabel": "Categorie",
+    "chatEmpty": "Niciun mesaj încă. Descrie problema ta și îți vom răspunde.",
+    "empty": "Niciun ticket de suport încă",
+    "inputPlaceholder": "Scrie un mesaj...",
+    "messageLabel": "Mesaj",
+    "messagePlaceholder": "Descrie problema ta în detaliu...",
+    "newTicket": "Ticket nou",
+    "send": "Trimite",
+    "sending": "Se trimite...",
+    "subjectLabel": "Subiect",
+    "subjectPlaceholder": "Scurtă descriere a problemei",
+    "ticketClosed": "Acest ticket a fost închis",
+    "title": "Suport",
+    "typing": "Suportul scrie..."
   }
 }

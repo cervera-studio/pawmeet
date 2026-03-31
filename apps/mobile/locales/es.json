@@ -289,7 +289,11 @@
       "writePlaceholder": "Escribe un comentario...",
       "replyPlaceholder": "Escribe una respuesta...",
       "replyTo": "Responder a",
-      "sendButton": "Enviar"
+      "sendButton": "Enviar",
+      "deleteConfirm": "¿Seguro que quieres eliminar este comentario?",
+      "deleteTitle": "Eliminar comentario",
+      "noCommentsDescription": "¡Sé el primero en dejar un comentario!",
+      "report": "Reportar comentario"
     },
     "actions": {
       "deletePost": "Eliminar publicación",
@@ -300,7 +304,17 @@
       "publishError": "No se pudo publicar la historia",
       "tapToSelect": "Toca para seleccionar",
       "noViews": "Sin visualizaciones",
-      "noViewsDescription": "Nadie ha visto esta historia todavía."
+      "noViewsDescription": "Nadie ha visto esta historia todavía.",
+      "viewsCountOne": "{{count}} visualización"
+    },
+    "hashtag": {
+      "noPosts": "Aún no hay publicaciones con este hashtag",
+      "trending": "Tendencia"
+    },
+    "reviews": {
+      "noReviews": "Aún no hay reseñas",
+      "noReviewsDescription": "¡Sé el primero en dejar una reseña!",
+      "title": "Reseñas"
     }
   },
   "profile": {
@@ -369,7 +383,10 @@
       "deactivateProfile": "Desactivar perfil",
       "activateProfile": "Activar perfil",
       "deleteProfile": "Eliminar perfil del perro",
-      "addPhotos": "Añade fotos"
+      "addPhotos": "Añade fotos",
+      "moodHistory": "Historial de ánimo",
+      "moodHistorySubtitle": "Sigue el ánimo de tu perro a lo largo del tiempo",
+      "viewAllBadges": "Ver todas las insignias"
     },
     "activity": {
       "title": "Actividad",
@@ -401,7 +418,8 @@
       "title": "Desafíos",
       "backButton": "Gamification",
       "completed": "¡Completado!",
-      "noChallenges": "No hay desafíos activos en este momento.\n¡Vuelve pronto para nuevos desafíos!"
+      "noChallenges": "No hay desafíos activos en este momento.\n¡Vuelve pronto para nuevos desafíos!",
+      "expired": "Expirado"
     },
     "followList": {
       "noFollowers": "Sin seguidores",
@@ -409,7 +427,12 @@
       "notFollowing": "No sigues a nadie",
       "notFollowingSubtitle": "¡Empieza a seguir a otros propietarios para estar al día!",
       "noFriends": "Aún no hay amigos",
-      "noFriendsSubtitle": "Los amigos son las personas que sigues y que también te siguen."
+      "noFriendsSubtitle": "Los amigos son las personas que sigues y que también te siguen.",
+      "followsYou": "Te sigue"
+    },
+    "dogBadges": {
+      "locked": "Bloqueado",
+      "title": "Insignias"
     }
   },
   "events": {
@@ -572,7 +595,9 @@
       "meetingPoint": "Punto de encuentro",
       "openMap": "Toca para abrir el mapa"
     },
-    "tapToRetry": "Toca para reintentar"
+    "tapToRetry": "Toca para reintentar",
+    "searchNoResults": "No se encontraron resultados",
+    "searchPlaceholder": "Buscar conversaciones..."
   },
   "auth": {
     "login": {
@@ -646,6 +671,14 @@
       "submitButton": "Confirmar",
       "submitting": "Enviando...",
       "invalidDate": "Fecha no válida"
+    },
+    "verifyEmail": {
+      "otpPlaceholder": "Introduce el código de 6 dígitos",
+      "resendCode": "Reenviar código",
+      "resending": "Reenviando...",
+      "title": "Verifica tu email",
+      "verifyButton": "Verificar",
+      "verifying": "Verificando..."
     }
   },
   "dogForm": {
@@ -753,7 +786,8 @@
       "enable": "Activar horario silencioso",
       "description": "Desactiva las notificaciones en determinados horarios",
       "from": "Desde",
-      "to": "Hasta"
+      "to": "Hasta",
+      "confirm": "Guardar horas de silencio"
     },
     "general": {
       "title": "General",
@@ -788,7 +822,8 @@
       "deletedMessage": "Tu cuenta ha sido desactivada. Recibirás un email de confirmación.",
       "invalidPassword": "Contraseña no válida. Inténtalo de nuevo.",
       "deleteError": "Error al eliminar la cuenta. Inténtalo más tarde."
-    }
+    },
+    "manageConsents": "Gestionar consentimientos"
   },
   "report": {
     "title": "Reportar",
@@ -923,7 +958,8 @@
     "date_of_birth_future": "Date of birth cannot be in the future",
     "date_of_birth_min_age": "You must be at least 18 years old to sign up",
     "display_name_min": "Name must be at least 2 characters",
-    "display_name_max": "Name cannot exceed 50 characters"
+    "display_name_max": "Name cannot exceed 50 characters",
+    "required": "Este campo es obligatorio"
   },
   "onboarding": {
     "slide1Title": "Encuentra compañeros de paseo",
@@ -949,5 +985,82 @@
     "synced": "Sincronizada",
     "thisDevice": "Solo este dispositivo",
     "addButton": "Añadir passkey"
+  },
+  "match": {
+    "close": "Cerrar",
+    "compatibility": "Compatibilidad"
+  },
+  "moodHistory": {
+    "empty": "Aún no hay registros de ánimo. ¡Empieza a registrar el ánimo de tu perro!",
+    "title": "Historial de ánimo"
+  },
+  "notifications": {
+    "empty": "Aún no hay notificaciones",
+    "noTitle": "Notificación"
+  },
+  "privacy": {
+    "approximateDistance": "Distancia aproximada",
+    "approximateDistanceDescription": "Muestra la distancia aproximada en lugar de la ubicación exacta",
+    "blockedSection": "Bloqueados",
+    "blockedUsers": "Usuarios bloqueados",
+    "dangerSection": "Zona peligrosa",
+    "dataSection": "Tus datos",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteWarning": "Esta acción es irreversible. Todos tus datos se eliminarán permanentemente.",
+    "exportButton": "Exportar",
+    "exportConfirmMessage": "Prepararemos un archivo con todos tus datos y lo enviaremos a tu email.",
+    "exportConfirmTitle": "¿Exportar tus datos?",
+    "exportData": "Exportar datos",
+    "exportDataDescription": "Descarga una copia de todos tus datos",
+    "exportError": "No se pudieron exportar los datos. Inténtalo de nuevo.",
+    "exportSuccess": "Exportación solicitada",
+    "exportSuccessMessage": "Recibirás un email con tus datos en breve.",
+    "profileActive": "Perfil visible",
+    "profileActiveDescription": "Tu perfil es visible para otros usuarios",
+    "showLastSeen": "Mostrar última conexión",
+    "showLastSeenDescription": "Permite que otros vean cuándo estuviste activo por última vez",
+    "title": "Privacidad",
+    "visibilitySection": "Visibilidad"
+  },
+  "safety": {
+    "addContact": "Añadir contacto",
+    "adding": "Añadiendo...",
+    "contactsSection": "Contactos de emergencia",
+    "deleteButton": "Eliminar",
+    "deleteConfirmTitle": "¿Eliminar este contacto?",
+    "description": "Configura contactos de emergencia que serán notificados si activas un SOS durante un paseo.",
+    "howSosWorks": "Cómo funciona el SOS",
+    "maxContacts": "Puedes añadir hasta {{max}} contactos de emergencia.",
+    "namePlaceholder": "Nombre del contacto",
+    "nameRequired": "El nombre es obligatorio",
+    "noContacts": "Aún no se han añadido contactos de emergencia",
+    "phonePlaceholder": "Número de teléfono",
+    "phoneRequired": "El número de teléfono es obligatorio",
+    "sosDescription": "Durante un paseo, mantén presionado el botón SOS. Tus contactos de emergencia recibirán un SMS con tu ubicación en tiempo real.",
+    "title": "Seguridad"
+  },
+  "support": {
+    "categories": {
+      "account": "Cuenta",
+      "billing": "Facturación",
+      "bug": "Reporte de error",
+      "general": "General",
+      "other": "Otro",
+      "safety": "Seguridad"
+    },
+    "categoryLabel": "Categoría",
+    "chatEmpty": "Sin mensajes aún. Describe tu problema y te responderemos.",
+    "empty": "Aún no hay tickets de soporte",
+    "inputPlaceholder": "Escribe un mensaje...",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "Describe tu problema en detalle...",
+    "newTicket": "Nuevo ticket",
+    "send": "Enviar",
+    "sending": "Enviando...",
+    "subjectLabel": "Asunto",
+    "subjectPlaceholder": "Breve descripción del problema",
+    "ticketClosed": "Este ticket ha sido cerrado",
+    "title": "Soporte",
+    "typing": "Soporte está escribiendo..."
   }
 }

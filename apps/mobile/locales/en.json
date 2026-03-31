@@ -326,6 +326,7 @@
     "activate": "Activate",
     "xpToNextLevel": "{{count}} XP to next level",
     "menu": {
+      "notifications": "Notifications",
       "gamification": "Gamification",
       "activity": "Activity and Stats",
       "matchingInsights": "Match Insights",
@@ -771,8 +772,12 @@
       "shareLocation": "Share location",
       "darkMode": "Dark mode",
       "searchRadius": "Search radius",
+      "searchRadiusUnit": "km",
+      "searchRadiusMin": "Minimum 1 km, maximum 50 km",
       "language": "Language",
-      "italian": "Italian"
+      "selectLanguage": "Select language",
+      "italian": "Italian",
+      "contactSupport": "Contact support"
     },
     "legal": {
       "termsOfService": "Terms of Service",
@@ -952,5 +957,19 @@
     "nextButton": "Next",
     "skipButton": "Skip",
     "completeButton": "Get started"
+  },
+  "biometric": {
+    "settingsTitle": "Biometric lock",
+    "settingsDescription": "Require Face ID or fingerprint to open the app",
+    "lockedMessage": "Unlock to continue",
+    "unlock": "Unlock"
+  },
+  "passkey": {
+    "settingsTitle": "Passkeys",
+    "settingsDescription": "Sign in faster with Face ID or fingerprint",
+    "defaultName": "Passkey",
+    "synced": "Synced",
+    "thisDevice": "This device only",
+    "addButton": "Add passkey"
   }
 }

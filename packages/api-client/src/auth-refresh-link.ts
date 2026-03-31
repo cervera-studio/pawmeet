@@ -7,6 +7,7 @@ export interface AuthRefreshCallbacks {
   getRefreshToken: () => Promise<string | null>;
   onTokensRefreshed: (accessToken: string, refreshToken: string) => Promise<void>;
   onRefreshFailed: () => void;
+  onRefreshError?: (reason: string) => void;
 }
 
 let refreshPromise: Promise<boolean> | null = null;
@@ -25,7 +26,10 @@ async function doRefresh(apiUrl: string, callbacks: AuthRefreshCallbacks): Promi
         body: JSON.stringify({ json: { refreshToken } }),
       });
 
-      if (!response.ok) return false;
+      if (!response.ok) {
+        callbacks.onRefreshError?.(`HTTP ${response.status} ${response.statusText}`);
+        return false;
+      }
 
       const data = (await response.json()) as {
         result?: { data?: { json?: { accessToken?: string; refreshToken?: string } } };
@@ -35,7 +39,8 @@ async function doRefresh(apiUrl: string, callbacks: AuthRefreshCallbacks): Promi
 
       await callbacks.onTokensRefreshed(result.accessToken, result.refreshToken);
       return true;
-    } catch {
+    } catch (e) {
+      callbacks.onRefreshError?.(`Exception: ${e instanceof Error ? e.message : String(e)}`);
       return false;
     } finally {
       refreshPromise = null;

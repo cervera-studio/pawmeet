@@ -320,6 +320,7 @@
     "activate": "Attiva",
     "xpToNextLevel": "{{count}} XP al prossimo livello",
     "menu": {
+      "notifications": "Notifiche",
       "gamification": "Gamification",
       "activity": "Attività e Statistiche",
       "matchingInsights": "Statistiche Matching",
@@ -759,8 +760,12 @@
       "shareLocation": "Condividi posizione",
       "darkMode": "Tema scuro",
       "searchRadius": "Raggio di ricerca",
+      "searchRadiusUnit": "km",
+      "searchRadiusMin": "Minimo 1 km, massimo 50 km",
       "language": "Lingua",
-      "italian": "Italiano"
+      "selectLanguage": "Seleziona lingua",
+      "italian": "Italiano",
+      "contactSupport": "Contatta il supporto"
     },
     "legal": {
       "termsOfService": "Termini di servizio",
@@ -930,5 +935,19 @@
     "nextButton": "Avanti",
     "skipButton": "Salta",
     "completeButton": "Inizia"
+  },
+  "biometric": {
+    "settingsTitle": "Blocco biometrico",
+    "settingsDescription": "Richiedi Face ID o impronta per aprire l'app",
+    "lockedMessage": "Sblocca per continuare",
+    "unlock": "Sblocca"
+  },
+  "passkey": {
+    "settingsTitle": "Passkey",
+    "settingsDescription": "Accedi più velocemente con Face ID o impronta",
+    "defaultName": "Passkey",
+    "synced": "Sincronizzata",
+    "thisDevice": "Solo questo dispositivo",
+    "addButton": "Aggiungi passkey"
   }
 }

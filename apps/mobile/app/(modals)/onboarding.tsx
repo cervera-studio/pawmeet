@@ -1,11 +1,10 @@
+import { logger } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
-
-import { logger } from '@pawmeet/utils';
 import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 

@@ -320,6 +320,7 @@
     "activate": "Activează",
     "xpToNextLevel": "{{count}} XP până la nivelul următor",
     "menu": {
+      "notifications": "Notificări",
       "gamification": "Gamification",
       "activity": "Activitate și Statistici",
       "matchingInsights": "Statistici Matching",
@@ -759,8 +760,12 @@
       "shareLocation": "Partajează locația",
       "darkMode": "Temă întunecată",
       "searchRadius": "Rază de căutare",
+      "searchRadiusUnit": "km",
+      "searchRadiusMin": "Minim 1 km, maxim 50 km",
       "language": "Limbă",
-      "italian": "Italiană"
+      "selectLanguage": "Selectează limba",
+      "italian": "Italiană",
+      "contactSupport": "Contactează suportul"
     },
     "legal": {
       "termsOfService": "Termeni și Condiții",
@@ -930,5 +935,19 @@
     "nextButton": "Înainte",
     "skipButton": "Sari",
     "completeButton": "Începe"
+  },
+  "biometric": {
+    "settingsTitle": "Blocare biometrică",
+    "settingsDescription": "Necesită Face ID sau amprentă pentru a deschide aplicația",
+    "lockedMessage": "Deblochează pentru a continua",
+    "unlock": "Deblochează"
+  },
+  "passkey": {
+    "settingsTitle": "Passkey-uri",
+    "settingsDescription": "Autentifică-te mai rapid cu Face ID sau amprentă",
+    "defaultName": "Passkey",
+    "synced": "Sincronizată",
+    "thisDevice": "Doar pe acest dispozitiv",
+    "addButton": "Adaugă passkey"
   }
 }

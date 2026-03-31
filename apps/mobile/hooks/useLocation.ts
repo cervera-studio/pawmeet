@@ -1,6 +1,6 @@
 import { logger } from '@pawmeet/utils';
 import * as Location from 'expo-location';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { Alert, Linking } from 'react-native';
 import { container } from '@/repositories/container';
 import { USER_REPOSITORY } from '@/repositories/tokens';
@@ -72,6 +72,9 @@ export function useLocation() {
     }
   }, [setPermissionGranted, setError]);
 
+  const coordinatesRef = useRef(coordinates);
+  coordinatesRef.current = coordinates;
+
   const getCurrentLocation = useCallback(async () => {
     setLoading(true);
     try {
@@ -101,10 +104,12 @@ export function useLocation() {
             setCoordinates(coords);
           }
           // If not confirmed, keep old coordinates
-          return confirmed ? coords : coordinates;
+          return confirmed ? coords : coordinatesRef.current;
         }
       } catch (e) {
         logger.warn('useLocation', 'Failed to sync location to server', e);
+        // Don't update coordinates when server rejects — avoids infinite re-trigger
+        return coordinatesRef.current;
       }
 
       setCoordinates(coords);
@@ -115,7 +120,7 @@ export function useLocation() {
     } finally {
       setLoading(false);
     }
-  }, [requestPermission, setCoordinates, setLoading, setError, coordinates]);
+  }, [requestPermission, setCoordinates, setLoading, setError]);
 
   return {
     coordinates,

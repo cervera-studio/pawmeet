@@ -23,6 +23,14 @@
       "emailTaken": "Este email ya está asociado a una cuenta. Prueba a iniciar sesión.",
       "invalidToken": "El código introducido no es válido o ha expirado.",
       "sessionExpired": "Tu sesión ha expirado. Inicia sesión de nuevo."
+    },
+    "passkey": {
+      "challengeExpired": "La solicitud ha expirado. Inténtalo de nuevo.",
+      "verificationFailed": "La verificación de la passkey falló. Inténtalo de nuevo.",
+      "limitReached": "Has alcanzado el número máximo de passkeys.",
+      "notFound": "Passkey no encontrada.",
+      "lastAuthMethod": "No puedes eliminar el último método de inicio de sesión.",
+      "nativeFailed": "El registro de la passkey falló. Inténtalo de nuevo."
     }
   },
   "common": {

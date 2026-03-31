@@ -1,10 +1,12 @@
 import { logger } from '@pawmeet/utils';
+import { TRPCClientError } from '@trpc/client';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { create, get, isSupported } from 'react-native-passkeys';
 import { container } from 'tsyringe';
 import { handleApiError } from '@/lib/error-handler';
+import i18n from '@/lib/i18n';
 import { passkeyFlag, storage } from '@/lib/storage';
 import type { PasskeySummary } from '@/repositories/interfaces';
 import { ANALYTICS_SERVICE, PASSKEY_REPOSITORY } from '@/repositories/tokens';
@@ -93,9 +95,15 @@ export function usePasskeys() {
         setHasRegisteredPasskey(true);
         analyticsService.track('passkey_registered', {});
       } catch (e) {
-        const isCancellation = e instanceof Error && e.message.includes('cancel');
+        const isCancellation =
+          e instanceof Error &&
+          (e.message.includes('cancel') ||
+            e.name === 'AbortError' ||
+            (e as { code?: string }).code === 'ERROR_PASSKEY_INTERRUPTED');
         if (!isCancellation) {
-          setError(handleApiError(e, 'registerPasskey').message);
+          const result = handleApiError(e, 'registerPasskey');
+          const isNativeError = !(e instanceof TRPCClientError);
+          setError(isNativeError ? i18n.t('errors.passkey.nativeFailed') : result.message);
         }
       } finally {
         setLoading(false);
@@ -155,6 +163,8 @@ export function usePasskeys() {
     }
   }, []);
 
+  const clearError = useCallback(() => setError(''), []);
+
   return {
     passkeys,
     loading,
@@ -166,6 +176,6 @@ export function usePasskeys() {
     registerPasskey,
     loginWithPasskey,
     deletePasskey,
-    clearError: () => setError(''),
+    clearError,
   };
 }

@@ -39,6 +39,11 @@ const APP_CODE_I18N: Record<string, string> = {
   AUTH_INVALID_TOKEN: 'errors.auth.invalidToken',
   AUTH_RATE_LIMITED: 'errors.rateLimited',
   SWIPE_LIMIT_REACHED: 'errors.swipeLimitReached',
+  PASSKEY_CHALLENGE_EXPIRED: 'errors.passkey.challengeExpired',
+  PASSKEY_VERIFICATION_FAILED: 'errors.passkey.verificationFailed',
+  PASSKEY_LIMIT_REACHED: 'errors.passkey.limitReached',
+  PASSKEY_NOT_FOUND: 'errors.passkey.notFound',
+  PASSKEY_LAST_AUTH_METHOD: 'errors.passkey.lastAuthMethod',
 };
 
 const RETRYABLE_CODES = new Set([

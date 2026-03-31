@@ -23,6 +23,14 @@
       "emailTaken": "Questa email è già associata a un account. Prova ad accedere.",
       "invalidToken": "Il codice inserito non è valido o è scaduto.",
       "sessionExpired": "La sessione è scaduta. Accedi di nuovo."
+    },
+    "passkey": {
+      "challengeExpired": "La richiesta è scaduta. Riprova.",
+      "verificationFailed": "Verifica passkey fallita. Riprova.",
+      "limitReached": "Hai raggiunto il numero massimo di passkey.",
+      "notFound": "Passkey non trovata.",
+      "lastAuthMethod": "Non puoi rimuovere l'ultimo metodo di accesso.",
+      "nativeFailed": "Registrazione passkey fallita. Riprova."
     }
   },
   "common": {

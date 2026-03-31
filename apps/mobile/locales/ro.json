@@ -23,6 +23,14 @@
       "emailTaken": "Acest email este deja asociat unui cont. Încearcă să te autentifici.",
       "invalidToken": "Codul introdus nu este valid sau a expirat.",
       "sessionExpired": "Sesiunea ta a expirat. Autentifică-te din nou."
+    },
+    "passkey": {
+      "challengeExpired": "Cererea a expirat. Încearcă din nou.",
+      "verificationFailed": "Verificarea passkey a eșuat. Încearcă din nou.",
+      "limitReached": "Ai atins numărul maxim de passkey-uri.",
+      "notFound": "Passkey negăsit.",
+      "lastAuthMethod": "Nu poți elimina ultima metodă de autentificare.",
+      "nativeFailed": "Înregistrarea passkey a eșuat. Încearcă din nou."
     }
   },
   "common": {

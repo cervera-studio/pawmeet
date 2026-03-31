@@ -23,6 +23,14 @@
       "emailTaken": "This email is already associated with an account. Try logging in.",
       "invalidToken": "The code you entered is invalid or expired.",
       "sessionExpired": "Your session has expired. Please log in again."
+    },
+    "passkey": {
+      "challengeExpired": "The request has expired. Please try again.",
+      "verificationFailed": "Passkey verification failed. Please try again.",
+      "limitReached": "You've reached the maximum number of passkeys.",
+      "notFound": "Passkey not found.",
+      "lastAuthMethod": "Cannot remove the last sign-in method.",
+      "nativeFailed": "Passkey registration failed. Please try again."
     }
   },
   "common": {

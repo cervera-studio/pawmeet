@@ -11,6 +11,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "io.pawmeet.mobile",
       "usesAppleSignIn": true,
+      "associatedDomains": ["webcredentials:pawmeet.io"],
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Per mostrarti cani nelle vicinanze",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Per aggiornare la tua posizione",

@@ -660,6 +660,49 @@
       "invalidDate": "Dată invalidă"
     }
   },
+  "dogForm": {
+    "editTitle": "Editează {{name}}",
+    "sections": {
+      "basicInfo": "Info de bază",
+      "temperament": "Temperament",
+      "walks": "Plimbări",
+      "photos": "Fotografii"
+    },
+    "fields": {
+      "name": "Numele câinelui",
+      "breed": "Rasă",
+      "breedSecondary": "Rasă secundară (opțional)",
+      "size": "Mărime",
+      "gender": "Sex",
+      "bio": "Bio câine",
+      "energy": "Nivel de energie",
+      "behaviorDogs": "Comportament cu alți câini",
+      "behaviorPeople": "Comportament cu oamenii",
+      "leash": "Comportament în lesă",
+      "recall": "Rechemare",
+      "walkTimes": "Ore preferate",
+      "walkTerrain": "Teren preferat",
+      "durationMin": "Durată minimă (min)",
+      "durationMax": "Durată maximă (min)"
+    },
+    "addPhotos": "Fotografii câine",
+    "photosHint": "Adaugă cel puțin o fotografie a câinelui tău",
+    "photosPrimary": "Principală",
+    "photosAdd": "Adaugă fotografie",
+    "photosPostCreate": "Poți adăuga fotografii după creare",
+    "saving": "Se salvează...",
+    "saveChanges": "Salvează modificările",
+    "validation": {
+      "selectSize": "Selectează o mărime",
+      "selectGender": "Selectează sexul",
+      "selectEnergy": "Selectează nivelul de energie",
+      "selectBehaviorDogs": "Selectează comportamentul cu câinii",
+      "selectBehaviorPeople": "Selectează comportamentul cu oamenii",
+      "selectLeash": "Selectează comportamentul în lesă",
+      "selectSchedule": "Selectează cel puțin o oră",
+      "selectTerrain": "Selectează cel puțin un teren"
+    }
+  },
   "requireDog": {
     "title": "Adaugă câinele tău",
     "description": "Pentru a folosi această funcție trebuie mai întâi să adaugi un profil al câinelui tău.",
@@ -849,21 +892,6 @@
     "countryside": "Câmp",
     "beach": "Plajă",
     "mountain": "Munte"
-  },
-  "dogForm": {
-    "validation": {
-      "selectSize": "Selectează mărimea",
-      "selectGender": "Selectează sexul",
-      "selectEnergy": "Selectează nivelul de energie",
-      "selectBehaviorDogs": "Selectează comportamentul cu alți câini",
-      "selectBehaviorPeople": "Selectează comportamentul cu oamenii",
-      "selectLeash": "Selectează comportamentul la lesă",
-      "selectSchedule": "Selectează cel puțin un program preferat",
-      "selectTerrain": "Selectează cel puțin un tip de teren"
-    },
-    "bioGenerationError": "Eroare la generarea bio-ului",
-    "createError": "Eroare la creare",
-    "addPhotos": "Adaugă fotografii"
   },
   "moodLog": {
     "title": "Starea câinelui",

@@ -671,6 +671,49 @@
     }
   },
 
+  "dogForm": {
+    "editTitle": "Edit {{name}}",
+    "sections": {
+      "basicInfo": "Basic info",
+      "temperament": "Temperament",
+      "walks": "Walks",
+      "photos": "Photos"
+    },
+    "fields": {
+      "name": "Dog's name",
+      "breed": "Breed",
+      "breedSecondary": "Secondary breed (optional)",
+      "size": "Size",
+      "gender": "Gender",
+      "bio": "Dog's bio",
+      "energy": "Energy level",
+      "behaviorDogs": "Behavior with other dogs",
+      "behaviorPeople": "Behavior with people",
+      "leash": "Leash behavior",
+      "recall": "Recall",
+      "walkTimes": "Preferred times",
+      "walkTerrain": "Preferred terrain",
+      "durationMin": "Min duration (min)",
+      "durationMax": "Max duration (min)"
+    },
+    "addPhotos": "Dog photos",
+    "photosHint": "Add at least one photo of your dog",
+    "photosPrimary": "Primary",
+    "photosAdd": "Add photo",
+    "photosPostCreate": "You can add photos after creation",
+    "saving": "Saving...",
+    "saveChanges": "Save changes",
+    "validation": {
+      "selectSize": "Select a size",
+      "selectGender": "Select gender",
+      "selectEnergy": "Select energy level",
+      "selectBehaviorDogs": "Select behavior with dogs",
+      "selectBehaviorPeople": "Select behavior with people",
+      "selectLeash": "Select leash behavior",
+      "selectSchedule": "Select at least one time",
+      "selectTerrain": "Select at least one terrain"
+    }
+  },
   "requireDog": {
     "title": "Add your dog",
     "description": "To use this feature you need to add a dog profile first.",
@@ -869,22 +912,6 @@
     "countryside": "Countryside",
     "beach": "Beach",
     "mountain": "Mountain"
-  },
-
-  "dogForm": {
-    "validation": {
-      "selectSize": "Select the size",
-      "selectGender": "Select the gender",
-      "selectEnergy": "Select the energy level",
-      "selectBehaviorDogs": "Select the behavior with other dogs",
-      "selectBehaviorPeople": "Select the behavior with people",
-      "selectLeash": "Select the leash behavior",
-      "selectSchedule": "Select at least one preferred schedule",
-      "selectTerrain": "Select at least one terrain type"
-    },
-    "bioGenerationError": "Error during bio generation",
-    "createError": "Error during creation",
-    "addPhotos": "Add photos"
   },
 
   "moodLog": {

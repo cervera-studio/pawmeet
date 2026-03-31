@@ -660,6 +660,49 @@
       "invalidDate": "Data non valida"
     }
   },
+  "dogForm": {
+    "editTitle": "Modifica {{name}}",
+    "sections": {
+      "basicInfo": "Info base",
+      "temperament": "Temperamento",
+      "walks": "Passeggiate",
+      "photos": "Foto"
+    },
+    "fields": {
+      "name": "Nome del cane",
+      "breed": "Razza",
+      "breedSecondary": "Razza secondaria (opzionale)",
+      "size": "Taglia",
+      "gender": "Sesso",
+      "bio": "Bio del cane",
+      "energy": "Livello di energia",
+      "behaviorDogs": "Comportamento con altri cani",
+      "behaviorPeople": "Comportamento con le persone",
+      "leash": "Comportamento al guinzaglio",
+      "recall": "Richiamo",
+      "walkTimes": "Orari preferiti",
+      "walkTerrain": "Terreno preferito",
+      "durationMin": "Durata minima (min)",
+      "durationMax": "Durata massima (min)"
+    },
+    "addPhotos": "Foto del cane",
+    "photosHint": "Aggiungi almeno una foto del tuo cane",
+    "photosPrimary": "Principale",
+    "photosAdd": "Aggiungi foto",
+    "photosPostCreate": "Potrai aggiungere foto dopo la creazione",
+    "saving": "Salvataggio...",
+    "saveChanges": "Salva modifiche",
+    "validation": {
+      "selectSize": "Seleziona una taglia",
+      "selectGender": "Seleziona il sesso",
+      "selectEnergy": "Seleziona il livello di energia",
+      "selectBehaviorDogs": "Seleziona il comportamento con i cani",
+      "selectBehaviorPeople": "Seleziona il comportamento con le persone",
+      "selectLeash": "Seleziona il comportamento al guinzaglio",
+      "selectSchedule": "Seleziona almeno un orario",
+      "selectTerrain": "Seleziona almeno un terreno"
+    }
+  },
   "requireDog": {
     "title": "Aggiungi il tuo cane",
     "description": "Per usare questa funzione devi prima aggiungere un profilo del tuo cane.",
@@ -849,21 +892,6 @@
     "countryside": "Campagna",
     "beach": "Spiaggia",
     "mountain": "Montagna"
-  },
-  "dogForm": {
-    "validation": {
-      "selectSize": "Seleziona la taglia",
-      "selectGender": "Seleziona il sesso",
-      "selectEnergy": "Seleziona il livello di energia",
-      "selectBehaviorDogs": "Seleziona il comportamento con altri cani",
-      "selectBehaviorPeople": "Seleziona il comportamento con le persone",
-      "selectLeash": "Seleziona il comportamento al guinzaglio",
-      "selectSchedule": "Seleziona almeno un orario preferito",
-      "selectTerrain": "Seleziona almeno un tipo di terreno"
-    },
-    "bioGenerationError": "Errore durante la generazione della bio",
-    "createError": "Errore durante la creazione",
-    "addPhotos": "Aggiungi delle foto"
   },
   "moodLog": {
     "title": "Umore del cane",

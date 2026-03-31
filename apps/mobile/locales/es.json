@@ -660,6 +660,49 @@
       "invalidDate": "Fecha no válida"
     }
   },
+  "dogForm": {
+    "editTitle": "Editar {{name}}",
+    "sections": {
+      "basicInfo": "Info básica",
+      "temperament": "Temperamento",
+      "walks": "Paseos",
+      "photos": "Fotos"
+    },
+    "fields": {
+      "name": "Nombre del perro",
+      "breed": "Raza",
+      "breedSecondary": "Raza secundaria (opcional)",
+      "size": "Tamaño",
+      "gender": "Sexo",
+      "bio": "Bio del perro",
+      "energy": "Nivel de energía",
+      "behaviorDogs": "Comportamiento con otros perros",
+      "behaviorPeople": "Comportamiento con personas",
+      "leash": "Comportamiento con correa",
+      "recall": "Llamada",
+      "walkTimes": "Horarios preferidos",
+      "walkTerrain": "Terreno preferido",
+      "durationMin": "Duración mínima (min)",
+      "durationMax": "Duración máxima (min)"
+    },
+    "addPhotos": "Fotos del perro",
+    "photosHint": "Añade al menos una foto de tu perro",
+    "photosPrimary": "Principal",
+    "photosAdd": "Añadir foto",
+    "photosPostCreate": "Podrás añadir fotos después de la creación",
+    "saving": "Guardando...",
+    "saveChanges": "Guardar cambios",
+    "validation": {
+      "selectSize": "Selecciona un tamaño",
+      "selectGender": "Selecciona el sexo",
+      "selectEnergy": "Selecciona el nivel de energía",
+      "selectBehaviorDogs": "Selecciona el comportamiento con perros",
+      "selectBehaviorPeople": "Selecciona el comportamiento con personas",
+      "selectLeash": "Selecciona el comportamiento con correa",
+      "selectSchedule": "Selecciona al menos un horario",
+      "selectTerrain": "Selecciona al menos un terreno"
+    }
+  },
   "requireDog": {
     "title": "Añade tu perro",
     "description": "Para usar esta función primero debes añadir un perfil de tu perro.",
@@ -849,21 +892,6 @@
     "countryside": "Campo",
     "beach": "Playa",
     "mountain": "Montaña"
-  },
-  "dogForm": {
-    "validation": {
-      "selectSize": "Selecciona el tamaño",
-      "selectGender": "Selecciona el sexo",
-      "selectEnergy": "Selecciona el nivel de energía",
-      "selectBehaviorDogs": "Selecciona el comportamiento con otros perros",
-      "selectBehaviorPeople": "Selecciona el comportamiento con las personas",
-      "selectLeash": "Selecciona el comportamiento con la correa",
-      "selectSchedule": "Selecciona al menos un horario preferido",
-      "selectTerrain": "Selecciona al menos un tipo de terreno"
-    },
-    "bioGenerationError": "Error al generar la bio",
-    "createError": "Error al crear",
-    "addPhotos": "Añade fotos"
   },
   "moodLog": {
     "title": "Estado del perro",

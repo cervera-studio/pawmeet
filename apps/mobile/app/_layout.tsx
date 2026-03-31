@@ -209,6 +209,7 @@ function RootLayout() {
   const { t } = useTranslation();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const requiresAgeVerification = useAuthStore((s) => s.requiresAgeVerification);
+  const onboardingCompleted = useAuthStore((s) => s.onboardingCompleted);
   const userId = useAuthStore((s) => s.user?.id);
   const hasSeenConsentModal = useConsentStore((s) => s.hasSeenConsentModal);
   const [showConsentModal, setShowConsentModal] = useState(false);
@@ -280,7 +281,22 @@ function RootLayout() {
               />
             </Stack.Protected>
 
-            <Stack.Protected guard={isAuthenticated && !requiresAgeVerification}>
+            <Stack.Protected
+              guard={isAuthenticated && !requiresAgeVerification && !onboardingCompleted}
+            >
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(modals)/onboarding"
+                options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                }}
+              />
+            </Stack.Protected>
+
+            <Stack.Protected
+              guard={isAuthenticated && !requiresAgeVerification && onboardingCompleted}
+            >
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen

@@ -2,10 +2,25 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
 import { FormField } from '@/components/FormField';
 import { OrSeparator, SocialAuthButtons } from '@/components/SocialAuth';
 import { Button } from '@/components/ui/Button';
 import { useLoginViewModel } from './_vm/login.view-model';
+
+function PawLogo() {
+  return (
+    <Svg width={48} height={48} viewBox="0 0 200 200" fill="none">
+      <Circle cx={100} cy={100} r={90} fill="#ECFDF5" />
+      <G transform="translate(60, 55)">
+        <Ellipse cx={40} cy={65} rx={28} ry={22} fill="#065F46" />
+        <Circle cx={15} cy={35} r={12} fill="#065F46" />
+        <Circle cx={40} cy={25} r={12} fill="#065F46" />
+        <Circle cx={65} cy={35} r={12} fill="#065F46" />
+      </G>
+    </Svg>
+  );
+}
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -19,6 +34,10 @@ export default function LoginScreen() {
         className="flex-1"
       >
         <View className="flex-1 justify-center px-8">
+          <View className="mb-4 flex-row items-center gap-3">
+            <PawLogo />
+            <Text className="text-2xl font-bold text-primary">PawMeet</Text>
+          </View>
           <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
             {t('auth.login.title')}
           </Text>
@@ -100,11 +119,6 @@ export default function LoginScreen() {
             <Text className="text-base text-gray-500 dark:text-neutral-500">
               {t('auth.login.noAccount')}{' '}
               <Text className="font-semibold text-primary">{t('auth.login.registerLink')}</Text>
-            </Text>
-          </Pressable>
-          <Pressable onPress={() => router.push('/(auth)/welcome')} className="items-center py-2">
-            <Text className="text-sm text-gray-400 dark:text-neutral-600">
-              {t('auth.login.discoverLink')}
             </Text>
           </Pressable>
         </View>

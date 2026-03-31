@@ -584,18 +584,6 @@
   },
 
   "auth": {
-    "welcome": {
-      "slide1Title": "Find walking companions",
-      "slide1Description": "Discover compatible dogs in your area for walks together.",
-      "slide2Title": "Make a match",
-      "slide2Description": "Swipe to find the perfect companion for your dog.",
-      "slide3Title": "Start walking",
-      "slide3Description": "Chat, plan, and head out for your first walk!",
-      "loginButton": "Log in",
-      "registerButton": "Sign up",
-      "nextButton": "Next",
-      "skipButton": "Skip"
-    },
     "login": {
       "title": "Welcome back!",
       "subtitle": "Log in to continue",
@@ -616,8 +604,7 @@
       "loginError": "Error during login",
       "socialLoginError": "Error during social login",
       "googleError": "Error with Google Sign In",
-      "appleError": "Error with Apple Sign In",
-      "discoverLink": "Discover PawMeet"
+      "appleError": "Error with Apple Sign In"
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -954,5 +941,16 @@
     "date_of_birth_min_age": "You must be at least 18 years old to sign up",
     "display_name_min": "Name must be at least 2 characters",
     "display_name_max": "Name cannot exceed 50 characters"
+  },
+  "onboarding": {
+    "slide1Title": "Find walking companions",
+    "slide1Description": "Discover compatible dogs in your area for walks together.",
+    "slide2Title": "Make a match",
+    "slide2Description": "Swipe to find the perfect companion for your dog.",
+    "slide3Title": "Start walking",
+    "slide3Description": "Chat, plan, and head out for your first walk!",
+    "nextButton": "Next",
+    "skipButton": "Skip",
+    "completeButton": "Get started"
   }
 }

@@ -35,6 +35,7 @@ const safeUserColumns = {
   followingCount: users.followingCount,
   termsAcceptedAt: users.termsAcceptedAt,
   privacyPolicyVersion: users.privacyPolicyVersion,
+  onboardingCompletedAt: users.onboardingCompletedAt,
 } as const;
 
 export class DrizzleUserRepository implements UserRepository {
@@ -92,6 +93,7 @@ export class DrizzleUserRepository implements UserRepository {
         | 'isActive'
         | 'deletionScheduledAt'
         | 'notificationPrefs'
+        | 'onboardingCompletedAt'
       >
     >,
   ): Promise<User> {

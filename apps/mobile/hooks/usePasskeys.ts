@@ -128,6 +128,7 @@ export function usePasskeys() {
           dateOfBirth: result.user.dateOfBirth ?? null,
         },
         result.accessToken,
+        result.user.onboardingCompletedAt != null,
       );
       analyticsService.identify(result.user.id);
     } catch (e) {

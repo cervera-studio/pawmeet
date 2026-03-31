@@ -16,12 +16,14 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   requiresAgeVerification: boolean;
-  login: (user: AuthUser, token: string) => void;
+  onboardingCompleted: boolean;
+  login: (user: AuthUser, token: string, onboardingCompleted: boolean) => void;
   logout: () => void;
   setToken: (token: string) => void;
   setUser: (user: AuthUser) => void;
   setLoading: (loading: boolean) => void;
   clearAgeVerification: () => void;
+  completeOnboarding: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -32,14 +34,16 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: true,
       requiresAgeVerification: false,
+      onboardingCompleted: false,
 
-      login: (user, token) =>
+      login: (user, token, onboardingCompleted) =>
         set({
           user,
           token,
           isAuthenticated: true,
           isLoading: false,
           requiresAgeVerification: user.dateOfBirth === null,
+          onboardingCompleted,
         }),
 
       logout: () =>
@@ -49,6 +53,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           isLoading: false,
           requiresAgeVerification: false,
+          onboardingCompleted: false,
         }),
 
       setToken: (token) => set({ token }),
@@ -58,6 +63,8 @@ export const useAuthStore = create<AuthState>()(
       setLoading: (isLoading) => set({ isLoading }),
 
       clearAgeVerification: () => set({ requiresAgeVerification: false }),
+
+      completeOnboarding: () => set({ onboardingCompleted: true }),
     }),
     {
       name: 'pawmeet-auth',
@@ -66,6 +73,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
+        onboardingCompleted: state.onboardingCompleted,
       }),
       onRehydrateStorage: () => (state) => {
         // MMKV is synchronous, so this fires immediately — mark loading done

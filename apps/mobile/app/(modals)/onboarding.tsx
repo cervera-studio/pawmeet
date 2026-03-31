@@ -5,6 +5,9 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
+import { api } from '@/lib/trpc';
+import { useAuthStore } from '@/stores/auth';
+
 // ---------------------------------------------------------------------------
 // Stylized SVG illustrations — unique per slide
 // ---------------------------------------------------------------------------
@@ -12,11 +15,8 @@ import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 function IllustrationDiscover() {
   return (
     <Svg width={260} height={260} viewBox="0 0 260 260" fill="none">
-      {/* Background circle */}
       <Circle cx={130} cy={130} r={120} fill="#ECFDF5" />
       <Circle cx={130} cy={130} r={95} fill="#D1FAE5" opacity={0.6} />
-
-      {/* Path / trail */}
       <Path
         d="M60 180 Q100 120 130 140 Q160 160 200 100"
         stroke="#059669"
@@ -25,21 +25,13 @@ function IllustrationDiscover() {
         strokeLinecap="round"
         fill="none"
       />
-
-      {/* Dog 1 — left */}
       <G transform="translate(65, 130)">
-        {/* Body */}
         <Ellipse cx={20} cy={24} rx={18} ry={14} fill="#065F46" />
-        {/* Head */}
         <Circle cx={8} cy={12} r={11} fill="#065F46" />
-        {/* Ear */}
         <Ellipse cx={2} cy={4} rx={5} ry={8} fill="#064E3B" />
-        {/* Eye */}
         <Circle cx={5} cy={11} r={2.5} fill="white" />
         <Circle cx={4.5} cy={11} r={1.2} fill="#1A1A2E" />
-        {/* Nose */}
         <Ellipse cx={1} cy={15} rx={2.5} ry={2} fill="#1A1A2E" />
-        {/* Tail */}
         <Path
           d="M38 18 Q48 4 44 12"
           stroke="#065F46"
@@ -47,25 +39,16 @@ function IllustrationDiscover() {
           strokeLinecap="round"
           fill="none"
         />
-        {/* Legs */}
         <Rect x={8} y={35} width={4} height={12} rx={2} fill="#047857" />
         <Rect x={28} y={35} width={4} height={12} rx={2} fill="#047857" />
       </G>
-
-      {/* Dog 2 — right */}
       <G transform="translate(155, 110)">
-        {/* Body */}
         <Ellipse cx={20} cy={24} rx={18} ry={14} fill="#C9A84C" />
-        {/* Head */}
         <Circle cx={34} cy={14} r={11} fill="#C9A84C" />
-        {/* Ear */}
         <Ellipse cx={40} cy={6} rx={5} ry={8} fill="#A6872E" />
-        {/* Eye */}
         <Circle cx={37} cy={13} r={2.5} fill="white" />
         <Circle cx={37.5} cy={13} r={1.2} fill="#1A1A2E" />
-        {/* Nose */}
         <Ellipse cx={42} cy={17} rx={2.5} ry={2} fill="#1A1A2E" />
-        {/* Tail */}
         <Path
           d="M2 18 Q-8 4 -4 12"
           stroke="#C9A84C"
@@ -73,12 +56,9 @@ function IllustrationDiscover() {
           strokeLinecap="round"
           fill="none"
         />
-        {/* Legs */}
         <Rect x={8} y={35} width={4} height={12} rx={2} fill="#A6872E" />
         <Rect x={28} y={35} width={4} height={12} rx={2} fill="#A6872E" />
       </G>
-
-      {/* Location pin */}
       <G transform="translate(118, 50)">
         <Path
           d="M12 0C5.4 0 0 5.4 0 12c0 9 12 20 12 20s12-11 12-20c0-6.6-5.4-12-12-12z"
@@ -86,8 +66,6 @@ function IllustrationDiscover() {
         />
         <Circle cx={12} cy={12} r={5} fill="white" />
       </G>
-
-      {/* Sparkles */}
       <Path d="M45 60 L48 55 L51 60 L48 65 Z" fill="#C9A84C" opacity={0.7} />
       <Path d="M210 160 L213 155 L216 160 L213 165 Z" fill="#C9A84C" opacity={0.7} />
       <Circle cx={190} cy={60} r={3} fill="#10B981" opacity={0.5} />
@@ -99,11 +77,8 @@ function IllustrationDiscover() {
 function IllustrationMatch() {
   return (
     <Svg width={260} height={260} viewBox="0 0 260 260" fill="none">
-      {/* Background circle */}
       <Circle cx={130} cy={130} r={120} fill="#FDF8EF" />
       <Circle cx={130} cy={130} r={95} fill="#FAF0D7" opacity={0.5} />
-
-      {/* Heart shape — center */}
       <Path
         d="M130 200 C130 200 60 150 60 105 C60 75 85 60 110 75 C120 82 130 95 130 95 C130 95 140 82 150 75 C175 60 200 75 200 105 C200 150 130 200 130 200Z"
         fill="#065F46"
@@ -114,24 +89,18 @@ function IllustrationMatch() {
         fill="#065F46"
         opacity={0.08}
       />
-
-      {/* Paw 1 — left */}
       <G transform="translate(85, 100)">
         <Ellipse cx={15} cy={22} rx={12} ry={10} fill="#065F46" />
         <Circle cx={5} cy={10} r={5} fill="#065F46" />
         <Circle cx={15} cy={6} r={5} fill="#065F46" />
         <Circle cx={25} cy={10} r={5} fill="#065F46" />
       </G>
-
-      {/* Paw 2 — right */}
       <G transform="translate(145, 100)">
         <Ellipse cx={15} cy={22} rx={12} ry={10} fill="#C9A84C" />
         <Circle cx={5} cy={10} r={5} fill="#C9A84C" />
         <Circle cx={15} cy={6} r={5} fill="#C9A84C" />
         <Circle cx={25} cy={10} r={5} fill="#C9A84C" />
       </G>
-
-      {/* Connection line between paws */}
       <Path
         d="M115 120 Q130 135 145 120"
         stroke="#10B981"
@@ -139,8 +108,6 @@ function IllustrationMatch() {
         strokeDasharray="4 4"
         fill="none"
       />
-
-      {/* Stars / sparkles */}
       <G transform="translate(60, 70)">
         <Path d="M8 0 L10 6 L16 8 L10 10 L8 16 L6 10 L0 8 L6 6 Z" fill="#C9A84C" />
       </G>
@@ -154,8 +121,6 @@ function IllustrationMatch() {
           opacity={0.6}
         />
       </G>
-
-      {/* Floating hearts */}
       <G transform="translate(50, 160) scale(0.5)">
         <Path
           d="M12 21 C12 21 3 15 3 9 C3 5 6 3 9 5 C10 6 12 8 12 8 C12 8 14 6 15 5 C18 3 21 5 21 9 C21 15 12 21 12 21Z"
@@ -177,10 +142,7 @@ function IllustrationMatch() {
 function IllustrationWalk() {
   return (
     <Svg width={260} height={260} viewBox="0 0 260 260" fill="none">
-      {/* Background circle */}
       <Circle cx={130} cy={130} r={120} fill="#ECFDF5" />
-
-      {/* Ground / path */}
       <Path
         d="M20 210 Q80 195 130 200 Q180 205 240 190"
         stroke="#D1FAE5"
@@ -188,8 +150,6 @@ function IllustrationWalk() {
         strokeLinecap="round"
         fill="none"
       />
-
-      {/* Trees in background */}
       <G transform="translate(40, 95)">
         <Rect x={8} y={40} width={6} height={20} rx={3} fill="#047857" />
         <Circle cx={11} cy={35} r={16} fill="#059669" opacity={0.6} />
@@ -200,19 +160,12 @@ function IllustrationWalk() {
         <Circle cx={11} cy={35} r={14} fill="#059669" opacity={0.6} />
         <Circle cx={11} cy={28} r={10} fill="#10B981" opacity={0.5} />
       </G>
-
-      {/* Person */}
       <G transform="translate(100, 100)">
-        {/* Head */}
         <Circle cx={18} cy={10} r={10} fill="#E0B04E" />
-        {/* Body */}
         <Rect x={10} y={20} width={16} height={30} rx={8} fill="#065F46" />
-        {/* Legs */}
         <Rect x={10} y={48} width={5} height={22} rx={2.5} fill="#064E3B" />
         <Rect x={21} y={48} width={5} height={22} rx={2.5} fill="#064E3B" />
-        {/* Arm with leash */}
         <Path d="M26 30 L40 40" stroke="#065F46" strokeWidth={4} strokeLinecap="round" />
-        {/* Leash line */}
         <Path
           d="M40 40 Q55 50 60 58"
           stroke="#8E8E93"
@@ -221,21 +174,13 @@ function IllustrationWalk() {
           fill="none"
         />
       </G>
-
-      {/* Dog on leash */}
       <G transform="translate(155, 150)">
-        {/* Body */}
         <Ellipse cx={18} cy={16} rx={16} ry={11} fill="#C9A84C" />
-        {/* Head */}
         <Circle cx={34} cy={8} r={9} fill="#C9A84C" />
-        {/* Ear */}
         <Ellipse cx={39} cy={2} rx={4} ry={6} fill="#A6872E" />
-        {/* Eye */}
         <Circle cx={37} cy={7} r={2} fill="white" />
         <Circle cx={37.5} cy={7} r={1} fill="#1A1A2E" />
-        {/* Nose */}
         <Ellipse cx={41} cy={11} rx={2} ry={1.5} fill="#1A1A2E" />
-        {/* Tail — wagging up */}
         <Path
           d="M2 10 Q-6 -4 -2 2"
           stroke="#C9A84C"
@@ -243,16 +188,11 @@ function IllustrationWalk() {
           strokeLinecap="round"
           fill="none"
         />
-        {/* Legs */}
         <Rect x={6} y={24} width={3.5} height={10} rx={1.5} fill="#A6872E" />
         <Rect x={25} y={24} width={3.5} height={10} rx={1.5} fill="#A6872E" />
       </G>
-
-      {/* Sun */}
       <Circle cx={210} cy={55} r={18} fill="#C9A84C" opacity={0.3} />
       <Circle cx={210} cy={55} r={12} fill="#E0B04E" opacity={0.4} />
-
-      {/* Chat bubble */}
       <G transform="translate(65, 60)">
         <Rect x={0} y={0} width={40} height={26} rx={13} fill="white" />
         <Path d="M15 26 L20 34 L25 26" fill="white" />
@@ -260,8 +200,6 @@ function IllustrationWalk() {
         <Circle cx={20} cy={13} r={2.5} fill="#10B981" />
         <Circle cx={28} cy={13} r={2.5} fill="#10B981" />
       </G>
-
-      {/* Small paw prints on path */}
       <G transform="translate(80, 200) scale(0.3)" opacity={0.3}>
         <Ellipse cx={15} cy={22} rx={12} ry={10} fill="#065F46" />
         <Circle cx={5} cy={10} r={5} fill="#065F46" />
@@ -284,28 +222,36 @@ const ILLUSTRATIONS = [IllustrationDiscover, IllustrationMatch, IllustrationWalk
 // Main component
 // ---------------------------------------------------------------------------
 
-export default function WelcomeScreen() {
+export default function OnboardingScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const completeOnboarding = useAuthStore((s) => s.completeOnboarding);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = useMemo(
     () => [
       {
-        title: t('auth.welcome.slide1Title'),
-        description: t('auth.welcome.slide1Description'),
+        title: t('onboarding.slide1Title'),
+        description: t('onboarding.slide1Description'),
       },
       {
-        title: t('auth.welcome.slide2Title'),
-        description: t('auth.welcome.slide2Description'),
+        title: t('onboarding.slide2Title'),
+        description: t('onboarding.slide2Description'),
       },
       {
-        title: t('auth.welcome.slide3Title'),
-        description: t('auth.welcome.slide3Description'),
+        title: t('onboarding.slide3Title'),
+        description: t('onboarding.slide3Description'),
       },
     ],
     [t],
   );
+
+  const handleComplete = () => {
+    completeOnboarding();
+    // Persist to backend (fire-and-forget, MMKV is the immediate source of truth)
+    api.users.completeOnboarding.mutate().catch(() => {});
+    router.replace('/(tabs)');
+  };
 
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
@@ -357,23 +303,15 @@ export default function WelcomeScreen() {
       />
 
       {/* Skip — top right */}
-      {isLastSlide ? (
-        <View style={{ height: 44 }} />
-      ) : (
-        <View style={{ alignItems: 'flex-end', paddingRight: 24, paddingTop: 8 }}>
-          <Pressable
-            onPress={() => setCurrentSlide(slides.length - 1)}
-            hitSlop={12}
-            style={{ paddingHorizontal: 16, paddingVertical: 8 }}
-          >
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#8E8E93' }}>
-              {t('auth.welcome.skipButton')}
-            </Text>
-          </Pressable>
-        </View>
-      )}
+      <View style={{ alignItems: 'flex-end', paddingRight: 24, paddingTop: 8 }}>
+        <Pressable onPress={handleComplete} hitSlop={12} style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
+          <Text style={{ fontSize: 14, fontWeight: '500', color: '#8E8E93' }}>
+            {t('onboarding.skipButton')}
+          </Text>
+        </Pressable>
+      </View>
 
-      {/* Illustration — centered in upper area */}
+      {/* Illustration */}
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <CurrentIllustration />
       </View>
@@ -432,62 +370,25 @@ export default function WelcomeScreen() {
         </View>
       </View>
 
-      {/* Action buttons — bottom */}
+      {/* Action button */}
       <View style={{ paddingHorizontal: 32, paddingBottom: 16 }}>
-        {isLastSlide ? (
-          <>
-            <Pressable
-              onPress={() => router.push('/(auth)/register')}
-              style={{
-                alignItems: 'center',
-                borderRadius: 16,
-                paddingVertical: 16,
-                backgroundColor: '#065F46',
-                shadowColor: '#065F46',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.25,
-                shadowRadius: 12,
-              }}
-            >
-              <Text style={{ fontSize: 17, fontWeight: '600', color: '#FFFFFF' }}>
-                {t('auth.welcome.registerButton')}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => router.push('/(auth)/login')}
-              style={{
-                alignItems: 'center',
-                borderRadius: 16,
-                paddingVertical: 16,
-                marginTop: 12,
-                borderWidth: 1.5,
-                borderColor: '#065F46',
-              }}
-            >
-              <Text style={{ fontSize: 17, fontWeight: '600', color: '#065F46' }}>
-                {t('auth.welcome.loginButton')}
-              </Text>
-            </Pressable>
-          </>
-        ) : (
-          <Pressable
-            onPress={handleNext}
-            style={{
-              alignItems: 'center',
-              borderRadius: 16,
-              paddingVertical: 16,
-              backgroundColor: '#065F46',
-              shadowColor: '#065F46',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.25,
-              shadowRadius: 12,
-            }}
-          >
-            <Text style={{ fontSize: 17, fontWeight: '600', color: '#FFFFFF' }}>
-              {t('auth.welcome.nextButton')}
-            </Text>
-          </Pressable>
-        )}
+        <Pressable
+          onPress={isLastSlide ? handleComplete : handleNext}
+          style={{
+            alignItems: 'center',
+            borderRadius: 16,
+            paddingVertical: 16,
+            backgroundColor: '#065F46',
+            shadowColor: '#065F46',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.25,
+            shadowRadius: 12,
+          }}
+        >
+          <Text style={{ fontSize: 17, fontWeight: '600', color: '#FFFFFF' }}>
+            {isLastSlide ? t('onboarding.completeButton') : t('onboarding.nextButton')}
+          </Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );

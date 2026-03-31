@@ -11,6 +11,7 @@ import { createGetProfile } from '../use-cases/get-profile.js';
 import { createReactivateAccount } from '../use-cases/reactivate-account.js';
 import { createRegisterPushToken } from '../use-cases/register-push-token.js';
 import { createRequestDataExport } from '../use-cases/request-data-export.js';
+import { createCompleteOnboarding } from '../use-cases/complete-onboarding.js';
 import { createSubmitDateOfBirth } from '../use-cases/submit-date-of-birth.js';
 import { createUpdateConsents } from '../use-cases/update-consents.js';
 import { createUpdateLocation } from '../use-cases/update-location.js';
@@ -67,6 +68,7 @@ export const userDeps = {
   }),
   reactivateAccount: createReactivateAccount({ userRepo, authService }),
   submitDateOfBirth: createSubmitDateOfBirth({ userRepo }),
+  completeOnboarding: createCompleteOnboarding({ userRepo }),
 };
 
 export const consentDeps = {

@@ -57,6 +57,13 @@
       "when": 1774524052919,
       "tag": "0007_shallow_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1774954851627,
+      "tag": "0008_real_shadowcat",
+      "breakpoints": true
     }
   ]
 }

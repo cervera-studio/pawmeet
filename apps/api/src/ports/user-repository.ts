@@ -69,6 +69,7 @@ export interface UserRepository {
         | 'dateOfBirth'
         | 'termsAcceptedAt'
         | 'privacyPolicyVersion'
+        | 'onboardingCompletedAt'
       >
     >,
   ): Promise<User>;

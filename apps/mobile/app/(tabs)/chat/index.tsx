@@ -3,58 +3,12 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 import { useEffect } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SegmentControl } from '@/components/chat/SegmentControl';
 import { RequireDogModal } from '@/components/RequireDogModal';
 import { Avatar } from '@/components/ui/Avatar';
 import { useRequireDog } from '@/hooks/useRequireDog';
 import type { Conversation, EnrichedMatch, GroupConversation, Tab } from './_vm/index.view-model';
 import { TABS, useChatListViewModel } from './_vm/index.view-model';
-
-// ── Segment control ──────────────────────────────────────────────────────────
-
-function SegmentControl({
-  activeTab,
-  onTabChange,
-}: {
-  activeTab: Tab;
-  onTabChange: (tab: Tab) => void;
-}) {
-  return (
-    <View className="mx-4 mb-2 flex-row rounded-xl bg-gray-100 dark:bg-[#38383A] p-1">
-      <Pressable
-        onPress={() => onTabChange(TABS.MESSAGES)}
-        className={`flex-1 items-center rounded-lg py-2 ${
-          activeTab === TABS.MESSAGES ? 'bg-white dark:bg-[#1C1C1E] shadow-sm' : ''
-        }`}
-      >
-        <Text
-          className={`text-sm font-medium ${
-            activeTab === TABS.MESSAGES
-              ? 'text-gray-900 dark:text-[#F5F5F7]'
-              : 'text-gray-500 dark:text-neutral-500'
-          }`}
-        >
-          Messaggi
-        </Text>
-      </Pressable>
-      <Pressable
-        onPress={() => onTabChange(TABS.GROUPS)}
-        className={`flex-1 items-center rounded-lg py-2 ${
-          activeTab === TABS.GROUPS ? 'bg-white dark:bg-[#1C1C1E] shadow-sm' : ''
-        }`}
-      >
-        <Text
-          className={`text-sm font-medium ${
-            activeTab === TABS.GROUPS
-              ? 'text-gray-900 dark:text-[#F5F5F7]'
-              : 'text-gray-500 dark:text-neutral-500'
-          }`}
-        >
-          Gruppi
-        </Text>
-      </Pressable>
-    </View>
-  );
-}
 
 // ── 1-on-1 chat row ─────────────────────────────────────────────────────────
 

@@ -95,6 +95,10 @@ export function createUsersRouter(deps: typeof userDeps) {
         return { message: result.message };
       }),
 
+    completeOnboarding: protectedProcedure.mutation(async ({ ctx }) =>
+      unwrapResult(await deps.completeOnboarding(ctx.userId)),
+    ),
+
     exportMyData: gdprExportProtectedProcedure.mutation(async ({ ctx }) =>
       unwrapResult(await deps.requestDataExport(ctx.userId)),
     ),

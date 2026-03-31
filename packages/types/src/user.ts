@@ -38,6 +38,7 @@ export interface User {
   followingCount: number;
   termsAcceptedAt: Date | null;
   privacyPolicyVersion: string | null;
+  onboardingCompletedAt: Date | null;
 }
 
 /** User data without sensitive fields (passwordHash, pushToken). */

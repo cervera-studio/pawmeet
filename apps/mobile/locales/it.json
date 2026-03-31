@@ -574,18 +574,6 @@
     "tapToRetry": "Tocca per riprovare"
   },
   "auth": {
-    "welcome": {
-      "slide1Title": "Trova compagni di passeggiata",
-      "slide1Description": "Scopri cani compatibili nella tua zona per passeggiate insieme.",
-      "slide2Title": "Fai match",
-      "slide2Description": "Swipa per trovare il compagno perfetto per il tuo cane.",
-      "slide3Title": "Inizia a camminare",
-      "slide3Description": "Chatta, organizza e parti per la vostra prima passeggiata!",
-      "loginButton": "Accedi",
-      "registerButton": "Registrati",
-      "nextButton": "Avanti",
-      "skipButton": "Salta"
-    },
     "login": {
       "title": "Bentornato!",
       "subtitle": "Accedi per continuare",
@@ -606,8 +594,7 @@
       "loginError": "Errore durante il login",
       "socialLoginError": "Errore durante il login social",
       "googleError": "Errore con Google Sign In",
-      "appleError": "Errore con Apple Sign In",
-      "discoverLink": "Scopri PawMeet"
+      "appleError": "Errore con Apple Sign In"
     },
     "forgotPassword": {
       "title": "Password dimenticata",
@@ -932,5 +919,16 @@
     "date_of_birth_min_age": "Devi avere almeno 18 anni per registrarti",
     "display_name_min": "Il nome deve avere almeno 2 caratteri",
     "display_name_max": "Il nome non può superare i 50 caratteri"
+  },
+  "onboarding": {
+    "slide1Title": "Trova compagni di passeggiata",
+    "slide1Description": "Scopri cani compatibili nella tua zona per passeggiate insieme.",
+    "slide2Title": "Fai match",
+    "slide2Description": "Swipa per trovare il compagno perfetto per il tuo cane.",
+    "slide3Title": "Inizia a camminare",
+    "slide3Description": "Chatta, organizza e parti per la vostra prima passeggiata!",
+    "nextButton": "Avanti",
+    "skipButton": "Salta",
+    "completeButton": "Inizia"
   }
 }

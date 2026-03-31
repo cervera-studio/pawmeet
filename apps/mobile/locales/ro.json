@@ -574,18 +574,6 @@
     "tapToRetry": "Atinge pentru a reincerca"
   },
   "auth": {
-    "welcome": {
-      "slide1Title": "Găsește parteneri de plimbare",
-      "slide1Description": "Descoperă câini compatibili în zona ta pentru plimbări împreună.",
-      "slide2Title": "Fă match",
-      "slide2Description": "Glisează pentru a găsi partenerul perfect pentru câinele tău.",
-      "slide3Title": "Începe să te plimbi",
-      "slide3Description": "Vorbește, organizează și pornește la prima voastră plimbare!",
-      "loginButton": "Autentifică-te",
-      "registerButton": "Înregistrează-te",
-      "nextButton": "Înainte",
-      "skipButton": "Sari"
-    },
     "login": {
       "title": "Bine ai revenit!",
       "subtitle": "Autentifică-te pentru a continua",
@@ -606,8 +594,7 @@
       "loginError": "Eroare la autentificare",
       "socialLoginError": "Eroare la autentificarea social",
       "googleError": "Eroare cu Google Sign In",
-      "appleError": "Eroare cu Apple Sign In",
-      "discoverLink": "Descoperă PawMeet"
+      "appleError": "Eroare cu Apple Sign In"
     },
     "forgotPassword": {
       "title": "Parolă uitată",
@@ -932,5 +919,16 @@
     "date_of_birth_min_age": "You must be at least 18 years old to sign up",
     "display_name_min": "Name must be at least 2 characters",
     "display_name_max": "Name cannot exceed 50 characters"
+  },
+  "onboarding": {
+    "slide1Title": "Găsește parteneri de plimbare",
+    "slide1Description": "Descoperă câini compatibili în zona ta pentru plimbări împreună.",
+    "slide2Title": "Fă match",
+    "slide2Description": "Glisează pentru a găsi partenerul perfect pentru câinele tău.",
+    "slide3Title": "Începe să te plimbi",
+    "slide3Description": "Vorbește, organizează și pornește la prima voastră plimbare!",
+    "nextButton": "Înainte",
+    "skipButton": "Sari",
+    "completeButton": "Începe"
   }
 }

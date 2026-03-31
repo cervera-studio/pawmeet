@@ -93,6 +93,7 @@ export function buildUser(overrides: Partial<User> = {}): User {
     followingCount: 0,
     termsAcceptedAt: new Date('2026-01-01'),
     privacyPolicyVersion: 'v1.0',
+    onboardingCompletedAt: null,
     ...overrides,
   };
 }

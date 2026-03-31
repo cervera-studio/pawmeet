@@ -2,21 +2,15 @@ import { Stack } from 'expo-router';
 
 export default function ChatLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{ headerShown: false }}
+    >
       <Stack.Screen name="index" />
       <Stack.Screen
         name="[matchId]"
         options={{
           headerShown: true,
           title: 'Chat',
-          headerBackTitle: 'Chat',
-        }}
-      />
-      <Stack.Screen
-        name="group"
-        options={{
-          headerShown: true,
-          title: 'Chat di gruppo',
           headerBackTitle: 'Chat',
         }}
       />

@@ -103,7 +103,12 @@
     "userProfile": "Profile",
     "storyViewers": "Views",
     "newStory": "New story",
-    "ageGate": "Age verification"
+    "ageGate": "Age verification",
+    "privacy": "Privacy",
+    "editDog": "Edit dog",
+    "safety": "Safety",
+    "support": "Support",
+    "supportChat": "Support chat"
   },
   "discovery": {
     "title": "Discover",

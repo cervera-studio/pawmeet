@@ -103,7 +103,12 @@
     "userProfile": "Profil",
     "storyViewers": "Vizualizări",
     "newStory": "Poveste nouă",
-    "ageGate": "Verificare vârstă"
+    "ageGate": "Verificare vârstă",
+    "privacy": "Confidențialitate",
+    "editDog": "Editează câine",
+    "safety": "Siguranță",
+    "support": "Asistență",
+    "supportChat": "Chat asistență"
   },
   "discovery": {
     "title": "Descoperă",

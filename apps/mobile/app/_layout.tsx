@@ -332,6 +332,26 @@ function RootLayout() {
                 }}
               />
               <Stack.Screen
+                name="(modals)/privacy"
+                options={{ presentation: 'modal', title: t('modals.privacy') }}
+              />
+              <Stack.Screen
+                name="(modals)/edit-dog"
+                options={{ presentation: 'modal', title: t('modals.editDog') }}
+              />
+              <Stack.Screen
+                name="(modals)/safety"
+                options={{ presentation: 'modal', title: t('modals.safety') }}
+              />
+              <Stack.Screen
+                name="(modals)/support"
+                options={{ presentation: 'modal', title: t('modals.support') }}
+              />
+              <Stack.Screen
+                name="(modals)/support-chat"
+                options={{ presentation: 'modal', title: t('modals.supportChat') }}
+              />
+              <Stack.Screen
                 name="(modals)/story-create"
                 options={{ presentation: 'modal', headerShown: false }}
               />

@@ -1,6 +1,5 @@
 import type { AppRouter } from '@pawmeet/api/trpc';
 import type { TRPCLink } from '@trpc/client';
-import { TRPCClientError } from '@trpc/client';
 import { observable } from '@trpc/server/observable';
 
 export interface AuthRefreshCallbacks {
@@ -51,8 +50,8 @@ async function doRefresh(apiUrl: string, callbacks: AuthRefreshCallbacks): Promi
 }
 
 function isUnauthorizedError(error: unknown): boolean {
-  if (error instanceof TRPCClientError) {
-    const code = (error.data as Record<string, unknown> | undefined)?.code;
+  if (error instanceof Error && error.name === 'TRPCClientError') {
+    const code = (error as { data?: Record<string, unknown> }).data?.code;
     return code === 'UNAUTHORIZED';
   }
   return false;

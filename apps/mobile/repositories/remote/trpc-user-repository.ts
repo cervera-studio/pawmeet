@@ -1,6 +1,9 @@
 import type { ApiClient } from '@pawmeet/api-client';
-import { TRPCClientError } from '@trpc/client';
 import type { LocationUpdateResult, UserRepository } from '../interfaces';
+
+function isTRPCClientError(error: unknown): error is Error & { data: Record<string, unknown> } {
+  return error instanceof Error && error.name === 'TRPCClientError';
+}
 
 export function createTrpcUserRepository(api: ApiClient): UserRepository {
   return {
@@ -12,13 +15,8 @@ export function createTrpcUserRepository(api: ApiClient): UserRepository {
         await api.users.updateLocation.mutate({ latitude, longitude, force });
         return {};
       } catch (error) {
-        if (
-          error instanceof TRPCClientError &&
-          (error.data as Record<string, unknown>)?.appCode === 'SUSPICIOUS_LOCATION'
-        ) {
-          const appData = (error.data as Record<string, unknown>)?.appData as
-            | Record<string, unknown>
-            | undefined;
+        if (isTRPCClientError(error) && error.data?.appCode === 'SUSPICIOUS_LOCATION') {
+          const appData = error.data?.appData as Record<string, unknown> | undefined;
           return {
             suspicious: true,
             distanceKm: typeof appData?.distanceKm === 'number' ? appData.distanceKm : undefined,

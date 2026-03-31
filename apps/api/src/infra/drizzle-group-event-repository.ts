@@ -210,7 +210,7 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
       .where(
         and(
           eq(groupEvents.status, 'in_progress'),
-          sql`${groupEvents.scheduledAt} + (${groupEvents.durationMin} || ' minutes')::interval <= ${now}`,
+          sql`${groupEvents.scheduledAt} + ${groupEvents.durationMin} * INTERVAL '1 minute' <= ${now}`,
         ),
       );
     return rowsAs<GroupEvent>(rows);

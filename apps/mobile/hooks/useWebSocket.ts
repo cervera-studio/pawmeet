@@ -48,13 +48,13 @@ function connect(token: string) {
 
   isConnecting = true;
   sharedToken = token;
-  const ws = new WebSocket(WS_URL);
+  // Authenticate during handshake via Sec-WebSocket-Protocol header.
+  // The server extracts the JWT from the "access_token.<jwt>" subprotocol.
+  const ws = new WebSocket(WS_URL, [`access_token.${token}`]);
   sharedWs = ws;
 
   ws.onopen = () => {
     isConnecting = false;
-    // Send auth token as first message instead of exposing it in the subprotocol/URL
-    ws.send(JSON.stringify({ type: 'auth', payload: { token } }));
     reconnectAttempt = 0;
     setConnectedState(true);
     logger.debug('useWebSocket', 'Connected');

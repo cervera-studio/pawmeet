@@ -51,17 +51,21 @@ export async function handleUpgrade(
     return;
   }
 
-  // Validate Origin header to prevent cross-origin WebSocket hijacking.
-  // Mobile clients don't send Origin, so allow missing header.
-  const origin = request.headers.origin;
-  if (origin && !ALLOWED_WS_ORIGINS.includes(origin)) {
-    logger.warn('WebSocket', `Rejected connection from unauthorized origin: ${origin}`);
+  const token = extractToken(request);
+  if (!token) {
     socket.destroy();
     return;
   }
 
-  const token = extractToken(request);
-  if (!token) {
+  // Validate Origin header to prevent cross-origin WebSocket hijacking.
+  // Skip for subprotocol-authenticated connections (mobile/native clients)
+  // since CSRF is not possible when the attacker cannot know the JWT.
+  const hasSubprotocolAuth = request.headers['sec-websocket-protocol']
+    ?.split(',')
+    .some((p) => p.trim().startsWith('access_token.'));
+  const origin = request.headers.origin;
+  if (!hasSubprotocolAuth && origin && !ALLOWED_WS_ORIGINS.includes(origin)) {
+    logger.warn('WebSocket', `Rejected connection from unauthorized origin: ${origin}`);
     socket.destroy();
     return;
   }

@@ -5,6 +5,7 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
+import { logger } from '@pawmeet/utils';
 import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 
@@ -248,8 +249,9 @@ export default function OnboardingScreen() {
 
   const handleComplete = () => {
     completeOnboarding();
-    // Persist to backend (fire-and-forget, MMKV is the immediate source of truth)
-    api.users.completeOnboarding.mutate().catch(() => {});
+    api.users.completeOnboarding.mutate().catch((e) => {
+      logger.warn('Onboarding', 'Failed to persist onboarding completion to server', e);
+    });
     router.replace('/(tabs)');
   };
 
@@ -304,7 +306,11 @@ export default function OnboardingScreen() {
 
       {/* Skip — top right */}
       <View style={{ alignItems: 'flex-end', paddingRight: 24, paddingTop: 8 }}>
-        <Pressable onPress={handleComplete} hitSlop={12} style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
+        <Pressable
+          onPress={handleComplete}
+          hitSlop={12}
+          style={{ paddingHorizontal: 16, paddingVertical: 8 }}
+        >
           <Text style={{ fontSize: 14, fontWeight: '500', color: '#8E8E93' }}>
             {t('onboarding.skipButton')}
           </Text>

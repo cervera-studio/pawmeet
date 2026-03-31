@@ -218,6 +218,7 @@ export default function ChatListScreen() {
           keyExtractor={(item) => item.matchId}
           onRefresh={vm.refreshAll}
           refreshing={vm.loadingConversations}
+          contentContainerStyle={{ flexGrow: 1 }}
           renderItem={({ item }) => (
             <ChatRow conversation={item} onPress={() => vm.navigateToChat(item.matchId)} />
           )}
@@ -229,6 +230,7 @@ export default function ChatListScreen() {
           keyExtractor={(item) => item.eventId}
           onRefresh={vm.refreshAll}
           refreshing={vm.loadingGroupConversations}
+          contentContainerStyle={{ flexGrow: 1 }}
           renderItem={({ item }) => (
             <GroupChatRow
               conversation={item}

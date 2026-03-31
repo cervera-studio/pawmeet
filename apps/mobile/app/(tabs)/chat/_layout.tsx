@@ -13,7 +13,7 @@ export default function ChatLayout() {
         }}
       />
       <Stack.Screen
-        name="group/[eventId]"
+        name="group"
         options={{
           headerShown: true,
           title: 'Chat di gruppo',

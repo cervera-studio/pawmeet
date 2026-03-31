@@ -92,10 +92,7 @@ export function useForgotPasswordViewModel() {
     clearErrors();
     setResendDisabled(true);
 
-    await execute(
-      () => api.auth.forgotPassword.mutate({ email }),
-      'forgotPassword.resend',
-    );
+    await execute(() => api.auth.forgotPassword.mutate({ email }), 'forgotPassword.resend');
 
     // Disable resend for 60 seconds
     if (resendTimerRef.current) clearTimeout(resendTimerRef.current);

@@ -1,5 +1,5 @@
-import { TRPCClientError } from '@trpc/client';
 import * as Sentry from '@sentry/react-native';
+import { TRPCClientError } from '@trpc/client';
 import i18n from '@/lib/i18n';
 import { isOnline } from '@/lib/network';
 

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { handleApiError, type AppErrorResult } from '@/lib/error-handler';
+import { type AppErrorResult, handleApiError } from '@/lib/error-handler';
 
 interface UseApiErrorReturn {
   apiError: string;
@@ -34,7 +34,7 @@ export function useApiError(): UseApiErrorReturn {
         setApiError(result.message);
         setFieldErrors(result.fieldErrors);
         setIsRetryable(result.isRetryable);
-        return undefined;
+        return;
       }
     },
     [clearErrors],

@@ -2,6 +2,7 @@ import '../global.css';
 import '@/lib/i18n';
 
 import { LogBox } from 'react-native';
+
 // Suppress Expo Router warnings for colocated view-model files inside _vm/ directories
 LogBox.ignoreLogs([/Route ".*_vm.*" is missing the required default export/]);
 
@@ -264,10 +265,12 @@ function RootLayout() {
           <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
           <Stack>
             <Stack.Protected guard={!isAuthenticated}>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             </Stack.Protected>
 
             <Stack.Protected guard={isAuthenticated && requiresAgeVerification}>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen
                 name="(modals)/age-gate"
                 options={{
@@ -278,6 +281,7 @@ function RootLayout() {
             </Stack.Protected>
 
             <Stack.Protected guard={isAuthenticated && !requiresAgeVerification}>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen
                 name="(modals)/dog-detail"

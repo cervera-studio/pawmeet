@@ -101,10 +101,7 @@ export function useRegisterViewModel() {
     }
 
     setLoading(true);
-    await execute(
-      () => register(displayName, email, password, dobString),
-      'register.email',
-    );
+    await execute(() => register(displayName, email, password, dobString), 'register.email');
     setLoading(false);
   }, [displayName, email, password, confirmPassword, dateOfBirth, register, clearErrors, execute]);
 

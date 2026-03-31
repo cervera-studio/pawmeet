@@ -52,10 +52,7 @@ export async function createContext(opts: { req: Request }): Promise<Context> {
  * Returns an array of field names that failed validation (e.g. ['email', 'password']).
  */
 function extractZodFieldNames(shape: Record<string, unknown>): string[] {
-  const zodError = shape.zodError as
-    | { fieldErrors?: Record<string, unknown> }
-    | null
-    | undefined;
+  const zodError = shape.zodError as { fieldErrors?: Record<string, unknown> } | null | undefined;
   return Object.keys(zodError?.fieldErrors ?? {});
 }
 
@@ -74,7 +71,9 @@ const t = initTRPC.context<Context>().create({
         // Expose machine-readable AppError code for client-side i18n mapping
         appCode: isAppError ? cause.code : undefined,
         // Only field names — no regex, no min/max, no constraints
-        zodFieldErrors: hasZodError ? extractZodFieldNames(shape.data as Record<string, unknown>) : undefined,
+        zodFieldErrors: hasZodError
+          ? extractZodFieldNames(shape.data as Record<string, unknown>)
+          : undefined,
         // Strip raw Zod error details from the response
         zodError: undefined,
       },

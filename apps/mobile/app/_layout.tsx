@@ -1,6 +1,10 @@
 import '../global.css';
 import '@/lib/i18n';
 
+import { LogBox } from 'react-native';
+// Suppress Expo Router warnings for colocated view-model files inside _vm/ directories
+LogBox.ignoreLogs([/Route ".*_vm.*" is missing the required default export/]);
+
 import { logger } from '@pawmeet/utils';
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';

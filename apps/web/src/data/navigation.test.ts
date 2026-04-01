@@ -38,7 +38,7 @@ describe('getSiteLinks (Italian)', () => {
   });
 
   it('includes the waitlist link', () => {
-    const waitlist = siteLinks.find((l) => l.href === '/waitlist');
+    const waitlist = siteLinks.find((l) => l.href === '/waitlist/');
     expect(waitlist).toBeDefined();
     expect(waitlist?.label).toBe('Waitlist');
   });
@@ -67,9 +67,9 @@ describe('getLegalLinks (Italian)', () => {
 
   it('includes privacy, terms, and cookie pages', () => {
     const hrefs = legalLinks.map((l) => l.href);
-    expect(hrefs).toContain('/privacy');
-    expect(hrefs).toContain('/terms');
-    expect(hrefs).toContain('/cookie');
+    expect(hrefs).toContain('/privacy/');
+    expect(hrefs).toContain('/terms/');
+    expect(hrefs).toContain('/cookie/');
   });
 
   it('every entry has a non-empty href starting with /', () => {

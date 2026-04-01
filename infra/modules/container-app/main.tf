@@ -1,14 +1,3 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source = "hashicorp/azurerm"
-    }
-    azapi = {
-      source = "Azure/azapi"
-    }
-  }
-}
-
 # ── Managed Identity for ACR pull ───────────────────────────────
 resource "azurerm_user_assigned_identity" "pull" {
   name                = "id-${var.project}-${var.name}-${var.environment}"
@@ -137,21 +126,21 @@ resource "azurerm_container_app" "main" {
 }
 
 # ── Sticky sessions (not yet in azurerm provider — patch via azapi) ──
-resource "azapi_update_resource" "sticky_sessions" {
-  count       = var.session_affinity_enabled ? 1 : 0
-  type        = "Microsoft.App/containerApps@2024-03-01"
-  resource_id = azurerm_container_app.main.id
+# azapi_update_resource requires re-sending all secrets in the PUT payload,
+# which is impractical since secret values are write-only. Use a local-exec
+# provisioner with Azure CLI instead.
+resource "terraform_data" "sticky_sessions" {
+  count = var.session_affinity_enabled ? 1 : 0
 
-  body = {
-    properties = {
-      configuration = {
-        ingress = {
-          stickySessions = {
-            affinity = "sticky"
-          }
-        }
-      }
-    }
+  triggers_replace = [azurerm_container_app.main.id]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      az containerapp ingress sticky-sessions set \
+        --name ${azurerm_container_app.main.name} \
+        --resource-group ${var.resource_group_name} \
+        --affinity sticky
+    EOT
   }
 }
 

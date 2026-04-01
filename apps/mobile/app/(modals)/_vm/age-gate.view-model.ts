@@ -9,14 +9,19 @@ import { useAuthStore } from '@/stores/auth';
 const userRepo = container.resolve(USER_REPOSITORY);
 
 export function useAgeGateViewModel() {
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+
+  const openPicker = useCallback(() => setShowPicker(true), []);
+  const closePicker = useCallback(() => setShowPicker(false), []);
 
   const handleSubmit = useCallback(async () => {
     setError(null);
 
-    const parsed = dateOfBirthSchema.safeParse(dateOfBirth);
+    const dobString = dateOfBirth ? (dateOfBirth.toISOString().split('T')[0] ?? '') : '';
+    const parsed = dateOfBirthSchema.safeParse(dobString);
     if (!parsed.success) {
       const firstIssue = parsed.error.issues[0];
       setError(firstIssue?.message ?? 'Data non valida');
@@ -25,10 +30,10 @@ export function useAgeGateViewModel() {
 
     setLoading(true);
     try {
-      await userRepo.submitDateOfBirth(dateOfBirth);
+      await userRepo.submitDateOfBirth(dobString);
       const store = useAuthStore.getState();
       if (store.user) {
-        store.setUser({ ...store.user, dateOfBirth });
+        store.setUser({ ...store.user, dateOfBirth: dobString });
       }
       store.clearAgeVerification();
     } catch (e) {
@@ -43,6 +48,9 @@ export function useAgeGateViewModel() {
     setDateOfBirth,
     error,
     loading,
+    showPicker,
+    openPicker,
+    closePicker,
     handleSubmit,
   };
 }

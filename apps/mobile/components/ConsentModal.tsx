@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Linking, Modal, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useConsentModalViewModel } from './ConsentModal.view-model';
 
 interface ConsentModalProps {
@@ -13,10 +14,8 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <ScrollView
-        className="flex-1 bg-white dark:bg-[#1C1C1E]"
-        contentContainerClassName="px-6 py-8"
-      >
+      <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
+        <ScrollView className="flex-1" contentContainerClassName="px-6 py-8">
         {vm.showDetail ? <DetailView vm={vm} t={t} /> : <SimpleView vm={vm} t={t} />}
 
         {/* Privacy Policy link */}
@@ -30,7 +29,8 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
             {t('consent.readPrivacyPolicy')}
           </Text>
         </Pressable>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     </Modal>
   );
 }

@@ -16,6 +16,7 @@ import { createSubmitDateOfBirth } from '../use-cases/submit-date-of-birth.js';
 import { createUpdateConsents } from '../use-cases/update-consents.js';
 import { createUpdateLocation } from '../use-cases/update-location.js';
 import { createUpdateNotificationPrefs } from '../use-cases/update-notification-prefs.js';
+import { createUpdatePrivacyPrefs } from '../use-cases/update-privacy-prefs.js';
 import { createUpdatePreferences } from '../use-cases/update-preferences.js';
 import { createUploadAvatarUrl } from '../use-cases/upload-avatar-url.js';
 import {
@@ -46,6 +47,7 @@ export const userDeps = {
   deleteAvatar: createDeleteAvatar({ userRepo, storage }),
   registerPushToken: createRegisterPushToken({ userRepo }),
   updateNotificationPrefs: createUpdateNotificationPrefs({ userRepo }),
+  updatePrivacyPrefs: createUpdatePrivacyPrefs({ userRepo }),
   deleteAccount: createDeleteAccount({
     userRepo,
     tokenRepo,

@@ -1,5 +1,5 @@
 import type { ApiClient } from '@pawmeet/api-client';
-import type { LocationUpdateResult, UserRepository } from '../interfaces';
+import type { LocationUpdateResult, PrivacyPrefs, UserRepository } from '../interfaces';
 
 function isTRPCClientError(error: unknown): error is Error & { data: Record<string, unknown> } {
   return error instanceof Error && error.name === 'TRPCClientError';
@@ -31,6 +31,9 @@ export function createTrpcUserRepository(api: ApiClient): UserRepository {
     async submitDateOfBirth(dateOfBirth) {
       const result = await api.users.submitDateOfBirth.mutate({ dateOfBirth });
       return { message: result.message };
+    },
+    async updatePrivacyPrefs(prefs: Partial<PrivacyPrefs>) {
+      return api.users.updatePrivacyPrefs.mutate(prefs);
     },
   };
 }

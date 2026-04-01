@@ -70,6 +70,7 @@ export interface UserRepository {
         | 'termsAcceptedAt'
         | 'privacyPolicyVersion'
         | 'onboardingCompletedAt'
+        | 'privacyPrefs'
       >
     >,
   ): Promise<User>;

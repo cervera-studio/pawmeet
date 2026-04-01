@@ -61,6 +61,14 @@ export type ConfirmUploadInput = z.infer<typeof confirmUploadSchema>;
 export type RegisterPushTokenInput = z.infer<typeof registerPushTokenSchema>;
 export type UpdateNotificationPrefsInput = z.infer<typeof updateNotificationPrefsSchema>;
 
+export const updatePrivacyPrefsSchema = z.object({
+  profileVisible: z.boolean().optional(),
+  approximateDistance: z.boolean().optional(),
+  showLastSeen: z.boolean().optional(),
+});
+
+export type UpdatePrivacyPrefsInput = z.infer<typeof updatePrivacyPrefsSchema>;
+
 export const submitDateOfBirthSchema = z.object({
   dateOfBirth: dateOfBirthSchema,
 });

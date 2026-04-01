@@ -14,6 +14,18 @@ export const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
   nearby: true,
 };
 
+export interface PrivacyPrefs {
+  profileVisible: boolean;
+  approximateDistance: boolean;
+  showLastSeen: boolean;
+}
+
+export const DEFAULT_PRIVACY_PREFS: PrivacyPrefs = {
+  profileVisible: true,
+  approximateDistance: false,
+  showLastSeen: true,
+};
+
 export interface User {
   id: string;
   email: string;
@@ -39,6 +51,7 @@ export interface User {
   termsAcceptedAt: Date | null;
   privacyPolicyVersion: string | null;
   onboardingCompletedAt: Date | null;
+  privacyPrefs: PrivacyPrefs;
 }
 
 /** User data without sensitive fields (passwordHash, pushToken). */

@@ -8,6 +8,7 @@ import {
   updateLocationSchema,
   updateNotificationPrefsSchema,
   updatePreferencesSchema,
+  updatePrivacyPrefsSchema,
 } from '@pawmeet/validation';
 import { z } from 'zod';
 import type { userDeps } from '../../container/index.js';
@@ -78,6 +79,12 @@ export function createUsersRouter(deps: typeof userDeps) {
       .input(updateNotificationPrefsSchema)
       .mutation(async ({ ctx, input }) =>
         unwrapResult(await deps.updateNotificationPrefs(ctx.userId, input)),
+      ),
+
+    updatePrivacyPrefs: protectedProcedure
+      .input(updatePrivacyPrefsSchema)
+      .mutation(async ({ ctx, input }) =>
+        unwrapResult(await deps.updatePrivacyPrefs(ctx.userId, input)),
       ),
 
     submitDateOfBirth: protectedProcedure

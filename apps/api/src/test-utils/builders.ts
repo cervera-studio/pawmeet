@@ -94,6 +94,7 @@ export function buildUser(overrides: Partial<User> = {}): User {
     termsAcceptedAt: new Date('2026-01-01'),
     privacyPolicyVersion: 'v1.0',
     onboardingCompletedAt: null,
+    privacyPrefs: { profileVisible: true, approximateDistance: false, showLastSeen: true },
     ...overrides,
   };
 }

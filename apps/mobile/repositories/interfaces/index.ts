@@ -41,6 +41,11 @@ export type {
 } from './safety-repository';
 export type { SmartMatchingRepository, SwipeScores } from './smart-matching-repository';
 export type { BindValue, LocalCache, NetworkState, SyncQueue } from './sync-queue';
-export type { LocationUpdateResult, NearbyUser, UserRepository } from './user-repository';
+export type {
+  LocationUpdateResult,
+  NearbyUser,
+  PrivacyPrefs,
+  UserRepository,
+} from './user-repository';
 export type { ProposeWalkInput, WalkRepository } from './walk-repository';
 export type { TrackPointInput, WalkTrackingRepository } from './walk-tracking-repository';

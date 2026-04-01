@@ -2,29 +2,40 @@ import { logger } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
+import { container } from 'tsyringe';
 import { useAuth } from '@/hooks/useAuth';
 import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
+import type { PrivacyPrefs } from '@/repositories/interfaces';
+import { USER_REPOSITORY } from '@/repositories/tokens';
+
+const DEFAULT_PRIVACY_PREFS: PrivacyPrefs = {
+  profileVisible: true,
+  approximateDistance: false,
+  showLastSeen: true,
+};
 
 export function usePrivacyViewModel() {
   const router = useRouter();
   const { logout } = useAuth();
+  const userRepo = container.resolve(USER_REPOSITORY);
 
-  const [profileVisible, setProfileVisible] = useState(true);
-  const [approximateDistance, setApproximateDistance] = useState(false);
-  const [showLastSeen, setShowLastSeen] = useState(true);
+  const [privacyPrefs, setPrivacyPrefs] = useState<PrivacyPrefs>(DEFAULT_PRIVACY_PREFS);
   const [blockedCount, setBlockedCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  // TODO: load privacy preferences from backend once dedicated endpoint exists
-  // Currently these are local-only defaults.
   useEffect(() => {
-    setIsLoading(false);
+    api.users.getProfile
+      .query()
+      .then((profile) => {
+        setPrivacyPrefs(profile.privacyPrefs ?? DEFAULT_PRIVACY_PREFS);
+      })
+      .catch((e) => logger.warn('Privacy', 'Failed to load privacy prefs', e))
+      .finally(() => setIsLoading(false));
   }, []);
 
-  // Load blocked users count
   useEffect(() => {
     api.follows.listBlocked
       .query({ limit: 50, offset: 0 })
@@ -35,20 +46,31 @@ export function usePrivacyViewModel() {
       .catch((e) => logger.warn('Privacy', 'Failed to load blocked users', e));
   }, []);
 
-  // TODO: persist to backend once privacy preferences endpoint is available
+  const updatePref = useCallback(
+    (key: keyof PrivacyPrefs, value: boolean) => {
+      const prev = privacyPrefs;
+      const updated = { ...prev, [key]: value };
+      setPrivacyPrefs(updated);
+
+      userRepo.updatePrivacyPrefs({ [key]: value }).catch((e) => {
+        logger.warn('Privacy', `Failed to update ${key}`, e);
+        setPrivacyPrefs(prev);
+      });
+    },
+    [privacyPrefs, userRepo],
+  );
+
   const toggleProfileVisibility = useCallback(() => {
-    setProfileVisible((prev) => !prev);
-  }, []);
+    updatePref('profileVisible', !privacyPrefs.profileVisible);
+  }, [privacyPrefs.profileVisible, updatePref]);
 
-  // TODO: persist to backend once privacy preferences endpoint is available
   const toggleApproximateDistance = useCallback(() => {
-    setApproximateDistance((prev) => !prev);
-  }, []);
+    updatePref('approximateDistance', !privacyPrefs.approximateDistance);
+  }, [privacyPrefs.approximateDistance, updatePref]);
 
-  // TODO: persist to backend once privacy preferences endpoint is available
   const toggleShowLastSeen = useCallback(() => {
-    setShowLastSeen((prev) => !prev);
-  }, []);
+    updatePref('showLastSeen', !privacyPrefs.showLastSeen);
+  }, [privacyPrefs.showLastSeen, updatePref]);
 
   const navigateToBlocked = useCallback(() => {
     router.push('/(modals)/blocked');
@@ -126,9 +148,9 @@ export function usePrivacyViewModel() {
   }, [logout]);
 
   return {
-    profileVisible,
-    approximateDistance,
-    showLastSeen,
+    profileVisible: privacyPrefs.profileVisible,
+    approximateDistance: privacyPrefs.approximateDistance,
+    showLastSeen: privacyPrefs.showLastSeen,
     blockedCount,
     isLoading,
     isDeleting,

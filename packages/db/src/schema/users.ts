@@ -57,6 +57,17 @@ export const users = pgTable(
     termsAcceptedAt: timestamp('terms_accepted_at', { withTimezone: true }),
     privacyPolicyVersion: varchar('privacy_policy_version', { length: 10 }),
     onboardingCompletedAt: timestamp('onboarding_completed_at', { withTimezone: true }),
+    privacyPrefs: jsonb('privacy_prefs')
+      .$type<{
+        profileVisible: boolean;
+        approximateDistance: boolean;
+        showLastSeen: boolean;
+      }>()
+      .default({
+        profileVisible: true,
+        approximateDistance: false,
+        showLastSeen: true,
+      }),
   },
   (table) => [
     // GiST spatial index managed via SQL migration (0005_add_postgis.sql)

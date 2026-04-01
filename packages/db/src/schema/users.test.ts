@@ -36,9 +36,10 @@ describe('users table', () => {
         'termsAcceptedAt',
         'privacyPolicyVersion',
         'onboardingCompletedAt',
+        'privacyPrefs',
       ]),
     );
-    expect(columnNames).toHaveLength(24);
+    expect(columnNames).toHaveLength(25);
   });
 
   describe('id column', () => {
@@ -158,6 +159,15 @@ describe('users table', () => {
     it('is a jsonb column with default prefs', () => {
       const col = getTableColumns(users).notificationPrefs;
       expect(col.name).toBe('notification_prefs');
+      expect(col.columnType).toBe('PgJsonb');
+      expect(col.hasDefault).toBe(true);
+    });
+  });
+
+  describe('privacyPrefs column', () => {
+    it('is a jsonb column with default prefs', () => {
+      const col = getTableColumns(users).privacyPrefs;
+      expect(col.name).toBe('privacy_prefs');
       expect(col.columnType).toBe('PgJsonb');
       expect(col.hasDefault).toBe(true);
     });

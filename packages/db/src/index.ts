@@ -3,7 +3,12 @@ import pg from 'pg';
 import * as schema from './schema';
 
 export function createDb(databaseUrl: string) {
-  const pool = new pg.Pool({ connectionString: databaseUrl });
+  const pool = new pg.Pool({
+    connectionString: databaseUrl,
+    max: 20,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 5_000,
+  });
   return drizzle(pool, { schema });
 }
 

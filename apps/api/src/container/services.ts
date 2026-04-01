@@ -82,7 +82,7 @@ const _dogRepo = new DrizzleDogRepository(db);
 const _breedRepo = new DrizzleBreedRepository(db);
 
 // Wrap with cache-aside (lazy redis import to avoid import-time crash in tests)
-const { redis } = await import('../lib/redis.js');
+export const { redis } = await import('../lib/redis.js');
 export const userRepo = new CachedUserRepository(_userRepo, redis);
 export const dogRepo = new CachedDogRepository(_dogRepo, redis);
 export const matchRepo = new DrizzleMatchRepository(db);

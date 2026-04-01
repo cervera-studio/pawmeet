@@ -36,7 +36,7 @@ variable "min_replicas" {
 variable "max_replicas" {
   description = "Maximum number of container replicas"
   type        = number
-  default     = 5
+  default     = 10
 }
 
 variable "api_secrets" {

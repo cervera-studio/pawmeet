@@ -1,10 +1,13 @@
 import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/config';
 import type { DiscoveryFilters, DogProfile, ScoreBreakdown } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import type { Redis } from '@upstash/redis';
 import { calculateDistance, logger } from '@pawmeet/utils';
 import { calculateCompatibilityScoreWithBreakdown } from '../domain/compatibility-scoring.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
+import { createCache } from '../lib/cache.js';
 import type {
+  CandidateDog,
   DogRepository,
   FollowRepository,
   MatchRepository,
@@ -16,6 +19,7 @@ type Deps = {
   matchRepo: MatchRepository;
   userRepo: UserRepository;
   followRepo: FollowRepository;
+  redis: Redis;
 };
 
 // ── Use case ───────────────────────────────────────────────────────────────────
@@ -70,7 +74,18 @@ function matchesFilters(dog: DogProfile, filters: DiscoveryFilters): boolean {
 
 // ── Use case factory ────────────────────────────────────────────────────────
 
-export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followRepo }: Deps) {
+export function createDiscoverCandidates({
+  dogRepo,
+  matchRepo,
+  userRepo,
+  followRepo,
+  redis,
+}: Deps) {
+  const candidatesCache = createCache<CandidateDog>(redis, {
+    prefix: 'cache:candidates',
+    ttlSeconds: 300,
+  });
+
   return async (
     userId: string,
     dogId: string,
@@ -93,13 +108,10 @@ export function createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followR
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;
 
-    // Get candidate dogs (bounded by PostGIS distance filter + excludes already-swiped)
-    const candidates = await matchRepo.findCandidateDogs(
-      userId,
-      dogId,
-      user.latitude,
-      user.longitude,
-      radiusKm * 1000,
+    // Get candidate dogs (cached PostGIS query — most expensive operation)
+    const cacheKey = `${userId}:${dogId}:${radiusKm}`;
+    const candidates = await candidatesCache.getList(cacheKey, () =>
+      matchRepo.findCandidateDogs(userId, dogId, user.latitude, user.longitude, radiusKm * 1000),
     );
 
     // Apply discovery filters, score, and rank

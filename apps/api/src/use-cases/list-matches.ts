@@ -1,11 +1,14 @@
 import type { Result } from '@pawmeet/types';
 import { succeed } from '@pawmeet/types';
+import type { Redis } from '@upstash/redis';
+import { createCache } from '../lib/cache.js';
 import type { DogRepository, MatchRepository, UserRepository } from '../ports/index.js';
 
 type Deps = {
   dogRepo: DogRepository;
   matchRepo: MatchRepository;
   userRepo: UserRepository;
+  redis: Redis;
 };
 
 export type EnrichedMatch = {
@@ -19,11 +22,21 @@ export type EnrichedMatch = {
   otherOwner: { id: string; displayName: string };
 };
 
-export function createListMatches({ dogRepo, matchRepo, userRepo }: Deps) {
+export function createListMatches({ dogRepo, matchRepo, userRepo, redis }: Deps) {
+  const matchesCache = createCache<{ matches: EnrichedMatch[] }>(redis, {
+    prefix: 'cache:matches',
+    ttlSeconds: 180,
+  });
+
   return async (userId: string): Promise<Result<{ matches: EnrichedMatch[] }>> => {
+    const cached = await matchesCache.get(userId, () => fetchMatches(userId));
+    return succeed(cached ?? { matches: [] });
+  };
+
+  async function fetchMatches(userId: string): Promise<{ matches: EnrichedMatch[] } | null> {
     const userDogs = await dogRepo.findByOwner(userId, true);
     if (userDogs.length === 0) {
-      return succeed({ matches: [] });
+      return { matches: [] };
     }
 
     const dogIds = userDogs.map((d) => d.id);
@@ -31,7 +44,7 @@ export function createListMatches({ dogRepo, matchRepo, userRepo }: Deps) {
     const activeMatches = await matchRepo.findActiveByDogIds(dogIds);
 
     if (activeMatches.length === 0) {
-      return succeed({ matches: [] });
+      return { matches: [] };
     }
 
     // Collect all referenced dog IDs
@@ -82,6 +95,6 @@ export function createListMatches({ dogRepo, matchRepo, userRepo }: Deps) {
       };
     });
 
-    return succeed({ matches: enriched });
-  };
+    return { matches: enriched };
+  }
 }

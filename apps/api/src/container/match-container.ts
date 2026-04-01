@@ -27,6 +27,7 @@ import {
   matchRepo,
   messageRepo,
   notificationService,
+  redis,
   userRepo,
 } from './services.js';
 
@@ -36,8 +37,8 @@ const mlStrategy = new MLScoringStrategy(onnxModelLoader, ruleBasedStrategy);
 const recommendationCacheRepo = createRedisRecommendationCacheRepository();
 
 export const matchDeps = {
-  listMatches: createListMatches({ dogRepo, matchRepo, userRepo }),
-  discoverCandidates: createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followRepo }),
+  listMatches: createListMatches({ dogRepo, matchRepo, userRepo, redis }),
+  discoverCandidates: createDiscoverCandidates({ dogRepo, matchRepo, userRepo, followRepo, redis }),
   likeDog: createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }),
   passDog: createPassDog({ dogRepo, matchRepo }),
   unmatch: createUnmatch({ dogRepo, matchRepo, messageRepo }),

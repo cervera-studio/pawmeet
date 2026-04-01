@@ -32,6 +32,7 @@ import {
   feedRealtime,
   feedRepo,
   notificationService,
+  redis,
   storage,
   storyRepo,
   userRepo,
@@ -62,7 +63,7 @@ export const feedDeps = {
   addContentReaction: createAddContentReaction({ feedRepo }),
   removeContentReaction: createRemoveContentReaction({ feedRepo }),
   searchByHashtag: createSearchByHashtag({ feedRepo }),
-  getTrendingHashtags: createGetTrendingHashtags({ feedRepo }),
+  getTrendingHashtags: createGetTrendingHashtags({ feedRepo, redis }),
 };
 
 export const contentModerationDeps = {

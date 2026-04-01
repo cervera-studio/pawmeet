@@ -1,3 +1,14 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+    }
+    azapi = {
+      source = "Azure/azapi"
+    }
+  }
+}
+
 # ── Managed Identity for ACR pull ───────────────────────────────
 resource "azurerm_user_assigned_identity" "pull" {
   name                = "id-${var.project}-${var.name}-${var.environment}"
@@ -123,5 +134,24 @@ resource "azurerm_container_app" "main" {
   tags = var.tags
 
   depends_on = [azurerm_role_assignment.acr_pull]
+}
+
+# ── Sticky sessions (not yet in azurerm provider — patch via azapi) ──
+resource "azapi_update_resource" "sticky_sessions" {
+  count       = var.session_affinity_enabled ? 1 : 0
+  type        = "Microsoft.App/containerApps@2024-03-01"
+  resource_id = azurerm_container_app.main.id
+
+  body = {
+    properties = {
+      configuration = {
+        ingress = {
+          stickySessions = {
+            affinity = "sticky"
+          }
+        }
+      }
+    }
+  }
 }
 

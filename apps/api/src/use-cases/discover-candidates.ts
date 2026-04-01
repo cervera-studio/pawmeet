@@ -1,8 +1,8 @@
 import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/config';
 import type { DiscoveryFilters, DogProfile, ScoreBreakdown } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import type { Redis } from '@upstash/redis';
 import { calculateDistance, logger } from '@pawmeet/utils';
+import type { Redis } from '@upstash/redis';
 import { calculateCompatibilityScoreWithBreakdown } from '../domain/compatibility-scoring.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
 import { createCache } from '../lib/cache.js';

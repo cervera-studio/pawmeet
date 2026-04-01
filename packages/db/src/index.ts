@@ -7,7 +7,7 @@ export function createDb(databaseUrl: string) {
     connectionString: databaseUrl,
     max: 20,
     idleTimeoutMillis: 30_000,
-    connectionTimeoutMillis: 5_000,
+    connectionTimeoutMillis: 5000,
   });
   return drizzle(pool, { schema });
 }

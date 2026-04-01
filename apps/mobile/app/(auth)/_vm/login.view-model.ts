@@ -1,17 +1,12 @@
 import { loginSchema } from '@pawmeet/validation';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
 import { useApiError } from '@/hooks/useApiError';
 import { useAuth } from '@/hooks/useAuth';
 import { usePasskeys } from '@/hooks/usePasskeys';
 import i18n from '@/lib/i18n';
-import {
-  extractGoogleCode,
-  type SocialAuthResult,
-  signInWithApple,
-  useGoogleAuth,
-} from '@/lib/social-auth';
+import { type SocialAuthResult, signInWithApple, signInWithGoogle } from '@/lib/social-auth';
 import { zodToFieldErrors } from '@/lib/validation';
 
 type LoginStep = 'email' | 'credentials';
@@ -28,8 +23,6 @@ export function useLoginViewModel() {
   const [loading, setLoading] = useState(false);
   const [passkeyAttempted, setPasskeyAttempted] = useState(false);
 
-  const google = useGoogleAuth();
-
   const handleSocialAuth = useCallback(
     async (result: SocialAuthResult) => {
       clearErrors();
@@ -42,27 +35,6 @@ export function useLoginViewModel() {
     },
     [socialLogin, clearErrors, execute],
   );
-
-  // Handle Google auth response (PKCE: exchange code server-side)
-  useEffect(() => {
-    const result = extractGoogleCode(google.response, google.request, google.redirectUri);
-    if (result) {
-      clearErrors();
-      setLoading(true);
-      execute(
-        () =>
-          socialLogin(
-            result.provider,
-            undefined,
-            undefined,
-            result.code,
-            result.codeVerifier,
-            result.redirectUri,
-          ),
-        'login.google',
-      ).finally(() => setLoading(false));
-    }
-  }, [google.response, google.request, google.redirectUri, socialLogin, clearErrors, execute]);
 
   // Step 1: user enters email and taps "Continue"
   // If passkey is available → auto-trigger passkey auth
@@ -120,12 +92,20 @@ export function useLoginViewModel() {
 
   const handleGoogleLogin = useCallback(async () => {
     clearErrors();
+    setLoading(true);
     try {
-      await google.promptAsync();
-    } catch {
-      // Google prompt failure is handled via the useEffect above
+      const result = await signInWithGoogle();
+      await handleSocialAuth(result);
+    } catch (e) {
+      if (e instanceof Error && e.message.includes('annullata')) {
+        // User cancelled — not an error
+      } else {
+        await execute(() => Promise.reject(e), 'login.google');
+      }
+    } finally {
+      setLoading(false);
     }
-  }, [google, clearErrors]);
+  }, [handleSocialAuth, clearErrors, execute]);
 
   const handleAppleLogin = useCallback(async () => {
     try {
@@ -164,7 +144,7 @@ export function useLoginViewModel() {
 
     // Feature flags
     showAppleLogin: Platform.OS === 'ios',
-    googleReady: google.request !== null,
+    googleReady: true,
     navigateToRegister,
   };
 }

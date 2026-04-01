@@ -1,15 +1,7 @@
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import * as AuthSession from 'expo-auth-session';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
-
-const GOOGLE_CLIENT_ID = Constants.expoConfig?.extra?.googleClientId ?? '';
-
-const googleDiscovery: AuthSession.DiscoveryDocument = {
-  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-  tokenEndpoint: 'https://oauth2.googleapis.com/token',
-  revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
-};
 
 export interface SocialAuthResult {
   provider: 'apple' | 'google';
@@ -24,7 +16,6 @@ function decodeJwtPayload(token: string): Record<string, unknown> {
   if (parts.length !== 3) throw new Error('Invalid JWT format');
 
   const payload = parts[1] ?? '';
-  // Base64url -> Base64
   const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
   const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
   const json = atob(padded);
@@ -50,7 +41,6 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
     throw new Error('Apple Sign In: nessun identity token ricevuto');
   }
 
-  // Validate nonce in the returned ID token
   const payload = decodeJwtPayload(credential.identityToken);
   if (payload.nonce !== hashedNonce) {
     throw new Error('Apple Sign In: nonce mismatch — possible replay attack');
@@ -69,44 +59,37 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
   };
 }
 
-export function useGoogleAuth() {
-  const redirectUri = AuthSession.makeRedirectUri();
-
-  const [request, response, promptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId: GOOGLE_CLIENT_ID,
-      scopes: ['openid', 'profile', 'email'],
-      responseType: AuthSession.ResponseType.Code,
-      usePKCE: true,
-      redirectUri,
-    },
-    googleDiscovery,
-  );
-
-  return { request, response, promptAsync, redirectUri };
+/**
+ * Configure Google Sign-In. Call once at app startup.
+ */
+export function configureGoogleSignIn(): void {
+  const webClientId = Constants.expoConfig?.extra?.googleWebClientId ?? '';
+  if (!webClientId) return;
+  GoogleSignin.configure({ webClientId, offlineAccess: false });
 }
 
-export interface GooglePkceResult {
-  provider: 'google';
-  code: string;
-  codeVerifier: string;
-  redirectUri: string;
-}
+/**
+ * Native Google Sign-In via Credential Manager.
+ * Returns an idToken to send to the backend for verification.
+ */
+export async function signInWithGoogle(): Promise<SocialAuthResult> {
+  await GoogleSignin.hasPlayServices();
 
-export function extractGoogleCode(
-  response: AuthSession.AuthSessionResult | null,
-  request: AuthSession.AuthRequest | null,
-  redirectUri: string,
-): GooglePkceResult | null {
-  if (response?.type !== 'success') return null;
+  const response = await GoogleSignin.signIn();
 
-  const code = response.params?.code;
-  if (!code) return null;
-
-  const codeVerifier = request?.codeVerifier;
-  if (!codeVerifier) {
-    throw new Error('Google Sign In: missing PKCE code verifier');
+  if (response.type !== 'success' || !response.data.idToken) {
+    throw new Error('Google Sign In: autenticazione annullata');
   }
 
-  return { provider: 'google', code, codeVerifier, redirectUri };
+  const { user, idToken } = response.data;
+  const displayName =
+    user.givenName && user.familyName
+      ? `${user.givenName} ${user.familyName}`
+      : (user.name ?? undefined);
+
+  return {
+    provider: 'google',
+    idToken,
+    displayName,
+  };
 }

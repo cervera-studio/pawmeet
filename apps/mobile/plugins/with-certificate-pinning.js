@@ -133,6 +133,29 @@ function withAndroidCertificatePinning(config) {
       const xmlPath = path.join(resXmlDir, 'network_security_config.xml');
       fs.writeFileSync(xmlPath, generateNetworkSecurityXml(), 'utf-8');
 
+      // Debug variant: allow cleartext for Metro dev server (LAN IP)
+      const debugResXmlDir = path.join(
+        modConfig.modRequest.platformProjectRoot,
+        'app',
+        'src',
+        'debug',
+        'res',
+        'xml',
+      );
+      fs.mkdirSync(debugResXmlDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(debugResXmlDir, 'network_security_config.xml'),
+        `<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>`,
+        'utf-8',
+      );
+
       return modConfig;
     },
   ]);

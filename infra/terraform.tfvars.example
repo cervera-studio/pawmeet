@@ -32,4 +32,6 @@ max_replicas    = 5
 #   POSTHOG_HOST              = "https://eu.i.posthog.com"
 #   ANALYTICS_HASH_SALT       = "..."
 #   MESSAGE_ENCRYPTION_KEY    = "..."
+#   PLAY_INTEGRITY_CLIENT_EMAIL = "play-integrity@your-project.iam.gserviceaccount.com"
+#   PLAY_INTEGRITY_PRIVATE_KEY  = "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 # }

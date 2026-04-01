@@ -27,10 +27,11 @@ import { getExpiringPins, validatePinsInitialized } from '@/lib/certificate-pinn
 import { loadConsentsFromApi } from '@/lib/consent-sync';
 import { checkDeviceIntegrity } from '@/lib/device-security';
 import { startNetworkMonitor, stopNetworkMonitor } from '@/lib/network';
+import { configureGoogleSignIn } from '@/lib/social-auth';
 import { api } from '@/lib/trpc';
 import { container } from '@/repositories/container';
 import { ANALYTICS_SERVICE } from '@/repositories/tokens';
-import { requestIntegrityToken } from '@/services/play-integrity-service';
+import { preparePlayIntegrity, requestIntegrityToken } from '@/services/play-integrity-service';
 import { drainQueue, initSyncEngine } from '@/services/sync-engine';
 import { createTrpcMutationExecutor } from '@/services/trpc-mutation-executor';
 import { useAuthStore } from '@/stores/auth';
@@ -40,6 +41,9 @@ import { useThemeStore } from '@/stores/theme';
 
 // Wire analytics service optIn/optOut to consent store changes
 initConsentSubscription(container.resolve(ANALYTICS_SERVICE));
+
+// Configure Google One Tap Sign-In (native, no browser redirect)
+configureGoogleSignIn();
 
 /**
  * Sentry: always active under legitimate interest (Art. 6(1)(f) GDPR).
@@ -203,12 +207,14 @@ function DeviceIntegrityMonitor() {
       }
     });
 
-    // Request a Play Integrity token (Android only, no-ops on iOS)
-    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `pawmeet:${Date.now()}`)
-      .then((challenge) => requestIntegrityToken(challenge))
-      .then((token) => {
-        if (token) useIntegrityStore.getState().setToken(token);
-      });
+    // Initialize Play Integrity and request a token (Android only, no-ops on iOS)
+    preparePlayIntegrity().then(() =>
+      Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `pawmeet:${Date.now()}`)
+        .then((hash) => requestIntegrityToken(hash))
+        .then((token) => {
+          if (token) useIntegrityStore.getState().setToken(token);
+        }),
+    );
   }, []);
 
   return null;

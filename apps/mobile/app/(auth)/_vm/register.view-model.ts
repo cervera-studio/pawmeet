@@ -1,22 +1,16 @@
 import { registerSchema } from '@pawmeet/validation';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
 import { useApiError } from '@/hooks/useApiError';
 import { useAuth } from '@/hooks/useAuth';
 import i18n from '@/lib/i18n';
-import {
-  extractGoogleCode,
-  type SocialAuthResult,
-  signInWithApple,
-  useGoogleAuth,
-} from '@/lib/social-auth';
+import { type SocialAuthResult, signInWithApple, signInWithGoogle } from '@/lib/social-auth';
 import { zodToFieldErrors } from '@/lib/validation';
 
 export function useRegisterViewModel() {
   const router = useRouter();
   const { register, socialLogin } = useAuth();
-  const google = useGoogleAuth();
   const { apiError, clearErrors, execute } = useApiError();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -39,34 +33,22 @@ export function useRegisterViewModel() {
     [socialLogin, clearErrors, execute],
   );
 
-  useEffect(() => {
-    const result = extractGoogleCode(google.response, google.request, google.redirectUri);
-    if (result) {
-      clearErrors();
-      setLoading(true);
-      execute(
-        () =>
-          socialLogin(
-            result.provider,
-            undefined,
-            undefined,
-            result.code,
-            result.codeVerifier,
-            result.redirectUri,
-          ),
-        'register.google',
-      ).finally(() => setLoading(false));
-    }
-  }, [google.response, google.request, google.redirectUri, socialLogin, clearErrors, execute]);
-
   const handleGoogleLogin = useCallback(async () => {
     clearErrors();
+    setLoading(true);
     try {
-      await google.promptAsync();
-    } catch {
-      // Google prompt failure is handled via the useEffect above
+      const result = await signInWithGoogle();
+      await handleSocialAuth(result);
+    } catch (e) {
+      if (e instanceof Error && e.message.includes('annullata')) {
+        // User cancelled
+      } else {
+        await execute(() => Promise.reject(e), 'register.google');
+      }
+    } finally {
+      setLoading(false);
     }
-  }, [google, clearErrors]);
+  }, [handleSocialAuth, clearErrors, execute]);
 
   const handleAppleLogin = useCallback(async () => {
     try {
@@ -127,7 +109,7 @@ export function useRegisterViewModel() {
     handleGoogleLogin,
     handleAppleLogin,
     showAppleLogin: Platform.OS === 'ios',
-    googleReady: google.request !== null,
+    googleReady: true,
     navigateToLogin,
   };
 }

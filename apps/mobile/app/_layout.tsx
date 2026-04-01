@@ -30,10 +30,12 @@ import { startNetworkMonitor, stopNetworkMonitor } from '@/lib/network';
 import { api } from '@/lib/trpc';
 import { container } from '@/repositories/container';
 import { ANALYTICS_SERVICE } from '@/repositories/tokens';
+import { requestIntegrityToken } from '@/services/play-integrity-service';
 import { drainQueue, initSyncEngine } from '@/services/sync-engine';
 import { createTrpcMutationExecutor } from '@/services/trpc-mutation-executor';
 import { useAuthStore } from '@/stores/auth';
 import { initConsentSubscription, useConsentStore } from '@/stores/consent';
+import { useIntegrityStore } from '@/stores/integrity';
 import { useThemeStore } from '@/stores/theme';
 
 // Wire analytics service optIn/optOut to consent store changes
@@ -190,7 +192,7 @@ function OfflineFirstManager() {
   return null;
 }
 
-/** Checks for root/jailbreak indicators on startup and logs a warning. */
+/** Checks for root/jailbreak indicators on startup and initializes Play Integrity. */
 function DeviceIntegrityMonitor() {
   useEffect(() => {
     checkDeviceIntegrity().then((result) => {
@@ -200,6 +202,13 @@ function DeviceIntegrityMonitor() {
         Sentry.captureMessage(message, 'warning');
       }
     });
+
+    // Request a Play Integrity token (Android only, no-ops on iOS)
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `pawmeet:${Date.now()}`)
+      .then((challenge) => requestIntegrityToken(challenge))
+      .then((token) => {
+        if (token) useIntegrityStore.getState().setToken(token);
+      });
   }, []);
 
   return null;

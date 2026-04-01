@@ -70,6 +70,7 @@ export type {
   ListOrganizationsQuery,
   OrganizationRepository,
 } from './organization-repository.js';
+export type { IntegrityVerdict, PlayIntegrityVerifier } from './play-integrity-verifier.js';
 export type { StorageService } from './storage-service.js';
 export type { CreateStoryInput, StoryRepository } from './story-repository.js';
 export type {

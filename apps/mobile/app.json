@@ -73,6 +73,7 @@
           "isSdkExtensionPatched": true
         }
       ],
+      "expo-app-integrity",
       "expo-video",
       "@react-native-community/datetimepicker",
       "@sentry/react-native",

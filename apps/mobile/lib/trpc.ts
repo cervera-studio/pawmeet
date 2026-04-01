@@ -1,5 +1,7 @@
 import { createApiClient } from '@pawmeet/api-client';
+import { Platform } from 'react-native';
 import { useAuthStore } from '@/stores/auth';
+import { useIntegrityStore } from '@/stores/integrity';
 import { createMobileAuthRefreshLink } from './auth-link';
 
 function getApiUrl(): string {
@@ -12,6 +14,14 @@ function getApiUrl(): string {
 
 const API_URL = getApiUrl();
 
-export const api = createApiClient(API_URL, () => useAuthStore.getState().token, [
-  createMobileAuthRefreshLink(API_URL),
-]);
+export const api = createApiClient(
+  API_URL,
+  () => useAuthStore.getState().token,
+  [createMobileAuthRefreshLink(API_URL)],
+  (): Record<string, string> => {
+    if (Platform.OS !== 'android') return {};
+    const token = useIntegrityStore.getState().token;
+    if (!token) return {};
+    return { 'x-android-integrity-token': token };
+  },
+);

@@ -240,6 +240,22 @@ async function tryCreateToxicityService() {
   return new PerspectiveToxicityService();
 }
 
+// ── Play Integrity (optional — degrades gracefully if env vars missing) ─────
+
+async function tryCreatePlayIntegrityVerifier() {
+  if (!(process.env.PLAY_INTEGRITY_CLIENT_EMAIL && process.env.PLAY_INTEGRITY_PRIVATE_KEY)) return;
+  const { GooglePlayIntegrityVerifier } = await import(
+    '../infra/google-play-integrity-verifier.js'
+  );
+  return new GooglePlayIntegrityVerifier(
+    process.env.ANDROID_PACKAGE_NAME ?? 'io.pawmeet.mobile',
+    process.env.PLAY_INTEGRITY_CLIENT_EMAIL,
+    process.env.PLAY_INTEGRITY_PRIVATE_KEY,
+  );
+}
+
+export const playIntegrityVerifier = await tryCreatePlayIntegrityVerifier();
+
 export const contentModerationService = await tryCreateContentModerationService();
 export const breedDetectionService = await tryCreateBreedDetectionService();
 export const toxicityService = await tryCreateToxicityService();

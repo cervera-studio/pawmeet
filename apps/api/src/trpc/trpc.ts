@@ -4,6 +4,7 @@ import { logger } from '@pawmeet/utils';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { Ratelimit } from '@upstash/ratelimit';
 import { verifyAccessToken, verifyAdminAccessToken } from '../lib/jwt.js';
+import type { IntegrityVerdict } from '../ports/play-integrity-verifier.js';
 
 /** Environment-namespaced prefix to prevent cross-env bleed when sharing Redis */
 const ENV_PREFIX =
@@ -13,6 +14,7 @@ export interface Context {
   userId: string | null;
   clientIp: string;
   adminRole?: string;
+  androidIntegrityToken?: string;
   [key: string]: unknown;
 }
 
@@ -23,9 +25,11 @@ export async function createContext(opts: { req: Request }): Promise<Context> {
     opts.req.headers.get('x-real-ip') ??
     'unknown';
 
+  const androidIntegrityToken = opts.req.headers.get('x-android-integrity-token') ?? undefined;
+
   const authHeader = opts.req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
-    return { userId: null, clientIp };
+    return { userId: null, clientIp, androidIntegrityToken };
   }
 
   const token = authHeader.slice(7);
@@ -33,17 +37,17 @@ export async function createContext(opts: { req: Request }): Promise<Context> {
   // Try user access token first
   try {
     const payload = await verifyAccessToken(token);
-    return { userId: payload.sub, clientIp };
+    return { userId: payload.sub, clientIp, androidIntegrityToken };
   } catch {
     // Not a user token — try admin token
   }
 
   try {
     const payload = await verifyAdminAccessToken(token);
-    return { userId: payload.sub, clientIp, adminRole: payload.role };
+    return { userId: payload.sub, clientIp, adminRole: payload.role, androidIntegrityToken };
   } catch {
     logger.warn('tRPC', 'Failed to verify access token in context');
-    return { userId: null, clientIp };
+    return { userId: null, clientIp, androidIntegrityToken };
   }
 }
 
@@ -192,6 +196,61 @@ export const gdprExportProtectedProcedure = t.procedure.use(async ({ ctx, next }
   }
 
   return next({ ctx: { ...ctx, userId: ctx.userId } });
+});
+
+// ── Integrity-verified procedure (Android Play Integrity) ─────────────────────
+
+/**
+ * Protected procedure that additionally requires a valid Android Play Integrity verdict.
+ * The integrity token is verified lazily — only when this procedure type is used.
+ * Falls back gracefully when the verifier is not configured (dev/staging).
+ */
+export const integrityVerifiedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+  }
+
+  // Fire-and-forget presence update (same as protectedProcedure)
+  const uid = ctx.userId;
+  if (uid) {
+    void import('../lib/user-presence.js').then(({ markUserActive }) => markUserActive(uid));
+  }
+
+  const { playIntegrityVerifier } = await import('../container/services.js');
+
+  // Skip verification if the verifier is not configured (dev/staging)
+  if (!playIntegrityVerifier) {
+    return next({ ctx: { ...ctx, userId: ctx.userId, integrityVerdict: undefined } });
+  }
+
+  if (!ctx.androidIntegrityToken) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Device integrity verification required',
+    });
+  }
+
+  let verdict: IntegrityVerdict;
+  try {
+    verdict = await playIntegrityVerifier.verify(ctx.androidIntegrityToken);
+  } catch (err) {
+    logger.warn('PlayIntegrity', 'Token verification failed', err);
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Device integrity verification failed',
+    });
+  }
+
+  const deviceVerdicts = verdict.deviceIntegrity.deviceRecognitionVerdict;
+  if (!deviceVerdicts.includes('MEETS_DEVICE_INTEGRITY')) {
+    logger.warn('PlayIntegrity', `Device failed integrity: ${deviceVerdicts.join(', ')}`);
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Device integrity check did not pass',
+    });
+  }
+
+  return next({ ctx: { ...ctx, userId: ctx.userId, integrityVerdict: verdict } });
 });
 
 /** Map HTTP status codes from AppError to tRPC error codes. */

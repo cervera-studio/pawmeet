@@ -27,6 +27,7 @@ export function createApiClient(
   baseUrl: string,
   getToken?: () => string | null,
   extraLinks?: TRPCLink<AppRouter>[],
+  extraHeaders?: () => Record<string, string>,
 ) {
   return createTRPCClient<AppRouter>({
     links: [
@@ -35,7 +36,10 @@ export function createApiClient(
         url: `${baseUrl}/trpc`,
         headers: () => {
           const token = getToken?.();
-          return token ? { Authorization: `Bearer ${token}` } : {};
+          return {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...extraHeaders?.(),
+          };
         },
       }),
     ],

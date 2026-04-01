@@ -27,7 +27,7 @@ interface OnnxRuntime {
 export class OnnxModelLoader {
   private session: OnnxInferenceSession | null = null;
   private currentVersion: string | null = null;
-  private pollTimer: NodeJS.Timeout | null = null;
+  private pollTimer: ReturnType<typeof setInterval> | null = null;
   private ort: OnnxRuntime | null = null;
 
   async initialize(): Promise<void> {

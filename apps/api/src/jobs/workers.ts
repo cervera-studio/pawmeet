@@ -51,6 +51,7 @@ import {
   scheduleMlFeatureCompute,
   scheduleMlOptimalTimes,
   scheduleMlRecommendations,
+  scheduleMlTraining,
   scheduleMlTrainingLabels,
   scheduleRisingCompatibility,
   scheduleStoryCleanup,
@@ -66,6 +67,7 @@ import { createEmailWorker } from './send-email.js';
 import { createNotificationWorker } from './send-notification.js';
 import { createStoryCleanupWorker } from './story-cleanup.js';
 import { createStreakCheckWorker } from './streak-check.js';
+import { createMlTrainingWorker } from './trigger-ml-training.js';
 import { createWalkReminderWorker, scheduleWalkReminders } from './walk-reminder.js';
 import { createWalkSafetyAlertWorker, scheduleWalkSafetyAlerts } from './walk-safety-alert.js';
 import { createWeeklyChallengeRotationWorker } from './weekly-challenge-rotation.js';
@@ -86,6 +88,7 @@ export async function startWorkers() {
   const walkSafetyAlertWorker = createWalkSafetyAlertWorker(walkSafetyAlertDeps);
   const nearbySuggestionWorker = createNearbySuggestionWorker(nearbySuggestionDeps);
   const mlTrainingLabelsWorker = createMlTrainingLabelsWorker(mlTrainingLabelsDeps);
+  const mlTrainingWorker = createMlTrainingWorker();
   const mlFeatureComputeWorker = createMlFeatureComputeWorker(mlFeatureComputeDeps);
   const mlRecommendationsWorker = createMlRecommendationsWorker(mlRecommendationsDeps);
   const mlOptimalTimesWorker = createMlOptimalTimesWorker(mlOptimalTimesDeps);
@@ -110,6 +113,7 @@ export async function startWorkers() {
   await scheduleWalkSafetyAlerts();
   await scheduleNearbySuggestions();
   await scheduleMlTrainingLabels();
+  await scheduleMlTraining();
   await scheduleMlFeatureCompute();
   await scheduleMlRecommendations();
   await scheduleMlOptimalTimes();
@@ -138,6 +142,7 @@ export async function startWorkers() {
       walkSafetyAlertWorker.close(),
       nearbySuggestionWorker.close(),
       mlTrainingLabelsWorker.close(),
+      mlTrainingWorker.close(),
       mlFeatureComputeWorker.close(),
       mlRecommendationsWorker.close(),
       mlOptimalTimesWorker.close(),

@@ -158,8 +158,18 @@ export async function handleMessage(userId: string, ws: WebSocket, data: string)
   // Other message types are handled via REST API
 }
 
-/** Broadcast online/offline status to all rooms the user belongs to */
-export function broadcastOnlineStatus(userId: string, online: boolean) {
+/**
+ * Broadcast online/offline status to all rooms the user belongs to.
+ * Respects the user's `showLastSeen` privacy preference — if disabled,
+ * no online/offline status is broadcast.
+ */
+export async function broadcastOnlineStatus(userId: string, online: boolean) {
+  // Check privacy preference before broadcasting presence
+  // biome-ignore lint/suspicious/noImportCycles: lazy import to break ws ↔ container cycle
+  const { userRepo } = await import('../container/services.js');
+  const user = await userRepo.findById(userId);
+  if (user?.privacyPrefs?.showLastSeen === false) return;
+
   for (const [matchId, room] of getRooms()) {
     if (room.has(userId)) {
       sendToRoom(matchId, { type: WS_EVENT.ONLINE_STATUS, payload: { userId, online } }, userId);

@@ -134,7 +134,7 @@ function setupConnection(ws: WebSocket, userId: string) {
   addConnection(userId, ws);
 
   // Notify room peers about online status
-  broadcastOnlineStatus(userId, true);
+  void broadcastOnlineStatus(userId, true);
 
   ws.on('message', (rawData) => {
     handleMessage(userId, ws, rawData.toString()).catch((err) => {
@@ -147,7 +147,7 @@ function setupConnection(ws: WebSocket, userId: string) {
 
     // Notify room peers about offline status
     if (!isUserOnline(userId)) {
-      broadcastOnlineStatus(userId, false);
+      void broadcastOnlineStatus(userId, false);
     }
   });
 

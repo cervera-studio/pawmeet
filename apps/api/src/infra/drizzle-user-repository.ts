@@ -166,6 +166,7 @@ export class DrizzleUserRepository implements UserRepository {
         distanceKm: distanceExpr,
         latitude: users.latitude,
         longitude: users.longitude,
+        privacyPrefs: users.privacyPrefs,
       })
       .from(users)
       .where(
@@ -175,6 +176,8 @@ export class DrizzleUserRepository implements UserRepository {
           isNotNull(users.latitude),
           isNotNull(users.longitude),
           sql`ST_DWithin(${rowPoint}, ${userPoint}, ${radiusMeters})`,
+          // Exclude users who have hidden their profile
+          sql`COALESCE((${users.privacyPrefs}->>'profileVisible')::boolean, true) = true`,
         ),
       )
       .orderBy(distanceExpr)
@@ -211,15 +214,19 @@ export class DrizzleUserRepository implements UserRepository {
       dogsByOwner.set(dog.ownerId, list);
     }
 
-    return rows.map((r) => ({
-      id: r.id,
-      displayName: r.displayName,
-      avatarUrl: r.avatarUrl,
-      distanceKm: r.distanceKm,
-      // Round to ~100m precision (2 decimals) to protect user privacy
-      approximateLatitude: Math.round((r.latitude ?? 0) * 100) / 100,
-      approximateLongitude: Math.round((r.longitude ?? 0) * 100) / 100,
-      dogs: dogsByOwner.get(r.id) ?? [],
-    }));
+    return rows.map((r) => {
+      const wantsApproximate = r.privacyPrefs?.approximateDistance ?? false;
+      // Default: ~100m precision (2 decimals). Approximate: ~1km precision (1 decimal).
+      const precision = wantsApproximate ? 10 : 100;
+      return {
+        id: r.id,
+        displayName: r.displayName,
+        avatarUrl: r.avatarUrl,
+        distanceKm: wantsApproximate ? Math.round(r.distanceKm) : r.distanceKm,
+        approximateLatitude: Math.round((r.latitude ?? 0) * precision) / precision,
+        approximateLongitude: Math.round((r.longitude ?? 0) * precision) / precision,
+        dogs: dogsByOwner.get(r.id) ?? [],
+      };
+    });
   }
 }

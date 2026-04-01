@@ -39,6 +39,14 @@
       ]
     },
     "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ],
       "expo-router",
       "expo-location",
       "expo-image-picker",
@@ -67,7 +75,8 @@
       ],
       "expo-video",
       "@react-native-community/datetimepicker",
-      "@sentry/react-native"
+      "@sentry/react-native",
+      "expo-build-properties"
     ],
     "extra": {
       "router": {},

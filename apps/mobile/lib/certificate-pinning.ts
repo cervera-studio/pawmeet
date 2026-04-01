@@ -54,8 +54,7 @@ export type PinnedDomain = keyof typeof PINNED_DOMAINS;
  */
 export const PIN_METADATA = {
   'api.pawmeet.io': {
-    // TODO(#220): Set actual expiry date after first deploy
-    primaryExpiry: new Date('2027-01-01'),
+    primaryExpiry: new Date('2026-09-21'),
     lastRotated: new Date('2026-03-11'),
     alertDaysBeforeExpiry: 30,
   },

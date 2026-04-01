@@ -8,7 +8,8 @@
       "namespace": "android_app",
       "package_name": "io.pawmeet.mobile",
       "sha256_cert_fingerprints": [
-        "TODO: Replace with your release signing key SHA-256 fingerprint"
+        "02:54:7C:2A:16:27:93:B2:F4:71:A4:BE:D8:C6:02:E8:57:3F:EF:12:F9:66:4F:39:47:2E:DA:E4:22:05:F1:A6",
+        "6D:5C:44:EB:4C:E9:18:1F:4E:5F:44:F7:DF:AB:09:DF:52:FD:48:E0:A1:06:BE:25:DE:77:B9:40:4F:FF:3C:36"
       ]
     }
   }

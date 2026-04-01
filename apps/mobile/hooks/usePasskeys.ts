@@ -1,11 +1,10 @@
 import { logger } from '@pawmeet/utils';
-import { isTRPCClientError } from '@/lib/error-handler';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { create, get, isSupported } from 'react-native-passkeys';
 import { container } from 'tsyringe';
-import { handleApiError } from '@/lib/error-handler';
+import { handleApiError, isTRPCClientError } from '@/lib/error-handler';
 import i18n from '@/lib/i18n';
 import { passkeyFlag, storage } from '@/lib/storage';
 import type { PasskeySummary } from '@/repositories/interfaces';

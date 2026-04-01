@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t } from '../../i18n';
+import { getLocaleStaticPaths } from '../../i18n';
+import type { Locale } from '../../i18n/locales';
+
+export const getStaticPaths = getLocaleStaticPaths;
+
+const { locale } = Astro.props as { locale: Locale };
+const strings = t(locale);
+---
+
+<BaseLayout title={strings.meta.cookieTitle} locale={locale}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+    <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-8">{strings.meta.cookieTitle}</h1>
+
+    <div class="prose prose-neutral max-w-none space-y-6 text-neutral-700">
+      <p><strong>Last updated:</strong> March 11, 2026</p>
+
+      <p>
+        This Cookie Policy describes the types of cookies and similar technologies used by the website
+        <strong>pawmeet.io</strong> (hereinafter, the "Site") and by the administration panel reserved
+        for authorized personnel. This policy is drafted in compliance with Regulation (EU) 2016/679
+        ("GDPR"), Italian Legislative Decree 196/2003 as amended by Legislative Decree 101/2018, and the
+        Italian Data Protection Authority's cookie guidelines of June 10, 2021.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">1. Data controller</h2>
+      <p>
+        The data controller is <strong>Cervera Studio</strong>,
+        VAT IT04904730167.
+      </p>
+      <p>
+        For any cookie-related questions, you can contact us at
+        <a href="mailto:privacy@pawmeet.io" class="text-primary-text underline">privacy@pawmeet.io</a>.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">2. What are cookies</h2>
+      <p>
+        Cookies are small text files that websites store on the user's device (computer, tablet, or smartphone)
+        during browsing. They serve to store useful information to improve the browsing experience or for the
+        technical operation of the site.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">3. Types of cookies</h2>
+      <ul class="list-disc pl-6 space-y-1">
+        <li><strong>By purpose:</strong> technical cookies (necessary for operation), analytics cookies
+          (traffic measurement), profiling cookies (preference tracking).</li>
+        <li><strong>By duration:</strong> session cookies (deleted when browser closes) and persistent
+          cookies (remain until expiry or manual deletion).</li>
+        <li><strong>By origin:</strong> first-party cookies (set by the visited domain) and third-party
+          cookies (set by different domains).</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">4. Cookies used by the website (pawmeet.io)</h2>
+      <p>
+        The PawMeet public website is a static informational page (SSG) hosted on Cloudflare Pages.
+        <strong>It does not install first-party cookies, analytics cookies, or profiling cookies.</strong>
+      </p>
+      <p>
+        Cloudflare infrastructure may set strictly necessary technical cookies for the security and
+        operation of the CDN network:
+      </p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2 pr-4">Cookie</th>
+              <th class="text-left py-2 pr-4">Provider</th>
+              <th class="text-left py-2 pr-4">Purpose</th>
+              <th class="text-left py-2 pr-4">Duration</th>
+              <th class="text-left py-2">Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-2 pr-4"><code>__cf_bm</code></td>
+              <td class="py-2 pr-4">Cloudflare</td>
+              <td class="py-2 pr-4">Anti-bot protection (Bot Management). Distinguishes human traffic from automated traffic.</td>
+              <td class="py-2 pr-4">30 minutes</td>
+              <td class="py-2">Technical, third-party</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">5. External resources</h2>
+      <p>
+        The typefaces used on this site (Inter and Instrument Serif fonts) are self-hosted on our
+        servers via Fontsource. No requests are made to third-party servers for font loading, and
+        therefore no user data is transmitted to external parties for this purpose.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">6. Administration panel cookies</h2>
+      <p>
+        The administration panel (backoffice), accessible only to authorized PawMeet personnel, uses
+        technical cookies for authentication management (<code>admin_refresh_token</code> and <code>admin_session</code>).
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">7. Mobile app</h2>
+      <p>
+        The PawMeet mobile app <strong>does not use cookies</strong>. Session data and preferences are
+        managed locally through native device technologies.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">8. Profiling and analytics cookies</h2>
+      <p>
+        Currently, the website and administration panel <strong>do not use profiling cookies, third-party
+        analytics cookies, or tracking tools</strong>.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">9. How to manage cookies</h2>
+      <p>
+        You can manage cookie preferences directly through your browser settings. Please note that
+        disabling technical cookies may compromise the operation of some parts of the site.
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li><a href="https://support.google.com/chrome/answer/95647" class="text-primary-text underline" target="_blank" rel="noopener">Google Chrome</a></li>
+        <li><a href="https://support.mozilla.org/en-US/kb/cookies-information-websites-store-on-your-computer" class="text-primary-text underline" target="_blank" rel="noopener">Mozilla Firefox</a></li>
+        <li><a href="https://support.apple.com/guide/safari/manage-cookies-sfri11471/mac" class="text-primary-text underline" target="_blank" rel="noopener">Safari</a></li>
+        <li><a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" class="text-primary-text underline" target="_blank" rel="noopener">Microsoft Edge</a></li>
+      </ul>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">10. Legal basis</h2>
+      <p>
+        Technical cookies used on the Site and administration panel are installed on the basis of the
+        exemption for strictly necessary cookies and the legitimate interest of the controller to ensure
+        the security and operation of its services.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">11. Data subject rights</h2>
+      <p>
+        Under Articles 15-22 of the GDPR, you have the right to access, rectify, delete, restrict,
+        port, and object to the processing of your personal data. Contact us at
+        <a href="mailto:privacy@pawmeet.io" class="text-primary-text underline">privacy@pawmeet.io</a>.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">12. Policy updates</h2>
+      <p>
+        The Controller reserves the right to update this Cookie Policy at any time. In case of substantial
+        changes, notice will be given through the Site.
+      </p>
+
+      <h2 class="text-xl font-semibold text-neutral-900 mt-8">13. Contact</h2>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>Email: <a href="mailto:privacy@pawmeet.io" class="text-primary-text underline">privacy@pawmeet.io</a></li>
+        <li>Web: <a href="https://cervera.studio" class="text-primary-text underline" target="_blank" rel="noopener">cervera.studio</a></li>
+      </ul>
+
+      <p class="text-sm text-neutral-600 mt-12 border-t pt-6">
+        This Cookie Policy complies with Regulation (EU) 2016/679 (GDPR), Italian Legislative Decree 196/2003
+        and subsequent amendments, and the Italian Data Protection Authority's cookie guidelines
+        (provision no. 231 of June 10, 2021).
+      </p>
+    </div>
+  </div>
+</BaseLayout>

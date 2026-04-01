@@ -35,12 +35,7 @@ export default function HeroClient({ strings }: Props) {
           </motion.div>
 
           {/* Headline — editorial serif, massive, left-aligned */}
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="font-serif text-[clamp(2.75rem,7vw,5.5rem)] leading-[1.05] tracking-[-0.02em] text-neutral-900"
-          >
+          <h1 className="font-serif text-[clamp(2.75rem,7vw,5.5rem)] leading-[1.05] tracking-[-0.02em] text-neutral-900">
             {strings.headlinePart1}
             <br className="hidden sm:block" /> {strings.headlinePart2}{' '}
             <em className="relative not-italic text-primary-text">
@@ -53,17 +48,12 @@ export default function HeroClient({ strings }: Props) {
                 aria-hidden="true"
               />
             </em>
-          </motion.h1>
+          </h1>
 
           {/* Subtitle — clean, restrained, generous width */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-8 text-[18px] sm:text-[20px] leading-[1.65] text-neutral-700 max-w-xl"
-          >
+          <p className="mt-8 text-[18px] sm:text-[20px] leading-[1.65] text-neutral-700 max-w-xl">
             {strings.subtitle}
-          </motion.p>
+          </p>
 
           {/* CTA group */}
           <motion.div

@@ -27,8 +27,10 @@ export function getCanonicalPath(path: string): string {
   return reverseLookup.get(normalized) ?? normalized;
 }
 
-/** Get the alternate URL path for a given locale */
+/** Get the alternate URL path for a given locale (always with trailing slash) */
 export function getAlternatePath(currentPath: string, targetLocale: Locale): string {
   const canonical = getCanonicalPath(currentPath);
-  return routeMap[canonical]?.[targetLocale] ?? currentPath;
+  const path = routeMap[canonical]?.[targetLocale] ?? currentPath;
+  if (path === '/') return '/';
+  return path.endsWith('/') ? path : `${path}/`;
 }

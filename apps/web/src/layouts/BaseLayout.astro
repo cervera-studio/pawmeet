@@ -24,21 +24,24 @@ const {
 } = Astro.props;
 
 const strings = t(locale);
-const defaultDescription = locale === 'it'
-  ? 'PawMeet trova compagni di passeggiata compatibili per il tuo cane in base a taglia, energia e temperamento. Unisciti a 1.200+ proprietari in Italia.'
-  : 'PawMeet matches your dog with compatible walking companions by size, energy and temperament. Join 1,200+ dog owners already waiting.';
+const defaultDescription = strings.meta.homeDescription;
 
 const resolvedDescription = description ?? defaultDescription;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
-const itPath = getAlternatePath(currentPath, 'it');
-const enPath = getAlternatePath(currentPath, 'en');
-const itUrl = new URL(itPath, Astro.site);
-const enUrl = new URL(enPath, Astro.site);
+const alternates = {
+  it: new URL(getAlternatePath(currentPath, 'it'), Astro.site),
+  en: new URL(getAlternatePath(currentPath, 'en'), Astro.site),
+  es: new URL(getAlternatePath(currentPath, 'es'), Astro.site),
+  ro: new URL(getAlternatePath(currentPath, 'ro'), Astro.site),
+};
 
-const ogLocale = locale === 'it' ? 'it_IT' : 'en_US';
-const ogLocaleAlternate = locale === 'it' ? 'en_US' : 'it_IT';
+const ogLocaleMap: Record<string, string> = { it: 'it_IT', en: 'en_US', es: 'es_ES', ro: 'ro_RO' };
+const ogLocale = ogLocaleMap[locale] ?? 'it_IT';
+const ogLocaleAlternates = Object.entries(ogLocaleMap)
+  .filter(([code]) => code !== locale)
+  .map(([, tag]) => tag);
 const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, Astro.site).href;
 ---
 
@@ -49,12 +52,19 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#065F46" />
+    <link rel="preload" href="/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/_astro/instrument-serif-latin-400-italic.DKMiL14s.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="canonical" href={canonicalURL} />
-    <link rel="alternate" hreflang="it" href={itUrl} />
-    <link rel="alternate" hreflang="en" href={enUrl} />
-    <link rel="alternate" hreflang="x-default" href={itUrl} />
+    <link rel="alternate" hreflang="it" href={alternates.it} />
+    <link rel="alternate" hreflang="en" href={alternates.en} />
+    <link rel="alternate" hreflang="es" href={alternates.es} />
+    <link rel="alternate" hreflang="ro" href={alternates.ro} />
+    <link rel="alternate" hreflang="x-default" href={alternates.it} />
 
-    {/* FOUC prevention — runs before any paint */}
+    <title>{title} | PawMeet</title>
+    <meta name="description" content={resolvedDescription} />
+
+    {/* FOUC prevention — runs before any paint, placed after SEO-critical meta */}
     <script is:inline>
       (function() {
         var stored = localStorage.getItem('theme');
@@ -73,9 +83,6 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
       })();
     </script>
 
-    <title>{title} | PawMeet</title>
-    <meta name="description" content={resolvedDescription} />
-
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
@@ -85,7 +92,9 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content={ogLocale} />
-    <meta property="og:locale:alternate" content={ogLocaleAlternate} />
+    {ogLocaleAlternates.map((alt) => (
+      <meta property="og:locale:alternate" content={alt} />
+    ))}
     <meta property="og:site_name" content="PawMeet" />
 
     <!-- Twitter -->
@@ -107,7 +116,7 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
         "@type": "ContactPoint",
         "email": "info@cervera.studio",
         "contactType": "customer support",
-        "availableLanguage": ["Italian", "English"]
+        "availableLanguage": ["Italian", "English", "Spanish", "Romanian"]
       }
     })} />
 
@@ -117,7 +126,7 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
       "@type": "WebSite",
       "name": "PawMeet",
       "url": "https://pawmeet.io",
-      "inLanguage": locale === 'it' ? "it-IT" : "en-US",
+      "inLanguage": { it: 'it-IT', en: 'en-US', es: 'es-ES', ro: 'ro-RO' }[locale],
       "description": resolvedDescription
     })} />
 
@@ -138,14 +147,8 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
           "priceCurrency": "EUR",
           "availability": "https://schema.org/PreOrder"
         },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "5",
-          "ratingCount": "1200",
-          "reviewCount": "1200"
-        },
         "url": "https://pawmeet.io",
-        "inLanguage": locale === 'it' ? "it-IT" : "en-US"
+        "inLanguage": { it: 'it-IT', en: 'en-US', es: 'es-ES', ro: 'ro-RO' }[locale]
       })} />
     )}
   </head>

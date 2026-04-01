@@ -28,6 +28,7 @@
         "backgroundColor": "#065F46"
       },
       "package": "io.pawmeet.mobile",
+      "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",

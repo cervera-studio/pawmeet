@@ -1,7 +1,15 @@
 import * as Sentry from '@sentry/react-native';
-import { TRPCClientError } from '@trpc/client';
 import i18n from '@/lib/i18n';
 import { isOnline } from '@/lib/network';
+
+/** Duck-type check for TRPCClientError without importing @trpc/client. */
+export function isTRPCClientError(error: unknown): error is Error & { data?: unknown } {
+  return (
+    error instanceof Error &&
+    'data' in error &&
+    typeof (error as Record<string, unknown>).data === 'object'
+  );
+}
 
 /**
  * Structured, user-safe error result.
@@ -73,7 +81,7 @@ export function handleApiError(error: unknown, context: string): AppErrorResult 
   }
 
   // 3. tRPC errors — the main case
-  if (error instanceof TRPCClientError) {
+  if (isTRPCClientError(error)) {
     logToSentry(error, context, 'error');
 
     const trpcCode = extractTrpcCode(error);
@@ -153,7 +161,7 @@ function logToSentry(error: unknown, context: string, level: 'warning' | 'error'
     scope.setTag('errorContext', context);
     scope.setLevel(level);
 
-    if (error instanceof TRPCClientError) {
+    if (isTRPCClientError(error)) {
       scope.setExtra('trpcCode', extractTrpcCode(error));
       scope.setExtra('appCode', extractAppCode(error));
       scope.setExtra('rawMessage', error.message);

@@ -1,5 +1,5 @@
 import { logger } from '@pawmeet/utils';
-import { TRPCClientError } from '@trpc/client';
+import { isTRPCClientError } from '@/lib/error-handler';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
@@ -102,7 +102,7 @@ export function usePasskeys() {
             (e as { code?: string }).code === 'ERROR_PASSKEY_INTERRUPTED');
         if (!isCancellation) {
           const result = handleApiError(e, 'registerPasskey');
-          const isNativeError = !(e instanceof TRPCClientError);
+          const isNativeError = !isTRPCClientError(e);
           setError(isNativeError ? i18n.t('errors.passkey.nativeFailed') : result.message);
         }
       } finally {

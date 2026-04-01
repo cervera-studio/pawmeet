@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "233507613362",
+    "project_id": "pawmeet-studio",
+    "storage_bucket": "pawmeet-studio.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233507613362:android:ed3feb53eeec8ce0f1b7ab",
+        "android_client_info": {
+          "package_name": "io.pawmeet.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqVK9CsVeb1btif9wlL48gjhl6aTZruTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

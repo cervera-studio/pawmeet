@@ -21,7 +21,7 @@ import {
 } from '@pawmeet/validation';
 import { z } from 'zod';
 import type { feedDeps } from '../../container/index.js';
-import { enqueueCommentToxicityCheck } from '../../jobs/queue.js';
+import { enqueueCommentToxicityCheck } from '../../jobs/queues/index.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { sendToAllAdmins } from '../../ws/admin-ws.js';
 import { protectedProcedure, router, unwrapResult } from '../trpc.js';

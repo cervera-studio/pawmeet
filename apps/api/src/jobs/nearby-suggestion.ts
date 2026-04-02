@@ -3,7 +3,7 @@ import { Worker } from 'bullmq';
 import { NOTIF_NEARBY_SUGGESTION } from '../constants/notifications.js';
 import { redis } from '../lib/redis.js';
 import type { NearbyJobRepository } from '../ports/nearby-job-repository.js';
-import { enqueueNotification, getRedisConnection } from './queue.js';
+import { enqueueNotification, getRedisConnection } from './queues/index.js';
 
 const NEARBY_SUGGESTION = 'nearby-suggestion';
 const COOLDOWN_HOURS = 24;

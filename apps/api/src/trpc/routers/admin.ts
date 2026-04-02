@@ -8,7 +8,7 @@ import type { TokenRepository } from '../../ports/token-repository.js';
 import { router } from '../trpc.js';
 import { createAdminDashboardRouter } from './admin-dashboard.js';
 import { createAdminGamificationRouter } from './admin-gamification.js';
-import { createAdminModerationRouter } from './admin-moderation.js';
+import { createAdminModerationRouter } from './admin-moderation/index.js';
 import { createAdminSettingsRouter } from './admin-settings.js';
 import { createAdminUsersRouter } from './admin-users.js';
 import { createAdminWaitlistRouter } from './admin-waitlist.js';

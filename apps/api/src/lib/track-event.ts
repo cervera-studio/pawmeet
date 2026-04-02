@@ -1,6 +1,6 @@
 import type { AnalyticsEventMap, AnalyticsEventName } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import { enqueueAnalyticsEvents } from '../jobs/queue.js';
+import { enqueueAnalyticsEvents } from '../jobs/queues/index.js';
 
 /**
  * Track a server-authoritative analytics event.

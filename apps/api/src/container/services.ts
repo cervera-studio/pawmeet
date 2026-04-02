@@ -1,13 +1,13 @@
 // Shared infrastructure: repositories, services, and external integrations
 
 import { createOrganizationAuthorizer } from '../domain/organization-authorizer.js';
+import { DrizzleAdminDataRepository } from '../infra/admin-data/index.js';
 import { BullMQNotificationService } from '../infra/bullmq-notification-service.js';
 import { CachedBreedRepository } from '../infra/cached-breed-repository.js';
 import { CachedDogRepository } from '../infra/cached-dog-repository.js';
 import { CachedUserRepository } from '../infra/cached-user-repository.js';
 import { DrizzleActivityRepository } from '../infra/drizzle-activity-repository.js';
 import { DrizzleAdminAiMatchingRepository } from '../infra/drizzle-admin-ai-matching-repository.js';
-import { DrizzleAdminDataRepository } from '../infra/drizzle-admin-data-repository.js';
 import { DrizzleAdminUserRepository } from '../infra/drizzle-admin-user-repository.js';
 import { DrizzleAuditLogRepository } from '../infra/drizzle-audit-log-repository.js';
 import { DrizzleBadgeRepository } from '../infra/drizzle-badge-repository.js';
@@ -20,11 +20,9 @@ import { DrizzleEmergencyContactRepository } from '../infra/drizzle-emergency-co
 import { DrizzleEventSponsorRepository } from '../infra/drizzle-event-sponsor-repository.js';
 import { DrizzleExperimentGuardrailsRepository } from '../infra/drizzle-experiment-guardrails-repository.js';
 import { DrizzleExperimentMetricsJobRepository } from '../infra/drizzle-experiment-metrics-job-repository.js';
-import { DrizzleFeedRepository } from '../infra/drizzle-feed-repository.js';
 import { DrizzleFeedbackRepository } from '../infra/drizzle-feedback-repository.js';
 import { DrizzleFollowRepository } from '../infra/drizzle-follow-repository.js';
 import { DrizzleGamificationRepository } from '../infra/drizzle-gamification-repository.js';
-import { DrizzleGdprExportRepository } from '../infra/drizzle-gdpr-export-repository.js';
 import { DrizzleGpsRetentionRepository } from '../infra/drizzle-gps-retention-repository.js';
 import { DrizzleGroupEventRepository } from '../infra/drizzle-group-event-repository.js';
 import { DrizzleGroupMessageRepository } from '../infra/drizzle-group-message-repository.js';
@@ -49,6 +47,8 @@ import { DrizzleWalkJobRepository } from '../infra/drizzle-walk-job-repository.j
 import { DrizzleWalkRepository } from '../infra/drizzle-walk-repository.js';
 import { DrizzleWalkTrackRepository } from '../infra/drizzle-walk-track-repository.js';
 import { EmailAdminNotificationService } from '../infra/email-admin-notification-service.js';
+import { DrizzleFeedRepository } from '../infra/feed/index.js';
+import { DrizzleGdprExportRepository } from '../infra/gdpr-export/index.js';
 import { JwksSocialAuthVerifier } from '../infra/jwks-social-auth-verifier.js';
 import { JwtAuthService } from '../infra/jwt-auth-service.js';
 import { PostHogAnalyticsProvider } from '../infra/posthog-analytics-provider.js';

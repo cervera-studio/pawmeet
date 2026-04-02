@@ -3,8 +3,8 @@ import { Worker } from 'bullmq';
 import { NOTIF_TOXICITY_WARNING } from '../constants/notifications.js';
 import type { NotificationService } from '../ports/notification-service.js';
 import type { ToxicityDetectionService } from '../ports/toxicity-detection-service.js';
-import type { CommentToxicityJobData, MessageToxicityJobData } from './queue.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import type { CommentToxicityJobData, MessageToxicityJobData } from './queues/index.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 interface MessageToxicityDeps {
   toxicityService: ToxicityDetectionService;

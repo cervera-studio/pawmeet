@@ -1,7 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { MatureMatchRow, MlTrainingRepository } from '../ports/ml-training-repository.js';
-import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queues/index.js';
 
 interface MlTrainingLabelsDeps {
   mlTrainingRepo: MlTrainingRepository;

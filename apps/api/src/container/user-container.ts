@@ -1,6 +1,6 @@
 // User domain: profile, location, preferences, avatar, account management
 
-import { enqueueGdprExport } from '../jobs/queue.js';
+import { enqueueGdprExport } from '../jobs/queues/index.js';
 import { createCompleteOnboarding } from '../use-cases/complete-onboarding.js';
 import { createConfirmAvatar } from '../use-cases/confirm-avatar.js';
 import { createDeleteAccount } from '../use-cases/delete-account.js';

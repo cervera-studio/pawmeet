@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { redis } from '../lib/redis.js';
 import type { MlFeatureRepository } from '../ports/ml-feature-repository.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 const FEATURE_TTL_SECONDS = 8 * 60 * 60; // 8 hours
 const POINTER_TTL_SECONDS = 9 * 60 * 60; // 9 hours (outlives features)

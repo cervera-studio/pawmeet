@@ -5,8 +5,8 @@ import { Worker } from 'bullmq';
 import type { ConsentRepository } from '../infra/drizzle-consent-repository.js';
 import { PostHogAnalyticsProvider } from '../infra/posthog-analytics-provider.js';
 import type { AnalyticsProvider } from '../ports/analytics-provider.js';
-import type { AnalyticsJobData } from './queue.js';
-import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
+import type { AnalyticsJobData } from './queues/index.js';
+import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queues/index.js';
 
 interface AnalyticsWorkerDeps {
   providers?: AnalyticsProvider[];

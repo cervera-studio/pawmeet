@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
 import { createCreateWeeklyChallenges } from '../use-cases/create-weekly-challenges.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 type Deps = {
   gamificationRepo: GamificationRepository;

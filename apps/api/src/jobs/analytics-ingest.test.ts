@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AnalyticsProvider, AnalyticsProviderEvent } from '../ports/analytics-provider.js';
-import type { AnalyticsJobData } from './queue.js';
+import type { AnalyticsJobData } from './queues/index.js';
 
 // Capture the processor function passed to the BullMQ Worker constructor
 let capturedProcessor: (job: { data: AnalyticsJobData }) => Promise<void>;

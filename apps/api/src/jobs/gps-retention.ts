@@ -1,7 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { GpsRetentionRepository } from '../ports/gps-retention-repository.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 interface GpsRetentionDeps {
   gpsRetentionRepo: GpsRetentionRepository;

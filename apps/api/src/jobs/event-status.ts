@@ -7,7 +7,7 @@ import type {
   NotificationService,
 } from '../ports/index.js';
 import { createTransitionEventStatuses } from '../use-cases/transition-event-statuses.js';
-import { getEventStatusQueue, getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getEventStatusQueue, getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 type Deps = {
   groupEventRepo: Pick<GroupEventRepository, 'findByIdWithParticipants' | 'updateStatus'> &

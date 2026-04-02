@@ -1,7 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { WalkJobRepository } from '../ports/walk-job-repository.js';
-import { enqueueNotification, getRedisConnection } from './queue.js';
+import { enqueueNotification, getRedisConnection } from './queues/index.js';
 
 const WALK_REMINDER = 'walk-reminder';
 

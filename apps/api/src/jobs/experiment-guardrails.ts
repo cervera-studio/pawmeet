@@ -3,7 +3,7 @@ import { Worker } from 'bullmq';
 import { redis } from '../lib/redis.js';
 import { trackEvent } from '../lib/track-event.js';
 import type { ExperimentGuardrailsRepository } from '../ports/experiment-guardrails-repository.js';
-import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queues/index.js';
 
 const EXPERIMENT_NAME = 'ai_matching_enabled';
 const GUARDRAIL_LOOKBACK_DAYS = 7;

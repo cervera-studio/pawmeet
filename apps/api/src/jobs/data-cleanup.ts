@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { DataCleanupRepository } from '../ports/data-cleanup-repository.js';
 import type { StorageService } from '../ports/storage-service.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 interface DataCleanupDeps {
   dataCleanupRepo: DataCleanupRepository;

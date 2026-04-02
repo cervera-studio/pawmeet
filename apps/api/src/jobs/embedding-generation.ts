@@ -3,7 +3,7 @@ import { Worker } from 'bullmq';
 import type { DogRepository } from '../ports/dog-repository.js';
 import type { EmbeddingRepository } from '../ports/embedding-repository.js';
 import type { EmbeddingService } from '../ports/embedding-service.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 export interface EmbeddingGenerationDeps {
   dogRepo: DogRepository;

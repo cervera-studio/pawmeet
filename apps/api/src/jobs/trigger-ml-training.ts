@@ -3,7 +3,7 @@ import { ContainerInstanceManagementClient } from '@azure/arm-containerinstance'
 import { DefaultAzureCredential } from '@azure/identity';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
-import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queues/index.js';
 
 const RESOURCE_GROUP = process.env.AZURE_RESOURCE_GROUP ?? 'rg-pawmeet-prod';
 const ACR_SERVER = process.env.ACR_SERVER ?? 'crpawmeetprod.azurecr.io';

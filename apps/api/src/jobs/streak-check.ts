@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { trackEvent } from '../lib/track-event.js';
 import type { GamificationRepository } from '../ports/gamification-repository.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 interface StreakCheckDeps {
   gamificationRepo: GamificationRepository;

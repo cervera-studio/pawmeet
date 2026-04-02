@@ -8,8 +8,8 @@ import type { BreedDetectionService } from '../ports/breed-detection-service.js'
 import type { ContentModerationService } from '../ports/content-moderation-service.js';
 import type { DogRepository } from '../ports/dog-repository.js';
 import type { NotificationService } from '../ports/notification-service.js';
-import type { PhotoModerationJobData } from './queue.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import type { PhotoModerationJobData } from './queues/index.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 const R2_BUCKET = process.env.R2_BUCKET || 'pawmeet';
 

@@ -1,7 +1,7 @@
 import { ANALYTICS_BATCH_MAX_BODY_BYTES } from '@pawmeet/config';
 import { batchEventsSchema } from '@pawmeet/validation';
 import { Hono } from 'hono';
-import { enqueueAnalyticsEvents } from '../jobs/queue.js';
+import { enqueueAnalyticsEvents } from '../jobs/queues/index.js';
 import { verifyAccessToken } from '../lib/jwt.js';
 import { analyticsRateLimitMiddleware } from '../middleware/rate-limit.js';
 

@@ -5,7 +5,7 @@ import {
   type NotificationJobData,
   type PhotoModerationJobData,
   QUEUE_NAMES,
-} from './queue.js';
+} from './queues/index.js';
 
 // We only test pure functions and types — actual queue creation requires Redis
 

@@ -3,8 +3,8 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { Resend } from 'resend';
 import { FROM_EMAIL } from '../constants/emails.js';
-import type { EmailJobData } from './queue.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import type { EmailJobData } from './queues/index.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 export function createEmailWorker() {
   const worker = new Worker<EmailJobData>(

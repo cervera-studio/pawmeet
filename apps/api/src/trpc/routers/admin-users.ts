@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { hash } from 'bcryptjs';
 import { z } from 'zod';
-import { enqueueGdprExport } from '../../jobs/queue.js';
+import { enqueueGdprExport } from '../../jobs/queues/index.js';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import { AdminRole, hasMinRole, requireRole } from '../../lib/admin-permissions.js';
 import { generateImpersonationToken } from '../../lib/jwt.js';

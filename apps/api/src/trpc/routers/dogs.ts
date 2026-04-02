@@ -10,7 +10,7 @@ import {
 import { Ratelimit } from '@upstash/ratelimit';
 import { z } from 'zod';
 import type { dogDeps } from '../../container/index.js';
-import { enqueueEmbeddingGeneration } from '../../jobs/queue.js';
+import { enqueueEmbeddingGeneration } from '../../jobs/queues/index.js';
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '../../lib/storage.js';
 import { trackEvent } from '../../lib/track-event.js';
 import { sendToAllAdmins } from '../../ws/admin-ws.js';

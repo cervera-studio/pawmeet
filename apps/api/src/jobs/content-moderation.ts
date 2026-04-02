@@ -7,8 +7,8 @@ import { extractKeyFromUrl, MAX_FILE_SIZE, MAX_VIDEO_FILE_SIZE } from '../lib/st
 import type { ContentModerationService } from '../ports/content-moderation-service.js';
 import type { FeedRepository } from '../ports/feed-repository.js';
 import type { NotificationService } from '../ports/notification-service.js';
-import type { ContentModerationJobData } from './queue.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import type { ContentModerationJobData } from './queues/index.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 const R2_BUCKET = process.env.R2_BUCKET || 'pawmeet';
 

@@ -4,7 +4,7 @@ import { Worker } from 'bullmq';
 import { RuleBasedStrategy } from '../domain/scoring-strategy.js';
 import { redis } from '../lib/redis.js';
 import type { MlRecommendationsRepository } from '../ports/ml-recommendations-repository.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 const USER_BATCH_SIZE = 100;
 const TOP_K = 50;

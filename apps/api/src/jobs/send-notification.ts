@@ -2,8 +2,8 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { expo } from '../lib/push.js';
 import type { UserRepository } from '../ports/user-repository.js';
-import type { NotificationJobData } from './queue.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import type { NotificationJobData } from './queues/index.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 interface NotificationDeps {
   userRepo: UserRepository;

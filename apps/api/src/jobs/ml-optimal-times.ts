@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { redis } from '../lib/redis.js';
 import type { MlOptimalTimesRepository } from '../ports/ml-optimal-times-repository.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 const USER_BATCH_SIZE = 200;
 const OPTIMAL_TIMES_TTL_SECONDS = 25 * 60 * 60; // 25 hours

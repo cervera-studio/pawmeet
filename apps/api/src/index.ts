@@ -138,7 +138,7 @@ app.get('/health', async (c) => {
 });
 
 // Register domain event handlers (in-process pub/sub for side effects)
-import { enqueueMessageToxicityCheck, enqueueNotification } from './jobs/queue.js';
+import { enqueueMessageToxicityCheck, enqueueNotification } from './jobs/queues/index.js';
 import { trackEvent } from './lib/track-event.js';
 import { sendToUser } from './ws/registry.js';
 

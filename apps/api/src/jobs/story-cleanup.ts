@@ -2,7 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { StorageService } from '../ports/storage-service.js';
 import type { StoryRepository } from '../ports/story-repository.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 interface StoryCleanupDeps {
   storyRepo: StoryRepository;

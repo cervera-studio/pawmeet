@@ -57,7 +57,7 @@ import {
   scheduleStoryCleanup,
   scheduleStreakCheck,
   scheduleWeeklyChallenges,
-} from './queue.js';
+} from './queues/index.js';
 import {
   createRecurringEventWorker,
   scheduleRecurringEventGeneration,

@@ -4,7 +4,7 @@ import { NOTIF_RISING_COMPATIBILITY } from '../constants/notifications.js';
 import { redis } from '../lib/redis.js';
 import { trackEvent } from '../lib/track-event.js';
 import type { RisingCompatibilityRepository } from '../ports/rising-compatibility-repository.js';
-import { enqueueNotification, getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { enqueueNotification, getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 const SCORE_IMPROVEMENT_THRESHOLD = 0.15; // 15%
 const ACTIVE_DAYS = 7;

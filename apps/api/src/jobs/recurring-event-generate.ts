@@ -4,7 +4,7 @@ import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { RRule } from '../lib/rrule.js';
 import type { GroupEventRecurrenceRepository, GroupEventRepository } from '../ports/index.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 type Deps = {
   groupEventRepo: Pick<GroupEventRepository, 'create' | 'updateStatus'> &

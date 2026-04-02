@@ -1,7 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import type { ExperimentMetricsJobRepository } from '../ports/experiment-metrics-job-repository.js';
-import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queue.js';
+import { getRedisConnection, moveToAnalyticsDlq, QUEUE_NAMES } from './queues/index.js';
 
 interface ExperimentMetricsDeps {
   experimentMetricsJobRepo: ExperimentMetricsJobRepository;

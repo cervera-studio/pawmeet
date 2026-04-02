@@ -5,8 +5,8 @@ import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { GdprExportRepository } from '../ports/gdpr-export-repository.js';
 import type { StorageService } from '../ports/storage-service.js';
-import type { GdprExportJobData } from './queue.js';
-import { getRedisConnection, QUEUE_NAMES } from './queue.js';
+import type { GdprExportJobData } from './queues/index.js';
+import { getRedisConnection, QUEUE_NAMES } from './queues/index.js';
 
 /** Presigned download URL expiry: 48 hours */
 const DOWNLOAD_URL_EXPIRY_SECONDS = 48 * 60 * 60;

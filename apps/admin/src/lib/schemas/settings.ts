@@ -6,7 +6,7 @@ type ValidationTranslationFn = ReturnType<typeof useTranslations<'validation'>>;
 export function createGeneralSettingsSchema(t: ValidationTranslationFn) {
   return z.object({
     appName: z.string().min(1, t('required', { field: t('fields.appName') })),
-    supportEmail: z.string().email(t('email')),
+    supportEmail: z.email(t('email')),
   });
 }
 

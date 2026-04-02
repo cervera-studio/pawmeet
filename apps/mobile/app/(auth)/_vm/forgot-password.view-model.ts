@@ -9,7 +9,7 @@ import { zodToFieldErrors } from '@/lib/validation';
 type Phase = 'request' | 'sent' | 'reset';
 
 const requestSchema = z.object({
-  email: z.string().email(i18n.t('auth.forgotPassword.invalidEmail')),
+  email: z.email(i18n.t('auth.forgotPassword.invalidEmail')),
 });
 
 const resetSchema = z

@@ -7,7 +7,7 @@ const ROLES = ['super_admin', 'admin', 'moderator', 'viewer'] as const;
 
 export function createAdminUserSchema(t: ValidationTranslationFn) {
   return z.object({
-    email: z.string().email(t('email')),
+    email: z.email(t('email')),
     displayName: z.string().min(1, t('required', { field: t('fields.name') })),
     temporaryPassword: z.string().min(1, t('required', { field: t('fields.password') })),
     role: z.enum(ROLES),

@@ -32,7 +32,7 @@ function buildOAuthAccountRepo(
     upsert: vi.fn().mockResolvedValue({
       id: 'oauth-1',
       userId: 'user-1',
-      provider: 'google',
+      provider: AUTH_PROVIDER.Google,
       providerUserId: 'provider-uid-1',
       providerEmail: 'social@example.com',
       linkedAt: new Date(),
@@ -71,7 +71,7 @@ describe('createSocialLogin', () => {
         buildUser({
           id: 'new-1',
           email: 'social@example.com',
-          authProvider: 'google',
+          authProvider: AUTH_PROVIDER.Google,
           emailVerified: true,
         }),
       ),
@@ -96,13 +96,13 @@ describe('createSocialLogin', () => {
     expect(userRepo.create).toHaveBeenCalledWith(
       expect.objectContaining({
         email: 'social@example.com',
-        authProvider: 'google',
+        authProvider: AUTH_PROVIDER.Google,
         passwordHash: null,
       }),
     );
     expect(oauthAccountRepo.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        provider: 'google',
+        provider: AUTH_PROVIDER.Google,
         providerUserId: 'provider-uid-1',
       }),
     );
@@ -154,7 +154,7 @@ describe('createSocialLogin', () => {
     const existingUser = buildUser({
       id: 'linked-user-1',
       email: 'social@example.com',
-      authProvider: 'google',
+      authProvider: AUTH_PROVIDER.Google,
       isActive: true,
       emailVerified: true,
     });
@@ -162,7 +162,7 @@ describe('createSocialLogin', () => {
       findByProviderUid: vi.fn().mockResolvedValue({
         id: 'oauth-1',
         userId: 'linked-user-1',
-        provider: 'google',
+        provider: AUTH_PROVIDER.Google,
         providerUserId: 'provider-uid-1',
         providerEmail: 'social@example.com',
         linkedAt: new Date(),
@@ -185,7 +185,7 @@ describe('createSocialLogin', () => {
   it('auto-links when existing email user has verified email', async () => {
     const existingUser = buildUser({
       email: 'social@example.com',
-      authProvider: 'email',
+      authProvider: AUTH_PROVIDER.Email,
       emailVerified: true,
     });
     const oauthAccountRepo = buildOAuthAccountRepo();
@@ -202,7 +202,7 @@ describe('createSocialLogin', () => {
     expect(oauthAccountRepo.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: existingUser.id,
-        provider: 'google',
+        provider: AUTH_PROVIDER.Google,
         providerUserId: 'provider-uid-1',
       }),
     );
@@ -211,7 +211,7 @@ describe('createSocialLogin', () => {
   it('rejects linking when existing user email is not verified', async () => {
     const unverifiedUser = buildUser({
       email: 'social@example.com',
-      authProvider: 'email',
+      authProvider: AUTH_PROVIDER.Email,
       emailVerified: false,
     });
     const userRepo = buildUserRepo({
@@ -231,7 +231,7 @@ describe('createSocialLogin', () => {
   it('rejects linking when provider email is not verified', async () => {
     const existingUser = buildUser({
       email: 'social@example.com',
-      authProvider: 'email',
+      authProvider: AUTH_PROVIDER.Email,
       emailVerified: true,
     });
     const socialAuthVerifier = buildSocialAuthVerifier({
@@ -276,7 +276,7 @@ describe('createSocialLogin', () => {
       findByProviderUid: vi.fn().mockResolvedValue({
         id: 'oauth-1',
         userId: disabledUser.id,
-        provider: 'google',
+        provider: AUTH_PROVIDER.Google,
         providerUserId: 'provider-uid-1',
         providerEmail: 'social@example.com',
         linkedAt: new Date(),
@@ -334,7 +334,7 @@ describe('createSocialLogin', () => {
       findByProviderUid: vi.fn().mockResolvedValue({
         id: 'oauth-1',
         userId: existingUser.id,
-        provider: 'google',
+        provider: AUTH_PROVIDER.Google,
         providerUserId: 'provider-uid-1',
         providerEmail: 'social@example.com',
         linkedAt: new Date(),
@@ -375,7 +375,7 @@ describe('createSocialLogin', () => {
     const existingUser = buildUser({
       id: 'apple-user-1',
       email: 'apple@example.com',
-      authProvider: 'apple',
+      authProvider: AUTH_PROVIDER.Apple,
       emailVerified: true,
     });
     const socialAuthVerifier = buildSocialAuthVerifier({
@@ -390,7 +390,7 @@ describe('createSocialLogin', () => {
       findByProviderUid: vi.fn().mockResolvedValue({
         id: 'oauth-apple-1',
         userId: 'apple-user-1',
-        provider: 'apple',
+        provider: AUTH_PROVIDER.Apple,
         providerUserId: 'apple-sub-123',
         providerEmail: 'apple@example.com',
         linkedAt: new Date(),
@@ -404,7 +404,7 @@ describe('createSocialLogin', () => {
     const socialLogin = createSocialLogin(deps);
 
     const result = await socialLogin({
-      provider: 'apple',
+      provider: AUTH_PROVIDER.Apple,
       idToken: 'valid-apple-token',
     });
 

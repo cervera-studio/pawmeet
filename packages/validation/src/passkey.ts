@@ -10,7 +10,7 @@ export const passkeyRegisterVerifySchema = z.object({
 });
 
 export const passkeyLoginOptionsSchema = z.object({
-  email: z.string().email().optional(),
+  email: z.email().optional(),
 });
 
 export const passkeyLoginVerifySchema = z.object({

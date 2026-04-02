@@ -25,7 +25,7 @@ export const dateOfBirthSchema = z.coerce
   });
 
 export const registerSchema = z.object({
-  email: z.string().email('email_invalid'),
+  email: z.email('email_invalid'),
   password: passwordSchema,
   displayName: z.string().min(2, 'display_name_min').max(50, 'display_name_max'),
   dateOfBirth: dateOfBirthSchema,

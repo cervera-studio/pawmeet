@@ -22,6 +22,8 @@ interface Organization {
 
 export function CreateOfficialEventForm({ organizations }: { organizations: Organization[] }) {
   const router = useRouter();
+  const t = useTranslations('events');
+  const tc = useTranslations('common');
   const tv = useTranslations('validation');
   const tt = useTranslations('toast');
   const [open, setOpen] = useState(false);
@@ -75,7 +77,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
   if (!open) {
     return (
       <Button onClick={() => setOpen(true)} disabled={organizations.length === 0}>
-        Crea Main Event
+        {t('createOfficial.openButton')}
       </Button>
     );
   }
@@ -83,33 +85,33 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Nuovo Main Event</CardTitle>
+        <CardTitle className="text-lg">{t('createOfficial.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="official-title" className="text-sm font-medium">
-                Titolo *
+                {t('createOfficial.titleLabel')}
               </label>
               <Input
                 id="official-title"
                 {...register('title')}
-                placeholder="Passeggiata al Parco Sempione"
+                placeholder={t('createOfficial.titlePlaceholder')}
               />
               {errors.title && <p className="text-xs text-red-600">{errors.title.message}</p>}
             </div>
 
             <div className="space-y-1.5">
               <label htmlFor="official-org" className="text-sm font-medium">
-                Organizzazione *
+                {t('createOfficial.organization')}
               </label>
               <select
                 id="official-org"
                 className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
                 {...register('organizationId')}
               >
-                <option value="">Seleziona...</option>
+                <option value="">{t('createOfficial.selectOrg')}</option>
                 {organizations.map((org) => (
                   <option key={org.id} value={org.id}>
                     {org.name} ({org.type})
@@ -123,7 +125,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
 
             <div className="space-y-1.5">
               <label htmlFor="official-date" className="text-sm font-medium">
-                Data e ora *
+                {t('createOfficial.dateTime')}
               </label>
               <Input id="official-date" type="datetime-local" {...register('scheduledAt')} />
               {errors.scheduledAt && (
@@ -133,7 +135,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
 
             <div className="space-y-1.5">
               <label htmlFor="official-duration" className="text-sm font-medium">
-                Durata (minuti)
+                {t('createOfficial.duration')}
               </label>
               <Input
                 id="official-duration"
@@ -149,35 +151,35 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
 
             <div className="space-y-1.5">
               <label htmlFor="official-location" className="text-sm font-medium">
-                Luogo *
+                {t('createOfficial.locationLabel')}
               </label>
               <Input
                 id="official-location"
                 {...register('location')}
-                placeholder="Parco Sempione, Milano"
+                placeholder={t('createOfficial.locationPlaceholder')}
               />
               {errors.location && <p className="text-xs text-red-600">{errors.location.message}</p>}
             </div>
 
             <div className="space-y-1.5">
               <label htmlFor="official-category" className="text-sm font-medium">
-                Categoria
+                {t('createOfficial.categoryLabel')}
               </label>
               <select
                 id="official-category"
                 className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
                 {...register('category')}
               >
-                <option value="walk">Passeggiata</option>
-                <option value="meetup">Incontro</option>
-                <option value="training">Addestramento</option>
+                <option value="walk">{t('categories.walk')}</option>
+                <option value="meetup">{t('categories.meetup')}</option>
+                <option value="training">{t('categories.training')}</option>
               </select>
               {errors.category && <p className="text-xs text-red-600">{errors.category.message}</p>}
             </div>
 
             <div className="space-y-1.5">
               <label htmlFor="official-lat" className="text-sm font-medium">
-                Latitudine *
+                {t('createOfficial.latitude')}
               </label>
               <Input
                 id="official-lat"
@@ -191,7 +193,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
 
             <div className="space-y-1.5">
               <label htmlFor="official-lng" className="text-sm font-medium">
-                Longitudine *
+                {t('createOfficial.longitude')}
               </label>
               <Input
                 id="official-lng"
@@ -207,7 +209,7 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
 
             <div className="space-y-1.5">
               <label htmlFor="official-max" className="text-sm font-medium">
-                Max partecipanti
+                {t('createOfficial.maxParticipants')}
               </label>
               <Input
                 id="official-max"
@@ -224,13 +226,13 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
 
           <div className="space-y-1.5">
             <label htmlFor="official-desc" className="text-sm font-medium">
-              Descrizione
+              {t('createOfficial.descriptionLabel')}
             </label>
             <textarea
               id="official-desc"
               className="flex min-h-[80px] w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
               {...register('description')}
-              placeholder="Descrizione dell'evento..."
+              placeholder={t('createOfficial.descriptionPlaceholder')}
             />
             {errors.description && (
               <p className="text-xs text-red-600">{errors.description.message}</p>
@@ -241,10 +243,10 @@ export function CreateOfficialEventForm({ organizations }: { organizations: Orga
 
           <div className="flex gap-2">
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creazione...' : 'Crea evento'}
+              {isSubmitting ? t('createOfficial.creating') : t('createOfficial.submit')}
             </Button>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Annulla
+              {tc('cancel')}
             </Button>
           </div>
         </form>

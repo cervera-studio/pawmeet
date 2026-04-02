@@ -4,9 +4,10 @@ import { fetchFeatureFlags } from './actions';
 import { FlagsTable } from './flags-table';
 
 export default async function FlagsPage() {
-  const [{ flags }, t] = await Promise.all([
+  const [{ flags }, t, tc] = await Promise.all([
     fetchFeatureFlags(),
     getTranslations('aiMatching.flags'),
+    getTranslations('common'),
   ]);
 
   return (
@@ -22,7 +23,7 @@ export default async function FlagsPage() {
         </CardHeader>
         <CardContent>
           {flags.length === 0 ? (
-            <p className="text-sm text-neutral-500">Nessun flag configurato.</p>
+            <p className="text-sm text-neutral-500">{t('emptyState')}</p>
           ) : (
             <FlagsTable
               flags={flags}
@@ -34,7 +35,7 @@ export default async function FlagsPage() {
               labels={{
                 enabled: t('enabled'),
                 disabled: t('disabled'),
-                edit: 'Modifica',
+                edit: tc('edit'),
               }}
             />
           )}

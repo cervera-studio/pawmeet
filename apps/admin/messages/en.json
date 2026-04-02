@@ -15,7 +15,8 @@
     "delete": "Delete",
     "active": "Active",
     "inactive": "Inactive",
-    "never": "Never"
+    "never": "Never",
+    "edit": "Edit"
   },
   "error": {
     "title": "Something went wrong",
@@ -586,6 +587,83 @@
       "pending": "pending",
       "recurring": "Recurring",
       "approval": "Approval"
+    },
+    "detail": {
+      "recurring": "Recurring",
+      "createdBy": "Created by",
+      "backToList": "Back to list",
+      "cancelEvent": "Cancel event",
+      "cancelling": "Cancelling...",
+      "confirmCancel": "Are you sure you want to cancel this event?",
+      "category": "Category",
+      "dateTime": "Date and time",
+      "minutes": "minutes",
+      "participants": "Participants",
+      "pendingApproval": "{count} pending approval",
+      "visibility": "Visibility",
+      "requiresApproval": "Requires approval",
+      "details": "Details",
+      "location": "Location",
+      "coordinates": "Coordinates",
+      "description": "Description",
+      "recurrenceRule": "Recurrence rule",
+      "parentEvent": "Parent event",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
+      "sponsors": "Sponsors"
+    },
+    "participants": {
+      "title": "Participants ({count})",
+      "pastTitle": "Past participants ({count})",
+      "none": "No participants",
+      "with": "with",
+      "unknownDog": "unknown dog",
+      "organizer": "Organizer",
+      "remove": "Remove",
+      "confirmRemove": "Remove this participant?",
+      "statuses": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "declined": "Declined",
+        "removed": "Removed",
+        "cancelled": "Cancelled"
+      }
+    },
+    "sponsors": {
+      "title": "Sponsors",
+      "addSponsor": "Add sponsor",
+      "add": "Add",
+      "noSponsors": "No sponsors associated.",
+      "remove": "Remove",
+      "loadingOrgs": "Loading organizations...",
+      "searchOrg": "Search organization...",
+      "noOrgFound": "No organization found",
+      "orgTypes": {
+        "pawmeet_team": "PawMeet Team",
+        "association": "Association",
+        "educator": "Educator",
+        "brand": "Brand"
+      }
+    },
+    "createOfficial": {
+      "openButton": "Create Main Event",
+      "title": "New Main Event",
+      "titleLabel": "Title *",
+      "titlePlaceholder": "Walk at Central Park",
+      "organization": "Organization *",
+      "selectOrg": "Select...",
+      "dateTime": "Date and time *",
+      "duration": "Duration (minutes)",
+      "locationLabel": "Location *",
+      "locationPlaceholder": "Central Park, New York",
+      "categoryLabel": "Category",
+      "latitude": "Latitude *",
+      "longitude": "Longitude *",
+      "maxParticipants": "Max participants",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Event description...",
+      "creating": "Creating...",
+      "submit": "Create event"
     }
   },
   "safety": {
@@ -789,7 +867,11 @@
       "chartPlaceholder": "Chart placeholder — Recharts coming soon",
       "experiment": "Experiment",
       "dateFrom": "Start date",
-      "dateTo": "End date"
+      "dateTo": "End date",
+      "acceptanceRate": "Match acceptance rate",
+      "walkCompletionRate": "Walk completion rate",
+      "aiMatchingLabel": "AI Matching",
+      "controlLabel": "Control"
     },
     "performance": {
       "title": "AI Model Performance",
@@ -803,7 +885,34 @@
       "chartCalibration": "Calibration curve",
       "chartWeights": "Feature weights distribution",
       "chartTimeline": "Performance over time",
-      "chartPlaceholder": "Chart placeholder — Recharts coming soon"
+      "chartPlaceholder": "Chart placeholder — Recharts coming soon",
+      "charts": {
+        "calibrationTitle": "Model calibration",
+        "calibrationEmpty": "No calibration data available.",
+        "observedRate": "Observed rate",
+        "weightTitle": "Weight distribution",
+        "weightEmpty": "No weight data available.",
+        "avgWeight": "Average weight",
+        "timeSeriesTitle": "Performance trend",
+        "timeSeriesEmpty": "No historical data available.",
+        "avgScore": "Average score",
+        "predictions": "Predictions"
+      },
+      "modelRegistry": {
+        "noModels": "No models registered.",
+        "version": "Version",
+        "samples": "Samples",
+        "status": "Status",
+        "promotedAt": "Promoted on",
+        "active": "Active",
+        "inactive": "Inactive",
+        "promote": "Promote",
+        "promoting": "Promoting...",
+        "confirmTitle": "Confirm promotion",
+        "confirmDescription": "Do you want to promote model {version} to production? The current model will be deactivated.",
+        "promoted": "Model {version} promoted",
+        "promoteError": "Error promoting the model"
+      }
     },
     "flags": {
       "title": "Feature Flags — AI Matching",
@@ -820,7 +929,16 @@
       "flagScoringStrategy": "Active scoring strategy",
       "flagAbTest": "A/B test ML matching experiment",
       "flagConfidenceThreshold": "Minimum confidence threshold",
-      "emptyState": "No feature flags configured"
+      "emptyState": "No feature flags configured",
+      "editDialog": {
+        "title": "Edit flag",
+        "status": "Status",
+        "active": "Active",
+        "inactive": "Disabled",
+        "splitPercentage": "Split percentage (treatment)",
+        "splitInfo": "Control: {control}% / Treatment: {treatment}%",
+        "warning": "Warning: modifying this flag affects the matching behavior in production. Make sure you have verified the impact before saving."
+      }
     }
   },
   "adminUsers": {

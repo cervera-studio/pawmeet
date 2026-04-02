@@ -15,7 +15,8 @@
     "delete": "Elimina",
     "active": "Attivo",
     "inactive": "Inattivo",
-    "never": "Mai"
+    "never": "Mai",
+    "edit": "Modifica"
   },
   "error": {
     "title": "Qualcosa è andato storto",
@@ -586,6 +587,83 @@
       "pending": "in attesa",
       "recurring": "Ricorrente",
       "approval": "Approvazione"
+    },
+    "detail": {
+      "recurring": "Ricorrente",
+      "createdBy": "Creato da",
+      "backToList": "Torna alla lista",
+      "cancelEvent": "Annulla evento",
+      "cancelling": "Annullamento...",
+      "confirmCancel": "Sei sicuro di voler annullare questo evento?",
+      "category": "Categoria",
+      "dateTime": "Data e ora",
+      "minutes": "minuti",
+      "participants": "Partecipanti",
+      "pendingApproval": "{count} in attesa di approvazione",
+      "visibility": "Visibilità",
+      "requiresApproval": "Richiede approvazione",
+      "details": "Dettagli",
+      "location": "Luogo",
+      "coordinates": "Coordinate",
+      "description": "Descrizione",
+      "recurrenceRule": "Regola ricorrenza",
+      "parentEvent": "Evento padre",
+      "createdAt": "Creato il",
+      "updatedAt": "Aggiornato il",
+      "sponsors": "Sponsor"
+    },
+    "participants": {
+      "title": "Partecipanti ({count})",
+      "pastTitle": "Partecipanti passati ({count})",
+      "none": "Nessun partecipante",
+      "with": "con",
+      "unknownDog": "cane sconosciuto",
+      "organizer": "Organizzatore",
+      "remove": "Rimuovi",
+      "confirmRemove": "Rimuovere questo partecipante?",
+      "statuses": {
+        "pending": "In attesa",
+        "accepted": "Accettato",
+        "declined": "Rifiutato",
+        "removed": "Rimosso",
+        "cancelled": "Annullato"
+      }
+    },
+    "sponsors": {
+      "title": "Sponsor",
+      "addSponsor": "Aggiungi sponsor",
+      "add": "Aggiungi",
+      "noSponsors": "Nessuno sponsor associato.",
+      "remove": "Rimuovi",
+      "loadingOrgs": "Caricamento organizzazioni...",
+      "searchOrg": "Cerca organizzazione...",
+      "noOrgFound": "Nessuna organizzazione trovata",
+      "orgTypes": {
+        "pawmeet_team": "PawMeet Team",
+        "association": "Associazione",
+        "educator": "Educatore",
+        "brand": "Brand"
+      }
+    },
+    "createOfficial": {
+      "openButton": "Crea Main Event",
+      "title": "Nuovo Main Event",
+      "titleLabel": "Titolo *",
+      "titlePlaceholder": "Passeggiata al Parco Sempione",
+      "organization": "Organizzazione *",
+      "selectOrg": "Seleziona...",
+      "dateTime": "Data e ora *",
+      "duration": "Durata (minuti)",
+      "locationLabel": "Luogo *",
+      "locationPlaceholder": "Parco Sempione, Milano",
+      "categoryLabel": "Categoria",
+      "latitude": "Latitudine *",
+      "longitude": "Longitudine *",
+      "maxParticipants": "Max partecipanti",
+      "descriptionLabel": "Descrizione",
+      "descriptionPlaceholder": "Descrizione dell'evento...",
+      "creating": "Creazione...",
+      "submit": "Crea evento"
     }
   },
   "safety": {
@@ -789,7 +867,11 @@
       "chartPlaceholder": "Grafico placeholder — Recharts in arrivo",
       "experiment": "Esperimento",
       "dateFrom": "Data inizio",
-      "dateTo": "Data fine"
+      "dateTo": "Data fine",
+      "acceptanceRate": "Tasso di accettazione match",
+      "walkCompletionRate": "Tasso di completamento passeggiate",
+      "aiMatchingLabel": "AI Matching",
+      "controlLabel": "Controllo"
     },
     "performance": {
       "title": "Performance Modello AI",
@@ -803,7 +885,34 @@
       "chartCalibration": "Curva di calibrazione",
       "chartWeights": "Distribuzione pesi features",
       "chartTimeline": "Andamento performance nel tempo",
-      "chartPlaceholder": "Grafico placeholder — Recharts in arrivo"
+      "chartPlaceholder": "Grafico placeholder — Recharts in arrivo",
+      "charts": {
+        "calibrationTitle": "Calibrazione modello",
+        "calibrationEmpty": "Nessun dato di calibrazione disponibile.",
+        "observedRate": "Tasso osservato",
+        "weightTitle": "Distribuzione pesi",
+        "weightEmpty": "Nessun dato sui pesi disponibile.",
+        "avgWeight": "Peso medio",
+        "timeSeriesTitle": "Andamento prestazioni",
+        "timeSeriesEmpty": "Nessun dato storico disponibile.",
+        "avgScore": "Score medio",
+        "predictions": "Predizioni"
+      },
+      "modelRegistry": {
+        "noModels": "Nessun modello registrato.",
+        "version": "Versione",
+        "samples": "Campioni",
+        "status": "Stato",
+        "promotedAt": "Promosso il",
+        "active": "Attivo",
+        "inactive": "Inattivo",
+        "promote": "Promuovi",
+        "promoting": "Promozione...",
+        "confirmTitle": "Conferma promozione",
+        "confirmDescription": "Vuoi promuovere il modello {version} in produzione? Il modello attuale verrà disattivato.",
+        "promoted": "Modello {version} promosso",
+        "promoteError": "Errore durante la promozione del modello"
+      }
     },
     "flags": {
       "title": "Feature Flag — AI Matching",
@@ -820,7 +929,16 @@
       "flagScoringStrategy": "Strategia di scoring attiva",
       "flagAbTest": "Esperimento A/B test ML matching",
       "flagConfidenceThreshold": "Soglia minima di confidenza",
-      "emptyState": "Nessun feature flag configurato"
+      "emptyState": "Nessun feature flag configurato",
+      "editDialog": {
+        "title": "Modifica flag",
+        "status": "Stato",
+        "active": "Attivo",
+        "inactive": "Disattivato",
+        "splitPercentage": "Percentuale split (treatment)",
+        "splitInfo": "Control: {control}% / Treatment: {treatment}%",
+        "warning": "Attenzione: la modifica di questo flag influenza il comportamento del matching in produzione. Assicurati di aver verificato l'impatto prima di salvare."
+      }
     }
   },
   "adminUsers": {

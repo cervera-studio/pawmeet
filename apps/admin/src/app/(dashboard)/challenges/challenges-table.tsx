@@ -1,7 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -33,8 +33,9 @@ function StatusBadge({ status }: { status: 'active' | 'expired' | 'upcoming' }) 
   return <Badge variant={variantMap[status]}>{t(`statuses.${status}`)}</Badge>;
 }
 
-function formatDate(date: string | Date): string {
-  return new Date(date).toLocaleDateString('it-IT', {
+function formatDate(date: string | Date, locale: string): string {
+  const dateLocale = { it: 'it-IT', en: 'en-US', es: 'es-ES', ro: 'ro-RO' }[locale] ?? 'it-IT';
+  return new Date(date).toLocaleDateString(dateLocale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -48,6 +49,7 @@ interface ChallengesTableProps {
 
 export function ChallengesTable({ initialData, pageSize }: ChallengesTableProps) {
   const t = useTranslations('challenges');
+  const locale = useLocale();
   const vm = useChallengesViewModel(initialData, pageSize);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -94,12 +96,16 @@ export function ChallengesTable({ initialData, pageSize }: ChallengesTableProps)
       {
         accessorKey: 'startsAt',
         header: t('columns.startsAt'),
-        cell: ({ row }) => <span className="text-sm">{formatDate(row.original.startsAt)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm">{formatDate(row.original.startsAt, locale)}</span>
+        ),
       },
       {
         accessorKey: 'endsAt',
         header: t('columns.endsAt'),
-        cell: ({ row }) => <span className="text-sm">{formatDate(row.original.endsAt)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm">{formatDate(row.original.endsAt, locale)}</span>
+        ),
       },
       {
         id: 'status',
@@ -124,7 +130,7 @@ export function ChallengesTable({ initialData, pageSize }: ChallengesTableProps)
         ),
       },
     ],
-    [t, openEditDialog, openDeleteDialog],
+    [t, locale, openEditDialog, openDeleteDialog],
   );
 
   return (

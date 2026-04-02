@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   Bar,
   BarChart,
@@ -42,21 +43,6 @@ export interface PerformanceChartsProps {
   timeSeries: TimeSeriesPoint[];
 }
 
-// ── Labels (Italian) — move to i18n when available ───────────────────────────
-
-const CHART_LABELS = {
-  calibrationTitle: 'Calibrazione modello',
-  calibrationEmpty: 'Nessun dato di calibrazione disponibile.',
-  observedRate: 'Tasso osservato',
-  weightTitle: 'Distribuzione pesi',
-  weightEmpty: 'Nessun dato sui pesi disponibile.',
-  avgWeight: 'Peso medio',
-  timeSeriesTitle: 'Andamento prestazioni',
-  timeSeriesEmpty: 'Nessun dato storico disponibile.',
-  avgScore: 'Score medio',
-  predictions: 'Predizioni',
-} as const;
-
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const AI_COLOR = '#3B82F6';
@@ -80,15 +66,16 @@ function EmptyState({ message }: { message: string }) {
 // ── Charts ───────────────────────────────────────────────────────────────────
 
 function CalibrationChart({ data }: { data: ScoreBucket[] | null }) {
+  const t = useTranslations('aiMatching.performance.charts');
   const chartColors = getChartColors(useIsDark());
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{CHART_LABELS.calibrationTitle}</CardTitle>
+        <CardTitle className="text-base">{t('calibrationTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         {!data || data.length === 0 ? (
-          <EmptyState message={CHART_LABELS.calibrationEmpty} />
+          <EmptyState message={t('calibrationEmpty')} />
         ) : (
           <ResponsiveContainer width="100%" height={256}>
             <ComposedChart data={data}>
@@ -98,7 +85,7 @@ function CalibrationChart({ data }: { data: ScoreBucket[] | null }) {
               <Tooltip />
               <Bar
                 dataKey="observedMatchRate"
-                name={CHART_LABELS.observedRate}
+                name={t('observedRate')}
                 fill={AI_COLOR}
                 radius={[4, 4, 0, 0]}
                 fillOpacity={0.7}
@@ -113,15 +100,16 @@ function CalibrationChart({ data }: { data: ScoreBucket[] | null }) {
 }
 
 function WeightDistributionChart({ data }: { data: WeightDimension[] | null }) {
+  const t = useTranslations('aiMatching.performance.charts');
   const chartColors = getChartColors(useIsDark());
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{CHART_LABELS.weightTitle}</CardTitle>
+        <CardTitle className="text-base">{t('weightTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         {!data || data.length === 0 ? (
-          <EmptyState message={CHART_LABELS.weightEmpty} />
+          <EmptyState message={t('weightEmpty')} />
         ) : (
           <ResponsiveContainer width="100%" height={256}>
             <BarChart data={data} layout="vertical">
@@ -141,7 +129,7 @@ function WeightDistributionChart({ data }: { data: WeightDimension[] | null }) {
               <Tooltip formatter={(v: unknown) => `${Number(v).toFixed(1)}%`} />
               <Bar
                 dataKey="avgWeight"
-                name={CHART_LABELS.avgWeight}
+                name={t('avgWeight')}
                 fill={AI_COLOR}
                 radius={[0, 4, 4, 0]}
               />
@@ -154,15 +142,16 @@ function WeightDistributionChart({ data }: { data: WeightDimension[] | null }) {
 }
 
 function PerformanceTimeSeries({ data }: { data: TimeSeriesPoint[] }) {
+  const t = useTranslations('aiMatching.performance.charts');
   const chartColors = getChartColors(useIsDark());
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{CHART_LABELS.timeSeriesTitle}</CardTitle>
+        <CardTitle className="text-base">{t('timeSeriesTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
-          <EmptyState message={CHART_LABELS.timeSeriesEmpty} />
+          <EmptyState message={t('timeSeriesEmpty')} />
         ) : (
           <ResponsiveContainer width="100%" height={256}>
             <ComposedChart data={data}>
@@ -185,7 +174,7 @@ function PerformanceTimeSeries({ data }: { data: TimeSeriesPoint[] }) {
                 yAxisId="left"
                 type="monotone"
                 dataKey="avgOverallScore"
-                name={CHART_LABELS.avgScore}
+                name={t('avgScore')}
                 stroke={AI_COLOR}
                 strokeWidth={2}
                 dot={false}
@@ -193,7 +182,7 @@ function PerformanceTimeSeries({ data }: { data: TimeSeriesPoint[] }) {
               <Bar
                 yAxisId="right"
                 dataKey="totalPredictions"
-                name={CHART_LABELS.predictions}
+                name={t('predictions')}
                 fill="#10B981"
                 fillOpacity={0.4}
                 radius={[4, 4, 0, 0]}

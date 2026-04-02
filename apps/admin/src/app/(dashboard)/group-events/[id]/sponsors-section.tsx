@@ -48,14 +48,8 @@ const placementLabels: Record<string, string> = {
   banner: 'Banner',
 };
 
-const orgTypeLabels: Record<string, string> = {
-  pawmeet_team: 'PawMeet Team',
-  association: 'Associazione',
-  educator: 'Educatore',
-  brand: 'Brand',
-};
-
 function OrgPicker({ value, onChange }: { value: string; onChange: (orgId: string) => void }) {
+  const t = useTranslations('events');
   const [query, setQuery] = useState('');
   const [organizations, setOrganizations] = useState<OrgOption[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -140,7 +134,7 @@ function OrgPicker({ value, onChange }: { value: string; onChange: (orgId: strin
   return (
     <div className="relative" ref={containerRef}>
       <Input
-        placeholder={isLoading ? 'Caricamento organizzazioni...' : 'Cerca organizzazione...'}
+        placeholder={isLoading ? t('sponsors.loadingOrgs') : t('sponsors.searchOrg')}
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -160,7 +154,7 @@ function OrgPicker({ value, onChange }: { value: string; onChange: (orgId: strin
             >
               <span className="font-medium">{org.name}</span>
               <span className="text-xs text-neutral-500">
-                {orgTypeLabels[org.type] ?? org.type}
+                {t(`sponsors.orgTypes.${org.type}` as Parameters<typeof t>[0]) ?? org.type}
               </span>
             </button>
           ))}
@@ -168,7 +162,7 @@ function OrgPicker({ value, onChange }: { value: string; onChange: (orgId: strin
       )}
       {isOpen && !isLoading && query && filtered.length === 0 && (
         <div className="absolute z-50 mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm text-neutral-500 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
-          Nessuna organizzazione trovata
+          {t('sponsors.noOrgFound')}
         </div>
       )}
     </div>
@@ -182,6 +176,8 @@ export function SponsorsSection({
   eventId: string;
   initialSponsors: EventSponsor[];
 }) {
+  const t = useTranslations('events');
+  const tc = useTranslations('common');
   const tt = useTranslations('toast');
   const [sponsors, setSponsors] = useState<EventSponsor[]>(initialSponsors);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -221,9 +217,9 @@ export function SponsorsSection({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Sponsor</h3>
+        <h3 className="text-lg font-semibold">{t('sponsors.title')}</h3>
         <Button size="sm" variant="outline" onClick={() => setShowAddForm(!showAddForm)}>
-          {showAddForm ? 'Annulla' : 'Aggiungi sponsor'}
+          {showAddForm ? tc('cancel') : t('sponsors.addSponsor')}
         </Button>
       </div>
 
@@ -251,14 +247,14 @@ export function SponsorsSection({
               <option value="banner">Banner</option>
             </select>
             <Button size="sm" onClick={handleAdd} disabled={loading || !orgId}>
-              Aggiungi
+              {t('sponsors.add')}
             </Button>
           </div>
         </div>
       )}
 
       {sponsors.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Nessuno sponsor associato.</p>
+        <p className="text-sm text-muted-foreground">{t('sponsors.noSponsors')}</p>
       ) : (
         <div className="space-y-2">
           {sponsors.map((s) => (
@@ -291,7 +287,7 @@ export function SponsorsSection({
                 onClick={() => handleRemove(s.organizationId)}
                 disabled={loading}
               >
-                Rimuovi
+                {t('sponsors.remove')}
               </Button>
             </div>
           ))}

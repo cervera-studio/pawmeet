@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   CartesianGrid,
   Legend,
@@ -40,6 +41,7 @@ const AI_COLOR = '#3B82F6';
 const CONTROL_COLOR = '#9CA3AF';
 
 export function AbTestCharts({ data }: AbTestChartsProps) {
+  const t = useTranslations('aiMatching.abTests');
   const chartColors = getChartColors(useIsDark());
   const chartData = useMemo(() => {
     const byDate = new Map<
@@ -77,7 +79,7 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
     <div className="grid gap-4 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Tasso di accettazione match</CardTitle>
+          <CardTitle className="text-base">{t('acceptanceRate')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={256}>
@@ -98,7 +100,7 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
               <Line
                 type="monotone"
                 dataKey="treatment_matchRate"
-                name="AI Matching"
+                name={t('aiMatchingLabel')}
                 stroke={AI_COLOR}
                 strokeWidth={2}
                 dot={false}
@@ -106,7 +108,7 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
               <Line
                 type="monotone"
                 dataKey="control_matchRate"
-                name="Controllo"
+                name={t('controlLabel')}
                 stroke={CONTROL_COLOR}
                 strokeWidth={2}
                 dot={false}
@@ -119,7 +121,7 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Tasso di completamento passeggiate</CardTitle>
+          <CardTitle className="text-base">{t('walkCompletionRate')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={256}>
@@ -140,7 +142,7 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
               <Line
                 type="monotone"
                 dataKey="treatment_walkRate"
-                name="AI Matching"
+                name={t('aiMatchingLabel')}
                 stroke={AI_COLOR}
                 strokeWidth={2}
                 dot={false}
@@ -148,7 +150,7 @@ export function AbTestCharts({ data }: AbTestChartsProps) {
               <Line
                 type="monotone"
                 dataKey="control_walkRate"
-                name="Controllo"
+                name={t('controlLabel')}
                 stroke={CONTROL_COLOR}
                 strokeWidth={2}
                 dot={false}

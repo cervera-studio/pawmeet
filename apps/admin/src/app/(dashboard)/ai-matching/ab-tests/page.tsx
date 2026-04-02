@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -38,7 +38,7 @@ export default async function AbTestsPage({ searchParams }: AbTestsPageProps) {
   const dateFrom = params.dateFrom ?? '';
   const dateTo = params.dateTo ?? '';
 
-  const [data, flags, t] = await Promise.all([
+  const [data, flags, t, locale] = await Promise.all([
     fetchExperimentMetrics({
       experimentName,
       dateFrom: dateFrom ? new Date(dateFrom).toISOString() : undefined,
@@ -46,6 +46,7 @@ export default async function AbTestsPage({ searchParams }: AbTestsPageProps) {
     }),
     fetchFeatureFlags().catch(() => ({ flags: [] })),
     getTranslations('aiMatching.abTests'),
+    getLocale(),
   ]);
 
   const experimentNames =
@@ -62,7 +63,7 @@ export default async function AbTestsPage({ searchParams }: AbTestsPageProps) {
   const earliestDate =
     data.timeSeries.length > 0
       ? // biome-ignore lint/style/noNonNullAssertion: length check above guarantees [0] exists
-        new Date(data.timeSeries[0]!.date).toLocaleDateString('it-IT', {
+        new Date(data.timeSeries[0]!.date).toLocaleDateString(locale, {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',

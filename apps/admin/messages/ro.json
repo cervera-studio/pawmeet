@@ -15,7 +15,8 @@
     "delete": "Sterge",
     "active": "Activ",
     "inactive": "Inactiv",
-    "never": "Niciodata"
+    "never": "Niciodata",
+    "edit": "Editeaza"
   },
   "error": {
     "title": "Ceva nu a functionat corect",
@@ -586,6 +587,83 @@
       "pending": "in asteptare",
       "recurring": "Recurent",
       "approval": "Aprobare"
+    },
+    "detail": {
+      "recurring": "Recurent",
+      "createdBy": "Creat de",
+      "backToList": "Inapoi la lista",
+      "cancelEvent": "Anuleaza evenimentul",
+      "cancelling": "Se anuleaza...",
+      "confirmCancel": "Esti sigur ca vrei sa anulezi acest eveniment?",
+      "category": "Categorie",
+      "dateTime": "Data si ora",
+      "minutes": "minute",
+      "participants": "Participanti",
+      "pendingApproval": "{count} in asteptare de aprobare",
+      "visibility": "Vizibilitate",
+      "requiresApproval": "Necesita aprobare",
+      "details": "Detalii",
+      "location": "Locatie",
+      "coordinates": "Coordonate",
+      "description": "Descriere",
+      "recurrenceRule": "Regula de recurenta",
+      "parentEvent": "Eveniment parinte",
+      "createdAt": "Creat la",
+      "updatedAt": "Actualizat la",
+      "sponsors": "Sponsori"
+    },
+    "participants": {
+      "title": "Participanti ({count})",
+      "pastTitle": "Participanti anteriori ({count})",
+      "none": "Niciun participant",
+      "with": "cu",
+      "unknownDog": "caine necunoscut",
+      "organizer": "Organizator",
+      "remove": "Elimina",
+      "confirmRemove": "Eliminati acest participant?",
+      "statuses": {
+        "pending": "In asteptare",
+        "accepted": "Acceptat",
+        "declined": "Refuzat",
+        "removed": "Eliminat",
+        "cancelled": "Anulat"
+      }
+    },
+    "sponsors": {
+      "title": "Sponsori",
+      "addSponsor": "Adauga sponsor",
+      "add": "Adauga",
+      "noSponsors": "Niciun sponsor asociat.",
+      "remove": "Elimina",
+      "loadingOrgs": "Se incarca organizatiile...",
+      "searchOrg": "Cauta organizatie...",
+      "noOrgFound": "Nicio organizatie gasita",
+      "orgTypes": {
+        "pawmeet_team": "PawMeet Team",
+        "association": "Asociatie",
+        "educator": "Educator",
+        "brand": "Brand"
+      }
+    },
+    "createOfficial": {
+      "openButton": "Creeaza Eveniment Principal",
+      "title": "Eveniment Principal Nou",
+      "titleLabel": "Titlu *",
+      "titlePlaceholder": "Plimbare in Parcul Herastrau",
+      "organization": "Organizatie *",
+      "selectOrg": "Selecteaza...",
+      "dateTime": "Data si ora *",
+      "duration": "Durata (minute)",
+      "locationLabel": "Locatie *",
+      "locationPlaceholder": "Parcul Herastrau, Bucuresti",
+      "categoryLabel": "Categorie",
+      "latitude": "Latitudine *",
+      "longitude": "Longitudine *",
+      "maxParticipants": "Max participanti",
+      "descriptionLabel": "Descriere",
+      "descriptionPlaceholder": "Descrierea evenimentului...",
+      "creating": "Se creeaza...",
+      "submit": "Creeaza eveniment"
     }
   },
   "safety": {
@@ -789,7 +867,11 @@
       "chartPlaceholder": "Grafic placeholder — Recharts in curand",
       "experiment": "Experiment",
       "dateFrom": "Data de inceput",
-      "dateTo": "Data de sfarsit"
+      "dateTo": "Data de sfarsit",
+      "acceptanceRate": "Rata de acceptare a match-urilor",
+      "walkCompletionRate": "Rata de finalizare a plimbarilor",
+      "aiMatchingLabel": "AI Matching",
+      "controlLabel": "Control"
     },
     "performance": {
       "title": "Performance Model AI",
@@ -803,7 +885,34 @@
       "chartCalibration": "Curba de calibrare",
       "chartWeights": "Distributia ponderilor caracteristicilor",
       "chartTimeline": "Evolutia performantei in timp",
-      "chartPlaceholder": "Grafic placeholder — Recharts in curand"
+      "chartPlaceholder": "Grafic placeholder — Recharts in curand",
+      "charts": {
+        "calibrationTitle": "Calibrarea modelului",
+        "calibrationEmpty": "Nu exista date de calibrare disponibile.",
+        "observedRate": "Rata observata",
+        "weightTitle": "Distributia ponderilor",
+        "weightEmpty": "Nu exista date de ponderi disponibile.",
+        "avgWeight": "Ponderea medie",
+        "timeSeriesTitle": "Tendinta performantei",
+        "timeSeriesEmpty": "Nu exista date istorice disponibile.",
+        "avgScore": "Scor mediu",
+        "predictions": "Predictii"
+      },
+      "modelRegistry": {
+        "noModels": "Niciun model inregistrat.",
+        "version": "Versiune",
+        "samples": "Esantioane",
+        "status": "Stare",
+        "promotedAt": "Promovat la",
+        "active": "Activ",
+        "inactive": "Inactiv",
+        "promote": "Promoveaza",
+        "promoting": "Promovare...",
+        "confirmTitle": "Confirma promovarea",
+        "confirmDescription": "Vrei sa promovezi modelul {version} in productie? Modelul actual va fi dezactivat.",
+        "promoted": "Modelul {version} promovat",
+        "promoteError": "Eroare la promovarea modelului"
+      }
     },
     "flags": {
       "title": "Feature Flag — AI Matching",
@@ -820,7 +929,16 @@
       "flagScoringStrategy": "Strategia activa de scoring",
       "flagAbTest": "Experiment A/B test ML matching",
       "flagConfidenceThreshold": "Prag minim de incredere",
-      "emptyState": "Niciun feature flag configurat"
+      "emptyState": "Niciun feature flag configurat",
+      "editDialog": {
+        "title": "Editeaza flag",
+        "status": "Stare",
+        "active": "Activ",
+        "inactive": "Dezactivat",
+        "splitPercentage": "Procentaj split (treatment)",
+        "splitInfo": "Control: {control}% / Treatment: {treatment}%",
+        "warning": "Atentie: modificarea acestui flag afecteaza comportamentul matching-ului in productie. Asigura-te ca ai verificat impactul inainte de a salva."
+      }
     }
   },
   "adminUsers": {

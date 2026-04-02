@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -24,6 +24,8 @@ interface FitnessStatsViewProps {
 
 export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
   const t = useTranslations('fitness');
+  const locale = useLocale();
+  const dateLocale = { it: 'it-IT', en: 'en-US', es: 'es-ES', ro: 'ro-RO' }[locale] ?? 'it-IT';
 
   return (
     <div className="space-y-6">
@@ -37,7 +39,7 @@ export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-neutral-900">
-              {stats.totalWalks.toLocaleString('it-IT')}
+              {stats.totalWalks.toLocaleString(dateLocale)}
             </p>
           </CardContent>
         </Card>
@@ -50,7 +52,7 @@ export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-neutral-900">
-              {stats.totalDistanceKm.toLocaleString('it-IT')} km
+              {stats.totalDistanceKm.toLocaleString(dateLocale)} km
             </p>
           </CardContent>
         </Card>
@@ -63,7 +65,7 @@ export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-neutral-900">
-              {stats.avgDistanceKm.toLocaleString('it-IT')} km
+              {stats.avgDistanceKm.toLocaleString(dateLocale)} km
             </p>
           </CardContent>
         </Card>
@@ -92,7 +94,7 @@ export function FitnessStatsView({ stats }: FitnessStatsViewProps) {
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell>{walker.displayName ?? t('stats.unknownUser')}</TableCell>
                     <TableCell className="text-right">
-                      {walker.totalKm.toLocaleString('it-IT')} km
+                      {walker.totalKm.toLocaleString(dateLocale)} km
                     </TableCell>
                   </TableRow>
                 ))}

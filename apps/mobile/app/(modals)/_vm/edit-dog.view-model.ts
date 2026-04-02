@@ -1,5 +1,4 @@
 import type { RouterOutput } from '@pawmeet/api-client';
-import { PHOTO_MODERATION_STATUS } from '@pawmeet/types';
 import {
   BEHAVIOR_DOGS_OPTIONS,
   BEHAVIOR_PEOPLE_OPTIONS,
@@ -22,6 +21,7 @@ import type {
   WalkTerrain,
   WalkTime,
 } from '@pawmeet/types';
+import { PHOTO_MODERATION_STATUS } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

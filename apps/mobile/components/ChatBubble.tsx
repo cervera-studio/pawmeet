@@ -1,4 +1,4 @@
-import { MESSAGE_STATUS, type ChatMessageReplyPreview, type MessageStatus } from '@pawmeet/types';
+import { type ChatMessageReplyPreview, MESSAGE_STATUS, type MessageStatus } from '@pawmeet/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Linking, Pressable, Text, View } from 'react-native';

@@ -1,10 +1,12 @@
+import type { DogSize } from '@pawmeet/types';
+
 /**
  * Analyzes a dog photo to extract breed, size, and age estimates.
  */
 export interface DogPhotoAnalysisResult {
   breed: string;
   breedSecondary?: string;
-  size: 'toy' | 'small' | 'medium' | 'large' | 'giant';
+  size: DogSize;
   ageEstimate?: string;
   confidence: number;
 }

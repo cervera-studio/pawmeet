@@ -1,3 +1,4 @@
+import { BEHAVIOR_WITH_DOGS, DOG_SIZE, ENERGY_LEVEL } from '@pawmeet/config';
 import { describe, expect, it } from 'vitest';
 import {
   calculateBehaviorScore,
@@ -8,53 +9,61 @@ import {
 
 describe('calculateSizeScore', () => {
   it('returns 1.0 for same size', () => {
-    expect(calculateSizeScore('medium', 'medium')).toBe(1.0);
-    expect(calculateSizeScore('toy', 'toy')).toBe(1.0);
-    expect(calculateSizeScore('giant', 'giant')).toBe(1.0);
+    expect(calculateSizeScore(DOG_SIZE.MEDIUM, DOG_SIZE.MEDIUM)).toBe(1.0);
+    expect(calculateSizeScore(DOG_SIZE.TOY, DOG_SIZE.TOY)).toBe(1.0);
+    expect(calculateSizeScore(DOG_SIZE.GIANT, DOG_SIZE.GIANT)).toBe(1.0);
   });
 
   it('returns symmetric scores', () => {
-    expect(calculateSizeScore('small', 'large')).toBe(calculateSizeScore('large', 'small'));
+    expect(calculateSizeScore(DOG_SIZE.SMALL, DOG_SIZE.LARGE)).toBe(
+      calculateSizeScore(DOG_SIZE.LARGE, DOG_SIZE.SMALL),
+    );
   });
 
   it('returns 0.0 for extreme mismatch', () => {
-    expect(calculateSizeScore('toy', 'giant')).toBe(0.0);
+    expect(calculateSizeScore(DOG_SIZE.TOY, DOG_SIZE.GIANT)).toBe(0.0);
   });
 
   it('returns higher score for closer sizes', () => {
-    expect(calculateSizeScore('medium', 'large')).toBeGreaterThan(
-      calculateSizeScore('medium', 'giant'),
+    expect(calculateSizeScore(DOG_SIZE.MEDIUM, DOG_SIZE.LARGE)).toBeGreaterThan(
+      calculateSizeScore(DOG_SIZE.MEDIUM, DOG_SIZE.GIANT),
     );
   });
 });
 
 describe('calculateEnergyScore', () => {
   it('returns 1.0 for same energy level', () => {
-    expect(calculateEnergyScore('high', 'high')).toBe(1.0);
+    expect(calculateEnergyScore(ENERGY_LEVEL.HIGH, ENERGY_LEVEL.HIGH)).toBe(1.0);
   });
 
   it('returns 0.0 for extreme mismatch', () => {
-    expect(calculateEnergyScore('low', 'very_high')).toBe(0.0);
+    expect(calculateEnergyScore(ENERGY_LEVEL.LOW, ENERGY_LEVEL.VERY_HIGH)).toBe(0.0);
   });
 
   it('returns higher score for closer levels', () => {
-    expect(calculateEnergyScore('medium', 'high')).toBeGreaterThan(
-      calculateEnergyScore('medium', 'very_high'),
+    expect(calculateEnergyScore(ENERGY_LEVEL.MEDIUM, ENERGY_LEVEL.HIGH)).toBeGreaterThan(
+      calculateEnergyScore(ENERGY_LEVEL.MEDIUM, ENERGY_LEVEL.VERY_HIGH),
     );
   });
 });
 
 describe('calculateBehaviorScore', () => {
   it('returns 1.0 for same behavior', () => {
-    expect(calculateBehaviorScore('very_friendly', 'very_friendly')).toBe(1.0);
+    expect(
+      calculateBehaviorScore(BEHAVIOR_WITH_DOGS.VERY_FRIENDLY, BEHAVIOR_WITH_DOGS.VERY_FRIENDLY),
+    ).toBe(1.0);
   });
 
   it('returns 0.0 for two reactive dogs', () => {
-    expect(calculateBehaviorScore('reactive', 'reactive')).toBe(0.0);
+    expect(calculateBehaviorScore(BEHAVIOR_WITH_DOGS.REACTIVE, BEHAVIOR_WITH_DOGS.REACTIVE)).toBe(
+      0.0,
+    );
   });
 
   it('penalizes reactive with social', () => {
-    expect(calculateBehaviorScore('very_friendly', 'reactive')).toBeLessThanOrEqual(0.2);
+    expect(
+      calculateBehaviorScore(BEHAVIOR_WITH_DOGS.VERY_FRIENDLY, BEHAVIOR_WITH_DOGS.REACTIVE),
+    ).toBeLessThanOrEqual(0.2);
   });
 });
 

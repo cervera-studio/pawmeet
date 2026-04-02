@@ -1,26 +1,97 @@
 // Compatibility matrices from MVP spec (doc 02)
+import { BEHAVIOR_WITH_DOGS, DOG_SIZE, ENERGY_LEVEL } from '@pawmeet/config';
 import type { BehaviorWithDogs, DogSize, EnergyLevel } from '@pawmeet/types';
 
 const SIZE_MATRIX: Record<DogSize, Record<DogSize, number>> = {
-  toy: { toy: 1.0, small: 0.7, medium: 0.3, large: 0.1, giant: 0.0 },
-  small: { toy: 0.7, small: 1.0, medium: 0.7, large: 0.3, giant: 0.1 },
-  medium: { toy: 0.3, small: 0.7, medium: 1.0, large: 0.7, giant: 0.3 },
-  large: { toy: 0.1, small: 0.3, medium: 0.7, large: 1.0, giant: 0.7 },
-  giant: { toy: 0.0, small: 0.1, medium: 0.3, large: 0.7, giant: 1.0 },
+  [DOG_SIZE.TOY]: {
+    [DOG_SIZE.TOY]: 1.0,
+    [DOG_SIZE.SMALL]: 0.7,
+    [DOG_SIZE.MEDIUM]: 0.3,
+    [DOG_SIZE.LARGE]: 0.1,
+    [DOG_SIZE.GIANT]: 0.0,
+  },
+  [DOG_SIZE.SMALL]: {
+    [DOG_SIZE.TOY]: 0.7,
+    [DOG_SIZE.SMALL]: 1.0,
+    [DOG_SIZE.MEDIUM]: 0.7,
+    [DOG_SIZE.LARGE]: 0.3,
+    [DOG_SIZE.GIANT]: 0.1,
+  },
+  [DOG_SIZE.MEDIUM]: {
+    [DOG_SIZE.TOY]: 0.3,
+    [DOG_SIZE.SMALL]: 0.7,
+    [DOG_SIZE.MEDIUM]: 1.0,
+    [DOG_SIZE.LARGE]: 0.7,
+    [DOG_SIZE.GIANT]: 0.3,
+  },
+  [DOG_SIZE.LARGE]: {
+    [DOG_SIZE.TOY]: 0.1,
+    [DOG_SIZE.SMALL]: 0.3,
+    [DOG_SIZE.MEDIUM]: 0.7,
+    [DOG_SIZE.LARGE]: 1.0,
+    [DOG_SIZE.GIANT]: 0.7,
+  },
+  [DOG_SIZE.GIANT]: {
+    [DOG_SIZE.TOY]: 0.0,
+    [DOG_SIZE.SMALL]: 0.1,
+    [DOG_SIZE.MEDIUM]: 0.3,
+    [DOG_SIZE.LARGE]: 0.7,
+    [DOG_SIZE.GIANT]: 1.0,
+  },
 };
 
 const ENERGY_MATRIX: Record<EnergyLevel, Record<EnergyLevel, number>> = {
-  low: { low: 1.0, medium: 0.6, high: 0.2, very_high: 0.0 },
-  medium: { low: 0.6, medium: 1.0, high: 0.7, very_high: 0.3 },
-  high: { low: 0.2, medium: 0.7, high: 1.0, very_high: 0.8 },
-  very_high: { low: 0.0, medium: 0.3, high: 0.8, very_high: 1.0 },
+  [ENERGY_LEVEL.LOW]: {
+    [ENERGY_LEVEL.LOW]: 1.0,
+    [ENERGY_LEVEL.MEDIUM]: 0.6,
+    [ENERGY_LEVEL.HIGH]: 0.2,
+    [ENERGY_LEVEL.VERY_HIGH]: 0.0,
+  },
+  [ENERGY_LEVEL.MEDIUM]: {
+    [ENERGY_LEVEL.LOW]: 0.6,
+    [ENERGY_LEVEL.MEDIUM]: 1.0,
+    [ENERGY_LEVEL.HIGH]: 0.7,
+    [ENERGY_LEVEL.VERY_HIGH]: 0.3,
+  },
+  [ENERGY_LEVEL.HIGH]: {
+    [ENERGY_LEVEL.LOW]: 0.2,
+    [ENERGY_LEVEL.MEDIUM]: 0.7,
+    [ENERGY_LEVEL.HIGH]: 1.0,
+    [ENERGY_LEVEL.VERY_HIGH]: 0.8,
+  },
+  [ENERGY_LEVEL.VERY_HIGH]: {
+    [ENERGY_LEVEL.LOW]: 0.0,
+    [ENERGY_LEVEL.MEDIUM]: 0.3,
+    [ENERGY_LEVEL.HIGH]: 0.8,
+    [ENERGY_LEVEL.VERY_HIGH]: 1.0,
+  },
 };
 
 const BEHAVIOR_MATRIX: Record<BehaviorWithDogs, Record<BehaviorWithDogs, number>> = {
-  very_friendly: { very_friendly: 1.0, friendly: 0.9, selective: 0.5, reactive: 0.2 },
-  friendly: { very_friendly: 0.9, friendly: 1.0, selective: 0.6, reactive: 0.3 },
-  selective: { very_friendly: 0.5, friendly: 0.6, selective: 0.7, reactive: 0.2 },
-  reactive: { very_friendly: 0.2, friendly: 0.3, selective: 0.2, reactive: 0.0 },
+  [BEHAVIOR_WITH_DOGS.VERY_FRIENDLY]: {
+    [BEHAVIOR_WITH_DOGS.VERY_FRIENDLY]: 1.0,
+    [BEHAVIOR_WITH_DOGS.FRIENDLY]: 0.9,
+    [BEHAVIOR_WITH_DOGS.SELECTIVE]: 0.5,
+    [BEHAVIOR_WITH_DOGS.REACTIVE]: 0.2,
+  },
+  [BEHAVIOR_WITH_DOGS.FRIENDLY]: {
+    [BEHAVIOR_WITH_DOGS.VERY_FRIENDLY]: 0.9,
+    [BEHAVIOR_WITH_DOGS.FRIENDLY]: 1.0,
+    [BEHAVIOR_WITH_DOGS.SELECTIVE]: 0.6,
+    [BEHAVIOR_WITH_DOGS.REACTIVE]: 0.3,
+  },
+  [BEHAVIOR_WITH_DOGS.SELECTIVE]: {
+    [BEHAVIOR_WITH_DOGS.VERY_FRIENDLY]: 0.5,
+    [BEHAVIOR_WITH_DOGS.FRIENDLY]: 0.6,
+    [BEHAVIOR_WITH_DOGS.SELECTIVE]: 0.7,
+    [BEHAVIOR_WITH_DOGS.REACTIVE]: 0.2,
+  },
+  [BEHAVIOR_WITH_DOGS.REACTIVE]: {
+    [BEHAVIOR_WITH_DOGS.VERY_FRIENDLY]: 0.2,
+    [BEHAVIOR_WITH_DOGS.FRIENDLY]: 0.3,
+    [BEHAVIOR_WITH_DOGS.SELECTIVE]: 0.2,
+    [BEHAVIOR_WITH_DOGS.REACTIVE]: 0.0,
+  },
 };
 
 export function calculateSizeScore(a: DogSize, b: DogSize): number {

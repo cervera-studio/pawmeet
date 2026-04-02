@@ -1,11 +1,12 @@
 import type Anthropic from '@anthropic-ai/sdk';
+import { DOG_SIZE } from '@pawmeet/config';
 import { logger } from '@pawmeet/utils';
 import type {
   DogPhotoAnalysisResult,
   DogPhotoAnalysisService,
 } from '../ports/dog-photo-analysis-service.js';
 
-const VALID_SIZES = ['toy', 'small', 'medium', 'large', 'giant'] as const;
+const VALID_SIZES = Object.values(DOG_SIZE);
 
 export class ClaudeDogPhotoAnalysisService implements DogPhotoAnalysisService {
   constructor(private client: Anthropic) {}
@@ -52,10 +53,10 @@ export class ClaudeDogPhotoAnalysisService implements DogPhotoAnalysisService {
 
       if (result.error === 'not_a_dog') return null;
 
-      const size = String(result.size ?? 'medium');
-      const validSize = VALID_SIZES.includes(size as (typeof VALID_SIZES)[number])
+      const size = String(result.size ?? DOG_SIZE.MEDIUM);
+      const validSize = VALID_SIZES.includes(size as DogPhotoAnalysisResult['size'])
         ? (size as DogPhotoAnalysisResult['size'])
-        : 'medium';
+        : DOG_SIZE.MEDIUM;
 
       return {
         breed: String(result.breed ?? ''),

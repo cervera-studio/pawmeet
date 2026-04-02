@@ -1,12 +1,14 @@
 'use client';
 
+import { DOG_SIZE } from '@pawmeet/config';
+import type { DogSize } from '@pawmeet/types';
 import { useTranslations } from 'next-intl';
 import type { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import type { BreedFormValues } from '@/lib/schemas/breed';
 
-export const SIZE_CATEGORIES = ['toy', 'small', 'medium', 'large', 'giant'] as const;
-export type SizeCategory = (typeof SIZE_CATEGORIES)[number];
+export const SIZE_CATEGORIES = Object.values(DOG_SIZE) as DogSize[];
+export type SizeCategory = DogSize;
 
 export const BREED_GROUPS = [
   'Herding',

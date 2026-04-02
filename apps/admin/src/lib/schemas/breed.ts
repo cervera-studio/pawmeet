@@ -1,9 +1,11 @@
+import { DOG_SIZE } from '@pawmeet/config';
+import type { DogSize } from '@pawmeet/types';
 import type { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
 type ValidationTranslationFn = ReturnType<typeof useTranslations<'validation'>>;
 
-const SIZE_CATEGORIES = ['toy', 'small', 'medium', 'large', 'giant'] as const;
+const SIZE_CATEGORIES = Object.values(DOG_SIZE) as [DogSize, ...DogSize[]];
 
 const BREED_GROUPS = [
   'Herding',

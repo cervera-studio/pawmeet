@@ -1,4 +1,4 @@
-import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/config';
+import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM, WALK_TERRAIN } from '@pawmeet/config';
 import type { WalkSuggestion, WalkSuggestionDog, WalkTerrain } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { calculateDistance } from '@pawmeet/utils';
@@ -183,7 +183,10 @@ export function createSuggestWalks({
       );
       if (compatibleDogs.length === 0) continue;
 
-      const terrainSuggestion = pickTopTerrain(terrainCounts, myDog.walkPrefTerrain[0] ?? 'park');
+      const terrainSuggestion = pickTopTerrain(
+        terrainCounts,
+        myDog.walkPrefTerrain[0] ?? WALK_TERRAIN.PARK,
+      );
       const compatibleDogIds = new Set(compatibleDogs.map((d) => d.dogId));
       const estimatedDurationMin = estimateDuration(candidates, compatibleDogIds, myDog);
       const avgCompatibility =

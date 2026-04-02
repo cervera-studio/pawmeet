@@ -1,4 +1,13 @@
-import { COMPATIBILITY_THRESHOLD } from '@pawmeet/config';
+import {
+  BEHAVIOR_WITH_DOGS,
+  COMPATIBILITY_THRESHOLD,
+  DOG_SIZE,
+  ENERGY_LEVEL,
+  GENDER,
+  LEASH_BEHAVIOR,
+  WALK_TERRAIN,
+  WALK_TIME,
+} from '@pawmeet/config';
 import type { DiscoveryFilters } from '@pawmeet/types';
 import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
@@ -48,14 +57,14 @@ describe('discoverCandidates', () => {
       dog: buildDog({
         id: 'dog-3',
         ownerId: 'user-3',
-        size: 'toy',
-        energyLevel: 'low',
-        behaviorWithDogs: 'reactive',
-        leashBehavior: 'difficult',
-        walkPrefTime: ['late_evening'],
+        size: DOG_SIZE.TOY,
+        energyLevel: ENERGY_LEVEL.LOW,
+        behaviorWithDogs: BEHAVIOR_WITH_DOGS.REACTIVE,
+        leashBehavior: LEASH_BEHAVIOR.DIFFICULT,
+        walkPrefTime: [WALK_TIME.LATE_EVENING],
         walkPrefDurationMin: 10,
         walkPrefDurationMax: 15,
-        walkPrefTerrain: ['beach'],
+        walkPrefTerrain: [WALK_TERRAIN.BEACH],
       }),
     });
 
@@ -156,10 +165,10 @@ describe('discoverCandidates', () => {
     const myDog = buildDog();
     const user = buildUser();
     const smallCandidate = buildCandidate({
-      dog: buildDog({ id: 'dog-small', ownerId: 'user-2', size: 'toy', name: 'Tiny' }),
+      dog: buildDog({ id: 'dog-small', ownerId: 'user-2', size: DOG_SIZE.TOY, name: 'Tiny' }),
     });
     const largeCandidate = buildCandidate({
-      dog: buildDog({ id: 'dog-large', ownerId: 'user-3', size: 'large', name: 'Big' }),
+      dog: buildDog({ id: 'dog-large', ownerId: 'user-3', size: DOG_SIZE.LARGE, name: 'Big' }),
     });
 
     const dogRepo = buildDogRepo({ findByIdAndOwner: vi.fn().mockResolvedValue(myDog) });
@@ -174,12 +183,12 @@ describe('discoverCandidates', () => {
       userRepo,
       followRepo: buildFollowRepo(),
     });
-    const filters: DiscoveryFilters = { size: ['large'] };
+    const filters: DiscoveryFilters = { size: [DOG_SIZE.LARGE] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.suggestions.every((s) => s.dog.size === 'large')).toBe(true);
+    expect(result.data.suggestions.every((s) => s.dog.size === DOG_SIZE.LARGE)).toBe(true);
     expect(result.data.suggestions.some((s) => s.dog.id === 'dog-small')).toBe(false);
   });
 
@@ -187,10 +196,20 @@ describe('discoverCandidates', () => {
     const myDog = buildDog();
     const user = buildUser();
     const lowEnergy = buildCandidate({
-      dog: buildDog({ id: 'dog-low', ownerId: 'user-2', energyLevel: 'low', name: 'Lazy' }),
+      dog: buildDog({
+        id: 'dog-low',
+        ownerId: 'user-2',
+        energyLevel: ENERGY_LEVEL.LOW,
+        name: 'Lazy',
+      }),
     });
     const highEnergy = buildCandidate({
-      dog: buildDog({ id: 'dog-high', ownerId: 'user-3', energyLevel: 'high', name: 'Zoom' }),
+      dog: buildDog({
+        id: 'dog-high',
+        ownerId: 'user-3',
+        energyLevel: ENERGY_LEVEL.HIGH,
+        name: 'Zoom',
+      }),
     });
 
     const dogRepo = buildDogRepo({ findByIdAndOwner: vi.fn().mockResolvedValue(myDog) });
@@ -205,22 +224,24 @@ describe('discoverCandidates', () => {
       userRepo,
       followRepo: buildFollowRepo(),
     });
-    const filters: DiscoveryFilters = { energyLevel: ['high'] };
+    const filters: DiscoveryFilters = { energyLevel: [ENERGY_LEVEL.HIGH] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.suggestions.every((s) => s.dog.energyLevel === 'high')).toBe(true);
+    expect(result.data.suggestions.every((s) => s.dog.energyLevel === ENERGY_LEVEL.HIGH)).toBe(
+      true,
+    );
   });
 
   it('filters by gender', async () => {
     const myDog = buildDog();
     const user = buildUser();
     const male = buildCandidate({
-      dog: buildDog({ id: 'dog-m', ownerId: 'user-2', gender: 'male', name: 'Max' }),
+      dog: buildDog({ id: 'dog-m', ownerId: 'user-2', gender: GENDER.MALE, name: 'Max' }),
     });
     const female = buildCandidate({
-      dog: buildDog({ id: 'dog-f', ownerId: 'user-3', gender: 'female', name: 'Luna' }),
+      dog: buildDog({ id: 'dog-f', ownerId: 'user-3', gender: GENDER.FEMALE, name: 'Luna' }),
     });
 
     const dogRepo = buildDogRepo({ findByIdAndOwner: vi.fn().mockResolvedValue(myDog) });
@@ -235,12 +256,12 @@ describe('discoverCandidates', () => {
       userRepo,
       followRepo: buildFollowRepo(),
     });
-    const filters: DiscoveryFilters = { gender: ['female'] };
+    const filters: DiscoveryFilters = { gender: [GENDER.FEMALE] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.suggestions.every((s) => s.dog.gender === 'female')).toBe(true);
+    expect(result.data.suggestions.every((s) => s.dog.gender === GENDER.FEMALE)).toBe(true);
     expect(result.data.suggestions.some((s) => s.dog.id === 'dog-m')).toBe(false);
   });
 
@@ -251,8 +272,8 @@ describe('discoverCandidates', () => {
       dog: buildDog({
         id: 'dog-both',
         ownerId: 'user-2',
-        size: 'large',
-        energyLevel: 'high',
+        size: DOG_SIZE.LARGE,
+        energyLevel: ENERGY_LEVEL.HIGH,
         name: 'Perfect',
       }),
     });
@@ -260,8 +281,8 @@ describe('discoverCandidates', () => {
       dog: buildDog({
         id: 'dog-size',
         ownerId: 'user-3',
-        size: 'large',
-        energyLevel: 'low',
+        size: DOG_SIZE.LARGE,
+        energyLevel: ENERGY_LEVEL.LOW,
         name: 'BigSlow',
       }),
     });
@@ -269,8 +290,8 @@ describe('discoverCandidates', () => {
       dog: buildDog({
         id: 'dog-energy',
         ownerId: 'user-4',
-        size: 'toy',
-        energyLevel: 'high',
+        size: DOG_SIZE.TOY,
+        energyLevel: ENERGY_LEVEL.HIGH,
         name: 'SmallFast',
       }),
     });
@@ -289,7 +310,7 @@ describe('discoverCandidates', () => {
       userRepo,
       followRepo: buildFollowRepo(),
     });
-    const filters: DiscoveryFilters = { size: ['large'], energyLevel: ['high'] };
+    const filters: DiscoveryFilters = { size: [DOG_SIZE.LARGE], energyLevel: [ENERGY_LEVEL.HIGH] };
     const result = await discover('user-1', 'dog-1', undefined, filters);
 
     expect(isSuccess(result)).toBe(true);

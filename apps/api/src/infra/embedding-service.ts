@@ -1,3 +1,14 @@
+import {
+  BEHAVIOR_WITH_DOGS,
+  BEHAVIOR_WITH_PEOPLE,
+  DOG_SIZE,
+  ENERGY_LEVEL,
+  GENDER,
+  LEASH_BEHAVIOR,
+  RECALL_RELIABILITY,
+  WALK_TERRAIN,
+  WALK_TIME,
+} from '@pawmeet/config';
 import type { DogProfile } from '@pawmeet/types';
 import type { EmbeddingService } from '../ports/embedding-service.js';
 
@@ -7,21 +18,57 @@ const MODEL_VERSION = 'local-v1';
 
 // ── Categorical mappings ────────────────────────────────────────────────────
 
-const SIZE_MAP = { toy: 0, small: 1, medium: 2, large: 3, giant: 4 } as const;
-const ENERGY_MAP = { low: 0, medium: 1, high: 2, very_high: 3 } as const;
-const BEHAVIOR_DOG_MAP = { very_friendly: 0, friendly: 1, selective: 2, reactive: 3 } as const;
-const BEHAVIOR_PEOPLE_MAP = {
-  very_friendly: 0,
-  friendly: 1,
-  shy: 2,
-  wary: 3,
+const SIZE_MAP = {
+  [DOG_SIZE.TOY]: 0,
+  [DOG_SIZE.SMALL]: 1,
+  [DOG_SIZE.MEDIUM]: 2,
+  [DOG_SIZE.LARGE]: 3,
+  [DOG_SIZE.GIANT]: 4,
 } as const;
-const LEASH_MAP = { excellent: 0, good: 1, in_training: 2, difficult: 3 } as const;
-const GENDER_MAP = { male: 0, female: 1 } as const;
-const RECALL_MAP = { reliable: 0, partial: 1, unreliable: 2 } as const;
+const ENERGY_MAP = {
+  [ENERGY_LEVEL.LOW]: 0,
+  [ENERGY_LEVEL.MEDIUM]: 1,
+  [ENERGY_LEVEL.HIGH]: 2,
+  [ENERGY_LEVEL.VERY_HIGH]: 3,
+} as const;
+const BEHAVIOR_DOG_MAP = {
+  [BEHAVIOR_WITH_DOGS.VERY_FRIENDLY]: 0,
+  [BEHAVIOR_WITH_DOGS.FRIENDLY]: 1,
+  [BEHAVIOR_WITH_DOGS.SELECTIVE]: 2,
+  [BEHAVIOR_WITH_DOGS.REACTIVE]: 3,
+} as const;
+const BEHAVIOR_PEOPLE_MAP = {
+  [BEHAVIOR_WITH_PEOPLE.VERY_FRIENDLY]: 0,
+  [BEHAVIOR_WITH_PEOPLE.FRIENDLY]: 1,
+  [BEHAVIOR_WITH_PEOPLE.SHY]: 2,
+  [BEHAVIOR_WITH_PEOPLE.WARY]: 3,
+} as const;
+const LEASH_MAP = {
+  [LEASH_BEHAVIOR.EXCELLENT]: 0,
+  [LEASH_BEHAVIOR.GOOD]: 1,
+  [LEASH_BEHAVIOR.IN_TRAINING]: 2,
+  [LEASH_BEHAVIOR.DIFFICULT]: 3,
+} as const;
+const GENDER_MAP = { [GENDER.MALE]: 0, [GENDER.FEMALE]: 1 } as const;
+const RECALL_MAP = {
+  [RECALL_RELIABILITY.RELIABLE]: 0,
+  [RECALL_RELIABILITY.PARTIAL]: 1,
+  [RECALL_RELIABILITY.UNRELIABLE]: 2,
+} as const;
 
-const TIME_SLOTS = ['morning', 'afternoon', 'evening', 'late_evening'] as const;
-const TERRAINS = ['urban', 'park', 'countryside', 'beach', 'mountain'] as const;
+const TIME_SLOTS = [
+  WALK_TIME.MORNING,
+  WALK_TIME.AFTERNOON,
+  WALK_TIME.EVENING,
+  WALK_TIME.LATE_EVENING,
+] as const;
+const TERRAINS = [
+  WALK_TERRAIN.URBAN,
+  WALK_TERRAIN.PARK,
+  WALK_TERRAIN.COUNTRYSIDE,
+  WALK_TERRAIN.BEACH,
+  WALK_TERRAIN.MOUNTAIN,
+] as const;
 
 // ── One-hot encoding helpers ────────────────────────────────────────────────
 

@@ -1,8 +1,9 @@
 'use server';
 
+import type { DogSize } from '@pawmeet/types';
 import { getServerTrpcClient } from '@/lib/server-api';
 
-type SizeCategory = 'toy' | 'small' | 'medium' | 'large' | 'giant';
+type SizeCategory = DogSize;
 
 export async function fetchBreeds(params: {
   page: number;

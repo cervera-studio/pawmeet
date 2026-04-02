@@ -1,5 +1,13 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
+import {
+  BEHAVIOR_WITH_DOGS,
+  DOG_SIZE,
+  ENERGY_LEVEL,
+  GENDER,
+  WALK_TERRAIN,
+  WALK_TIME,
+} from '@pawmeet/config';
 import type { DiscoveryFilters } from '@pawmeet/types';
 import { formatDogAge } from '@pawmeet/utils';
 import { useEffect, useState } from 'react';
@@ -28,61 +36,64 @@ const getFilterSections = (t: (key: string) => string): FilterSection<keyof Disc
     key: 'size',
     label: t('discovery.filters.size'),
     options: [
-      { value: 'toy', label: t('discovery.sizeOptions.toy') },
-      { value: 'small', label: t('discovery.sizeOptions.small') },
-      { value: 'medium', label: t('discovery.sizeOptions.medium') },
-      { value: 'large', label: t('discovery.sizeOptions.large') },
-      { value: 'giant', label: t('discovery.sizeOptions.giant') },
+      { value: DOG_SIZE.TOY, label: t('discovery.sizeOptions.toy') },
+      { value: DOG_SIZE.SMALL, label: t('discovery.sizeOptions.small') },
+      { value: DOG_SIZE.MEDIUM, label: t('discovery.sizeOptions.medium') },
+      { value: DOG_SIZE.LARGE, label: t('discovery.sizeOptions.large') },
+      { value: DOG_SIZE.GIANT, label: t('discovery.sizeOptions.giant') },
     ],
   },
   {
     key: 'energyLevel',
     label: t('discovery.filters.energy'),
     options: [
-      { value: 'low', label: t('discovery.energyOptions.low') },
-      { value: 'medium', label: t('discovery.energyOptions.medium') },
-      { value: 'high', label: t('discovery.energyOptions.high') },
-      { value: 'very_high', label: t('discovery.energyOptions.very_high') },
+      { value: ENERGY_LEVEL.LOW, label: t('discovery.energyOptions.low') },
+      { value: ENERGY_LEVEL.MEDIUM, label: t('discovery.energyOptions.medium') },
+      { value: ENERGY_LEVEL.HIGH, label: t('discovery.energyOptions.high') },
+      { value: ENERGY_LEVEL.VERY_HIGH, label: t('discovery.energyOptions.very_high') },
     ],
   },
   {
     key: 'gender',
     label: t('discovery.filters.gender'),
     options: [
-      { value: 'male', label: t('discovery.genderOptions.male') },
-      { value: 'female', label: t('discovery.genderOptions.female') },
+      { value: GENDER.MALE, label: t('discovery.genderOptions.male') },
+      { value: GENDER.FEMALE, label: t('discovery.genderOptions.female') },
     ],
   },
   {
     key: 'behaviorWithDogs',
     label: t('discovery.filters.behavior'),
     options: [
-      { value: 'very_friendly', label: t('discovery.behaviorOptions.very_friendly') },
-      { value: 'friendly', label: t('discovery.behaviorOptions.friendly') },
-      { value: 'selective', label: t('discovery.behaviorOptions.selective') },
-      { value: 'reactive', label: t('discovery.behaviorOptions.reactive') },
+      {
+        value: BEHAVIOR_WITH_DOGS.VERY_FRIENDLY,
+        label: t('discovery.behaviorOptions.very_friendly'),
+      },
+      { value: BEHAVIOR_WITH_DOGS.FRIENDLY, label: t('discovery.behaviorOptions.friendly') },
+      { value: BEHAVIOR_WITH_DOGS.SELECTIVE, label: t('discovery.behaviorOptions.selective') },
+      { value: BEHAVIOR_WITH_DOGS.REACTIVE, label: t('discovery.behaviorOptions.reactive') },
     ],
   },
   {
     key: 'walkPrefTime',
     label: t('discovery.filters.schedule'),
     options: [
-      { value: 'early_morning', label: t('discovery.scheduleOptions.early_morning') },
-      { value: 'morning', label: t('discovery.scheduleOptions.morning') },
-      { value: 'afternoon', label: t('discovery.scheduleOptions.afternoon') },
-      { value: 'evening', label: t('discovery.scheduleOptions.evening') },
-      { value: 'late_evening', label: t('discovery.scheduleOptions.late_evening') },
+      { value: WALK_TIME.EARLY_MORNING, label: t('discovery.scheduleOptions.early_morning') },
+      { value: WALK_TIME.MORNING, label: t('discovery.scheduleOptions.morning') },
+      { value: WALK_TIME.AFTERNOON, label: t('discovery.scheduleOptions.afternoon') },
+      { value: WALK_TIME.EVENING, label: t('discovery.scheduleOptions.evening') },
+      { value: WALK_TIME.LATE_EVENING, label: t('discovery.scheduleOptions.late_evening') },
     ],
   },
   {
     key: 'walkPrefTerrain',
     label: t('discovery.filters.terrain'),
     options: [
-      { value: 'urban', label: t('discovery.terrainOptions.urban') },
-      { value: 'park', label: t('discovery.terrainOptions.park') },
-      { value: 'countryside', label: t('discovery.terrainOptions.countryside') },
-      { value: 'beach', label: t('discovery.terrainOptions.beach') },
-      { value: 'mountain', label: t('discovery.terrainOptions.mountain') },
+      { value: WALK_TERRAIN.URBAN, label: t('discovery.terrainOptions.urban') },
+      { value: WALK_TERRAIN.PARK, label: t('discovery.terrainOptions.park') },
+      { value: WALK_TERRAIN.COUNTRYSIDE, label: t('discovery.terrainOptions.countryside') },
+      { value: WALK_TERRAIN.BEACH, label: t('discovery.terrainOptions.beach') },
+      { value: WALK_TERRAIN.MOUNTAIN, label: t('discovery.terrainOptions.mountain') },
     ],
   },
 ];

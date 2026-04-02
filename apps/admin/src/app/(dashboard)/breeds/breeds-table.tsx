@@ -1,6 +1,6 @@
 'use client';
 
-import { getBreedName } from '@pawmeet/config';
+import { DOG_SIZE, getBreedName } from '@pawmeet/config';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
@@ -28,20 +28,22 @@ function ScoreBar({ value }: { value: number | null }) {
   );
 }
 
-function getSizeBadgeVariant(size: string) {
+type BadgeVariant = 'outline' | 'secondary' | 'default' | 'success' | 'destructive';
+
+function getSizeBadgeVariant(size: string): BadgeVariant {
   switch (size) {
-    case 'toy':
-      return 'outline' as const;
-    case 'small':
-      return 'secondary' as const;
-    case 'medium':
-      return 'default' as const;
-    case 'large':
-      return 'success' as const;
-    case 'giant':
-      return 'destructive' as const;
+    case DOG_SIZE.TOY:
+      return 'outline';
+    case DOG_SIZE.SMALL:
+      return 'secondary';
+    case DOG_SIZE.MEDIUM:
+      return 'default';
+    case DOG_SIZE.LARGE:
+      return 'success';
+    case DOG_SIZE.GIANT:
+      return 'destructive';
     default:
-      return 'outline' as const;
+      return 'outline';
   }
 }
 

@@ -1,5 +1,5 @@
 import type { DogSizeCategory } from '@pawmeet/config';
-import { BREED_ACTIVITY_GOALS } from '@pawmeet/config';
+import { BREED_ACTIVITY_GOALS, DOG_SIZE } from '@pawmeet/config';
 import type { HealthGoal, Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { ERROR_MESSAGES } from '../constants/messages.js';
@@ -13,11 +13,11 @@ type Deps = {
 
 /** Map dog size values to the health config size categories */
 const SIZE_MAP: Record<string, DogSizeCategory> = {
-  toy: 'toy',
-  small: 'small',
-  medium: 'medium',
-  large: 'large',
-  giant: 'giant',
+  [DOG_SIZE.TOY]: DOG_SIZE.TOY,
+  [DOG_SIZE.SMALL]: DOG_SIZE.SMALL,
+  [DOG_SIZE.MEDIUM]: DOG_SIZE.MEDIUM,
+  [DOG_SIZE.LARGE]: DOG_SIZE.LARGE,
+  [DOG_SIZE.GIANT]: DOG_SIZE.GIANT,
 };
 
 export function createGetDogHealthGoal({ dogRepo, activityRepo }: Deps) {
@@ -35,7 +35,7 @@ export function createGetDogHealthGoal({ dogRepo, activityRepo }: Deps) {
       return fail(new AppError('DOG_NOT_OWNED', ERROR_MESSAGES.DOG_NOT_OWNED, 403));
     }
 
-    const sizeCategory = SIZE_MAP[dog.size] ?? 'medium';
+    const sizeCategory = SIZE_MAP[dog.size] ?? DOG_SIZE.MEDIUM;
     const recommendedDailyMinutes = BREED_ACTIVITY_GOALS[sizeCategory];
 
     // Get last 7 days of activity to compute current daily average

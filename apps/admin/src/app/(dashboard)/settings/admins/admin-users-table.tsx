@@ -1,5 +1,6 @@
 'use client';
 
+import { ADMIN_ROLE } from '@pawmeet/types';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
@@ -13,7 +14,6 @@ import { formatDateTime } from '@/lib/formatters';
 import { toggleAdminActive } from './actions';
 import { CreateAdminDialog } from './create-admin-dialog';
 import { EditRoleDialog } from './edit-role-dialog';
-import { ADMIN_ROLE } from '@pawmeet/types';
 import {
   type AdminUser,
   type AdminUsersData,
@@ -24,21 +24,23 @@ import {
 } from './page.view-model';
 import { ResetPasswordDialog } from './reset-password-dialog';
 
-function getRoleBadgeVariant(role: string) {
+type BadgeVariant = 'destructive' | 'default' | 'secondary' | 'outline' | 'success';
+
+function getRoleBadgeVariant(role: string): BadgeVariant {
   switch (role) {
     case ADMIN_ROLE.SUPER_ADMIN:
-      return 'destructive' as const;
+      return 'destructive';
     case ADMIN_ROLE.ADMIN:
-      return 'default' as const;
+      return 'default';
     case ADMIN_ROLE.MODERATOR:
-      return 'secondary' as const;
+      return 'secondary';
     default:
-      return 'outline' as const;
+      return 'outline';
   }
 }
 
-function getStatusBadgeVariant(isActive: boolean) {
-  return isActive ? ('success' as const) : ('outline' as const);
+function getStatusBadgeVariant(isActive: boolean): BadgeVariant {
+  return isActive ? 'success' : 'outline';
 }
 
 interface AdminUsersTableProps {

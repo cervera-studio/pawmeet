@@ -1,3 +1,13 @@
+import {
+  BEHAVIOR_WITH_DOGS,
+  BEHAVIOR_WITH_PEOPLE,
+  DOG_SIZE,
+  ENERGY_LEVEL,
+  GENDER,
+  LEASH_BEHAVIOR,
+  WALK_TERRAIN,
+  WALK_TIME,
+} from '@pawmeet/config';
 import type { DogPhoto, DogProfile } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { TRPCError } from '@trpc/server';
@@ -54,18 +64,18 @@ const validCreateInput = {
   name: 'Rex',
   birthDate: '2022-01-01',
   breed: 'Labrador',
-  size: 'large' as const,
+  size: DOG_SIZE.LARGE,
   weightKg: 30,
-  gender: 'male' as const,
+  gender: GENDER.MALE,
   isNeutered: true,
-  energyLevel: 'high' as const,
-  behaviorWithDogs: 'friendly' as const,
-  behaviorWithPeople: 'very_friendly' as const,
-  leashBehavior: 'good' as const,
-  walkPrefTime: ['morning' as const],
+  energyLevel: ENERGY_LEVEL.HIGH,
+  behaviorWithDogs: BEHAVIOR_WITH_DOGS.FRIENDLY,
+  behaviorWithPeople: BEHAVIOR_WITH_PEOPLE.VERY_FRIENDLY,
+  leashBehavior: LEASH_BEHAVIOR.GOOD,
+  walkPrefTime: [WALK_TIME.MORNING],
   walkPrefDurationMin: 30,
   walkPrefDurationMax: 60,
-  walkPrefTerrain: ['park' as const],
+  walkPrefTerrain: [WALK_TERRAIN.PARK],
 };
 
 function buildDogDeps(overrides: Partial<typeof dogDeps> = {}): typeof dogDeps {

@@ -1,4 +1,4 @@
-import { isSuccess } from '@pawmeet/types';
+import { isSuccess, SWIPE_DIRECTION } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildDog,
@@ -21,9 +21,9 @@ describe('createGetMatchingInsights', () => {
       findActiveByDogIds: vi.fn().mockResolvedValue([buildMatch()]),
     });
     const swipeLogs = [
-      { direction: 'like' as const, sizeScore: 0.5, energyScore: 0.8 },
-      { direction: 'like' as const, sizeScore: 0.6, energyScore: 0.7 },
-      { direction: 'pass' as const, sizeScore: 0.3, energyScore: 0.2 },
+      { direction: SWIPE_DIRECTION.LIKE, sizeScore: 0.5, energyScore: 0.8 },
+      { direction: SWIPE_DIRECTION.LIKE, sizeScore: 0.6, energyScore: 0.7 },
+      { direction: SWIPE_DIRECTION.PASS, sizeScore: 0.3, energyScore: 0.2 },
     ];
     const prefs = {
       id: 'pref-1',

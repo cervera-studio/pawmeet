@@ -1,5 +1,6 @@
 'use client';
 
+import { ADMIN_ROLE, type AdminRole } from '@pawmeet/types';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -13,7 +14,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { handleError } from '@/lib/error-handler';
-import { ADMIN_ROLE, type AdminRole } from '@pawmeet/types';
 import { updateAdminRole } from './actions';
 import { type AdminUser, buildRoleLabels, ROLES, toRole } from './page.view-model';
 

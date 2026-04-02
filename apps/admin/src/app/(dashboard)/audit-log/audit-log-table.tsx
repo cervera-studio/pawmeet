@@ -23,12 +23,14 @@ const DESTRUCTIVE_ACTIONS = ['ban', 'delete', 'reject'];
 const WARNING_ACTIONS = ['suspend', 'cancel', 'revoke', 'remove'];
 const SUCCESS_ACTIONS = ['approve', 'verify', 'reactivate'];
 
-function getActionVariant(action: string) {
+type ActionVariant = 'destructive' | 'warning' | 'success' | 'outline';
+
+function getActionVariant(action: string): ActionVariant {
   const lower = action.toLowerCase();
-  if (DESTRUCTIVE_ACTIONS.some((a) => lower.includes(a))) return 'destructive' as const;
-  if (WARNING_ACTIONS.some((a) => lower.includes(a))) return 'warning' as const;
-  if (SUCCESS_ACTIONS.some((a) => lower.includes(a))) return 'success' as const;
-  return 'outline' as const;
+  if (DESTRUCTIVE_ACTIONS.some((a) => lower.includes(a))) return 'destructive';
+  if (WARNING_ACTIONS.some((a) => lower.includes(a))) return 'warning';
+  if (SUCCESS_ACTIONS.some((a) => lower.includes(a))) return 'success';
+  return 'outline';
 }
 
 function ChangesDetail({

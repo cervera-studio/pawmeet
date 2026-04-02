@@ -1,3 +1,13 @@
+import {
+  BEHAVIOR_WITH_DOGS,
+  BEHAVIOR_WITH_PEOPLE,
+  DOG_SIZE,
+  ENERGY_LEVEL,
+  GENDER,
+  LEASH_BEHAVIOR,
+  WALK_TERRAIN,
+  WALK_TIME,
+} from '@pawmeet/config';
 import { describe, expect, it, vi } from 'vitest';
 import type { BioGenerationService } from '../ports/bio-generation-service.js';
 import { createGenerateDogBio } from './generate-dog-bio.js';
@@ -6,14 +16,14 @@ function buildInput() {
   return {
     name: 'Luna',
     breed: 'Labrador',
-    size: 'large' as const,
-    gender: 'female' as const,
-    energyLevel: 'high' as const,
-    behaviorWithDogs: 'very_friendly' as const,
-    behaviorWithPeople: 'friendly' as const,
-    leashBehavior: 'good' as const,
-    walkPrefTime: ['morning' as const, 'evening' as const],
-    walkPrefTerrain: ['park' as const],
+    size: DOG_SIZE.LARGE,
+    gender: GENDER.FEMALE,
+    energyLevel: ENERGY_LEVEL.HIGH,
+    behaviorWithDogs: BEHAVIOR_WITH_DOGS.VERY_FRIENDLY,
+    behaviorWithPeople: BEHAVIOR_WITH_PEOPLE.FRIENDLY,
+    leashBehavior: LEASH_BEHAVIOR.GOOD,
+    walkPrefTime: [WALK_TIME.MORNING, WALK_TIME.EVENING],
+    walkPrefTerrain: [WALK_TERRAIN.PARK],
   };
 }
 

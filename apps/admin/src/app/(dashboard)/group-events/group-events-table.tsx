@@ -84,7 +84,7 @@ export function GroupEventsTable({ initialData, pageSize }: GroupEventsTableProp
         accessorKey: 'status',
         header: t('columns.status'),
         cell: ({ row }) => {
-          const variant = statusVariants[row.original.status] ?? ('outline' as const);
+          const variant = statusVariants[row.original.status] ?? 'outline';
           const label =
             t(
               `statuses.${row.original.status}` as

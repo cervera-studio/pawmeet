@@ -1,3 +1,10 @@
+export const SWIPE_DIRECTION = {
+  LIKE: 'like',
+  PASS: 'pass',
+} as const;
+
+export type SwipeDirection = (typeof SWIPE_DIRECTION)[keyof typeof SWIPE_DIRECTION];
+
 export interface Match {
   id: string;
   dogAId: string;
@@ -11,6 +18,6 @@ export interface Swipe {
   id: string;
   swiperDogId: string;
   swipedDogId: string;
-  direction: 'like' | 'pass';
+  direction: SwipeDirection;
   createdAt: Date;
 }

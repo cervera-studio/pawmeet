@@ -1,3 +1,4 @@
+import { SWIPE_DIRECTION } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import type { MatchingAiRepository } from '../ports/index.js';
 import { buildDog, buildDogRepo, buildMatch, buildMatchRepo } from '../test-utils/builders.js';
@@ -48,7 +49,7 @@ describe('learnUserPreferences', () => {
     // Simulate: user always likes dogs with high energy scores, passes on low energy
     const swipeLogs = [
       ...Array.from({ length: 10 }, () => ({
-        direction: 'like' as const,
+        direction: SWIPE_DIRECTION.LIKE,
         sizeScore: 0.5,
         energyScore: 0.9,
         behaviorScore: 0.7,
@@ -57,7 +58,7 @@ describe('learnUserPreferences', () => {
         leashScore: 0.5,
       })),
       ...Array.from({ length: 10 }, () => ({
-        direction: 'pass' as const,
+        direction: SWIPE_DIRECTION.PASS,
         sizeScore: 0.5,
         energyScore: 0.2,
         behaviorScore: 0.7,

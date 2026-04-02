@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ADMIN_ROLE } from '@pawmeet/types';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -10,7 +11,6 @@ import { FormField } from '@/components/form-field';
 import { Input } from '@/components/ui/input';
 import { handleError } from '@/lib/error-handler';
 import { type CreateAdminUserFormValues, createAdminUserSchema } from '@/lib/schemas/admin-user';
-import { ADMIN_ROLE } from '@pawmeet/types';
 import { createAdminUser } from './actions';
 import { buildRoleLabels, ROLES } from './page.view-model';
 

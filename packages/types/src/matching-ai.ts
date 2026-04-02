@@ -1,3 +1,5 @@
+import type { SwipeDirection } from './match';
+
 /** Score breakdown for a single candidate evaluation */
 export interface ScoreBreakdown {
   sizeScore: number;
@@ -14,7 +16,7 @@ export interface SwipeScoreLog {
   id: string;
   swiperDogId: string;
   swipedDogId: string;
-  direction: 'like' | 'pass';
+  direction: SwipeDirection;
   sizeScore: number;
   energyScore: number;
   behaviorScore: number;

@@ -81,7 +81,7 @@ export function EventParticipants({
           ) : (
             <div className="divide-y divide-neutral-100">
               {activeParticipants.map((p) => {
-                const pVariant = participantStatusVariants[p.status] ?? ('outline' as const);
+                const pVariant = participantStatusVariants[p.status] ?? 'outline';
                 const pLabel =
                   t(`participants.statuses.${p.status}` as Parameters<typeof t>[0]) ?? p.status;
                 return (
@@ -135,7 +135,7 @@ export function EventParticipants({
           <CardContent>
             <div className="divide-y divide-neutral-100">
               {inactiveParticipants.map((p) => {
-                const pVariant = participantStatusVariants[p.status] ?? ('outline' as const);
+                const pVariant = participantStatusVariants[p.status] ?? 'outline';
                 const pLabel =
                   t(`participants.statuses.${p.status}` as Parameters<typeof t>[0]) ?? p.status;
                 return (

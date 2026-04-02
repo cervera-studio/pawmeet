@@ -1,5 +1,10 @@
 import { dogProfiles, groupEventParticipants, groupEvents, users } from '@pawmeet/db';
-import type { GroupEvent, GroupEventParticipant, GroupEventWithParticipants } from '@pawmeet/types';
+import {
+  PARTICIPANT_STATUS,
+  type GroupEvent,
+  type GroupEventParticipant,
+  type GroupEventWithParticipants,
+} from '@pawmeet/types';
 import { and, count, desc, eq, inArray, isNotNull, lte, ne, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
@@ -376,7 +381,7 @@ export class DrizzleGroupEventRepository implements FullGroupEventRepository {
       eventId: waitlisted.eventId,
       userId: waitlisted.userId,
       dogId: waitlisted.dogId,
-      status: 'accepted' as const,
+      status: PARTICIPANT_STATUS.ACCEPTED,
       isOrganizer: waitlisted.isOrganizer,
       joinedAt: waitlisted.joinedAt,
     } satisfies GroupEventParticipant;

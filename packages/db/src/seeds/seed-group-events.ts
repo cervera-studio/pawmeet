@@ -2,6 +2,7 @@ import process from 'node:process';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
+import { GROUP_EVENT_VISIBILITY } from '@pawmeet/types';
 import { dogProfiles } from '../schema/dogs';
 import { groupEventParticipants, groupEvents } from '../schema/group-events';
 import { users } from '../schema/users';
@@ -65,7 +66,7 @@ async function seed() {
       latitude: 45.4729,
       longitude: 9.1797,
       maxParticipants: 10,
-      visibility: 'public' as const,
+      visibility: GROUP_EVENT_VISIBILITY.PUBLIC,
       status: 'scheduled',
     },
     {
@@ -78,7 +79,7 @@ async function seed() {
       latitude: 45.4494,
       longitude: 9.1681,
       maxParticipants: 8,
-      visibility: 'public' as const,
+      visibility: GROUP_EVENT_VISIBILITY.PUBLIC,
       status: 'scheduled',
     },
     {
@@ -91,7 +92,7 @@ async function seed() {
       latitude: 45.5968,
       longitude: 9.3038,
       maxParticipants: 6,
-      visibility: 'public' as const,
+      visibility: GROUP_EVENT_VISIBILITY.PUBLIC,
       status: 'scheduled',
     },
     {
@@ -104,7 +105,7 @@ async function seed() {
       latitude: 45.4738,
       longitude: 9.1975,
       maxParticipants: 10,
-      visibility: 'public' as const,
+      visibility: GROUP_EVENT_VISIBILITY.PUBLIC,
       status: 'completed',
     },
   ];

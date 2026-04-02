@@ -1,4 +1,4 @@
-import { isFailure, isSuccess } from '@pawmeet/types';
+import { GROUP_EVENT_VISIBILITY, isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildDog,
@@ -17,7 +17,7 @@ describe('createRecurringEvent', () => {
     latitude: 45.4729,
     longitude: 9.1797,
     maxParticipants: 10,
-    visibility: 'public' as const,
+    visibility: GROUP_EVENT_VISIBILITY.PUBLIC,
     dogId: 'dog-1',
     recurrenceRule: 'FREQ=WEEKLY;BYDAY=SA',
   };

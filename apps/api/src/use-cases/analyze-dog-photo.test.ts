@@ -1,3 +1,4 @@
+import { DOG_SIZE } from '@pawmeet/config';
 import { describe, expect, it, vi } from 'vitest';
 import type { DogPhotoAnalysisService } from '../ports/dog-photo-analysis-service.js';
 import { createAnalyzeDogPhoto } from './analyze-dog-photo.js';
@@ -5,7 +6,7 @@ import { createAnalyzeDogPhoto } from './analyze-dog-photo.js';
 const mockResult = {
   breed: 'Labrador Retriever',
   breedSecondary: undefined,
-  size: 'large' as const,
+  size: DOG_SIZE.LARGE,
   ageEstimate: '2-4 anni',
   confidence: 0.92,
 };

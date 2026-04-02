@@ -1,3 +1,4 @@
+import { DOG_SIZE } from '@pawmeet/config';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type {
   DogPhotoAnalysisResult,
@@ -17,7 +18,7 @@ export function createAnalyzeDogPhoto({ dogPhotoAnalysisService }: Deps) {
       return succeed({
         analysis: {
           breed: 'unknown',
-          size: 'medium' as const,
+          size: DOG_SIZE.MEDIUM,
           confidence: 0,
         },
       });

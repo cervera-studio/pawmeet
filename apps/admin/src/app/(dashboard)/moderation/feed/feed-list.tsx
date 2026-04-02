@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,9 +13,8 @@ import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { FeedPost, FeedPostPage, FeedStats } from '@/repositories';
+import { POST_MODERATION_STATUS, type PostModerationStatus } from '@pawmeet/types';
 import { fetchFeedPosts, fetchFeedStats, moderatePost } from './actions';
-
-type StatusFilter = 'pending' | 'approved' | 'rejected' | undefined;
 
 type StatusStyle = { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' };
 
@@ -60,11 +59,11 @@ function FiltersSection({
   onStatusFilter,
   onSearch,
 }: {
-  statusFilter: StatusFilter;
+  statusFilter: PostModerationStatus | undefined;
   search: string;
   total: number;
-  statusOptions: ReadonlyArray<{ value: StatusFilter; label: string }>;
-  onStatusFilter: (status: StatusFilter) => void;
+  statusOptions: ReadonlyArray<{ value: PostModerationStatus | undefined; label: string }>;
+  onStatusFilter: (status: PostModerationStatus | undefined) => void;
   onSearch: (value: string) => void;
 }) {
   const t = useTranslations('feed');
@@ -107,7 +106,7 @@ function PostListItem({
   const t = useTranslations('feed');
   const statusInfo = statusStyles[post.moderationStatus] ?? {
     label: post.moderationStatus,
-    variant: 'outline' as const,
+    variant: 'outline' as BadgeProps['variant'],
   };
   const caption = (() => {
     if (!post.caption) return t('noCaption');
@@ -263,7 +262,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
   const [totalPages, setTotalPages] = useState(initialPosts.totalPages);
   const [page, setPageState] = useState(1);
   const [stats, setStats] = useState<FeedStats>(initialStats);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>(undefined);
+  const [statusFilter, setStatusFilter] = useState<PostModerationStatus | undefined>(undefined);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [updatingPostId, setUpdatingPostId] = useState<string | null>(null);
@@ -296,14 +295,14 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
 
   const STATUS_OPTIONS = [
     { value: undefined, label: t('tabs.all') },
-    { value: 'pending' as const, label: t('tabs.pending') },
-    { value: 'approved' as const, label: t('tabs.approved') },
-    { value: 'rejected' as const, label: t('tabs.rejected') },
+    { value: POST_MODERATION_STATUS.PENDING, label: t('tabs.pending') },
+    { value: POST_MODERATION_STATUS.APPROVED, label: t('tabs.approved') },
+    { value: POST_MODERATION_STATUS.REJECTED, label: t('tabs.rejected') },
   ];
 
   async function fetchPosts(params?: {
     pageOverride?: number;
-    statusOverride?: StatusFilter;
+    statusOverride?: PostModerationStatus | undefined;
     searchOverride?: string;
   }) {
     const p = params?.pageOverride ?? page;
@@ -353,7 +352,7 @@ export function FeedList({ initialPosts, initialStats }: FeedListProps) {
       });
   }
 
-  function handleStatusFilter(status: StatusFilter) {
+  function handleStatusFilter(status: PostModerationStatus | undefined) {
     setStatusFilter(status);
     setPageState(1);
     void fetchPosts({ pageOverride: 1, statusOverride: status });

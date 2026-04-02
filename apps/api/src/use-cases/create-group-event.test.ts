@@ -1,4 +1,4 @@
-import { isFailure, isSuccess } from '@pawmeet/types';
+import { GROUP_EVENT_VISIBILITY, isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildDog, buildDogRepo, buildGroupEventRepo } from '../test-utils/builders.js';
 import { createCreateGroupEvent } from './create-group-event.js';
@@ -13,7 +13,7 @@ const validInput = {
   latitude: 45.4729,
   longitude: 9.1797,
   maxParticipants: 10,
-  visibility: 'public' as const,
+  visibility: GROUP_EVENT_VISIBILITY.PUBLIC,
   dogId: 'dog-1',
 };
 

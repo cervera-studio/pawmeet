@@ -25,11 +25,12 @@ function getChallengeStatus(
 
 function StatusBadge({ status }: { status: 'active' | 'expired' | 'upcoming' }) {
   const t = useTranslations('challenges');
-  const variantMap = {
-    active: 'success' as const,
-    expired: 'secondary' as const,
-    upcoming: 'default' as const,
-  };
+  const variantMap: Record<'active' | 'expired' | 'upcoming', 'success' | 'secondary' | 'default'> =
+    {
+      active: 'success',
+      expired: 'secondary',
+      upcoming: 'default',
+    };
   return <Badge variant={variantMap[status]}>{t(`statuses.${status}`)}</Badge>;
 }
 

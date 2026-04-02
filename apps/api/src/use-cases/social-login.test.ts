@@ -1,4 +1,5 @@
 import { isFailure, isSuccess } from '@pawmeet/types';
+import { AUTH_PROVIDER } from '@pawmeet/validation';
 import { describe, expect, it, vi } from 'vitest';
 import type { OAuthAccountRepository } from '../ports/oauth-account-repository.js';
 import type { SocialAuthVerifier } from '../ports/social-auth-verifier.js';
@@ -60,7 +61,7 @@ function buildDeps(
   };
 }
 
-const input = { provider: 'google' as const, idToken: 'valid-id-token' };
+const input = { provider: AUTH_PROVIDER.Google, idToken: 'valid-id-token' };
 
 describe('createSocialLogin', () => {
   it('creates a new user when no link and no email match found', async () => {

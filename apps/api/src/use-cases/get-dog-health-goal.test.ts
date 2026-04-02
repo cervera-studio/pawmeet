@@ -1,3 +1,4 @@
+import { HEALTH_DATA_SOURCE } from '@pawmeet/config';
 import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildActivityRepo, buildDog, buildDogRepo } from '../test-utils/builders.js';
@@ -18,7 +19,7 @@ describe('createGetDogHealthGoal', () => {
       walkDistanceKm: 3,
       walkDurationMin: 45,
       walkCount: 1,
-      source: 'app' as const,
+      source: HEALTH_DATA_SOURCE.APP,
       createdAt: new Date(),
       updatedAt: new Date(),
     }));

@@ -31,7 +31,7 @@ export function SosTable({ initialData, pageSize }: SosTableProps) {
         header: t('columns.type'),
         cell: ({ row }) => {
           const type = row.original.type;
-          const variant = typeVariants[type] ?? ('secondary' as const);
+          const variant = typeVariants[type] ?? 'secondary';
           const typeKey = type as 'sos' | 'auto_alert' | 'check_in';
           let label: string;
           if (type === 'auto_alert') {

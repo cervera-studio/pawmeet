@@ -3,9 +3,9 @@ import {
   AppError,
   fail,
   type Result,
-  succeed,
   SUPPORT_MESSAGE_SENDER_TYPE,
   SUPPORT_TICKET_STATUS,
+  succeed,
 } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';

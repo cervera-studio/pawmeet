@@ -1,4 +1,4 @@
-import { isSuccess } from '@pawmeet/types';
+import { isSuccess, SWIPE_DIRECTION } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import { buildMatchingAiRepo } from '../test-utils/builders.js';
 import { createLogSwipeScores } from './log-swipe-scores.js';
@@ -7,7 +7,7 @@ describe('createLogSwipeScores', () => {
   const swipeInput = {
     swiperDogId: 'dog-1',
     swipedDogId: 'dog-2',
-    direction: 'like' as const,
+    direction: SWIPE_DIRECTION.LIKE,
     sizeScore: 0.7,
     energyScore: 0.8,
     behaviorScore: 0.9,
@@ -33,7 +33,7 @@ describe('createLogSwipeScores', () => {
   });
 
   it('logs pass swipe scores correctly', async () => {
-    const passInput = { ...swipeInput, direction: 'pass' as const, overallScore: 0.3 };
+    const passInput = { ...swipeInput, direction: SWIPE_DIRECTION.PASS, overallScore: 0.3 };
     const expectedLog = { id: 'log-2', ...passInput, createdAt: new Date() };
     const matchingAiRepo = buildMatchingAiRepo({
       createSwipeScoreLog: vi.fn().mockResolvedValue(expectedLog),

@@ -1,20 +1,28 @@
-import { MAX_PHOTOS_PER_DOG } from '@pawmeet/config';
+import {
+  BEHAVIOR_WITH_DOGS,
+  BEHAVIOR_WITH_PEOPLE,
+  DOG_SIZE,
+  ENERGY_LEVEL,
+  GENDER,
+  LEASH_BEHAVIOR,
+  MAX_PHOTOS_PER_DOG,
+  RECALL_RELIABILITY,
+  WALK_TERRAIN,
+  WALK_TIME,
+} from '@pawmeet/config';
 import { z } from 'zod';
 
-export const dogSizeEnum = z.enum(['toy', 'small', 'medium', 'large', 'giant']);
-export const energyLevelEnum = z.enum(['low', 'medium', 'high', 'very_high']);
-export const behaviorWithDogsEnum = z.enum(['very_friendly', 'friendly', 'selective', 'reactive']);
-export const behaviorWithPeopleEnum = z.enum(['very_friendly', 'friendly', 'shy', 'wary']);
-export const leashBehaviorEnum = z.enum(['excellent', 'good', 'in_training', 'difficult']);
-export const walkTimeEnum = z.enum([
-  'early_morning',
-  'morning',
-  'afternoon',
-  'evening',
-  'late_evening',
-]);
-export const walkTerrainEnum = z.enum(['urban', 'park', 'countryside', 'beach', 'mountain']);
-export const genderEnum = z.enum(['male', 'female']);
+const vals = <T extends Record<string, string>>(obj: T) =>
+  Object.values(obj) as [T[keyof T], ...T[keyof T][]];
+
+export const dogSizeEnum = z.enum(vals(DOG_SIZE));
+export const energyLevelEnum = z.enum(vals(ENERGY_LEVEL));
+export const behaviorWithDogsEnum = z.enum(vals(BEHAVIOR_WITH_DOGS));
+export const behaviorWithPeopleEnum = z.enum(vals(BEHAVIOR_WITH_PEOPLE));
+export const leashBehaviorEnum = z.enum(vals(LEASH_BEHAVIOR));
+export const walkTimeEnum = z.enum(vals(WALK_TIME));
+export const walkTerrainEnum = z.enum(vals(WALK_TERRAIN));
+export const genderEnum = z.enum(vals(GENDER));
 
 export const createDogSchema = z.object({
   name: z.string().min(2).max(50),
@@ -29,7 +37,7 @@ export const createDogSchema = z.object({
   behaviorWithDogs: behaviorWithDogsEnum,
   behaviorWithPeople: behaviorWithPeopleEnum,
   leashBehavior: leashBehaviorEnum,
-  recallReliability: z.enum(['reliable', 'partial', 'unreliable']).optional(),
+  recallReliability: z.enum(vals(RECALL_RELIABILITY)).optional(),
   bio: z.string().max(500).optional(),
   walkPrefTime: z.array(walkTimeEnum).min(1),
   walkPrefDurationMin: z.number().min(15).max(180),

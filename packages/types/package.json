@@ -16,5 +16,8 @@
     "@pawmeet/vitest-config": "workspace:*",
     "typescript": "^5.9.0",
     "vitest": "^4.1.0"
+  },
+  "dependencies": {
+    "@pawmeet/config": "workspace:^"
   }
 }

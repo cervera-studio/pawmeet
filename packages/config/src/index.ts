@@ -1,6 +1,7 @@
 export * from './analytics';
 export * from './app';
 export * from './breeds/index';
+export * from './dog-enums';
 export * from './dog-options';
 export * from './feed';
 export * from './gamification';

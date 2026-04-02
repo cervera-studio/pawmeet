@@ -1,12 +1,24 @@
-export type DogSize = 'toy' | 'small' | 'medium' | 'large' | 'giant';
-export type EnergyLevel = 'low' | 'medium' | 'high' | 'very_high';
-export type BehaviorWithDogs = 'very_friendly' | 'friendly' | 'selective' | 'reactive';
-export type BehaviorWithPeople = 'very_friendly' | 'friendly' | 'shy' | 'wary';
-export type LeashBehavior = 'excellent' | 'good' | 'in_training' | 'difficult';
-export type RecallReliability = 'reliable' | 'partial' | 'unreliable';
-export type WalkTime = 'early_morning' | 'morning' | 'afternoon' | 'evening' | 'late_evening';
-export type WalkTerrain = 'urban' | 'park' | 'countryside' | 'beach' | 'mountain';
-export type Gender = 'male' | 'female';
+import type {
+  BEHAVIOR_WITH_DOGS,
+  BEHAVIOR_WITH_PEOPLE,
+  DOG_SIZE,
+  ENERGY_LEVEL,
+  GENDER,
+  LEASH_BEHAVIOR,
+  RECALL_RELIABILITY,
+  WALK_TERRAIN,
+  WALK_TIME,
+} from '@pawmeet/config';
+
+export type DogSize = (typeof DOG_SIZE)[keyof typeof DOG_SIZE];
+export type EnergyLevel = (typeof ENERGY_LEVEL)[keyof typeof ENERGY_LEVEL];
+export type BehaviorWithDogs = (typeof BEHAVIOR_WITH_DOGS)[keyof typeof BEHAVIOR_WITH_DOGS];
+export type BehaviorWithPeople = (typeof BEHAVIOR_WITH_PEOPLE)[keyof typeof BEHAVIOR_WITH_PEOPLE];
+export type LeashBehavior = (typeof LEASH_BEHAVIOR)[keyof typeof LEASH_BEHAVIOR];
+export type RecallReliability = (typeof RECALL_RELIABILITY)[keyof typeof RECALL_RELIABILITY];
+export type WalkTime = (typeof WALK_TIME)[keyof typeof WALK_TIME];
+export type WalkTerrain = (typeof WALK_TERRAIN)[keyof typeof WALK_TERRAIN];
+export type Gender = (typeof GENDER)[keyof typeof GENDER];
 
 export interface DogProfile {
   id: string;

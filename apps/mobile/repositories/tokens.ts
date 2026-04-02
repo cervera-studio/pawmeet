@@ -5,6 +5,7 @@ import type {
   AuthRepository,
   BadgeRepository,
   ChatRepository,
+  DogRepository,
   FeedbackRepository,
   FeedRepository,
   FollowRepository,
@@ -23,6 +24,7 @@ import type {
 } from './interfaces';
 
 export const AUTH_REPOSITORY = Symbol('AuthRepository') as InjectionToken<AuthRepository>;
+export const DOG_REPOSITORY = Symbol('DogRepository') as InjectionToken<DogRepository>;
 export const MATCH_REPOSITORY = Symbol('MatchRepository') as InjectionToken<MatchRepository>;
 export const CHAT_REPOSITORY = Symbol('ChatRepository') as InjectionToken<ChatRepository>;
 export const WALK_REPOSITORY = Symbol('WalkRepository') as InjectionToken<WalkRepository>;

@@ -1,13 +1,14 @@
-import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 import { getDateLocale } from '@/lib/i18n';
-import { api } from '@/lib/trpc';
+import { container } from '@/repositories/container';
+import type { DogRating } from '@/repositories/interfaces';
+import { FEEDBACK_REPOSITORY } from '@/repositories/tokens';
 
-type DogRating = RouterOutput['feedback']['getDogRating'];
+const feedbackRepo = container.resolve(FEEDBACK_REPOSITORY);
 
 interface ReviewItem {
   id: string;
@@ -77,11 +78,9 @@ export const DogReviews = memo(function DogReviews({ dogId, dogRating }: DogRevi
   useEffect(() => {
     if (!dogId) return;
 
-    api.feedback.getDogRating
-      .query({ dogId })
+    feedbackRepo
+      .getDogRating(dogId)
       .then((ratingData) => {
-        // The rating data gives aggregate info — we also need detailed reviews
-        // which come from the dog's walk feedback
         if (ratingData && 'reviews' in ratingData) {
           setReviews((ratingData as DogRating & { reviews: ReviewItem[] }).reviews);
         }

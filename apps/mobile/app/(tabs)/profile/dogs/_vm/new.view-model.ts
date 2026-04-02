@@ -17,9 +17,15 @@ import { useCallback, useReducer, useState } from 'react';
 import { Alert } from 'react-native';
 import { handleApiError } from '@/lib/error-handler';
 import i18n from '@/lib/i18n';
-import { api } from '@/lib/trpc';
+import { uploadToPresignedUrl } from '@/lib/upload';
 import { zodToFieldErrors } from '@/lib/validation';
+import { container } from '@/repositories/container';
+import type { MediaContentType } from '@/repositories/interfaces';
+import { DOG_REPOSITORY, MEDIA_REPOSITORY } from '@/repositories/tokens';
 import { useDogsStore } from '@/stores/dogs';
+
+const dogRepo = container.resolve(DOG_REPOSITORY);
+const mediaRepo = container.resolve(MEDIA_REPOSITORY);
 
 // -- State shape --
 
@@ -275,7 +281,7 @@ export function useNewDogViewModel() {
 
     setGeneratingBio(true);
     try {
-      const { bio } = await api.dogs.generateBio.mutate(buildBioMutationInput(state));
+      const { bio } = await dogRepo.generateBio(buildBioMutationInput(state));
       dispatch({ type: 'SET_FIELD', field: 'bio', value: bio });
     } catch (e) {
       setApiError(handleApiError(e, 'generateBio').message);
@@ -347,7 +353,7 @@ export function useNewDogViewModel() {
     setAnalyzingPhoto(true);
     setApiError('');
     try {
-      const { analysis } = await api.dogs.analyzePhoto.mutate({
+      const { analysis } = await dogRepo.analyzePhoto({
         imageBase64: photo.base64,
         mimeType: photo.mimeType as 'image/jpeg' | 'image/png' | 'image/webp',
       });
@@ -400,26 +406,18 @@ export function useNewDogViewModel() {
     setLoading(true);
     setApiError('');
     try {
-      const { dog } = await api.dogs.create.mutate(result.data);
+      const { dog } = await dogRepo.create(result.data);
 
-      // Upload pending photos after dog creation
       for (const photo of state.pendingPhotos) {
         try {
-          const { uploadUrl, key } = await api.dogs.uploadPhotoUrl.mutate({
-            dogId: dog.id,
-            contentType: photo.contentType,
-            fileSize: photo.fileSize,
-          });
-
-          const response = await fetch(photo.uri);
-          const blob = await response.blob();
-          await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': photo.contentType },
-            body: blob,
-          });
-
-          await api.dogs.confirmPhoto.mutate({ dogId: dog.id, key });
+          const contentType = photo.contentType as MediaContentType;
+          const { uploadUrl, key } = await mediaRepo.getDogPhotoUploadUrl(
+            dog.id,
+            contentType,
+            photo.fileSize,
+          );
+          await uploadToPresignedUrl(uploadUrl, photo.uri, contentType);
+          await mediaRepo.confirmDogPhoto(dog.id, key);
         } catch (e) {
           logger.warn('NewDog', `Failed to upload photo: ${photo.uri}`, e);
         }

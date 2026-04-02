@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -70,6 +71,7 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
   const tt = useTranslations('toast');
   const tc = useTranslations('common');
   const [isCancelling, setIsCancelling] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   const statusVariants: Record<
     string,
@@ -89,7 +91,6 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
   const canCancel = event.status === 'scheduled' || event.status === 'in_progress';
 
   async function handleCancel() {
-    if (!confirm(t('detail.confirmCancel'))) return;
     setIsCancelling(true);
     try {
       await cancelGroupEvent(event.id);
@@ -103,6 +104,17 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
 
   return (
     <div className="space-y-6">
+      <ConfirmDialog
+        open={showCancelConfirm}
+        onOpenChange={setShowCancelConfirm}
+        title={t('detail.confirmCancel')}
+        confirmLabel={t('detail.cancelEvent')}
+        cancelLabel={tc('cancel')}
+        variant="destructive"
+        isLoading={isCancelling}
+        onConfirm={() => void handleCancel()}
+      />
+
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -123,7 +135,11 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
             {t('detail.backToList')}
           </Button>
           {canCancel && (
-            <Button variant="destructive" onClick={handleCancel} disabled={isCancelling}>
+            <Button
+              variant="destructive"
+              onClick={() => setShowCancelConfirm(true)}
+              disabled={isCancelling}
+            >
               {isCancelling ? t('detail.cancelling') : t('detail.cancelEvent')}
             </Button>
           )}

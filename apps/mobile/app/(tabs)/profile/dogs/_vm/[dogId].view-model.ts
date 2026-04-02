@@ -73,7 +73,17 @@ export function useDogDetailViewModel() {
     if (!dog) return;
     const photo = await uploadDogPhoto(dog.id);
     if (photo) {
-      setPhotos((prev) => [...prev, photo]);
+      setPhotos((prev) => [
+        ...prev,
+        {
+          ...photo,
+          dogId: dog!.id,
+          position: prev.length,
+          isPrimary: prev.length === 0,
+          moderationStatus: 'pending' as const,
+          uploadedAt: new Date().toISOString(),
+        },
+      ]);
     }
   }, [dog, uploadDogPhoto]);
 

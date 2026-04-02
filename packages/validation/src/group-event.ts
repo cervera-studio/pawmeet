@@ -9,6 +9,7 @@ import {
   WALK_DURATION_MIN,
 } from '@pawmeet/config';
 import { z } from 'zod';
+import { latitudeSchema, longitudeSchema } from './value-objects';
 
 export const createGroupEventSchema = z.object({
   title: z.string().min(1).max(GROUP_EVENT_TITLE_MAX_LENGTH),
@@ -16,8 +17,8 @@ export const createGroupEventSchema = z.object({
   scheduledAt: z.iso.datetime(),
   durationMin: z.number().int().min(WALK_DURATION_MIN).max(WALK_DURATION_MAX).default(60),
   location: z.string().min(1).max(200),
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
+  latitude: latitudeSchema,
+  longitude: longitudeSchema,
   maxParticipants: z
     .number()
     .int()
@@ -37,8 +38,8 @@ export const createRecurringEventSchema = z.object({
   scheduledAt: z.iso.datetime(),
   durationMin: z.number().int().min(WALK_DURATION_MIN).max(WALK_DURATION_MAX).default(60),
   location: z.string().min(1).max(200),
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
+  latitude: latitudeSchema,
+  longitude: longitudeSchema,
   maxParticipants: z
     .number()
     .int()
@@ -74,8 +75,8 @@ export const updateGroupEventSchema = z.object({
   scheduledAt: z.iso.datetime().optional(),
   durationMin: z.number().int().min(WALK_DURATION_MIN).max(WALK_DURATION_MAX).optional(),
   location: z.string().min(1).max(200).optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
+  latitude: latitudeSchema.optional(),
+  longitude: longitudeSchema.optional(),
   maxParticipants: z
     .number()
     .int()
@@ -89,8 +90,8 @@ export const cancelGroupEventSchema = z.object({
 });
 
 export const listNearbyEventsSchema = z.object({
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
+  latitude: latitudeSchema,
+  longitude: longitudeSchema,
   radiusKm: z.number().min(MIN_SEARCH_RADIUS_KM).max(MAX_SEARCH_RADIUS_KM).default(10),
   limit: z.number().int().min(1).max(50).default(20),
   category: z.enum(['walk', 'meetup', 'training']).optional(),
@@ -129,8 +130,8 @@ export const createOfficialEventSchema = z.object({
   scheduledAt: z.iso.datetime(),
   durationMin: z.number().int().min(WALK_DURATION_MIN).max(WALK_DURATION_MAX).default(60),
   location: z.string().min(1).max(200),
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
+  latitude: latitudeSchema,
+  longitude: longitudeSchema,
   maxParticipants: z.number().int().min(GROUP_EVENT_MIN_PARTICIPANTS).max(500).default(50),
   coverImageUrl: z.url().max(500).optional(),
   dogId: z.uuid(),

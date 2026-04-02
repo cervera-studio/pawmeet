@@ -5,7 +5,12 @@ export interface DogRating {
   count: number;
 }
 
+export interface WalkFeedbackItem {
+  [key: string]: unknown;
+}
+
 export interface FeedbackRepository {
   submit(walkId: string, toDogId: string, rating: FeedbackRating, comment?: string): Promise<void>;
   getDogRating(dogId: string): Promise<DogRating>;
+  listByWalk(walkId: string): Promise<WalkFeedbackItem[]>;
 }

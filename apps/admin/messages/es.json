@@ -5,6 +5,7 @@
     "noData": "No hay datos disponibles",
     "save": "Guardar",
     "cancel": "Cancelar",
+    "confirm": "Confirmar",
     "details": "Detalles",
     "search": "Buscar...",
     "unknown": "Desconocido",
@@ -1307,12 +1308,14 @@
     },
     "organizations": {
       "verifyError": "Error al verificar la organización",
-      "revokeError": "Error al revocar la verificación"
+      "revokeError": "Error al revocar la verificación",
+      "loadError": "Error al cargar las organizaciones"
     },
     "challenges": {
       "createError": "Error al crear el desafío",
       "updateError": "Error al actualizar el desafío",
-      "deleteError": "Error al eliminar el desafío"
+      "deleteError": "Error al eliminar el desafío",
+      "loadError": "Error al cargar los desafíos"
     },
     "deletions": {
       "cancelError": "Error al cancelar la eliminación",

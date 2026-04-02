@@ -3,12 +3,11 @@ import { useRouter } from 'expo-router';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { api } from '@/lib/trpc';
+import { container } from '@/repositories/container';
+import type { TrendingHashtag } from '@/repositories/interfaces';
+import { FEED_REPOSITORY } from '@/repositories/tokens';
 
-interface TrendingHashtag {
-  name: string;
-  usageCount: number;
-}
+const feedRepo = container.resolve(FEED_REPOSITORY);
 
 export const TrendingHashtags = memo(function TrendingHashtags() {
   const { t } = useTranslation();
@@ -17,11 +16,10 @@ export const TrendingHashtags = memo(function TrendingHashtags() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.feed.trendingHashtags
-      .query({ limit: 10 })
+    feedRepo
+      .trendingHashtags(10)
       .then((data) => {
-        const items = 'hashtags' in data ? (data as { hashtags: TrendingHashtag[] }).hashtags : [];
-        setHashtags(items);
+        setHashtags(data.hashtags);
         setLoading(false);
       })
       .catch((e) => {

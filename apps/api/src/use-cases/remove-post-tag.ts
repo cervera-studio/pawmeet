@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { FeedRepository } from '../ports/index.js';
 
 type Deps = {
@@ -21,7 +22,7 @@ export function createRemovePostTag({ feedRepo }: Deps) {
     const isAuthor = post.authorId === userId;
     const isTaggedUser = tag.taggedUserId === userId;
     if (!(isAuthor || isTaggedUser)) {
-      return fail(new AppError('FORBIDDEN', 'Non puoi rimuovere questo tag', 403));
+      return fail(new AppError('FORBIDDEN', ERROR_MESSAGES.TAG_REMOVE_FORBIDDEN, 403));
     }
 
     await feedRepo.removeTags([tagId]);

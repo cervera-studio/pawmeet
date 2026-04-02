@@ -5,6 +5,7 @@
     "noData": "No data available",
     "save": "Save",
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "details": "Details",
     "search": "Search...",
     "unknown": "Unknown",
@@ -1307,12 +1308,14 @@
     },
     "organizations": {
       "verifyError": "Error verifying organization",
-      "revokeError": "Error revoking verification"
+      "revokeError": "Error revoking verification",
+      "loadError": "Error loading organizations"
     },
     "challenges": {
       "createError": "Error creating challenge",
       "updateError": "Error updating challenge",
-      "deleteError": "Error deleting challenge"
+      "deleteError": "Error deleting challenge",
+      "loadError": "Error loading challenges"
     },
     "deletions": {
       "cancelError": "Error cancelling deletion",

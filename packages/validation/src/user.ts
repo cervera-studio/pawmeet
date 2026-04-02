@@ -1,18 +1,19 @@
 import { MAX_SEARCH_RADIUS_KM, MIN_SEARCH_RADIUS_KM } from '@pawmeet/config';
 import { z } from 'zod';
 import { dateOfBirthSchema } from './auth';
+import { latitudeSchema, longitudeSchema } from './value-objects';
 
 export const updateUserProfileSchema = z.object({
   displayName: z.string().min(2).max(50).optional(),
   avatarUrl: z.url().nullable().optional(),
-  latitude: z.number().min(-90).max(90).nullable().optional(),
-  longitude: z.number().min(-180).max(180).nullable().optional(),
+  latitude: latitudeSchema.nullable().optional(),
+  longitude: longitudeSchema.nullable().optional(),
   searchRadiusKm: z.number().min(1).max(50).optional(),
 });
 
 export const updateLocationSchema = z.object({
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
+  latitude: latitudeSchema,
+  longitude: longitudeSchema,
   force: z.boolean().optional(),
 });
 

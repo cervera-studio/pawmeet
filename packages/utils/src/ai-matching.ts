@@ -1,3 +1,4 @@
+import { DEFAULT_WEIGHTS } from '@pawmeet/config';
 import type { ScoreBreakdown, UserMatchingPreferences } from '@pawmeet/types';
 
 export interface MatchingWeights {
@@ -27,15 +28,7 @@ const MIN_IMPORTANCE_FLOOR = 0.01;
 /** Bonus multiplier applied to like averages when computing importance */
 const LIKE_AVERAGE_BONUS = 0.3;
 
-/** Default weights matching the rule-based algorithm */
-const DEFAULTS: MatchingWeights = {
-  size: 0.25,
-  energy: 0.25,
-  behavior: 0.2,
-  walk: 0.15,
-  distance: 0.1,
-  leash: 0.05,
-};
+const DEFAULTS: MatchingWeights = DEFAULT_WEIGHTS;
 
 /**
  * Blend default weights with learned user preferences.

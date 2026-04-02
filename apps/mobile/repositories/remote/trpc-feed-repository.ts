@@ -4,6 +4,12 @@ import type { FeedRepository } from '../interfaces';
 
 export function createTrpcFeedRepository(api: ApiClient): FeedRepository {
   return {
+    async createPost(input) {
+      return api.feed.createPost.mutate(input);
+    },
+    async trendingHashtags(limit) {
+      return api.feed.trendingHashtags.query({ limit });
+    },
     async timeline(cursor?, limit = 20) {
       return api.feed.timeline.query({ cursor, limit });
     },

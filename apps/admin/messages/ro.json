@@ -5,6 +5,7 @@
     "noData": "Nu exista date disponibile",
     "save": "Salveaza",
     "cancel": "Anuleaza",
+    "confirm": "Confirma",
     "details": "Detalii",
     "search": "Cauta...",
     "unknown": "Necunoscut",
@@ -1307,12 +1308,14 @@
     },
     "organizations": {
       "verifyError": "Eroare la verificarea organizatiei",
-      "revokeError": "Eroare la revocarea verificarii"
+      "revokeError": "Eroare la revocarea verificarii",
+      "loadError": "Eroare la incarcarea organizatiilor"
     },
     "challenges": {
       "createError": "Eroare la crearea provocarii",
       "updateError": "Eroare la actualizarea provocarii",
-      "deleteError": "Eroare la stergerea provocarii"
+      "deleteError": "Eroare la stergerea provocarii",
+      "loadError": "Eroare la incarcarea provocarilor"
     },
     "deletions": {
       "cancelError": "Eroare la anularea stergerii",

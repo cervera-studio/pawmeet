@@ -2,10 +2,10 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
-import i18n from '@/lib/i18n';
 import type { FeedItem, StoryGroup } from '@/hooks/useFeed';
 import { useFeed } from '@/hooks/useFeed';
 import { useFeedRealtime } from '@/hooks/useFeedRealtime';
+import i18n from '@/lib/i18n';
 import { useFeedStore } from '@/stores/feed';
 
 export type { FeedItem, StoryGroup };

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { latitudeSchema, longitudeSchema } from './value-objects';
 
 export const createEmergencyContactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -12,8 +13,8 @@ export const deleteEmergencyContactSchema = z.object({
 
 export const walkSosSchema = z.object({
   walkId: z.uuid(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
+  latitude: latitudeSchema.optional(),
+  longitude: longitudeSchema.optional(),
 });
 
 export const walkCheckinSchema = z.object({

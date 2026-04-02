@@ -25,14 +25,23 @@ export function safeParseEmail(value: string) {
 
 // ── Coordinates ──────────────────────────────────────────────────────────────
 
+export const latitudeSchema = z
+  .number()
+  .min(-90, 'latitude_out_of_range')
+  .max(90, 'latitude_out_of_range');
+export const longitudeSchema = z
+  .number()
+  .min(-180, 'longitude_out_of_range')
+  .max(180, 'longitude_out_of_range');
+
 /**
  * Geographic coordinate pair (WGS84).
  * Latitude: -90..90, Longitude: -180..180.
  */
 export const coordinatesSchema = z
   .object({
-    latitude: z.number().min(-90, 'latitude_out_of_range').max(90, 'latitude_out_of_range'),
-    longitude: z.number().min(-180, 'longitude_out_of_range').max(180, 'longitude_out_of_range'),
+    latitude: latitudeSchema,
+    longitude: longitudeSchema,
   })
   .brand<'Coordinates'>();
 

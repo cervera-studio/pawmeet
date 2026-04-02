@@ -1,10 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import { useDataTable } from '@/hooks/use-data-table';
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
-import { TIMING } from '@/lib/constants';
-import { handleError } from '@/lib/error-handler';
+import { useCallback } from 'react';
+import { usePaginatedData } from '@/hooks/use-paginated-data';
 import { fetchEmergencyContacts } from '../actions';
 
 export type ContactsData = Awaited<ReturnType<typeof fetchEmergencyContacts>>;
@@ -12,53 +8,21 @@ export type EmergencyContactItem = ContactsData['data'][number];
 
 export function useContactsViewModel(initialData: ContactsData, pageSize: number) {
   const tt = useTranslations('toast');
-  const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
-  const [data, setData] = useState(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const isInitialRender = useRef(true);
 
-  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
+  const buildParams = useCallback(
+    (ctx: { page: number; pageSize: number; search: string | undefined }) => ({
+      page: ctx.page,
+      pageSize: ctx.pageSize,
+      search: ctx.search,
+    }),
+    [],
+  );
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchEmergencyContacts({
-        page: table.page,
-        pageSize: table.pageSize,
-        search: debouncedSearch || undefined,
-      });
-      setData(result);
-    } catch (error) {
-      toast.error(handleError(error, tt('safety.contactsLoadError')));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [table.page, table.pageSize, debouncedSearch, tt]);
-
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    void fetchData();
-  }, [fetchData]);
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    if (value === '') {
-      table.onPageChange(0);
-    }
-  }
-
-  return {
-    data: data.data,
-    total: data.total,
-    totalPages: table.totalPages,
-    isLoading,
-    search,
-    setSearch: handleSearchChange,
-    pagination: table.pagination,
-    setPagination: table.setPagination,
-  };
+  return usePaginatedData({
+    initialData,
+    pageSize,
+    fetchFn: fetchEmergencyContacts,
+    buildParams,
+    errorMessage: tt('safety.contactsLoadError'),
+  });
 }

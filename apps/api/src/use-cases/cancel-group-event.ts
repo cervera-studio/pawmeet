@@ -1,4 +1,5 @@
 import { AppError, fail, GROUP_EVENT_STATUS, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { canTransitionTo } from '../domain/group-event-state-machine.js';
 import { checkOwnership } from '../domain/ownership.js';
@@ -27,7 +28,7 @@ export function createCancelGroupEvent({ groupEventRepo }: Deps) {
       return fail(
         new AppError(
           'INVALID_STATUS_TRANSITION',
-          `Impossibile annullare un evento con stato "${event.status}"`,
+          ERROR_MESSAGES.EVENT_CANCEL_INVALID_STATUS(event.status),
           400,
         ),
       );

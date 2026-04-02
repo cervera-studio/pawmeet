@@ -18,6 +18,7 @@ import { createTrpcActivityRepository } from './remote/trpc-activity-repository'
 import { createTrpcAuthRepository } from './remote/trpc-auth-repository';
 import { createTrpcBadgeRepository } from './remote/trpc-badge-repository';
 import { createTrpcChatRepository } from './remote/trpc-chat-repository';
+import { createTrpcDogRepository } from './remote/trpc-dog-repository';
 import { createTrpcFeedRepository } from './remote/trpc-feed-repository';
 import { createTrpcFeedbackRepository } from './remote/trpc-feedback-repository';
 import { createTrpcFollowRepository } from './remote/trpc-follow-repository';
@@ -39,6 +40,7 @@ import {
   AUTH_REPOSITORY,
   BADGE_REPOSITORY,
   CHAT_REPOSITORY,
+  DOG_REPOSITORY,
   FEED_REPOSITORY,
   FEEDBACK_REPOSITORY,
   FOLLOW_REPOSITORY,
@@ -63,6 +65,7 @@ container.register(WALK_TRACKING_REPOSITORY, {
 });
 container.register(MEDIA_REPOSITORY, { useValue: createTrpcMediaRepository(api) });
 container.register(SAFETY_REPOSITORY, { useValue: createTrpcSafetyRepository(api) });
+container.register(DOG_REPOSITORY, { useValue: createTrpcDogRepository(api) });
 container.register(FEEDBACK_REPOSITORY, { useValue: createTrpcFeedbackRepository(api) });
 container.register(ACTIVITY_REPOSITORY, { useValue: createTrpcActivityRepository(api) });
 container.register(USER_REPOSITORY, { useValue: createTrpcUserRepository(api) });
@@ -158,7 +161,7 @@ container.register(GAMIFICATION_REPOSITORY, {
 
 const analyticsService = __DEV__
   ? createNoOpAnalyticsService()
-  : createBufferedAnalyticsService(process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000');
+  : createBufferedAnalyticsService(process.env.EXPO_PUBLIC_API_URL ?? '');
 container.register(ANALYTICS_SERVICE, { useValue: analyticsService });
 
 export { container };

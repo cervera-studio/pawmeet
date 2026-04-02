@@ -1,12 +1,18 @@
 import type { MediaType } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
-import { api } from '@/lib/trpc';
+import { uploadToPresignedUrl } from '@/lib/upload';
+import { container } from '@/repositories/container';
+import type { MediaContentType } from '@/repositories/interfaces';
+import { FEED_REPOSITORY, MEDIA_REPOSITORY } from '@/repositories/tokens';
 
 interface UploadProgress {
   current: number;
   total: number;
 }
+
+const feedRepo = container.resolve(FEED_REPOSITORY);
+const mediaRepo = container.resolve(MEDIA_REPOSITORY);
 
 export function usePostUpload() {
   const [uploading, setUploading] = useState(false);
@@ -20,7 +26,7 @@ export function usePostUpload() {
       walkId: string | null;
     }) => {
       try {
-        const result = await api.feed.createPost.mutate(input);
+        const result = await feedRepo.createPost(input);
         return result.post;
       } catch (e) {
         logger.warn('usePostUpload', 'Failed to create post', e);
@@ -43,35 +49,17 @@ export function usePostUpload() {
           const file = files[i];
           if (!file) continue;
 
-          // 1. Get presigned URL
-          const { uploadUrl, key } = await api.feed.uploadMediaUrl.mutate({
+          const contentType = file.type as MediaContentType;
+          const { uploadUrl, key } = await mediaRepo.getPostMediaUploadUrl(
             postId,
-            contentType: file.type as
-              | 'image/jpeg'
-              | 'image/png'
-              | 'image/webp'
-              | 'video/mp4'
-              | 'video/quicktime',
-            fileSize: file.fileSize,
-          });
+            contentType,
+            file.fileSize,
+          );
 
-          // 2. Upload to R2
-          const response = await fetch(file.uri);
-          const blob = await response.blob();
-          await fetch(uploadUrl, {
-            method: 'PUT',
-            body: blob,
-            headers: { 'Content-Type': file.type },
-          });
+          await uploadToPresignedUrl(uploadUrl, file.uri, contentType);
 
-          // 3. Confirm upload
           const mediaType: MediaType = file.type.startsWith('video/') ? 'video' : 'photo';
-          await api.feed.confirmMedia.mutate({
-            postId,
-            key,
-            mediaType,
-            position: i,
-          });
+          await mediaRepo.confirmPostMedia(postId, key, mediaType, i);
 
           setProgress({ current: i + 1, total: files.length });
         }
@@ -90,32 +78,13 @@ export function usePostUpload() {
     async (file: { uri: string; type: string; fileSize: number }): Promise<boolean> => {
       setUploading(true);
       try {
-        // 1. Get presigned URL
-        const { uploadUrl, key } = await api.feed.createStory.mutate({
-          contentType: file.type as
-            | 'image/jpeg'
-            | 'image/png'
-            | 'image/webp'
-            | 'video/mp4'
-            | 'video/quicktime',
-          fileSize: file.fileSize,
-        });
+        const contentType = file.type as MediaContentType;
+        const { uploadUrl, key } = await mediaRepo.getStoryUploadUrl(contentType, file.fileSize);
 
-        // 2. Upload to R2
-        const response = await fetch(file.uri);
-        const blob = await response.blob();
-        await fetch(uploadUrl, {
-          method: 'PUT',
-          body: blob,
-          headers: { 'Content-Type': file.type },
-        });
+        await uploadToPresignedUrl(uploadUrl, file.uri, contentType);
 
-        // 3. Confirm story
         const mediaType: MediaType = file.type.startsWith('video/') ? 'video' : 'photo';
-        await api.feed.confirmStory.mutate({
-          key,
-          mediaType,
-        });
+        await mediaRepo.confirmStory(key, mediaType);
 
         return true;
       } catch (e) {

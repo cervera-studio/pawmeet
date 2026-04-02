@@ -1,12 +1,13 @@
 import { z } from 'zod';
+import { latitudeSchema, longitudeSchema } from './value-objects';
 
 export const startTrackingSchema = z.object({
   walkId: z.uuid().nullable().optional(),
 });
 
 export const trackPointSchema = z.object({
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
+  latitude: latitudeSchema,
+  longitude: longitudeSchema,
   altitude: z.number().nullable().optional(),
   timestamp: z.iso.datetime(),
   speedKmh: z.number().min(0).nullable().optional(),

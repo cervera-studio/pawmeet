@@ -25,11 +25,7 @@ export function createPasskeyDelete(deps: Deps) {
 
       if (!hasPassword && oauthLinks.length === 0) {
         return fail(
-          new AppError(
-            'PASSKEY_LAST_AUTH_METHOD',
-            'Non puoi eliminare la tua unica passkey senza un altro metodo di accesso',
-            400,
-          ),
+          new AppError('PASSKEY_LAST_AUTH_METHOD', ERROR_MESSAGES.PASSKEY_LAST_AUTH_METHOD, 400),
         );
       }
     }

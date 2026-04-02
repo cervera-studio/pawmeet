@@ -1,6 +1,6 @@
 import type { Match } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import { logger } from '@pawmeet/utils';
+import { calculateDistance, logger } from '@pawmeet/utils';
 import { ERROR_MESSAGES } from '../constants/messages.js';
 import { NOTIF_NEW_MATCH } from '../constants/notifications.js';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
@@ -12,17 +12,6 @@ import type {
   NotificationService,
   UserRepository,
 } from '../ports/index.js';
-
-/** Haversine distance between two coordinates in km */
-function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
 
 type Deps = {
   dogRepo: DogRepository;
@@ -61,7 +50,12 @@ async function computeOwnerDistance(
     userRepo.findById(targetOwnerId),
   ]);
   if (!(myUser && hasLocation(myUser) && otherUser && hasLocation(otherUser))) return;
-  return haversineKm(myUser.latitude, myUser.longitude, otherUser.latitude, otherUser.longitude);
+  return calculateDistance(
+    myUser.latitude,
+    myUser.longitude,
+    otherUser.latitude,
+    otherUser.longitude,
+  );
 }
 
 export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationService }: Deps) {

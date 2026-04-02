@@ -6,6 +6,7 @@ import type { Locale } from '../i18n/locales';
 import { t } from '../i18n';
 import { getAlternatePath } from '../i18n/routes';
 import { getCanonicalPath } from '../i18n/routes';
+import { SITE_URL, CONTACT_EMAIL } from '../config/site';
 
 interface Props {
   title: string;
@@ -109,12 +110,12 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "PawMeet",
-      "url": "https://pawmeet.io",
-      "logo": "https://pawmeet.io/favicon.svg",
+      "url": SITE_URL,
+      "logo": `${SITE_URL}/favicon.svg`,
       "sameAs": [],
       "contactPoint": {
         "@type": "ContactPoint",
-        "email": "info@cervera.studio",
+        "email": CONTACT_EMAIL,
         "contactType": "customer support",
         "availableLanguage": ["Italian", "English", "Spanish", "Romanian"]
       }
@@ -125,7 +126,7 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "PawMeet",
-      "url": "https://pawmeet.io",
+      "url": SITE_URL,
       "inLanguage": { it: 'it-IT', en: 'en-US', es: 'es-ES', ro: 'ro-RO' }[locale],
       "description": resolvedDescription
     })} />
@@ -147,7 +148,7 @@ const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, 
           "priceCurrency": "EUR",
           "availability": "https://schema.org/PreOrder"
         },
-        "url": "https://pawmeet.io",
+        "url": SITE_URL,
         "inLanguage": { it: 'it-IT', en: 'en-US', es: 'es-ES', ro: 'ro-RO' }[locale]
       })} />
     )}

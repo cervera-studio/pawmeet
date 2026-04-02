@@ -1,6 +1,7 @@
 import type { ContentReportReason } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import type {
+  CreatePostInput,
   FeedComment,
   FeedItem,
   FeedPage,
@@ -9,6 +10,7 @@ import type {
   NetworkState,
   StoryGroup,
   SyncQueue,
+  TrendingHashtag,
 } from '../interfaces';
 
 interface CompositeFeedDeps {
@@ -40,6 +42,15 @@ export function createCompositeFeedRepository(deps: CompositeFeedDeps): FeedRepo
   }
 
   return {
+    async createPost(input: CreatePostInput) {
+      return remote.createPost(input);
+    },
+
+    async trendingHashtags(limit: number): Promise<{ hashtags: TrendingHashtag[] }> {
+      if (!network.isOnline()) return { hashtags: [] };
+      return remote.trendingHashtags(limit);
+    },
+
     async timeline(cursor?: string, limit?: number): Promise<FeedPage> {
       // Try remote first when online
       if (network.isOnline()) {

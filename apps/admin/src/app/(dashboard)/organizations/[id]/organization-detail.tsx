@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,11 +43,12 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
   const router = useRouter();
   const t = useTranslations('organizations.detail');
   const tTypes = useTranslations('organizations.types');
+  const tc = useTranslations('common');
   const tt = useTranslations('toast');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'verify' | 'revoke' | null>(null);
 
   async function handleVerify() {
-    if (!confirm(t('confirmVerify'))) return;
     setIsProcessing(true);
     try {
       await verifyOrganization(organization.id);
@@ -59,7 +61,6 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
   }
 
   async function handleRevoke() {
-    if (!confirm(t('confirmRevoke'))) return;
     setIsProcessing(true);
     try {
       await revokeOrganization(organization.id);
@@ -73,6 +74,22 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
 
   return (
     <div className="space-y-6">
+      <ConfirmDialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmAction(null);
+        }}
+        title={confirmAction === 'verify' ? t('confirmVerify') : t('confirmRevoke')}
+        confirmLabel={tc('confirm')}
+        cancelLabel={tc('cancel')}
+        variant={confirmAction === 'revoke' ? 'destructive' : 'default'}
+        isLoading={isProcessing}
+        onConfirm={() => {
+          if (confirmAction === 'verify') void handleVerify();
+          else void handleRevoke();
+        }}
+      />
+
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -91,11 +108,15 @@ export function OrganizationDetail({ organization }: OrganizationDetailProps) {
             {t('backToList')}
           </Button>
           {organization.isVerified ? (
-            <Button variant="destructive" onClick={handleRevoke} disabled={isProcessing}>
+            <Button
+              variant="destructive"
+              onClick={() => setConfirmAction('revoke')}
+              disabled={isProcessing}
+            >
               {isProcessing ? t('revokingVerification') : t('revokeVerification')}
             </Button>
           ) : (
-            <Button onClick={handleVerify} disabled={isProcessing}>
+            <Button onClick={() => setConfirmAction('verify')} disabled={isProcessing}>
               {isProcessing ? t('verifying') : t('verifyOrganization')}
             </Button>
           )}

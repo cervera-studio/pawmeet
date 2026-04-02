@@ -3,6 +3,7 @@ import type { Locale } from '../i18n/locales';
 import { t } from '../i18n';
 import { getSiteLinks, getLegalLinks } from '../data/navigation';
 import { getCopyrightYear } from '../utils/meta';
+import { CONTACT_EMAIL } from '../config/site';
 
 interface Props {
   locale?: Locale;
@@ -75,10 +76,10 @@ const homeHref = locale === 'it' ? '/' : '/en';
         &copy; {currentYear} {strings.footer.copyright} &middot; {strings.footer.vat}
       </p>
       <a
-        href="mailto:info@cervera.studio"
+        href={`mailto:${CONTACT_EMAIL}`}
         class="text-[13px] text-neutral-400 hover:text-neutral-300 transition-colors"
       >
-        info@cervera.studio
+        {CONTACT_EMAIL}
       </a>
     </div>
   </div>

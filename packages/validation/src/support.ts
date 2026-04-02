@@ -1,3 +1,4 @@
+import { MAX_EMAIL_LENGTH } from '@pawmeet/config';
 import { z } from 'zod';
 
 export const createSupportTicketSchema = z.object({
@@ -8,7 +9,7 @@ export const createSupportTicketSchema = z.object({
 
 export const createGuestSupportTicketSchema = z.object({
   name: z.string().min(1).max(200),
-  email: z.email().max(255),
+  email: z.email().max(MAX_EMAIL_LENGTH),
   subject: z.string().min(1).max(300),
   category: z.enum(['general', 'bug', 'account', 'safety', 'billing', 'other']).default('general'),
   message: z.string().min(1).max(5000),

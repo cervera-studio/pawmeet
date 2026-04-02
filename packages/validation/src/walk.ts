@@ -1,5 +1,6 @@
 import { WALK_DURATION_MAX, WALK_DURATION_MIN } from '@pawmeet/config';
 import { z } from 'zod';
+import { latitudeSchema, longitudeSchema } from './value-objects';
 
 export const proposeWalkSchema = z.object({
   matchId: z.uuid(),
@@ -7,8 +8,8 @@ export const proposeWalkSchema = z.object({
   durationMin: z.number().int().min(WALK_DURATION_MIN).max(WALK_DURATION_MAX).default(30),
   title: z.string().max(100).optional(),
   location: z.string().max(200).optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
+  latitude: latitudeSchema.optional(),
+  longitude: longitudeSchema.optional(),
   notes: z.string().max(500).optional(),
 });
 

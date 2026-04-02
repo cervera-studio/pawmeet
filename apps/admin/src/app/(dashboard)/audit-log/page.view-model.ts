@@ -1,10 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import { useDataTable } from '@/hooks/use-data-table';
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
-import { TIMING } from '@/lib/constants';
-import { handleError } from '@/lib/error-handler';
+import { useCallback, useState } from 'react';
+import { usePaginatedData } from '@/hooks/use-paginated-data';
 import { fetchAuditLog } from './actions';
 
 export type AuditLogData = Awaited<ReturnType<typeof fetchAuditLog>>;
@@ -35,62 +31,34 @@ export function isResourceType(v: string): v is ResourceType {
 
 export function useAuditLogViewModel(initialData: AuditLogData, pageSize: number) {
   const tt = useTranslations('toast');
-  const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [resourceFilter, setResourceFilter] = useState<ResourceType | undefined>(undefined);
-  const [data, setData] = useState(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const isInitialRender = useRef(true);
 
-  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
+  const buildParams = useCallback(
+    (ctx: { page: number; pageSize: number; search: string | undefined }) => ({
+      page: ctx.page,
+      pageSize: ctx.pageSize,
+      search: ctx.search,
+      resourceType: resourceFilter,
+    }),
+    [resourceFilter],
+  );
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchAuditLog({
-        page: table.page,
-        pageSize: table.pageSize,
-        search: debouncedSearch || undefined,
-        resourceType: resourceFilter,
-      });
-      setData(result);
-    } catch (error) {
-      toast.error(handleError(error, tt('auditLog.loadError')));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [table.page, table.pageSize, debouncedSearch, resourceFilter, tt]);
-
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    void fetchData();
-  }, [fetchData]);
+  const paginated = usePaginatedData({
+    initialData,
+    pageSize,
+    fetchFn: fetchAuditLog,
+    buildParams,
+    errorMessage: tt('auditLog.loadError'),
+  });
 
   function handleResourceFilterChange(type: ResourceType | undefined) {
     setResourceFilter(type);
-    table.onPageChange(0);
-  }
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    if (value === '') {
-      table.onPageChange(0);
-    }
+    paginated.resetPage();
   }
 
   return {
-    data: data.data,
-    total: data.total,
-    totalPages: table.totalPages,
-    isLoading,
-    search,
-    setSearch: handleSearchChange,
+    ...paginated,
     resourceFilter,
     setResourceFilter: handleResourceFilterChange,
-    pagination: table.pagination,
-    setPagination: table.setPagination,
   };
 }

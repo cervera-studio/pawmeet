@@ -1,3 +1,4 @@
+import { MAX_EMAIL_LENGTH } from '@pawmeet/config';
 import { z } from 'zod';
 
 export const organizationTypeEnum = z.enum(['pawmeet_team', 'association', 'educator', 'brand']);
@@ -15,7 +16,7 @@ export const createOrganizationSchema = z.object({
   description: z.string().max(2000).optional(),
   logoUrl: z.url().max(500).optional(),
   websiteUrl: z.url().max(500).optional(),
-  contactEmail: z.email().max(255).optional(),
+  contactEmail: z.email().max(MAX_EMAIL_LENGTH).optional(),
 });
 
 export type CreateOrganizationInput = z.infer<typeof createOrganizationSchema>;

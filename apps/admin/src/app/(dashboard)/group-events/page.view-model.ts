@@ -1,11 +1,7 @@
 import type { PaginatedResult } from '@pawmeet/types';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import { useDataTable } from '@/hooks/use-data-table';
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
-import { TIMING } from '@/lib/constants';
-import { handleError } from '@/lib/error-handler';
+import { useCallback, useState } from 'react';
+import { usePaginatedData } from '@/hooks/use-paginated-data';
 import type { AdminGroupEventListItem, ListGroupEventsParams } from '@/repositories';
 import { fetchGroupEvents } from './actions';
 
@@ -17,71 +13,43 @@ export function useGroupEventsViewModel(
   pageSize: number,
 ) {
   const tt = useTranslations('toast');
-  const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search, TIMING.DEBOUNCE_DELAY_MS);
   const [statusFilter, setStatusFilter] = useState<EventStatus | undefined>(undefined);
   const [categoryFilter, setCategoryFilter] = useState<EventCategory | undefined>(undefined);
-  const [data, setData] = useState(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const isInitialRender = useRef(true);
 
-  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
+  const buildParams = useCallback(
+    (ctx: { page: number; pageSize: number; search: string | undefined }) => ({
+      page: ctx.page,
+      pageSize: ctx.pageSize,
+      search: ctx.search,
+      status: statusFilter,
+      category: categoryFilter,
+    }),
+    [statusFilter, categoryFilter],
+  );
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchGroupEvents({
-        page: table.page,
-        pageSize: table.pageSize,
-        search: debouncedSearch || undefined,
-        status: statusFilter,
-        category: categoryFilter,
-      });
-      setData(result);
-    } catch (error) {
-      toast.error(handleError(error, tt('events.loadError')));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [table.page, table.pageSize, debouncedSearch, statusFilter, categoryFilter, tt]);
-
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    void fetchData();
-  }, [fetchData]);
+  const paginated = usePaginatedData({
+    initialData,
+    pageSize,
+    fetchFn: fetchGroupEvents,
+    buildParams,
+    errorMessage: tt('events.loadError'),
+  });
 
   function handleStatusFilterChange(status: EventStatus | undefined) {
     setStatusFilter(status);
-    table.onPageChange(0);
+    paginated.resetPage();
   }
 
   function handleCategoryFilterChange(category: EventCategory | undefined) {
     setCategoryFilter(category);
-    table.onPageChange(0);
-  }
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    if (value === '') {
-      table.onPageChange(0);
-    }
+    paginated.resetPage();
   }
 
   return {
-    data: data.data,
-    total: data.total,
-    totalPages: table.totalPages,
-    isLoading,
-    search,
-    setSearch: handleSearchChange,
+    ...paginated,
     statusFilter,
     setStatusFilter: handleStatusFilterChange,
     categoryFilter,
     setCategoryFilter: handleCategoryFilterChange,
-    pagination: table.pagination,
-    setPagination: table.setPagination,
   };
 }

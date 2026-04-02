@@ -1,8 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import { useDataTable } from '@/hooks/use-data-table';
-import { handleError } from '@/lib/error-handler';
+import { useCallback, useState } from 'react';
+import { usePaginatedData } from '@/hooks/use-paginated-data';
 import { fetchSosAlerts } from '../actions';
 
 export type AlertType = 'sos' | 'auto_alert' | 'checkin';
@@ -19,49 +17,33 @@ export function isAlertType(v: string): v is AlertType {
 export function useSosViewModel(initialData: SosData, pageSize: number) {
   const tt = useTranslations('toast');
   const [typeFilter, setTypeFilter] = useState<AlertType | undefined>(undefined);
-  const [data, setData] = useState(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const isInitialRender = useRef(true);
 
-  const table = useDataTable({ totalItems: data.total, initialPageSize: pageSize });
+  const buildParams = useCallback(
+    (ctx: { page: number; pageSize: number }) => ({
+      page: ctx.page,
+      pageSize: ctx.pageSize,
+      type: typeFilter,
+    }),
+    [typeFilter],
+  );
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchSosAlerts({
-        page: table.page,
-        pageSize: table.pageSize,
-        type: typeFilter,
-      });
-      setData(result);
-    } catch (error) {
-      toast.error(handleError(error, tt('safety.sosLoadError')));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [table.page, table.pageSize, typeFilter, tt]);
-
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    void fetchData();
-  }, [fetchData]);
+  const paginated = usePaginatedData({
+    initialData,
+    pageSize,
+    fetchFn: fetchSosAlerts,
+    buildParams,
+    errorMessage: tt('safety.sosLoadError'),
+    enableSearch: false,
+  });
 
   function handleTypeFilterChange(type: AlertType | undefined) {
     setTypeFilter(type);
-    table.onPageChange(0);
+    paginated.resetPage();
   }
 
   return {
-    data: data.data,
-    total: data.total,
-    totalPages: table.totalPages,
-    isLoading,
+    ...paginated,
     typeFilter,
     setTypeFilter: handleTypeFilterChange,
-    pagination: table.pagination,
-    setPagination: table.setPagination,
   };
 }

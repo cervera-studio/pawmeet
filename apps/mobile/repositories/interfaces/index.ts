@@ -3,6 +3,12 @@ export type { AuthRepository, AuthResult } from './auth-repository';
 export type { BadgeRepository } from './badge-repository';
 export type { ChatRepository, Conversation } from './chat-repository';
 export type {
+  AnalyzePhotoInput,
+  AnalyzePhotoResult,
+  DogRepository,
+  GenerateBioInput,
+} from './dog-repository';
+export type {
   CommentsPage,
   CreatePostInput,
   FeedComment,
@@ -10,8 +16,9 @@ export type {
   FeedPage,
   FeedRepository,
   StoryGroup,
+  TrendingHashtag,
 } from './feed-repository';
-export type { DogRating, FeedbackRepository } from './feedback-repository';
+export type { DogRating, FeedbackRepository, WalkFeedbackItem } from './feedback-repository';
 export type {
   BlockedPage,
   BlockedUser,

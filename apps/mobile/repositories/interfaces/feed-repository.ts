@@ -1,6 +1,7 @@
 import type { ContentReportReason } from '@pawmeet/types';
 
 export interface FeedItem {
+  id: string;
   [key: string]: unknown;
 }
 
@@ -23,13 +24,20 @@ export interface CommentsPage {
 }
 
 export interface CreatePostInput {
-  caption?: string;
-  latitude?: number;
-  longitude?: number;
-  walkId?: string;
+  caption: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  walkId: string | null;
+}
+
+export interface TrendingHashtag {
+  name: string;
+  usageCount: number;
 }
 
 export interface FeedRepository {
+  createPost(input: CreatePostInput): Promise<{ post: FeedItem }>;
+  trendingHashtags(limit: number): Promise<{ hashtags: TrendingHashtag[] }>;
   timeline(cursor?: string, limit?: number): Promise<FeedPage>;
   stories(): Promise<{ groups: StoryGroup[] }>;
   like(postId: string): Promise<{ liked: boolean }>;

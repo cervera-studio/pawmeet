@@ -38,6 +38,7 @@ export const ERROR_MESSAGES = {
   TRACK_ALREADY_COMPLETED: 'Walk track is already completed',
 
   // ── Feed / Posts ────────────────────────────────────────────────────────────
+  TAG_REMOVE_FORBIDDEN: 'Not authorized to remove this tag',
   POST_ALREADY_DELETED: 'Post has already been deleted',
   POST_DELETED: 'Post has been deleted',
   COMMENT_ALREADY_DELETED: 'Comment has already been deleted',
@@ -64,6 +65,7 @@ export const ERROR_MESSAGES = {
   NOT_PARTICIPANT_CONVERSATION: 'Not a participant in this conversation',
 
   // ── Group Events ────────────────────────────────────────────────────────────
+  EVENT_CANCEL_INVALID_STATUS: (status: string) => `Cannot cancel an event with status "${status}"`,
   EVENT_INVALID_DATE: 'Date must be in the future',
   EVENT_MIN_PARTICIPANTS: 'Minimum 2 participants for a group event',
   EVENT_NOT_SCHEDULED: 'Event is no longer open for invitations',
@@ -90,7 +92,7 @@ export const ERROR_MESSAGES = {
 
   // ── Dogs ────────────────────────────────────────────────────────────────────
   DOG_NOT_OWNED: 'Not authorized for this dog',
-  DOG_LIMIT_REACHED: 'Maximum number of dogs reached',
+  DOG_LIMIT_REACHED: (max: number) => `You can register at most ${max} dogs`,
 
   // ── Organizations ───────────────────────────────────────────────────────────
   ORG_NOT_AUTHORIZED: 'Not authorized to manage members',
@@ -100,6 +102,7 @@ export const ERROR_MESSAGES = {
   ORG_MEMBER_EXISTS: 'User is already a member of this organization',
 
   // ── Passkeys ────────────────────────────────────────────────────────────────
+  PASSKEY_LAST_AUTH_METHOD: 'Cannot delete your only passkey without another sign-in method',
   PASSKEY_NOT_FOUND: 'Passkey not found',
   PASSKEY_LIMIT_REACHED: 'Maximum number of passkeys reached',
   PASSKEY_CHALLENGE_EXPIRED: 'Challenge expired, please try again',

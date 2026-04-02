@@ -1,12 +1,13 @@
-import type { RouterOutput } from '@pawmeet/api-client';
+import type { FeedbackRating } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
-import { api } from '@/lib/trpc';
-
-type DogRating = RouterOutput['feedback']['getDogRating'];
-type WalkFeedbackItem = RouterOutput['feedback']['listByWalk'][number];
+import { container } from '@/repositories/container';
+import type { DogRating, WalkFeedbackItem } from '@/repositories/interfaces';
+import { FEEDBACK_REPOSITORY } from '@/repositories/tokens';
 
 export type { DogRating, WalkFeedbackItem };
+
+const feedbackRepo = container.resolve(FEEDBACK_REPOSITORY);
 
 export function useFeedback() {
   const [submitting, setSubmitting] = useState(false);
@@ -16,15 +17,10 @@ export function useFeedback() {
   const [loadingWalkFeedback, setLoadingWalkFeedback] = useState(false);
 
   const submitFeedback = useCallback(
-    async (walkId: string, toDogId: string, rating: number, comment?: string) => {
+    async (walkId: string, toDogId: string, rating: FeedbackRating, comment?: string) => {
       setSubmitting(true);
       try {
-        await api.feedback.submit.mutate({
-          walkId,
-          toDogId,
-          rating,
-          comment,
-        });
+        await feedbackRepo.submit(walkId, toDogId, rating, comment);
       } finally {
         setSubmitting(false);
       }
@@ -35,7 +31,7 @@ export function useFeedback() {
   const fetchDogRating = useCallback(async (dogId: string) => {
     setLoadingRating(true);
     try {
-      const result = await api.feedback.getDogRating.query({ dogId });
+      const result = await feedbackRepo.getDogRating(dogId);
       setDogRating(result);
       return result;
     } catch (e) {
@@ -49,8 +45,8 @@ export function useFeedback() {
   const fetchWalkFeedback = useCallback(async (walkId: string) => {
     setLoadingWalkFeedback(true);
     try {
-      const result = await api.feedback.listByWalk.query({ walkId });
-      setWalkFeedback(result as WalkFeedbackItem[]);
+      const result = await feedbackRepo.listByWalk(walkId);
+      setWalkFeedback(result);
       return result;
     } catch (e) {
       logger.warn('useFeedback', 'Failed to fetch walk feedback', e);

@@ -160,7 +160,18 @@ export function useEditDogViewModel() {
   const handleUploadPhoto = useCallback(async () => {
     if (!dogId) return;
     const photo = await uploadDogPhoto(dogId);
-    if (photo) setPhotos((prev) => [...prev, photo]);
+    if (photo)
+      setPhotos((prev) => [
+        ...prev,
+        {
+          ...photo,
+          dogId: dogId!,
+          position: prev.length,
+          isPrimary: prev.length === 0,
+          moderationStatus: 'pending' as const,
+          uploadedAt: new Date().toISOString(),
+        },
+      ]);
   }, [dogId, uploadDogPhoto]);
 
   const handleDeletePhoto = useCallback(

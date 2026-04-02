@@ -26,7 +26,7 @@ export function useFeedbackModalViewModel(
     }
 
     try {
-      await submitFeedback(walkId, toDogId, rating, comment || undefined);
+      await submitFeedback(walkId, toDogId, rating as 1 | 2 | 3 | 4 | 5, comment || undefined);
       resetForm();
       onSubmit();
     } catch (e) {

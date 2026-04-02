@@ -1,6 +1,7 @@
 import { Check, Loader2, Send } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { type FormEvent, useState } from 'react';
+import { API_URL, CONTACT_EMAIL } from '../config/site';
 import type { TranslationDictionary } from '../i18n';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
@@ -38,7 +39,7 @@ export default function ContactFormClient({ strings }: Props) {
     };
 
     try {
-      const res = await fetch('https://api.pawmeet.io/api/web/contact', {
+      const res = await fetch(`${API_URL}/api/web/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -220,7 +221,7 @@ export default function ContactFormClient({ strings }: Props) {
         <p>
           {strings.directEmail}{' '}
           <a
-            href="mailto:info@cervera.studio"
+            href={`mailto:${CONTACT_EMAIL}`}
             className="text-primary-text hover:underline font-medium"
           >
             info@cervera.studio

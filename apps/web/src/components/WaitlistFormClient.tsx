@@ -1,6 +1,7 @@
 import { Check, Loader2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { type FormEvent, useState } from 'react';
+import { API_URL } from '../config/site';
 import type { TranslationDictionary } from '../i18n';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
@@ -23,7 +24,7 @@ export default function WaitlistFormClient({ strings, locale = 'it' }: Props) {
     setErrorMessage('');
 
     try {
-      const res = await fetch('https://api.pawmeet.io/api/web/waitlist', {
+      const res = await fetch(`${API_URL}/api/web/waitlist`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, locale }),

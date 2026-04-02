@@ -1,17 +1,17 @@
-import type { RouterOutput } from '@pawmeet/api-client';
 import { logger } from '@pawmeet/utils';
-
-/** Photo type as returned by the tRPC layer (Dates serialized as strings). */
-type DogPhotoResponse = RouterOutput['dogs']['confirmPhoto']['photo'];
-
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import i18n from '@/lib/i18n';
-import { api } from '@/lib/trpc';
+import { uploadToPresignedUrl } from '@/lib/upload';
+import { container } from '@/repositories/container';
+import type { MediaContentType } from '@/repositories/interfaces';
+import { MEDIA_REPOSITORY } from '@/repositories/tokens';
 import { useAuthStore } from '@/stores/auth';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB — must match server-side constant
+
+const mediaRepo = container.resolve(MEDIA_REPOSITORY);
 
 /** Pick a single image from the device library. Returns null if cancelled or denied. */
 async function pickImage(
@@ -43,26 +43,6 @@ function resolveContentType(asset: ImagePicker.ImagePickerAsset): string {
   return 'image/jpeg';
 }
 
-/** Upload a local file to a presigned PUT URL via blob fetch. */
-async function uploadToPresignedUrl(
-  uploadUrl: string,
-  uri: string,
-  contentType: string,
-): Promise<void> {
-  const response = await fetch(uri);
-  const blob = await response.blob();
-
-  const uploadResponse = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: { 'Content-Type': contentType },
-    body: blob,
-  });
-
-  if (!uploadResponse.ok) {
-    throw new Error(`Upload failed with status ${uploadResponse.status}`);
-  }
-}
-
 export function useImageUpload() {
   const [uploading, setUploading] = useState(false);
 
@@ -70,13 +50,13 @@ export function useImageUpload() {
    * Full flow: pick image -> get presigned URL -> upload to R2 -> confirm with backend.
    * Returns the confirmed DogPhoto or null on cancel/error.
    */
-  const uploadDogPhoto = async (dogId: string): Promise<DogPhotoResponse | null> => {
+  const uploadDogPhoto = async (dogId: string) => {
     const asset = await pickImage([1, 1]);
     if (!asset) return null;
 
     setUploading(true);
     try {
-      const contentType = resolveContentType(asset);
+      const contentType = resolveContentType(asset) as MediaContentType;
       const fileSize = asset.fileSize ?? 0;
 
       if (fileSize > MAX_FILE_SIZE) {
@@ -84,18 +64,9 @@ export function useImageUpload() {
         return null;
       }
 
-      // Step 1: get presigned upload URL
-      const { uploadUrl, key } = await api.dogs.uploadPhotoUrl.mutate({
-        dogId,
-        contentType,
-        fileSize,
-      });
-
-      // Step 2: upload file directly to R2
+      const { uploadUrl, key } = await mediaRepo.getDogPhotoUploadUrl(dogId, contentType, fileSize);
       await uploadToPresignedUrl(uploadUrl, asset.uri, contentType);
-
-      // Step 3: confirm upload with backend
-      const { photo } = await api.dogs.confirmPhoto.mutate({ dogId, key });
+      const { photo } = await mediaRepo.confirmDogPhoto(dogId, key);
 
       return photo;
     } catch (e) {
@@ -117,7 +88,7 @@ export function useImageUpload() {
 
     setUploading(true);
     try {
-      const contentType = resolveContentType(asset);
+      const contentType = resolveContentType(asset) as MediaContentType;
       const fileSize = asset.fileSize ?? 0;
 
       if (fileSize > MAX_FILE_SIZE) {
@@ -125,19 +96,10 @@ export function useImageUpload() {
         return null;
       }
 
-      // Step 1: get presigned upload URL
-      const { uploadUrl, key } = await api.users.uploadAvatarUrl.mutate({
-        contentType,
-        fileSize,
-      });
-
-      // Step 2: upload file directly to R2
+      const { uploadUrl, key } = await mediaRepo.getAvatarUploadUrl(contentType, fileSize);
       await uploadToPresignedUrl(uploadUrl, asset.uri, contentType);
+      const { avatarUrl } = await mediaRepo.confirmAvatar(key);
 
-      // Step 3: confirm upload with backend
-      const { avatarUrl } = await api.users.confirmAvatar.mutate({ key });
-
-      // Update the auth store with the new avatar URL
       const currentUser = useAuthStore.getState().user;
       if (currentUser) {
         useAuthStore.getState().setUser({ ...currentUser, avatarUrl });

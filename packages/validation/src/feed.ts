@@ -1,9 +1,10 @@
 import { z } from 'zod';
+import { latitudeSchema, longitudeSchema } from './value-objects';
 
 export const createPostSchema = z.object({
   caption: z.string().max(500).nullable().optional(),
-  latitude: z.number().min(-90).max(90).nullable().optional(),
-  longitude: z.number().min(-180).max(180).nullable().optional(),
+  latitude: latitudeSchema.nullable().optional(),
+  longitude: longitudeSchema.nullable().optional(),
   walkId: z.uuid().nullable().optional(),
 });
 

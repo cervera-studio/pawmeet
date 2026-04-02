@@ -5,6 +5,7 @@
     "noData": "Nessun dato disponibile",
     "save": "Salva",
     "cancel": "Annulla",
+    "confirm": "Conferma",
     "details": "Dettagli",
     "search": "Cerca...",
     "unknown": "Sconosciuto",
@@ -1307,12 +1308,14 @@
     },
     "organizations": {
       "verifyError": "Errore durante la verifica dell'organizzazione",
-      "revokeError": "Errore durante la revoca della verifica"
+      "revokeError": "Errore durante la revoca della verifica",
+      "loadError": "Errore nel caricamento delle organizzazioni"
     },
     "challenges": {
       "createError": "Errore durante la creazione della sfida",
       "updateError": "Errore durante l'aggiornamento della sfida",
-      "deleteError": "Errore durante l'eliminazione della sfida"
+      "deleteError": "Errore durante l'eliminazione della sfida",
+      "loadError": "Errore nel caricamento delle sfide"
     },
     "deletions": {
       "cancelError": "Errore durante l'annullamento della cancellazione",

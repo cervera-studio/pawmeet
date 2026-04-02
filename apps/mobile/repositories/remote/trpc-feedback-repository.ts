@@ -11,5 +11,8 @@ export function createTrpcFeedbackRepository(api: ApiClient): FeedbackRepository
       const result = await api.feedback.getDogRating.query({ dogId });
       return { average: result.average, count: result.count };
     },
+    async listByWalk(walkId) {
+      return api.feedback.listByWalk.query({ walkId });
+    },
   };
 }

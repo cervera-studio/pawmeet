@@ -25,6 +25,6 @@ export function createMarkGroupMessagesRead({ groupMessageRepo, chat }: Deps) {
       userId,
     );
 
-    return succeed({ message: 'Messaggi segnati come letti' });
+    return succeed({ message: 'Messages marked as read' });
   };
 }

@@ -21,6 +21,6 @@ export function createDeleteAvatar({ userRepo, storage }: Deps) {
     // Clear avatar URL in DB
     await userRepo.update(userId, { avatarUrl: null });
 
-    return succeed({ message: 'Avatar eliminato' });
+    return succeed({ message: 'Avatar deleted' });
   };
 }

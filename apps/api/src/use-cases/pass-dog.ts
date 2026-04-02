@@ -37,6 +37,6 @@ export function createPassDog({ dogRepo, matchRepo }: Deps) {
       direction: 'pass',
     });
 
-    return succeed({ message: 'Passato' });
+    return succeed({ message: 'Passed' });
   };
 }

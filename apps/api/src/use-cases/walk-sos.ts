@@ -74,7 +74,7 @@ export function createWalkSos({
     }
 
     return succeed({
-      message: `SOS inviato. ${contacts.length} contatti di emergenza registrati.`,
+      message: `SOS sent. ${contacts.length} emergency contacts on file.`,
     });
   };
 }
@@ -98,6 +98,6 @@ export function createWalkCheckin({
       type: SAFETY_CHECKIN_TYPE.CHECKIN,
     });
 
-    return succeed({ message: 'Check-in registrato' });
+    return succeed({ message: 'Check-in recorded' });
   };
 }

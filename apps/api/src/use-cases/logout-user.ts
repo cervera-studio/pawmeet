@@ -23,6 +23,6 @@ export function createLogoutUser(deps: Deps) {
 
     logSecurityEvent({ event: SECURITY_EVENT.Logout });
 
-    return succeed({ message: 'Logout effettuato' });
+    return succeed({ message: 'Logged out' });
   };
 }

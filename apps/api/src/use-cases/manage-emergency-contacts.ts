@@ -32,6 +32,6 @@ export function createListEmergencyContacts({ emergencyContactRepo }: Deps) {
 export function createDeleteEmergencyContact({ emergencyContactRepo }: Deps) {
   return async (userId: string, contactId: string): Promise<Result<{ message: string }>> => {
     await emergencyContactRepo.delete(contactId, userId);
-    return succeed({ message: 'Contatto di emergenza rimosso' });
+    return succeed({ message: 'Emergency contact removed' });
   };
 }

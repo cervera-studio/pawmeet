@@ -26,7 +26,7 @@ describe('cancelWalk', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.message).toBe('Passeggiata annullata');
+    expect(result.data.message).toBe('Walk cancelled');
     expect(walkRepo.updateStatus).toHaveBeenCalledWith('walk-1', 'cancelled');
   });
 

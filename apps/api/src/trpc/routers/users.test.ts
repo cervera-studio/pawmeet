@@ -73,7 +73,7 @@ function buildUserDeps(overrides: Partial<typeof userDeps> = {}): typeof userDep
     confirmAvatar: vi
       .fn()
       .mockResolvedValue(succeed({ avatarUrl: 'https://cdn.example.com/avatar.jpg' })),
-    deleteAvatar: vi.fn().mockResolvedValue(succeed({ message: 'Avatar eliminato' })),
+    deleteAvatar: vi.fn().mockResolvedValue(succeed({ message: 'Avatar deleted' })),
     registerPushToken: vi.fn().mockResolvedValue(succeed({ registered: true })),
     updateNotificationPrefs: vi
       .fn()
@@ -113,7 +113,7 @@ describe('users router', () => {
       const deps = buildUserDeps({
         getProfile: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('USER_NOT_FOUND', 'Utente non trovato', 404))),
+          .mockResolvedValue(fail(new AppError('USER_NOT_FOUND', 'User not found', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -248,9 +248,7 @@ describe('users router', () => {
       const deps = buildUserDeps({
         findNearby: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400)),
-          ),
+          .mockResolvedValue(fail(new AppError('LOCATION_NOT_SET', 'Location not set', 400))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -329,7 +327,7 @@ describe('users router', () => {
 
       const result = await caller.users.deleteAvatar();
 
-      expect(result.message).toBe('Avatar eliminato');
+      expect(result.message).toBe('Avatar deleted');
       expect(deps.deleteAvatar).toHaveBeenCalledWith('user-1');
     });
 

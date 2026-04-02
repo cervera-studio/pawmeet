@@ -35,6 +35,6 @@ export function createRevokeSession(deps: Deps) {
       metadata: { revokedSessionId: sessionId, deviceName: target.deviceName },
     });
 
-    return succeed({ message: 'Sessione revocata' });
+    return succeed({ message: 'Session revoked' });
   };
 }

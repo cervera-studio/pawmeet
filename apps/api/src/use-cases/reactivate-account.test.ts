@@ -25,7 +25,7 @@ describe('createReactivateAccount', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (isSuccess(result)) {
-      expect(result.data.message).toContain('riattivato');
+      expect(result.data.message).toContain('reactivated');
     }
   });
 

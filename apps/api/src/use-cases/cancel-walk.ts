@@ -64,6 +64,6 @@ export function createCancelWalk({
       }
     }
 
-    return succeed({ message: 'Passeggiata annullata' });
+    return succeed({ message: 'Walk cancelled' });
   };
 }

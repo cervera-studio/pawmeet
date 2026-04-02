@@ -46,9 +46,7 @@ function buildChatDeps(overrides: Partial<typeof chatDeps> = {}): typeof chatDep
       }),
     ),
     sendMessage: vi.fn().mockResolvedValue(succeed({ message: buildMessage() })),
-    markMessagesRead: vi
-      .fn()
-      .mockResolvedValue(succeed({ message: 'Messaggi segnati come letti' })),
+    markMessagesRead: vi.fn().mockResolvedValue(succeed({ message: 'Messages marked as read' })),
     ...overrides,
   };
 }
@@ -130,7 +128,7 @@ describe('chat router', () => {
         getMessages: vi
           .fn()
           .mockResolvedValue(
-            fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversazione non trovata', 404)),
+            fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversation not found', 404)),
           ),
       });
       const caller = createAuthenticatedCaller(deps);
@@ -209,7 +207,7 @@ describe('chat router', () => {
         sendMessage: vi
           .fn()
           .mockResolvedValue(
-            fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversazione non trovata', 404)),
+            fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversation not found', 404)),
           ),
       });
       const caller = createAuthenticatedCaller(deps);
@@ -267,7 +265,7 @@ describe('chat router', () => {
 
       const result = await caller.chat.markMessagesRead({ matchId });
 
-      expect(result.message).toBe('Messaggi segnati come letti');
+      expect(result.message).toBe('Messages marked as read');
       expect(deps.markMessagesRead).toHaveBeenCalledWith('user-1', matchId);
     });
 
@@ -276,7 +274,7 @@ describe('chat router', () => {
         markMessagesRead: vi
           .fn()
           .mockResolvedValue(
-            fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversazione non trovata', 404)),
+            fail(new AppError('CONVERSATION_NOT_FOUND', 'Conversation not found', 404)),
           ),
       });
       const caller = createAuthenticatedCaller(deps);

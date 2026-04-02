@@ -96,6 +96,6 @@ export function createInviteToEvent({
       data: { type: 'event_invite', eventId },
     });
 
-    return succeed({ message: 'Invito inviato' });
+    return succeed({ message: 'Invitation sent' });
   };
 }

@@ -64,13 +64,13 @@ function buildAuthDeps(overrides: Partial<typeof authDeps> = {}): typeof authDep
         refreshToken: 'new_refresh_tok',
       }),
     ),
-    logoutUser: vi.fn().mockResolvedValue(succeed({ message: 'Logout effettuato' })),
+    logoutUser: vi.fn().mockResolvedValue(succeed({ message: 'Logged out' })),
     forgotPassword: vi
       .fn()
-      .mockResolvedValue(succeed({ message: "Se l'email esiste, riceverai un link per il reset" })),
-    resetPassword: vi
-      .fn()
-      .mockResolvedValue(succeed({ message: 'Password reimpostata con successo' })),
+      .mockResolvedValue(
+        succeed({ message: "Se l'email esiste, riceverai un codice per il reset" }),
+      ),
+    resetPassword: vi.fn().mockResolvedValue(succeed({ message: 'Password reset successfully' })),
     socialLogin: vi.fn().mockResolvedValue(
       succeed({
         user: buildSafeUser(),
@@ -78,12 +78,12 @@ function buildAuthDeps(overrides: Partial<typeof authDeps> = {}): typeof authDep
         refreshToken: 'refresh_tok',
       }),
     ),
-    verifyEmailOtp: vi
-      .fn()
-      .mockResolvedValue(succeed({ message: 'Email verificata con successo' })),
+    verifyEmailOtp: vi.fn().mockResolvedValue(succeed({ message: 'Email verified successfully' })),
     resendVerification: vi
       .fn()
-      .mockResolvedValue(succeed({ message: 'Codice di verifica inviato' })),
+      .mockResolvedValue(
+        succeed({ message: "Se l'email esiste, riceverai un codice di verifica" }),
+      ),
     ...overrides,
   };
 }
@@ -124,7 +124,11 @@ describe('auth router', () => {
       const deps = buildAuthDeps({
         registerUser: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('AUTH_EMAIL_TAKEN', 'Email già registrata', 409))),
+          .mockResolvedValue(
+            fail(
+              new AppError('AUTH_EMAIL_TAKEN', 'Registration failed. Try again or sign in.', 409),
+            ),
+          ),
       });
       const caller = createCaller(deps);
 
@@ -194,7 +198,7 @@ describe('auth router', () => {
         loginUser: vi
           .fn()
           .mockResolvedValue(
-            fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Credenziali non valide', 401)),
+            fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Invalid credentials', 401)),
           ),
       });
       const caller = createCaller(deps);
@@ -208,9 +212,7 @@ describe('auth router', () => {
       const deps = buildAuthDeps({
         loginUser: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disattivato', 403)),
-          ),
+          .mockResolvedValue(fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disabled', 403))),
       });
       const caller = createCaller(deps);
 
@@ -225,7 +227,11 @@ describe('auth router', () => {
           .fn()
           .mockResolvedValue(
             fail(
-              new AppError('AUTH_ACCOUNT_LOCKED', 'Troppi tentativi. Riprova tra 15 minuti.', 429),
+              new AppError(
+                'AUTH_ACCOUNT_LOCKED',
+                'Account temporarily locked. Try again later.',
+                429,
+              ),
             ),
           ),
       });
@@ -261,7 +267,7 @@ describe('auth router', () => {
       const deps = buildAuthDeps({
         refreshTokens: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('AUTH_INVALID_TOKEN', 'Token non valido', 401))),
+          .mockResolvedValue(fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid token', 401))),
       });
       const caller = createCaller(deps);
 
@@ -286,7 +292,7 @@ describe('auth router', () => {
 
       const result = await caller.auth.logout({ refreshToken: 'some_token' });
 
-      expect(result.message).toBe('Logout effettuato');
+      expect(result.message).toBe('Logged out');
       expect(deps.logoutUser).toHaveBeenCalledWith('some_token');
     });
   });
@@ -324,7 +330,7 @@ describe('auth router', () => {
         password: 'NewStr0ng!',
       });
 
-      expect(result.message).toBe('Password reimpostata con successo');
+      expect(result.message).toBe('Password reset successfully');
       expect(deps.resetPassword).toHaveBeenCalledWith({
         email: 'test@example.com',
         code: '123456',
@@ -336,9 +342,7 @@ describe('auth router', () => {
       const deps = buildAuthDeps({
         resetPassword: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('AUTH_INVALID_TOKEN', 'Codice non valido o scaduto', 400)),
-          ),
+          .mockResolvedValue(fail(new AppError('AUTH_INVALID_TOKEN', 'Invalid token', 400))),
       });
       const caller = createCaller(deps);
 

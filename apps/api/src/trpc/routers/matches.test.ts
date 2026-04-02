@@ -75,8 +75,8 @@ function buildMatchDeps(overrides: Partial<typeof matchDeps> = {}): typeof match
       }),
     ),
     likeDog: vi.fn().mockResolvedValue(succeed({ isMatch: false })),
-    passDog: vi.fn().mockResolvedValue(succeed({ message: 'Passato' })),
-    unmatch: vi.fn().mockResolvedValue(succeed({ message: 'Match annullato' })),
+    passDog: vi.fn().mockResolvedValue(succeed({ message: 'Passed' })),
+    unmatch: vi.fn().mockResolvedValue(succeed({ message: 'Match cancelled' })),
     awardXp: vi.fn().mockResolvedValue(
       succeed({
         xpAwarded: 30,
@@ -163,9 +163,7 @@ describe('matches router', () => {
       const deps = buildMatchDeps({
         discoverCandidates: vi
           .fn()
-          .mockResolvedValue(
-            fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400)),
-          ),
+          .mockResolvedValue(fail(new AppError('LOCATION_NOT_SET', 'Location not set', 400))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -178,7 +176,7 @@ describe('matches router', () => {
       const deps = buildMatchDeps({
         discoverCandidates: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404))),
+          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -233,7 +231,9 @@ describe('matches router', () => {
       const deps = buildMatchDeps({
         likeDog: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('SWIPE_LIMIT_REACHED', 'Limite giornaliero', 429))),
+          .mockResolvedValue(
+            fail(new AppError('SWIPE_LIMIT_REACHED', 'Daily swipe limit reached', 429)),
+          ),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -244,7 +244,11 @@ describe('matches router', () => {
 
     it('throws CONFLICT when already swiped', async () => {
       const deps = buildMatchDeps({
-        likeDog: vi.fn().mockResolvedValue(fail(new AppError('ALREADY_SWIPED', 'Già votato', 409))),
+        likeDog: vi
+          .fn()
+          .mockResolvedValue(
+            fail(new AppError('ALREADY_SWIPED', 'Already swiped on this profile', 409)),
+          ),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -270,13 +274,17 @@ describe('matches router', () => {
 
       const result = await caller.matches.pass({ dogId, targetDogId });
 
-      expect(result.message).toBe('Passato');
+      expect(result.message).toBe('Passed');
       expect(deps.passDog).toHaveBeenCalledWith('user-1', dogId, targetDogId);
     });
 
     it('throws CONFLICT when already swiped', async () => {
       const deps = buildMatchDeps({
-        passDog: vi.fn().mockResolvedValue(fail(new AppError('ALREADY_SWIPED', 'Già votato', 409))),
+        passDog: vi
+          .fn()
+          .mockResolvedValue(
+            fail(new AppError('ALREADY_SWIPED', 'Already swiped on this profile', 409)),
+          ),
       });
       const caller = createAuthenticatedCaller(deps);
 
@@ -302,7 +310,7 @@ describe('matches router', () => {
 
       const result = await caller.matches.unmatch({ matchId });
 
-      expect(result.message).toBe('Match annullato');
+      expect(result.message).toBe('Match cancelled');
       expect(deps.unmatch).toHaveBeenCalledWith('user-1', matchId);
     });
 
@@ -310,7 +318,7 @@ describe('matches router', () => {
       const deps = buildMatchDeps({
         unmatch: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('MATCH_NOT_FOUND', 'Match non trovato', 404))),
+          .mockResolvedValue(fail(new AppError('MATCH_NOT_FOUND', 'Match not found', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
 

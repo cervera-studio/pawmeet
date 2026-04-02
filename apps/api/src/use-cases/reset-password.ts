@@ -81,6 +81,6 @@ export function createResetPassword(deps: Deps) {
 
     logSecurityEvent({ event: SECURITY_EVENT.PasswordResetSuccess, userId: user.id, email });
 
-    return succeed({ message: 'Password reimpostata con successo' });
+    return succeed({ message: 'Password reset successfully' });
   };
 }

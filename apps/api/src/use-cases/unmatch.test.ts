@@ -26,7 +26,7 @@ describe('unmatch', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.message).toBe('Match annullato');
+    expect(result.data.message).toBe('Match cancelled');
     expect(matchRepo.softDelete).toHaveBeenCalledWith('match-1');
   });
 

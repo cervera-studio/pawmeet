@@ -39,7 +39,7 @@ describe('respondToWalk', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.message).toBe('Passeggiata accettata');
+    expect(result.data.message).toBe('Walk accepted');
     expect(walkRepo.updateStatus).toHaveBeenCalledWith('walk-1', 'accepted');
   });
 
@@ -68,7 +68,7 @@ describe('respondToWalk', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.message).toBe('Passeggiata rifiutata');
+    expect(result.data.message).toBe('Walk declined');
     expect(walkRepo.updateStatus).toHaveBeenCalledWith('walk-1', 'declined');
   });
 

@@ -40,6 +40,6 @@ export function createSubmitDateOfBirth({ userRepo }: Deps) {
 
     await userRepo.update(userId, { dateOfBirth });
 
-    return succeed({ message: 'Data di nascita aggiornata' });
+    return succeed({ message: 'Date of birth updated' });
   };
 }

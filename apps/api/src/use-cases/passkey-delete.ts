@@ -45,6 +45,6 @@ export function createPasskeyDelete(deps: Deps) {
       metadata: { provider: 'passkey', action: 'deleted', passkeyId },
     });
 
-    return succeed({ message: 'Passkey eliminata' });
+    return succeed({ message: 'Passkey deleted' });
   };
 }

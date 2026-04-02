@@ -91,7 +91,7 @@ describe('requestDataExport', () => {
       return;
     }
 
-    expect(result.data.message).toBe("Export in corso. Riceverai un'email quando sarà pronto.");
+    expect(result.data.message).toBe('Export in progress. You will receive an email when ready.');
     expect(gdprExportRepo.createExport).toHaveBeenCalledWith(userId);
     expect(enqueueExport).toHaveBeenCalledWith({
       userId,

@@ -13,6 +13,6 @@ export function createDeleteDog({ dogRepo }: Deps) {
     }
 
     await dogRepo.softDelete(dogId);
-    return succeed({ message: 'Profilo cane eliminato' });
+    return succeed({ message: 'Dog profile deleted' });
   };
 }

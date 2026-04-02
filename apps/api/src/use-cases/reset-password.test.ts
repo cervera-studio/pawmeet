@@ -53,7 +53,7 @@ describe('createResetPassword', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.message).toBe('Password reimpostata con successo');
+    expect(result.data.message).toBe('Password reset successfully');
     expect(deps.tokenRepo.markVerificationTokenUsedAtomic).toHaveBeenCalledWith('vt-1');
     expect(deps.userRepo.update).toHaveBeenCalledWith('usr_1', { passwordHash: 'new-hashed-pw' });
     expect(deps.tokenRepo.revokeAllUserRefreshTokens).toHaveBeenCalledWith('usr_1');

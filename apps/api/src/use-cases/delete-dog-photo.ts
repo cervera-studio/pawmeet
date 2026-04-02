@@ -45,6 +45,6 @@ export function createDeleteDogPhoto({ dogRepo, storage }: Deps) {
       await dogRepo.updatePhotoPositions(updates);
     }
 
-    return succeed({ message: 'Foto eliminata' });
+    return succeed({ message: 'Photo deleted' });
   };
 }

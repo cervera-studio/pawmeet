@@ -34,7 +34,7 @@ export function createVerifyEmailOtp(deps: Deps) {
     }
 
     if (user.emailVerified) {
-      return succeed({ message: 'Email già verificata' });
+      return succeed({ message: 'Email already verified' });
     }
 
     const codeHash = await authService.hashToken(input.code);
@@ -53,6 +53,6 @@ export function createVerifyEmailOtp(deps: Deps) {
     await userRepo.update(user.id, { emailVerified: true });
     await resetOtpAttempts(input.email);
 
-    return succeed({ message: 'Email verificata con successo' });
+    return succeed({ message: 'Email verified successfully' });
   };
 }

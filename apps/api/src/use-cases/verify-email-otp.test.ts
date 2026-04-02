@@ -47,7 +47,7 @@ describe('createVerifyEmailOtp', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.message).toBe('Email verificata con successo');
+    expect(result.data.message).toBe('Email verified successfully');
     expect(deps.tokenRepo.markVerificationTokenUsed).toHaveBeenCalledWith('vt-1');
     expect(deps.userRepo.update).toHaveBeenCalledWith('usr_1', { emailVerified: true });
   });
@@ -63,7 +63,7 @@ describe('createVerifyEmailOtp', () => {
 
     expect(isSuccess(result)).toBe(true);
     if (!isSuccess(result)) return;
-    expect(result.data.message).toBe('Email già verificata');
+    expect(result.data.message).toBe('Email already verified');
     expect(deps.tokenRepo.findValidVerificationTokenByUser).not.toHaveBeenCalled();
   });
 

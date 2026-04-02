@@ -76,7 +76,7 @@ export function createRespondToWalk({
       (Date.now() - new Date(walk.createdAt).getTime()) / (1000 * 60 * 60),
     );
 
-    const message = accept ? 'Passeggiata accettata' : 'Passeggiata rifiutata';
+    const message = accept ? 'Walk accepted' : 'Walk declined';
     return succeed({ message, proposalAgeHours });
   };
 }

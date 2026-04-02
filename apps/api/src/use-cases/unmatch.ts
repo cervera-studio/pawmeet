@@ -35,6 +35,6 @@ export function createUnmatch({ dogRepo, matchRepo, messageRepo }: Deps) {
       (Date.now() - new Date(match.createdAt).getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    return succeed({ message: 'Match annullato', matchAgeDays, messageCount });
+    return succeed({ message: 'Match cancelled', matchAgeDays, messageCount });
   };
 }

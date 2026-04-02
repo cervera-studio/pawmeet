@@ -71,7 +71,7 @@ export function createReactivateAccount(deps: Deps) {
     logger.info('ReactivateAccount', `User ${userId} reactivated account during grace period`);
 
     return succeed({
-      message: 'Account riattivato con successo.',
+      message: 'Account reactivated successfully.',
     });
   };
 }

@@ -75,13 +75,13 @@ function buildDogDeps(overrides: Partial<typeof dogDeps> = {}): typeof dogDeps {
     createDog: vi.fn().mockResolvedValue(succeed({ dog: buildDog() })),
     getDog: vi.fn().mockResolvedValue(succeed({ dog: buildDog(), photos: [buildPhoto()] })),
     updateDog: vi.fn().mockResolvedValue(succeed({ dog: buildDog({ name: 'Updated' }) })),
-    deleteDog: vi.fn().mockResolvedValue(succeed({ message: 'Profilo cane eliminato' })),
+    deleteDog: vi.fn().mockResolvedValue(succeed({ message: 'Dog profile deleted' })),
     uploadDogPhotoUrl: vi
       .fn()
       .mockResolvedValue(succeed({ uploadUrl: 'https://upload.url', key: 'dogs/dog-1/img.jpg' })),
     confirmDogPhoto: vi.fn().mockResolvedValue(succeed({ photo: buildPhoto() })),
-    deleteDogPhoto: vi.fn().mockResolvedValue(succeed({ message: 'Foto eliminata' })),
-    reorderDogPhotos: vi.fn().mockResolvedValue(succeed({ message: 'Ordine aggiornato' })),
+    deleteDogPhoto: vi.fn().mockResolvedValue(succeed({ message: 'Photo deleted' })),
+    reorderDogPhotos: vi.fn().mockResolvedValue(succeed({ message: 'Photos reordered' })),
     ...overrides,
   };
 }
@@ -162,7 +162,7 @@ describe('dogs router', () => {
         createDog: vi
           .fn()
           .mockResolvedValue(
-            fail(new AppError('DOG_LIMIT_REACHED', 'Puoi registrare al massimo 5 cani', 400)),
+            fail(new AppError('DOG_LIMIT_REACHED', 'Maximum number of dogs reached', 400)),
           ),
       });
       const caller = createAuthenticatedCaller(deps);
@@ -202,7 +202,7 @@ describe('dogs router', () => {
       const deps = buildDogDeps({
         getDog: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404))),
+          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440099';
@@ -269,7 +269,7 @@ describe('dogs router', () => {
       const deps = buildDogDeps({
         updateDog: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404))),
+          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440000';
@@ -298,7 +298,7 @@ describe('dogs router', () => {
 
       const result = await caller.dogs.delete({ id: dogId });
 
-      expect(result.message).toBe('Profilo cane eliminato');
+      expect(result.message).toBe('Dog profile deleted');
       expect(deps.deleteDog).toHaveBeenCalledWith(dogId, 'user-1');
     });
 
@@ -306,7 +306,7 @@ describe('dogs router', () => {
       const deps = buildDogDeps({
         deleteDog: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Profilo cane non trovato', 404))),
+          .mockResolvedValue(fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404))),
       });
       const caller = createAuthenticatedCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440000';
@@ -347,7 +347,9 @@ describe('dogs router', () => {
       const deps = buildDogDeps({
         uploadDogPhotoUrl: vi
           .fn()
-          .mockResolvedValue(fail(new AppError('PHOTO_LIMIT_REACHED', 'Limite foto', 400))),
+          .mockResolvedValue(
+            fail(new AppError('PHOTO_LIMIT_REACHED', 'File exceeds maximum allowed size', 400)),
+          ),
       });
       const caller = createAuthenticatedCaller(deps);
       const dogId = '550e8400-e29b-41d4-a716-446655440000';
@@ -399,7 +401,7 @@ describe('dogs router', () => {
 
       const result = await caller.dogs.deletePhoto({ dogId, photoId });
 
-      expect(result.message).toBe('Foto eliminata');
+      expect(result.message).toBe('Photo deleted');
     });
 
     it('rejects unauthenticated callers', async () => {
@@ -423,7 +425,7 @@ describe('dogs router', () => {
 
       const result = await caller.dogs.reorderPhotos({ dogId, photoIds });
 
-      expect(result.message).toBe('Ordine aggiornato');
+      expect(result.message).toBe('Photos reordered');
     });
 
     it('rejects unauthenticated callers', async () => {

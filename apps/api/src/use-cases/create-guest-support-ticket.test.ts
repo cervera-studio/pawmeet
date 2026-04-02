@@ -1,16 +1,8 @@
 import type { SupportTicket } from '@pawmeet/types';
 import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
-import { buildEmailService } from '../test-utils/builders.js';
-import type { SupportRepository } from '../ports/support-repository.js';
+import { buildEmailService, buildSupportRepo } from '../test-utils/builders.js';
 import { createCreateGuestSupportTicket } from './create-guest-support-ticket.js';
-
-const buildSupportRepo = (overrides: Partial<SupportRepository> = {}): SupportRepository =>
-  ({
-    createGuestTicket: vi.fn(),
-    addMessage: vi.fn(),
-    ...overrides,
-  }) as unknown as SupportRepository;
 
 const buildTicket = (overrides: Partial<SupportTicket> = {}): SupportTicket => ({
   id: 'ticket-1',

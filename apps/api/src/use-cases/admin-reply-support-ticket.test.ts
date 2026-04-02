@@ -1,21 +1,13 @@
 import type { SupportMessage, SupportTicket } from '@pawmeet/types';
 import { isFailure, isSuccess, SUPPORT_TICKET_STATUS } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { SupportRepository } from '../ports/support-repository.js';
+import { buildSupportRepo } from '../test-utils/builders.js';
 import { createAdminReplySupportTicket } from './admin-reply-support-ticket.js';
 
 vi.mock('../domain/events.js', () => ({
   DOMAIN_EVENT: { SUPPORT_REPLY_SENT: 'SUPPORT_REPLY_SENT' },
   emit: vi.fn(),
 }));
-
-const buildSupportRepo = (overrides: Partial<SupportRepository> = {}): SupportRepository =>
-  ({
-    getTicketById: vi.fn(),
-    addMessage: vi.fn(),
-    updateStatus: vi.fn(),
-    ...overrides,
-  }) as unknown as SupportRepository;
 
 const buildTicket = (overrides: Partial<SupportTicket> = {}): SupportTicket => ({
   id: 'ticket-1',

@@ -1,9 +1,9 @@
 import { isSuccess } from '@pawmeet/types';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PasskeyRepository } from '../ports/passkey-repository.js';
 import { buildUser, buildUserRepo } from '../test-utils/builders.js';
-import type { ChallengeStore } from './passkey-register-options.js';
 import { createPasskeyLoginOptions } from './passkey-login-options.js';
+import type { ChallengeStore } from './passkey-register-options.js';
 
 vi.mock('@simplewebauthn/server', () => ({
   generateAuthenticationOptions: vi.fn().mockResolvedValue({
@@ -34,6 +34,10 @@ function buildChallengeStore(): ChallengeStore {
 }
 
 describe('createPasskeyLoginOptions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('generates options without email (discoverable credential flow)', async () => {
     const deps = {
       userRepo: buildUserRepo(),

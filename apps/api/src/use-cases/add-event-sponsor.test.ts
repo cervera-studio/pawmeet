@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { GroupEventRepository } from '../ports/group-event-repository.js';
 import {
   buildEventSponsorRepo,
   buildGroupEvent,
+  buildGroupEventRepo,
   buildOrganization,
   buildOrganizationRepo,
 } from '../test-utils/builders.js';
@@ -11,15 +11,15 @@ import { createAddEventSponsor } from './add-event-sponsor.js';
 function setup(
   overrides: {
     eventSponsorRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['eventSponsorRepo']>;
-    groupEventRepo?: Partial<GroupEventRepository>;
+    groupEventRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['groupEventRepo']>;
     organizationRepo?: Partial<Parameters<typeof createAddEventSponsor>[0]['organizationRepo']>;
   } = {},
 ) {
   const eventSponsorRepo = buildEventSponsorRepo(overrides.eventSponsorRepo);
-  const groupEventRepo = {
+  const groupEventRepo = buildGroupEventRepo({
     findById: vi.fn().mockResolvedValue(buildGroupEvent({ isOfficial: true })),
     ...overrides.groupEventRepo,
-  } as unknown as GroupEventRepository;
+  });
   const organizationRepo = buildOrganizationRepo({
     findById: vi.fn().mockResolvedValue(buildOrganization({ isVerified: true, isActive: true })),
     ...overrides.organizationRepo,

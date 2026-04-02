@@ -20,6 +20,7 @@ import {
   type BadgeType,
   type Challenge,
   type ChatMessage,
+  type ContentReaction,
   type ContentReport,
   type DailyActivity,
   type DogProfile,
@@ -664,8 +665,10 @@ export function buildEmailService(overrides: Partial<EmailService> = {}): EmailS
     sendAccountDeletedConfirmation: vi.fn().mockResolvedValue(undefined),
     sendGdprExportReady: vi.fn().mockResolvedValue(undefined),
     sendGdprExportFailed: vi.fn().mockResolvedValue(undefined),
+    sendAdminInvite: vi.fn().mockResolvedValue(undefined),
+    sendSupportTicketNotification: vi.fn().mockResolvedValue(undefined),
     ...overrides,
-  } as EmailService;
+  } satisfies EmailService;
 }
 
 export function buildTokenRepo(overrides: Partial<TokenRepository> = {}): TokenRepository {
@@ -849,9 +852,16 @@ export function buildFeedRepo(overrides: Partial<FeedRepository> = {}): FeedRepo
     searchPostsByHashtag: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
     getTrendingHashtags: vi.fn().mockResolvedValue([]),
     removeReaction: vi.fn().mockResolvedValue(undefined),
-    addReaction: vi.fn().mockResolvedValue(undefined),
+    addReaction: vi.fn().mockResolvedValue({
+      id: 'reaction-1',
+      contentType: 'post',
+      contentId: 'post-1',
+      userId: 'user-1',
+      emoji: '❤️',
+      createdAt: new Date(),
+    } satisfies ContentReaction),
     ...overrides,
-  } as FeedRepository;
+  } satisfies FeedRepository;
 }
 
 export function buildStoryRepo(overrides: Partial<StoryRepository> = {}): StoryRepository {

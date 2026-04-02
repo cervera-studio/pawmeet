@@ -1,5 +1,5 @@
 import { isFailure, isSuccess } from '@pawmeet/types';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PasskeyRepository } from '../ports/passkey-repository.js';
 import type { ChallengeStore } from './passkey-register-options.js';
 import { createPasskeyRegisterVerify } from './passkey-register-verify.js';
@@ -50,6 +50,10 @@ const mockInput = {
 };
 
 describe('createPasskeyRegisterVerify', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('verifies registration and stores credential', async () => {
     const deps = { passkeyRepo: buildPasskeyRepo(), challengeStore: buildChallengeStore() };
     const registerVerify = createPasskeyRegisterVerify(deps);

@@ -1,13 +1,7 @@
 import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
-import type { SupportRepository } from '../ports/support-repository.js';
+import { buildSupportRepo } from '../test-utils/builders.js';
 import { createListSupportTickets } from './list-support-tickets.js';
-
-const buildSupportRepo = (overrides: Partial<SupportRepository> = {}): SupportRepository =>
-  ({
-    listTickets: vi.fn(),
-    ...overrides,
-  }) as unknown as SupportRepository;
 
 describe('createListSupportTickets', () => {
   it('returns paginated tickets', async () => {

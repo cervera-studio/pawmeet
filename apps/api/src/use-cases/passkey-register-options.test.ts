@@ -1,6 +1,6 @@
 import { WEBAUTHN_MAX_CREDENTIALS_PER_USER } from '@pawmeet/config';
 import { isFailure, isSuccess } from '@pawmeet/types';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PasskeyRepository } from '../ports/passkey-repository.js';
 import { buildUser, buildUserRepo } from '../test-utils/builders.js';
 import type { ChallengeStore } from './passkey-register-options.js';
@@ -45,6 +45,10 @@ function buildDeps() {
 }
 
 describe('createPasskeyRegisterOptions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('generates registration options and stores challenge', async () => {
     const deps = buildDeps();
     const registerOptions = createPasskeyRegisterOptions(deps);

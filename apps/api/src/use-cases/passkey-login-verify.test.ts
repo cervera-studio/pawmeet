@@ -1,5 +1,5 @@
 import { isFailure, isSuccess } from '@pawmeet/types';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PasskeyRepository } from '../ports/passkey-repository.js';
 import {
   buildAuthService,
@@ -7,8 +7,8 @@ import {
   buildUser,
   buildUserRepo,
 } from '../test-utils/builders.js';
-import type { ChallengeStore } from './passkey-register-options.js';
 import { createPasskeyLoginVerify } from './passkey-login-verify.js';
+import type { ChallengeStore } from './passkey-register-options.js';
 
 vi.mock('@simplewebauthn/server', () => ({
   verifyAuthenticationResponse: vi.fn().mockResolvedValue({
@@ -83,6 +83,10 @@ const mockResponse = {
 } as never;
 
 describe('createPasskeyLoginVerify', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('authenticates user and returns tokens', async () => {
     const deps = buildDeps();
     const loginVerify = createPasskeyLoginVerify(deps);

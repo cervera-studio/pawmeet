@@ -15,6 +15,7 @@ describe('getTrendingHashtags', () => {
     const redis = {
       get: vi.fn().mockResolvedValue(null),
       set: vi.fn().mockResolvedValue('OK'),
+      del: vi.fn().mockResolvedValue(1),
     } as unknown as import('@upstash/redis').Redis;
 
     const getTrendingHashtags = createGetTrendingHashtags({ feedRepo, redis });

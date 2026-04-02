@@ -1,7 +1,7 @@
 import { isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
-import { buildEmailService } from '../test-utils/builders.js';
 import type { SupportRepository } from '../ports/support-repository.js';
+import { buildEmailService } from '../test-utils/builders.js';
 import { createCreateSupportTicket } from './create-support-ticket.js';
 
 function buildSupportRepo(): SupportRepository {

@@ -1,30 +1,18 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { BadgeRepository } from '../ports/badge-repository.js';
-import type { GroupEventRepository } from '../ports/group-event-repository.js';
-import { buildGroupEvent } from '../test-utils/builders.js';
+import { buildBadgeRepo, buildGroupEvent, buildGroupEventRepo } from '../test-utils/builders.js';
 import { createAwardMainEventBadge } from './award-main-event-badge.js';
 
 function setup(
   overrides: {
-    badgeRepo?: Partial<BadgeRepository>;
-    groupEventRepo?: Partial<GroupEventRepository>;
+    badgeRepo?: Partial<Parameters<typeof createAwardMainEventBadge>[0]['badgeRepo']>;
+    groupEventRepo?: Partial<Parameters<typeof createAwardMainEventBadge>[0]['groupEventRepo']>;
   } = {},
 ) {
-  const badgeRepo = {
-    hasBadge: vi.fn().mockResolvedValue(false),
-    award: vi.fn().mockResolvedValue({
-      id: 'badge-1',
-      dogId: 'dog-1',
-      type: 'main_event',
-      awardedAt: new Date(),
-    }),
-    findByDog: vi.fn().mockResolvedValue([]),
-    ...overrides.badgeRepo,
-  } as unknown as BadgeRepository;
-  const groupEventRepo = {
+  const badgeRepo = buildBadgeRepo(overrides.badgeRepo);
+  const groupEventRepo = buildGroupEventRepo({
     findById: vi.fn().mockResolvedValue(buildGroupEvent({ isOfficial: true })),
     ...overrides.groupEventRepo,
-  } as unknown as GroupEventRepository;
+  });
 
   const awardMainEventBadge = createAwardMainEventBadge({
     badgeRepo,

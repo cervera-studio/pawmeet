@@ -77,6 +77,7 @@ import type {
 import type { MatchingAiRepository } from '../ports/matching-ai-repository.js';
 import type { MoodLogRepository } from '../ports/mood-log-repository.js';
 import type { OrganizationRepository } from '../ports/organization-repository.js';
+import type { SupportRepository } from '../ports/support-repository.js';
 
 // ── Entity builders ──────────────────────────────────────────────────────────
 
@@ -845,6 +846,10 @@ export function buildFeedRepo(overrides: Partial<FeedRepository> = {}): FeedRepo
     getResolvedTags: vi.fn().mockResolvedValue([]),
     findTagById: vi.fn().mockResolvedValue(null),
     getConnectedUserIds: vi.fn().mockResolvedValue([]),
+    searchPostsByHashtag: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    getTrendingHashtags: vi.fn().mockResolvedValue([]),
+    removeReaction: vi.fn().mockResolvedValue(undefined),
+    addReaction: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   } as FeedRepository;
 }
@@ -1184,6 +1189,59 @@ export function buildMoodLogRepo(overrides: Partial<MoodLogRepository> = {}): Mo
       ),
     findByDog: vi.fn().mockResolvedValue({ logs: [], nextCursor: null }),
     findByTrack: vi.fn().mockResolvedValue(null),
+    ...overrides,
+  };
+}
+
+// ── Support builders ────────────────────────────────────────────────────────
+
+export function buildSupportRepo(overrides: Partial<SupportRepository> = {}): SupportRepository {
+  return {
+    createTicket: vi.fn().mockResolvedValue({
+      id: 'ticket-1',
+      userId: 'user-1',
+      subject: 'Test',
+      category: 'general',
+      status: 'open',
+      assignedTo: null,
+      guestName: null,
+      guestEmail: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }),
+    createGuestTicket: vi.fn().mockResolvedValue({
+      id: 'ticket-1',
+      userId: null,
+      subject: 'Test',
+      category: 'general',
+      status: 'open',
+      assignedTo: null,
+      guestName: 'Guest',
+      guestEmail: 'guest@test.com',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }),
+    addMessage: vi.fn().mockResolvedValue({
+      id: 'msg-1',
+      ticketId: 'ticket-1',
+      senderType: 'user',
+      senderId: 'user-1',
+      content: 'Test message',
+      isInternal: false,
+      isRead: false,
+      createdAt: new Date(),
+    }),
+    getTicketById: vi.fn().mockResolvedValue(null),
+    getTicketByIdForUser: vi.fn().mockResolvedValue(null),
+    listTicketsByUser: vi.fn().mockResolvedValue([]),
+    listTickets: vi.fn().mockResolvedValue({ data: [], total: 0 }),
+    getMessages: vi.fn().mockResolvedValue({ messages: [], nextCursor: null, hasMore: false }),
+    updateStatus: vi.fn().mockResolvedValue(null),
+    assignTicket: vi.fn().mockResolvedValue(null),
+    getTicketOwnerUserId: vi.fn().mockResolvedValue(null),
+    countMessagesByTicket: vi.fn().mockResolvedValue(0),
+    markAdminMessagesRead: vi.fn().mockResolvedValue(0),
+    markUserMessagesRead: vi.fn().mockResolvedValue(0),
     ...overrides,
   };
 }

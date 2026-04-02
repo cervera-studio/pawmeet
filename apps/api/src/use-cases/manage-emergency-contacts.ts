@@ -1,4 +1,5 @@
 import { AppError, type EmergencyContact, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { EmergencyContactRepository } from '../ports/index.js';
 
 type Deps = {
@@ -13,7 +14,7 @@ export function createAddEmergencyContact({ emergencyContactRepo }: Deps) {
     const existing = await emergencyContactRepo.findByUserId(userId);
     if (existing.length >= 3) {
       return fail(
-        new AppError('MAX_CONTACTS_REACHED', 'Puoi avere al massimo 3 contatti di emergenza', 400),
+        new AppError('MAX_CONTACTS_REACHED', ERROR_MESSAGES.MAX_CONTACTS_REACHED(3), 400),
       );
     }
     const contact = await emergencyContactRepo.create(userId, input);

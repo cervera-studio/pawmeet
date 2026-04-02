@@ -7,6 +7,8 @@ import {
   succeed,
 } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { NOTIF_PROMOTED_FROM_WAITLIST } from '../constants/notifications.js';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -38,7 +40,7 @@ export function createLeaveGroupEvent({ groupEventRepo, notificationService }: D
 
     const participant = await groupEventRepo.findParticipant(eventId, userId);
     if (!participant) {
-      return fail(new AppError('NOT_PARTICIPANT', 'Non sei iscritto a questo evento', 404));
+      return fail(new AppError('NOT_PARTICIPANT', ERROR_MESSAGES.NOT_PARTICIPANT, 404));
     }
 
     const wasAccepted = participant.status === PARTICIPANT_STATUS.ACCEPTED;
@@ -51,8 +53,8 @@ export function createLeaveGroupEvent({ groupEventRepo, notificationService }: D
         notificationService
           .send({
             userId: promoted.userId,
-            title: 'Posto disponibile!',
-            body: `Sei stato promosso dalla lista d'attesa per "${event.title}"`,
+            title: NOTIF_PROMOTED_FROM_WAITLIST.title,
+            body: NOTIF_PROMOTED_FROM_WAITLIST.body(event.title),
           })
           .catch((err) => {
             logger.error('leave-group-event', 'Failed to send notification', err);

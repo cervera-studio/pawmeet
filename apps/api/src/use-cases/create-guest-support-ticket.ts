@@ -1,6 +1,7 @@
 import type { SupportTicket, SupportTicketCategory } from '@pawmeet/types';
 import { type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { SUPPORT_EMAIL } from '../constants/emails.js';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type { EmailService } from '../ports/email-service.js';
 import type { SupportRepository } from '../ports/support-repository.js';
@@ -41,7 +42,7 @@ export function createCreateGuestSupportTicket({ supportRepo, emailService }: De
       sanitizedMessage.length > 100 ? `${sanitizedMessage.slice(0, 97)}...` : sanitizedMessage;
 
     emailService
-      .sendSupportTicketNotification('support@pawmeet.io', ticket.id, sanitizedSubject, preview)
+      .sendSupportTicketNotification(SUPPORT_EMAIL, ticket.id, sanitizedSubject, preview)
       .catch((err) =>
         logger.error('createGuestSupportTicket', 'Failed to send support notification email', err),
       );

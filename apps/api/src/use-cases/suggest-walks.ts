@@ -2,6 +2,7 @@ import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/conf
 import type { WalkSuggestion, WalkSuggestionDog, WalkTerrain } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { calculateDistance } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { calculateCompatibilityScoreWithBreakdown } from '../domain/compatibility-scoring.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
 import type {
@@ -164,7 +165,7 @@ export function createSuggestWalks({
 
     const user = await userRepo.findById(userId);
     if (!(user && hasLocation(user))) {
-      return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
+      return fail(new AppError('LOCATION_NOT_SET', ERROR_MESSAGES.LOCATION_NOT_SET, 400));
     }
 
     const activityWindows = await matchingAiRepo.findActivityWindowsByUser(userId);

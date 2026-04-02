@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { checkDailySwipeLimit } from '../lib/swipe-limit.js';
 import type { DogRepository, MatchRepository } from '../ports/index.js';
 
@@ -26,7 +27,7 @@ export function createPassDog({ dogRepo, matchRepo }: Deps) {
     // Check if already swiped
     const existing = await matchRepo.findSwipe(dogId, targetDogId);
     if (existing) {
-      return fail(new AppError('ALREADY_SWIPED', 'Già votato per questo profilo', 409));
+      return fail(new AppError('ALREADY_SWIPED', ERROR_MESSAGES.ALREADY_SWIPED, 409));
     }
 
     // Record the pass

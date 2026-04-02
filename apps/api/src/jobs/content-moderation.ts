@@ -2,6 +2,7 @@ import process from 'node:process';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
+import { NOTIF_CONTENT_REJECTED } from '../constants/notifications.js';
 import { extractKeyFromUrl, MAX_FILE_SIZE, MAX_VIDEO_FILE_SIZE } from '../lib/storage.js';
 import type { ContentModerationService } from '../ports/content-moderation-service.js';
 import type { FeedRepository } from '../ports/feed-repository.js';
@@ -98,8 +99,8 @@ async function notifyRejection(
   await notificationService
     .send({
       userId: post.authorId,
-      title: 'Contenuto rifiutato',
-      body: 'Uno dei tuoi contenuti non rispetta le linee guida.',
+      title: NOTIF_CONTENT_REJECTED.title,
+      body: NOTIF_CONTENT_REJECTED.body,
     })
     .catch((err) => {
       logger.error('ContentModeration', 'Failed to send notification', err);

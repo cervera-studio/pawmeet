@@ -1,5 +1,6 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { UserRepository } from '../ports/index.js';
 
 const EXPO_PUSH_TOKEN_REGEX = /^ExponentPushToken\[.+\]$/;
@@ -19,7 +20,7 @@ export function createRegisterPushToken({ userRepo }: Deps) {
       return succeed({ registered: true });
     } catch (error) {
       logger.error('registerPushToken', 'Failed to save push token', error);
-      return fail(new AppError('INTERNAL_ERROR', 'Errore durante il salvataggio del token', 500));
+      return fail(new AppError('INTERNAL_ERROR', ERROR_MESSAGES.PUSH_TOKEN_SAVE_FAILED, 500));
     }
   };
 }

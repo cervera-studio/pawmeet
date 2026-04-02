@@ -1,4 +1,6 @@
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { FALLBACK_DISPLAY_NAME, NOTIF_WALK_RESPONSE } from '../constants/notifications.js';
 import type {
   DogRepository,
   MatchRepository,
@@ -33,17 +35,13 @@ export function createRespondToWalk({
     }
 
     if (walk.status !== WALK_STATUS.PENDING) {
-      return fail(new AppError('WALK_NOT_PENDING', 'La passeggiata non è più in attesa', 400));
+      return fail(new AppError('WALK_NOT_PENDING', ERROR_MESSAGES.WALK_NOT_PENDING, 400));
     }
 
     // The responder must NOT be the creator
     if (walk.createdBy === userId) {
       return fail(
-        new AppError(
-          'WALK_CANNOT_RESPOND_OWN',
-          'Non puoi rispondere alla tua stessa proposta',
-          403,
-        ),
+        new AppError('WALK_CANNOT_RESPOND_OWN', ERROR_MESSAGES.WALK_CANNOT_RESPOND_OWN, 403),
       );
     }
 
@@ -66,12 +64,10 @@ export function createRespondToWalk({
     const creator = await userRepo.findById(walk.createdBy);
     if (creator?.notificationPrefs?.reminders !== false) {
       const responder = await userRepo.findById(userId);
-      const emoji = accept ? '✅' : '❌';
-      const action = accept ? 'accettato' : 'rifiutato';
       await notificationService.send({
         userId: walk.createdBy,
-        title: `${emoji} Passeggiata ${action}`,
-        body: `${responder?.displayName ?? 'Qualcuno'} ha ${action} la tua proposta di passeggiata`,
+        title: NOTIF_WALK_RESPONSE.title(accept),
+        body: NOTIF_WALK_RESPONSE.body(responder?.displayName ?? FALLBACK_DISPLAY_NAME, accept),
         data: { type: 'walk_response', walkId },
       });
     }

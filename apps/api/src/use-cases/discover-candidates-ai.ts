@@ -2,6 +2,7 @@ import { COMPATIBILITY_THRESHOLD, DEFAULT_SEARCH_RADIUS_KM, STATSIG_GATE } from 
 import type { DiscoveryFilters, DogProfile } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { calculateDistance } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { ScoringStrategy } from '../domain/scoring-strategy.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
 import type { EmbeddingRepository } from '../ports/embedding-repository.js';
@@ -190,7 +191,7 @@ export function createDiscoverCandidatesAi({
 
     const user = await userRepo.findById(userId);
     if (!(user && hasLocation(user))) {
-      return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
+      return fail(new AppError('LOCATION_NOT_SET', ERROR_MESSAGES.LOCATION_NOT_SET, 400));
     }
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;

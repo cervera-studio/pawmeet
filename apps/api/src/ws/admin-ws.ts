@@ -3,6 +3,7 @@ import { logger } from '@pawmeet/utils';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
+import { HEARTBEAT_INTERVAL_MS, MAX_CONCURRENT_ADMIN_CONNECTIONS } from '../constants/infra.js';
 import { handleAdminUpgrade } from './admin-auth.js';
 import {
   addAdminConnection,
@@ -12,9 +13,6 @@ import {
 } from './admin-registry.js';
 
 // ── Admin WS connection rate limiting ────────────────────────────────────────
-
-/** Max concurrent admin WebSocket connections per admin */
-const MAX_CONCURRENT_ADMIN_CONNECTIONS = 2;
 
 /** Connection rate limiter: max 5 connections per minute per admin */
 let _adminConnectionLimiter: Ratelimit | null = null;
@@ -53,8 +51,6 @@ async function isAdminConnectionAllowed(adminId: string): Promise<boolean> {
 
 // ── Heartbeat ────────────────────────────────────────────────────────────────
 
-const HEARTBEAT_INTERVAL = 30_000;
-
 // ── Admin WebSocket server ───────────────────────────────────────────────────
 
 let adminWss: WebSocketServer | null = null;
@@ -90,7 +86,7 @@ export function setupAdminWebSocket() {
       sock.isAlive = false;
       sock.ping();
     }
-  }, HEARTBEAT_INTERVAL);
+  }, HEARTBEAT_INTERVAL_MS);
 
   wss.on('close', () => {
     clearInterval(heartbeatInterval);

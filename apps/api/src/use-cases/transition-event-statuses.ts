@@ -1,6 +1,7 @@
 import type { GroupEventStatus, Result } from '@pawmeet/types';
 import { PARTICIPANT_STATUS, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { NOTIF_EVENT_COMPLETED } from '../constants/notifications.js';
 import { canTransitionTo } from '../domain/group-event-state-machine.js';
 import type { BadgeRepository } from '../ports/badge-repository.js';
 import type {
@@ -52,8 +53,8 @@ async function notifyCompletedParticipants(
   for (const p of participants) {
     await notificationService.send({
       userId: p.userId,
-      title: 'Evento completato',
-      body: `"${event.title}" è terminato. Com'è andata?`,
+      title: NOTIF_EVENT_COMPLETED.title,
+      body: NOTIF_EVENT_COMPLETED.body(event.title),
       data: { type: 'event_completed', eventId: event.id },
     });
   }

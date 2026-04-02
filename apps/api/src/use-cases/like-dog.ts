@@ -1,6 +1,8 @@
 import type { Match } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { NOTIF_NEW_MATCH } from '../constants/notifications.js';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { hasLocation } from '../domain/type-guards.js';
 import { checkDailySwipeLimit } from '../lib/swipe-limit.js';
@@ -42,8 +44,8 @@ async function notifyMatchRecipient(
   notificationService
     .send({
       userId: targetDog.ownerId,
-      title: 'Hai un nuovo match! \u{1F415}',
-      body: `Il tuo cane ${targetDog.name} ha un nuovo compagno di passeggiata!`,
+      title: NOTIF_NEW_MATCH.title,
+      body: NOTIF_NEW_MATCH.body(targetDog.name),
       data: { matchId, type: 'new_match' },
     })
     .catch((err) => logger.error('likeDog', 'Failed to enqueue match notification', err));
@@ -86,7 +88,7 @@ export function createLikeDog({ dogRepo, matchRepo, userRepo, notificationServic
 
     const existing = await matchRepo.findSwipe(dogId, targetDogId);
     if (existing) {
-      return fail(new AppError('ALREADY_SWIPED', 'Già votato per questo profilo', 409));
+      return fail(new AppError('ALREADY_SWIPED', ERROR_MESSAGES.ALREADY_SWIPED, 409));
     }
 
     await matchRepo.createSwipe({

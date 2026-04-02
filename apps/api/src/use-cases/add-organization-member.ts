@@ -6,6 +6,7 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { OrganizationAuthorizer } from '../domain/organization-authorizer.js';
 import type { OrganizationRepository } from '../ports/index.js';
 
@@ -41,9 +42,7 @@ export function createAddOrganizationMember({ organizationRepo, organizationAuth
     // Check if user is already a member
     const existingMember = await organizationRepo.findMember(input.organizationId, input.userId);
     if (existingMember) {
-      return fail(
-        new AppError('ORG_MEMBER_EXISTS', 'Utente già membro di questa organizzazione', 409),
-      );
+      return fail(new AppError('ORG_MEMBER_EXISTS', ERROR_MESSAGES.ORG_MEMBER_EXISTS, 409));
     }
 
     const member = await organizationRepo.addMember(input.organizationId, input.userId, input.role);

@@ -1,8 +1,8 @@
 import type { IncomingMessage } from 'node:http';
-import process from 'node:process';
 import type { Duplex } from 'node:stream';
 import { logger } from '@pawmeet/utils';
 import type { WebSocketServer } from 'ws';
+import { getAllowedOrigins } from '../constants/origins.js';
 import { verifyAccessToken } from '../lib/jwt.js';
 
 /**
@@ -32,10 +32,7 @@ function extractToken(request: IncomingMessage): string | null {
 }
 
 /** Allowed origins for WebSocket connections (same as CORS). */
-const ALLOWED_WS_ORIGINS =
-  process.env.NODE_ENV === 'production'
-    ? ['https://pawmeet.io', 'https://den.pawmeet.io']
-    : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:4321'];
+const ALLOWED_WS_ORIGINS = getAllowedOrigins();
 
 /** Handle HTTP → WebSocket upgrade with JWT authentication */
 export async function handleUpgrade(

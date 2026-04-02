@@ -1,8 +1,8 @@
 import type { IncomingMessage } from 'node:http';
-import process from 'node:process';
 import type { Duplex } from 'node:stream';
 import { logger } from '@pawmeet/utils';
 import type { WebSocketServer } from 'ws';
+import { getAllowedOrigins } from '../constants/origins.js';
 import { verifyAdminAccessToken } from '../lib/jwt.js';
 
 /**
@@ -27,11 +27,8 @@ function extractToken(request: IncomingMessage): string | null {
   return null;
 }
 
-/** Allowed origins for admin WebSocket connections */
-const ALLOWED_ADMIN_WS_ORIGINS =
-  process.env.NODE_ENV === 'production'
-    ? ['https://pawmeet-admin.vercel.app']
-    : ['http://localhost:3001'];
+/** Allowed origins for admin WebSocket connections (same as CORS) */
+const ALLOWED_ADMIN_WS_ORIGINS = getAllowedOrigins();
 
 /** Handle HTTP -> WebSocket upgrade for admin connections */
 export async function handleAdminUpgrade(

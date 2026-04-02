@@ -1,5 +1,6 @@
 import type { Result, WalkTrack, WalkTrackPoint } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { WalkTrackRepository } from '../ports/walk-track-repository.js';
 
 type Deps = {
@@ -18,9 +19,7 @@ export function createGetWalkTrack({ walkTrackRepo }: Deps) {
     }
 
     if (track.userId !== userId) {
-      return fail(
-        new AppError('TRACK_NOT_OWNED', 'Non hai i permessi per questo tracciamento', 403),
-      );
+      return fail(new AppError('TRACK_NOT_OWNED', ERROR_MESSAGES.TRACK_NOT_OWNED, 403));
     }
 
     const points = await walkTrackRepo.findPointsByTrack(input.trackId);

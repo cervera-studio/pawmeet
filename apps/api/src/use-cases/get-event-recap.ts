@@ -6,6 +6,7 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { GroupEventRepository, UserRepository } from '../ports/index.js';
 
 type Deps = {
@@ -38,7 +39,7 @@ export function createGetEventRecap({ groupEventRepo, userRepo }: Deps) {
     }
 
     if (event.status !== GROUP_EVENT_STATUS.COMPLETED) {
-      return fail(new AppError('EVENT_NOT_COMPLETED', "L'evento non è ancora terminato", 400));
+      return fail(new AppError('EVENT_NOT_COMPLETED', ERROR_MESSAGES.EVENT_NOT_COMPLETED, 400));
     }
 
     // Only participants can view the recap
@@ -47,7 +48,7 @@ export function createGetEventRecap({ groupEventRepo, userRepo }: Deps) {
     );
     const isCreator = event.createdBy === userId;
     if (!(isParticipant || isCreator)) {
-      return fail(new AppError('NOT_PARTICIPANT', 'Non sei un partecipante di questo evento', 403));
+      return fail(new AppError('NOT_PARTICIPANT', ERROR_MESSAGES.NOT_PARTICIPANT, 403));
     }
 
     const accepted = event.participants.filter((p) => p.status === PARTICIPANT_STATUS.ACCEPTED);

@@ -1,6 +1,8 @@
 import type { SafeUser } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import type { SocialLoginInput } from '@pawmeet/validation';
+import { REFRESH_TOKEN_TTL_MS } from '../constants/auth.js';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { sanitizeUser } from '../lib/sanitize.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
@@ -22,8 +24,6 @@ export interface SocialLoginOutput {
   accessToken: string;
   refreshToken: string;
 }
-
-const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export function createSocialLogin(deps: Deps) {
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: multi-provider OAuth flow requires sequential branching
@@ -68,7 +68,9 @@ export function createSocialLogin(deps: Deps) {
           email: payload.email ?? undefined,
           metadata: { provider, reason: 'account_disabled' },
         });
-        return fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disattivato', 403));
+        return fail(
+          new AppError('AUTH_ACCOUNT_DISABLED', ERROR_MESSAGES.AUTH_ACCOUNT_DISABLED, 403),
+        );
       }
     } else if (payload.email) {
       // 3. No link found — fall back to email lookup for potential account linking
@@ -82,7 +84,9 @@ export function createSocialLogin(deps: Deps) {
             email: payload.email,
             metadata: { provider, reason: 'account_disabled' },
           });
-          return fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disattivato', 403));
+          return fail(
+            new AppError('AUTH_ACCOUNT_DISABLED', ERROR_MESSAGES.AUTH_ACCOUNT_DISABLED, 403),
+          );
         }
 
         // Auto-link only if BOTH sides have verified email

@@ -3,6 +3,7 @@ import type { DiscoveryFilters, DogProfile, ScoreBreakdown } from '@pawmeet/type
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { calculateDistance, logger } from '@pawmeet/utils';
 import type { Redis } from '@upstash/redis';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { calculateCompatibilityScoreWithBreakdown } from '../domain/compatibility-scoring.js';
 import { hasLocation, hasOwnerLocation } from '../domain/type-guards.js';
 import { createCache } from '../lib/cache.js';
@@ -103,7 +104,7 @@ export function createDiscoverCandidates({
     // Get current user's location
     const user = await userRepo.findById(userId);
     if (!(user && hasLocation(user))) {
-      return fail(new AppError('LOCATION_NOT_SET', 'Posizione non impostata', 400));
+      return fail(new AppError('LOCATION_NOT_SET', ERROR_MESSAGES.LOCATION_NOT_SET, 400));
     }
 
     const radiusKm = filters?.maxDistanceKm ?? user.searchRadiusKm ?? DEFAULT_SEARCH_RADIUS_KM;

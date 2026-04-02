@@ -6,7 +6,8 @@ import emailIt from '@pawmeet/i18n/locales/it/email.json' with { type: 'json' };
 import emailRo from '@pawmeet/i18n/locales/ro/email.json' with { type: 'json' };
 import { Resend } from 'resend';
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'PawMeet <noreply@pawmeet.io>';
+import { ADMIN_LOGIN_URL, FROM_EMAIL, PRIVACY_EMAIL } from '../constants/emails.js';
+import { SUPPORT_TICKET_EMAIL } from '../constants/messages.js';
 
 /** Escape user-supplied text before inserting into HTML email templates. */
 function escapeHtml(text: string): string {
@@ -17,8 +18,6 @@ function escapeHtml(text: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
 }
-const ADMIN_LOGIN_URL = process.env.ADMIN_URL || 'https://admin.pawmeet.io';
-const PRIVACY_EMAIL = 'privacy@pawmeet.io';
 
 type EmailMessages = typeof emailIt;
 
@@ -42,11 +41,11 @@ function getResend(): Resend {
   return _resend;
 }
 
-/** Email verification OTP expiry: 5 minutes */
-export const EMAIL_VERIFICATION_OTP_EXPIRY_MS = 5 * 60 * 1000;
-
-/** Password reset OTP expiry: 5 minutes */
-export const PASSWORD_RESET_OTP_EXPIRY_MS = 5 * 60 * 1000;
+// Re-export for backward compat with existing importers
+export {
+  EMAIL_VERIFICATION_OTP_EXPIRY_MS,
+  PASSWORD_RESET_OTP_EXPIRY_MS,
+} from '../constants/auth.js';
 
 /**
  * Hash a token using SHA-256 for secure storage.
@@ -203,16 +202,17 @@ export async function sendSupportTicketNotification(
   subject: string,
   preview: string,
 ): Promise<void> {
+  const t = SUPPORT_TICKET_EMAIL;
   await getResend().emails.send({
     from: FROM_EMAIL,
     to,
     subject: `[PawMeet Support] ${escapeHtml(subject)}`,
     html: `
-      <h2>Aggiornamento ticket di supporto</h2>
-      <p><strong>Ticket:</strong> ${ticketId.slice(0, 8)}</p>
-      <p><strong>Oggetto:</strong> ${escapeHtml(subject)}</p>
-      <p><strong>Anteprima:</strong> ${escapeHtml(preview)}</p>
-      <p>Accedi all'app per visualizzare la risposta completa.</p>
+      <h2>${t.heading}</h2>
+      <p><strong>${t.ticketLabel}:</strong> ${ticketId.slice(0, 8)}</p>
+      <p><strong>${t.subjectLabel}:</strong> ${escapeHtml(subject)}</p>
+      <p><strong>${t.previewLabel}:</strong> ${escapeHtml(preview)}</p>
+      <p>${t.callToAction}</p>
     `,
   });
 }

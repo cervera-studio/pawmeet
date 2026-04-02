@@ -1,4 +1,5 @@
 import { AppError, fail, type Organization, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { OrganizationRepository } from '../ports/index.js';
 
 type Deps = {
@@ -22,7 +23,7 @@ export function createCreateOrganization({ organizationRepo }: Deps) {
   ): Promise<Result<Organization>> => {
     const existing = await organizationRepo.findBySlug(input.slug);
     if (existing) {
-      return fail(new AppError('ORG_SLUG_TAKEN', 'Questo slug è già in uso', 409));
+      return fail(new AppError('ORG_SLUG_TAKEN', ERROR_MESSAGES.ORG_SLUG_TAKEN, 409));
     }
 
     const org = await organizationRepo.create({

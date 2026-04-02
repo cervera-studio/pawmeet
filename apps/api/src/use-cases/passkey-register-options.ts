@@ -7,6 +7,7 @@ import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import type { AuthenticatorTransportFuture } from '@simplewebauthn/server';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { PasskeyRepository } from '../ports/passkey-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
 
@@ -33,9 +34,7 @@ export function createPasskeyRegisterOptions(deps: Deps) {
 
     const existingCount = await passkeyRepo.countByUserId(userId);
     if (existingCount >= WEBAUTHN_MAX_CREDENTIALS_PER_USER) {
-      return fail(
-        new AppError('PASSKEY_LIMIT_REACHED', 'Numero massimo di passkey raggiunto', 400),
-      );
+      return fail(new AppError('PASSKEY_LIMIT_REACHED', ERROR_MESSAGES.PASSKEY_LIMIT_REACHED, 400));
     }
 
     const existingCredentials = await passkeyRepo.findByUserId(userId);

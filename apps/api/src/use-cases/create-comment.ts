@@ -2,6 +2,12 @@ import { MAX_COMMENT_LENGTH } from '@pawmeet/config';
 import type { PostComment } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import {
+  FALLBACK_DISPLAY_NAME,
+  NOTIF_COMMENT_REPLIED,
+  NOTIF_POST_COMMENTED,
+} from '../constants/notifications.js';
 import type {
   FeedRealtimeService,
   FeedRepository,
@@ -37,7 +43,7 @@ async function notifyPostAuthor(
   services.notificationService
     .send({
       userId: ctx.postAuthorId,
-      title: `${ctx.commenterName} ha commentato`,
+      title: NOTIF_POST_COMMENTED.title(ctx.commenterName),
       body: ctx.preview,
       data: { postId: ctx.postId, commentId: ctx.commentId, type: 'post_comment' },
     })
@@ -68,7 +74,7 @@ async function notifyParentCommentAuthor(
   services.notificationService
     .send({
       userId: ctx.parentComment.authorId,
-      title: `${ctx.commenterName} ha risposto al tuo commento`,
+      title: NOTIF_COMMENT_REPLIED.title(ctx.commenterName),
       body: ctx.preview,
       data: { postId: ctx.postId, commentId: ctx.commentId, type: 'comment_reply' },
     })
@@ -89,11 +95,7 @@ export function createCreateComment({
   ): Promise<Result<{ comment: PostComment; postAgeHours: number }>> => {
     if (content.length > MAX_COMMENT_LENGTH) {
       return fail(
-        new AppError(
-          'COMMENT_TOO_LONG',
-          `Il commento può avere al massimo ${MAX_COMMENT_LENGTH} caratteri`,
-          400,
-        ),
+        new AppError('COMMENT_TOO_LONG', ERROR_MESSAGES.COMMENT_TOO_LONG(MAX_COMMENT_LENGTH), 400),
       );
     }
 
@@ -110,7 +112,7 @@ export function createCreateComment({
       }
       // Only allow 1 level of nesting
       if (parentComment.parentId) {
-        return fail(new AppError('NESTING_TOO_DEEP', 'Non puoi rispondere a una risposta', 400));
+        return fail(new AppError('NESTING_TOO_DEEP', ERROR_MESSAGES.NESTING_TOO_DEEP, 400));
       }
     }
 
@@ -124,7 +126,7 @@ export function createCreateComment({
     // Fetch commenter name once for all notifications
     const needsCommenterLookup = post.authorId !== userId || parentComment;
     const commenter = needsCommenterLookup ? await userRepo.findById(userId) : null;
-    const commenterName = commenter?.displayName ?? 'Qualcuno';
+    const commenterName = commenter?.displayName ?? FALLBACK_DISPLAY_NAME;
     const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
 
     await notifyPostAuthor(

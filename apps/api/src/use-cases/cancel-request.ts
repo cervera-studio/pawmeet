@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { GroupEventParticipationRepository } from '../ports/index.js';
 
 type Deps = {
@@ -13,7 +14,7 @@ export function createCancelRequest({ groupEventRepo }: Deps) {
     const participant = await groupEventRepo.findParticipant(eventId, userId);
     if (!participant || participant.status !== 'pending') {
       return fail(
-        new AppError('NO_PENDING_REQUEST', 'Nessuna richiesta pendente da annullare', 404),
+        new AppError('NO_PENDING_REQUEST', ERROR_MESSAGES.NO_PENDING_REQUEST_TO_CANCEL, 404),
       );
     }
 

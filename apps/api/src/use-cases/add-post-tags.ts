@@ -1,5 +1,6 @@
 import type { PostTag } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { FeedRepository } from '../ports/index.js';
 
 type Deps = {
@@ -24,7 +25,7 @@ export function createAddPostTags({ feedRepo }: Deps) {
     // Validate every tag has at least one target
     const hasInvalid = tags.some((t) => !(t.taggedUserId || t.taggedDogId));
     if (hasInvalid) {
-      return fail(new AppError('INVALID_TAGS', 'Ogni tag deve avere un utente o un cane', 400));
+      return fail(new AppError('INVALID_TAGS', ERROR_MESSAGES.INVALID_TAGS, 400));
     }
 
     // Verify tagged users/dogs are connected to the author
@@ -33,9 +34,7 @@ export function createAddPostTags({ feedRepo }: Deps) {
 
     for (const tag of tags) {
       if (tag.taggedUserId && !connectedSet.has(tag.taggedUserId)) {
-        return fail(
-          new AppError('TAG_NOT_CONNECTED', 'Puoi taggare solo utenti con cui hai un match', 403),
-        );
+        return fail(new AppError('TAG_NOT_CONNECTED', ERROR_MESSAGES.TAG_NOT_CONNECTED, 403));
       }
     }
 

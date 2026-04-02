@@ -1,5 +1,6 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
+import { NOTIF_TOXICITY_WARNING } from '../constants/notifications.js';
 import type { NotificationService } from '../ports/notification-service.js';
 import type { ToxicityDetectionService } from '../ports/toxicity-detection-service.js';
 import type { CommentToxicityJobData, MessageToxicityJobData } from './queue.js';
@@ -43,14 +44,14 @@ export function createMessageToxicityWorker(deps: MessageToxicityDeps) {
         );
 
         const warningBody = isComment
-          ? 'Il tuo commento potrebbe contenere linguaggio inappropriato. Ti chiediamo di mantenere un tono rispettoso.'
-          : 'Il tuo messaggio potrebbe contenere linguaggio inappropriato. Ti chiediamo di mantenere un tono rispettoso.';
+          ? NOTIF_TOXICITY_WARNING.commentBody
+          : NOTIF_TOXICITY_WARNING.messageBody;
 
         // Warn the sender
         await notificationService
           .send({
             userId: senderId,
-            title: 'Avviso',
+            title: NOTIF_TOXICITY_WARNING.title,
             body: warningBody,
           })
           .catch((err) => {

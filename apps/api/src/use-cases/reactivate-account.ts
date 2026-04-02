@@ -1,6 +1,7 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { UserRepository } from '../ports/user-repository.js';
@@ -29,7 +30,7 @@ export function createReactivateAccount(deps: Deps) {
     }
 
     if (user.isActive) {
-      return fail(new AppError('ALREADY_ACTIVE', 'Account già attivo', 400));
+      return fail(new AppError('ALREADY_ACTIVE', ERROR_MESSAGES.ALREADY_ACTIVE, 400));
     }
 
     if (!user.deletionScheduledAt) {
@@ -38,7 +39,7 @@ export function createReactivateAccount(deps: Deps) {
 
     // Check if grace period has expired
     if (new Date() >= user.deletionScheduledAt) {
-      return fail(new AppError('GRACE_PERIOD_EXPIRED', 'Il periodo di grazia è scaduto', 410));
+      return fail(new AppError('GRACE_PERIOD_EXPIRED', ERROR_MESSAGES.GRACE_PERIOD_EXPIRED, 410));
     }
 
     // Re-auth gate

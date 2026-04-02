@@ -1,5 +1,7 @@
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { FALLBACK_DISPLAY_NAME, NOTIF_WALK_PROPOSAL } from '../constants/notifications.js';
 import type {
   DogRepository,
   MatchRepository,
@@ -58,7 +60,7 @@ export function createProposeWalk({
 
     // Validate scheduledAt is in the future
     if (input.scheduledAt <= new Date()) {
-      return fail(new AppError('WALK_INVALID_DATE', 'La data deve essere nel futuro', 400));
+      return fail(new AppError('WALK_INVALID_DATE', ERROR_MESSAGES.WALK_INVALID_DATE, 400));
     }
 
     const walk = await walkRepo.create({
@@ -90,8 +92,8 @@ export function createProposeWalk({
         const user = await userRepo.findById(userId);
         await notificationService.send({
           userId: otherDog.ownerId,
-          title: '🐾 Nuova proposta di passeggiata',
-          body: `${user?.displayName ?? 'Qualcuno'} ti ha proposto una passeggiata${input.title ? `: ${input.title}` : ''}`,
+          title: NOTIF_WALK_PROPOSAL.title,
+          body: NOTIF_WALK_PROPOSAL.body(user?.displayName ?? FALLBACK_DISPLAY_NAME, input.title),
           data: { type: 'walk_proposal', walkId: walk.id },
         });
       }

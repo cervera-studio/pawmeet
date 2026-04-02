@@ -1,4 +1,6 @@
 import { AppError, fail, type Result, SAFETY_CHECKIN_TYPE, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { NOTIF_WALK_SOS } from '../constants/notifications.js';
 import type {
   EmergencyContactRepository,
   NotificationService,
@@ -35,7 +37,7 @@ export function createWalkSos({
     }
 
     if (walk.status !== 'accepted' && walk.status !== 'pending') {
-      return fail(new AppError('WALK_NOT_ACTIVE', 'La passeggiata non è attiva', 400));
+      return fail(new AppError('WALK_NOT_ACTIVE', ERROR_MESSAGES.WALK_NOT_ACTIVE, 400));
     }
 
     const user = await userRepo.findById(userId);
@@ -65,8 +67,8 @@ export function createWalkSos({
     if (partnerId) {
       await notificationService.send({
         userId: partnerId,
-        title: '🚨 SOS — Richiesta di aiuto',
-        body: `${user.displayName} ha inviato un SOS durante la passeggiata${locationText}`,
+        title: NOTIF_WALK_SOS.title,
+        body: NOTIF_WALK_SOS.body(user.displayName, locationText),
         data: { type: 'walk_sos', walkId },
       });
     }

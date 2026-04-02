@@ -1,5 +1,6 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { OAuthAccountRepository } from '../ports/oauth-account-repository.js';
 import type { PasskeyRepository } from '../ports/passkey-repository.js';
@@ -35,7 +36,7 @@ export function createPasskeyDelete(deps: Deps) {
 
     const deleted = await passkeyRepo.delete(passkeyId, userId);
     if (!deleted) {
-      return fail(new AppError('PASSKEY_NOT_FOUND', 'Passkey non trovata', 404));
+      return fail(new AppError('PASSKEY_NOT_FOUND', ERROR_MESSAGES.PASSKEY_NOT_FOUND, 404));
     }
 
     logSecurityEvent({

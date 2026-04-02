@@ -1,5 +1,6 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { FALLBACK_DISPLAY_NAME, NOTIF_POST_LIKED } from '../constants/notifications.js';
 import type {
   FeedRealtimeService,
   FeedRepository,
@@ -40,7 +41,7 @@ export function createLikePost({ feedRepo, userRepo, notificationService, feedRe
     // Notify the post author (unless they liked their own post)
     if (post.authorId !== userId) {
       const liker = await userRepo.findById(userId);
-      const likerName = liker?.displayName ?? 'Qualcuno';
+      const likerName = liker?.displayName ?? FALLBACK_DISPLAY_NAME;
 
       // Push notification
       const recipient = await userRepo.findById(post.authorId);
@@ -48,10 +49,8 @@ export function createLikePost({ feedRepo, userRepo, notificationService, feedRe
         notificationService
           .send({
             userId: post.authorId,
-            title: `${likerName} ha messo mi piace`,
-            body: post.caption
-              ? `Al tuo post: ${post.caption.length > 50 ? `${post.caption.slice(0, 47)}...` : post.caption}`
-              : 'Al tuo post',
+            title: NOTIF_POST_LIKED.title(likerName),
+            body: NOTIF_POST_LIKED.body(post.caption),
             data: { postId, type: 'post_like' },
           })
           .catch((err) => logger.error('likePost', 'Failed to enqueue like notification', err));

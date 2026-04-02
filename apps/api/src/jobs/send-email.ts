@@ -2,10 +2,9 @@ import process from 'node:process';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
 import { Resend } from 'resend';
+import { FROM_EMAIL } from '../constants/emails.js';
 import type { EmailJobData } from './queue.js';
 import { getRedisConnection, QUEUE_NAMES } from './queue.js';
-
-const FROM_EMAIL = process.env.FROM_EMAIL || 'PawMeet <noreply@pawmeet.io>';
 
 export function createEmailWorker() {
   const worker = new Worker<EmailJobData>(

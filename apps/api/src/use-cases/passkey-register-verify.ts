@@ -3,6 +3,7 @@ import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import type { RegistrationResponseJSON } from '@simplewebauthn/server';
 import { verifyRegistrationResponse } from '@simplewebauthn/server';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { PasskeyRepository } from '../ports/passkey-repository.js';
 import type { ChallengeStore } from './passkey-register-options.js';
@@ -26,7 +27,9 @@ export function createPasskeyRegisterVerify(deps: Deps) {
 
     const expectedChallenge = await challengeStore.get(userId);
     if (!expectedChallenge) {
-      return fail(new AppError('PASSKEY_CHALLENGE_EXPIRED', 'Challenge scaduto, riprova', 400));
+      return fail(
+        new AppError('PASSKEY_CHALLENGE_EXPIRED', ERROR_MESSAGES.PASSKEY_CHALLENGE_EXPIRED, 400),
+      );
     }
 
     await challengeStore.del(userId);
@@ -40,11 +43,23 @@ export function createPasskeyRegisterVerify(deps: Deps) {
         expectedRPID: WEBAUTHN_RP_ID,
       });
     } catch {
-      return fail(new AppError('PASSKEY_VERIFICATION_FAILED', 'Verifica passkey fallita', 400));
+      return fail(
+        new AppError(
+          'PASSKEY_VERIFICATION_FAILED',
+          ERROR_MESSAGES.PASSKEY_VERIFICATION_FAILED,
+          400,
+        ),
+      );
     }
 
     if (!(verification.verified && verification.registrationInfo)) {
-      return fail(new AppError('PASSKEY_VERIFICATION_FAILED', 'Verifica passkey fallita', 400));
+      return fail(
+        new AppError(
+          'PASSKEY_VERIFICATION_FAILED',
+          ERROR_MESSAGES.PASSKEY_VERIFICATION_FAILED,
+          400,
+        ),
+      );
     }
 
     const { credential, credentialDeviceType, credentialBackedUp } = verification.registrationInfo;

@@ -1,4 +1,5 @@
 import { AppError, fail, type GroupEvent, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type {
   DogRepository,
   GroupEventParticipationRepository,
@@ -29,16 +30,12 @@ type CreateGroupEventInput = {
 export function createCreateGroupEvent({ groupEventRepo, dogRepo }: Deps) {
   return async (userId: string, input: CreateGroupEventInput): Promise<Result<GroupEvent>> => {
     if (input.scheduledAt <= new Date()) {
-      return fail(new AppError('EVENT_INVALID_DATE', 'La data deve essere nel futuro', 400));
+      return fail(new AppError('EVENT_INVALID_DATE', ERROR_MESSAGES.EVENT_INVALID_DATE, 400));
     }
 
     if (input.maxParticipants < 2) {
       return fail(
-        new AppError(
-          'EVENT_MIN_PARTICIPANTS',
-          'Minimo 2 partecipanti per un evento di gruppo',
-          400,
-        ),
+        new AppError('EVENT_MIN_PARTICIPANTS', ERROR_MESSAGES.EVENT_MIN_PARTICIPANTS, 400),
       );
     }
 

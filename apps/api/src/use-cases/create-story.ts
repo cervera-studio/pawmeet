@@ -1,5 +1,6 @@
 import { MAX_IMAGE_SIZE, MAX_STORIES_PER_DAY, MAX_VIDEO_SIZE } from '@pawmeet/config';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { StorageService, StoryRepository } from '../ports/index.js';
 
 type Deps = {
@@ -18,7 +19,7 @@ export function createCreateStory({ storyRepo, storage }: Deps) {
       return fail(
         new AppError(
           'STORY_LIMIT_REACHED',
-          `Puoi pubblicare al massimo ${MAX_STORIES_PER_DAY} storie al giorno`,
+          ERROR_MESSAGES.STORY_LIMIT_REACHED(MAX_STORIES_PER_DAY),
           400,
         ),
       );
@@ -27,9 +28,7 @@ export function createCreateStory({ storyRepo, storage }: Deps) {
     const isVideo = contentType.startsWith('video/');
     const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
     if (fileSize > maxSize) {
-      return fail(
-        new AppError('FILE_TOO_LARGE', 'Il file supera la dimensione massima consentita', 400),
-      );
+      return fail(new AppError('FILE_TOO_LARGE', ERROR_MESSAGES.FILE_TOO_LARGE, 400));
     }
 
     const key = storage.buildStoryMediaKey(userId, contentType);

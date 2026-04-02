@@ -3,6 +3,7 @@ import { logger } from '@pawmeet/utils';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
+import { HEARTBEAT_INTERVAL_MS, MAX_CONCURRENT_USER_CONNECTIONS } from '../constants/infra.js';
 // biome-ignore lint/suspicious/noImportCycles: re-export pattern for backward compat
 import { broadcastOnlineStatus, handleMessage } from './handlers.js';
 import {
@@ -18,9 +19,6 @@ import {
 } from './registry.js';
 
 // ── WebSocket connection rate limiting ──────────────────────────────────────────
-
-/** Max concurrent WebSocket connections per user */
-const MAX_CONCURRENT_CONNECTIONS = 5;
 
 /** Connection rate limiter: max 10 connections per minute per user */
 let _wsConnectionLimiter: Ratelimit | null = null;
@@ -41,7 +39,7 @@ async function getWsConnectionLimiter(): Promise<Ratelimit> {
 async function isConnectionAllowed(userId: string): Promise<boolean> {
   // Check concurrent connection limit
   const existingConnections = getConnections().get(userId);
-  if (existingConnections && existingConnections.size >= MAX_CONCURRENT_CONNECTIONS) {
+  if (existingConnections && existingConnections.size >= MAX_CONCURRENT_USER_CONNECTIONS) {
     logger.warn('WebSocket', `User ${userId} exceeded max concurrent connections`);
     return false;
   }
@@ -78,9 +76,6 @@ export {
   type WsMessage,
 };
 
-/** How often the server sends a ping frame to each client (ms) */
-const HEARTBEAT_INTERVAL = 30_000;
-
 /** Set up the WebSocket server (noServer mode — upgrade routing handled externally) */
 export function setupWebSocket() {
   const wss = new WebSocketServer({ noServer: true });
@@ -113,7 +108,7 @@ export function setupWebSocket() {
       sock.isAlive = false;
       sock.ping();
     }
-  }, HEARTBEAT_INTERVAL);
+  }, HEARTBEAT_INTERVAL_MS);
 
   wss.on('close', () => {
     clearInterval(heartbeatInterval);

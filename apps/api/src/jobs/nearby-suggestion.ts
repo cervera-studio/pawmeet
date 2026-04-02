@@ -1,5 +1,6 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
+import { NOTIF_NEARBY_SUGGESTION } from '../constants/notifications.js';
 import { redis } from '../lib/redis.js';
 import type { NearbyJobRepository } from '../ports/nearby-job-repository.js';
 import { enqueueNotification, getRedisConnection } from './queue.js';
@@ -56,11 +57,8 @@ export function createNearbySuggestionWorker(deps: NearbySuggestionDeps) {
 
         await enqueueNotification({
           userId: user.id,
-          title: '📍 Cani nelle vicinanze!',
-          body:
-            count === 1
-              ? "C'è 1 cane compatibile nella tua zona — scoprilo!"
-              : `Ci sono ${count} cani compatibili nella tua zona — scoprili!`,
+          title: NOTIF_NEARBY_SUGGESTION.title,
+          body: NOTIF_NEARBY_SUGGESTION.body(count),
           data: { type: 'nearby_suggestion' },
         });
 

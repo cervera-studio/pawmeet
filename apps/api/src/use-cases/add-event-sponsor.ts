@@ -1,5 +1,6 @@
 import type { EventSponsor, Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { EventSponsorRepository } from '../ports/event-sponsor-repository.js';
 import type { GroupEventRepository } from '../ports/group-event-repository.js';
 import type { OrganizationRepository } from '../ports/organization-repository.js';
@@ -39,9 +40,7 @@ export function createAddEventSponsor({
     }
 
     if (!(org.isVerified && org.isActive)) {
-      return fail(
-        new AppError('ORG_NOT_VERIFIED', "L'organizzazione deve essere verificata e attiva", 400),
-      );
+      return fail(new AppError('ORG_NOT_VERIFIED', ERROR_MESSAGES.ORG_NOT_VERIFIED, 400));
     }
 
     // Check tier limit

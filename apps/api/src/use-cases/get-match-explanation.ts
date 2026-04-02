@@ -6,6 +6,7 @@ import {
   calculateEnergyScore,
   calculateSizeScore,
 } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import {
   calculateLeashScore,
   calculateWalkScore,
@@ -56,7 +57,7 @@ export function createGetMatchExplanation({ matchRepo, dogRepo, userRepo }: Deps
 
     // Verify user owns one of the dogs
     if (dogA.ownerId !== userId && dogB.ownerId !== userId) {
-      return fail(new AppError('FORBIDDEN', 'Non autorizzato', 403));
+      return fail(new AppError('FORBIDDEN', ERROR_MESSAGES.MATCH_FORBIDDEN, 403));
     }
 
     // Get owners for distance calculation

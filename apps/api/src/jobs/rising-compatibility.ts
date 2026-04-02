@@ -1,5 +1,6 @@
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
+import { NOTIF_RISING_COMPATIBILITY } from '../constants/notifications.js';
 import { redis } from '../lib/redis.js';
 import { trackEvent } from '../lib/track-event.js';
 import type { RisingCompatibilityRepository } from '../ports/rising-compatibility-repository.js';
@@ -141,8 +142,8 @@ async function detectRisingForUser(userId: string): Promise<boolean> {
   if (risingCount > 0) {
     await enqueueNotification({
       userId,
-      title: 'Nuove compatibilità in crescita!',
-      body: `Hai ${risingCount} nuovi match con compatibilità in aumento. Dai un'occhiata!`,
+      title: NOTIF_RISING_COMPATIBILITY.title,
+      body: NOTIF_RISING_COMPATIBILITY.body(risingCount),
       data: { type: 'nearby_suggestion' },
     });
 

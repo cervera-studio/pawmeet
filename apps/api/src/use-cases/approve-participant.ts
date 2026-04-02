@@ -1,5 +1,7 @@
 import { AppError, fail, PARTICIPANT_STATUS, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { NOTIF_EVENT_REQUEST_APPROVED } from '../constants/notifications.js';
 import type { GroupEventParticipationRepository, GroupEventRepository } from '../ports/index.js';
 import type { NotificationService } from '../ports/notification-service.js';
 
@@ -26,9 +28,7 @@ export function createApproveParticipant({ groupEventRepo, notificationService }
 
     const participant = await groupEventRepo.findParticipant(eventId, targetUserId);
     if (!participant || participant.status !== PARTICIPANT_STATUS.PENDING) {
-      return fail(
-        new AppError('NO_PENDING_REQUEST', 'Nessuna richiesta pendente per questo utente', 404),
-      );
+      return fail(new AppError('NO_PENDING_REQUEST', ERROR_MESSAGES.NO_PENDING_REQUEST, 404));
     }
 
     await groupEventRepo.updateParticipantStatus(
@@ -40,8 +40,8 @@ export function createApproveParticipant({ groupEventRepo, notificationService }
     notificationService
       .send({
         userId: targetUserId,
-        title: 'Richiesta approvata',
-        body: `La tua richiesta per l'evento "${event.title}" è stata approvata!`,
+        title: NOTIF_EVENT_REQUEST_APPROVED.title,
+        body: NOTIF_EVENT_REQUEST_APPROVED.body(event.title),
         data: { eventId: event.id, type: 'event_request_approved' },
       })
       .catch((err) => {

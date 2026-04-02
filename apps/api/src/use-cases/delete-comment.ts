@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { FeedRepository } from '../ports/index.js';
 
 type Deps = {
@@ -14,7 +15,7 @@ export function createDeleteComment({ feedRepo }: Deps) {
 
     if (comment.isDeleted) {
       return fail(
-        new AppError('COMMENT_ALREADY_DELETED', 'Il commento è già stato eliminato', 400),
+        new AppError('COMMENT_ALREADY_DELETED', ERROR_MESSAGES.COMMENT_ALREADY_DELETED, 400),
       );
     }
 

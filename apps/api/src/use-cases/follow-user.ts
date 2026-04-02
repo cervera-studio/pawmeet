@@ -1,6 +1,8 @@
 import type { UserFollow } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { NOTIF_NEW_FOLLOWER } from '../constants/notifications.js';
 import type { FollowRepository, NotificationService, UserRepository } from '../ports/index.js';
 
 type Deps = {
@@ -12,7 +14,7 @@ type Deps = {
 export function createFollowUser({ followRepo, userRepo, notificationService }: Deps) {
   return async (userId: string, targetUserId: string): Promise<Result<UserFollow>> => {
     if (userId === targetUserId) {
-      return fail(new AppError('SELF_FOLLOW', 'Non puoi seguire te stesso', 400));
+      return fail(new AppError('SELF_FOLLOW', ERROR_MESSAGES.SELF_FOLLOW, 400));
     }
 
     const target = await userRepo.findById(targetUserId);
@@ -22,12 +24,12 @@ export function createFollowUser({ followRepo, userRepo, notificationService }: 
 
     const blocked = await followRepo.isBlockedEitherWay(userId, targetUserId);
     if (blocked) {
-      return fail(new AppError('USER_BLOCKED', 'Operazione non consentita', 403));
+      return fail(new AppError('USER_BLOCKED', ERROR_MESSAGES.OPERATION_NOT_ALLOWED, 403));
     }
 
     const alreadyFollowing = await followRepo.isFollowing(userId, targetUserId);
     if (alreadyFollowing) {
-      return fail(new AppError('ALREADY_FOLLOWING', 'Stai già seguendo questo utente', 409));
+      return fail(new AppError('ALREADY_FOLLOWING', ERROR_MESSAGES.ALREADY_FOLLOWING, 409));
     }
 
     const follow = await followRepo.follow(userId, targetUserId);
@@ -38,8 +40,8 @@ export function createFollowUser({ followRepo, userRepo, notificationService }: 
       notificationService
         .send({
           userId: targetUserId,
-          title: 'Nuovo follower!',
-          body: `${follower.displayName} ha iniziato a seguirti`,
+          title: NOTIF_NEW_FOLLOWER.title,
+          body: NOTIF_NEW_FOLLOWER.body(follower.displayName),
           data: { type: 'new_follower', userId },
         })
         .catch((err) => logger.error('followUser', 'Failed to send follower notification', err));

@@ -1,5 +1,6 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -22,7 +23,7 @@ export function createRevokeSession(deps: Deps) {
     const target = activeTokens.find((t) => t.id === sessionId);
 
     if (!target) {
-      return fail(new AppError('SESSION_NOT_FOUND', 'Sessione non trovata o già revocata', 404));
+      return fail(new AppError('SESSION_NOT_FOUND', ERROR_MESSAGES.SESSION_NOT_FOUND, 404));
     }
 
     // Revoke the entire token family (all rotated tokens for that device)

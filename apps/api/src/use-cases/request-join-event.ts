@@ -1,5 +1,6 @@
 import { AppError, fail, type GroupEventParticipant, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { createGroupEventAggregate } from '../domain/group-event.js';
 import type {
   DogRepository,
@@ -73,12 +74,12 @@ export function createRequestJoinEvent({
     // Check if already participating
     const existing = await groupEventRepo.findParticipant(input.eventId, userId);
     if (aggregate.isAlreadyActive(existing)) {
-      return fail(new AppError('ALREADY_JOINED', 'Sei già iscritto a questo evento', 409));
+      return fail(new AppError('ALREADY_JOINED', ERROR_MESSAGES.ALREADY_JOINED_EVENT, 409));
     }
 
     const count = await groupEventRepo.countParticipants(input.eventId);
     if (aggregate.isFull(count)) {
-      return fail(new AppError('EVENT_FULL', 'Evento al completo', 400));
+      return fail(new AppError('EVENT_FULL', ERROR_MESSAGES.EVENT_FULL, 400));
     }
 
     // Determine status based on approval setting

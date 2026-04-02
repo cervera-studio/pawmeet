@@ -1,5 +1,6 @@
 import { DEFAULT_WEIGHTS } from '@pawmeet/config';
 import { z } from 'zod';
+import { SUPPORT_EMAIL } from '../../constants/emails.js';
 import { logAdminAction, RESOURCE_TYPE } from '../../lib/admin-audit.js';
 import { AdminRole, requireRole } from '../../lib/admin-permissions.js';
 import { toAuditChanges } from '../../lib/audit-helpers.js';
@@ -30,7 +31,7 @@ export interface PersistedSettings {
 function getDefaultSettings(): PersistedSettings {
   return {
     appName: 'PawMeet',
-    supportEmail: 'support@pawmeet.io',
+    supportEmail: SUPPORT_EMAIL,
     photoConfidenceThreshold: 95,
     maxReportsBeforeSuspension: 5,
     matchWeightSize: DEFAULT_WEIGHTS.size,

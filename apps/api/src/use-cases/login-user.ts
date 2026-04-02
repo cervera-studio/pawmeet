@@ -1,7 +1,9 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
-import { accountLockout, MAX_FAILED_ATTEMPTS } from '../lib/account-lockout.js';
+import { MAX_FAILED_ATTEMPTS, REFRESH_TOKEN_TTL_MS } from '../constants/auth.js';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { accountLockout } from '../lib/account-lockout.js';
 import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
@@ -61,9 +63,7 @@ export function createLoginUser(deps: Deps) {
         userId: user.id,
         email,
       });
-      return fail(
-        new AppError('AUTH_ACCOUNT_LOCKED', 'Troppi tentativi. Riprova tra 15 minuti.', 429),
-      );
+      return fail(new AppError('AUTH_ACCOUNT_LOCKED', ERROR_MESSAGES.AUTH_ACCOUNT_LOCKED, 429));
     }
 
     // Verify password
@@ -100,7 +100,7 @@ export function createLoginUser(deps: Deps) {
         email,
         metadata: { reason: 'account_disabled' },
       });
-      return fail(new AppError('AUTH_ACCOUNT_DISABLED', 'Account disattivato', 403));
+      return fail(new AppError('AUTH_ACCOUNT_DISABLED', ERROR_MESSAGES.AUTH_ACCOUNT_DISABLED, 403));
     }
 
     // Generate tokens
@@ -111,7 +111,7 @@ export function createLoginUser(deps: Deps) {
     await tokenRepo.createRefreshToken({
       userId: user.id,
       tokenHash,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
     });
 
     // Update last login

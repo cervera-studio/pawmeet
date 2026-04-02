@@ -1,8 +1,9 @@
 import { logger } from '@pawmeet/utils';
-
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCKOUT_DURATION_SECONDS = 15 * 60; // 15 minutes
-const FAILED_ATTEMPTS_PREFIX = 'auth:failed:';
+import {
+  MAX_FAILED_ATTEMPTS,
+  REDIS_PREFIX_USER_FAILED_ATTEMPTS,
+  USER_LOCKOUT_DURATION_SECONDS,
+} from '../constants/auth.js';
 
 interface AccountLockoutService {
   recordFailedAttempt(userId: string): Promise<number>;
@@ -20,10 +21,10 @@ export function createAccountLockout(): AccountLockoutService {
     async recordFailedAttempt(userId: string): Promise<number> {
       try {
         const redis = await getRedis();
-        const key = `${FAILED_ATTEMPTS_PREFIX}${userId}`;
+        const key = `${REDIS_PREFIX_USER_FAILED_ATTEMPTS}${userId}`;
         const attempts = await redis.incr(key);
         // Set/refresh TTL on every attempt
-        await redis.expire(key, LOCKOUT_DURATION_SECONDS);
+        await redis.expire(key, USER_LOCKOUT_DURATION_SECONDS);
         return attempts;
       } catch (err) {
         // Fail-closed: treat as max attempts to prevent brute-force when Redis is down
@@ -35,7 +36,7 @@ export function createAccountLockout(): AccountLockoutService {
     async isLocked(userId: string): Promise<boolean> {
       try {
         const redis = await getRedis();
-        const key = `${FAILED_ATTEMPTS_PREFIX}${userId}`;
+        const key = `${REDIS_PREFIX_USER_FAILED_ATTEMPTS}${userId}`;
         const attempts = await redis.get<number>(key);
         return (attempts ?? 0) >= MAX_FAILED_ATTEMPTS;
       } catch (err) {
@@ -48,7 +49,7 @@ export function createAccountLockout(): AccountLockoutService {
     async resetAttempts(userId: string): Promise<void> {
       try {
         const redis = await getRedis();
-        await redis.del(`${FAILED_ATTEMPTS_PREFIX}${userId}`);
+        await redis.del(`${REDIS_PREFIX_USER_FAILED_ATTEMPTS}${userId}`);
       } catch (err) {
         logger.warn('AccountLockout', 'Failed to reset attempts', err);
       }
@@ -57,4 +58,3 @@ export function createAccountLockout(): AccountLockoutService {
 }
 
 export const accountLockout = createAccountLockout();
-export { LOCKOUT_DURATION_SECONDS, MAX_FAILED_ATTEMPTS };

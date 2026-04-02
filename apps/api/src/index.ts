@@ -4,6 +4,7 @@ import { logger as appLogger } from '@pawmeet/utils';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { registerDomainEventHandlers } from './app/event-handlers.js';
+import { ERROR_MESSAGES } from './constants/messages.js';
 import {
   adminDeps,
   experimentService,
@@ -75,15 +76,15 @@ app.onError((err, c) => {
 
   // Zod validation errors return 400 — never expose raw details to client
   if (err.message.includes('Validation')) {
-    return c.json({ error: 'Dati non validi', errorId }, 400);
+    return c.json({ error: ERROR_MESSAGES.INVALID_DATA, errorId }, 400);
   }
 
-  return c.json({ error: 'Errore interno del server', errorId }, 500);
+  return c.json({ error: ERROR_MESSAGES.INTERNAL_ERROR, errorId }, 500);
 });
 
 // 404 handler
 app.notFound((c) => {
-  return c.json({ error: 'Endpoint non trovato' }, 404);
+  return c.json({ error: ERROR_MESSAGES.NOT_FOUND }, 404);
 });
 
 // tRPC endpoint — typed API for mobile and admin clients

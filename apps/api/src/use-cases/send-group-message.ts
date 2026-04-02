@@ -1,5 +1,6 @@
 import type { GroupChatMessage } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { sanitizeContent } from '../lib/sanitize.js';
 import type { GroupMessageRepository } from '../ports/group-message-repository.js';
@@ -17,7 +18,9 @@ export function createSendGroupMessage({ groupMessageRepo }: Deps) {
   ): Promise<Result<{ message: GroupChatMessage }>> => {
     const isParticipant = await groupMessageRepo.isEventParticipant(eventId, userId);
     if (!isParticipant) {
-      return fail(new AppError('NOT_PARTICIPANT', 'Non sei partecipante di questo evento', 403));
+      return fail(
+        new AppError('NOT_PARTICIPANT', ERROR_MESSAGES.SEND_GROUP_MESSAGE_NOT_PARTICIPANT, 403),
+      );
     }
 
     const sanitizedContent = sanitizeContent(content);

@@ -1,5 +1,6 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { REFRESH_TOKEN_TTL_MS } from '../constants/auth.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { TokenRepository } from '../ports/token-repository.js';
@@ -13,8 +14,6 @@ interface Deps {
   tokenRepo: TokenRepository;
   authService: AuthService;
 }
-
-const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export function createRefreshTokens(deps: Deps) {
   return async (refreshToken: string): Promise<Result<RefreshOutput>> => {

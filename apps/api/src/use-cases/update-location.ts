@@ -1,6 +1,7 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { safeParseCoordinates } from '@pawmeet/validation';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { hasLocation } from '../domain/type-guards.js';
 import type { UserRepository } from '../ports/index.js';
 
@@ -56,7 +57,7 @@ export function createUpdateLocation({ userRepo }: Deps) {
         if (speedKmh > MAX_SPEED_KMH) {
           if (!force) {
             return fail(
-              new AppError('SUSPICIOUS_LOCATION', 'Aggiornamento posizione sospetto', 409, {
+              new AppError('SUSPICIOUS_LOCATION', ERROR_MESSAGES.SUSPICIOUS_LOCATION, 409, {
                 distanceKm: Math.round(distanceKm),
               }),
             );

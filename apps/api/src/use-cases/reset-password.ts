@@ -1,6 +1,7 @@
 import { TOKEN_TYPE } from '@pawmeet/db';
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { checkOtpRateLimit, recordOtpAttempt, resetOtpAttempts } from '../lib/otp-rate-limit.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
@@ -31,7 +32,7 @@ export function createResetPassword(deps: Deps) {
     // Per-email OTP rate limiting to prevent brute-force
     const allowed = await checkOtpRateLimit(email);
     if (!allowed) {
-      return fail(new AppError('AUTH_RATE_LIMITED', 'Troppi tentativi, riprova più tardi', 429));
+      return fail(new AppError('AUTH_RATE_LIMITED', ERROR_MESSAGES.AUTH_RATE_LIMITED, 429));
     }
 
     const user = await userRepo.findByEmail(email);

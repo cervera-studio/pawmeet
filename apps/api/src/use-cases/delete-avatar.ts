@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { StorageService, UserRepository } from '../ports/index.js';
 
 type Deps = {
@@ -10,7 +11,7 @@ export function createDeleteAvatar({ userRepo, storage }: Deps) {
   return async (userId: string): Promise<Result<{ message: string }>> => {
     const user = await userRepo.findById(userId);
     if (!user?.avatarUrl) {
-      return fail(new AppError('NO_AVATAR', 'Nessun avatar da eliminare', 404));
+      return fail(new AppError('NO_AVATAR', ERROR_MESSAGES.NO_AVATAR, 404));
     }
 
     // Delete from R2

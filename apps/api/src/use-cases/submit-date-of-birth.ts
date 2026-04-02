@@ -2,6 +2,7 @@ import { MIN_USER_AGE } from '@pawmeet/config';
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { calculateAge } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { UserRepository } from '../ports/user-repository.js';
 
@@ -18,7 +19,7 @@ export function createSubmitDateOfBirth({ userRepo }: Deps) {
 
     // Prevent overwriting an already-set date of birth
     if (user.dateOfBirth) {
-      return fail(new AppError('AGE_ALREADY_VERIFIED', 'Data di nascita già impostata', 409));
+      return fail(new AppError('AGE_ALREADY_VERIFIED', ERROR_MESSAGES.AGE_ALREADY_VERIFIED, 409));
     }
 
     // Server-side age validation

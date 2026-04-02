@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { FeedRepository } from '../ports/index.js';
 
 type Deps = {
@@ -16,7 +17,7 @@ export function createDeletePost({ feedRepo }: Deps) {
     }
 
     if (post.isDeleted) {
-      return fail(new AppError('POST_ALREADY_DELETED', 'Il post è già stato eliminato', 400));
+      return fail(new AppError('POST_ALREADY_DELETED', ERROR_MESSAGES.POST_ALREADY_DELETED, 400));
     }
 
     const postAgeHours = Math.floor(

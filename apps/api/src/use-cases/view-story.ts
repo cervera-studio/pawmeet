@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { StoryRepository } from '../ports/index.js';
 
 type Deps = {
@@ -13,7 +14,7 @@ export function createViewStory({ storyRepo }: Deps) {
     }
 
     if (story.expiresAt < new Date()) {
-      return fail(new AppError('STORY_EXPIRED', 'La storia è scaduta', 410));
+      return fail(new AppError('STORY_EXPIRED', ERROR_MESSAGES.STORY_EXPIRED, 410));
     }
 
     // Don't count views on own stories

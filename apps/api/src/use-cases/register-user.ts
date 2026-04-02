@@ -4,6 +4,8 @@ import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { parseEmail } from '@pawmeet/validation';
+import { REFRESH_TOKEN_TTL_MS } from '../constants/auth.js';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { EMAIL_VERIFICATION_OTP_EXPIRY_MS, generateOtp } from '../lib/email.js';
 import { type SafeUser, sanitizeUser } from '../lib/sanitize.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
@@ -47,21 +49,13 @@ export function createRegisterUser(deps: Deps) {
       today.getDate(),
     );
     if (dateOfBirth > ageCutoff) {
-      return fail(
-        new AppError(
-          'AUTH_UNDERAGE',
-          `Devi avere almeno ${MIN_USER_AGE} anni per registrarti.`,
-          400,
-        ),
-      );
+      return fail(new AppError('AUTH_UNDERAGE', ERROR_MESSAGES.AUTH_UNDERAGE(MIN_USER_AGE), 400));
     }
 
     // Check if email already exists
     const existing = await userRepo.findByEmail(email);
     if (existing) {
-      return fail(
-        new AppError('AUTH_EMAIL_TAKEN', 'Registrazione non riuscita. Riprova o accedi.', 409),
-      );
+      return fail(new AppError('AUTH_EMAIL_TAKEN', ERROR_MESSAGES.AUTH_EMAIL_TAKEN, 409));
     }
 
     // Hash password and create user
@@ -103,7 +97,7 @@ export function createRegisterUser(deps: Deps) {
     await tokenRepo.createRefreshToken({
       userId: user.id,
       tokenHash: refreshHash,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
     });
 
     // Update last login

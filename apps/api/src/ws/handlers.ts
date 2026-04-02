@@ -3,6 +3,7 @@ import { logger } from '@pawmeet/utils';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { WebSocket } from 'ws';
 import { z } from 'zod';
+import { TICKET_OWNER_TTL_MS } from '../constants/infra.js';
 import { getRooms, sendToRoom, sendToUser } from './registry.js';
 
 const wsMessageSchema = z.object({
@@ -52,7 +53,6 @@ interface CachedOwner {
   expiresAt: number;
 }
 
-const TICKET_OWNER_TTL_MS = 30_000; // 30 seconds
 const ticketOwnerCache = new Map<string, CachedOwner>();
 
 async function getTicketOwnerCached(ticketId: string): Promise<string | null> {

@@ -2,6 +2,7 @@ import process from 'node:process';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import { logger } from '@pawmeet/utils';
 import { Worker } from 'bullmq';
+import { NOTIF_PHOTO_REJECTED } from '../constants/notifications.js';
 import { extractKeyFromUrl, MAX_FILE_SIZE } from '../lib/storage.js';
 import type { BreedDetectionService } from '../ports/breed-detection-service.js';
 import type { ContentModerationService } from '../ports/content-moderation-service.js';
@@ -114,8 +115,8 @@ export function createPhotoModerationWorker(deps: PhotoModerationDeps) {
           await notificationService
             .send({
               userId: dogId,
-              title: 'Foto rifiutata',
-              body: 'Una delle foto del tuo cane non rispetta le linee guida.',
+              title: NOTIF_PHOTO_REJECTED.title,
+              body: NOTIF_PHOTO_REJECTED.body,
             })
             .catch((err) => {
               logger.error('PhotoModeration', 'Failed to send notification', err);

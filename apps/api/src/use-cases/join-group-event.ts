@@ -1,5 +1,6 @@
 import { AppError, fail, type GroupEventParticipant, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { createGroupEventAggregate } from '../domain/group-event.js';
 import type {
@@ -70,13 +71,13 @@ export function createJoinGroupEvent({
     // Check if already participating
     const existing = await groupEventRepo.findParticipant(input.eventId, userId);
     if (aggregate.isAlreadyActive(existing)) {
-      return fail(new AppError('ALREADY_JOINED', 'Sei già iscritto a questo evento', 409));
+      return fail(new AppError('ALREADY_JOINED', ERROR_MESSAGES.ALREADY_JOINED_EVENT, 409));
     }
 
     // Determine status based on capacity and approval setting
     const count = await groupEventRepo.countParticipants(input.eventId);
     if (aggregate.isFull(count)) {
-      return fail(new AppError('EVENT_FULL', 'Evento al completo', 400));
+      return fail(new AppError('EVENT_FULL', ERROR_MESSAGES.EVENT_FULL, 400));
     }
 
     const status = aggregate.resolveJoinStatus();

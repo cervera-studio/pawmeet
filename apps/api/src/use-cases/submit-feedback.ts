@@ -1,5 +1,6 @@
 import type { WalkFeedback } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type {
   DogRepository,
   FeedbackRepository,
@@ -30,9 +31,7 @@ export function createSubmitFeedback({ feedbackRepo, walkRepo, matchRepo, dogRep
     }
 
     if (walk.status !== WALK_STATUS.COMPLETED) {
-      return fail(
-        new AppError('WALK_NOT_COMPLETED', 'La passeggiata non è ancora completata', 400),
-      );
+      return fail(new AppError('WALK_NOT_COMPLETED', ERROR_MESSAGES.WALK_NOT_COMPLETED, 400));
     }
 
     // Verify user participated in this walk via match
@@ -47,25 +46,19 @@ export function createSubmitFeedback({ feedbackRepo, walkRepo, matchRepo, dogRep
 
     if (!isParticipant) {
       return fail(
-        new AppError('FEEDBACK_NOT_PARTICIPANT', 'Non hai partecipato a questa passeggiata', 403),
+        new AppError('FEEDBACK_NOT_PARTICIPANT', ERROR_MESSAGES.FEEDBACK_NOT_PARTICIPANT, 403),
       );
     }
 
     // Verify the target dog is the other dog in the match (not the user's own dog)
     const targetDogInMatch = input.toDogId === match.dogAId || input.toDogId === match.dogBId;
     if (!targetDogInMatch) {
-      return fail(
-        new AppError(
-          'FEEDBACK_INVALID_DOG',
-          'Il cane non ha partecipato a questa passeggiata',
-          400,
-        ),
-      );
+      return fail(new AppError('FEEDBACK_INVALID_DOG', ERROR_MESSAGES.FEEDBACK_INVALID_DOG, 400));
     }
 
     // Ensure user is not rating their own dog
     if (dogIds.has(input.toDogId)) {
-      return fail(new AppError('FEEDBACK_OWN_DOG', 'Non puoi valutare il tuo cane', 400));
+      return fail(new AppError('FEEDBACK_OWN_DOG', ERROR_MESSAGES.FEEDBACK_OWN_DOG, 400));
     }
 
     // Check if user already submitted feedback for this walk

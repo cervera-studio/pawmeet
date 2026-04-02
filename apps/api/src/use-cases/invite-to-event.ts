@@ -6,6 +6,8 @@ import {
   type Result,
   succeed,
 } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { NOTIF_EVENT_INVITE } from '../constants/notifications.js';
 import { checkOwnership } from '../domain/ownership.js';
 import type {
   DogRepository,
@@ -49,15 +51,13 @@ export function createInviteToEvent({
     if (ownershipError) return fail(ownershipError);
 
     if (event.status !== GROUP_EVENT_STATUS.SCHEDULED) {
-      return fail(
-        new AppError('EVENT_NOT_SCHEDULED', "L'evento non è più aperto agli inviti", 400),
-      );
+      return fail(new AppError('EVENT_NOT_SCHEDULED', ERROR_MESSAGES.EVENT_NOT_SCHEDULED, 400));
     }
 
     // Check if already a participant
     const existing = event.participants.find((p) => p.userId === invitedUserId);
     if (existing) {
-      return fail(new AppError('ALREADY_PARTICIPANT', "L'utente è già un partecipante", 409));
+      return fail(new AppError('ALREADY_PARTICIPANT', ERROR_MESSAGES.ALREADY_PARTICIPANT, 409));
     }
 
     // Check capacity
@@ -65,7 +65,7 @@ export function createInviteToEvent({
       (p) => p.status === PARTICIPANT_STATUS.ACCEPTED,
     ).length;
     if (acceptedCount >= event.maxParticipants) {
-      return fail(new AppError('EVENT_FULL', "L'evento ha raggiunto il numero massimo", 400));
+      return fail(new AppError('EVENT_FULL', ERROR_MESSAGES.EVENT_FULL, 400));
     }
 
     // Invited user must exist and have at least one active dog
@@ -77,7 +77,7 @@ export function createInviteToEvent({
     const dogs = await dogRepo.findByOwner(invitedUserId, true);
     const firstDog = dogs[0];
     if (!firstDog) {
-      return fail(new AppError('NO_ACTIVE_DOG', "L'utente non ha cani attivi", 400));
+      return fail(new AppError('NO_ACTIVE_DOG', ERROR_MESSAGES.NO_ACTIVE_DOG, 400));
     }
 
     // Add as accepted participant with their first active dog
@@ -91,8 +91,8 @@ export function createInviteToEvent({
     // Notify the invited user
     await notificationService.send({
       userId: invitedUserId,
-      title: 'Invito a un evento',
-      body: `Sei stato invitato a "${event.title}"`,
+      title: NOTIF_EVENT_INVITE.title,
+      body: NOTIF_EVENT_INVITE.body(event.title),
       data: { type: 'event_invite', eventId },
     });
 

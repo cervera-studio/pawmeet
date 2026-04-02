@@ -1,5 +1,6 @@
 import type { MoodLog, MoodTag } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { DogRepository, MoodLogRepository, WalkTrackRepository } from '../ports/index.js';
 
 type Deps = {
@@ -36,20 +37,14 @@ export function createSubmitMoodLog({ moodLogRepo, walkTrackRepo, dogRepo }: Dep
 
     // Verify track is completed
     if (!track.isCompleted) {
-      return fail(
-        new AppError('TRACK_NOT_COMPLETED', 'Il tracciamento non è ancora completato', 400),
-      );
+      return fail(new AppError('TRACK_NOT_COMPLETED', ERROR_MESSAGES.TRACK_NOT_COMPLETED, 400));
     }
 
     // Check if already submitted for this dog+track
     const existing = await moodLogRepo.findByTrack(input.trackId, input.dogId);
     if (existing) {
       return fail(
-        new AppError(
-          'MOOD_LOG_ALREADY_SUBMITTED',
-          "Hai già registrato l'umore per questa passeggiata",
-          409,
-        ),
+        new AppError('MOOD_LOG_ALREADY_SUBMITTED', ERROR_MESSAGES.MOOD_LOG_ALREADY_SUBMITTED, 409),
       );
     }
 

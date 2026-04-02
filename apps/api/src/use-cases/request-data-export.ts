@@ -1,5 +1,6 @@
 import type { Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { GdprExportRepository } from '../ports/gdpr-export-repository.js';
 import type { UserRepository } from '../ports/user-repository.js';
 
@@ -27,11 +28,7 @@ export function createRequestDataExport(deps: Deps) {
     const pending = await gdprExportRepo.findPendingExport(userId);
     if (pending) {
       return fail(
-        new AppError(
-          'EXPORT_ALREADY_PENDING',
-          "Hai già un export in corso. Riceverai un'email quando sarà pronto.",
-          409,
-        ),
+        new AppError('EXPORT_ALREADY_PENDING', ERROR_MESSAGES.EXPORT_ALREADY_PENDING, 409),
       );
     }
 
@@ -52,6 +49,6 @@ export function createRequestDataExport(deps: Deps) {
       locale: user.locale,
     });
 
-    return succeed({ message: "Export in corso. Riceverai un'email quando sarà pronto." });
+    return succeed({ message: ERROR_MESSAGES.EXPORT_IN_PROGRESS });
   };
 }

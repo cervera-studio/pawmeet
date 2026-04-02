@@ -1,4 +1,5 @@
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
+import { FALLBACK_DISPLAY_NAME, NOTIF_WALK_CANCELLED } from '../constants/notifications.js';
 import type {
   DogRepository,
   MatchRepository,
@@ -56,8 +57,8 @@ export function createCancelWalk({
         const user = await userRepo.findById(userId);
         await notificationService.send({
           userId: otherDog.ownerId,
-          title: '❌ Passeggiata annullata',
-          body: `${user?.displayName ?? 'Qualcuno'} ha annullato la passeggiata`,
+          title: NOTIF_WALK_CANCELLED.title,
+          body: NOTIF_WALK_CANCELLED.body(user?.displayName ?? FALLBACK_DISPLAY_NAME),
           data: { type: 'walk_cancelled', walkId },
         });
       }

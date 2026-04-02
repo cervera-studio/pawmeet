@@ -2,6 +2,7 @@ import type { DogSizeCategory } from '@pawmeet/config';
 import { BREED_ACTIVITY_GOALS } from '@pawmeet/config';
 import type { HealthGoal, Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { ActivityRepository } from '../ports/activity-repository.js';
 import type { DogRepository } from '../ports/index.js';
 
@@ -31,7 +32,7 @@ export function createGetDogHealthGoal({ dogRepo, activityRepo }: Deps) {
     }
 
     if (dog.ownerId !== userId) {
-      return fail(new AppError('DOG_NOT_OWNED', 'Non hai i permessi per questo cane', 403));
+      return fail(new AppError('DOG_NOT_OWNED', ERROR_MESSAGES.DOG_NOT_OWNED, 403));
     }
 
     const sizeCategory = SIZE_MAP[dog.size] ?? 'medium';

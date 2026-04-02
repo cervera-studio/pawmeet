@@ -3,6 +3,8 @@ import { waitlistSubscribers } from '@pawmeet/db';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { Resend } from 'resend';
+import { CONTACT_EMAIL, FROM_EMAIL, WAITLIST_NOTIFY_EMAIL } from '../constants/emails.js';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { supportDeps as SupportDeps } from '../container/index.js';
 import { db } from '../lib/db.js';
 import { trackEvent } from '../lib/track-event.js';
@@ -87,8 +89,6 @@ const WAITLIST_EMAILS: Record<string, { subject: string; body: string[] }> = {
 export function createWebRoutes(deps: typeof SupportDeps) {
   const web = new Hono();
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'info@cervera.studio';
-  const NOTIFY_EMAIL = process.env.WAITLIST_NOTIFY_EMAIL || 'info@cervera.studio';
 
   // ── Contact form ────────────────────────────────────────────────────
   web.post('/contact', async (c) => {
@@ -105,12 +105,12 @@ export function createWebRoutes(deps: typeof SupportDeps) {
       message.length < 10 ||
       message.length > 5000
     ) {
-      return c.json({ error: 'Dati non validi' }, 400);
+      return c.json({ error: ERROR_MESSAGES.INVALID_DATA }, 400);
     }
 
     try {
       await resend.emails.send({
-        from: 'PawMeet Contatti <noreply@pawmeet.io>',
+        from: FROM_EMAIL,
         to: CONTACT_EMAIL,
         replyTo: email,
         subject: subject ? `[Contatto] ${subject}` : `Contatto da ${name}`,
@@ -143,7 +143,7 @@ export function createWebRoutes(deps: typeof SupportDeps) {
       trackEvent('web_contact_submitted', null, { hasSubject: !!subject });
       return c.json({ ok: true });
     } catch {
-      return c.json({ error: 'Errore interno' }, 500);
+      return c.json({ error: ERROR_MESSAGES.INTERNAL_ERROR }, 500);
     }
   });
 
@@ -154,7 +154,7 @@ export function createWebRoutes(deps: typeof SupportDeps) {
     const locale = typeof body?.locale === 'string' ? body.locale : 'it';
 
     if (!EMAIL_RE.test(email)) {
-      return c.json({ error: 'Email non valida' }, 400);
+      return c.json({ error: ERROR_MESSAGES.INVALID_EMAIL }, 400);
     }
 
     try {
@@ -181,7 +181,7 @@ export function createWebRoutes(deps: typeof SupportDeps) {
       // biome-ignore lint/style/noNonNullAssertion: 'it' key is always defined in WAITLIST_EMAILS
       const welcomeEmail = WAITLIST_EMAILS[locale] ?? WAITLIST_EMAILS.it!;
       await resend.emails.send({
-        from: 'PawMeet <noreply@pawmeet.io>',
+        from: FROM_EMAIL,
         to: email,
         subject: welcomeEmail.subject,
         text: welcomeEmail.body.join('\n'),
@@ -189,8 +189,8 @@ export function createWebRoutes(deps: typeof SupportDeps) {
 
       // Notify team
       await resend.emails.send({
-        from: 'PawMeet <noreply@pawmeet.io>',
-        to: NOTIFY_EMAIL,
+        from: FROM_EMAIL,
+        to: WAITLIST_NOTIFY_EMAIL,
         subject: `Nuova iscrizione waitlist: ${email}`,
         text: `Nuova iscrizione alla waitlist PawMeet.\n\nEmail: ${email}\nData: ${new Date().toISOString()}`,
       });
@@ -198,7 +198,7 @@ export function createWebRoutes(deps: typeof SupportDeps) {
       trackEvent('web_waitlist_signed_up', null, { locale });
       return c.json({ ok: true });
     } catch {
-      return c.json({ error: 'Errore interno' }, 500);
+      return c.json({ error: ERROR_MESSAGES.INTERNAL_ERROR }, 500);
     }
   });
 

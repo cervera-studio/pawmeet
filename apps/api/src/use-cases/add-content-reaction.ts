@@ -1,5 +1,6 @@
 import type { ContentReaction, ContentType, Result } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { FeedRepository } from '../ports/index.js';
 
 type Deps = {
@@ -19,7 +20,9 @@ export function createAddContentReaction({ feedRepo }: Deps) {
     } catch (err) {
       // Unique constraint violation → reaction already exists
       if (err instanceof Error && err.message.includes('unique')) {
-        return fail(new AppError('REACTION_ALREADY_EXISTS', 'Reazione già presente', 409));
+        return fail(
+          new AppError('REACTION_ALREADY_EXISTS', ERROR_MESSAGES.REACTION_ALREADY_EXISTS, 409),
+        );
       }
       const message = err instanceof Error ? err.message : 'Errore imprevisto';
       return fail(new AppError('REACTION_FAILED', message, 500));

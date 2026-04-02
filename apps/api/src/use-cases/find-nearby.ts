@@ -1,5 +1,6 @@
 import { DEFAULT_SEARCH_RADIUS_KM } from '@pawmeet/config';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import type { FollowRepository, NearbyUser, UserRepository } from '../ports/index.js';
 
 type Deps = {
@@ -21,11 +22,7 @@ export function createFindNearby({ userRepo, followRepo }: Deps) {
     const user = await userRepo.findById(userId);
     if (!(user?.latitude && user?.longitude)) {
       return fail(
-        new AppError(
-          'LOCATION_NOT_SET',
-          'Posizione non impostata. Aggiorna la tua posizione.',
-          400,
-        ),
+        new AppError('LOCATION_NOT_SET', ERROR_MESSAGES.LOCATION_NOT_SET_WITH_ACTION, 400),
       );
     }
 

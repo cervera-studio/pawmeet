@@ -5,7 +5,17 @@ import { compare, hash } from 'bcryptjs';
 import { Hono } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
 import { z } from 'zod';
-import { generateOtp, hashToken, PASSWORD_RESET_OTP_EXPIRY_MS } from '../lib/email.js';
+import {
+  ADMIN_LOCKOUT_DURATION_SECONDS,
+  ADMIN_REFRESH_COOKIE_MAX_AGE,
+  MAX_FAILED_ATTEMPTS,
+  PASSWORD_RESET_OTP_EXPIRY_MS,
+  REDIS_PREFIX_ADMIN_FAILED_ATTEMPTS,
+  REDIS_PREFIX_ADMIN_LOCKOUT,
+  REDIS_PREFIX_ADMIN_RESET_OTP,
+} from '../constants/auth.js';
+import { ERROR_MESSAGES } from '../constants/messages.js';
+import { generateOtp, hashToken } from '../lib/email.js';
 import {
   generateAdminAccessToken,
   generateAdminRefreshToken,
@@ -49,14 +59,6 @@ const adminResetPasswordSchema = z.object({
 });
 
 const REFRESH_COOKIE_NAME = 'admin_refresh_token';
-const REFRESH_COOKIE_MAX_AGE = 8 * 60 * 60; // 8 hours in seconds
-
-/** Account lockout: 5 failed attempts -> locked for 30 minutes */
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCKOUT_DURATION_SECONDS = 30 * 60; // 30 minutes
-const FAILED_ATTEMPTS_PREFIX = 'admin:login:failed:';
-const LOCKOUT_PREFIX = 'admin:login:locked:';
-const RESET_OTP_PREFIX = 'admin:reset-otp:';
 const RESET_OTP_TTL_SECONDS = Math.ceil(PASSWORD_RESET_OTP_EXPIRY_MS / 1000);
 
 interface AdminAuthDeps {
@@ -83,16 +85,18 @@ async function incrementFailedAttempts(
   redis: InstanceType<typeof import('@upstash/redis').Redis>,
   email: string,
 ): Promise<number> {
-  const key = `${FAILED_ATTEMPTS_PREFIX}${email}`;
+  const key = `${REDIS_PREFIX_ADMIN_FAILED_ATTEMPTS}${email}`;
   const attempts = await redis.incr(key);
 
   // Set TTL on first attempt (auto-expires after lockout window)
   if (attempts === 1) {
-    await redis.expire(key, LOCKOUT_DURATION_SECONDS);
+    await redis.expire(key, ADMIN_LOCKOUT_DURATION_SECONDS);
   }
 
   if (attempts >= MAX_FAILED_ATTEMPTS) {
-    await redis.set(`${LOCKOUT_PREFIX}${email}`, '1', { ex: LOCKOUT_DURATION_SECONDS });
+    await redis.set(`${REDIS_PREFIX_ADMIN_LOCKOUT}${email}`, '1', {
+      ex: ADMIN_LOCKOUT_DURATION_SECONDS,
+    });
   }
 
   return attempts;
@@ -111,7 +115,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
         const redis = await getRedis();
 
         // Check if account is locked
-        const lockKey = `${LOCKOUT_PREFIX}${body.email}`;
+        const lockKey = `${REDIS_PREFIX_ADMIN_LOCKOUT}${body.email}`;
         const isLocked = await redis.get(lockKey);
         if (isLocked) {
           logSecurityEvent({
@@ -119,14 +123,14 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             email: body.email,
             metadata: { source: 'admin_login' },
           });
-          return c.json({ error: 'Account temporaneamente bloccato. Riprova tra 30 minuti' }, 423);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_ACCOUNT_LOCKED }, 423);
         }
 
         const admin = await adminUserRepo.findByEmail(body.email);
 
         if (!admin?.isActive) {
           await incrementFailedAttempts(redis, body.email);
-          return c.json({ error: 'Credenziali non valide' }, 401);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_INVALID_CREDENTIALS }, 401);
         }
 
         const passwordValid = await compare(body.password, admin.passwordHash);
@@ -139,11 +143,11 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
               metadata: { source: 'admin_login', attempts },
             });
           }
-          return c.json({ error: 'Credenziali non valide' }, 401);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_INVALID_CREDENTIALS }, 401);
         }
 
         // Successful login — clear failed attempts
-        await redis.del(`${FAILED_ATTEMPTS_PREFIX}${body.email}`);
+        await redis.del(`${REDIS_PREFIX_ADMIN_FAILED_ATTEMPTS}${body.email}`);
 
         // If MFA is enabled, issue a short-lived MFA pending token instead of full tokens
         if (admin.totpEnabled) {
@@ -167,7 +171,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
           secure: true,
           sameSite: 'None',
           path: '/',
-          maxAge: REFRESH_COOKIE_MAX_AGE,
+          maxAge: ADMIN_REFRESH_COOKIE_MAX_AGE,
         });
 
         return c.json({
@@ -204,7 +208,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             totpEnabled: admin.totpEnabled,
           });
         } catch {
-          return c.json({ error: 'Token non valido' }, 401);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_TOKEN_INVALID }, 401);
         }
       })
       .post('/refresh', async (c) => {
@@ -250,7 +254,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             secure: true,
             sameSite: 'None',
             path: '/',
-            maxAge: REFRESH_COOKIE_MAX_AGE,
+            maxAge: ADMIN_REFRESH_COOKIE_MAX_AGE,
           });
 
           return c.json({
@@ -263,7 +267,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             },
           });
         } catch {
-          return c.json({ error: 'Refresh token non valido' }, 401);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_REFRESH_TOKEN_INVALID }, 401);
         }
       })
       .post('/logout', async (c) => {
@@ -307,7 +311,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
           const redis = await getRedis();
 
           // Store OTP hash in Redis with TTL
-          await redis.set(`${RESET_OTP_PREFIX}${email}`, otpHash, {
+          await redis.set(`${REDIS_PREFIX_ADMIN_RESET_OTP}${email}`, otpHash, {
             ex: RESET_OTP_TTL_SECONDS,
           });
 
@@ -323,20 +327,20 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
           metadata: { source: 'admin' },
         });
 
-        return c.json({ message: "Se l'email esiste, riceverai un codice per il reset" });
+        return c.json({ message: ERROR_MESSAGES.ADMIN_PASSWORD_RESET_SENT });
       })
       .post('/reset-password', zValidator('json', adminResetPasswordSchema), async (c) => {
         const { email, code, password } = c.req.valid('json');
         const redis = await getRedis();
 
-        const storedHash = await redis.get<string>(`${RESET_OTP_PREFIX}${email}`);
+        const storedHash = await redis.get<string>(`${REDIS_PREFIX_ADMIN_RESET_OTP}${email}`);
         if (!storedHash) {
           logSecurityEvent({
             event: SECURITY_EVENT.PasswordResetFailed,
             email,
             metadata: { reason: 'no_otp_found', source: 'admin' },
           });
-          return c.json({ error: 'Codice non valido o scaduto' }, 400);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_CODE_INVALID }, 400);
         }
 
         const codeHash = await hashToken(code);
@@ -352,12 +356,12 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             email,
             metadata: { reason: 'invalid_code', source: 'admin' },
           });
-          return c.json({ error: 'Codice non valido o scaduto' }, 400);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_CODE_INVALID }, 400);
         }
 
         const admin = await adminUserRepo.findByEmail(email);
         if (!admin?.isActive) {
-          return c.json({ error: 'Codice non valido o scaduto' }, 400);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_CODE_INVALID }, 400);
         }
 
         // Update password
@@ -365,9 +369,9 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
         await adminUserRepo.updatePasswordHash(admin.id, passwordHash);
 
         // Consume OTP and clear lockout
-        await redis.del(`${RESET_OTP_PREFIX}${email}`);
-        await redis.del(`${FAILED_ATTEMPTS_PREFIX}${email}`);
-        await redis.del(`${LOCKOUT_PREFIX}${email}`);
+        await redis.del(`${REDIS_PREFIX_ADMIN_RESET_OTP}${email}`);
+        await redis.del(`${REDIS_PREFIX_ADMIN_FAILED_ATTEMPTS}${email}`);
+        await redis.del(`${REDIS_PREFIX_ADMIN_LOCKOUT}${email}`);
 
         logSecurityEvent({
           event: SECURITY_EVENT.PasswordResetSuccess,
@@ -376,7 +380,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
           metadata: { source: 'admin' },
         });
 
-        return c.json({ message: 'Password reimpostata con successo' });
+        return c.json({ message: ERROR_MESSAGES.ADMIN_PASSWORD_RESET_SUCCESS });
       })
       // ── MFA: Verify TOTP during login ──────────────────────────────────────
       .use('/mfa/verify', authRateLimitMiddleware)
@@ -398,17 +402,17 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
           try {
             payload = await verifyMfaPendingToken(mfaToken);
           } catch {
-            return c.json({ error: 'Token MFA non valido o scaduto' }, 401);
+            return c.json({ error: ERROR_MESSAGES.MFA_TOKEN_INVALID }, 401);
           }
 
           // findById uses safe columns (no password/totpSecret), so fetch via email
           const adminSafe = await adminUserRepo.findById(payload.sub);
           if (!(adminSafe?.isActive && adminSafe.totpEnabled)) {
-            return c.json({ error: 'MFA non configurato' }, 400);
+            return c.json({ error: ERROR_MESSAGES.MFA_NOT_CONFIGURED }, 400);
           }
           const adminFull = await adminUserRepo.findByEmail(adminSafe.email);
           if (!adminFull?.totpSecret) {
-            return c.json({ error: 'MFA non configurato' }, 400);
+            return c.json({ error: ERROR_MESSAGES.MFA_NOT_CONFIGURED }, 400);
           }
 
           const base32Secret = decryptSecret(adminFull.totpSecret);
@@ -418,7 +422,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
               userId: payload.sub,
               metadata: { source: 'admin_login' },
             });
-            return c.json({ error: 'Codice TOTP non valido' }, 401);
+            return c.json({ error: ERROR_MESSAGES.MFA_INVALID_CODE }, 401);
           }
 
           // MFA verified — issue full tokens
@@ -436,7 +440,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             secure: true,
             sameSite: 'None',
             path: '/',
-            maxAge: REFRESH_COOKIE_MAX_AGE,
+            maxAge: ADMIN_REFRESH_COOKIE_MAX_AGE,
           });
 
           logSecurityEvent({
@@ -472,7 +476,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
           }
 
           if (admin.totpEnabled) {
-            return c.json({ error: 'MFA è già attivo' }, 400);
+            return c.json({ error: ERROR_MESSAGES.MFA_ALREADY_ENABLED }, 400);
           }
 
           const { secret, uri } = generateTotpSetup(admin.email);
@@ -484,7 +488,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
           return c.json({ uri, secret });
         } catch (error) {
           logger.error('AdminAuth', 'mfa/setup failed', error);
-          return c.json({ error: 'Token non valido' }, 401);
+          return c.json({ error: ERROR_MESSAGES.ADMIN_TOKEN_INVALID }, 401);
         }
       })
       // ── MFA: Confirm setup (verify first code to enable) ──────────────────
@@ -506,21 +510,21 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             }
 
             if (adminSafe.totpEnabled) {
-              return c.json({ error: 'MFA è già attivo' }, 400);
+              return c.json({ error: ERROR_MESSAGES.MFA_ALREADY_ENABLED }, 400);
             }
 
             // Read pending secret from Redis (stored by /mfa/setup)
             const redis = await getRedis();
             const pendingSecret = await redis.get<string>(`admin:mfa:setup:${adminSafe.id}`);
             if (!pendingSecret) {
-              return c.json({ error: 'Avvia prima il setup MFA' }, 400);
+              return c.json({ error: ERROR_MESSAGES.MFA_SETUP_REQUIRED }, 400);
             }
 
             const { code } = c.req.valid('json');
             const base32Secret = decryptSecret(pendingSecret);
 
             if (!verifyTotpCode(base32Secret, code)) {
-              return c.json({ error: 'Codice TOTP non valido. Riprova.' }, 400);
+              return c.json({ error: ERROR_MESSAGES.MFA_INVALID_CODE }, 400);
             }
 
             // Confirmed — persist to DB and enable
@@ -537,7 +541,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             return c.json({ success: true });
           } catch (error) {
             logger.error('AdminAuth', 'mfa/confirm failed', error);
-            return c.json({ error: 'Token non valido' }, 401);
+            return c.json({ error: ERROR_MESSAGES.ADMIN_TOKEN_INVALID }, 401);
           }
         },
       )
@@ -567,7 +571,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
 
             const adminFull = await adminUserRepo.findByEmail(adminSafe.email);
             if (!(adminFull?.totpEnabled && adminFull.totpSecret)) {
-              return c.json({ error: 'MFA non è attivo' }, 400);
+              return c.json({ error: ERROR_MESSAGES.MFA_NOT_ENABLED }, 400);
             }
 
             const { password, code } = c.req.valid('json');
@@ -575,13 +579,13 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             // Verify password
             const passwordValid = await compare(password, adminFull.passwordHash);
             if (!passwordValid) {
-              return c.json({ error: 'Password non valida' }, 401);
+              return c.json({ error: ERROR_MESSAGES.INVALID_PASSWORD }, 401);
             }
 
             // Verify TOTP code
             const base32Secret = decryptSecret(adminFull.totpSecret);
             if (!verifyTotpCode(base32Secret, code)) {
-              return c.json({ error: 'Codice TOTP non valido' }, 400);
+              return c.json({ error: ERROR_MESSAGES.MFA_INVALID_CODE }, 400);
             }
 
             await adminUserRepo.disableTotp(adminFull.id);
@@ -595,7 +599,7 @@ export function createAdminAuthRoutes(deps: AdminAuthDeps) {
             return c.json({ success: true });
           } catch (error) {
             logger.error('AdminAuth', 'mfa/disable failed', error);
-            return c.json({ error: 'Token non valido' }, 401);
+            return c.json({ error: ERROR_MESSAGES.ADMIN_TOKEN_INVALID }, 401);
           }
         },
       )

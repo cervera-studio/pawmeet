@@ -6,6 +6,8 @@ import type {
   AuthenticatorTransportFuture,
 } from '@simplewebauthn/server';
 import { verifyAuthenticationResponse } from '@simplewebauthn/server';
+import { REFRESH_TOKEN_TTL_MS } from '../constants/auth.js';
+import { ERROR_MESSAGES } from '../constants/messages.js';
 import { logSecurityEvent, SECURITY_EVENT } from '../lib/security-log.js';
 import type { AuthService } from '../ports/auth-service.js';
 import type { PasskeyRepository } from '../ports/passkey-repository.js';
@@ -21,8 +23,6 @@ interface Deps {
   challengeStore: ChallengeStore;
 }
 
-const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-
 export function createPasskeyLoginVerify(deps: Deps) {
   return async (
     response: AuthenticationResponseJSON,
@@ -37,7 +37,7 @@ export function createPasskeyLoginVerify(deps: Deps) {
 
     const credential = await passkeyRepo.findByCredentialId(response.id);
     if (!credential) {
-      return fail(new AppError('PASSKEY_NOT_FOUND', 'Passkey non trovata', 400));
+      return fail(new AppError('PASSKEY_NOT_FOUND', ERROR_MESSAGES.PASSKEY_NOT_FOUND, 400));
     }
 
     let verification: Awaited<ReturnType<typeof verifyAuthenticationResponse>>;
@@ -62,11 +62,23 @@ export function createPasskeyLoginVerify(deps: Deps) {
         },
       });
     } catch {
-      return fail(new AppError('PASSKEY_VERIFICATION_FAILED', 'Verifica passkey fallita', 400));
+      return fail(
+        new AppError(
+          'PASSKEY_VERIFICATION_FAILED',
+          ERROR_MESSAGES.PASSKEY_VERIFICATION_FAILED,
+          400,
+        ),
+      );
     }
 
     if (!verification.verified) {
-      return fail(new AppError('PASSKEY_VERIFICATION_FAILED', 'Verifica passkey fallita', 400));
+      return fail(
+        new AppError(
+          'PASSKEY_VERIFICATION_FAILED',
+          ERROR_MESSAGES.PASSKEY_VERIFICATION_FAILED,
+          400,
+        ),
+      );
     }
 
     // Update counter for replay protection
@@ -74,7 +86,9 @@ export function createPasskeyLoginVerify(deps: Deps) {
 
     const user = await userRepo.findById(credential.userId);
     if (!user?.isActive) {
-      return fail(new AppError('AUTH_INVALID_CREDENTIALS', 'Account non attivo', 401));
+      return fail(
+        new AppError('AUTH_INVALID_CREDENTIALS', ERROR_MESSAGES.AUTH_ACCOUNT_DISABLED, 401),
+      );
     }
 
     // Generate tokens (same as email+password login)

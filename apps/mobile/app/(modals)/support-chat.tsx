@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import { SUPPORT_MESSAGE_SENDER_TYPE } from '@pawmeet/types';
 import { memo } from 'react';
 
 type SupportMsg = RouterOutput['support']['getTicketMessages']['messages'][number];
@@ -31,7 +32,7 @@ function formatDate(date: Date | string): string {
 
 /** Read receipt indicator for user messages: double check if read, single check if sent */
 function ReadReceipt({ message }: { message: SupportMsg }) {
-  if (message.senderType !== 'user') return null;
+  if (message.senderType !== SUPPORT_MESSAGE_SENDER_TYPE.User) return null;
 
   return (
     <Text
@@ -43,7 +44,7 @@ function ReadReceipt({ message }: { message: SupportMsg }) {
 }
 
 const SupportBubble = memo(function SupportBubble({ message }: { message: SupportMsg }) {
-  if (message.senderType === 'system') {
+  if (message.senderType === SUPPORT_MESSAGE_SENDER_TYPE.System) {
     return (
       <View className="mb-3 items-center px-6">
         <Text className="text-xs text-gray-400 dark:text-neutral-500 text-center">
@@ -53,7 +54,7 @@ const SupportBubble = memo(function SupportBubble({ message }: { message: Suppor
     );
   }
 
-  const isMine = message.senderType === 'user';
+  const isMine = message.senderType === SUPPORT_MESSAGE_SENDER_TYPE.User;
 
   return (
     <View className={`mb-2 max-w-[80%] px-4 ${isMine ? 'self-end' : 'self-start'}`}>

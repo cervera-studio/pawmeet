@@ -1,5 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
-import { MESSAGE_STATUS } from '@pawmeet/types';
+import { MESSAGE_KIND, MESSAGE_STATUS } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import * as Crypto from 'expo-crypto';
 import { useCallback } from 'react';
@@ -42,7 +42,7 @@ export function useMessageSender(matchId: string | undefined, deps: MessageSende
       if (!(matchId && content.trim())) return;
       const tempId = Crypto.randomUUID();
       const optimistic = createOptimisticMessage(tempId, content);
-      pendingMetaRef.current.set(tempId, { content, kind: 'text' });
+      pendingMetaRef.current.set(tempId, { content, kind: MESSAGE_KIND.TEXT });
       setMessages((prev) => [...prev, optimistic]);
 
       try {
@@ -68,7 +68,7 @@ export function useMessageSender(matchId: string | undefined, deps: MessageSende
       if (!matchId) return;
       const tempId = Crypto.randomUUID();
       const optimistic = createOptimisticMessage(tempId, '', imageUri);
-      pendingMetaRef.current.set(tempId, { content: '', imageUri, kind: 'image' });
+      pendingMetaRef.current.set(tempId, { content: '', imageUri, kind: MESSAGE_KIND.IMAGE });
       setMessages((prev) => [...prev, optimistic]);
 
       try {
@@ -100,7 +100,7 @@ export function useMessageSender(matchId: string | undefined, deps: MessageSende
         latitude,
         longitude,
         locationLabel: label,
-        kind: 'location',
+        kind: MESSAGE_KIND.LOCATION,
       });
       setMessages((prev) => [...prev, optimistic]);
 
@@ -131,15 +131,15 @@ export function useMessageSender(matchId: string | undefined, deps: MessageSende
       try {
         let msg: Message;
         switch (meta.kind) {
-          case 'image': {
+          case MESSAGE_KIND.IMAGE: {
             // biome-ignore lint/style/noNonNullAssertion: imageUri is always set when kind === 'image'
             const { mediaUrl } = await chatRepo.uploadImage(matchId, meta.imageUri!);
             const result = await chatRepo.sendMessage({ matchId, content: '', mediaUrl });
             msg = result.message as Message;
             break;
           }
-          case 'location':
-          case 'text': {
+          case MESSAGE_KIND.LOCATION:
+          case MESSAGE_KIND.TEXT: {
             const result = await chatRepo.sendMessage({ matchId, content: meta.content });
             msg = result.message as Message;
             break;

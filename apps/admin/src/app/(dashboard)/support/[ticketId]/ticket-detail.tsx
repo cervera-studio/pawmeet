@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { SUPPORT_MESSAGE_SENDER_TYPE } from '@pawmeet/types';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,8 +34,8 @@ function MessageBubble({
   message: TicketMessage;
   t: ReturnType<typeof useTranslations<'support.detail'>>;
 }) {
-  const isAdmin = message.senderType === 'admin';
-  const isSystem = message.senderType === 'system';
+  const isAdmin = message.senderType === SUPPORT_MESSAGE_SENDER_TYPE.Admin;
+  const isSystem = message.senderType === SUPPORT_MESSAGE_SENDER_TYPE.System;
   const isInternal = message.isInternal;
 
   return (

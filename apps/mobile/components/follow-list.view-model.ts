@@ -1,3 +1,4 @@
+import { FOLLOW_LIST_MODE, type FollowListMode } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { container } from 'tsyringe';
@@ -6,9 +7,7 @@ import { FOLLOW_REPOSITORY } from '@/repositories/tokens';
 
 const followRepo = container.resolve(FOLLOW_REPOSITORY);
 
-type ListMode = 'followers' | 'following' | 'friends';
-
-export function useFollowListViewModel(mode: ListMode, userId: string) {
+export function useFollowListViewModel(mode: FollowListMode, userId: string) {
   const [users, setUsers] = useState<FollowUser[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,13 +23,13 @@ export function useFollowListViewModel(mode: ListMode, userId: string) {
         let data: { users: FollowUser[]; nextCursor: string | null };
 
         switch (mode) {
-          case 'followers':
+          case FOLLOW_LIST_MODE.FOLLOWERS:
             data = await followRepo.listFollowers(userId, cursor ?? undefined);
             break;
-          case 'following':
+          case FOLLOW_LIST_MODE.FOLLOWING:
             data = await followRepo.listFollowing(userId, cursor ?? undefined);
             break;
-          case 'friends':
+          case FOLLOW_LIST_MODE.FRIENDS:
             data = await followRepo.listFriends(cursor ?? undefined);
             break;
         }

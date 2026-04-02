@@ -1,4 +1,4 @@
-import { WS_EVENT } from '@pawmeet/types';
+import { SUPPORT_TICKET_STATUS, WS_EVENT } from '@pawmeet/types';
 import {
   assignTicketSchema,
   createSupportTicketSchema,
@@ -137,7 +137,7 @@ export function createSupportRouter(deps: typeof supportDeps) {
         const { ticket, messageCount } = unwrapResult(
           await deps.updateStatus(ctx.userId, input.ticketId, input.status),
         );
-        if (input.status === 'resolved') {
+        if (input.status === SUPPORT_TICKET_STATUS.Resolved) {
           trackEvent('support_ticket_resolved', ctx.userId, {
             ticketId: input.ticketId,
             messageCount,

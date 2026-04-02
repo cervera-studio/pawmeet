@@ -1,5 +1,12 @@
 import type { SupportMessage } from '@pawmeet/types';
-import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import {
+  AppError,
+  fail,
+  type Result,
+  succeed,
+  SUPPORT_MESSAGE_SENDER_TYPE,
+  SUPPORT_TICKET_STATUS,
+} from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { sanitizeContent } from '../lib/sanitize.js';
@@ -20,7 +27,7 @@ export function createSendSupportMessage({ supportRepo }: Deps) {
       return fail(new AppError('TICKET_NOT_FOUND', 'Support ticket not found', 404));
     }
 
-    if (ticket.status === 'closed') {
+    if (ticket.status === SUPPORT_TICKET_STATUS.Closed) {
       return fail(
         new AppError('TICKET_CLOSED', 'Ticket is closed and does not accept new messages', 400),
       );
@@ -30,14 +37,14 @@ export function createSendSupportMessage({ supportRepo }: Deps) {
 
     const message = await supportRepo.addMessage({
       ticketId,
-      senderType: 'user',
+      senderType: SUPPORT_MESSAGE_SENDER_TYPE.User,
       senderId: userId,
       content: sanitizedContent,
     });
 
     // Reopen ticket if it was resolved
-    if (ticket.status === 'resolved') {
-      await supportRepo.updateStatus(ticketId, 'open');
+    if (ticket.status === SUPPORT_TICKET_STATUS.Resolved) {
+      await supportRepo.updateStatus(ticketId, SUPPORT_TICKET_STATUS.Open);
       logger.info('SendSupportMessage', 'Ticket reopened by user message', { ticketId, userId });
     }
 

@@ -10,6 +10,7 @@ import { FormField } from '@/components/form-field';
 import { Input } from '@/components/ui/input';
 import { handleError } from '@/lib/error-handler';
 import { type CreateAdminUserFormValues, createAdminUserSchema } from '@/lib/schemas/admin-user';
+import { ADMIN_ROLE } from '@pawmeet/types';
 import { createAdminUser } from './actions';
 import { buildRoleLabels, ROLES } from './page.view-model';
 
@@ -33,7 +34,7 @@ export function CreateAdminDialog({ open, onOpenChange, onCreated }: CreateAdmin
       email: '',
       displayName: '',
       temporaryPassword: '',
-      role: 'viewer',
+      role: ADMIN_ROLE.VIEWER,
     },
   });
 

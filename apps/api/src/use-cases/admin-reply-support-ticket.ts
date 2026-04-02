@@ -1,5 +1,12 @@
 import type { SupportMessage } from '@pawmeet/types';
-import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import {
+  AppError,
+  fail,
+  type Result,
+  succeed,
+  SUPPORT_MESSAGE_SENDER_TYPE,
+  SUPPORT_TICKET_STATUS,
+} from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { DOMAIN_EVENT, emit } from '../domain/events.js';
 import { sanitizeContent } from '../lib/sanitize.js';
@@ -25,15 +32,15 @@ export function createAdminReplySupportTicket({ supportRepo }: Deps) {
 
     const message = await supportRepo.addMessage({
       ticketId,
-      senderType: 'admin',
+      senderType: SUPPORT_MESSAGE_SENDER_TYPE.Admin,
       senderId: adminId,
       content: sanitizedContent,
       isInternal,
     });
 
     // Set status to in_progress if currently open
-    if (ticket.status === 'open') {
-      await supportRepo.updateStatus(ticketId, 'in_progress');
+    if (ticket.status === SUPPORT_TICKET_STATUS.Open) {
+      await supportRepo.updateStatus(ticketId, SUPPORT_TICKET_STATUS.InProgress);
     }
 
     // Emit domain event — WS broadcast and push notifications handled by listeners

@@ -13,6 +13,7 @@ import { formatDateTime } from '@/lib/formatters';
 import { toggleAdminActive } from './actions';
 import { CreateAdminDialog } from './create-admin-dialog';
 import { EditRoleDialog } from './edit-role-dialog';
+import { ADMIN_ROLE } from '@pawmeet/types';
 import {
   type AdminUser,
   type AdminUsersData,
@@ -25,11 +26,11 @@ import { ResetPasswordDialog } from './reset-password-dialog';
 
 function getRoleBadgeVariant(role: string) {
   switch (role) {
-    case 'super_admin':
+    case ADMIN_ROLE.SUPER_ADMIN:
       return 'destructive' as const;
-    case 'admin':
+    case ADMIN_ROLE.ADMIN:
       return 'default' as const;
-    case 'moderator':
+    case ADMIN_ROLE.MODERATOR:
       return 'secondary' as const;
     default:
       return 'outline' as const;

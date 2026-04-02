@@ -24,3 +24,11 @@ export interface FriendSummary {
   displayName: string;
   avatarUrl: string | null;
 }
+
+export const FOLLOW_LIST_MODE = {
+  FOLLOWERS: 'followers',
+  FOLLOWING: 'following',
+  FRIENDS: 'friends',
+} as const;
+
+export type FollowListMode = (typeof FOLLOW_LIST_MODE)[keyof typeof FOLLOW_LIST_MODE];

@@ -1,3 +1,4 @@
+import { ADMIN_ROLE, type AdminRole } from '@pawmeet/types';
 import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import { usePaginatedData } from '@/hooks/use-paginated-data';
@@ -23,14 +24,13 @@ interface AdminUsersData {
 
 export type { AdminUser, AdminUsersData };
 
-const ROLES = ['super_admin', 'admin', 'moderator', 'viewer'] as const;
-type Role = (typeof ROLES)[number];
+const ROLES = Object.values(ADMIN_ROLE);
 
-function isValidRole(value: string): value is Role {
+function isValidRole(value: string): value is AdminRole {
   return (ROLES as readonly string[]).includes(value);
 }
 
-function toRole(value: string, fallback: Role = 'viewer'): Role {
+function toRole(value: string, fallback: AdminRole = ADMIN_ROLE.VIEWER): AdminRole {
   return isValidRole(value) ? value : fallback;
 }
 
@@ -38,21 +38,20 @@ function toRole(value: string, fallback: Role = 'viewer'): Role {
  * Builds a Record mapping each role to its translated label.
  * Eliminates the need for `as 'roles.super_admin' | ...` casts with dynamic i18n keys.
  */
-function buildRoleLabels(t: (key: string) => string): Record<Role, string> {
+function buildRoleLabels(t: (key: string) => string): Record<AdminRole, string> {
   return {
-    super_admin: t('roles.super_admin'),
-    admin: t('roles.admin'),
-    moderator: t('roles.moderator'),
-    viewer: t('roles.viewer'),
+    [ADMIN_ROLE.SUPER_ADMIN]: t('roles.super_admin'),
+    [ADMIN_ROLE.ADMIN]: t('roles.admin'),
+    [ADMIN_ROLE.MODERATOR]: t('roles.moderator'),
+    [ADMIN_ROLE.VIEWER]: t('roles.viewer'),
   };
 }
 
-export type { Role };
 export { buildRoleLabels, isValidRole, ROLES, toRole };
 
 export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: number) {
   const tt = useTranslations('toast');
-  const [roleFilter, setRoleFilter] = useState<Role | undefined>(undefined);
+  const [roleFilter, setRoleFilter] = useState<AdminRole | undefined>(undefined);
 
   const buildParams = useCallback(
     (ctx: { page: number; pageSize: number; search: string | undefined }) => ({
@@ -72,7 +71,7 @@ export function useAdminUsersViewModel(initialData: AdminUsersData, pageSize: nu
     errorMessage: tt('admins.loadError'),
   });
 
-  function handleRoleFilterChange(role: Role | undefined) {
+  function handleRoleFilterChange(role: AdminRole | undefined) {
     setRoleFilter(role);
     paginated.resetPage();
   }

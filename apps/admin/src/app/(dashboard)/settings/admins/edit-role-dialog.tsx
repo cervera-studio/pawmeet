@@ -13,8 +13,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { handleError } from '@/lib/error-handler';
+import { ADMIN_ROLE, type AdminRole } from '@pawmeet/types';
 import { updateAdminRole } from './actions';
-import { type AdminUser, buildRoleLabels, ROLES, type Role, toRole } from './page.view-model';
+import { type AdminUser, buildRoleLabels, ROLES, toRole } from './page.view-model';
 
 interface EditRoleDialogProps {
   open: boolean;
@@ -27,7 +28,7 @@ export function EditRoleDialog({ open, onOpenChange, user, onUpdated }: EditRole
   const t = useTranslations('adminUsers');
   const tc = useTranslations('common');
   const tt = useTranslations('toast');
-  const [editRole, setEditRole] = useState<Role>('viewer');
+  const [editRole, setEditRole] = useState<AdminRole>(ADMIN_ROLE.VIEWER);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleOpenChange(nextOpen: boolean) {

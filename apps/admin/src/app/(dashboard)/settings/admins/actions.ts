@@ -1,8 +1,7 @@
 'use server';
 
+import type { AdminRole } from '@pawmeet/types';
 import { getServerTrpcClient } from '@/lib/server-api';
-
-type AdminRole = 'super_admin' | 'admin' | 'moderator' | 'viewer';
 
 export async function fetchAdminUsers(params: {
   page: number;

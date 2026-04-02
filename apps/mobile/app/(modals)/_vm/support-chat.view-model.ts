@@ -1,5 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
-import type { WsMessage } from '@pawmeet/types';
+import { SUPPORT_MESSAGE_SENDER_TYPE, SUPPORT_TICKET_STATUS, type WsMessage } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -27,7 +27,9 @@ export function useSupportChatViewModel() {
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef = useRef(false);
 
-  const isClosed = ticket?.status === 'resolved' || ticket?.status === 'closed';
+  const isClosed =
+    ticket?.status === SUPPORT_TICKET_STATUS.Resolved ||
+    ticket?.status === SUPPORT_TICKET_STATUS.Closed;
 
   const fetchMessages = useCallback(async () => {
     if (!ticketId) return;
@@ -91,7 +93,7 @@ export function useSupportChatViewModel() {
           });
 
           // Auto-mark as read when we receive a new admin message while chat is open
-          if (raw.senderType === 'admin') {
+          if (raw.senderType === SUPPORT_MESSAGE_SENDER_TYPE.Admin) {
             void markAsRead();
           }
         } else if (wsMsg.type === 'support_typing_start') {
@@ -106,7 +108,9 @@ export function useSupportChatViewModel() {
           // Mark all user messages as read
           const readAt = wsMsg.payload.readAt;
           setMessages((prev) =>
-            prev.map((m) => (m.senderType === 'user' && !m.readAt ? { ...m, readAt } : m)),
+            prev.map((m) =>
+              m.senderType === SUPPORT_MESSAGE_SENDER_TYPE.User && !m.readAt ? { ...m, readAt } : m,
+            ),
           );
         }
       },

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
+import { GROUP_EVENT_STATUS } from '@pawmeet/types';
 import { cancelGroupEvent } from '../actions';
 import { EventParticipants } from './event-participants';
 import { SponsorsSection } from './sponsors-section';
@@ -88,7 +89,9 @@ export function EventDetail({ event, initialSponsors }: EventDetailProps) {
     label: t(`statuses.${event.status}` as Parameters<typeof t>[0]) ?? event.status,
     variant: statusVariants[event.status] ?? ('outline' as const),
   };
-  const canCancel = event.status === 'scheduled' || event.status === 'in_progress';
+  const canCancel =
+    event.status === GROUP_EVENT_STATUS.SCHEDULED ||
+    event.status === GROUP_EVENT_STATUS.IN_PROGRESS;
 
   async function handleCancel() {
     setIsCancelling(true);

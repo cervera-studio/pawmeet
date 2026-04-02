@@ -20,6 +20,14 @@ export interface ChatMessageReplyPreview {
   senderName: string;
 }
 
+export const MESSAGE_KIND = {
+  TEXT: 'text',
+  IMAGE: 'image',
+  LOCATION: 'location',
+} as const;
+
+export type MessageKind = (typeof MESSAGE_KIND)[keyof typeof MESSAGE_KIND];
+
 export interface ChatMessage {
   id: string;
   matchId: string;

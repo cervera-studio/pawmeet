@@ -1,7 +1,9 @@
 import { memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { HashtagText } from '@/components/HashtagText';
 import { Avatar } from '@/components/ui/Avatar';
+import i18n from '@/lib/i18n';
 
 interface PostMedia {
   id: string;
@@ -54,7 +56,7 @@ function formatTimeAgo(date: Date | string): string {
   const diffMs = now.getTime() - d.getTime();
   const diffMin = Math.floor(diffMs / 60_000);
 
-  if (diffMin < 1) return 'Ora';
+  if (diffMin < 1) return i18n.t('common.timeNow');
   if (diffMin < 60) return `${diffMin}m`;
   const diffHours = Math.floor(diffMin / 60);
   if (diffHours < 24) return `${diffHours}h`;
@@ -71,6 +73,7 @@ export const PostCard = memo(function PostCard({
   onReport,
   onReaction,
 }: PostCardProps) {
+  const { t } = useTranslation();
   const sortedMedia = [...post.media].sort((a, b) => a.position - b.position);
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -109,7 +112,9 @@ export const PostCard = memo(function PostCard({
                 }}
                 className="px-6 py-4"
               >
-                <Text className="text-base text-gray-900 dark:text-[#F5F5F7]">Segnala</Text>
+                <Text className="text-base text-gray-900 dark:text-[#F5F5F7]">
+                  {t('common.report')}
+                </Text>
               </Pressable>
             ) : null}
             {onDelete ? (
@@ -120,11 +125,13 @@ export const PostCard = memo(function PostCard({
                 }}
                 className="px-6 py-4"
               >
-                <Text className="text-base text-red-500">Elimina</Text>
+                <Text className="text-base text-red-500">{t('common.delete')}</Text>
               </Pressable>
             ) : null}
             <Pressable onPress={() => setMenuVisible(false)} className="px-6 py-4">
-              <Text className="text-base text-gray-500 dark:text-neutral-500">Annulla</Text>
+              <Text className="text-base text-gray-500 dark:text-neutral-500">
+                {t('common.cancel')}
+              </Text>
             </Pressable>
           </View>
         </Pressable>

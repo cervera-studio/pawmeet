@@ -186,5 +186,27 @@
     "ctaButton": "Unisciti alla waitlist",
     "notFound": "Profilo non trovato",
     "notFoundText": "Il profilo che stai cercando non esiste o non è più disponibile."
-  }
+  },
+  "faq": [
+    {
+      "question": "Cos'è PawMeet?",
+      "answer": "PawMeet è un'app che aiuta i proprietari di cani a trovare compagni di passeggiata compatibili nella loro zona, grazie a un algoritmo di matching basato su taglia, energia e temperamento del cane."
+    },
+    {
+      "question": "Come funziona il match tra cani su PawMeet?",
+      "answer": "PawMeet analizza il profilo del tuo cane — taglia, livello di energia, comportamento in guinzaglio e preferenze di socializzazione — e lo abbina con i cani più compatibili nella tua area geografica."
+    },
+    {
+      "question": "PawMeet è disponibile in tutta Italia?",
+      "answer": "PawMeet è disponibile in tutta Italia. Attualmente oltre 1.200 proprietari di cani in più di 15 città si sono già iscritti alla lista d'attesa."
+    },
+    {
+      "question": "Quando sarà disponibile PawMeet su App Store e Google Play?",
+      "answer": "Il lancio ufficiale di PawMeet è previsto per giugno 2026. Puoi iscriverti alla lista d'attesa per ricevere accesso anticipato esclusivo."
+    },
+    {
+      "question": "PawMeet è gratuito?",
+      "answer": "Sì, PawMeet sarà disponibile gratuitamente su iOS e Android al momento del lancio."
+    }
+  ]
 }

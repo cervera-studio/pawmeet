@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGamificationViewModel } from './_vm/gamification.view-model';
@@ -19,6 +20,7 @@ function GamificationSkeleton() {
 // ── XP Progress Bar ─────────────────────────────────────────────────────────
 
 function XpProgressBar({ currentXp, xpToNext }: { currentXp: number; xpToNext: number | null }) {
+  const { t } = useTranslation();
   const progress = xpToNext != null && xpToNext > 0 ? currentXp / (currentXp + xpToNext) : 1;
   const clampedProgress = Math.min(Math.max(progress, 0), 1);
 
@@ -40,11 +42,11 @@ function XpProgressBar({ currentXp, xpToNext }: { currentXp: number; xpToNext: n
       </View>
       {xpToNext == null ? (
         <Text className="mt-1 text-xs text-primary text-center font-medium">
-          Livello massimo raggiunto!
+          {t('profile.gamification.maxLevelReached')}
         </Text>
       ) : (
         <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-500 text-center">
-          {xpToNext} XP al prossimo livello
+          {t('profile.gamification.xpToNextLevel', { count: xpToNext })}
         </Text>
       )}
     </View>
@@ -85,14 +87,15 @@ function NavCard({
 
 export default function GamificationScreen() {
   const vm = useGamificationViewModel();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]">
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Gamification',
-          headerBackTitle: 'Profilo',
+          title: t('profile.gamification.title'),
+          headerBackTitle: t('tabs.profile'),
         }}
       />
 
@@ -106,7 +109,7 @@ export default function GamificationScreen() {
               <View className="flex-row items-center justify-between">
                 <View>
                   <Text className="text-sm text-neutral-500 dark:text-neutral-500">
-                    Il tuo livello
+                    {t('profile.gamification.yourLevel')}
                   </Text>
                   <Text className="text-2xl font-bold text-primary">{vm.xpSummary.level}</Text>
                 </View>
@@ -114,7 +117,9 @@ export default function GamificationScreen() {
                   <Text className="text-3xl font-bold text-neutral-900 dark:text-[#F5F5F7]">
                     {vm.xpSummary.totalXp}
                   </Text>
-                  <Text className="text-xs text-neutral-500 dark:text-neutral-500">XP totali</Text>
+                  <Text className="text-xs text-neutral-500 dark:text-neutral-500">
+                    {t('profile.gamification.totalXp')}
+                  </Text>
                 </View>
               </View>
               <XpProgressBar
@@ -127,20 +132,20 @@ export default function GamificationScreen() {
           {/* Navigation cards */}
           <NavCard
             emoji={'\u{1F3C6}'}
-            title="Classifica"
-            subtitle="Confronta i tuoi punti con gli altri"
+            title={t('profile.gamification.leaderboard')}
+            subtitle={t('profile.gamification.leaderboardSubtitle')}
             onPress={vm.navigateToLeaderboard}
           />
           <NavCard
             emoji={'\u{1F3AF}'}
-            title="Sfide"
-            subtitle="Sfide settimanali per guadagnare XP"
+            title={t('profile.gamification.challenges')}
+            subtitle={t('profile.gamification.challengesSubtitle')}
             onPress={vm.navigateToChallenges}
           />
           <NavCard
             emoji={'\u{1F396}\u{FE0F}'}
-            title="Obiettivi"
-            subtitle="I tuoi traguardi raggiunti"
+            title={t('profile.gamification.achievements')}
+            subtitle={t('profile.gamification.achievementsSubtitle')}
             onPress={vm.navigateToAchievements}
           />
         </ScrollView>

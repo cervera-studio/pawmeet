@@ -44,14 +44,14 @@ describe('generateDogBio', () => {
     expect(service.generate).toHaveBeenCalledWith(input);
   });
 
-  it('fails gracefully when service is not configured', async () => {
+  it('degrades gracefully when service is not configured', async () => {
     const generateDogBio = createGenerateDogBio({ bioGenerationService: undefined });
 
     const result = await generateDogBio(buildInput());
 
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.code).toBe('AI_SERVICE_UNAVAILABLE');
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.bio).toBe('');
     }
   });
 

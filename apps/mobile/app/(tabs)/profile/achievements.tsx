@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { type AchievementCardData, useAchievementsViewModel } from './_vm/achievements.view-model';
@@ -24,6 +25,7 @@ function AchievementsSkeleton() {
 // ── Achievement Card ────────────────────────────────────────────────────────
 
 function AchievementCard({ card }: { card: AchievementCardData }) {
+  const { t } = useTranslation();
   const formattedDate = card.unlockedAt
     ? new Date(card.unlockedAt).toLocaleDateString('it-IT', {
         day: 'numeric',
@@ -52,7 +54,9 @@ function AchievementCard({ card }: { card: AchievementCardData }) {
       {card.unlocked && formattedDate ? (
         <Text className="mt-1 text-xs text-primary text-center">{formattedDate}</Text>
       ) : (
-        <Text className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">Bloccato</Text>
+        <Text className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">
+          {t('profile.dogBadges.locked')}
+        </Text>
       )}
     </View>
   );
@@ -62,14 +66,15 @@ function AchievementCard({ card }: { card: AchievementCardData }) {
 
 export default function AchievementsScreen() {
   const vm = useAchievementsViewModel();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]">
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Obiettivi',
-          headerBackTitle: 'Gamification',
+          title: t('profile.gamification.achievements'),
+          headerBackTitle: t('profile.gamification.title'),
         }}
       />
 

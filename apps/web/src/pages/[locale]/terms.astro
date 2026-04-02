@@ -8,7 +8,6 @@ export const getStaticPaths = getLocaleStaticPaths;
 
 const { locale } = Astro.props as { locale: Locale };
 const strings = t(locale);
-const enStrings = t('en');
 ---
 
 <BaseLayout title={strings.meta.termsTitle} locale={locale}>

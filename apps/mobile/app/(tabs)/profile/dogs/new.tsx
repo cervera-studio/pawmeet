@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChipSelect } from '@/components/ChipSelect';
+import { DatePickerField } from '@/components/DatePickerField';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useNewDogViewModel } from './_vm/new.view-model';
@@ -85,7 +86,7 @@ function Step1BasicInfo({
   return (
     <View className="gap-4">
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-        Come si chiama il tuo cane?
+        {t('dogForm.step1Title')}
       </Text>
 
       {/* Photo analysis CTA */}
@@ -101,7 +102,7 @@ function Step1BasicInfo({
             analyzingPhoto ? 'text-gray-400 dark:text-neutral-500' : 'text-primary'
           }`}
         >
-          {analyzingPhoto ? 'Analisi in corso...' : 'Analizza foto per pre-compilare'}
+          {analyzingPhoto ? t('dogForm.analyzingPhoto') : t('dogForm.analyzePhoto')}
         </Text>
       </Pressable>
 
@@ -129,18 +130,17 @@ function Step1BasicInfo({
         onChangeText={(v) => setField('breedSecondary', v)}
       />
 
-      <View>
-        <Input
-          placeholder="Data di nascita (AAAA-MM-GG)"
-          value={state.birthDate}
-          onChangeText={(v) => setField('birthDate', v)}
-        />
-        <FieldError message={errors.birthDate} />
-      </View>
+      <DatePickerField
+        value={state.birthDate ? new Date(state.birthDate) : null}
+        onChange={(date) => setField('birthDate', date.toISOString().split('T')[0] ?? '')}
+        placeholder={t('dogForm.fields.birthDate')}
+        error={errors.birthDate}
+        spacingClassName="mb-4"
+      />
 
       <View>
         <Input
-          placeholder="Peso (kg)"
+          placeholder={t('dogForm.fields.weightKg')}
           value={state.weightKg}
           onChangeText={(v) => setField('weightKg', v)}
           keyboardType="decimal-pad"
@@ -174,7 +174,7 @@ function Step1BasicInfo({
 
       <View>
         <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          Sterilizzato/a?
+          {t('dogForm.fields.neutered')}
         </Text>
         <View className="flex-row gap-2">
           <Pressable
@@ -211,7 +211,7 @@ function Step1BasicInfo({
 
       <View>
         <Input
-          placeholder="Bio (opzionale, max 500 caratteri)"
+          placeholder={t('dogForm.fields.bio')}
           value={state.bio}
           onChangeText={(v) => setField('bio', v)}
           multiline
@@ -233,13 +233,12 @@ function Step1BasicInfo({
                 : 'text-primary'
             }`}
           >
-            {generatingBio ? 'Generazione...' : 'Genera bio con AI'}
+            {generatingBio ? t('dogForm.generatingBio') : t('dogForm.generateBio')}
           </Text>
         </Pressable>
         {!canGenerateBio && (
           <Text className="mt-1 px-1 text-xs text-gray-400 dark:text-neutral-500">
-            Completa tutti i campi obbligatori (inclusi temperamento e passeggiate) per generare la
-            bio
+            {t('dogForm.generateBioHint')}
           </Text>
         )}
       </View>
@@ -260,7 +259,7 @@ function Step2Personality({
   return (
     <View className="gap-5">
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-        Parlaci del suo carattere
+        {t('dogForm.step2Title')}
       </Text>
 
       <View>
@@ -338,7 +337,7 @@ function Step3WalkPrefs({
   return (
     <View className="gap-5">
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-        Preferenze passeggiata
+        {t('dogForm.step3Title')}
       </Text>
 
       <View>
@@ -488,7 +487,7 @@ export default function NewDogScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Nuovo cane',
+          title: t('dogForm.newTitle'),
           headerBackTitle: t('profile.dogDetail.backButton'),
         }}
       />
@@ -531,7 +530,7 @@ export default function NewDogScreen() {
             ) : (
               <Button
                 onPress={handleSubmit}
-                label={loading ? 'Creazione...' : 'Crea profilo'}
+                label={loading ? t('dogForm.creating') : t('dogForm.createProfile')}
                 disabled={loading}
               />
             )}

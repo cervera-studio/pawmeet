@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { useFeedbackModalViewModel } from './FeedbackModal.view-model';
 
@@ -24,6 +25,7 @@ function StarSelector({ rating, onSelect }: { rating: number; onSelect: (value: 
 }
 
 export function FeedbackModal({ visible, walkId, toDogId, onClose, onSubmit }: Props) {
+  const { t } = useTranslation();
   const vm = useFeedbackModalViewModel(walkId, toDogId, onClose, onSubmit);
 
   return (
@@ -32,10 +34,12 @@ export function FeedbackModal({ visible, walkId, toDogId, onClose, onSubmit }: P
         {/* Header */}
         <View className="flex-row items-center justify-between border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
           <Pressable onPress={vm.handleClose}>
-            <Text className="text-base text-gray-500 dark:text-neutral-500">Annulla</Text>
+            <Text className="text-base text-gray-500 dark:text-neutral-500">
+              {t('common.cancel')}
+            </Text>
           </Pressable>
           <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">
-            Feedback passeggiata
+            {t('walks.feedback.title')}
           </Text>
           <View style={{ width: 60 }} />
         </View>
@@ -44,16 +48,12 @@ export function FeedbackModal({ visible, walkId, toDogId, onClose, onSubmit }: P
           {/* Rating */}
           <View className="mb-6">
             <Text className="mb-3 text-center text-base font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Come è andata la passeggiata?
+              {t('walks.feedback.question')}
             </Text>
             <StarSelector rating={vm.rating} onSelect={vm.setRating} />
             {vm.rating > 0 && (
               <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
-                {vm.rating === 1 && 'Pessima'}
-                {vm.rating === 2 && 'Scarsa'}
-                {vm.rating === 3 && 'Nella media'}
-                {vm.rating === 4 && 'Buona'}
-                {vm.rating === 5 && 'Ottima'}
+                {t(`walks.feedback.ratings.${vm.rating}`)}
               </Text>
             )}
           </View>
@@ -61,12 +61,12 @@ export function FeedbackModal({ visible, walkId, toDogId, onClose, onSubmit }: P
           {/* Comment */}
           <View className="mb-6">
             <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Commento (opzionale)
+              {t('walks.feedback.commentLabel')}
             </Text>
             <TextInput
               value={vm.comment}
               onChangeText={vm.setComment}
-              placeholder="Racconta com'è andata..."
+              placeholder={t('walks.feedback.commentPlaceholder')}
               className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={MAX_COMMENT_LENGTH}
@@ -88,7 +88,7 @@ export function FeedbackModal({ visible, walkId, toDogId, onClose, onSubmit }: P
             }`}
           >
             <Text className="text-base font-bold text-white">
-              {vm.submitting ? 'Invio...' : 'Invia feedback'}
+              {vm.submitting ? t('common.sending') : t('walks.feedback.submitButton')}
             </Text>
           </Pressable>
         </View>

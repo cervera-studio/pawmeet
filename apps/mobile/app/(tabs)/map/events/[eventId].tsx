@@ -231,7 +231,7 @@ function RoleBadges({
       <View className="flex-row mt-1">
         {isOrganizer && (
           <View className="rounded-full bg-primary/10 px-3 py-1">
-            <Text className="text-xs font-medium text-primary">Organizzatore</Text>
+            <Text className="text-xs font-medium text-primary">{t('events.detail.organizer')}</Text>
           </View>
         )}
         {isParticipant && !isOrganizer && (

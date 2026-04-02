@@ -23,52 +23,16 @@ const strings = t(locale);
   <WaitlistForm locale={locale} />
   <DownloadCTA locale={locale} />
 
-  {locale === 'it' && (
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Cos'è PawMeet?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "PawMeet è un'app che aiuta i proprietari di cani a trovare compagni di passeggiata compatibili nella loro zona, grazie a un algoritmo di matching basato su taglia, energia e temperamento del cane."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Come funziona il match tra cani su PawMeet?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "PawMeet analizza il profilo del tuo cane — taglia, livello di energia, comportamento in guinzaglio e preferenze di socializzazione — e lo abbina con i cani più compatibili nella tua area geografica."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "PawMeet è disponibile in tutta Italia?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "PawMeet è disponibile in tutta Italia. Attualmente oltre 1.200 proprietari di cani in più di 15 città si sono già iscritti alla lista d'attesa."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Quando sarà disponibile PawMeet su App Store e Google Play?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Il lancio ufficiale di PawMeet è previsto per giugno 2026. Puoi iscriverti alla lista d'attesa per ricevere accesso anticipato esclusivo."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "PawMeet è gratuito?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sì, PawMeet sarà disponibile gratuitamente su iOS e Android al momento del lancio."
-          }
-        }
-      ]
-    })} />
-  )}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": strings.faq.map((item) => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer,
+      },
+    })),
+  })} />
 </BaseLayout>

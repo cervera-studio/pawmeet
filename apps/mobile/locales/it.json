@@ -123,6 +123,8 @@
     "noMoreProfiles": "Nessun altro profilo",
     "noMoreProfilesDescription": "Hai visto tutti i cani nelle vicinanze. Riprova più tardi!",
     "refresh": "Aggiorna",
+    "otherDogSingular": "altro cane",
+    "otherDogPlural": "altri cani",
     "filters": {
       "title": "Filtri",
       "reset": "Resetta",
@@ -175,7 +177,6 @@
   },
   "walks": {
     "title": "Passeggiate",
-    "calendar": "Calendario",
     "track": "Traccia",
     "noWalks": "Nessuna passeggiata in programma",
     "noWalksDescription": "Proponi una passeggiata dalla chat con uno dei tuoi match!",
@@ -258,6 +259,17 @@
       "dateInFuture": "La data deve essere nel futuro",
       "proposeError": "Impossibile proporre la passeggiata"
     },
+    "calendar": {
+      "title": "Calendario",
+      "today": "Oggi",
+      "empty": "Nessuna passeggiata",
+      "weekdaysShort": ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
+    },
+    "viewMode": {
+      "week": "Settimana",
+      "month": "Mese"
+    },
+    "defaultTitle": "Passeggiata",
     "feedback": {
       "title": "Feedback passeggiata",
       "question": "Come è andata la passeggiata?",
@@ -399,7 +411,13 @@
       "addPhotos": "Aggiungi delle foto",
       "moodHistory": "Storico umore",
       "moodHistorySubtitle": "Monitora l'umore del tuo cane nel tempo",
-      "viewAllBadges": "Vedi tutti i badge"
+      "viewAllBadges": "Vedi tutti i badge",
+      "size": "Taglia",
+      "energy": "Energia",
+      "character": "Carattere",
+      "owner": "Proprietario",
+      "like": "Mi piace!",
+      "reportProfile": "Segnala profilo"
     },
     "activity": {
       "title": "Attività",
@@ -407,7 +425,38 @@
       "month": "Mese",
       "selectDog": "Seleziona cane",
       "totalDistance": "Distanza totale",
-      "walks": "Passeggiate"
+      "walks": "Passeggiate",
+      "totalTime": "Tempo totale",
+      "totalSteps": "Passi totali",
+      "dailyAverages": "Medie giornaliere",
+      "kmPerDay": "km/giorno",
+      "minPerDay": "min/giorno",
+      "stepsPerDay": "passi/giorno",
+      "dailyBreakdown": "Dettaglio giornaliero",
+      "dailyGoal": "Obiettivo giornaliero",
+      "connectAppleHealth": "Connetti Apple Salute",
+      "connectHealthConnect": "Connetti Health Connect",
+      "syncDescription": "Sincronizza passi e distanza automaticamente",
+      "lastSync": "Ultima sincronizzazione: {{date}}",
+      "syncing": "Sincronizzazione...",
+      "syncNow": "Sincronizza ora",
+      "disconnect": "Scollega",
+      "connecting": "Connessione...",
+      "connect": "Connetti",
+      "sizeLabel": "Taglia: {{size}}"
+    },
+    "gamification": {
+      "title": "Gamification",
+      "yourLevel": "Il tuo livello",
+      "totalXp": "XP totali",
+      "maxLevelReached": "Livello massimo raggiunto!",
+      "xpToNextLevel": "{{count}} XP al prossimo livello",
+      "leaderboard": "Classifica",
+      "leaderboardSubtitle": "Confronta i tuoi punti con gli altri",
+      "challenges": "Sfide",
+      "challengesSubtitle": "Sfide settimanali per guadagnare XP",
+      "achievements": "Obiettivi",
+      "achievementsSubtitle": "I tuoi traguardi raggiunti"
     },
     "matchingInsights": {
       "title": "Statistiche Matching",
@@ -610,7 +659,14 @@
     },
     "tapToRetry": "Tocca per riprovare",
     "searchNoResults": "Nessun risultato trovato",
-    "searchPlaceholder": "Cerca conversazioni..."
+    "searchPlaceholder": "Cerca conversazioni...",
+    "newMatches": "Nuovi match",
+    "noMessage": "Nessun messaggio",
+    "defaultDogName": "Cane",
+    "listEmptyTitle": "Nessuna chat",
+    "listEmptyDescription": "Fai match con qualcuno per iniziare a chattare!",
+    "groupListEmptyTitle": "Nessuna chat di gruppo",
+    "groupListEmptyDescription": "Partecipa a un evento per chattare con il gruppo!"
   },
   "auth": {
     "login": {
@@ -695,7 +751,18 @@
     }
   },
   "dogForm": {
+    "newTitle": "Nuovo cane",
     "editTitle": "Modifica {{name}}",
+    "step1Title": "Come si chiama il tuo cane?",
+    "step2Title": "Parlaci del suo carattere",
+    "step3Title": "Preferenze passeggiata",
+    "analyzePhoto": "Analizza foto per pre-compilare",
+    "analyzingPhoto": "Analisi in corso...",
+    "generateBio": "Genera bio con AI",
+    "generatingBio": "Generazione...",
+    "generateBioHint": "Completa tutti i campi obbligatori (inclusi temperamento e passeggiate) per generare la bio",
+    "creating": "Creazione...",
+    "createProfile": "Crea profilo",
     "sections": {
       "basicInfo": "Info base",
       "temperament": "Temperamento",
@@ -706,9 +773,12 @@
       "name": "Nome del cane",
       "breed": "Razza",
       "breedSecondary": "Razza secondaria (opzionale)",
+      "birthDate": "Data di nascita",
+      "weightKg": "Peso (kg)",
       "size": "Taglia",
       "gender": "Sesso",
-      "bio": "Bio del cane",
+      "neutered": "Sterilizzato/a?",
+      "bio": "Bio (opzionale, max 500 caratteri)",
       "energy": "Livello di energia",
       "behaviorDogs": "Comportamento con altri cani",
       "behaviorPeople": "Comportamento con le persone",
@@ -889,6 +959,10 @@
     "openSettings": "Apri Impostazioni",
     "permissionError": "Errore nel richiedere i permessi di posizione",
     "notGranted": "Permesso di posizione non concesso",
+    "loading": "Recupero posizione...",
+    "required": "Posizione necessaria",
+    "requiredDescription": "Abilita la posizione per vedere i cani nelle vicinanze sulla mappa.",
+    "enableButton": "Abilita posizione",
     "fetchError": "Errore nel recuperare la posizione",
     "suspiciousTitle": "Spostamento rilevato",
     "suspiciousMessage": "La tua posizione sembra cambiata di circa {{distance}} km rispetto all'ultima volta. Vuoi aggiornare la tua posizione?",

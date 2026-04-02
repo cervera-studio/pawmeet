@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMatchingInsightsViewModel } from './_vm/matching-insights.view-model';
 
 export default function MatchingInsightsScreen() {
   const vm = useMatchingInsightsViewModel();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
@@ -40,12 +42,26 @@ export default function MatchingInsightsScreen() {
           <View className="gap-4 pb-6">
             {/* Stats overview */}
             <View className="rounded-xl bg-emerald-50 p-4">
-              <Text className="mb-3 text-lg font-bold text-emerald-900">Panoramica</Text>
+              <Text className="mb-3 text-lg font-bold text-emerald-900">
+                {t('profile.matchingInsights.overview')}
+              </Text>
               <View className="flex-row flex-wrap gap-3">
-                <StatCard label="Swipe totali" value={String(vm.insights.totalSwipes)} />
-                <StatCard label="Like dati" value={String(vm.insights.totalLikes)} />
-                <StatCard label="Match" value={String(vm.insights.totalMatches)} />
-                <StatCard label="Tasso match" value={vm.insights.matchRate} />
+                <StatCard
+                  label={t('profile.matchingInsights.totalSwipes')}
+                  value={String(vm.insights.totalSwipes)}
+                />
+                <StatCard
+                  label={t('profile.matchingInsights.likesGiven')}
+                  value={String(vm.insights.totalLikes)}
+                />
+                <StatCard
+                  label={t('profile.matchingInsights.matchCount')}
+                  value={String(vm.insights.totalMatches)}
+                />
+                <StatCard
+                  label={t('profile.matchingInsights.matchRate')}
+                  value={vm.insights.matchRate}
+                />
               </View>
             </View>
 
@@ -53,10 +69,10 @@ export default function MatchingInsightsScreen() {
             {vm.insights.dimensions.length > 0 && (
               <View className="rounded-xl bg-white dark:bg-[#1C1C1E] border border-zinc-200 dark:border-[#38383A] p-4">
                 <Text className="mb-3 text-lg font-bold text-zinc-900 dark:text-[#F5F5F7]">
-                  Le tue preferenze
+                  {t('profile.matchingInsights.preferences')}
                 </Text>
                 <Text className="mb-3 text-sm text-zinc-500 dark:text-neutral-500">
-                  Come valutiamo la compatibilità per te
+                  {t('profile.matchingInsights.preferencesSubtitle')}
                 </Text>
                 {vm.insights.dimensions.map((dim) => (
                   <View key={dim.label} className="mb-2">
@@ -81,10 +97,10 @@ export default function MatchingInsightsScreen() {
             {vm.insights.optimalTimes.length > 0 && (
               <View className="rounded-xl bg-white dark:bg-[#1C1C1E] border border-zinc-200 dark:border-[#38383A] p-4">
                 <Text className="mb-3 text-lg font-bold text-zinc-900 dark:text-[#F5F5F7]">
-                  Orari migliori
+                  {t('profile.matchingInsights.bestTimes')}
                 </Text>
                 <Text className="mb-3 text-sm text-zinc-500 dark:text-neutral-500">
-                  Quando è più probabile trovare compagni di passeggiata
+                  {t('profile.matchingInsights.bestTimesSubtitle')}
                 </Text>
                 {vm.insights.optimalTimes.map((time) => (
                   <View
@@ -96,7 +112,9 @@ export default function MatchingInsightsScreen() {
                     </Text>
                     <View className="flex-row items-center">
                       <Text className="text-xs text-zinc-500 dark:text-neutral-500 mr-2">
-                        {time.nearbyActiveUsers} utenti attivi
+                        {t('profile.matchingInsights.activeUsers', {
+                          count: time.nearbyActiveUsers,
+                        })}
                       </Text>
                       <View
                         className={`h-3 w-3 rounded-full ${(() => {

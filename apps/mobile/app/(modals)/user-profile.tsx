@@ -35,7 +35,9 @@ export default function UserProfileScreen() {
 
         {/* Follow status label */}
         {vm.status.isFollowingMe && (
-          <Text className="mt-1 text-xs text-gray-400 dark:text-neutral-500">Ti segue</Text>
+          <Text className="mt-1 text-xs text-gray-400 dark:text-neutral-500">
+            {t('profile.followList.followsYou')}
+          </Text>
         )}
 
         {/* Action buttons */}

@@ -2,10 +2,12 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 
 import { formatDistance } from '@pawmeet/utils';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import MapView, { Circle, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
+import i18n from '@/lib/i18n';
 import type { GroupEvent, NearbyUser } from './_vm/index.view-model';
 import { useMapViewModel } from './_vm/index.view-model';
 
@@ -21,16 +23,9 @@ function formatEventDate(date: Date | string): string {
 }
 
 function categoryLabel(category: string): string {
-  switch (category) {
-    case 'walk':
-      return 'Passeggiata';
-    case 'meetup':
-      return 'Incontro';
-    case 'training':
-      return 'Addestramento';
-    default:
-      return category;
-  }
+  const key = `events.categories.${category}`;
+  const translated = i18n.t(key);
+  return translated === key ? category : translated;
 }
 
 const UserPreviewCard = memo(function UserPreviewCard({
@@ -42,6 +37,7 @@ const UserPreviewCard = memo(function UserPreviewCard({
   onClose: () => void;
   onViewProfile: () => void;
 }) {
+  const { t } = useTranslation();
   const primaryDog = user.dogs[0];
 
   return (
@@ -70,7 +66,8 @@ const UserPreviewCard = memo(function UserPreviewCard({
 
       {user.dogs.length > 1 && (
         <Text className="mt-2 text-xs text-gray-400 dark:text-neutral-500">
-          +{user.dogs.length - 1} {user.dogs.length === 2 ? 'altro cane' : 'altri cani'}
+          +{user.dogs.length - 1}{' '}
+          {user.dogs.length === 2 ? t('discovery.otherDogSingular') : t('discovery.otherDogPlural')}
         </Text>
       )}
     </View>
@@ -122,13 +119,14 @@ const EventPreviewCard = memo(function EventPreviewCard({
 });
 
 export default function MapScreen() {
+  const { t } = useTranslation();
   const vm = useMapViewModel();
 
   if (vm.locationLoading && !vm.coordinates) {
     return (
       <View className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E]">
         <ActivityIndicator size="large" color="#065F46" />
-        <Text className="mt-4 text-gray-500 dark:text-neutral-500">Recupero posizione...</Text>
+        <Text className="mt-4 text-gray-500 dark:text-neutral-500">{t('location.loading')}</Text>
       </View>
     );
   }
@@ -138,16 +136,16 @@ export default function MapScreen() {
       <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E] px-8">
         <Text className="text-5xl">📍</Text>
         <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-          Posizione necessaria
+          {t('location.required')}
         </Text>
         <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500">
-          Abilita la posizione per vedere i cani nelle vicinanze sulla mappa.
+          {t('location.requiredDescription')}
         </Text>
         <Pressable
           onPress={vm.getCurrentLocation}
           className="mt-6 rounded-2xl bg-primary px-8 py-3"
         >
-          <Text className="font-semibold text-white">Abilita posizione</Text>
+          <Text className="font-semibold text-white">{t('location.enableButton')}</Text>
         </Pressable>
       </SafeAreaView>
     );
@@ -253,7 +251,9 @@ export default function MapScreen() {
         {vm.usersLoading ? (
           <ActivityIndicator size="small" color="#065F46" />
         ) : (
-          <Text className="text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Aggiorna</Text>
+          <Text className="text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+            {t('discovery.refresh')}
+          </Text>
         )}
       </Pressable>
 

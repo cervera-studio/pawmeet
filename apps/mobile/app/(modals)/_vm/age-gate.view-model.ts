@@ -1,4 +1,3 @@
-import { logger } from '@pawmeet/utils';
 import { dateOfBirthSchema } from '@pawmeet/validation';
 import { useCallback, useState } from 'react';
 import { container } from 'tsyringe';
@@ -12,10 +11,6 @@ export function useAgeGateViewModel() {
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
-
-  const openPicker = useCallback(() => setShowPicker(true), []);
-  const closePicker = useCallback(() => setShowPicker(false), []);
 
   const handleSubmit = useCallback(async () => {
     setError(null);
@@ -48,9 +43,6 @@ export function useAgeGateViewModel() {
     setDateOfBirth,
     error,
     loading,
-    showPicker,
-    openPicker,
-    closePicker,
     handleSubmit,
   };
 }

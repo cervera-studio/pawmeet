@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useProposeWalkViewModel } from './ProposeWalkModal.view-model';
 
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props) {
+  const { t } = useTranslation();
   const vm = useProposeWalkViewModel(matchId, onPropose, onClose);
 
   return (
@@ -26,10 +28,12 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
         {/* Header */}
         <View className="flex-row items-center justify-between border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
           <Pressable onPress={onClose}>
-            <Text className="text-base text-gray-500 dark:text-neutral-500">Annulla</Text>
+            <Text className="text-base text-gray-500 dark:text-neutral-500">
+              {t('common.cancel')}
+            </Text>
           </Pressable>
           <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">
-            Proponi passeggiata
+            {t('walks.propose.title')}
           </Text>
           <View style={{ width: 60 }} />
         </View>
@@ -38,7 +42,7 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           {/* Date input */}
           <View className="mb-4">
             <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Data (AAAA-MM-GG) *
+              {t('walks.propose.dateLabel')}
             </Text>
             <TextInput
               value={vm.date}
@@ -53,7 +57,7 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           {/* Time input */}
           <View className="mb-4">
             <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Ora (HH:MM) *
+              {t('walks.propose.timeLabel')}
             </Text>
             <TextInput
               value={vm.time}
@@ -68,7 +72,7 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           {/* Duration selector */}
           <View className="mb-4">
             <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Durata
+              {t('walks.propose.durationLabel')}
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {DURATION_OPTIONS.map((d) => (
@@ -94,12 +98,12 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           {/* Title */}
           <View className="mb-4">
             <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Titolo
+              {t('walks.propose.titleLabel')}
             </Text>
             <TextInput
               value={vm.title}
               onChangeText={vm.setTitle}
-              placeholder="Es. Passeggiata al parco"
+              placeholder={t('walks.propose.titlePlaceholder')}
               className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={100}
@@ -109,12 +113,12 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
           {/* Location */}
           <View className="mb-4">
             <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-              Luogo
+              {t('walks.propose.locationLabel')}
             </Text>
             <TextInput
               value={vm.location}
               onChangeText={vm.setLocation}
-              placeholder="Es. Parco Sempione, Milano"
+              placeholder={t('walks.propose.locationPlaceholder')}
               className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={200}
@@ -123,11 +127,13 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
 
           {/* Notes */}
           <View className="mb-6">
-            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">Note</Text>
+            <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+              {t('walks.propose.notesLabel')}
+            </Text>
             <TextInput
               value={vm.notes}
               onChangeText={vm.setNotes}
-              placeholder="Es. Ci vediamo all'ingresso principale"
+              placeholder={t('walks.propose.notesPlaceholder')}
               className="rounded-xl border border-gray-200 dark:border-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               maxLength={500}
@@ -143,7 +149,7 @@ export function ProposeWalkModal({ visible, matchId, onClose, onPropose }: Props
             className={`items-center rounded-xl py-4 ${vm.submitting ? 'bg-gray-300 dark:bg-[#48484A]' : 'bg-primary'}`}
           >
             <Text className="text-base font-bold text-white">
-              {vm.submitting ? 'Invio...' : 'Proponi'}
+              {vm.submitting ? t('common.sending') : t('walks.propose.submitButton')}
             </Text>
           </Pressable>
         </ScrollView>

@@ -53,7 +53,7 @@ export default function DogDetailModal() {
 
   useEffect(() => {
     if (!dogId) {
-      setError('ID cane mancante');
+      setError(t('profile.dogDetail.invalidId'));
       setLoading(false);
       return;
     }
@@ -65,10 +65,10 @@ export default function DogDetailModal() {
         setLoading(false);
       })
       .catch(() => {
-        setError('Impossibile caricare il profilo');
+        setError(t('errors.generic'));
         setLoading(false);
       });
-  }, [dogId]);
+  }, [dogId, t]);
 
   if (loading) {
     return <DogDetailSkeleton />;
@@ -78,7 +78,7 @@ export default function DogDetailModal() {
     return (
       <View className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E]">
         <Text className="text-base text-gray-500 dark:text-neutral-500">
-          {error ?? 'Profilo non trovato'}
+          {error ?? t('profile.dogDetail.notFound')}
         </Text>
       </View>
     );
@@ -129,19 +129,25 @@ export default function DogDetailModal() {
       {/* Trait chips */}
       <View className="mt-4 flex-row gap-3">
         <View className="flex-1 items-center rounded-xl bg-primary-50 p-3 dark:bg-[#2C2C2E]">
-          <Text className="text-xs text-gray-500 dark:text-neutral-500">Taglia</Text>
+          <Text className="text-xs text-gray-500 dark:text-neutral-500">
+            {t('profile.dogDetail.size')}
+          </Text>
           <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">
             {label(profile.size)}
           </Text>
         </View>
         <View className="flex-1 items-center rounded-xl bg-primary-50 p-3 dark:bg-[#2C2C2E]">
-          <Text className="text-xs text-gray-500 dark:text-neutral-500">Energia</Text>
+          <Text className="text-xs text-gray-500 dark:text-neutral-500">
+            {t('profile.dogDetail.energy')}
+          </Text>
           <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">
             {label(profile.energyLevel)}
           </Text>
         </View>
         <View className="flex-1 items-center rounded-xl bg-primary-50 p-3 dark:bg-[#2C2C2E]">
-          <Text className="text-xs text-gray-500 dark:text-neutral-500">Carattere</Text>
+          <Text className="text-xs text-gray-500 dark:text-neutral-500">
+            {t('profile.dogDetail.character')}
+          </Text>
           <Text className="font-semibold text-gray-900 dark:text-[#F5F5F7]">
             {label(profile.behaviorWithDogs)}
           </Text>
@@ -158,15 +164,19 @@ export default function DogDetailModal() {
           <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
             {profile.ownerFirstName}
           </Text>
-          <Text className="text-sm text-gray-500 dark:text-neutral-500">Proprietario</Text>
+          <Text className="text-sm text-gray-500 dark:text-neutral-500">
+            {t('profile.dogDetail.owner')}
+          </Text>
         </View>
       </View>
 
       {/* Actions */}
       <View className="mt-6 gap-3 pb-8">
-        <Button onPress={() => router.back()} label="Mi piace!" />
+        <Button onPress={() => router.back()} label={t('profile.dogDetail.like')} />
         <Pressable onPress={() => router.push('/(modals)/report')} className="items-center py-2">
-          <Text className="text-sm text-gray-400 dark:text-neutral-500">Segnala profilo</Text>
+          <Text className="text-sm text-gray-400 dark:text-neutral-500">
+            {t('profile.dogDetail.reportProfile')}
+          </Text>
         </Pressable>
       </View>
     </ScrollView>

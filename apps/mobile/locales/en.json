@@ -171,11 +171,18 @@
       "countryside": "Countryside",
       "beach": "Beach",
       "mountain": "Mountain"
-    }
+    },
+    "otherDogSingular": "other dog",
+    "otherDogPlural": "other dogs"
   },
   "walks": {
     "title": "Walks",
-    "calendar": "Calendar",
+    "calendar": {
+      "title": "Calendar",
+      "today": "Today",
+      "empty": "No walks",
+      "weekdaysShort": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    },
     "track": "Track",
     "noWalks": "No walks scheduled",
     "noWalksDescription": "Propose a walk from the chat with one of your matches!",
@@ -273,7 +280,12 @@
         "4": "Good",
         "5": "Excellent"
       }
-    }
+    },
+    "viewMode": {
+      "week": "Week",
+      "month": "Month"
+    },
+    "defaultTitle": "Walk"
   },
   "feed": {
     "title": "Feed",
@@ -399,7 +411,13 @@
       "addPhotos": "Add photos",
       "moodHistory": "Mood History",
       "moodHistorySubtitle": "Track your dog's mood over time",
-      "viewAllBadges": "View all badges"
+      "viewAllBadges": "View all badges",
+      "size": "Size",
+      "energy": "Energy",
+      "character": "Character",
+      "owner": "Owner",
+      "like": "Like!",
+      "reportProfile": "Report profile"
     },
     "activity": {
       "title": "Activity",
@@ -407,7 +425,25 @@
       "month": "Month",
       "selectDog": "Select dog",
       "totalDistance": "Total distance",
-      "walks": "Walks"
+      "walks": "Walks",
+      "totalTime": "Total time",
+      "totalSteps": "Total steps",
+      "dailyAverages": "Daily averages",
+      "kmPerDay": "km/day",
+      "minPerDay": "min/day",
+      "stepsPerDay": "steps/day",
+      "dailyBreakdown": "Daily breakdown",
+      "dailyGoal": "Daily goal",
+      "connectAppleHealth": "Connect Apple Health",
+      "connectHealthConnect": "Connect Health Connect",
+      "syncDescription": "Sync steps and distance automatically",
+      "lastSync": "Last sync: {{date}}",
+      "syncing": "Syncing...",
+      "syncNow": "Sync now",
+      "disconnect": "Disconnect",
+      "connecting": "Connecting...",
+      "connect": "Connect",
+      "sizeLabel": "Size: {{size}}"
     },
     "matchingInsights": {
       "title": "Match Insights",
@@ -446,6 +482,19 @@
     "dogBadges": {
       "locked": "Locked",
       "title": "Badges"
+    },
+    "gamification": {
+      "title": "Gamification",
+      "yourLevel": "Your level",
+      "totalXp": "Total XP",
+      "maxLevelReached": "Max level reached!",
+      "xpToNextLevel": "{{count}} XP to next level",
+      "leaderboard": "Leaderboard",
+      "leaderboardSubtitle": "Compare your points with others",
+      "challenges": "Challenges",
+      "challengesSubtitle": "Weekly challenges to earn XP",
+      "achievements": "Achievements",
+      "achievementsSubtitle": "Your milestones achieved"
     }
   },
   "events": {
@@ -610,7 +659,14 @@
     },
     "tapToRetry": "Tap to retry",
     "searchNoResults": "No results found",
-    "searchPlaceholder": "Search conversations..."
+    "searchPlaceholder": "Search conversations...",
+    "defaultDogName": "Dog",
+    "newMatches": "New matches",
+    "noMessage": "No messages",
+    "listEmptyTitle": "No chats",
+    "listEmptyDescription": "Match with someone to start chatting!",
+    "groupListEmptyTitle": "No group chats",
+    "groupListEmptyDescription": "Join an event to chat with the group!"
   },
   "auth": {
     "login": {
@@ -695,7 +751,18 @@
     }
   },
   "dogForm": {
+    "newTitle": "New dog",
     "editTitle": "Edit {{name}}",
+    "step1Title": "What's your dog's name?",
+    "step2Title": "Tell us about their personality",
+    "step3Title": "Walk preferences",
+    "analyzePhoto": "Analyze photo to pre-fill",
+    "analyzingPhoto": "Analyzing...",
+    "generateBio": "Generate bio with AI",
+    "generatingBio": "Generating...",
+    "generateBioHint": "Complete all required fields (including temperament and walks) to generate the bio",
+    "creating": "Creating...",
+    "createProfile": "Create profile",
     "sections": {
       "basicInfo": "Basic info",
       "temperament": "Temperament",
@@ -706,9 +773,12 @@
       "name": "Dog's name",
       "breed": "Breed",
       "breedSecondary": "Secondary breed (optional)",
+      "birthDate": "Date of birth",
+      "weightKg": "Weight (kg)",
       "size": "Size",
       "gender": "Gender",
-      "bio": "Dog's bio",
+      "neutered": "Neutered/spayed?",
+      "bio": "Bio (optional, max 500 chars)",
       "energy": "Energy level",
       "behaviorDogs": "Behavior with other dogs",
       "behaviorPeople": "Behavior with people",
@@ -894,7 +964,11 @@
     "suspiciousMessage": "Your location appears to have changed by about {{distance}} km since last time. Do you want to update your location?",
     "suspiciousMessageGeneric": "Your location appears to have changed significantly since last time. Do you want to update your location?",
     "keepPrevious": "Keep previous",
-    "update": "Update"
+    "update": "Update",
+    "loading": "Getting location...",
+    "required": "Location required",
+    "requiredDescription": "Enable location to see nearby dogs on the map.",
+    "enableButton": "Enable location"
   },
   "badges": {
     "firstMeeting": "First meeting",

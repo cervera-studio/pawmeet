@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -75,6 +76,7 @@ function BarChart({
   days: { date: string; walkDistanceKm: number; walkDurationMin: number }[];
   period: 'week' | 'month';
 }) {
+  const { t } = useTranslation();
   const [tooltipIndex, setTooltipIndex] = useState<number | null>(null);
   const maxKm = Math.max(...days.map((d) => d.walkDistanceKm), 0.1);
   const isWeek = period === 'week';
@@ -89,7 +91,7 @@ function BarChart({
   return (
     <View className="mb-4 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm">
       <Text className="mb-3 text-base font-semibold text-neutral-900 dark:text-[#F5F5F7]">
-        Dettaglio giornaliero
+        {t('profile.activity.dailyBreakdown')}
       </Text>
       <View className="flex-row items-end justify-center" style={{ height: BAR_HEIGHT }}>
         {days.map((day, i) => {
@@ -143,6 +145,7 @@ function ProgressRing({
   targetMin: number;
   sizeCategory: string;
 }) {
+  const { t } = useTranslation();
   const clamped = Math.min(Math.max(progress, 0), 1);
   const animatedProgress = useSharedValue(0);
 
@@ -190,7 +193,7 @@ function ProgressRing({
         </View>
       </View>
       <Text className="mt-2 text-xs text-neutral-500 dark:text-neutral-500">
-        Taglia: {sizeCategory}
+        {t('profile.activity.sizeLabel', { size: sizeCategory })}
       </Text>
     </View>
   );
@@ -199,12 +202,16 @@ function ProgressRing({
 // --- Health Connect Card ---
 
 function HealthConnectCard() {
+  const { t } = useTranslation();
   const { isAvailable, isConnected, loading, connect, disconnect, syncNow, lastSyncDate } =
     useHealthConnect();
 
   if (!(isAvailable || isConnected)) return null;
 
-  const title = Platform.OS === 'ios' ? 'Connetti Apple Salute' : 'Connetti Health Connect';
+  const title =
+    Platform.OS === 'ios'
+      ? t('profile.activity.connectAppleHealth')
+      : t('profile.activity.connectHealthConnect');
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('it-IT', {
@@ -221,14 +228,14 @@ function HealthConnectCard() {
         {title}
       </Text>
       <Text className="mb-3 text-sm text-neutral-500 dark:text-neutral-500">
-        Sincronizza passi e distanza automaticamente
+        {t('profile.activity.syncDescription')}
       </Text>
 
       {isConnected ? (
         <>
           {lastSyncDate ? (
             <Text className="mb-3 text-xs text-neutral-500 dark:text-neutral-500">
-              Ultima sincronizzazione: {formatDate(lastSyncDate)}
+              {t('profile.activity.lastSync', { date: formatDate(lastSyncDate) })}
             </Text>
           ) : null}
 
@@ -241,7 +248,7 @@ function HealthConnectCard() {
               }`}
             >
               <Text className="font-medium text-white">
-                {loading ? 'Sincronizzazione...' : 'Sincronizza ora'}
+                {loading ? t('profile.activity.syncing') : t('profile.activity.syncNow')}
               </Text>
             </Pressable>
 
@@ -249,7 +256,9 @@ function HealthConnectCard() {
               onPress={disconnect}
               className="items-center rounded-xl border border-neutral-300 dark:border-neutral-600 px-4 py-2.5"
             >
-              <Text className="font-medium text-neutral-700 dark:text-[#D1D1D6]">Scollega</Text>
+              <Text className="font-medium text-neutral-700 dark:text-[#D1D1D6]">
+                {t('profile.activity.disconnect')}
+              </Text>
             </Pressable>
           </View>
         </>
@@ -259,7 +268,9 @@ function HealthConnectCard() {
           disabled={loading}
           className={`items-center rounded-xl py-2.5 ${loading ? 'bg-primary-200' : 'bg-primary'}`}
         >
-          <Text className="font-medium text-white">{loading ? 'Connessione...' : 'Connetti'}</Text>
+          <Text className="font-medium text-white">
+            {loading ? t('profile.activity.connecting') : t('profile.activity.connect')}
+          </Text>
         </Pressable>
       )}
     </View>
@@ -270,14 +281,15 @@ function HealthConnectCard() {
 
 export default function ActivityScreen() {
   const vm = useActivityViewModel();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]">
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Attività',
-          headerBackTitle: 'Profilo',
+          title: t('profile.activity.title'),
+          headerBackTitle: t('tabs.profile'),
         }}
       />
 
@@ -296,7 +308,7 @@ export default function ActivityScreen() {
               <Text
                 className={`font-medium ${vm.period === 'week' ? 'text-white' : 'text-neutral-700 dark:text-[#D1D1D6]'}`}
               >
-                Settimana
+                {t('profile.activity.week')}
               </Text>
             </Pressable>
             <Pressable
@@ -308,7 +320,7 @@ export default function ActivityScreen() {
               <Text
                 className={`font-medium ${vm.period === 'month' ? 'text-white' : 'text-neutral-700 dark:text-[#D1D1D6]'}`}
               >
-                Mese
+                {t('profile.activity.month')}
               </Text>
             </Pressable>
           </View>
@@ -317,7 +329,7 @@ export default function ActivityScreen() {
           {vm.dogs.length > 1 ? (
             <View className="mb-4">
               <Text className="mb-2 text-sm font-medium text-neutral-700 dark:text-[#D1D1D6]">
-                Seleziona cane
+                {t('profile.activity.selectDog')}
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {vm.dogs.map((dog) => (
@@ -350,28 +362,32 @@ export default function ActivityScreen() {
                 <StatCard
                   value={vm.stats.summary.totalDistanceKm.toFixed(1)}
                   unit="km"
-                  label="Distanza totale"
+                  label={t('profile.activity.totalDistance')}
                 />
-                <StatCard value={String(vm.stats.summary.totalWalks)} unit="" label="Passeggiate" />
+                <StatCard
+                  value={String(vm.stats.summary.totalWalks)}
+                  unit=""
+                  label={t('profile.activity.walks')}
+                />
               </View>
 
               <View className="mb-4 flex-row gap-3">
                 <StatCard
                   value={String(Math.round(vm.stats.summary.totalDurationMin))}
                   unit="min"
-                  label="Tempo totale"
+                  label={t('profile.activity.totalTime')}
                 />
                 <StatCard
                   value={String(Math.round(vm.stats.summary.totalSteps))}
                   unit=""
-                  label="Passi totali"
+                  label={t('profile.activity.totalSteps')}
                 />
               </View>
 
               {/* Daily averages */}
               <View className="mb-4 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm">
                 <Text className="mb-3 text-base font-semibold text-neutral-900 dark:text-[#F5F5F7]">
-                  Medie giornaliere
+                  {t('profile.activity.dailyAverages')}
                 </Text>
                 <View className="flex-row justify-around">
                   <View className="items-center">
@@ -379,7 +395,7 @@ export default function ActivityScreen() {
                       {vm.stats.summary.avgDailyDistanceKm.toFixed(1)}
                     </Text>
                     <Text className="text-xs text-neutral-500 dark:text-neutral-500">
-                      km/giorno
+                      {t('profile.activity.kmPerDay')}
                     </Text>
                   </View>
                   <View className="items-center">
@@ -387,7 +403,7 @@ export default function ActivityScreen() {
                       {Math.round(vm.stats.summary.avgDailyDurationMin)}
                     </Text>
                     <Text className="text-xs text-neutral-500 dark:text-neutral-500">
-                      min/giorno
+                      {t('profile.activity.minPerDay')}
                     </Text>
                   </View>
                   <View className="items-center">
@@ -395,7 +411,7 @@ export default function ActivityScreen() {
                       {Math.round(vm.stats.summary.avgDailySteps)}
                     </Text>
                     <Text className="text-xs text-neutral-500 dark:text-neutral-500">
-                      passi/giorno
+                      {t('profile.activity.stepsPerDay')}
                     </Text>
                   </View>
                 </View>
@@ -412,7 +428,7 @@ export default function ActivityScreen() {
           {vm.healthGoal ? (
             <View className="mb-4 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm">
               <Text className="mb-3 text-base font-semibold text-neutral-900 dark:text-[#F5F5F7]">
-                Obiettivo giornaliero
+                {t('profile.activity.dailyGoal')}
               </Text>
               <ProgressRing
                 progress={vm.healthGoal.goal.goalProgress}

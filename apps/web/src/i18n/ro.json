@@ -186,5 +186,27 @@
     "ctaButton": "Înscrie-te pe lista de așteptare",
     "notFound": "Profil negăsit",
     "notFoundText": "Profilul pe care îl cauți nu există sau nu mai este disponibil."
-  }
+  },
+  "faq": [
+    {
+      "question": "Ce este PawMeet?",
+      "answer": "PawMeet este o aplicație care ajută proprietarii de câini să găsească parteneri de plimbare compatibili în zona lor, folosind un algoritm de potrivire bazat pe mărime, energie și temperament."
+    },
+    {
+      "question": "Cum funcționează potrivirea câinilor pe PawMeet?",
+      "answer": "PawMeet analizează profilul câinelui tău — mărime, nivel de energie, comportament la lesă și preferințe de socializare — și îl potrivește cu cei mai compatibili câini din zona ta."
+    },
+    {
+      "question": "PawMeet este disponibil în toată Italia?",
+      "answer": "PawMeet este disponibil în toată Italia. În prezent, peste 1.200 de proprietari de câini din peste 15 orașe s-au înscris deja pe lista de așteptare."
+    },
+    {
+      "question": "Când va fi disponibil PawMeet pe App Store și Google Play?",
+      "answer": "Lansarea oficială a PawMeet este planificată pentru iunie 2026. Te poți înscrie pe lista de așteptare pentru a primi acces anticipat exclusiv."
+    },
+    {
+      "question": "PawMeet este gratuit?",
+      "answer": "Da, PawMeet va fi disponibil gratuit pe iOS și Android la lansare."
+    }
+  ]
 }

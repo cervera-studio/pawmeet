@@ -171,11 +171,18 @@
       "countryside": "Câmp",
       "beach": "Plajă",
       "mountain": "Munte"
-    }
+    },
+    "otherDogSingular": "alt câine",
+    "otherDogPlural": "alți câini"
   },
   "walks": {
     "title": "Plimbări",
-    "calendar": "Calendar",
+    "calendar": {
+      "title": "Calendar",
+      "today": "Azi",
+      "empty": "Nicio plimbare",
+      "weekdaysShort": ["Lun", "Mar", "Mie", "Joi", "Vin", "Sâm", "Dum"]
+    },
     "track": "Urmărește",
     "noWalks": "Nicio plimbare programată",
     "noWalksDescription": "Propune o plimbare din chat-ul cu unul dintre match-urile tale!",
@@ -273,7 +280,12 @@
         "4": "Bună",
         "5": "Excelentă"
       }
-    }
+    },
+    "viewMode": {
+      "week": "Săptămână",
+      "month": "Lună"
+    },
+    "defaultTitle": "Plimbare"
   },
   "feed": {
     "title": "Feed",
@@ -399,7 +411,13 @@
       "addPhotos": "Adaugă fotografii",
       "moodHistory": "Istoric dispoziție",
       "moodHistorySubtitle": "Urmărește dispoziția câinelui tău în timp",
-      "viewAllBadges": "Vezi toate insignele"
+      "viewAllBadges": "Vezi toate insignele",
+      "size": "Mărime",
+      "energy": "Energie",
+      "character": "Caracter",
+      "owner": "Proprietar",
+      "like": "Îmi place!",
+      "reportProfile": "Raportează profilul"
     },
     "activity": {
       "title": "Activitate",
@@ -407,7 +425,25 @@
       "month": "Lună",
       "selectDog": "Selectează câinele",
       "totalDistance": "Distanță totală",
-      "walks": "Plimbări"
+      "walks": "Plimbări",
+      "totalTime": "Timp total",
+      "totalSteps": "Pași totali",
+      "dailyAverages": "Medii zilnice",
+      "kmPerDay": "km/zi",
+      "minPerDay": "min/zi",
+      "stepsPerDay": "pași/zi",
+      "dailyBreakdown": "Detalii zilnice",
+      "dailyGoal": "Obiectiv zilnic",
+      "connectAppleHealth": "Conectează Apple Health",
+      "connectHealthConnect": "Conectează Health Connect",
+      "syncDescription": "Sincronizează pașii și distanța automat",
+      "lastSync": "Ultima sincronizare: {{date}}",
+      "syncing": "Se sincronizează...",
+      "syncNow": "Sincronizează acum",
+      "disconnect": "Deconectează",
+      "connecting": "Se conectează...",
+      "connect": "Conectează",
+      "sizeLabel": "Mărime: {{size}}"
     },
     "matchingInsights": {
       "title": "Statistici Matching",
@@ -446,6 +482,19 @@
     "dogBadges": {
       "locked": "Blocat",
       "title": "Insigne"
+    },
+    "gamification": {
+      "title": "Gamificare",
+      "yourLevel": "Nivelul tău",
+      "totalXp": "XP total",
+      "maxLevelReached": "Nivel maxim atins!",
+      "xpToNextLevel": "{{count}} XP până la nivelul următor",
+      "leaderboard": "Clasament",
+      "leaderboardSubtitle": "Compară punctele tale cu ale altora",
+      "challenges": "Provocări",
+      "challengesSubtitle": "Provocări săptămânale pentru a câștiga XP",
+      "achievements": "Realizări",
+      "achievementsSubtitle": "Realizările tale"
     }
   },
   "events": {
@@ -610,7 +659,14 @@
     },
     "tapToRetry": "Atinge pentru a reincerca",
     "searchNoResults": "Niciun rezultat găsit",
-    "searchPlaceholder": "Caută conversații..."
+    "searchPlaceholder": "Caută conversații...",
+    "defaultDogName": "Câine",
+    "newMatches": "Potriviri noi",
+    "noMessage": "Niciun mesaj",
+    "listEmptyTitle": "Nicio conversație",
+    "listEmptyDescription": "Fă match cu cineva pentru a începe să discuți!",
+    "groupListEmptyTitle": "Nicio conversație de grup",
+    "groupListEmptyDescription": "Participă la un eveniment pentru a discuta cu grupul!"
   },
   "auth": {
     "login": {
@@ -695,7 +751,18 @@
     }
   },
   "dogForm": {
+    "newTitle": "Câine nou",
     "editTitle": "Editează {{name}}",
+    "step1Title": "Cum se numește câinele tău?",
+    "step2Title": "Spune-ne despre caracterul lui",
+    "step3Title": "Preferințe de plimbare",
+    "analyzePhoto": "Analizează fotografia pentru a completa automat",
+    "analyzingPhoto": "Se analizează...",
+    "generateBio": "Generează bio cu AI",
+    "generatingBio": "Se generează...",
+    "generateBioHint": "Completează toate câmpurile obligatorii (inclusiv temperament și plimbări) pentru a genera bio",
+    "creating": "Se creează...",
+    "createProfile": "Creează profil",
     "sections": {
       "basicInfo": "Info de bază",
       "temperament": "Temperament",
@@ -706,9 +773,12 @@
       "name": "Numele câinelui",
       "breed": "Rasă",
       "breedSecondary": "Rasă secundară (opțional)",
+      "birthDate": "Data nașterii",
+      "weightKg": "Greutate (kg)",
       "size": "Mărime",
       "gender": "Sex",
-      "bio": "Bio câine",
+      "neutered": "Sterilizat/ă?",
+      "bio": "Bio (opțional, max 500 caractere)",
       "energy": "Nivel de energie",
       "behaviorDogs": "Comportament cu alți câini",
       "behaviorPeople": "Comportament cu oamenii",
@@ -894,7 +964,11 @@
     "suspiciousMessage": "Locația ta pare să se fi schimbat cu aproximativ {{distance}} km față de ultima dată. Vrei să îți actualizezi locația?",
     "suspiciousMessageGeneric": "Locația ta pare să se fi schimbat semnificativ față de ultima dată. Vrei să îți actualizezi locația?",
     "keepPrevious": "Păstrează anterioara",
-    "update": "Actualizează"
+    "update": "Actualizează",
+    "loading": "Se obține locația...",
+    "required": "Locație necesară",
+    "requiredDescription": "Activează locația pentru a vedea câinii din apropiere pe hartă.",
+    "enableButton": "Activează locația"
   },
   "badges": {
     "firstMeeting": "Prima întâlnire",

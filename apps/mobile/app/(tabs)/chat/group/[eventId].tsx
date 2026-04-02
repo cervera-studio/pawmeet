@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -83,6 +84,7 @@ function GroupChatBubble({
 
 export default function GroupChatConversationScreen() {
   usePreventScreenCapture();
+  const { t } = useTranslation();
   const vm = useGroupChatConversationViewModel();
 
   return (
@@ -90,8 +92,8 @@ export default function GroupChatConversationScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Chat di gruppo',
-          headerBackTitle: 'Chat',
+          title: t('chat.groupChat'),
+          headerBackTitle: t('chat.backButton'),
         }}
       />
       <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
@@ -134,10 +136,10 @@ export default function GroupChatConversationScreen() {
                 <View className="items-center py-20">
                   <Text className="text-5xl">{'\u{1F43E}'}</Text>
                   <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-                    Chat di gruppo
+                    {t('chat.groupEmptyTitle')}
                   </Text>
                   <Text className="mt-2 text-center text-sm text-gray-500 dark:text-neutral-500 px-8">
-                    Scrivi un messaggio per coordinare la passeggiata!
+                    {t('chat.groupEmptyDescription')}
                   </Text>
                 </View>
               }
@@ -149,7 +151,7 @@ export default function GroupChatConversationScreen() {
             <TextInput
               value={vm.text}
               onChangeText={vm.handleTextChange}
-              placeholder="Scrivi un messaggio..."
+              placeholder={t('chat.messagePlaceholder')}
               className="mr-2 flex-1 rounded-full bg-gray-100 dark:bg-[#38383A] px-4 py-3 text-base"
               placeholderTextColor="#9CA3AF"
               multiline

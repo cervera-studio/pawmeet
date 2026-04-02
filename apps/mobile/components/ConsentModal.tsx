@@ -16,19 +16,19 @@ export function ConsentModal({ visible, onDismiss }: ConsentModalProps) {
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
       <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
         <ScrollView className="flex-1" contentContainerClassName="px-6 py-8">
-        {vm.showDetail ? <DetailView vm={vm} t={t} /> : <SimpleView vm={vm} t={t} />}
+          {vm.showDetail ? <DetailView vm={vm} t={t} /> : <SimpleView vm={vm} t={t} />}
 
-        {/* Privacy Policy link */}
-        <Pressable
-          onPress={() =>
-            Linking.openURL(`${process.env.EXPO_PUBLIC_WEB_URL ?? 'https://pawmeet.io'}/privacy`)
-          }
-          className="mt-6 items-center"
-        >
-          <Text className="text-sm text-gray-400 dark:text-neutral-500 underline">
-            {t('consent.readPrivacyPolicy')}
-          </Text>
-        </Pressable>
+          {/* Privacy Policy link */}
+          <Pressable
+            onPress={() =>
+              Linking.openURL(`${process.env.EXPO_PUBLIC_WEB_URL ?? 'https://pawmeet.io'}/privacy`)
+            }
+            className="mt-6 items-center"
+          >
+            <Text className="text-sm text-gray-400 dark:text-neutral-500 underline">
+              {t('consent.readPrivacyPolicy')}
+            </Text>
+          </Pressable>
         </ScrollView>
       </SafeAreaView>
     </Modal>

@@ -39,14 +39,15 @@ describe('analyzeDogPhoto', () => {
     expect(service.analyze).toHaveBeenCalledWith('abc123', 'image/png');
   });
 
-  it('fails when service is not configured', async () => {
+  it('degrades gracefully when service is not configured', async () => {
     const analyzeDogPhoto = createAnalyzeDogPhoto({ dogPhotoAnalysisService: undefined });
 
     const result = await analyzeDogPhoto('base64data', 'image/jpeg');
 
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.code).toBe('AI_SERVICE_UNAVAILABLE');
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.analysis.breed).toBe('unknown');
+      expect(result.data.analysis.confidence).toBe(0);
     }
   });
 

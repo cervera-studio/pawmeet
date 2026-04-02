@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -15,6 +16,7 @@ interface MatchCelebrationProps {
 }
 
 export function MatchCelebration({ onDismiss, onChat }: MatchCelebrationProps) {
+  const { t } = useTranslation();
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
   const emojiScale = useSharedValue(0);
@@ -57,21 +59,27 @@ export function MatchCelebration({ onDismiss, onChat }: MatchCelebrationProps) {
           <Text className="text-8xl">🐾</Text>
         </Animated.View>
 
-        <Text className="mt-6 text-4xl font-black text-white">Match!</Text>
+        <Text className="mt-6 text-4xl font-black text-white">
+          {t('matches.celebration.title')}
+        </Text>
         <Text className="mt-2 text-center text-lg text-white/80">
-          I vostri cani sono compatibili!
+          {t('matches.celebration.compatible')}
         </Text>
         <Text className="mt-1 text-center text-base text-white/60">
-          Inizia una conversazione per organizzare una passeggiata insieme.
+          {t('matches.celebration.startConversation')}
         </Text>
 
         <Animated.View className="mt-8 w-full gap-3" style={buttonsStyle}>
           <Pressable onPress={onChat} className="items-center rounded-2xl bg-primary py-4">
-            <Text className="text-lg font-semibold text-white">Invia un messaggio</Text>
+            <Text className="text-lg font-semibold text-white">
+              {t('matches.celebration.sendMessage')}
+            </Text>
           </Pressable>
 
           <Pressable onPress={onDismiss} className="items-center py-3">
-            <Text className="text-base text-white/70">Continua a esplorare</Text>
+            <Text className="text-base text-white/70">
+              {t('matches.celebration.keepExploring')}
+            </Text>
           </Pressable>
         </Animated.View>
       </Animated.View>

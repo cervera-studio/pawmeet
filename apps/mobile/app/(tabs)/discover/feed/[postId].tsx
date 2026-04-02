@@ -2,6 +2,7 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 
 import { Stack } from 'expo-router';
 import { memo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { TextInput as TextInputType } from 'react-native';
 import {
   FlatList,
@@ -40,6 +41,7 @@ const CommentRow = memo(function CommentRow({
   onReply: (commentId: string, authorName: string) => void;
   onReport: (commentId: string) => void;
 }) {
+  const { t } = useTranslation();
   const isReply = Boolean(comment.parentId);
   return (
     <View
@@ -58,11 +60,11 @@ const CommentRow = memo(function CommentRow({
           {isReply ? null : (
             <>
               <Pressable onPress={() => onReply(comment.id, comment.author.displayName)}>
-                <Text className="text-xs font-medium text-emerald-700">Rispondi</Text>
+                <Text className="text-xs font-medium text-emerald-700">{t('common.reply')}</Text>
               </Pressable>
               <Pressable onPress={() => onReport(comment.id)}>
                 <Text className="text-xs font-medium text-gray-400 dark:text-neutral-500">
-                  Segnala
+                  {t('common.report')}
                 </Text>
               </Pressable>
             </>
@@ -89,6 +91,7 @@ function PostDetailSkeleton() {
 
 export default function PostDetailScreen() {
   const vm = usePostDetailViewModel();
+  const { t } = useTranslation();
   const inputRef = useRef<TextInputType>(null);
 
   const handleReply = (commentId: string, authorName: string) => {
@@ -100,8 +103,8 @@ export default function PostDetailScreen() {
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <Stack.Screen
         options={{
-          title: 'Post',
-          headerBackTitle: 'Feed',
+          title: t('feed.postTitle'),
+          headerBackTitle: t('feed.backButton'),
         }}
       />
 
@@ -156,7 +159,7 @@ export default function PostDetailScreen() {
                 {/* Comments header */}
                 <View className="border-t border-gray-100 dark:border-[#38383A] px-4 py-2">
                   <Text className="text-sm font-semibold text-gray-500 dark:text-neutral-500">
-                    Commenti
+                    {t('feed.comments.title')}
                   </Text>
                 </View>
               </View>
@@ -172,7 +175,7 @@ export default function PostDetailScreen() {
             onEndReachedThreshold={0.5}
             ListEmptyComponent={
               <Text className="px-4 py-8 text-center text-sm text-gray-400 dark:text-neutral-500">
-                Nessun commento ancora
+                {t('feed.comments.noComments')}
               </Text>
             }
           />
@@ -181,11 +184,12 @@ export default function PostDetailScreen() {
           {vm.replyingTo ? (
             <View className="flex-row items-center justify-between border-t border-gray-100 dark:border-[#38383A] bg-gray-50 dark:bg-[#2C2C2E] px-4 py-2">
               <Text className="text-xs text-gray-500 dark:text-neutral-500">
-                Rispondi a <Text className="font-semibold">{vm.replyingTo.authorName}</Text>
+                {t('feed.comments.replyTo')}{' '}
+                <Text className="font-semibold">{vm.replyingTo.authorName}</Text>
               </Text>
               <Pressable onPress={vm.cancelReply}>
                 <Text className="text-xs font-medium text-gray-400 dark:text-neutral-500">
-                  Annulla
+                  {t('common.cancel')}
                 </Text>
               </Pressable>
             </View>
@@ -196,7 +200,11 @@ export default function PostDetailScreen() {
             <TextInput
               ref={inputRef}
               className="flex-1 rounded-full bg-gray-100 dark:bg-[#38383A] px-4 py-2 text-sm"
-              placeholder={vm.replyingTo ? 'Scrivi una risposta...' : 'Scrivi un commento...'}
+              placeholder={
+                vm.replyingTo
+                  ? t('feed.comments.replyPlaceholder')
+                  : t('feed.comments.writePlaceholder')
+              }
               value={vm.commentText}
               onChangeText={vm.setCommentText}
               maxLength={500}
@@ -207,7 +215,7 @@ export default function PostDetailScreen() {
               className="rounded-full bg-emerald-800 px-4 py-2"
             >
               <Text className="text-sm font-semibold text-white">
-                {vm.submitting ? '...' : 'Invia'}
+                {vm.submitting ? '...' : t('feed.comments.sendButton')}
               </Text>
             </Pressable>
           </View>

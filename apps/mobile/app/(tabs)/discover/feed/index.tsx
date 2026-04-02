@@ -1,6 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PostCard } from '@/components/PostCard';
@@ -31,14 +32,15 @@ function FeedSkeleton() {
 // ── Empty State ────────────────────────────────────────────────────────────
 
 function EmptyFeed() {
+  const { t } = useTranslation();
   return (
     <View className="flex-1 items-center justify-center px-8 pt-20">
       <Text className="mb-2 text-5xl">📷</Text>
       <Text className="mb-1 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
-        Nessun post ancora
+        {t('feed.noPostsYet')}
       </Text>
       <Text className="text-center text-sm text-gray-500 dark:text-neutral-500">
-        Inizia a seguire altri proprietari o pubblica il tuo primo post!
+        {t('feed.noPostsDescription')}
       </Text>
     </View>
   );
@@ -87,12 +89,15 @@ const FeedItemRow = memo(function FeedItemRow({
 
 export default function FeedScreen() {
   const vm = useFeedViewModel();
+  const { t } = useTranslation();
 
   if (vm.isInitialLoad) {
     return (
       <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
         <View className="border-b border-gray-100 dark:border-[#38383A] px-4 pb-3 pt-2">
-          <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">Feed</Text>
+          <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+            {t('feed.title')}
+          </Text>
         </View>
         <FeedSkeleton />
       </SafeAreaView>
@@ -102,7 +107,7 @@ export default function FeedScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="border-b border-gray-100 px-4 pb-3 pt-2">
-        <Text className="text-xl font-bold text-gray-900">Feed</Text>
+        <Text className="text-xl font-bold text-gray-900">{t('feed.title')}</Text>
       </View>
 
       {/* New posts banner */}
@@ -111,7 +116,9 @@ export default function FeedScreen() {
           onPress={vm.refresh}
           className="items-center border-b border-emerald-100 bg-emerald-50 py-2"
         >
-          <Text className="text-sm font-medium text-emerald-800">Nuovi post disponibili</Text>
+          <Text className="text-sm font-medium text-emerald-800">
+            {t('feed.newPostsAvailable')}
+          </Text>
         </Pressable>
       ) : null}
 

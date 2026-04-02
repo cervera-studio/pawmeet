@@ -9,7 +9,7 @@ type Deps = {
 export function createGenerateDogBio({ bioGenerationService }: Deps) {
   return async (input: GenerateDogBioInput): Promise<Result<{ bio: string }>> => {
     if (!bioGenerationService) {
-      return fail(new AppError('AI_SERVICE_UNAVAILABLE', 'AI service unavailable', 503));
+      return succeed({ bio: '' });
     }
 
     const bio = await bioGenerationService.generate(input);

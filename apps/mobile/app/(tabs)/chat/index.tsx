@@ -1,6 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SegmentControl } from '@/components/chat/SegmentControl';
@@ -13,6 +14,8 @@ import { TABS, useChatListViewModel } from './_vm/index.view-model';
 // ── 1-on-1 chat row ─────────────────────────────────────────────────────────
 
 function ChatRow({ conversation, onPress }: { conversation: Conversation; onPress: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <Pressable
       onPress={onPress}
@@ -20,7 +23,7 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
     >
       {/* Avatar */}
       <View className="relative">
-        <Avatar name={conversation.otherDogName ?? 'Cane'} size="md" />
+        <Avatar name={conversation.otherDogName ?? t('chat.defaultDogName')} size="md" />
       </View>
 
       <View className="ml-3 flex-1">
@@ -32,8 +35,8 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
                 : 'font-semibold text-gray-900 dark:text-[#F5F5F7]'
             }`}
           >
-            {conversation.otherDogName ?? 'Cane'} &{' '}
-            {conversation.otherUser?.displayName ?? 'Utente'}
+            {conversation.otherDogName ?? t('chat.defaultDogName')} &{' '}
+            {conversation.otherUser?.displayName ?? t('common.user')}
           </Text>
           <Text className="text-xs text-gray-400 dark:text-neutral-500">
             {conversation.lastMessage ? String(conversation.lastMessage.createdAt) : ''}
@@ -48,7 +51,7 @@ function ChatRow({ conversation, onPress }: { conversation: Conversation; onPres
             }`}
             numberOfLines={1}
           >
-            {conversation.lastMessage?.content ?? 'Nessun messaggio'}
+            {conversation.lastMessage?.content ?? t('chat.noMessage')}
           </Text>
           {conversation.unreadCount > 0 && (
             <View className="ml-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5">
@@ -70,6 +73,8 @@ function GroupChatRow({
   conversation: GroupConversation;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <Pressable
       onPress={onPress}
@@ -106,7 +111,7 @@ function GroupChatRow({
               }`}
               numberOfLines={1}
             >
-              {conversation.lastMessage?.content ?? 'Nessun messaggio'}
+              {conversation.lastMessage?.content ?? t('chat.noMessage')}
             </Text>
           </View>
           <View className="flex-row items-center ml-2">
@@ -134,12 +139,14 @@ function MatchesRail({
   matches: EnrichedMatch[];
   onPress: (matchId: string) => void;
 }) {
+  const { t } = useTranslation();
+
   if (matches.length === 0) return null;
 
   return (
     <View className="border-b border-gray-100 dark:border-[#38383A] py-3">
       <Text className="mb-2 px-4 text-xs font-semibold uppercase text-gray-400 dark:text-neutral-500">
-        Nuovi match
+        {t('chat.newMatches')}
       </Text>
       <ScrollView
         horizontal
@@ -168,25 +175,29 @@ function MatchesRail({
 // ── Empty states ─────────────────────────────────────────────────────────────
 
 function MessagesEmptyState() {
+  const { t } = useTranslation();
+
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F4AC}'}</Text>
-      <Text className="mt-4 text-lg text-gray-400 dark:text-neutral-500">Nessuna chat</Text>
-      <Text className="text-sm text-gray-300">Fai match con qualcuno per iniziare a chattare!</Text>
+      <Text className="mt-4 text-lg text-gray-400 dark:text-neutral-500">
+        {t('chat.listEmptyTitle')}
+      </Text>
+      <Text className="text-sm text-gray-300">{t('chat.listEmptyDescription')}</Text>
     </View>
   );
 }
 
 function GroupsEmptyState() {
+  const { t } = useTranslation();
+
   return (
     <View className="flex-1 items-center justify-center py-20">
       <Text className="text-5xl">{'\u{1F465}'}</Text>
       <Text className="mt-4 text-lg text-gray-400 dark:text-neutral-500">
-        Nessuna chat di gruppo
+        {t('chat.groupListEmptyTitle')}
       </Text>
-      <Text className="text-sm text-gray-300">
-        Partecipa a un evento per chattare con il gruppo!
-      </Text>
+      <Text className="text-sm text-gray-300">{t('chat.groupListEmptyDescription')}</Text>
     </View>
   );
 }
@@ -194,6 +205,7 @@ function GroupsEmptyState() {
 // ── Screen ───────────────────────────────────────────────────────────────────
 
 export default function ChatListScreen() {
+  const { t } = useTranslation();
   const vm = useChatListViewModel();
   const { hasDog, showGate, setShowGate, dismissGate, goToAddDog } = useRequireDog();
 
@@ -205,7 +217,9 @@ export default function ChatListScreen() {
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
       <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
       <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">Chat</Text>
+        <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('tabs.chat')}
+        </Text>
       </View>
 
       <MatchesRail matches={vm.newMatches} onPress={vm.navigateToChat} />

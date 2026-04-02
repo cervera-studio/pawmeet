@@ -14,7 +14,13 @@ export function createAnalyzeDogPhoto({ dogPhotoAnalysisService }: Deps) {
     mimeType: string,
   ): Promise<Result<{ analysis: DogPhotoAnalysisResult }>> => {
     if (!dogPhotoAnalysisService) {
-      return fail(new AppError('AI_SERVICE_UNAVAILABLE', 'AI service unavailable', 503));
+      return succeed({
+        analysis: {
+          breed: 'unknown',
+          size: 'medium' as const,
+          confidence: 0,
+        },
+      });
     }
 
     const analysis = await dogPhotoAnalysisService.analyze(imageBase64, mimeType);

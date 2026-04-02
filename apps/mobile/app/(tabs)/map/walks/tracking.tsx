@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MoodLogModal } from '@/components/MoodLogModal';
@@ -15,6 +16,7 @@ function StatBox({ label, value }: { label: string; value: string }) {
 }
 
 export default function TrackingScreen() {
+  const { t } = useTranslation();
   const vm = useTrackingViewModel();
   const selectedDogId = useDogsStore((s) => s.selectedDogId);
   const dogs = useDogsStore((s) => s.dogs);
@@ -25,8 +27,8 @@ export default function TrackingScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Traccia passeggiata',
-          headerBackTitle: 'Passeggiate',
+          title: t('walks.tracking.title'),
+          headerBackTitle: t('walks.tracking.backButton'),
         }}
       />
 
@@ -39,21 +41,21 @@ export default function TrackingScreen() {
               {vm.formattedElapsed}
             </Text>
             <Text className="mt-2 text-base text-gray-500 dark:text-neutral-500">
-              {vm.isTracking ? 'In corso' : 'Pronta per partire'}
+              {vm.isTracking ? t('walks.tracking.inProgress') : t('walks.tracking.readyToGo')}
             </Text>
           </View>
 
           {/* Distance and speed */}
           <View className="flex-row gap-3">
-            <StatBox label="Distanza" value={vm.formattedDistance} />
-            <StatBox label="Velocità" value={vm.formattedSpeed} />
+            <StatBox label={t('walks.tracking.distance')} value={vm.formattedDistance} />
+            <StatBox label={t('walks.tracking.speed')} value={vm.formattedSpeed} />
           </View>
 
           {/* Points count */}
           {vm.isTracking ? (
             <View className="items-center">
               <Text className="text-sm text-gray-400 dark:text-neutral-500">
-                {vm.points.length} punti GPS registrati
+                {t('walks.tracking.gpsPoints', { count: vm.points.length })}
               </Text>
             </View>
           ) : null}
@@ -93,12 +95,12 @@ export default function TrackingScreen() {
               onPress={vm.handleStart}
               className="h-24 w-24 items-center justify-center rounded-full bg-emerald-700 shadow-lg"
             >
-              <Text className="text-lg font-bold text-white">VAI</Text>
+              <Text className="text-lg font-bold text-white">{t('common.go')}</Text>
             </Pressable>
           )}
 
           <Text className="mt-4 text-sm text-gray-400 dark:text-neutral-500">
-            {vm.isTracking ? 'Tocca per terminare' : 'Tocca per iniziare'}
+            {vm.isTracking ? t('walks.tracking.tapToStop') : t('walks.tracking.tapToStart')}
           </Text>
         </View>
       </View>

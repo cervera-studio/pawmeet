@@ -3,13 +3,15 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 import { WALK_STATUS } from '@pawmeet/types';
 import { useRouter } from 'expo-router';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogSelector } from '@/components/DogSelector';
+import i18n from '@/lib/i18n';
 import type { ViewMode } from './_vm/calendar.view-model';
 import { useCalendarViewModel } from './_vm/calendar.view-model';
 
-const WEEKDAY_LABELS = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+const WEEKDAY_LABELS_FALLBACK = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
 
 function statusColor(status: string): string {
   switch (status) {
@@ -27,11 +29,11 @@ function statusColor(status: string): string {
 function statusLabel(status: string): string {
   switch (status) {
     case WALK_STATUS.PENDING:
-      return 'In attesa';
+      return i18n.t('walks.status.pending');
     case WALK_STATUS.ACCEPTED:
-      return 'Confermata';
+      return i18n.t('walks.status.accepted');
     case WALK_STATUS.COMPLETED:
-      return 'Completata';
+      return i18n.t('walks.status.completed');
     default:
       return status;
   }
@@ -64,6 +66,7 @@ function ViewModeToggle({
   viewMode: ViewMode;
   onToggle: (mode: ViewMode) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <View className="flex-row rounded-lg bg-gray-100 dark:bg-[#38383A] p-0.5">
       <Pressable
@@ -73,7 +76,7 @@ function ViewModeToggle({
         <Text
           className={`text-xs font-medium ${viewMode === 'week' ? 'text-gray-900 dark:text-[#F5F5F7]' : 'text-gray-500 dark:text-neutral-500'}`}
         >
-          Settimana
+          {t('walks.viewMode.week')}
         </Text>
       </Pressable>
       <Pressable
@@ -83,7 +86,7 @@ function ViewModeToggle({
         <Text
           className={`text-xs font-medium ${viewMode === 'month' ? 'text-gray-900 dark:text-[#F5F5F7]' : 'text-gray-500 dark:text-neutral-500'}`}
         >
-          Mese
+          {t('walks.viewMode.month')}
         </Text>
       </Pressable>
     </View>
@@ -164,7 +167,7 @@ const WalkItem = memo(function WalkItem({
       <View className={`h-10 w-1 rounded-full mr-3 ${statusColor(status)}`} />
       <View className="flex-1">
         <Text className="text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">
-          {title ?? 'Passeggiata'}
+          {title ?? i18n.t('walks.defaultTitle')}
         </Text>
         <Text className="text-xs text-gray-500 dark:text-neutral-500">
           {time} - {duration} min
@@ -213,6 +216,7 @@ function CalendarSkeleton() {
 // ── Screen ─────────────────────────────────────────────────────────────────
 
 export default function CalendarScreen() {
+  const { t } = useTranslation();
   const vm = useCalendarViewModel();
   const router = useRouter();
 
@@ -229,11 +233,15 @@ export default function CalendarScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between border-b border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-3">
         <Pressable onPress={() => router.back()}>
-          <Text className="text-base text-emerald-700 font-medium">Indietro</Text>
+          <Text className="text-base text-emerald-700 font-medium">{t('common.back')}</Text>
         </Pressable>
-        <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">Calendario</Text>
+        <Text className="text-lg font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('walks.calendar.title')}
+        </Text>
         <Pressable onPress={vm.goToToday}>
-          <Text className="text-base text-emerald-700 font-medium">Oggi</Text>
+          <Text className="text-base text-emerald-700 font-medium">
+            {t('walks.calendar.today')}
+          </Text>
         </Pressable>
       </View>
 
@@ -264,7 +272,10 @@ export default function CalendarScreen() {
 
           {/* Weekday headers */}
           <View className="flex-row px-4 mb-1">
-            {WEEKDAY_LABELS.map((label) => (
+            {(
+              (t('walks.calendar.weekdaysShort', { returnObjects: true }) as string[]) ??
+              WEEKDAY_LABELS_FALLBACK
+            ).map((label) => (
               <View key={label} className="flex-1 items-center">
                 <Text className="text-xs font-medium text-gray-400 dark:text-neutral-500">
                   {label}
@@ -306,7 +317,7 @@ export default function CalendarScreen() {
             {vm.walksForSelectedDate.length === 0 ? (
               <View className="items-center py-8">
                 <Text className="text-gray-400 dark:text-neutral-500 text-sm">
-                  Nessuna passeggiata
+                  {t('walks.calendar.empty')}
                 </Text>
               </View>
             ) : (

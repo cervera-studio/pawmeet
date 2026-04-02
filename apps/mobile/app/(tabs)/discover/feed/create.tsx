@@ -1,6 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { TagOption } from './_vm/create.view-model';
@@ -8,13 +9,14 @@ import { useCreatePostViewModel } from './_vm/create.view-model';
 
 export default function CreatePostScreen() {
   const vm = useCreatePostViewModel();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['bottom']}>
       <Stack.Screen
         options={{
-          title: 'Nuovo post',
-          headerBackTitle: 'Feed',
+          title: t('feed.create.title'),
+          headerBackTitle: t('feed.backButton'),
         }}
       />
 
@@ -22,7 +24,7 @@ export default function CreatePostScreen() {
         {/* Caption */}
         <TextInput
           className="mb-4 min-h-[80px] rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4 text-base text-gray-900 dark:text-[#F5F5F7]"
-          placeholder="Scrivi una didascalia..."
+          placeholder={t('feed.create.captionPlaceholder')}
           value={vm.caption}
           onChangeText={vm.setCaption}
           multiline
@@ -47,7 +49,7 @@ export default function CreatePostScreen() {
               </Pressable>
               {media.type.startsWith('video/') ? (
                 <View className="absolute bottom-1 left-1 rounded bg-black/60 px-1">
-                  <Text className="text-xs text-white">Video</Text>
+                  <Text className="text-xs text-white">{t('common.video')}</Text>
                 </View>
               ) : null}
             </View>
@@ -59,7 +61,9 @@ export default function CreatePostScreen() {
               className="h-24 w-24 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-[#48484A]"
             >
               <Text className="text-2xl text-gray-400 dark:text-neutral-500">+</Text>
-              <Text className="text-xs text-gray-400 dark:text-neutral-500">Aggiungi</Text>
+              <Text className="text-xs text-gray-400 dark:text-neutral-500">
+                {t('feed.create.addMedia')}
+              </Text>
             </Pressable>
           ) : null}
         </View>
@@ -73,8 +77,8 @@ export default function CreatePostScreen() {
             <Text className="text-base">🏷️</Text>
             <Text className="text-sm text-gray-700 dark:text-[#D1D1D6]">
               {vm.selectedTags.length > 0
-                ? `${vm.selectedTags.length} tag selezionati`
-                : 'Tagga persone o cani'}
+                ? t('feed.create.tagsSelected', { count: vm.selectedTags.length })
+                : t('feed.create.tagPrompt')}
             </Text>
           </View>
 
@@ -123,7 +127,9 @@ export default function CreatePostScreen() {
         <View className="mb-4 flex-row items-center justify-between rounded-xl bg-gray-50 dark:bg-[#2C2C2E] p-4">
           <View className="flex-row items-center gap-2">
             <Text className="text-base">📍</Text>
-            <Text className="text-sm text-gray-700 dark:text-[#D1D1D6]">Includi posizione</Text>
+            <Text className="text-sm text-gray-700 dark:text-[#D1D1D6]">
+              {t('feed.create.includeLocation')}
+            </Text>
           </View>
           <Switch
             value={vm.includeLocation}
@@ -136,7 +142,10 @@ export default function CreatePostScreen() {
         {vm.uploading ? (
           <View className="mb-4 rounded-xl bg-emerald-50 p-4">
             <Text className="text-sm font-medium text-emerald-800">
-              Caricamento {vm.progress.current}/{vm.progress.total}...
+              {t('feed.create.uploadProgress', {
+                current: vm.progress.current,
+                total: vm.progress.total,
+              })}
             </Text>
             <View className="mt-2 h-2 overflow-hidden rounded-full bg-emerald-200">
               <View
@@ -161,7 +170,7 @@ export default function CreatePostScreen() {
           className={`items-center rounded-xl py-3 ${vm.canSubmit ? 'bg-emerald-800' : 'bg-gray-300 dark:bg-[#48484A]'}`}
         >
           <Text className="text-base font-semibold text-white">
-            {vm.uploading ? 'Pubblicando...' : 'Pubblica'}
+            {vm.uploading ? t('common.publishing') : t('common.publish')}
           </Text>
         </Pressable>
       </View>

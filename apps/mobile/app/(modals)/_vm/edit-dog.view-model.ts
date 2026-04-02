@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import { PHOTO_MODERATION_STATUS } from '@pawmeet/types';
 import {
   BEHAVIOR_DOGS_OPTIONS,
   BEHAVIOR_PEOPLE_OPTIONS,
@@ -168,7 +169,7 @@ export function useEditDogViewModel() {
           dogId: dogId!,
           position: prev.length,
           isPrimary: prev.length === 0,
-          moderationStatus: 'pending' as const,
+          moderationStatus: PHOTO_MODERATION_STATUS.PENDING,
           uploadedAt: new Date().toISOString(),
         },
       ]);

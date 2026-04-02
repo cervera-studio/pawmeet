@@ -44,13 +44,22 @@ export interface DiscoveryFilters {
   maxDistanceKm?: number;
 }
 
+export const PHOTO_MODERATION_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+} as const;
+
+export type PhotoModerationStatus =
+  (typeof PHOTO_MODERATION_STATUS)[keyof typeof PHOTO_MODERATION_STATUS];
+
 export interface DogPhoto {
   id: string;
   dogId: string;
   url: string;
   position: number;
   isPrimary: boolean;
-  moderationStatus: 'pending' | 'approved' | 'rejected';
+  moderationStatus: PhotoModerationStatus;
   uploadedAt: Date;
 }
 

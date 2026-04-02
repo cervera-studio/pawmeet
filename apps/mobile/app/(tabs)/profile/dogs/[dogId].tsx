@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import { PHOTO_MODERATION_STATUS } from '@pawmeet/types';
 import { formatDogAge } from '@pawmeet/utils';
 import { Stack, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -157,14 +158,14 @@ function PhotoGallery({
                 <ActivityIndicator size="small" color="#ffffff" />
               </View>
             )}
-            {photo.moderationStatus === 'pending' && (
+            {photo.moderationStatus === PHOTO_MODERATION_STATUS.PENDING && (
               <View className="absolute bottom-1 left-1 rounded-full bg-yellow-500 px-1.5 py-0.5">
                 <Text className="text-[10px] font-medium text-white">
                   {t('profile.dogDetail.photoReview')}
                 </Text>
               </View>
             )}
-            {photo.moderationStatus === 'rejected' && (
+            {photo.moderationStatus === PHOTO_MODERATION_STATUS.REJECTED && (
               <View className="absolute bottom-1 left-1 rounded-full bg-red-500 px-1.5 py-0.5">
                 <Text className="text-[10px] font-medium text-white">
                   {t('profile.dogDetail.photoRejected')}

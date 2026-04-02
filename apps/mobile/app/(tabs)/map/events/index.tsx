@@ -1,7 +1,7 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
 import type { GroupEventCategory } from '@pawmeet/types';
-import { GROUP_EVENT_STATUS } from '@pawmeet/types';
+import { GROUP_EVENT_STATUS, PARTICIPANT_STATUS } from '@pawmeet/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
@@ -61,11 +61,11 @@ function statusColor(status: string): string {
 
 function rsvpLabel(status: string | null | undefined): string | null {
   switch (status) {
-    case 'accepted':
+    case PARTICIPANT_STATUS.ACCEPTED:
       return i18n.t('events.rsvp.accepted');
-    case 'pending':
+    case PARTICIPANT_STATUS.PENDING:
       return i18n.t('events.rsvp.pending');
-    case 'declined':
+    case PARTICIPANT_STATUS.DECLINED:
       return i18n.t('events.rsvp.declined');
     default:
       return null;
@@ -74,11 +74,11 @@ function rsvpLabel(status: string | null | undefined): string | null {
 
 function rsvpColor(status: string | null | undefined): string {
   switch (status) {
-    case 'accepted':
+    case PARTICIPANT_STATUS.ACCEPTED:
       return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
-    case 'pending':
+    case PARTICIPANT_STATUS.PENDING:
       return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
-    case 'declined':
+    case PARTICIPANT_STATUS.DECLINED:
       return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
     default:
       return '';

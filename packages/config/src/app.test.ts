@@ -25,6 +25,7 @@ describe('app constants', () => {
       'GROUP_EVENT_DESCRIPTION_MAX_LENGTH',
       'GROUP_EVENT_MAX_RECURRING_TEMPLATES',
       'GROUP_EVENT_OCCURRENCES_AHEAD',
+      'MAX_EMAIL_LENGTH',
     ] as const;
 
     it.each(requiredKeys)('exports %s', (key) => {

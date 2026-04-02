@@ -17,6 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChipSelect } from '@/components/ChipSelect';
 import { Button } from '@/components/ui/Button';
+import { getDateLocale } from '@/lib/i18n';
 import { useSupportViewModel } from './_vm/support.view-model';
 
 const STATUS_COLORS: Record<SupportTicketStatus, { bg: string; text: string }> = {
@@ -45,7 +46,11 @@ function StatusBadge({ status }: { status: SupportTicketStatus }) {
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  return d.toLocaleDateString(getDateLocale(), {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  });
 }
 
 function TicketRow({ ticket, onPress }: { ticket: Ticket; onPress: (id: string) => void }) {

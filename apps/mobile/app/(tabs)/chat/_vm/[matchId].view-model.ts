@@ -8,6 +8,7 @@ import { useChat } from '@/hooks/useChat';
 import { useLocation } from '@/hooks/useLocation';
 import { useWalks } from '@/hooks/useWalks';
 import { isValidUUID } from '@/lib/deep-link-validation';
+import { getDateLocale } from '@/lib/i18n';
 import { useAuthStore } from '@/stores/auth';
 
 export function useChatConversationViewModel() {
@@ -242,5 +243,5 @@ export function useChatConversationViewModel() {
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(getDateLocale(), { hour: '2-digit', minute: '2-digit' });
 }

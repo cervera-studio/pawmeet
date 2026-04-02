@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
+import { getDateLocale } from '@/lib/i18n';
 import type { CommentWithAuthor } from './_vm/comments.view-model';
 import { useCommentsViewModel } from './_vm/comments.view-model';
 
@@ -23,7 +24,7 @@ import { useCommentsViewModel } from './_vm/comments.view-model';
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', {
+  return d.toLocaleDateString(getDateLocale(), {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',

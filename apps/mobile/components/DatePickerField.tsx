@@ -3,6 +3,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, useColorScheme, View } from 'react-native';
+import { getDateLocale } from '@/lib/i18n';
 
 interface DatePickerFieldProps {
   value: Date | null;
@@ -70,7 +71,7 @@ export function DatePickerField({
             }
           >
             {value
-              ? value.toLocaleDateString('it-IT', {
+              ? value.toLocaleDateString(getDateLocale(), {
                   day: '2-digit',
                   month: 'long',
                   year: 'numeric',

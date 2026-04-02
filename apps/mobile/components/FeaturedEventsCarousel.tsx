@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Dimensions, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { getDateLocale } from '@/lib/i18n';
 import type { FeaturedEvent } from '@/repositories/interfaces';
 
 const CARD_WIDTH = Dimensions.get('window').width * 0.85;
@@ -7,7 +8,7 @@ const CARD_HEIGHT = 200;
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', {
+  return d.toLocaleDateString(getDateLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -16,7 +17,7 @@ function formatDate(date: Date | string): string {
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(getDateLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 const FeaturedCard = memo(function FeaturedCard({

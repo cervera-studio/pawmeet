@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogSelector } from '@/components/DogSelector';
-import i18n from '@/lib/i18n';
+import i18n, { getDateLocale } from '@/lib/i18n';
 import type { ViewMode } from './_vm/calendar.view-model';
 import { useCalendarViewModel } from './_vm/calendar.view-model';
 
@@ -54,7 +54,7 @@ function statusBadgeColor(status: string): string {
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(getDateLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 // ── View mode toggle ───────────────────────────────────────────────────────
@@ -222,7 +222,7 @@ export default function CalendarScreen() {
 
   const isInitialLoad = vm.loading && vm.walksForSelectedDate.length === 0;
 
-  const selectedDateLabel = vm.selectedDate.toLocaleDateString('it-IT', {
+  const selectedDateLabel = vm.selectedDate.toLocaleDateString(getDateLocale(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',

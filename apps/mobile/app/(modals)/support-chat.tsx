@@ -16,16 +16,17 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
+import { getDateLocale } from '@/lib/i18n';
 import { useSupportChatViewModel } from './_vm/support-chat.view-model';
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(getDateLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
+  return d.toLocaleDateString(getDateLocale(), { day: '2-digit', month: 'short' });
 }
 
 /** Read receipt indicator for user messages: double check if read, single check if sent */

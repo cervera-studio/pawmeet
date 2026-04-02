@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getDateLocale } from '@/lib/i18n';
 import { useCreateEventViewModel } from './_vm/create.view-model';
 
 // ── Stepper component ────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ function Stepper({
 // ── Helper ───────────────────────────────────────────────────────────────────
 
 function formatDateTime(date: Date): string {
-  return date.toLocaleDateString('it-IT', {
+  return date.toLocaleDateString(getDateLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -152,7 +153,7 @@ export default function CreateEventScreen() {
                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                 minimumDate={new Date()}
                 onChange={vm.handleDateChange}
-                locale="it-IT"
+                locale={getDateLocale()}
               />
             )}
           </View>

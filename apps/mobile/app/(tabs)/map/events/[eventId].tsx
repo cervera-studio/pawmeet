@@ -13,7 +13,7 @@ import {
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import i18n from '@/lib/i18n';
+import i18n, { getDateLocale } from '@/lib/i18n';
 import { useEventDetailViewModel } from './_vm/[eventId].view-model';
 import { useEventRequestsViewModel } from './_vm/requests.view-model';
 
@@ -24,7 +24,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', {
+  return d.toLocaleDateString(getDateLocale(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -34,7 +34,7 @@ function formatDate(date: Date | string): string {
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(getDateLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 function statusLabel(status: string): string {

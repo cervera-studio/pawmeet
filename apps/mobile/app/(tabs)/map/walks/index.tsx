@@ -7,12 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeedbackModal } from '@/components/FeedbackModal';
+import { getDateLocale } from '@/lib/i18n';
 import type { Walk } from './_vm/index.view-model';
 import { useWalksViewModel } from './_vm/index.view-model';
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', {
+  return d.toLocaleDateString(getDateLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -21,7 +22,7 @@ function formatDate(date: Date | string): string {
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(getDateLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 const STATUS_KEY_MAP: Record<string, string> = {

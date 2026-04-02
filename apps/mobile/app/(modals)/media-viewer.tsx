@@ -1,5 +1,6 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
@@ -17,6 +18,7 @@ function isValidMediaUrl(raw: string): boolean {
 
 export default function MediaViewerScreen() {
   usePreventScreenCapture();
+  const { t } = useTranslation();
   const { url, mediaType } = useLocalSearchParams<{ url: string; mediaType: string }>();
   const router = useRouter();
 
@@ -36,7 +38,7 @@ export default function MediaViewerScreen() {
         <Pressable
           onPress={() => router.back()}
           className="mt-2 h-10 w-10 items-center justify-center rounded-full bg-black/50"
-          accessibilityLabel="Chiudi"
+          accessibilityLabel={t('common.close')}
           accessibilityRole="button"
         >
           <Text className="text-lg font-bold text-white">✕</Text>

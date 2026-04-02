@@ -330,11 +330,15 @@
       "tapToSelect": "Tocca per selezionare",
       "noViews": "Nessuna visualizzazione",
       "noViewsDescription": "Nessuno ha ancora visto questa storia.",
-      "viewsCountOne": "{{count}} visualizzazione"
+      "viewsCountOne": "{{count}} visualizzazione",
+      "viewsCount": "{{count}} visualizzazioni"
     },
     "hashtag": {
       "noPosts": "Nessun post con questo hashtag",
-      "trending": "Di tendenza"
+      "trending": "Di tendenza",
+      "title": "#{{hashtag}}",
+      "postsCount": "{{count}} post",
+      "noPostsDescription": "Nessun post con questo hashtag ancora"
     },
     "reviews": {
       "noReviews": "Nessuna recensione",
@@ -481,7 +485,9 @@
       "backButton": "Gamification",
       "completed": "Completata!",
       "noChallenges": "Nessuna sfida attiva al momento.\nTorna presto per nuove sfide!",
-      "expired": "Scaduta"
+      "expired": "Scaduta",
+      "daysLeft": "{{count}}g rimasti",
+      "hoursLeft": "{{count}}h rimaste"
     },
     "followList": {
       "noFollowers": "Nessun follower",
@@ -747,7 +753,9 @@
       "resending": "Reinvio in corso...",
       "title": "Verifica la tua email",
       "verifyButton": "Verifica",
-      "verifying": "Verifica in corso..."
+      "verifying": "Verifica in corso...",
+      "subtitle": "Abbiamo inviato un codice di verifica a {{email}}",
+      "resendCountdown": "Riprova tra {{seconds}}s"
     }
   },
   "dogForm": {
@@ -1119,6 +1127,7 @@
     "adding": "Aggiunta in corso...",
     "contactsSection": "Contatti di emergenza",
     "deleteButton": "Rimuovi",
+    "deleteConfirmMessage": "Sei sicuro di voler rimuovere {{name}} dai tuoi contatti di emergenza?",
     "deleteConfirmTitle": "Rimuovere questo contatto?",
     "description": "Configura i contatti di emergenza che verranno avvisati se attivi un SOS durante una passeggiata.",
     "howSosWorks": "Come funziona l'SOS",
@@ -1153,6 +1162,12 @@
     "subjectPlaceholder": "Breve descrizione del problema",
     "ticketClosed": "Questo ticket è stato chiuso",
     "title": "Supporto",
-    "typing": "Il supporto sta scrivendo..."
+    "typing": "Il supporto sta scrivendo...",
+    "status": {
+      "open": "Aperto",
+      "in_progress": "In corso",
+      "resolved": "Risolto",
+      "closed": "Chiuso"
+    }
   }
 }

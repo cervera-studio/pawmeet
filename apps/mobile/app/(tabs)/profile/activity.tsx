@@ -6,6 +6,7 @@ import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { useHealthConnect } from '@/hooks/useHealthConnect';
+import { getDateLocale } from '@/lib/i18n';
 import { useActivityViewModel } from './_vm/activity.view-model';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -214,7 +215,7 @@ function HealthConnectCard() {
       : t('profile.activity.connectHealthConnect');
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('it-IT', {
+    return date.toLocaleDateString(getDateLocale(), {
       day: 'numeric',
       month: 'short',
       hour: '2-digit',

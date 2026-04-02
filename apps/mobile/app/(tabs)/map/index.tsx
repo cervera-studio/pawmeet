@@ -7,13 +7,13 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import MapView, { Circle, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
-import i18n from '@/lib/i18n';
+import i18n, { getDateLocale } from '@/lib/i18n';
 import type { GroupEvent, NearbyUser } from './_vm/index.view-model';
 import { useMapViewModel } from './_vm/index.view-model';
 
 function formatEventDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', {
+  return d.toLocaleDateString(getDateLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',

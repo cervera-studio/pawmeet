@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { HashtagText } from '@/components/HashtagText';
 import { Avatar } from '@/components/ui/Avatar';
-import i18n from '@/lib/i18n';
+import i18n, { getDateLocale } from '@/lib/i18n';
 
 interface PostMedia {
   id: string;
@@ -62,7 +62,7 @@ function formatTimeAgo(date: Date | string): string {
   if (diffHours < 24) return `${diffHours}h`;
   const diffDays = Math.floor(diffHours / 24);
   if (diffDays < 7) return `${diffDays}g`;
-  return d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString(getDateLocale(), { day: 'numeric', month: 'short' });
 }
 
 export const PostCard = memo(function PostCard({

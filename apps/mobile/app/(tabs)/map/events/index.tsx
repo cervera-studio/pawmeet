@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeaturedEventsCarousel } from '@/components/FeaturedEventsCarousel';
-import i18n from '@/lib/i18n';
+import i18n, { getDateLocale } from '@/lib/i18n';
 import type { NearbyEvent } from './_vm/index.view-model';
 import { useEventDiscoveryViewModel } from './_vm/index.view-model';
 
@@ -15,7 +15,7 @@ import { useEventDiscoveryViewModel } from './_vm/index.view-model';
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', {
+  return d.toLocaleDateString(getDateLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -24,7 +24,7 @@ function formatDate(date: Date | string): string {
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(getDateLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 function statusLabel(status: string): string {

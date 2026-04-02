@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getDateLocale } from '@/lib/i18n';
 import { useMoodHistoryViewModel } from './_vm/mood-history.view-model';
 
 const SKELETON_KEYS = ['a', 'b', 'c', 'd', 'e'] as const;
@@ -55,12 +56,12 @@ function MoodTagChip({ tag }: { tag: string }) {
 function MoodLogRow({ log }: { log: Serialized<MoodLog> }) {
   const { t } = useTranslation();
   const date = new Date(log.createdAt);
-  const formattedDate = date.toLocaleDateString('it-IT', {
+  const formattedDate = date.toLocaleDateString(getDateLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   });
-  const formattedTime = date.toLocaleTimeString('it-IT', {
+  const formattedTime = date.toLocaleTimeString(getDateLocale(), {
     hour: '2-digit',
     minute: '2-digit',
   });

@@ -29,4 +29,10 @@ i18n.use(initReactI18next).init({
   },
 });
 
+/** Map i18n language code to BCP 47 tag for date formatting */
+export function getDateLocale(): string {
+  const map: Record<string, string> = { it: 'it-IT', en: 'en-US', es: 'es-ES', ro: 'ro-RO' };
+  return map[i18n.language] ?? 'it-IT';
+}
+
 export default i18n;

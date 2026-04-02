@@ -330,11 +330,15 @@
       "tapToSelect": "Atinge pentru a selecta",
       "noViews": "Nicio vizualizare",
       "noViewsDescription": "Nimeni nu a văzut încă această poveste.",
-      "viewsCountOne": "{{count}} vizualizare"
+      "viewsCountOne": "{{count}} vizualizare",
+      "viewsCount": "{{count}} vizualizări"
     },
     "hashtag": {
       "noPosts": "Nicio postare cu acest hashtag încă",
-      "trending": "În tendințe"
+      "trending": "În tendințe",
+      "title": "#{{hashtag}}",
+      "postsCount": "{{count}} postări",
+      "noPostsDescription": "Nu există postări cu acest hashtag încă"
     },
     "reviews": {
       "noReviews": "Nicio recenzie încă",
@@ -468,7 +472,9 @@
       "backButton": "Gamification",
       "completed": "Finalizată!",
       "noChallenges": "Nicio provocare activă momentan.\nRevino curând pentru provocări noi!",
-      "expired": "Expirat"
+      "expired": "Expirat",
+      "daysLeft": "{{count}}z rămase",
+      "hoursLeft": "{{count}}h rămase"
     },
     "followList": {
       "noFollowers": "Niciun urmăritor",
@@ -747,7 +753,9 @@
       "resending": "Se retrimite...",
       "title": "Verifică-ți emailul",
       "verifyButton": "Verifică",
-      "verifying": "Se verifică..."
+      "verifying": "Se verifică...",
+      "subtitle": "Am trimis un cod de verificare la {{email}}",
+      "resendCountdown": "Reîncearcă în {{seconds}}s"
     }
   },
   "dogForm": {
@@ -1119,6 +1127,7 @@
     "adding": "Se adaugă...",
     "contactsSection": "Contacte de urgență",
     "deleteButton": "Elimină",
+    "deleteConfirmMessage": "Ești sigur că vrei să elimini pe {{name}} din contactele de urgență?",
     "deleteConfirmTitle": "Elimini acest contact?",
     "description": "Configurează contactele de urgență care vor fi notificate dacă activezi un SOS în timpul unei plimbări.",
     "howSosWorks": "Cum funcționează SOS",
@@ -1153,6 +1162,12 @@
     "subjectPlaceholder": "Scurtă descriere a problemei",
     "ticketClosed": "Acest ticket a fost închis",
     "title": "Suport",
-    "typing": "Suportul scrie..."
+    "typing": "Suportul scrie...",
+    "status": {
+      "open": "Deschis",
+      "in_progress": "În curs",
+      "resolved": "Rezolvat",
+      "closed": "Închis"
+    }
   }
 }

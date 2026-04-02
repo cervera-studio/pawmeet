@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getDateLocale } from '@/lib/i18n';
 import { type BadgeCardData, useBadgesGridViewModel } from './_vm/badges.view-model';
 
 const SKELETON_KEYS_4 = ['a', 'b', 'c', 'd'] as const;
@@ -27,7 +28,7 @@ function BadgesSkeleton() {
 function BadgeCard({ card }: { card: BadgeCardData }) {
   const { t } = useTranslation();
   const formattedDate = card.unlockedAt
-    ? new Date(card.unlockedAt).toLocaleDateString('it-IT', {
+    ? new Date(card.unlockedAt).toLocaleDateString(getDateLocale(), {
         day: 'numeric',
         month: 'short',
         year: 'numeric',

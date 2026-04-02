@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getDateLocale } from '@/lib/i18n';
 import { type AchievementCardData, useAchievementsViewModel } from './_vm/achievements.view-model';
 
 const SKELETON_KEYS_8 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -27,7 +28,7 @@ function AchievementsSkeleton() {
 function AchievementCard({ card }: { card: AchievementCardData }) {
   const { t } = useTranslation();
   const formattedDate = card.unlockedAt
-    ? new Date(card.unlockedAt).toLocaleDateString('it-IT', {
+    ? new Date(card.unlockedAt).toLocaleDateString(getDateLocale(), {
         day: 'numeric',
         month: 'short',
         year: 'numeric',

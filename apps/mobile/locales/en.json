@@ -330,11 +330,15 @@
       "tapToSelect": "Tap to select",
       "noViews": "No views",
       "noViewsDescription": "No one has seen this story yet.",
-      "viewsCountOne": "{{count}} view"
+      "viewsCountOne": "{{count}} view",
+      "viewsCount": "{{count}} views"
     },
     "hashtag": {
       "noPosts": "No posts with this hashtag yet",
-      "trending": "Trending"
+      "trending": "Trending",
+      "title": "#{{hashtag}}",
+      "postsCount": "{{count}} posts",
+      "noPostsDescription": "No posts with this hashtag yet"
     },
     "reviews": {
       "noReviews": "No reviews yet",
@@ -468,7 +472,9 @@
       "backButton": "Gamification",
       "completed": "Completed!",
       "noChallenges": "No active challenges at the moment.\nCheck back soon for new challenges!",
-      "expired": "Expired"
+      "expired": "Expired",
+      "daysLeft": "{{count}}d left",
+      "hoursLeft": "{{count}}h left"
     },
     "followList": {
       "noFollowers": "No followers",
@@ -747,7 +753,9 @@
       "resending": "Resending...",
       "title": "Verify your email",
       "verifyButton": "Verify",
-      "verifying": "Verifying..."
+      "verifying": "Verifying...",
+      "subtitle": "We sent a verification code to {{email}}",
+      "resendCountdown": "Retry in {{seconds}}s"
     }
   },
   "dogForm": {
@@ -1119,6 +1127,7 @@
     "adding": "Adding...",
     "contactsSection": "Emergency contacts",
     "deleteButton": "Remove",
+    "deleteConfirmMessage": "Are you sure you want to remove {{name}} from your emergency contacts?",
     "deleteConfirmTitle": "Remove this contact?",
     "description": "Set up emergency contacts who will be notified if you trigger an SOS during a walk.",
     "howSosWorks": "How SOS works",
@@ -1153,6 +1162,12 @@
     "subjectPlaceholder": "Brief description of your issue",
     "ticketClosed": "This ticket has been closed",
     "title": "Support",
-    "typing": "Support is typing..."
+    "typing": "Support is typing...",
+    "status": {
+      "open": "Open",
+      "in_progress": "In progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    }
   }
 }

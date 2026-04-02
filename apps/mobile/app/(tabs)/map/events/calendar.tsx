@@ -3,16 +3,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getDateLocale } from '@/lib/i18n';
 import { container } from '@/repositories/container';
 import type { FeaturedEvent } from '@/repositories/interfaces';
 import { GROUP_EVENT_REPOSITORY } from '@/repositories/tokens';
 
 function formatMonthYear(date: Date): string {
-  return date.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
+  return date.toLocaleDateString(getDateLocale(), { month: 'long', year: 'numeric' });
 }
 
 function formatDayLabel(date: Date): string {
-  return date.toLocaleDateString('it-IT', {
+  return date.toLocaleDateString(getDateLocale(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -21,7 +22,7 @@ function formatDayLabel(date: Date): string {
 
 function formatTime(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(getDateLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 interface DayGroup {

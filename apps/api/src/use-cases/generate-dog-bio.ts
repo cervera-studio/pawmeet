@@ -8,6 +8,8 @@ type Deps = {
 
 export function createGenerateDogBio({ bioGenerationService }: Deps) {
   return async (input: GenerateDogBioInput): Promise<Result<{ bio: string }>> => {
+    // Service not configured → graceful degradation (empty bio is acceptable).
+    // Service configured but returns empty → unexpected failure (AI_GENERATION_FAILED).
     if (!bioGenerationService) {
       return succeed({ bio: '' });
     }

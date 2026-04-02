@@ -4,6 +4,7 @@ import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
+import { getDateLocale } from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 
 type DogRating = RouterOutput['feedback']['getDogRating'];
@@ -34,7 +35,7 @@ function StarRating({ rating }: { rating: number }) {
 
 function formatDate(date: Date | string): string {
   const d = new Date(date);
-  return d.toLocaleDateString('it-IT', {
+  return d.toLocaleDateString(getDateLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

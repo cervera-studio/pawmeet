@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import { MESSAGE_STATUS } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import * as Crypto from 'expo-crypto';
 import { useCallback } from 'react';
@@ -124,7 +125,7 @@ export function useMessageSender(matchId: string | undefined, deps: MessageSende
 
       // Reset status back to "sending"
       setMessages((prev) =>
-        prev.map((m) => (m.id === tempId ? { ...m, status: 'sending' as const } : m)),
+        prev.map((m) => (m.id === tempId ? { ...m, status: MESSAGE_STATUS.SENDING } : m)),
       );
 
       try {

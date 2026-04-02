@@ -1,3 +1,4 @@
+import { HEALTH_DATA_SOURCE } from '@pawmeet/config';
 import { logger } from '@pawmeet/utils';
 import { Platform } from 'react-native';
 import { mmkv } from '@/lib/storage';
@@ -48,7 +49,7 @@ export function createHealthSyncService(healthService: HealthService): HealthSyn
               walkDistanceKm: distanceKm,
               walkDurationMin: activeMinutes,
               walkCount: 0,
-              source: isIOS ? ('health_kit' as const) : ('google_fit' as const),
+              source: isIOS ? HEALTH_DATA_SOURCE.HEALTH_KIT : HEALTH_DATA_SOURCE.GOOGLE_FIT,
             },
           ],
         });

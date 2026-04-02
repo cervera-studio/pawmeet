@@ -133,7 +133,10 @@ export default function MatchingInsightsScreen() {
             {vm.insights.variant && (
               <View className="rounded-lg bg-zinc-100 dark:bg-[#38383A] px-3 py-2">
                 <Text className="text-xs text-zinc-500 dark:text-neutral-500">
-                  Algoritmo: {vm.insights.variant === 'ai_enhanced' ? 'AI potenziato' : 'Standard'}
+                  {t('profile.matchingInsights.algorithmLabel')}:{' '}
+                  {vm.insights.variant === 'ai_enhanced'
+                    ? t('profile.matchingInsights.algorithmAI')
+                    : t('profile.matchingInsights.algorithmStandard')}
                 </Text>
               </View>
             )}
@@ -141,9 +144,11 @@ export default function MatchingInsightsScreen() {
         ) : null}
         {vm.loading || vm.insights ? null : (
           <View className="items-center justify-center py-20">
-            <Text className="text-zinc-500 dark:text-neutral-500">Nessun dato disponibile</Text>
+            <Text className="text-zinc-500 dark:text-neutral-500">
+              {t('profile.matchingInsights.noData')}
+            </Text>
             <Text className="text-sm text-zinc-400 dark:text-neutral-500 mt-1">
-              Inizia a fare swipe per vedere le tue statistiche
+              {t('profile.matchingInsights.noDataHint')}
             </Text>
           </View>
         )}

@@ -1,4 +1,4 @@
-import type { ChatMessageReplyPreview, MessageStatus } from '@pawmeet/types';
+import { MESSAGE_STATUS, type ChatMessageReplyPreview, type MessageStatus } from '@pawmeet/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Linking, Pressable, Text, View } from 'react-native';
@@ -95,7 +95,7 @@ export const ChatBubble = memo(function ChatBubble({
 }: ChatBubbleProps) {
   const { t } = useTranslation();
   const location = tryParseLocation(text);
-  const isFailed = status === 'failed';
+  const isFailed = status === MESSAGE_STATUS.FAILED;
 
   return (
     <Pressable
@@ -159,12 +159,14 @@ export const ChatBubble = memo(function ChatBubble({
         className={`mt-1 flex-row items-center gap-1 ${isMine ? 'justify-end' : 'justify-start'}`}
       >
         <Text className="text-xs text-gray-400 dark:text-neutral-500">{timestamp}</Text>
-        {isMine && status === 'sending' && <ActivityIndicator size={10} color="#9CA3AF" />}
-        {isMine && status && status !== 'sending' && (
+        {isMine && status === MESSAGE_STATUS.SENDING && (
+          <ActivityIndicator size={10} color="#9CA3AF" />
+        )}
+        {isMine && status && status !== MESSAGE_STATUS.SENDING && (
           <Text
             className={`text-xs ${(() => {
-              if (status === 'read') return 'text-blue-500';
-              if (status === 'failed') return 'text-red-500';
+              if (status === MESSAGE_STATUS.READ) return 'text-blue-500';
+              if (status === MESSAGE_STATUS.FAILED) return 'text-red-500';
               return 'text-gray-400 dark:text-neutral-500';
             })()}`}
           >

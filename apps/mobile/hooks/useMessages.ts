@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import { MESSAGE_STATUS } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useRef, useState } from 'react';
 import { container } from 'tsyringe';
@@ -58,7 +59,7 @@ export function useMessages(matchId?: string) {
   /** Mark an optimistic message as failed. */
   const markFailed = useCallback((tempId: string) => {
     setMessages((prev) =>
-      prev.map((m) => (m.id === tempId ? { ...m, status: 'failed' as const } : m)),
+      prev.map((m) => (m.id === tempId ? { ...m, status: MESSAGE_STATUS.FAILED } : m)),
     );
   }, []);
 

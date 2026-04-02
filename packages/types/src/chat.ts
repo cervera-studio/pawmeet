@@ -1,10 +1,18 @@
 import type { SupportMessage } from './support.js';
 
+export const MESSAGE_STATUS = {
+  SENDING: 'sending',
+  SENT: 'sent',
+  DELIVERED: 'delivered',
+  READ: 'read',
+  FAILED: 'failed',
+} as const;
+
 /** Persisted statuses (DB CHECK constraint: sent | delivered | read). */
 export type PersistedMessageStatus = 'sent' | 'delivered' | 'read';
 
 /** Client-only statuses added for optimistic UI — never stored in DB. */
-export type MessageStatus = PersistedMessageStatus | 'sending' | 'failed';
+export type MessageStatus = (typeof MESSAGE_STATUS)[keyof typeof MESSAGE_STATUS];
 
 export interface ChatMessageReplyPreview {
   id: string;

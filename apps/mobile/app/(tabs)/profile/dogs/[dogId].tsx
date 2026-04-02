@@ -358,7 +358,11 @@ export default function DogDetailScreen() {
           <DogReviews dogId={vm.dog.id} dogRating={vm.dogRating} />
 
           {/* Edit button */}
-          <Button onPress={vm.navigateToEdit} label="Modifica profilo" variant="outline" />
+          <Button
+            onPress={vm.navigateToEdit}
+            label={t('profile.dogDetail.editProfile')}
+            variant="outline"
+          />
 
           {/* Photo gallery */}
           <PhotoGallery

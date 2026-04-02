@@ -7,6 +7,7 @@ type DogPhotoResponse = RouterOutput['dogs']['confirmPhoto']['photo'];
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import i18n from '@/lib/i18n';
 import { api } from '@/lib/trpc';
 import { useAuthStore } from '@/stores/auth';
 
@@ -18,7 +19,7 @@ async function pickImage(
 ): Promise<ImagePicker.ImagePickerAsset | null> {
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (status !== 'granted') {
-    Alert.alert('Permesso necessario', "Consenti l'accesso alla galleria per caricare una foto.");
+    Alert.alert(i18n.t('common.permissionRequired'), i18n.t('common.galleryPermission'));
     return null;
   }
 
@@ -79,7 +80,7 @@ export function useImageUpload() {
       const fileSize = asset.fileSize ?? 0;
 
       if (fileSize > MAX_FILE_SIZE) {
-        Alert.alert('File troppo grande', 'La foto non può superare i 5 MB.');
+        Alert.alert(i18n.t('common.fileTooLarge'), i18n.t('common.fileTooLargeMessage'));
         return null;
       }
 
@@ -99,7 +100,7 @@ export function useImageUpload() {
       return photo;
     } catch (e) {
       logger.warn('useImageUpload', 'Dog photo upload failed', e);
-      Alert.alert('Errore', 'Impossibile caricare la foto. Riprova.');
+      Alert.alert(i18n.t('common.error'), i18n.t('common.uploadPhotoError'));
       return null;
     } finally {
       setUploading(false);
@@ -120,7 +121,7 @@ export function useImageUpload() {
       const fileSize = asset.fileSize ?? 0;
 
       if (fileSize > MAX_FILE_SIZE) {
-        Alert.alert('File troppo grande', 'La foto non può superare i 5 MB.');
+        Alert.alert(i18n.t('common.fileTooLarge'), i18n.t('common.fileTooLargeMessage'));
         return null;
       }
 
@@ -145,7 +146,7 @@ export function useImageUpload() {
       return avatarUrl;
     } catch (e) {
       logger.warn('useImageUpload', 'Avatar upload failed', e);
-      Alert.alert('Errore', "Impossibile caricare l'immagine del profilo. Riprova.");
+      Alert.alert(i18n.t('common.error'), i18n.t('common.uploadAvatarError'));
       return null;
     } finally {
       setUploading(false);

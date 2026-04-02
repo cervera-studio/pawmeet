@@ -82,7 +82,9 @@
     "permissionRequired": "Permiso necesario",
     "galleryPermission": "Permite el acceso a la galería para subir una foto.",
     "uploadPhotoError": "No se pudo subir la foto. Inténtalo de nuevo.",
-    "uploadAvatarError": "No se pudo subir la imagen de perfil. Inténtalo de nuevo."
+    "uploadAvatarError": "No se pudo subir la imagen de perfil. Inténtalo de nuevo.",
+    "galleryPermissionAnalyze": "Permite el acceso a la galería para analizar la foto.",
+    "galleryPermissionUpload": "Permite el acceso a la galería para subir fotos."
   },
   "tabs": {
     "discover": "Descubrir",
@@ -421,7 +423,8 @@
       "character": "Carácter",
       "owner": "Propietario",
       "like": "¡Me gusta!",
-      "reportProfile": "Reportar perfil"
+      "reportProfile": "Reportar perfil",
+      "editProfile": "Editar perfil"
     },
     "activity": {
       "title": "Actividad",
@@ -586,6 +589,14 @@
       "title": "Calendario de Eventos",
       "backButton": "Eventos",
       "noOfficialEvents": "No hay eventos oficiales"
+    },
+    "offlineErrors": {
+      "unavailable": "Evento no disponible sin conexión",
+      "createRequired": "Crear un evento requiere conexión",
+      "cancelRequired": "Cancelar un evento requiere conexión",
+      "requestsRequired": "Ver solicitudes pendientes requiere conexión",
+      "approveRequired": "Aprobar un participante requiere conexión",
+      "declineRequired": "Rechazar un participante requiere conexión"
     }
   },
   "matches": {
@@ -642,7 +653,13 @@
       "tier2": "Buen paso juntos",
       "tier3": "Correa aceptable",
       "tier4": "Correa por gestionar"
-    }
+    },
+    "status": {
+      "nuovo": "Nuevo",
+      "inChat": "En chat",
+      "incontrato": "Conocido"
+    },
+    "compatiblePercent": "{{score}}% compatible"
   },
   "chat": {
     "title": "Chat",
@@ -663,6 +680,8 @@
       "meetingPoint": "Punto de encuentro",
       "openMap": "Toca para abrir el mapa"
     },
+    "invalidConversationId": "ID de conversación no válido",
+    "replyYou": "Tú",
     "tapToRetry": "Toca para reintentar",
     "searchNoResults": "No se encontraron resultados",
     "searchPlaceholder": "Buscar conversaciones...",
@@ -812,7 +831,18 @@
       "selectBehaviorPeople": "Selecciona el comportamiento con personas",
       "selectLeash": "Selecciona el comportamiento con correa",
       "selectSchedule": "Selecciona al menos un horario",
-      "selectTerrain": "Selecciona al menos un terreno"
+      "selectTerrain": "Selecciona al menos un terreno",
+      "nameMinLength": "El nombre debe tener al menos 2 caracteres",
+      "breedRequired": "Introduce la raza",
+      "birthDateRequired": "Introduce la fecha de nacimiento",
+      "weightInvalid": "Introduce un peso válido (mín. 0.5 kg)",
+      "neuteredRequired": "Indica si está esterilizado/a",
+      "durationMinRange": "Duración mínima entre 15 y 180 minutos",
+      "durationMaxRange": "Duración máxima entre 15 y 180 minutos",
+      "durationMaxGteMin": "La duración máxima debe ser >= mínima",
+      "maxDogsReached": "Puedes añadir como máximo {{max}} perros",
+      "maxPhotosReached": "Puedes añadir como máximo {{max}} fotos.",
+      "limitReachedTitle": "Límite alcanzado"
     }
   },
   "requireDog": {
@@ -1076,7 +1106,8 @@
     "settingsTitle": "Bloqueo biométrico",
     "settingsDescription": "Requiere Face ID o huella para abrir la app",
     "lockedMessage": "Desbloquea para continuar",
-    "unlock": "Desbloquear"
+    "unlock": "Desbloquear",
+    "promptMessage": "Desbloquear PawMeet"
   },
   "passkey": {
     "settingsTitle": "Passkeys",

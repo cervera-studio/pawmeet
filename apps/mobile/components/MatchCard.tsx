@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 
@@ -17,10 +18,16 @@ interface MatchCardProps {
   onCompatibilityTap?: () => void;
 }
 
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  nuovo: { label: 'Nuovo', color: 'bg-primary-100 text-primary' },
-  in_chat: { label: 'In chat', color: 'bg-blue-100 text-blue-600' },
-  incontrato: { label: 'Incontrato', color: 'bg-green-100 text-green-600' },
+const STATUS_COLORS: Record<string, string> = {
+  nuovo: 'bg-primary-100 text-primary',
+  in_chat: 'bg-blue-100 text-blue-600',
+  incontrato: 'bg-green-100 text-green-600',
+};
+
+const STATUS_KEYS: Record<string, string> = {
+  nuovo: 'matches.status.nuovo',
+  in_chat: 'matches.status.inChat',
+  incontrato: 'matches.status.incontrato',
 };
 
 export const MatchCard = memo(function MatchCard({
@@ -34,7 +41,9 @@ export const MatchCard = memo(function MatchCard({
   topReason,
   onCompatibilityTap,
 }: MatchCardProps) {
-  const statusInfo = status ? STATUS_LABELS[status] : null;
+  const { t } = useTranslation();
+  const statusColor = status ? STATUS_COLORS[status] : null;
+  const statusKey = status ? STATUS_KEYS[status] : null;
 
   return (
     <View className="mb-3 flex-row items-center rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm">
@@ -44,10 +53,10 @@ export const MatchCard = memo(function MatchCard({
           <Text className="text-base font-semibold text-gray-900 dark:text-[#F5F5F7]">
             {dogName} & {ownerName}
           </Text>
-          {statusInfo && (
-            <View className={`rounded-full px-2 py-0.5 ${statusInfo.color.split(' ')[0]}`}>
-              <Text className={`text-[10px] font-medium ${statusInfo.color.split(' ')[1]}`}>
-                {statusInfo.label}
+          {statusColor && statusKey && (
+            <View className={`rounded-full px-2 py-0.5 ${statusColor.split(' ')[0]}`}>
+              <Text className={`text-[10px] font-medium ${statusColor.split(' ')[1]}`}>
+                {t(statusKey)}
               </Text>
             </View>
           )}
@@ -56,7 +65,7 @@ export const MatchCard = memo(function MatchCard({
         {compatibilityScore != null && (
           <Pressable onPress={onCompatibilityTap}>
             <Text className="text-xs text-primary">
-              {Math.round(compatibilityScore * 100)}% compatibile
+              {t('matches.compatiblePercent', { score: Math.round(compatibilityScore * 100) })}
             </Text>
             {topReason && <Text className="text-xs text-primary/70">{topReason}</Text>}
           </Pressable>

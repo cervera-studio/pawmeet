@@ -8,7 +8,7 @@ import { useChat } from '@/hooks/useChat';
 import { useLocation } from '@/hooks/useLocation';
 import { useWalks } from '@/hooks/useWalks';
 import { isValidUUID } from '@/lib/deep-link-validation';
-import { getDateLocale } from '@/lib/i18n';
+import i18n, { getDateLocale } from '@/lib/i18n';
 import { useAuthStore } from '@/stores/auth';
 
 export function useChatConversationViewModel() {
@@ -19,7 +19,7 @@ export function useChatConversationViewModel() {
   // Validate deep link param
   useEffect(() => {
     if (matchId && !isValidUUID(matchId)) {
-      setParamError('ID conversazione non valido');
+      setParamError(i18n.t('chat.invalidConversationId'));
     }
   }, [matchId]);
 
@@ -120,7 +120,7 @@ export function useChatConversationViewModel() {
       coords = await getCurrentLocation();
     }
     if (coords) {
-      sendLocation(coords.latitude, coords.longitude, 'Punto di incontro');
+      sendLocation(coords.latitude, coords.longitude, i18n.t('chat.location.meetingPoint'));
     }
   }, [coordinates, getCurrentLocation, sendLocation]);
 
@@ -151,7 +151,7 @@ export function useChatConversationViewModel() {
       // In a 1:1 chat, "Tu" for own messages; for the other person we use
       // the senderName already resolved by the API on the replyTo preview
       // of previous messages, or fall back to empty (the banner is ephemeral).
-      const senderName = message.senderId === userId ? 'Tu' : '';
+      const senderName = message.senderId === userId ? i18n.t('chat.replyYou') : '';
       setReplyingTo({
         id: message.id,
         content: message.content,

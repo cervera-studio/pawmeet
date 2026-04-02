@@ -128,21 +128,21 @@ export function useSettingsViewModel() {
 
   const deleteAccount = useCallback(() => {
     Alert.alert(
-      'Elimina account',
-      'Sei sicuro? Il tuo account verrà disattivato immediatamente e i dati eliminati entro 30 giorni. Questa azione non può essere annullata.',
+      i18n.t('settings.account.deleteConfirmTitle'),
+      i18n.t('settings.account.deleteConfirmMessage'),
       [
-        { text: 'Annulla', style: 'cancel' },
+        { text: i18n.t('common.cancel'), style: 'cancel' },
         {
-          text: 'Elimina',
+          text: i18n.t('common.delete'),
           style: 'destructive',
           onPress: () => {
             Alert.prompt(
-              'Conferma con password',
-              "Inserisci la tua password per confermare la cancellazione dell'account.",
+              i18n.t('settings.account.passwordConfirmTitle'),
+              i18n.t('settings.account.passwordConfirmMessage'),
               [
-                { text: 'Annulla', style: 'cancel' },
+                { text: i18n.t('common.cancel'), style: 'cancel' },
                 {
-                  text: 'Conferma eliminazione',
+                  text: i18n.t('settings.account.confirmDeletion'),
                   style: 'destructive',
                   onPress: (password: string | undefined) => {
                     if (!password) return;
@@ -151,18 +151,18 @@ export function useSettingsViewModel() {
                       .mutate({ password })
                       .then(() => {
                         Alert.alert(
-                          'Account eliminato',
-                          'Il tuo account è stato disattivato. Riceverai una email di conferma.',
-                          [{ text: 'OK', onPress: logout }],
+                          i18n.t('settings.account.deletedTitle'),
+                          i18n.t('settings.account.deletedMessage'),
+                          [{ text: i18n.t('common.ok'), onPress: logout }],
                         );
                       })
                       .catch((err) => {
                         setIsDeleting(false);
                         const message =
                           err?.data?.code === 'INVALID_PASSWORD'
-                            ? 'Password non valida. Riprova.'
-                            : 'Errore durante la cancellazione. Riprova più tardi.';
-                        Alert.alert('Errore', message);
+                            ? i18n.t('settings.account.invalidPassword')
+                            : i18n.t('settings.account.deleteError');
+                        Alert.alert(i18n.t('common.error'), message);
                       });
                   },
                 },

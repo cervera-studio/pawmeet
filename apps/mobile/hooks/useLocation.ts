@@ -2,6 +2,7 @@ import { logger } from '@pawmeet/utils';
 import * as Location from 'expo-location';
 import { useCallback, useRef } from 'react';
 import { Alert, Linking } from 'react-native';
+import i18n from '@/lib/i18n';
 import { container } from '@/repositories/container';
 import { USER_REPOSITORY } from '@/repositories/tokens';
 import { useLocationStore } from '@/stores/location';
@@ -12,13 +13,13 @@ function showLocationConfirmAlert(distanceKm?: number): Promise<boolean> {
   const distance = distanceKm ?? 0;
   return new Promise((resolve) => {
     Alert.alert(
-      'Spostamento rilevato',
+      i18n.t('location.suspiciousTitle'),
       distance > 0
-        ? `La tua posizione sembra cambiata di circa ${distance} km rispetto all'ultima volta. Vuoi aggiornare la tua posizione?`
-        : "La tua posizione sembra cambiata molto rispetto all'ultima volta. Vuoi aggiornare la tua posizione?",
+        ? i18n.t('location.suspiciousMessage', { distance })
+        : i18n.t('location.suspiciousMessageGeneric'),
       [
-        { text: 'Mantieni precedente', style: 'cancel', onPress: () => resolve(false) },
-        { text: 'Aggiorna', onPress: () => resolve(true) },
+        { text: i18n.t('location.keepPrevious'), style: 'cancel', onPress: () => resolve(false) },
+        { text: i18n.t('location.update'), onPress: () => resolve(true) },
       ],
       { cancelable: false },
     );
@@ -52,22 +53,18 @@ export function useLocation() {
       setPermissionGranted(granted);
 
       if (!granted) {
-        Alert.alert(
-          'Posizione richiesta',
-          'PawMeet ha bisogno della tua posizione per mostrare cani nelle vicinanze. Abilita la posizione nelle impostazioni.',
-          [
-            { text: 'Annulla', style: 'cancel' },
-            {
-              text: 'Apri Impostazioni',
-              onPress: () => Linking.openSettings(),
-            },
-          ],
-        );
+        Alert.alert(i18n.t('location.permissionTitle'), i18n.t('location.permissionMessage'), [
+          { text: i18n.t('common.cancel'), style: 'cancel' },
+          {
+            text: i18n.t('location.openSettings'),
+            onPress: () => Linking.openSettings(),
+          },
+        ]);
       }
 
       return granted;
     } catch {
-      setError('Errore nel richiedere i permessi di posizione');
+      setError(i18n.t('location.permissionError'));
       return false;
     }
   }, [setPermissionGranted, setError]);
@@ -80,7 +77,7 @@ export function useLocation() {
     try {
       const hasPermission = await requestPermission();
       if (!hasPermission) {
-        setError('Permesso di posizione non concesso');
+        setError(i18n.t('location.notGranted'));
         return null;
       }
 
@@ -115,7 +112,7 @@ export function useLocation() {
       setCoordinates(coords);
       return coords;
     } catch {
-      setError('Errore nel recuperare la posizione');
+      setError(i18n.t('location.fetchError'));
       return null;
     } finally {
       setLoading(false);

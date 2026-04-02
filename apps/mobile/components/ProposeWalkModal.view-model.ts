@@ -1,6 +1,7 @@
 import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
+import i18n from '@/lib/i18n';
 
 type ProposeInput = {
   matchId: string;
@@ -35,19 +36,19 @@ export function useProposeWalkViewModel(
 
   const handleSubmit = useCallback(async () => {
     if (!(date && time)) {
-      Alert.alert('Errore', 'Inserisci data e ora');
+      Alert.alert(i18n.t('common.error'), i18n.t('walks.propose.dateTimeRequired'));
       return;
     }
 
     // Parse date (expected: YYYY-MM-DD) and time (expected: HH:MM)
     const scheduledAt = new Date(`${date}T${time}:00`);
     if (Number.isNaN(scheduledAt.getTime())) {
-      Alert.alert('Errore', 'Data o ora non valida. Usa il formato AAAA-MM-GG e HH:MM');
+      Alert.alert(i18n.t('common.error'), i18n.t('walks.propose.dateTimeInvalid'));
       return;
     }
 
     if (scheduledAt <= new Date()) {
-      Alert.alert('Errore', 'La data deve essere nel futuro');
+      Alert.alert(i18n.t('common.error'), i18n.t('walks.propose.dateInFuture'));
       return;
     }
 
@@ -65,7 +66,7 @@ export function useProposeWalkViewModel(
       onClose();
     } catch (e) {
       logger.warn('ProposeWalkModal', 'Failed to propose walk', e);
-      Alert.alert('Errore', 'Impossibile proporre la passeggiata');
+      Alert.alert(i18n.t('common.error'), i18n.t('walks.propose.proposeError'));
     } finally {
       setSubmitting(false);
     }

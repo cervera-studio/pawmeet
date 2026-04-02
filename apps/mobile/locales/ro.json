@@ -82,7 +82,9 @@
     "permissionRequired": "Permisiune necesară",
     "galleryPermission": "Permite accesul la galerie pentru a încărca o fotografie.",
     "uploadPhotoError": "Fotografia nu a putut fi încărcată. Reîncearcă.",
-    "uploadAvatarError": "Imaginea de profil nu a putut fi încărcată. Reîncearcă."
+    "uploadAvatarError": "Imaginea de profil nu a putut fi încărcată. Reîncearcă.",
+    "galleryPermissionAnalyze": "Permite accesul la galerie pentru a analiza fotografia.",
+    "galleryPermissionUpload": "Permite accesul la galerie pentru a încărca fotografii."
   },
   "tabs": {
     "discover": "Descoperă",
@@ -421,7 +423,8 @@
       "character": "Caracter",
       "owner": "Proprietar",
       "like": "Îmi place!",
-      "reportProfile": "Raportează profilul"
+      "reportProfile": "Raportează profilul",
+      "editProfile": "Editează profilul"
     },
     "activity": {
       "title": "Activitate",
@@ -586,6 +589,14 @@
       "title": "Calendar Evenimente",
       "backButton": "Evenimente",
       "noOfficialEvents": "Niciun eveniment oficial"
+    },
+    "offlineErrors": {
+      "unavailable": "Evenimentul nu este disponibil offline",
+      "createRequired": "Crearea unui eveniment necesită conexiune",
+      "cancelRequired": "Anularea unui eveniment necesită conexiune",
+      "requestsRequired": "Vizualizarea cererilor necesită conexiune",
+      "approveRequired": "Aprobarea unui participant necesită conexiune",
+      "declineRequired": "Respingerea unui participant necesită conexiune"
     }
   },
   "matches": {
@@ -642,7 +653,13 @@
       "tier2": "Pas bun împreună",
       "tier3": "Lesă acceptabilă",
       "tier4": "Lesă de gestionat"
-    }
+    },
+    "status": {
+      "nuovo": "Nou",
+      "inChat": "În chat",
+      "incontrato": "Întâlnit"
+    },
+    "compatiblePercent": "{{score}}% compatibil"
   },
   "chat": {
     "title": "Chat",
@@ -663,6 +680,8 @@
       "meetingPoint": "Punct de întâlnire",
       "openMap": "Atinge pentru a deschide harta"
     },
+    "invalidConversationId": "ID conversație invalid",
+    "replyYou": "Tu",
     "tapToRetry": "Atinge pentru a reincerca",
     "searchNoResults": "Niciun rezultat găsit",
     "searchPlaceholder": "Caută conversații...",
@@ -812,7 +831,18 @@
       "selectBehaviorPeople": "Selectează comportamentul cu oamenii",
       "selectLeash": "Selectează comportamentul în lesă",
       "selectSchedule": "Selectează cel puțin o oră",
-      "selectTerrain": "Selectează cel puțin un teren"
+      "selectTerrain": "Selectează cel puțin un teren",
+      "nameMinLength": "Numele trebuie să aibă cel puțin 2 caractere",
+      "breedRequired": "Introdu rasa",
+      "birthDateRequired": "Introdu data nașterii",
+      "weightInvalid": "Introdu o greutate validă (min 0.5 kg)",
+      "neuteredRequired": "Indică dacă este sterilizat/ă",
+      "durationMinRange": "Durata minimă între 15 și 180 de minute",
+      "durationMaxRange": "Durata maximă între 15 și 180 de minute",
+      "durationMaxGteMin": "Durata maximă trebuie să fie >= minimă",
+      "maxDogsReached": "Poți adăuga cel mult {{max}} câini",
+      "maxPhotosReached": "Poți adăuga cel mult {{max}} fotografii.",
+      "limitReachedTitle": "Limită atinsă"
     }
   },
   "requireDog": {
@@ -1076,7 +1106,8 @@
     "settingsTitle": "Blocare biometrică",
     "settingsDescription": "Necesită Face ID sau amprentă pentru a deschide aplicația",
     "lockedMessage": "Deblochează pentru a continua",
-    "unlock": "Deblochează"
+    "unlock": "Deblochează",
+    "promptMessage": "Deblochează PawMeet"
   },
   "passkey": {
     "settingsTitle": "Passkey-uri",

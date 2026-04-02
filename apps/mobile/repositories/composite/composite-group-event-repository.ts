@@ -1,3 +1,4 @@
+import i18n from '@/lib/i18n';
 import type {
   CreateGroupEventInput,
   FeaturedEvent,
@@ -62,11 +63,11 @@ export function createCompositeGroupEventRepository(deps: Deps): GroupEventRepos
         [eventId],
       );
       if (cached[0]) return JSON.parse(cached[0].data);
-      throw new Error('Evento non disponibile offline');
+      throw new Error(i18n.t('events.offlineErrors.unavailable'));
     },
 
     async create(input: CreateGroupEventInput) {
-      if (!network.isOnline()) throw new Error('Creazione evento richiede connessione');
+      if (!network.isOnline()) throw new Error(i18n.t('events.offlineErrors.createRequired'));
       return remote.create(input);
     },
 
@@ -97,22 +98,22 @@ export function createCompositeGroupEventRepository(deps: Deps): GroupEventRepos
     },
 
     async cancel(eventId) {
-      if (!network.isOnline()) throw new Error('Annullamento evento richiede connessione');
+      if (!network.isOnline()) throw new Error(i18n.t('events.offlineErrors.cancelRequired'));
       await remote.cancel(eventId);
     },
 
     async listPendingRequests(eventId) {
-      if (!network.isOnline()) throw new Error('Richieste in sospeso richiede connessione');
+      if (!network.isOnline()) throw new Error(i18n.t('events.offlineErrors.requestsRequired'));
       return remote.listPendingRequests(eventId);
     },
 
     async approveParticipant(eventId, userId) {
-      if (!network.isOnline()) throw new Error('Approvazione partecipante richiede connessione');
+      if (!network.isOnline()) throw new Error(i18n.t('events.offlineErrors.approveRequired'));
       await remote.approveParticipant(eventId, userId);
     },
 
     async declineParticipant(eventId, userId) {
-      if (!network.isOnline()) throw new Error('Rifiuto partecipante richiede connessione');
+      if (!network.isOnline()) throw new Error(i18n.t('events.offlineErrors.declineRequired'));
       await remote.declineParticipant(eventId, userId);
     },
   };

@@ -2,6 +2,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
+import i18n from '@/lib/i18n';
 import type { FeedItem, StoryGroup } from '@/hooks/useFeed';
 import { useFeed } from '@/hooks/useFeed';
 import { useFeedRealtime } from '@/hooks/useFeedRealtime';
@@ -60,10 +61,10 @@ export function useFeedViewModel() {
 
   const handleDelete = useCallback(
     async (postId: string) => {
-      Alert.alert('Elimina post', 'Sei sicuro di voler eliminare questo post?', [
-        { text: 'Annulla', style: 'cancel' },
+      Alert.alert(i18n.t('feed.actions.deletePost'), i18n.t('feed.actions.deletePostConfirm'), [
+        { text: i18n.t('common.cancel'), style: 'cancel' },
         {
-          text: 'Elimina',
+          text: i18n.t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             const success = await deletePost(postId);

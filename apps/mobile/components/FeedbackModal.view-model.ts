@@ -2,6 +2,7 @@ import { logger } from '@pawmeet/utils';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { useFeedback } from '@/hooks/useFeedback';
+import i18n from '@/lib/i18n';
 
 export function useFeedbackModalViewModel(
   walkId: string,
@@ -20,7 +21,7 @@ export function useFeedbackModalViewModel(
 
   const handleSubmit = useCallback(async () => {
     if (rating === 0) {
-      Alert.alert('Errore', 'Seleziona una valutazione');
+      Alert.alert(i18n.t('common.error'), i18n.t('walks.feedback.ratingRequired'));
       return;
     }
 
@@ -30,7 +31,7 @@ export function useFeedbackModalViewModel(
       onSubmit();
     } catch (e) {
       logger.warn('FeedbackModal', 'Failed to submit feedback', e);
-      Alert.alert('Errore', 'Impossibile inviare il feedback. Riprova.');
+      Alert.alert(i18n.t('common.error'), i18n.t('walks.feedback.submitError'));
     }
   }, [rating, comment, walkId, toDogId, submitFeedback, resetForm, onSubmit]);
 

@@ -102,16 +102,16 @@ function formReducer(state: DogFormState, action: DogFormAction): DogFormState {
 function validateStep0(state: DogFormState): Record<string, string> {
   const errors: Record<string, string> = {};
   if (!state.name || state.name.length < 2) {
-    errors.name = 'Il nome deve avere almeno 2 caratteri';
+    errors.name = i18n.t('dogForm.validation.nameMinLength');
   }
-  if (!state.breed) errors.breed = 'Inserisci la razza';
-  if (!state.birthDate) errors.birthDate = 'Inserisci la data di nascita';
+  if (!state.breed) errors.breed = i18n.t('dogForm.validation.breedRequired');
+  if (!state.birthDate) errors.birthDate = i18n.t('dogForm.validation.birthDateRequired');
   if (!state.weightKg || Number(state.weightKg) < 0.5) {
-    errors.weightKg = 'Inserisci un peso valido (min 0.5 kg)';
+    errors.weightKg = i18n.t('dogForm.validation.weightInvalid');
   }
   if (state.size === null) errors.size = i18n.t('dogForm.validation.selectSize');
   if (!state.gender) errors.gender = i18n.t('dogForm.validation.selectGender');
-  if (state.isNeutered === null) errors.isNeutered = 'Indica se sterilizzato/a';
+  if (state.isNeutered === null) errors.isNeutered = i18n.t('dogForm.validation.neuteredRequired');
   return errors;
 }
 
@@ -141,13 +141,13 @@ function validateStep2(state: DogFormState): Record<string, string> {
   const dMin = Number(state.walkPrefDurationMin);
   const dMax = Number(state.walkPrefDurationMax);
   if (dMin < 15 || dMin > 180) {
-    errors.walkPrefDurationMin = 'Durata minima tra 15 e 180 minuti';
+    errors.walkPrefDurationMin = i18n.t('dogForm.validation.durationMinRange');
   }
   if (dMax < 15 || dMax > 180) {
-    errors.walkPrefDurationMax = 'Durata massima tra 15 e 180 minuti';
+    errors.walkPrefDurationMax = i18n.t('dogForm.validation.durationMaxRange');
   }
   if (dMin > dMax) {
-    errors.walkPrefDurationMax = 'La durata massima deve essere >= minima';
+    errors.walkPrefDurationMax = i18n.t('dogForm.validation.durationMaxGteMin');
   }
   return errors;
 }
@@ -198,7 +198,7 @@ function buildBioMutationInput(state: DogFormState) {
 async function pickPhotoFromLibrary() {
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (status !== 'granted') {
-    Alert.alert('Permesso necessario', "Consenti l'accesso alla galleria per analizzare la foto.");
+    Alert.alert(i18n.t('common.permissionRequired'), i18n.t('common.galleryPermissionAnalyze'));
     return null;
   }
 
@@ -291,13 +291,16 @@ export function useNewDogViewModel() {
 
   const addPendingPhoto = useCallback(async () => {
     if (state.pendingPhotos.length >= MAX_PHOTOS) {
-      Alert.alert('Limite raggiunto', `Puoi aggiungere al massimo ${MAX_PHOTOS} foto.`);
+      Alert.alert(
+        i18n.t('dogForm.validation.limitReachedTitle'),
+        i18n.t('dogForm.validation.maxPhotosReached', { max: MAX_PHOTOS }),
+      );
       return;
     }
 
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permesso necessario', "Consenti l'accesso alla galleria per caricare foto.");
+      Alert.alert(i18n.t('common.permissionRequired'), i18n.t('common.galleryPermissionUpload'));
       return;
     }
 
@@ -313,7 +316,7 @@ export function useNewDogViewModel() {
     const asset = result.assets[0];
     const fileSize = asset.fileSize ?? 0;
     if (fileSize > MAX_FILE_SIZE) {
-      Alert.alert('File troppo grande', 'La foto non può superare i 5 MB.');
+      Alert.alert(i18n.t('common.fileTooLarge'), i18n.t('common.fileTooLargeMessage'));
       return;
     }
 
@@ -383,7 +386,7 @@ export function useNewDogViewModel() {
     if (!validateStep()) return;
 
     if (dogCount >= MAX_DOGS_PER_USER) {
-      setApiError(`Puoi aggiungere al massimo ${MAX_DOGS_PER_USER} cani`);
+      setApiError(i18n.t('dogForm.validation.maxDogsReached', { max: MAX_DOGS_PER_USER }));
       return;
     }
 

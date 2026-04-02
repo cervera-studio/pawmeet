@@ -42,7 +42,8 @@ const STATUS_ICONS: Record<Exclude<MessageStatus, 'sending'>, string> = {
 };
 
 function LocationCard({ location, isMine }: { location: LocationData; isMine: boolean }) {
-  const mapsUrl = `https://maps.apple.com/?ll=${location.latitude},${location.longitude}&q=${encodeURIComponent(location.label ?? 'Punto di incontro')}`;
+  const { t } = useTranslation();
+  const mapsUrl = `https://maps.apple.com/?ll=${location.latitude},${location.longitude}&q=${encodeURIComponent(location.label ?? t('chat.location.meetingPoint'))}`;
 
   return (
     <Pressable onPress={() => Linking.openURL(mapsUrl)}>
@@ -70,10 +71,10 @@ function LocationCard({ location, isMine }: { location: LocationData; isMine: bo
           <Text
             className={`text-sm font-medium ${isMine ? 'text-white' : 'text-gray-900 dark:text-[#F5F5F7]'}`}
           >
-            {location.label ?? 'Punto di incontro'}
+            {location.label ?? t('chat.location.meetingPoint')}
           </Text>
           <Text className={`text-xs ${isMine ? 'text-white/70' : 'text-primary'}`}>
-            Tocca per aprire la mappa
+            {t('chat.location.openMap')}
           </Text>
         </View>
       </View>

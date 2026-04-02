@@ -1,6 +1,7 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
+import i18n from '@/lib/i18n';
 import { useAuthStore } from '@/stores/auth';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -33,8 +34,8 @@ export function useBiometricLock() {
     }
 
     const result = await LocalAuthentication.authenticateAsync({
-      promptMessage: 'Sblocca PawMeet',
-      cancelLabel: 'Annulla',
+      promptMessage: i18n.t('biometric.promptMessage'),
+      cancelLabel: i18n.t('common.cancel'),
       disableDeviceFallback: false,
     });
 

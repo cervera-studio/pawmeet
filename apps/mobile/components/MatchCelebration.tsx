@@ -70,8 +70,11 @@ export function MatchCelebration({ onDismiss, onChat }: MatchCelebrationProps) {
         </Text>
 
         <Animated.View className="mt-8 w-full gap-3" style={buttonsStyle}>
-          <Pressable onPress={onChat} className="items-center rounded-2xl bg-primary py-4">
-            <Text className="text-lg font-semibold text-white">
+          <Pressable
+            onPress={onChat}
+            className="items-center rounded-full bg-white px-12 py-4 shadow-lg"
+          >
+            <Text className="text-lg font-bold text-primary">
               {t('matches.celebration.sendMessage')}
             </Text>
           </Pressable>

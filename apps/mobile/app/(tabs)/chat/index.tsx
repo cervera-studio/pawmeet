@@ -8,7 +8,7 @@ import { SegmentControl } from '@/components/chat/SegmentControl';
 import { RequireDogModal } from '@/components/RequireDogModal';
 import { Avatar } from '@/components/ui/Avatar';
 import { useRequireDog } from '@/hooks/useRequireDog';
-import type { Conversation, EnrichedMatch, GroupConversation, Tab } from './_vm/index.view-model';
+import type { Conversation, EnrichedMatch, GroupConversation } from './_vm/index.view-model';
 import { TABS, useChatListViewModel } from './_vm/index.view-model';
 
 // ── 1-on-1 chat row ─────────────────────────────────────────────────────────
@@ -214,7 +214,7 @@ export default function ChatListScreen() {
   }, [hasDog, setShowGate]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['top']}>
       <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
       <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-4">
         <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">

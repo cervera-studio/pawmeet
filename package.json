@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "turbo dev",
+    "dev:local": "turbo dev:local --filter=@pawmeet/api --filter=@pawmeet/mobile",
     "build": "turbo build",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",

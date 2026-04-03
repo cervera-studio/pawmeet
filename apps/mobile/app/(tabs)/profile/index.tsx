@@ -52,14 +52,14 @@ export default function ProfileScreen() {
 
   if (vm.isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
+      <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['top']}>
         <ProfileLoadingSkeleton />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['top']}>
       <ScrollView contentContainerClassName="px-4 pt-6 pb-20">
         {/* ── User profile header ── */}
         <View className="mb-6 items-center">

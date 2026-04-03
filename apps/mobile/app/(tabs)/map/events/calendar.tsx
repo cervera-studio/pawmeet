@@ -102,7 +102,7 @@ export default function EventCalendarScreen() {
           headerBackTitle: t('events.calendar.backButton'),
         }}
       />
-      <SafeAreaView edges={['bottom']} className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
+      <SafeAreaView edges={['top']} className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
         {/* Month navigator */}
         <View className="flex-row items-center justify-between px-4 py-3 bg-white dark:bg-[#1C1C1E] border-b border-gray-100 dark:border-[#38383A]">
           <Pressable onPress={prevMonth} className="px-3 py-2">

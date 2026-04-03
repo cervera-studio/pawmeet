@@ -1,5 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
-import { formatDogAge } from '@pawmeet/utils';
+import { formatBreedName, formatDogAge } from '@pawmeet/utils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -113,8 +113,9 @@ export default function DogDetailModal() {
             {profile.name}
           </Text>
           <Text className="text-base text-gray-500 dark:text-neutral-500">
-            {profile.breed}
-            {profile.breedSecondary ? ` / ${profile.breedSecondary}` : ''} - {ageLabel}
+            {formatBreedName(profile.breed)}
+            {profile.breedSecondary ? ` / ${formatBreedName(profile.breedSecondary)}` : ''} -{' '}
+            {ageLabel}
           </Text>
         </View>
       </View>

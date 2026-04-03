@@ -153,7 +153,7 @@ export default function WalkSuggestionsScreen() {
   const { t } = useTranslation();
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]" edges={['top']}>
       {/* Header */}
       <View className="flex-row items-center justify-between border-b border-gray-100 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] px-4 py-4">
         <View className="flex-row items-center gap-3">

@@ -10,7 +10,12 @@
     "build:android": "eas build --platform android",
     "lint": "biome check app/ components/ hooks/ stores/ lib/",
     "typecheck": "tsc --noEmit",
-    "validate:pins": "npx tsx scripts/validate-cert-pins.ts"
+    "validate:pins": "npx tsx scripts/validate-cert-pins.ts",
+    "api:local": "bash scripts/switch-api.sh local",
+    "api:prod": "bash scripts/switch-api.sh prod",
+    "api:status": "bash scripts/switch-api.sh status",
+    "dev:local": "bash scripts/switch-api.sh local && expo start -c --ios",
+    "dev:prod": "bash scripts/switch-api.sh prod && expo start -c --ios"
   },
   "dependencies": {
     "@expo/app-integrity": "^55.0.9",

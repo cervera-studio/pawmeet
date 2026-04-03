@@ -133,7 +133,10 @@ export default function MapScreen() {
 
   if (!vm.coordinates) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E] px-8">
+      <SafeAreaView
+        className="flex-1 items-center justify-center bg-white dark:bg-[#1C1C1E] px-8"
+        edges={['top']}
+      >
         <Text className="text-5xl">📍</Text>
         <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
           {t('location.required')}

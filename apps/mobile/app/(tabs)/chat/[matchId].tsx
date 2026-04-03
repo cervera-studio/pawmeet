@@ -72,7 +72,7 @@ export default function ChatConversationScreen() {
           ),
         }}
       />
-      <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
+      <SafeAreaView edges={[]} className="flex-1 bg-white dark:bg-[#1C1C1E]">
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           className="flex-1"

@@ -93,7 +93,7 @@ export default function FeedScreen() {
 
   if (vm.isInitialLoad) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
+      <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]" edges={['top']}>
         <View className="border-b border-gray-100 dark:border-[#38383A] px-4 pb-3 pt-2">
           <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
             {t('feed.title')}
@@ -105,7 +105,7 @@ export default function FeedScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <View className="border-b border-gray-100 px-4 pb-3 pt-2">
         <Text className="text-xl font-bold text-gray-900">{t('feed.title')}</Text>
       </View>

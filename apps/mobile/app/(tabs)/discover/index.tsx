@@ -10,18 +10,80 @@ import {
 } from '@pawmeet/config';
 import type { DiscoveryFilters } from '@pawmeet/types';
 import { formatBreedName, formatDogAge } from '@pawmeet/utils';
-import { useEffect, useState } from 'react';
+import * as Haptics from 'expo-haptics';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogSelector } from '@/components/DogSelector';
 import { ExplanationModal } from '@/components/ExplanationModal';
 import { MatchCelebration } from '@/components/MatchCelebration';
 import { RequireDogModal } from '@/components/RequireDogModal';
-import { SwipeCard } from '@/components/SwipeCard';
+import { SwipeCard, type SwipeCardRef } from '@/components/SwipeCard';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useRequireDog } from '@/hooks/useRequireDog';
 import { useDiscoveryViewModel } from './_vm/index.view-model';
+
+// ── Animated action button ─────────────────────────────────────────────────
+
+const PRESS_SPRING = { mass: 0.3, damping: 15, stiffness: 300 };
+
+function ActionButton({
+  onPress,
+  size,
+  bgClass,
+  children,
+}: {
+  onPress: () => void;
+  size: 'sm' | 'lg';
+  bgClass: string;
+  children: React.ReactNode;
+}) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = useCallback(() => {
+    scale.value = withSpring(0.88, PRESS_SPRING);
+  }, [scale]);
+
+  const handlePressOut = useCallback(() => {
+    scale.value = withSpring(1, PRESS_SPRING);
+  }, [scale]);
+
+  const handlePress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    // Bounce: compress then overshoot then settle
+    scale.value = withSequence(
+      withTiming(0.85, { duration: 60 }),
+      withSpring(1.08, { mass: 0.3, damping: 8, stiffness: 200 }),
+      withSpring(1, PRESS_SPRING),
+    );
+    onPress();
+  }, [onPress, scale]);
+
+  const sizeClass = size === 'lg' ? 'h-16 w-16' : 'h-13 w-13';
+
+  return (
+    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handlePress}>
+      <Animated.View
+        className={`${sizeClass} items-center justify-center rounded-full ${bgClass} shadow-lg`}
+        style={animatedStyle}
+      >
+        {children}
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 // ── Filter configuration ────────────────────────────────────────────────────
 
@@ -250,6 +312,7 @@ export default function DiscoveryScreen() {
   const analytics = useAnalyticsService();
   const [explanationVisible, setExplanationVisible] = useState(false);
   const { hasDog, showGate, setShowGate, dismissGate, goToAddDog } = useRequireDog();
+  const cardRef = useRef<SwipeCardRef>(null);
 
   // Show gate on mount if no dog
   useEffect(() => {
@@ -257,18 +320,13 @@ export default function DiscoveryScreen() {
   }, [hasDog, setShowGate]);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#1A1A1C]">
       <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-2">
-        <View>
-          <Text className="text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-            {t('discovery.title')}
-          </Text>
-          <Text className="text-sm text-gray-500 dark:text-neutral-500">
-            {t('discovery.subtitle')}
-          </Text>
-        </View>
+      <View className="flex-row items-center justify-between px-4 pb-1">
+        <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('discovery.title')}
+        </Text>
         <Pressable
           onPress={vm.openFilterModal}
           className="relative h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-[#1C1C1E] shadow-sm"
@@ -285,10 +343,10 @@ export default function DiscoveryScreen() {
       {/* Dog selector (visible only with multiple dogs) */}
       <DogSelector />
 
-      {/* Card area */}
-      <View className="flex-1 items-center justify-center px-4">
+      {/* Card area — relative container so action buttons can overlay */}
+      <View className="flex-1 px-3 pt-1 pb-2">
         {vm.dogs.length === 0 ? (
-          <View className="items-center px-8">
+          <View className="flex-1 items-center justify-center px-8">
             <Text className="text-5xl">{'\u{1F436}'}</Text>
             <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
               {t('discovery.addYourDog')}
@@ -305,7 +363,7 @@ export default function DiscoveryScreen() {
           </View>
         ) : null}
         {vm.dogs.length > 0 && vm.coordinates && vm.isLoading ? (
-          <View className="items-center">
+          <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#065F46" />
             <Text className="mt-4 text-gray-400 dark:text-neutral-500">
               {t('discovery.searchingDogs')}
@@ -317,35 +375,62 @@ export default function DiscoveryScreen() {
         !vm.isLoading &&
         vm.currentProfile &&
         vm.hasMore ? (
-          <SwipeCard
-            dog={{
-              dogId: vm.currentProfile.dog.id,
-              name: vm.currentProfile.dog.name,
-              breed: formatBreedName(vm.currentProfile.dog.breed),
-              age: formatDogAge(new Date(vm.currentProfile.dog.birthDate)),
-              distanceKm: vm.currentProfile.distanceKm,
-              compatibilityScore: vm.currentProfile.compatibilityScore,
-              ownerName: vm.currentProfile.ownerDisplayName ?? '',
-              imageUrl: vm.currentProfile.primaryPhotoUrl ?? null,
-              scoreBreakdown: vm.currentProfile.scoreBreakdown,
-            }}
-            onSwipeRight={vm.handleSwipeRight}
-            onSwipeLeft={vm.handleSwipeLeft}
-            onSwipeUp={vm.handleSuperLike}
-            onExplanationTap={() => {
-              setExplanationVisible(true);
-              analytics.track('match_explanation_viewed', {
-                source: 'swipe_card',
-                overallScore: vm.currentProfile?.compatibilityScore ?? 0,
-              });
-            }}
-          />
+          <>
+            <SwipeCard
+              ref={cardRef}
+              dog={{
+                dogId: vm.currentProfile.dog.id,
+                name: vm.currentProfile.dog.name,
+                breed: formatBreedName(vm.currentProfile.dog.breed),
+                age: formatDogAge(new Date(vm.currentProfile.dog.birthDate)),
+                distanceKm: vm.currentProfile.distanceKm,
+                compatibilityScore: vm.currentProfile.compatibilityScore,
+                ownerName: vm.currentProfile.ownerDisplayName ?? '',
+                imageUrl: vm.currentProfile.primaryPhotoUrl ?? null,
+                scoreBreakdown: vm.currentProfile.scoreBreakdown,
+              }}
+              onSwipeRight={vm.handleSwipeRight}
+              onSwipeLeft={vm.handleSwipeLeft}
+              onSwipeUp={vm.handleSuperLike}
+              onExplanationTap={() => {
+                setExplanationVisible(true);
+                analytics.track('match_explanation_viewed', {
+                  source: 'swipe_card',
+                  overallScore: vm.currentProfile?.compatibilityScore ?? 0,
+                });
+              }}
+            />
+            {/* Action buttons — overlaid on the card's bottom edge */}
+            <View className="absolute bottom-6 left-0 right-0 flex-row items-center justify-center gap-5 z-10">
+              <ActionButton
+                onPress={() => cardRef.current?.animateLeft()}
+                size="lg"
+                bgClass="bg-white/90 dark:bg-[#2C2C2E]/90"
+              >
+                <Text className="text-2xl font-bold text-red-400">✕</Text>
+              </ActionButton>
+              <ActionButton
+                onPress={() => cardRef.current?.animateUp()}
+                size="sm"
+                bgClass="bg-blue-500"
+              >
+                <Text className="text-lg font-bold text-white">★</Text>
+              </ActionButton>
+              <ActionButton
+                onPress={() => cardRef.current?.animateRight()}
+                size="lg"
+                bgClass="bg-primary"
+              >
+                <Text className="text-2xl">🐾</Text>
+              </ActionButton>
+            </View>
+          </>
         ) : null}
         {vm.dogs.length > 0 &&
         vm.coordinates &&
         !vm.isLoading &&
         !(vm.currentProfile && vm.hasMore) ? (
-          <View className="items-center">
+          <View className="flex-1 items-center justify-center">
             <Text className="text-5xl">🐕</Text>
             <Text className="mt-4 text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
               {t('discovery.noMoreProfiles')}
@@ -362,7 +447,7 @@ export default function DiscoveryScreen() {
           </View>
         ) : null}
         {vm.dogs.length > 0 && !vm.coordinates ? (
-          <View className="items-center px-8">
+          <View className="flex-1 items-center justify-center px-8">
             <Text className="text-5xl">📍</Text>
             <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
               {t('discovery.locationRequired')}
@@ -379,30 +464,6 @@ export default function DiscoveryScreen() {
           </View>
         ) : null}
       </View>
-
-      {/* Action buttons */}
-      {vm.currentProfile && vm.hasMore && (
-        <View className="flex-row items-center justify-center gap-6 pb-4">
-          <Pressable
-            onPress={vm.handleSwipeLeft}
-            className="h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-[#1C1C1E] shadow-md"
-          >
-            <Text className="text-2xl">✕</Text>
-          </Pressable>
-          <Pressable
-            onPress={vm.handleSuperLike}
-            className="h-14 w-14 items-center justify-center rounded-full bg-blue-500 shadow-md"
-          >
-            <Text className="text-xl text-white">★</Text>
-          </Pressable>
-          <Pressable
-            onPress={vm.handleSwipeRight}
-            className="h-16 w-16 items-center justify-center rounded-full bg-primary shadow-md"
-          >
-            <Text className="text-2xl">🐾</Text>
-          </Pressable>
-        </View>
-      )}
 
       {/* Match celebration overlay */}
       {vm.newMatch?.isMatch && (

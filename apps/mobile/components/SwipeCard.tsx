@@ -1,10 +1,13 @@
 import type { ScoreBreakdown } from '@pawmeet/types';
 import { formatDistance, getTopReasons } from '@pawmeet/utils';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { type Ref, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  Extrapolation,
   interpolate,
   runOnJS,
   useAnimatedStyle,
@@ -14,9 +17,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Avatar } from '@/components/ui/Avatar';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
+const FALLBACK_WIDTH = 400;
+const SWIPE_THRESHOLD = 120;
 const SWIPE_UP_THRESHOLD = -150;
+
+const SNAP_BACK_SPRING = { mass: 0.5, damping: 15, stiffness: 150 };
 
 export interface SwipeCardDog {
   dogId: string;
@@ -30,7 +35,14 @@ export interface SwipeCardDog {
   scoreBreakdown?: ScoreBreakdown;
 }
 
+export interface SwipeCardRef {
+  animateLeft: () => void;
+  animateRight: () => void;
+  animateUp: () => void;
+}
+
 interface SwipeCardProps {
+  ref?: Ref<SwipeCardRef>;
   dog: SwipeCardDog;
   onSwipeRight: () => void;
   onSwipeLeft: () => void;
@@ -39,6 +51,7 @@ interface SwipeCardProps {
 }
 
 export function SwipeCard({
+  ref,
   dog,
   onSwipeRight,
   onSwipeLeft,
@@ -49,39 +62,57 @@ export function SwipeCard({
   const { t } = useTranslation();
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
-  const cardScale = useSharedValue(1);
+  const cardWidth = useSharedValue(FALLBACK_WIDTH);
 
   const distanceLabel = formatDistance(dog.distanceKm);
-
   const compatPercent = Math.round(dog.compatibilityScore * 100);
   const topReasonKeys = dog.scoreBreakdown ? getTopReasons(dog.scoreBreakdown) : [];
   const topReasons = topReasonKeys.map((key) => t(key));
 
+  // Imperative API for button-triggered animations
+  useImperativeHandle(ref, () => ({
+    animateRight() {
+      translateX.value = withTiming(cardWidth.value * 1.5, { duration: 300 }, () => {
+        runOnJS(onSwipeRight)();
+      });
+    },
+    animateLeft() {
+      translateX.value = withTiming(-cardWidth.value * 1.5, { duration: 300 }, () => {
+        runOnJS(onSwipeLeft)();
+      });
+    },
+    animateUp() {
+      translateY.value = withTiming(-cardWidth.value * 2, { duration: 300 }, () => {
+        runOnJS(onSwipeUp)();
+      });
+    },
+  }));
+
   const panGesture = Gesture.Pan()
+    .activeOffsetX([-10, 10])
+    .activeOffsetY([-15, 15])
     .onUpdate((event) => {
       translateX.value = event.translationX;
       translateY.value = event.translationY;
     })
     .onEnd((event) => {
-      if (event.translationX > SWIPE_THRESHOLD) {
-        // Swipe right - like
-        translateX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 300 }, () => {
+      const threshold = cardWidth.value * 0.3 || SWIPE_THRESHOLD;
+
+      if (event.translationX > threshold) {
+        translateX.value = withTiming(cardWidth.value * 1.5, { duration: 300 }, () => {
           runOnJS(onSwipeRight)();
         });
-      } else if (event.translationX < -SWIPE_THRESHOLD) {
-        // Swipe left - dislike
-        translateX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 300 }, () => {
+      } else if (event.translationX < -threshold) {
+        translateX.value = withTiming(-cardWidth.value * 1.5, { duration: 300 }, () => {
           runOnJS(onSwipeLeft)();
         });
       } else if (event.translationY < SWIPE_UP_THRESHOLD) {
-        // Swipe up - superlike
-        translateY.value = withTiming(-SCREEN_WIDTH * 2, { duration: 300 }, () => {
+        translateY.value = withTiming(-cardWidth.value * 2, { duration: 300 }, () => {
           runOnJS(onSwipeUp)();
         });
       } else {
-        // Spring back
-        translateX.value = withSpring(0);
-        translateY.value = withSpring(0);
+        translateX.value = withSpring(0, SNAP_BACK_SPRING);
+        translateY.value = withSpring(0, SNAP_BACK_SPRING);
       }
     });
 
@@ -93,94 +124,151 @@ export function SwipeCard({
     runOnJS(navigateToDetail)();
   });
 
-  const gesture = Gesture.Race(panGesture, tapGesture);
+  const gesture = Gesture.Exclusive(panGesture, tapGesture);
 
   const cardStyle = useAnimatedStyle(() => {
-    const rotation = interpolate(translateX.value, [-SCREEN_WIDTH, 0, SCREEN_WIDTH], [-15, 0, 15]);
+    const rotation = interpolate(
+      translateX.value,
+      [-cardWidth.value, 0, cardWidth.value],
+      [-12, 0, 12],
+    );
 
     return {
       transform: [
         { translateX: translateX.value },
         { translateY: translateY.value },
         { rotate: `${rotation}deg` },
-        { scale: cardScale.value },
       ],
     };
   });
 
-  const likeOpacity = useAnimatedStyle(() => ({
-    opacity: interpolate(translateX.value, [0, SWIPE_THRESHOLD], [0, 1]),
+  // Green tint overlay on swipe right
+  const likeOverlayStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(translateX.value, [0, SWIPE_THRESHOLD], [0, 0.3], Extrapolation.CLAMP),
   }));
 
-  const nopeOpacity = useAnimatedStyle(() => ({
-    opacity: interpolate(translateX.value, [-SWIPE_THRESHOLD, 0], [1, 0]),
+  // Red tint overlay on swipe left
+  const nopeOverlayStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(translateX.value, [-SWIPE_THRESHOLD, 0], [0.3, 0], Extrapolation.CLAMP),
   }));
 
-  const superlikeOpacity = useAnimatedStyle(() => ({
-    opacity: interpolate(translateY.value, [SWIPE_UP_THRESHOLD, 0], [1, 0]),
+  // Blue tint overlay on swipe up
+  const superlikeOverlayStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(translateY.value, [SWIPE_UP_THRESHOLD, 0], [0.3, 0], Extrapolation.CLAMP),
+  }));
+
+  // Label opacity (appears stronger than tint)
+  const likeLabelStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(translateX.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolation.CLAMP),
+  }));
+
+  const nopeLabelStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(translateX.value, [-SWIPE_THRESHOLD, 0], [1, 0], Extrapolation.CLAMP),
+  }));
+
+  const superlikeLabelStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(translateY.value, [SWIPE_UP_THRESHOLD, 0], [1, 0], Extrapolation.CLAMP),
   }));
 
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View
-        className="w-full overflow-hidden rounded-3xl bg-white dark:bg-[#1C1C1E] shadow-lg"
-        style={[{ aspectRatio: 3 / 4 }, cardStyle]}
+        className="flex-1 w-full overflow-hidden rounded-2xl"
+        style={cardStyle}
+        onLayout={(e) => {
+          cardWidth.value = e.nativeEvent.layout.width;
+        }}
       >
+        {/* Image or avatar fallback — fills entire card */}
         {dog.imageUrl ? (
           <Image source={{ uri: dog.imageUrl }} className="flex-1" resizeMode="cover" />
         ) : (
-          <View className="flex-1 items-center justify-center bg-gray-100 dark:bg-[#38383A]">
+          <View className="flex-1 items-center justify-center bg-neutral-900">
             <Avatar name={dog.name} size="lg" />
-            <Text className="mt-3 text-lg font-semibold text-gray-600 dark:text-[#D1D1D6]">
-              {dog.name}
-            </Text>
+            <Text className="mt-3 text-lg font-semibold text-neutral-300">{dog.name}</Text>
           </View>
         )}
 
-        {/* Like overlay */}
+        {/* Swipe direction tint overlays — full card coverage */}
         <Animated.View
-          className="absolute left-6 top-12 rounded-xl border-4 border-green-500 px-4 py-2"
-          style={[likeOpacity, { transform: [{ rotate: '-15deg' }] }]}
+          className="absolute inset-0 bg-emerald-500"
+          style={likeOverlayStyle}
+          pointerEvents="none"
+        />
+        <Animated.View
+          className="absolute inset-0 bg-red-500"
+          style={nopeOverlayStyle}
+          pointerEvents="none"
+        />
+        <Animated.View
+          className="absolute inset-0 bg-blue-500"
+          style={superlikeOverlayStyle}
+          pointerEvents="none"
+        />
+
+        {/* Like stamp */}
+        <Animated.View
+          className="absolute left-6 top-16 rounded-lg border-[3px] border-emerald-400 bg-emerald-400/20 px-5 py-2"
+          style={[likeLabelStyle, { transform: [{ rotate: '-15deg' }] }]}
+          pointerEvents="none"
         >
-          <Text className="text-2xl font-black text-green-500">MI PIACE</Text>
+          <Text className="text-3xl font-black tracking-tight text-emerald-400">MI PIACE</Text>
         </Animated.View>
 
-        {/* Nope overlay */}
+        {/* Nope stamp */}
         <Animated.View
-          className="absolute right-6 top-12 rounded-xl border-4 border-red-500 px-4 py-2"
-          style={[nopeOpacity, { transform: [{ rotate: '15deg' }] }]}
+          className="absolute right-6 top-16 rounded-lg border-[3px] border-red-400 bg-red-400/20 px-5 py-2"
+          style={[nopeLabelStyle, { transform: [{ rotate: '15deg' }] }]}
+          pointerEvents="none"
         >
-          <Text className="text-2xl font-black text-red-500">NO</Text>
+          <Text className="text-3xl font-black tracking-tight text-red-400">NO</Text>
         </Animated.View>
 
-        {/* Superlike overlay */}
+        {/* Superlike stamp */}
         <Animated.View
-          className="absolute bottom-32 self-center rounded-xl border-4 border-blue-500 px-4 py-2"
-          style={superlikeOpacity}
+          className="absolute bottom-40 self-center rounded-lg border-[3px] border-blue-400 bg-blue-400/20 px-5 py-2"
+          style={superlikeLabelStyle}
+          pointerEvents="none"
         >
-          <Text className="text-2xl font-black text-blue-500">SUPER</Text>
+          <Text className="text-3xl font-black tracking-tight text-blue-400">SUPER</Text>
         </Animated.View>
 
-        {/* Info overlay at bottom */}
-        <View className="absolute bottom-0 left-0 right-0 bg-black/40 p-5">
+        {/* Bottom gradient — tall gradient, not a flat bar */}
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.85)']}
+          locations={[0, 0.4, 1]}
+          className="absolute bottom-0 left-0 right-0"
+          style={{ height: '45%' }}
+          pointerEvents="none"
+        />
+
+        {/* Info overlay — sits on top of gradient */}
+        <View className="absolute bottom-0 left-0 right-0 px-5 pb-24">
           <View className="flex-row items-end justify-between">
-            <View>
-              <Text className="text-2xl font-bold text-white">{dog.name}</Text>
-              <Text className="text-base text-white/80">{dog.breed}</Text>
-              <Text className="text-sm text-white/60">
-                {dog.age} - {dog.ownerName}
+            <View className="flex-1 mr-3">
+              {/* Name — hero weight */}
+              <Text className="text-[28px] font-extrabold tracking-tight text-white">
+                {dog.name}
+              </Text>
+              {/* Breed — secondary */}
+              <Text className="text-[15px] font-medium text-white/80 mt-0.5">{dog.breed}</Text>
+              {/* Age + owner — tertiary */}
+              <Text className="text-[13px] text-white/60 mt-0.5">
+                {dog.age} — {dog.ownerName}
               </Text>
             </View>
-            <View className="items-end gap-1">
-              <View className="rounded-full bg-white/20 px-3 py-1">
-                <Text className="text-sm font-medium text-white">{distanceLabel}</Text>
+            <View className="items-end gap-1.5">
+              <View className="rounded-full bg-white/15 px-3.5 py-1.5 backdrop-blur-sm">
+                <Text className="text-[13px] font-semibold text-white">{distanceLabel}</Text>
               </View>
-              <Pressable onPress={onExplanationTap} className="items-end gap-0.5">
-                <View className="rounded-full bg-primary/80 px-3 py-1">
-                  <Text className="text-sm font-medium text-white">{compatPercent}%</Text>
+              <Pressable onPress={onExplanationTap} className="items-end gap-1">
+                <View className="rounded-full bg-primary/90 px-3.5 py-1.5">
+                  <Text className="text-[13px] font-bold text-white">{compatPercent}%</Text>
                 </View>
                 {topReasons.length > 0 && (
-                  <Text className="text-xs text-white/70">{topReasons.join(' · ')}</Text>
+                  <Text className="text-[11px] font-medium text-white/50">
+                    {topReasons.join(' · ')}
+                  </Text>
                 )}
               </Pressable>
             </View>

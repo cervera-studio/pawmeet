@@ -179,11 +179,15 @@ export function SwipeCard({
           cardWidth.value = e.nativeEvent.layout.width;
         }}
       >
-        {/* Image or avatar fallback — fills entire card */}
+        {/* Image or avatar fallback — absolute, covers entire card */}
         {dog.imageUrl ? (
-          <Image source={{ uri: dog.imageUrl }} className="flex-1" resizeMode="cover" />
+          <Image
+            source={{ uri: dog.imageUrl }}
+            className="absolute inset-0 h-full w-full"
+            resizeMode="cover"
+          />
         ) : (
-          <View className="flex-1 items-center justify-center bg-neutral-900">
+          <View className="absolute inset-0 items-center justify-center bg-neutral-900">
             <Avatar name={dog.name} size="lg" />
             <Text className="mt-3 text-lg font-semibold text-neutral-300">{dog.name}</Text>
           </View>

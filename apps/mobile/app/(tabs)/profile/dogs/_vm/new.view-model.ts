@@ -426,7 +426,7 @@ export function useNewDogViewModel() {
       }
 
       addDog(dog);
-      router.back();
+      router.replace('/(tabs)/profile');
     } catch (e) {
       setApiError(handleApiError(e, 'createDog').message);
     } finally {

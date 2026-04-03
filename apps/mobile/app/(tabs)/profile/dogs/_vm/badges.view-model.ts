@@ -15,6 +15,7 @@ const BADGE_CATALOG = [
   { type: BADGE_TYPE.REGULAR_WALKER, icon: '\u{1F6B6}', labelKey: 'badges.regularWalker' },
   { type: BADGE_TYPE.SUPER_SOCIAL, icon: '\u{2B50}', labelKey: 'badges.superSocial' },
   { type: BADGE_TYPE.FRIENDLY_DOG, icon: '\u{1F415}', labelKey: 'badges.friendlyDog' },
+  { type: BADGE_TYPE.MAIN_EVENT, icon: '\u{1F3C6}', labelKey: 'badges.mainEvent' },
 ] as const;
 
 export interface BadgeCardData {

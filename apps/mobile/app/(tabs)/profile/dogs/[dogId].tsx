@@ -1,4 +1,5 @@
 import type { RouterOutput } from '@pawmeet/api-client';
+import { getBreedName } from '@pawmeet/config';
 import { PHOTO_MODERATION_STATUS } from '@pawmeet/types';
 import { formatDogAge } from '@pawmeet/utils';
 import { Stack, useRouter } from 'expo-router';
@@ -26,15 +27,19 @@ function InfoChip({ title, value }: { title: string; value: string }) {
 }
 
 function DogHeader({ dog, primaryPhotoUrl }: { dog: Dog; primaryPhotoUrl: string | undefined }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <View className="items-center">
       <Avatar name={dog.name} imageUrl={primaryPhotoUrl} size="lg" />
       <Text className="mt-3 text-2xl font-bold text-gray-900 dark:text-[#F5F5F7]">{dog.name}</Text>
-      <Text className="text-base text-gray-500 dark:text-neutral-500">{dog.breed}</Text>
+      <Text className="text-base text-gray-500 dark:text-neutral-500">
+        {getBreedName(dog.breed, i18n.language)}
+      </Text>
       {dog.breedSecondary ? (
         <Text className="text-sm text-gray-400 dark:text-neutral-500">
-          {t('profile.dogDetail.crossbreed', { breed: dog.breedSecondary })}
+          {t('profile.dogDetail.crossbreed', {
+            breed: getBreedName(dog.breedSecondary, i18n.language),
+          })}
         </Text>
       ) : null}
       <Text className="text-sm text-gray-400 dark:text-neutral-500">

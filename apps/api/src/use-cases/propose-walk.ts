@@ -1,8 +1,8 @@
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { ERROR_MESSAGES } from '../constants/messages.js';
-import { sanitizeContent } from '../lib/sanitize.js';
 import { FALLBACK_DISPLAY_NAME, NOTIF_WALK_PROPOSAL } from '../constants/notifications.js';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type {
   DogRepository,
   MatchRepository,

@@ -4,12 +4,12 @@ import {
   ENABLE_AI_FEATURES,
   ENERGY_OPTIONS,
   GENDER_OPTIONS,
+  getBreedSize,
   LEASH_OPTIONS,
   RECALL_OPTIONS,
   SIZE_OPTIONS,
   TERRAIN_OPTIONS,
   WALK_TIME_OPTIONS,
-  getBreedSize,
 } from '@pawmeet/config';
 import type {
   BehaviorWithDogs,
@@ -209,8 +209,7 @@ function Step1BasicInfo({
           error={errors.isNeutered}
           chipProps={{
             options: NEUTERED_OPTIONS,
-            selected:
-              state.isNeutered === null ? '' : state.isNeutered ? 'true' : 'false',
+            selected: state.isNeutered == null ? '' : String(state.isNeutered),
             onSelect: (v: string) => setField('isNeutered', v === 'true'),
           }}
         />
@@ -339,8 +338,7 @@ function Step2Personality({
           chipProps={{
             options: LEASH_OPTIONS,
             selected: state.leashBehavior ?? '',
-            onSelect: (v: string) =>
-              setField('leashBehavior', (v || null) as LeashBehavior | null),
+            onSelect: (v: string) => setField('leashBehavior', (v || null) as LeashBehavior | null),
           }}
         />
         <ChipField

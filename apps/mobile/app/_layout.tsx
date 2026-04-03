@@ -303,9 +303,7 @@ function RootLayout() {
                 />
               </Stack.Protected>
 
-              <Stack.Protected
-                guard={isAuthenticated && !requiresAgeVerification}
-              >
+              <Stack.Protected guard={isAuthenticated && !requiresAgeVerification}>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen

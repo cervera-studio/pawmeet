@@ -195,15 +195,7 @@
       "title": "Calendario",
       "today": "Hoy",
       "empty": "Sin paseos",
-      "weekdaysShort": [
-        "Lun",
-        "Mar",
-        "Mié",
-        "Jue",
-        "Vie",
-        "Sáb",
-        "Dom"
-      ]
+      "weekdaysShort": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
     },
     "track": "Rastrear",
     "noWalks": "Ningún paseo programado",
@@ -1074,7 +1066,19 @@
     "regularWalker": "Paseador habitual",
     "superSocial": "Súper sociable",
     "friendlyDog": "Perro amigable",
+    "mainEvent": "Evento oficial",
     "noBadges": "Aún no hay insignias"
+  },
+  "achievements": {
+    "firstWalk": "Primer paseo",
+    "walks10": "10 paseos",
+    "walks50": "50 paseos",
+    "walks100": "100 paseos",
+    "firstMatch": "Primer match",
+    "matches10": "10 matches",
+    "firstGroupEvent": "Primer evento",
+    "socialButterfly": "Mariposa social",
+    "marathonWalker": "Maratonista"
   },
   "labels": {
     "toy": "Toy",

@@ -40,6 +40,8 @@ interface EditDogForm {
   name: string;
   breed: string;
   breedSecondary: string;
+  birthDate: string;
+  weightKg: string;
   bio: string;
   size: DogSize;
   gender: Gender;
@@ -60,6 +62,8 @@ function dogToForm(dog: Dog): EditDogForm {
     name: dog.name,
     breed: dog.breed,
     breedSecondary: dog.breedSecondary ?? '',
+    birthDate: dog.birthDate ? (dog.birthDate.split('T')[0] ?? '') : '',
+    weightKg: dog.weightKg == null ? '' : String(dog.weightKg),
     bio: dog.bio ?? '',
     size: dog.size,
     gender: dog.gender,
@@ -134,6 +138,8 @@ export function useEditDogViewModel() {
           name: form.name,
           breed: form.breed,
           breedSecondary: form.breedSecondary || undefined,
+          birthDate: form.birthDate ? new Date(form.birthDate) : undefined,
+          weightKg: form.weightKg ? Number(form.weightKg) : undefined,
           bio: form.bio || undefined,
           size: form.size,
           gender: form.gender,
@@ -166,7 +172,7 @@ export function useEditDogViewModel() {
         ...prev,
         {
           ...photo,
-          dogId: dogId!,
+          dogId,
           position: prev.length,
           isPrimary: prev.length === 0,
           moderationStatus: PHOTO_MODERATION_STATUS.PENDING,

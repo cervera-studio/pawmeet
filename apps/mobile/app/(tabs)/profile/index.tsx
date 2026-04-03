@@ -1,6 +1,6 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import { MAX_DOGS_PER_USER } from '@pawmeet/config';
+import { getBreedName, MAX_DOGS_PER_USER } from '@pawmeet/config';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -47,7 +47,7 @@ function ProfileLoadingSkeleton() {
 
 export default function ProfileScreen() {
   usePreventScreenCapture();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const vm = useProfileViewModel();
 
   if (vm.isLoading) {
@@ -153,7 +153,7 @@ export default function ProfileScreen() {
                   <View key={dog.id} className="relative">
                     <DogProfileCard
                       name={dog.name}
-                      breed={dog.breed}
+                      breed={getBreedName(dog.breed, i18n.language)}
                       age={formatDogAge(new Date(dog.birthDate))}
                       onPress={() => vm.navigateToDogDetail(dog.id)}
                     />

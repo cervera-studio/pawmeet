@@ -1,6 +1,6 @@
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
-import type { ComponentProps } from 'react';
 import { ChipSelect } from './ChipSelect';
 
 type ChipSelectProps = ComponentProps<typeof ChipSelect>;

@@ -277,15 +277,7 @@
       "title": "Calendario",
       "today": "Oggi",
       "empty": "Nessuna passeggiata",
-      "weekdaysShort": [
-        "Lun",
-        "Mar",
-        "Mer",
-        "Gio",
-        "Ven",
-        "Sab",
-        "Dom"
-      ]
+      "weekdaysShort": ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     },
     "viewMode": {
       "week": "Settimana",
@@ -1074,7 +1066,19 @@
     "regularWalker": "Camminatore regolare",
     "superSocial": "Super socievole",
     "friendlyDog": "Cane amichevole",
+    "mainEvent": "Evento ufficiale",
     "noBadges": "Nessun badge ancora"
+  },
+  "achievements": {
+    "firstWalk": "Prima passeggiata",
+    "walks10": "10 passeggiate",
+    "walks50": "50 passeggiate",
+    "walks100": "100 passeggiate",
+    "firstMatch": "Primo match",
+    "matches10": "10 match",
+    "firstGroupEvent": "Primo evento",
+    "socialButterfly": "Farfalla sociale",
+    "marathonWalker": "Maratoneta"
   },
   "labels": {
     "toy": "Toy",

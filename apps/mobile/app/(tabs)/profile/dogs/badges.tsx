@@ -42,7 +42,7 @@ function BadgeCard({ card }: { card: BadgeCardData }) {
       }`}
       style={{ width: '47%', minHeight: 140 }}
     >
-      <Text className="text-3xl mb-2">{card.unlocked ? card.icon : '?'}</Text>
+      <Text className={`text-3xl mb-2 ${card.unlocked ? '' : 'opacity-30'}`}>{card.icon}</Text>
       <Text
         className={`text-sm font-semibold text-center ${
           card.unlocked

@@ -195,15 +195,7 @@
       "title": "Calendar",
       "today": "Azi",
       "empty": "Nicio plimbare",
-      "weekdaysShort": [
-        "Lun",
-        "Mar",
-        "Mie",
-        "Joi",
-        "Vin",
-        "Sâm",
-        "Dum"
-      ]
+      "weekdaysShort": ["Lun", "Mar", "Mie", "Joi", "Vin", "Sâm", "Dum"]
     },
     "track": "Urmărește",
     "noWalks": "Nicio plimbare programată",
@@ -1074,7 +1066,19 @@
     "regularWalker": "Plimbăreț regulat",
     "superSocial": "Super sociabil",
     "friendlyDog": "Câine prietenos",
+    "mainEvent": "Eveniment oficial",
     "noBadges": "Niciun badge încă"
+  },
+  "achievements": {
+    "firstWalk": "Prima plimbare",
+    "walks10": "10 plimbări",
+    "walks50": "50 plimbări",
+    "walks100": "100 plimbări",
+    "firstMatch": "Primul match",
+    "matches10": "10 match-uri",
+    "firstGroupEvent": "Primul eveniment",
+    "socialButterfly": "Fluture social",
+    "marathonWalker": "Maratonist"
   },
   "labels": {
     "toy": "Toy",

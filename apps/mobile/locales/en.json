@@ -195,15 +195,7 @@
       "title": "Calendar",
       "today": "Today",
       "empty": "No walks",
-      "weekdaysShort": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-      ]
+      "weekdaysShort": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     },
     "track": "Track",
     "noWalks": "No walks scheduled",
@@ -1074,7 +1066,19 @@
     "regularWalker": "Regular walker",
     "superSocial": "Super friendly",
     "friendlyDog": "Friendly dog",
+    "mainEvent": "Main event",
     "noBadges": "No badges yet"
+  },
+  "achievements": {
+    "firstWalk": "First walk",
+    "walks10": "10 walks",
+    "walks50": "50 walks",
+    "walks100": "100 walks",
+    "firstMatch": "First match",
+    "matches10": "10 matches",
+    "firstGroupEvent": "First event",
+    "socialButterfly": "Social butterfly",
+    "marathonWalker": "Marathon walker"
   },
   "labels": {
     "toy": "Toy",

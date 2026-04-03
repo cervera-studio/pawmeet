@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getIsConnected, onConnectionChange } from '@/hooks/useWebSocket';
 import { useConversations } from './useConversations';
 import { useMessageSender } from './useMessageSender';
@@ -44,14 +44,14 @@ export function useChat(matchId?: string) {
   const { isTyping, sendTyping } = useTypingIndicator(matchId);
 
   // When marking as read, also update conversation unread count
-  const markAsRead = async () => {
+  const markAsRead = useCallback(async () => {
     await markAsReadMessages();
     if (matchId) {
       setConversations((prev) =>
         prev.map((c) => (c.matchId === matchId ? { ...c, unreadCount: 0 } : c)),
       );
     }
-  };
+  }, [markAsReadMessages, matchId, setConversations]);
 
   return {
     connected,

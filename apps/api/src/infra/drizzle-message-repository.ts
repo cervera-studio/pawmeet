@@ -198,7 +198,7 @@ export class DrizzleMessageRepository implements MessageRepository {
         .leftJoin(users, eq(messages.senderId, users.id))
         .where(inArray(messages.id, replyIds));
       for (const r of replyRows) {
-        replyMap.set(r.id, { content: r.content, senderName: r.senderName ?? '' });
+        replyMap.set(r.id, { content: maybeDecrypt(r.content), senderName: r.senderName ?? '' });
       }
     }
     const nextCursor = hasMore ? (rowList.at(-1)?.id ?? null) : null;
@@ -271,7 +271,7 @@ export class DrizzleMessageRepository implements MessageRepository {
       if (replyRow) {
         replyTo = {
           id: replyToId,
-          content: replyRow.content,
+          content: maybeDecrypt(replyRow.content),
           senderName: replyRow.senderName ?? '',
         };
       }
@@ -281,8 +281,8 @@ export class DrizzleMessageRepository implements MessageRepository {
       id: row.id,
       matchId: row.matchId,
       senderId: row.senderId,
-      content: row.content,
-      mediaUrl: row.mediaUrl,
+      content: maybeDecrypt(row.content),
+      mediaUrl: row.mediaUrl ? maybeDecrypt(row.mediaUrl) : null,
       replyToId,
       replyTo,
       status: row.status as ChatMessage['status'],

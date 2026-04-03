@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { type Ref, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
@@ -183,7 +183,7 @@ export function SwipeCard({
         {dog.imageUrl ? (
           <Image
             source={{ uri: dog.imageUrl }}
-            className="absolute inset-0 h-full w-full"
+            style={StyleSheet.absoluteFillObject}
             resizeMode="cover"
           />
         ) : (

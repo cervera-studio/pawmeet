@@ -59,11 +59,15 @@ export function useChatConversationViewModel() {
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch messages and mark as read when entering the conversation
   useEffect(() => {
+    if (!validMatchId) return;
     fetchMessages();
     markAsRead();
+  }, [fetchMessages, markAsRead, validMatchId]);
 
-    // Track chat_opened once per mount
+  // Track chat_opened once per mount
+  useEffect(() => {
     if (!chatOpenTrackedRef.current && validMatchId) {
       chatOpenTrackedRef.current = true;
       analytics.track('chat_opened', {
@@ -71,7 +75,7 @@ export function useChatConversationViewModel() {
         isFirstOpen: messages.length === 0,
       });
     }
-  }, [fetchMessages, markAsRead, validMatchId, analytics, messages.length]);
+  }, [validMatchId]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {

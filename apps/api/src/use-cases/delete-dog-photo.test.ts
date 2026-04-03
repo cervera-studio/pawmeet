@@ -7,13 +7,11 @@ function buildDeps() {
   return {
     dogRepo: buildDogRepo({
       findByIdAndOwner: vi.fn().mockResolvedValue(buildDog()),
-      findPhoto: vi
-        .fn()
-        .mockResolvedValue({
-          id: 'photo-1',
-          url: 'https://cdn.example.com/dogs/photo.jpg',
-          position: 0,
-        }),
+      findPhoto: vi.fn().mockResolvedValue({
+        id: 'photo-1',
+        url: 'https://cdn.example.com/dogs/photo.jpg',
+        position: 0,
+      }),
       deletePhoto: vi.fn().mockResolvedValue(undefined),
       findPhotos: vi
         .fn()

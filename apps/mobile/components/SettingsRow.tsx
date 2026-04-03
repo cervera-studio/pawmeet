@@ -37,14 +37,14 @@ export function SettingsRow({
           <Text className="text-xs text-gray-400 dark:text-neutral-500">{subtitle}</Text>
         ) : null}
       </View>
-      {onToggle != null ? (
+      {onToggle == null ? null : (
         <Switch
           value={value}
           onValueChange={onToggle}
           trackColor={TRACK_COLOR}
           disabled={disabled}
         />
-      ) : null}
+      )}
       {onPress && !onToggle ? <Text className="text-lg text-gray-400">›</Text> : null}
     </>
   );

@@ -1,6 +1,7 @@
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { ERROR_MESSAGES } from '../constants/messages.js';
+import { sanitizeContent } from '../lib/sanitize.js';
 import { FALLBACK_DISPLAY_NAME, NOTIF_WALK_PROPOSAL } from '../constants/notifications.js';
 import type {
   DogRepository,
@@ -66,14 +67,14 @@ export function createProposeWalk({
     const walk = await walkRepo.create({
       matchId: input.matchId,
       createdBy: userId,
-      title: input.title ?? null,
+      title: input.title ? sanitizeContent(input.title) : null,
       scheduledAt: input.scheduledAt,
       durationMin: input.durationMin,
-      location: input.location ?? null,
+      location: input.location ? sanitizeContent(input.location) : null,
       latitude: input.latitude ?? null,
       longitude: input.longitude ?? null,
       status: WALK_STATUS.PENDING,
-      notes: input.notes ?? null,
+      notes: input.notes ? sanitizeContent(input.notes) : null,
     });
 
     // Analytics context

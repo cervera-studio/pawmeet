@@ -1,3 +1,4 @@
+import { getBreedSize } from '@pawmeet/config';
 import type { WalkTerrain, WalkTime } from '@pawmeet/types';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -68,23 +69,31 @@ export default function EditDogScreen() {
             <BreedAutocomplete
               placeholder={t('dogForm.fields.breed')}
               value={vm.form.breed}
-              onSelect={(v) => vm.setField('breed', v)}
+              onSelect={(v) => {
+                vm.setField('breed', v);
+                const size = getBreedSize(v);
+                if (size) vm.setField('size', size);
+              }}
             />
-            <BreedAutocomplete
-              placeholder={t('dogForm.fields.breedSecondary')}
-              value={vm.form.breedSecondary}
-              onSelect={(v) => vm.setField('breedSecondary', v)}
-            />
-            <View>
-              <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-                {t('dogForm.fields.size')}
-              </Text>
-              <ChipSelect
-                options={SIZE_OPTIONS}
-                selected={vm.form.size}
-                onSelect={(v) => vm.setField('size', v)}
+            {vm.form.breed === 'mixed_breed' && (
+              <BreedAutocomplete
+                placeholder={t('dogForm.fields.breedSecondary')}
+                value={vm.form.breedSecondary}
+                onSelect={(v) => vm.setField('breedSecondary', v)}
               />
-            </View>
+            )}
+            {vm.form.breed === 'mixed_breed' && (
+              <View>
+                <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+                  {t('dogForm.fields.size')}
+                </Text>
+                <ChipSelect
+                  options={SIZE_OPTIONS}
+                  selected={vm.form.size}
+                  onSelect={(v) => vm.setField('size', v)}
+                />
+              </View>
+            )}
             <View>
               <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
                 {t('dogForm.fields.gender')}
@@ -195,7 +204,7 @@ export default function EditDogScreen() {
                 </Text>
                 <Input
                   value={vm.form.walkPrefDurationMin}
-                  onChangeText={(v) => vm.setField('walkPrefDurationMin', v)}
+                  onChangeText={(v) => vm.setField('walkPrefDurationMin', v.replace(/[^0-9]/g, ''))}
                   keyboardType="number-pad"
                 />
               </View>
@@ -205,7 +214,7 @@ export default function EditDogScreen() {
                 </Text>
                 <Input
                   value={vm.form.walkPrefDurationMax}
-                  onChangeText={(v) => vm.setField('walkPrefDurationMax', v)}
+                  onChangeText={(v) => vm.setField('walkPrefDurationMax', v.replace(/[^0-9]/g, ''))}
                   keyboardType="number-pad"
                 />
               </View>

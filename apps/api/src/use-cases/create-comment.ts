@@ -3,6 +3,7 @@ import type { PostComment } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { ERROR_MESSAGES } from '../constants/messages.js';
+import { sanitizeContent } from '../lib/sanitize.js';
 import {
   FALLBACK_DISPLAY_NAME,
   NOTIF_COMMENT_REPLIED,
@@ -116,10 +117,12 @@ export function createCreateComment({
       }
     }
 
+    const sanitizedContent = sanitizeContent(content);
+
     const comment = await feedRepo.addComment({
       postId,
       authorId: userId,
-      content,
+      content: sanitizedContent,
       parentId: parentId ?? null,
     });
 
@@ -127,7 +130,7 @@ export function createCreateComment({
     const needsCommenterLookup = post.authorId !== userId || parentComment;
     const commenter = needsCommenterLookup ? await userRepo.findById(userId) : null;
     const commenterName = commenter?.displayName ?? FALLBACK_DISPLAY_NAME;
-    const preview = content.length > 50 ? `${content.slice(0, 47)}...` : content;
+    const preview = sanitizedContent.length > 50 ? `${sanitizedContent.slice(0, 47)}...` : sanitizedContent;
 
     await notifyPostAuthor(
       { feedRealtime, notificationService, userRepo },

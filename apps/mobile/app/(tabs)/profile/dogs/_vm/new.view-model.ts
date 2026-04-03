@@ -399,7 +399,9 @@ export function useNewDogViewModel() {
     const data = buildFormData(state);
     const result = createDogSchema.safeParse(data);
     if (!result.success) {
-      setErrors(zodToFieldErrors(result.error));
+      const fieldErrors = zodToFieldErrors(result.error);
+      setErrors(fieldErrors);
+      setApiError(Object.values(fieldErrors).join('\n'));
       return;
     }
 

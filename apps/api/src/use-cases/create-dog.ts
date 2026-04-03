@@ -3,6 +3,7 @@ import type { DogProfile } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { ERROR_MESSAGES } from '../constants/messages.js';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type { CreateDogInput, DogRepository } from '../ports/index.js';
 
 type Deps = {
@@ -21,7 +22,8 @@ export function createCreateDog({ dogRepo }: Deps) {
       );
     }
 
-    const dog = await dogRepo.create({ ...input, ownerId: userId });
+    const sanitizedInput = { ...input, bio: input.bio ? sanitizeContent(input.bio) : input.bio };
+    const dog = await dogRepo.create({ ...sanitizedInput, ownerId: userId });
 
     logger.info('CreateDog', 'Dog created', { userId, dogId: dog.id });
 

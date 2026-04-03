@@ -7,17 +7,15 @@ describe('createUpdatePrivacyPrefs', () => {
   it('merges partial prefs with current', async () => {
     const deps = {
       userRepo: buildUserRepo({
-        findById: vi
-          .fn()
-          .mockResolvedValue(
-            buildUser({
-              privacyPrefs: {
-                profileVisible: true,
-                approximateDistance: false,
-                showLastSeen: true,
-              },
-            }),
-          ),
+        findById: vi.fn().mockResolvedValue(
+          buildUser({
+            privacyPrefs: {
+              profileVisible: true,
+              approximateDistance: false,
+              showLastSeen: true,
+            },
+          }),
+        ),
         update: vi.fn().mockResolvedValue(undefined),
       }),
     };

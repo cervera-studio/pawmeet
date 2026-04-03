@@ -1,4 +1,4 @@
-import { CHART_COLORS, EVENT, FONT_SIZE, PAGINATION, TIMING, getChartColors } from './constants';
+import { CHART_COLORS, EVENT, FONT_SIZE, getChartColors, PAGINATION, TIMING } from './constants';
 
 describe('PAGINATION', () => {
   it('has a default page size of 20', () => {

@@ -2,6 +2,7 @@ import type { ContentReport } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { ERROR_MESSAGES } from '../constants/messages.js';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type { ContentReportRepository } from '../ports/index.js';
 
 type Deps = {
@@ -26,7 +27,7 @@ export function createReportContent({ contentReportRepo }: Deps) {
       contentType,
       contentId,
       reason,
-      description,
+      description: description ? sanitizeContent(description) : null,
     });
 
     logger.info('ReportContent', 'Content reported', {

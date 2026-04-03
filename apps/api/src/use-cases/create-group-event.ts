@@ -1,5 +1,6 @@
 import { AppError, fail, type GroupEvent, type Result, succeed } from '@pawmeet/types';
 import { ERROR_MESSAGES } from '../constants/messages.js';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type {
   DogRepository,
   GroupEventParticipationRepository,
@@ -47,11 +48,11 @@ export function createCreateGroupEvent({ groupEventRepo, dogRepo }: Deps) {
 
     const event = await groupEventRepo.create({
       createdBy: userId,
-      title: input.title,
-      description: input.description ?? null,
+      title: sanitizeContent(input.title),
+      description: input.description ? sanitizeContent(input.description) : null,
       scheduledAt: input.scheduledAt,
       durationMin: input.durationMin,
-      location: input.location,
+      location: sanitizeContent(input.location),
       latitude: input.latitude,
       longitude: input.longitude,
       maxParticipants: input.maxParticipants,

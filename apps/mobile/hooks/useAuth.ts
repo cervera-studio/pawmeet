@@ -33,11 +33,7 @@ function toAuthUser(user: {
 async function persistAuthResult(result: AuthResult, storeLogin: AuthStore['login']) {
   await storage.setToken(result.accessToken);
   await storage.setRefreshToken(result.refreshToken);
-  storeLogin(
-    toAuthUser(result.user),
-    result.accessToken,
-    result.user.onboardingCompletedAt != null,
-  );
+  storeLogin(toAuthUser(result.user), result.accessToken);
 
   // Initialize analytics for this user session
   analyticsService.identify(result.user.id);
@@ -137,11 +133,7 @@ export function useAuth() {
       const currentState = useAuthStore.getState();
       currentState.setToken(savedToken);
       const profile = await authRepo.getProfile();
-      // Keep local onboardingCompleted if already true (covers race where
-      // the user completed onboarding but the API call hasn't landed yet)
-      const onboardingDone =
-        currentState.onboardingCompleted || profile.onboardingCompletedAt != null;
-      storeLogin(toAuthUser(profile), savedToken, onboardingDone);
+      storeLogin(toAuthUser(profile), savedToken);
 
       analyticsService.identify(profile.id);
       if (useConsentStore.getState().consents.analytics) {

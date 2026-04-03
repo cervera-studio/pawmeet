@@ -30,7 +30,7 @@ export default function VerifyEmailScreen() {
 
           <TextInput
             value={vm.otp}
-            onChangeText={vm.setOtp}
+            onChangeText={(v) => vm.setOtp(v.replace(/[^0-9]/g, ''))}
             keyboardType="number-pad"
             maxLength={6}
             autoFocus

@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { GroupEvent } from '@pawmeet/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type {
   GroupEventRecurrenceRepository,
   GroupEventRepository,

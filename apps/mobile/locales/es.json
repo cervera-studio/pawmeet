@@ -95,7 +95,8 @@
       "sat": "Sáb"
     },
     "search": "Buscar...",
-    "noResults": "Sin resultados"
+    "noResults": "Sin resultados",
+    "optional": "opcional"
   },
   "tabs": {
     "discover": "Descubrir",
@@ -194,7 +195,15 @@
       "title": "Calendario",
       "today": "Hoy",
       "empty": "Sin paseos",
-      "weekdaysShort": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+      "weekdaysShort": [
+        "Lun",
+        "Mar",
+        "Mié",
+        "Jue",
+        "Vie",
+        "Sáb",
+        "Dom"
+      ]
     },
     "track": "Rastrear",
     "noWalks": "Ningún paseo programado",
@@ -811,7 +820,21 @@
       "basicInfo": "Info básica",
       "temperament": "Temperamento",
       "walks": "Paseos",
-      "photos": "Fotos"
+      "photos": "Fotos",
+      "character": "Carácter",
+      "training": "Adiestramiento",
+      "characterDesc": "¿Cómo se comporta tu perro en el día a día?",
+      "trainingDesc": "Nivel de control durante los paseos.",
+      "schedule": "Horarios",
+      "scheduleDesc": "¿Cuándo prefieres salir con tu perro?",
+      "terrain": "Recorrido",
+      "terrainDesc": "¿Qué tipo de recorrido preferís?",
+      "identity": "Identidad",
+      "identityDesc": "Nombre, raza y fecha de nacimiento de tu perro.",
+      "physique": "Físico",
+      "physiqueDesc": "Características físicas de tu perro.",
+      "bio": "Bio",
+      "bioDesc": "Una breve descripción para presentar a tu perro."
     },
     "fields": {
       "name": "Nombre del perro",
@@ -860,7 +883,18 @@
       "maxDogsReached": "Puedes añadir como máximo {{max}} perros",
       "maxPhotosReached": "Puedes añadir como máximo {{max}} fotos.",
       "limitReachedTitle": "Límite alcanzado"
-    }
+    },
+    "step2Subtitle": "Esta información nos ayuda a encontrar compañeros de paseo compatibles.",
+    "hints": {
+      "energy": "¿Cómo se comporta durante un día normal?",
+      "behaviorDogs": "¿Cómo reacciona al encontrarse con otro perro?",
+      "behaviorPeople": "¿Cómo se comporta con personas desconocidas?",
+      "leash": "¿Qué tan fácil es pasearle con correa?",
+      "recall": "¿Vuelve cuando le llamas sin correa?",
+      "walkTimes": "¿En qué horarios prefieres pasear?",
+      "walkTerrain": "¿Dónde os gusta pasear más?"
+    },
+    "step1Subtitle": "Introduce la información básica de tu perro."
   },
   "requireDog": {
     "title": "Añade tu perro",
@@ -1117,17 +1151,6 @@
     "display_name_min": "Name must be at least 2 characters",
     "display_name_max": "Name cannot exceed 50 characters",
     "required": "Este campo es obligatorio"
-  },
-  "onboarding": {
-    "slide1Title": "Encuentra compañeros de paseo",
-    "slide1Description": "Descubre perros compatibles en tu zona para pasear juntos.",
-    "slide2Title": "Haz match",
-    "slide2Description": "Desliza para encontrar el compañero perfecto para tu perro.",
-    "slide3Title": "Empieza a caminar",
-    "slide3Description": "¡Chatea, organiza y sal a vuestro primer paseo!",
-    "nextButton": "Siguiente",
-    "skipButton": "Omitir",
-    "completeButton": "Empezar"
   },
   "biometric": {
     "settingsTitle": "Bloqueo biométrico",

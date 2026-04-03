@@ -67,18 +67,16 @@ describe('createPasskeyDelete', () => {
     const deps = buildDeps();
     deps.passkeyRepo.countByUserId = vi.fn().mockResolvedValue(1);
     deps.userRepo.findById = vi.fn().mockResolvedValue(buildUser({ passwordHash: null }));
-    deps.oauthAccountRepo.findByUserId = vi
-      .fn()
-      .mockResolvedValue([
-        {
-          id: 'oauth-1',
-          provider: 'google',
-          userId: 'usr_1',
-          providerUserId: 'g-1',
-          providerEmail: null,
-          linkedAt: new Date(),
-        },
-      ]);
+    deps.oauthAccountRepo.findByUserId = vi.fn().mockResolvedValue([
+      {
+        id: 'oauth-1',
+        provider: 'google',
+        userId: 'usr_1',
+        providerUserId: 'g-1',
+        providerEmail: null,
+        linkedAt: new Date(),
+      },
+    ]);
     const passkeyDelete = createPasskeyDelete(deps);
 
     const result = await passkeyDelete('usr_1', 'pk-1');

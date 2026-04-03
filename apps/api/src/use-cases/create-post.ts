@@ -2,6 +2,7 @@ import type { XpAction } from '@pawmeet/config';
 import { MAX_POST_CAPTION } from '@pawmeet/config';
 import type { Post, Result, XpSummary } from '@pawmeet/types';
 import { AppError, fail, succeed } from '@pawmeet/types';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type { FeedRealtimeService, FeedRepository } from '../ports/index.js';
 
 type AwardXpFn = (
@@ -38,7 +39,7 @@ export function createCreatePost({ feedRepo, feedRealtime, awardXp }: Deps) {
 
     const post = await feedRepo.createPost({
       authorId: userId,
-      caption: input.caption ?? null,
+      caption: input.caption ? sanitizeContent(input.caption) : null,
       latitude: input.latitude ?? null,
       longitude: input.longitude ?? null,
       walkId: input.walkId ?? null,

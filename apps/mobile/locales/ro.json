@@ -95,7 +95,8 @@
       "sat": "Sâm"
     },
     "search": "Caută...",
-    "noResults": "Niciun rezultat"
+    "noResults": "Niciun rezultat",
+    "optional": "opțional"
   },
   "tabs": {
     "discover": "Descoperă",
@@ -194,7 +195,15 @@
       "title": "Calendar",
       "today": "Azi",
       "empty": "Nicio plimbare",
-      "weekdaysShort": ["Lun", "Mar", "Mie", "Joi", "Vin", "Sâm", "Dum"]
+      "weekdaysShort": [
+        "Lun",
+        "Mar",
+        "Mie",
+        "Joi",
+        "Vin",
+        "Sâm",
+        "Dum"
+      ]
     },
     "track": "Urmărește",
     "noWalks": "Nicio plimbare programată",
@@ -811,7 +820,21 @@
       "basicInfo": "Info de bază",
       "temperament": "Temperament",
       "walks": "Plimbări",
-      "photos": "Fotografii"
+      "photos": "Fotografii",
+      "character": "Caracter",
+      "training": "Dresaj",
+      "characterDesc": "Cum se comportă câinele tău în viața de zi cu zi?",
+      "trainingDesc": "Nivelul de control în timpul plimbărilor.",
+      "schedule": "Program",
+      "scheduleDesc": "Când preferi să ieși cu câinele tău?",
+      "terrain": "Traseu",
+      "terrainDesc": "Ce tip de traseu preferați?",
+      "identity": "Identitate",
+      "identityDesc": "Numele, rasa și data nașterii câinelui tău.",
+      "physique": "Fizic",
+      "physiqueDesc": "Caracteristicile fizice ale câinelui tău.",
+      "bio": "Bio",
+      "bioDesc": "O scurtă descriere pentru a-ți prezenta câinele."
     },
     "fields": {
       "name": "Numele câinelui",
@@ -860,7 +883,18 @@
       "maxDogsReached": "Poți adăuga cel mult {{max}} câini",
       "maxPhotosReached": "Poți adăuga cel mult {{max}} fotografii.",
       "limitReachedTitle": "Limită atinsă"
-    }
+    },
+    "step2Subtitle": "Aceste informații ne ajută să găsim parteneri de plimbare compatibili.",
+    "hints": {
+      "energy": "Cât de activ este într-o zi obișnuită?",
+      "behaviorDogs": "Cum reacționează când întâlnește un alt câine?",
+      "behaviorPeople": "Cum se comportă cu persoane necunoscute?",
+      "leash": "Cât de ușor este să-l plimbi în lesă?",
+      "recall": "Se întoarce când îl chemi fără lesă?",
+      "walkTimes": "La ce ore preferi să te plimbi?",
+      "walkTerrain": "Unde vă place cel mai mult să vă plimbați?"
+    },
+    "step1Subtitle": "Introdu informațiile de bază ale câinelui tău."
   },
   "requireDog": {
     "title": "Adaugă câinele tău",
@@ -1117,17 +1151,6 @@
     "display_name_min": "Name must be at least 2 characters",
     "display_name_max": "Name cannot exceed 50 characters",
     "required": "Acest câmp este obligatoriu"
-  },
-  "onboarding": {
-    "slide1Title": "Găsește parteneri de plimbare",
-    "slide1Description": "Descoperă câini compatibili în zona ta pentru plimbări împreună.",
-    "slide2Title": "Fă match",
-    "slide2Description": "Glisează pentru a găsi partenerul perfect pentru câinele tău.",
-    "slide3Title": "Începe să te plimbi",
-    "slide3Description": "Vorbește, organizează și pornește la prima voastră plimbare!",
-    "nextButton": "Înainte",
-    "skipButton": "Sari",
-    "completeButton": "Începe"
   },
   "biometric": {
     "settingsTitle": "Blocare biometrică",

@@ -1,6 +1,7 @@
 import type { WalkFeedback } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed, WALK_STATUS } from '@pawmeet/types';
 import { ERROR_MESSAGES } from '../constants/messages.js';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type {
   DogRepository,
   FeedbackRepository,
@@ -78,7 +79,7 @@ export function createSubmitFeedback({ feedbackRepo, walkRepo, matchRepo, dogRep
       fromUserId: userId,
       toDogId: input.toDogId,
       rating: input.rating as 1 | 2 | 3 | 4 | 5,
-      comment: input.comment ?? null,
+      comment: input.comment ? sanitizeContent(input.comment) : null,
     });
 
     return succeed(feedback);

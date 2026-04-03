@@ -95,7 +95,8 @@
       "sat": "Sat"
     },
     "search": "Search...",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "optional": "optional"
   },
   "tabs": {
     "discover": "Discover",
@@ -194,7 +195,15 @@
       "title": "Calendar",
       "today": "Today",
       "empty": "No walks",
-      "weekdaysShort": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+      "weekdaysShort": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ]
     },
     "track": "Track",
     "noWalks": "No walks scheduled",
@@ -811,7 +820,21 @@
       "basicInfo": "Basic info",
       "temperament": "Temperament",
       "walks": "Walks",
-      "photos": "Photos"
+      "photos": "Photos",
+      "character": "Character",
+      "training": "Training",
+      "characterDesc": "How does your dog behave in everyday life?",
+      "trainingDesc": "Level of control during walks.",
+      "schedule": "Schedule",
+      "scheduleDesc": "When do you prefer to go out with your dog?",
+      "terrain": "Route",
+      "terrainDesc": "What type of route do you prefer?",
+      "identity": "Identity",
+      "identityDesc": "Your dog's name, breed, and date of birth.",
+      "physique": "Physique",
+      "physiqueDesc": "Your dog's physical characteristics.",
+      "bio": "Bio",
+      "bioDesc": "A short description to introduce your dog."
     },
     "fields": {
       "name": "Dog's name",
@@ -860,7 +883,18 @@
       "maxDogsReached": "You can add at most {{max}} dogs",
       "maxPhotosReached": "You can add at most {{max}} photos.",
       "limitReachedTitle": "Limit reached"
-    }
+    },
+    "step2Subtitle": "This info helps us find compatible walking companions.",
+    "hints": {
+      "energy": "How active are they on a typical day?",
+      "behaviorDogs": "How do they react when meeting another dog?",
+      "behaviorPeople": "How do they behave around strangers?",
+      "leash": "How easy is it to walk them on a leash?",
+      "recall": "Do they come back when called off-leash?",
+      "walkTimes": "What times of day do you prefer to walk?",
+      "walkTerrain": "Where do you like to walk the most?"
+    },
+    "step1Subtitle": "Enter your dog's basic information."
   },
   "requireDog": {
     "title": "Add your dog",
@@ -1117,17 +1151,6 @@
     "display_name_min": "Name must be at least 2 characters",
     "display_name_max": "Name cannot exceed 50 characters",
     "required": "This field is required"
-  },
-  "onboarding": {
-    "slide1Title": "Find walking companions",
-    "slide1Description": "Discover compatible dogs in your area for walks together.",
-    "slide2Title": "Make a match",
-    "slide2Description": "Swipe to find the perfect companion for your dog.",
-    "slide3Title": "Start walking",
-    "slide3Description": "Chat, plan, and head out for your first walk!",
-    "nextButton": "Next",
-    "skipButton": "Skip",
-    "completeButton": "Get started"
   },
   "biometric": {
     "settingsTitle": "Biometric lock",

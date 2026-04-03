@@ -1,6 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-
 import type { GenerateDogBioInput } from '@pawmeet/validation';
+import { describe, expect, it, vi } from 'vitest';
 import { ClaudeBioGenerationService } from './claude-bio-generation-service.js';
 
 function buildBioInput(overrides: Partial<GenerateDogBioInput> = {}): GenerateDogBioInput {

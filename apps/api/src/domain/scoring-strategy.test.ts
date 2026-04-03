@@ -9,7 +9,7 @@ import {
 import { describe, expect, it, vi } from 'vitest';
 import type { MatchingAiRepository } from '../ports/index.js';
 import { buildDog } from '../test-utils/builders.js';
-import { RuleBasedStrategy, getScoreBreakdown } from './scoring-strategy.js';
+import { getScoreBreakdown, RuleBasedStrategy } from './scoring-strategy.js';
 
 const dogA = buildDog({
   id: 'dog-a',

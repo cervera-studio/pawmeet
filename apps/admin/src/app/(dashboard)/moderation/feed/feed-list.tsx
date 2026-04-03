@@ -1,5 +1,6 @@
 'use client';
 
+import { POST_MODERATION_STATUS, type PostModerationStatus } from '@pawmeet/types';
 import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -13,7 +14,6 @@ import { PAGINATION } from '@/lib/constants';
 import { handleError } from '@/lib/error-handler';
 import { formatDateTime } from '@/lib/formatters';
 import type { FeedPost, FeedPostPage, FeedStats } from '@/repositories';
-import { POST_MODERATION_STATUS, type PostModerationStatus } from '@pawmeet/types';
 import { fetchFeedPosts, fetchFeedStats, moderatePost } from './actions';
 
 type StatusStyle = { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' };

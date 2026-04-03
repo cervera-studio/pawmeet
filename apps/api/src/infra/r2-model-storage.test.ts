@@ -9,13 +9,13 @@ vi.mock('../lib/r2.js', () => ({
   r2: { send: mockSend },
 }));
 
+import type { ModelArtifacts } from './r2-model-storage.js';
 import {
   downloadFeatureSchema,
   downloadMetrics,
   downloadModel,
   uploadModelArtifacts,
 } from './r2-model-storage.js';
-import type { ModelArtifacts } from './r2-model-storage.js';
 
 describe('r2-model-storage', () => {
   beforeEach(() => {

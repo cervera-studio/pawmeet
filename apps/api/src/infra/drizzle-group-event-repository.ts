@@ -1,9 +1,9 @@
 import { dogProfiles, groupEventParticipants, groupEvents, users } from '@pawmeet/db';
 import {
-  PARTICIPANT_STATUS,
   type GroupEvent,
   type GroupEventParticipant,
   type GroupEventWithParticipants,
+  PARTICIPANT_STATUS,
 } from '@pawmeet/types';
 import { and, count, desc, eq, inArray, isNotNull, lte, ne, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';

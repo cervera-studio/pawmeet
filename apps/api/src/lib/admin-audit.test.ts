@@ -9,8 +9,8 @@ vi.mock('@pawmeet/utils', () => ({
 }));
 
 import { logger } from '@pawmeet/utils';
-import { logAdminAction, RESOURCE_TYPE } from './admin-audit.js';
 import type { AuditEntry, AuditLogRepository } from '../ports/audit-log-repository.js';
+import { logAdminAction, RESOURCE_TYPE } from './admin-audit.js';
 
 function createMockRepo(overrides?: Partial<AuditLogRepository>): AuditLogRepository {
   return {

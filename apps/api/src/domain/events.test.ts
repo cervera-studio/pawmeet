@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DomainEvent } from './events.js';
-import { DOMAIN_EVENT, clearHandlers, emit, on } from './events.js';
+import { clearHandlers, DOMAIN_EVENT, emit, on } from './events.js';
 
 afterEach(() => {
   clearHandlers();

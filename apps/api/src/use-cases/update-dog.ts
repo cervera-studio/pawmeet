@@ -1,5 +1,6 @@
 import type { DogProfile } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type { CreateDogInput, DogRepository } from '../ports/index.js';
 
 type Deps = {
@@ -17,7 +18,8 @@ export function createUpdateDog({ dogRepo }: Deps) {
       return fail(new AppError('DOG_NOT_FOUND', 'Dog profile not found', 404));
     }
 
-    const dog = await dogRepo.update(dogId, input);
+    const sanitizedInput = { ...input, bio: input.bio ? sanitizeContent(input.bio) : input.bio };
+    const dog = await dogRepo.update(dogId, sanitizedInput);
     return succeed({ dog });
   };
 }

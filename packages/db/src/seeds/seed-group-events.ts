@@ -1,8 +1,8 @@
 import process from 'node:process';
+import { GROUP_EVENT_VISIBILITY } from '@pawmeet/types';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
-import { GROUP_EVENT_VISIBILITY } from '@pawmeet/types';
 import { dogProfiles } from '../schema/dogs';
 import { groupEventParticipants, groupEvents } from '../schema/group-events';
 import { users } from '../schema/users';

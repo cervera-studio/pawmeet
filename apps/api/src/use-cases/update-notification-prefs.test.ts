@@ -7,19 +7,17 @@ describe('createUpdateNotificationPrefs', () => {
   it('merges partial prefs with current', async () => {
     const deps = {
       userRepo: buildUserRepo({
-        findById: vi
-          .fn()
-          .mockResolvedValue(
-            buildUser({
-              notificationPrefs: {
-                matches: true,
-                messages: true,
-                reminders: true,
-                feed: true,
-                nearby: true,
-              },
-            }),
-          ),
+        findById: vi.fn().mockResolvedValue(
+          buildUser({
+            notificationPrefs: {
+              matches: true,
+              messages: true,
+              reminders: true,
+              feed: true,
+              nearby: true,
+            },
+          }),
+        ),
         update: vi.fn().mockResolvedValue(undefined),
       }),
     };

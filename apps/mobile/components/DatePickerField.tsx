@@ -88,7 +88,7 @@ export function DatePickerField({
 
       {Platform.OS === 'android' && showAndroidPicker && (
         <DateTimePicker
-          value={value ?? new Date(2000, 0, 1)}
+          value={value ?? new Date(new Date().getFullYear() - 2, new Date().getMonth(), 1)}
           mode="date"
           display="default"
           maximumDate={maximumDate}
@@ -114,7 +114,7 @@ export function DatePickerField({
               {sheetTitle ?? placeholder}
             </Text>
             <DateTimePicker
-              value={value ?? new Date(2000, 0, 1)}
+              value={value ?? new Date(new Date().getFullYear() - 2, new Date().getMonth(), 1)}
               mode="date"
               display="spinner"
               maximumDate={maximumDate}

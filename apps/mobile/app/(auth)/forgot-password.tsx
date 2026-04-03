@@ -69,7 +69,7 @@ export default function ForgotPasswordScreen() {
               <FormField
                 placeholder={t('auth.forgotPassword.otpPlaceholder')}
                 value={vm.otp}
-                onChangeText={vm.setOtp}
+                onChangeText={(v) => vm.setOtp(v.replace(/[^0-9]/g, ''))}
                 keyboardType="number-pad"
                 maxLength={6}
                 error={vm.errors.otp}

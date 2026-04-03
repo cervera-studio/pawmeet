@@ -1,5 +1,6 @@
 import { AppError, fail, type Organization, type Result, succeed } from '@pawmeet/types';
 import { ERROR_MESSAGES } from '../constants/messages.js';
+import { sanitizeContent } from '../lib/sanitize.js';
 import type { OrganizationRepository } from '../ports/index.js';
 
 type Deps = {
@@ -27,10 +28,10 @@ export function createCreateOrganization({ organizationRepo }: Deps) {
     }
 
     const org = await organizationRepo.create({
-      name: input.name,
+      name: sanitizeContent(input.name),
       slug: input.slug,
       type: input.type,
-      description: input.description ?? null,
+      description: input.description ? sanitizeContent(input.description) : null,
       logoUrl: input.logoUrl ?? null,
       websiteUrl: input.websiteUrl ?? null,
       contactEmail: input.contactEmail ?? null,

@@ -9,6 +9,7 @@ import {
   SIZE_OPTIONS,
   TERRAIN_OPTIONS,
   WALK_TIME_OPTIONS,
+  getBreedSize,
 } from '@pawmeet/config';
 import type {
   BehaviorWithDogs,
@@ -25,8 +26,9 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BreedAutocomplete } from '@/components/BreedAutocomplete';
-import { ChipSelect } from '@/components/ChipSelect';
+import { ChipField } from '@/components/ChipField';
 import { DatePickerField } from '@/components/DatePickerField';
+import { FormSection } from '@/components/FormSection';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useNewDogViewModel } from './_vm/new.view-model';
@@ -65,6 +67,11 @@ function FieldError({ message }: { message: string | undefined }) {
   return <Text className="mt-1 px-1 text-sm text-red-500">{message}</Text>;
 }
 
+const NEUTERED_OPTIONS = [
+  { value: 'true', labelKey: 'common.yes' },
+  { value: 'false', labelKey: 'common.no' },
+] as const;
+
 function Step1BasicInfo({
   state,
   setField,
@@ -86,10 +93,15 @@ function Step1BasicInfo({
 }) {
   const { t } = useTranslation();
   return (
-    <View className="gap-4">
-      <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-        {t('dogForm.step1Title')}
-      </Text>
+    <View className="gap-6">
+      <View>
+        <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('dogForm.step1Title')}
+        </Text>
+        <Text className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
+          {t('dogForm.step1Subtitle')}
+        </Text>
+      </View>
 
       {/* Photo analysis CTA */}
       {ENABLE_AI_FEATURES && (
@@ -110,144 +122,144 @@ function Step1BasicInfo({
         </Pressable>
       )}
 
-      <View>
-        <Input
-          placeholder={t('dogForm.fields.name')}
-          value={state.name}
-          onChangeText={(v) => setField('name', v)}
-        />
-        <FieldError message={errors.name} />
-      </View>
-
-      <BreedAutocomplete
-        placeholder={t('dogForm.fields.breed')}
-        value={state.breed}
-        onSelect={(v) => setField('breed', v)}
-        error={errors.breed}
-      />
-
-      <BreedAutocomplete
-        placeholder={t('dogForm.fields.breedSecondary')}
-        value={state.breedSecondary}
-        onSelect={(v) => setField('breedSecondary', v)}
-      />
-
-      <DatePickerField
-        value={state.birthDate ? new Date(state.birthDate) : null}
-        onChange={(date) => setField('birthDate', date.toISOString().split('T')[0] ?? '')}
-        placeholder={t('dogForm.fields.birthDate')}
-        error={errors.birthDate}
-        spacingClassName="mb-4"
-      />
-
-      <View>
-        <Input
-          placeholder={t('dogForm.fields.weightKg')}
-          value={state.weightKg}
-          onChangeText={(v) => setField('weightKg', v)}
-          keyboardType="decimal-pad"
-        />
-        <FieldError message={errors.weightKg} />
-      </View>
-
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.size')}
-        </Text>
-        <ChipSelect
-          options={SIZE_OPTIONS}
-          selected={state.size ?? ''}
-          onSelect={(v) => setField('size', (v || null) as DogSize | null)}
-        />
-        <FieldError message={errors.size} />
-      </View>
-
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.gender')}
-        </Text>
-        <ChipSelect
-          options={GENDER_OPTIONS}
-          selected={state.gender ?? ''}
-          onSelect={(v) => setField('gender', (v || null) as Gender | null)}
-        />
-        <FieldError message={errors.gender} />
-      </View>
-
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.neutered')}
-        </Text>
-        <View className="flex-row gap-2">
-          <Pressable
-            onPress={() => setField('isNeutered', true)}
-            className={`rounded-full px-4 py-2 ${
-              state.isNeutered === true ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'
-            }`}
-          >
-            <Text
-              className={`text-sm font-medium ${
-                state.isNeutered === true ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'
-              }`}
-            >
-              {t('common.yes')}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setField('isNeutered', false)}
-            className={`rounded-full px-4 py-2 ${
-              state.isNeutered === false ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'
-            }`}
-          >
-            <Text
-              className={`text-sm font-medium ${
-                state.isNeutered === false ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'
-              }`}
-            >
-              {t('common.no')}
-            </Text>
-          </Pressable>
+      {/* Identità */}
+      <FormSection
+        icon="📋"
+        title={t('dogForm.sections.identity')}
+        description={t('dogForm.sections.identityDesc')}
+      >
+        <View>
+          <Input
+            placeholder={t('dogForm.fields.name')}
+            value={state.name}
+            onChangeText={(v) => setField('name', v)}
+          />
+          <FieldError message={errors.name} />
         </View>
-        <FieldError message={errors.isNeutered} />
-      </View>
 
-      <View>
-        <Input
-          placeholder={t('dogForm.fields.bio')}
-          value={state.bio}
-          onChangeText={(v) => setField('bio', v)}
-          multiline
-          numberOfLines={3}
+        <BreedAutocomplete
+          placeholder={t('dogForm.fields.breed')}
+          value={state.breed}
+          onSelect={(v) => {
+            setField('breed', v);
+            const size = getBreedSize(v);
+            if (size) setField('size', size);
+          }}
+          error={errors.breed}
         />
-        {ENABLE_AI_FEATURES && (
-          <>
-            <Pressable
-              onPress={onGenerateBio}
-              disabled={generatingBio || !canGenerateBio}
-              className={`mt-2 flex-row items-center justify-center rounded-full border px-4 py-2 ${
-                generatingBio || !canGenerateBio
-                  ? 'border-gray-200 dark:border-[#48484A]'
-                  : 'border-primary'
-              }`}
-            >
-              <Text
-                className={`text-sm font-medium ${
+
+        {state.breed === 'mixed_breed' && (
+          <BreedAutocomplete
+            placeholder={t('dogForm.fields.breedSecondary')}
+            value={state.breedSecondary}
+            onSelect={(v) => setField('breedSecondary', v)}
+          />
+        )}
+
+        <DatePickerField
+          value={state.birthDate ? new Date(state.birthDate) : null}
+          onChange={(date) => setField('birthDate', date.toISOString().split('T')[0] ?? '')}
+          placeholder={t('dogForm.fields.birthDate')}
+          error={errors.birthDate}
+          spacingClassName="mb-0"
+        />
+      </FormSection>
+
+      {/* Fisico */}
+      <FormSection
+        icon="📏"
+        title={t('dogForm.sections.physique')}
+        description={t('dogForm.sections.physiqueDesc')}
+      >
+        <View>
+          <Input
+            placeholder={t('dogForm.fields.weightKg')}
+            value={state.weightKg}
+            onChangeText={(v) => setField('weightKg', v.replace(/[^0-9.,]/g, ''))}
+            keyboardType="decimal-pad"
+          />
+          <FieldError message={errors.weightKg} />
+        </View>
+
+        {state.breed === 'mixed_breed' && (
+          <ChipField
+            label={t('dogForm.fields.size')}
+            error={errors.size}
+            chipProps={{
+              options: SIZE_OPTIONS,
+              selected: state.size ?? '',
+              onSelect: (v: string) => setField('size', (v || null) as DogSize | null),
+              variant: 'scale',
+            }}
+          />
+        )}
+
+        <ChipField
+          label={t('dogForm.fields.gender')}
+          error={errors.gender}
+          chipProps={{
+            options: GENDER_OPTIONS,
+            selected: state.gender ?? '',
+            onSelect: (v: string) => setField('gender', (v || null) as Gender | null),
+          }}
+        />
+
+        <ChipField
+          label={t('dogForm.fields.neutered')}
+          error={errors.isNeutered}
+          chipProps={{
+            options: NEUTERED_OPTIONS,
+            selected:
+              state.isNeutered === null ? '' : state.isNeutered ? 'true' : 'false',
+            onSelect: (v: string) => setField('isNeutered', v === 'true'),
+          }}
+        />
+      </FormSection>
+
+      {/* Bio */}
+      <FormSection
+        icon="✏️"
+        title={t('dogForm.sections.bio')}
+        description={t('dogForm.sections.bioDesc')}
+      >
+        <View>
+          <Input
+            placeholder={t('dogForm.fields.bio')}
+            value={state.bio}
+            onChangeText={(v) => setField('bio', v)}
+            multiline
+            numberOfLines={3}
+          />
+          {ENABLE_AI_FEATURES && (
+            <>
+              <Pressable
+                onPress={onGenerateBio}
+                disabled={generatingBio || !canGenerateBio}
+                className={`mt-2 flex-row items-center justify-center rounded-full border px-4 py-2 ${
                   generatingBio || !canGenerateBio
-                    ? 'text-gray-400 dark:text-neutral-500'
-                    : 'text-primary'
+                    ? 'border-gray-200 dark:border-[#48484A]'
+                    : 'border-primary'
                 }`}
               >
-                {generatingBio ? t('dogForm.generatingBio') : t('dogForm.generateBio')}
-              </Text>
-            </Pressable>
-            {!canGenerateBio && (
-              <Text className="mt-1 px-1 text-xs text-gray-400 dark:text-neutral-500">
-                {t('dogForm.generateBioHint')}
-              </Text>
-            )}
-          </>
-        )}
-      </View>
+                <Text
+                  className={`text-sm font-medium ${
+                    generatingBio || !canGenerateBio
+                      ? 'text-gray-400 dark:text-neutral-500'
+                      : 'text-primary'
+                  }`}
+                >
+                  {generatingBio ? t('dogForm.generatingBio') : t('dogForm.generateBio')}
+                </Text>
+              </Pressable>
+              {!canGenerateBio && (
+                <Text className="mt-1 px-1 text-xs text-gray-400 dark:text-neutral-500">
+                  {t('dogForm.generateBioHint')}
+                </Text>
+              )}
+            </>
+          )}
+        </View>
+      </FormSection>
     </View>
   );
 }
@@ -263,69 +275,86 @@ function Step2Personality({
 }) {
   const { t } = useTranslation();
   return (
-    <View className="gap-5">
-      <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-        {t('dogForm.step2Title')}
-      </Text>
-
+    <View className="gap-6">
       <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.energy')}
+        <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
+          {t('dogForm.step2Title')}
         </Text>
-        <ChipSelect
-          options={ENERGY_OPTIONS}
-          selected={state.energyLevel ?? ''}
-          onSelect={(v) => setField('energyLevel', (v || null) as EnergyLevel | null)}
-        />
-        <FieldError message={errors.energyLevel} />
+        <Text className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
+          {t('dogForm.step2Subtitle')}
+        </Text>
       </View>
 
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.behaviorDogs')}
-        </Text>
-        <ChipSelect
-          options={BEHAVIOR_DOGS_OPTIONS}
-          selected={state.behaviorWithDogs ?? ''}
-          onSelect={(v) => setField('behaviorWithDogs', (v || null) as BehaviorWithDogs | null)}
+      {/* Carattere */}
+      <FormSection
+        icon="🐕"
+        title={t('dogForm.sections.character')}
+        description={t('dogForm.sections.characterDesc')}
+      >
+        <ChipField
+          label={t('dogForm.fields.energy')}
+          hint={t('dogForm.hints.energy')}
+          error={errors.energyLevel}
+          chipProps={{
+            options: ENERGY_OPTIONS,
+            selected: state.energyLevel ?? '',
+            onSelect: (v: string) => setField('energyLevel', (v || null) as EnergyLevel | null),
+            variant: 'scale',
+          }}
         />
-        <FieldError message={errors.behaviorWithDogs} />
-      </View>
+        <ChipField
+          label={t('dogForm.fields.behaviorDogs')}
+          hint={t('dogForm.hints.behaviorDogs')}
+          error={errors.behaviorWithDogs}
+          chipProps={{
+            options: BEHAVIOR_DOGS_OPTIONS,
+            selected: state.behaviorWithDogs ?? '',
+            onSelect: (v: string) =>
+              setField('behaviorWithDogs', (v || null) as BehaviorWithDogs | null),
+          }}
+        />
+        <ChipField
+          label={t('dogForm.fields.behaviorPeople')}
+          hint={t('dogForm.hints.behaviorPeople')}
+          error={errors.behaviorWithPeople}
+          chipProps={{
+            options: BEHAVIOR_PEOPLE_OPTIONS,
+            selected: state.behaviorWithPeople ?? '',
+            onSelect: (v: string) =>
+              setField('behaviorWithPeople', (v || null) as BehaviorWithPeople | null),
+          }}
+        />
+      </FormSection>
 
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.behaviorPeople')}
-        </Text>
-        <ChipSelect
-          options={BEHAVIOR_PEOPLE_OPTIONS}
-          selected={state.behaviorWithPeople ?? ''}
-          onSelect={(v) => setField('behaviorWithPeople', (v || null) as BehaviorWithPeople | null)}
+      {/* Addestramento */}
+      <FormSection
+        icon="🎓"
+        title={t('dogForm.sections.training')}
+        description={t('dogForm.sections.trainingDesc')}
+      >
+        <ChipField
+          label={t('dogForm.fields.leash')}
+          hint={t('dogForm.hints.leash')}
+          error={errors.leashBehavior}
+          chipProps={{
+            options: LEASH_OPTIONS,
+            selected: state.leashBehavior ?? '',
+            onSelect: (v: string) =>
+              setField('leashBehavior', (v || null) as LeashBehavior | null),
+          }}
         />
-        <FieldError message={errors.behaviorWithPeople} />
-      </View>
-
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.leash')}
-        </Text>
-        <ChipSelect
-          options={LEASH_OPTIONS}
-          selected={state.leashBehavior ?? ''}
-          onSelect={(v) => setField('leashBehavior', (v || null) as LeashBehavior | null)}
+        <ChipField
+          label={t('dogForm.fields.recall')}
+          hint={t('dogForm.hints.recall')}
+          optional
+          chipProps={{
+            options: RECALL_OPTIONS,
+            selected: state.recallReliability ?? '',
+            onSelect: (v: string) => setField('recallReliability', v),
+            variant: 'scale',
+          }}
         />
-        <FieldError message={errors.leashBehavior} />
-      </View>
-
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.recall')}
-        </Text>
-        <ChipSelect
-          options={RECALL_OPTIONS}
-          selected={state.recallReliability ?? ''}
-          onSelect={(v) => setField('recallReliability', v)}
-        />
-      </View>
+      </FormSection>
     </View>
   );
 }
@@ -341,62 +370,74 @@ function Step3WalkPrefs({
 }) {
   const { t } = useTranslation();
   return (
-    <View className="gap-5">
+    <View className="gap-6">
       <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
         {t('dogForm.step3Title')}
       </Text>
 
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.walkTimes')}
-        </Text>
-        <ChipSelect
-          options={WALK_TIME_OPTIONS}
-          selected={state.walkPrefTime}
-          onSelect={(v) => setField('walkPrefTime', v as WalkTime[])}
-          multiple
+      {/* Orari */}
+      <FormSection
+        icon="🕐"
+        title={t('dogForm.sections.schedule')}
+        description={t('dogForm.sections.scheduleDesc')}
+      >
+        <ChipField
+          label={t('dogForm.fields.walkTimes')}
+          hint={t('dogForm.hints.walkTimes')}
+          error={errors.walkPrefTime}
+          chipProps={{
+            options: WALK_TIME_OPTIONS,
+            selected: state.walkPrefTime,
+            onSelect: (v: string[]) => setField('walkPrefTime', v as WalkTime[]),
+            multiple: true,
+          }}
         />
-        <FieldError message={errors.walkPrefTime} />
-      </View>
+      </FormSection>
 
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.walkTerrain')}
-        </Text>
-        <ChipSelect
-          options={TERRAIN_OPTIONS}
-          selected={state.walkPrefTerrain}
-          onSelect={(v) => setField('walkPrefTerrain', v as WalkTerrain[])}
-          multiple
+      {/* Percorso */}
+      <FormSection
+        icon="🌳"
+        title={t('dogForm.sections.terrain')}
+        description={t('dogForm.sections.terrainDesc')}
+      >
+        <ChipField
+          label={t('dogForm.fields.walkTerrain')}
+          hint={t('dogForm.hints.walkTerrain')}
+          error={errors.walkPrefTerrain}
+          chipProps={{
+            options: TERRAIN_OPTIONS,
+            selected: state.walkPrefTerrain,
+            onSelect: (v: string[]) => setField('walkPrefTerrain', v as WalkTerrain[]),
+            multiple: true,
+          }}
         />
-        <FieldError message={errors.walkPrefTerrain} />
-      </View>
 
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.durationMin')}
-        </Text>
-        <Input
-          placeholder="30"
-          value={state.walkPrefDurationMin}
-          onChangeText={(v) => setField('walkPrefDurationMin', v)}
-          keyboardType="number-pad"
-        />
-        <FieldError message={errors.walkPrefDurationMin} />
-      </View>
+        <View>
+          <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+            {t('dogForm.fields.durationMin')}
+          </Text>
+          <Input
+            placeholder="30"
+            value={state.walkPrefDurationMin}
+            onChangeText={(v) => setField('walkPrefDurationMin', v.replace(/[^0-9]/g, ''))}
+            keyboardType="number-pad"
+          />
+          <FieldError message={errors.walkPrefDurationMin} />
+        </View>
 
-      <View>
-        <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
-          {t('dogForm.fields.durationMax')}
-        </Text>
-        <Input
-          placeholder="60"
-          value={state.walkPrefDurationMax}
-          onChangeText={(v) => setField('walkPrefDurationMax', v)}
-          keyboardType="number-pad"
-        />
-        <FieldError message={errors.walkPrefDurationMax} />
-      </View>
+        <View>
+          <Text className="mb-1 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">
+            {t('dogForm.fields.durationMax')}
+          </Text>
+          <Input
+            placeholder="60"
+            value={state.walkPrefDurationMax}
+            onChangeText={(v) => setField('walkPrefDurationMax', v.replace(/[^0-9]/g, ''))}
+            keyboardType="number-pad"
+          />
+          <FieldError message={errors.walkPrefDurationMax} />
+        </View>
+      </FormSection>
     </View>
   );
 }

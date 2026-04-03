@@ -9,6 +9,8 @@ import {
 import { describe, expect, it } from 'vitest';
 import { buildDog } from '../test-utils/builders.js';
 import {
+  calculateLeashScore,
+  calculateWalkScore,
   LEASH_SCORES,
   WEIGHT_BEHAVIOR,
   WEIGHT_DISTANCE,
@@ -16,8 +18,6 @@ import {
   WEIGHT_LEASH,
   WEIGHT_SIZE,
   WEIGHT_WALK,
-  calculateLeashScore,
-  calculateWalkScore,
 } from './compatibility-scoring.js';
 
 describe('weights', () => {

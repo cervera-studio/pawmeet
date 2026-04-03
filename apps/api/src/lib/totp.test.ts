@@ -1,5 +1,5 @@
+import { Secret, TOTP } from 'otpauth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TOTP, Secret } from 'otpauth';
 
 // Need a stable encryption key for tests (at least 32 chars)
 const TEST_ENCRYPTION_KEY = 'pawmeet-test-totp-encryption-key-very-long-string';

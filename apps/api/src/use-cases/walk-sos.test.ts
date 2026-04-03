@@ -1,5 +1,6 @@
 import { isFailure, isSuccess } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
+import type { EmergencyContactRepository } from '../ports/emergency-contact-repository.js';
 import {
   buildNotificationService,
   buildUser,
@@ -7,7 +8,6 @@ import {
   buildWalk,
   buildWalkRepo,
 } from '../test-utils/builders.js';
-import type { EmergencyContactRepository } from '../ports/emergency-contact-repository.js';
 import { createWalkCheckin, createWalkSos } from './walk-sos.js';
 
 const buildEmergencyContactRepo = (

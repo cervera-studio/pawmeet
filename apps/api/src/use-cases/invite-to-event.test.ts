@@ -1,4 +1,4 @@
-import { GROUP_EVENT_STATUS, PARTICIPANT_STATUS, isFailure, isSuccess } from '@pawmeet/types';
+import { GROUP_EVENT_STATUS, isFailure, isSuccess, PARTICIPANT_STATUS } from '@pawmeet/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
   buildDog,

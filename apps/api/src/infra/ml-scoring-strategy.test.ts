@@ -38,8 +38,8 @@ vi.mock('../domain/compatibility-scoring.js', () => ({
 }));
 
 import type { CompatibilityBreakdown, RuleBasedStrategy } from '../domain/scoring-strategy.js';
-import type { OnnxModelLoader } from './onnx-model-loader.js';
 import { MLScoringStrategy } from './ml-scoring-strategy.js';
+import type { OnnxModelLoader } from './onnx-model-loader.js';
 
 function buildDogProfile(overrides: Partial<DogProfile> = {}): DogProfile {
   return {

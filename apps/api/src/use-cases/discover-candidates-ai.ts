@@ -72,6 +72,7 @@ type Suggestion = {
   dog: DogProfile;
   distanceKm: number;
   compatibilityScore: number;
+  primaryPhotoUrl: string | null;
   scoreBreakdown?: {
     sizeScore: number;
     energyScore: number;
@@ -145,6 +146,7 @@ function buildBackfill(
       dog: c.dog,
       distanceKm: Math.round(distanceKm * 10) / 10,
       compatibilityScore: 0,
+      primaryPhotoUrl: c.primaryPhotoUrl,
     });
 
     if (scored.length + backfill.length >= effectiveLimit) break;
@@ -240,6 +242,7 @@ export function createDiscoverCandidatesAi({
             dog: c.dog,
             distanceKm: Math.round(distanceKm * 10) / 10,
             compatibilityScore: Math.round(result.overallScore * 100) / 100,
+            primaryPhotoUrl: c.primaryPhotoUrl,
             scoreBreakdown: {
               sizeScore: result.sizeScore,
               energyScore: result.energyScore,

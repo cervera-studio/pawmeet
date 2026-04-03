@@ -1,4 +1,4 @@
-import { dogProfiles, matches, swipes, users } from '@pawmeet/db';
+import { dogPhotos, dogProfiles, matches, swipes, users } from '@pawmeet/db';
 import type { DogProfile, Match, Swipe } from '@pawmeet/types';
 import { and, count, eq, gte, ne, or, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -121,6 +121,13 @@ export class DrizzleMatchRepository implements MatchRepository {
         dog: dogProfiles,
         ownerLat: users.latitude,
         ownerLon: users.longitude,
+        primaryPhotoUrl: sql<string | null>`(
+          SELECT ${dogPhotos.url} FROM ${dogPhotos}
+          WHERE ${dogPhotos.dogId} = ${dogProfiles.id}
+            AND ${dogPhotos.isPrimary} = true
+            AND ${dogPhotos.moderationStatus} = 'approved'
+          LIMIT 1
+        )`,
       })
       .from(dogProfiles)
       .innerJoin(users, eq(dogProfiles.ownerId, users.id))
@@ -149,6 +156,7 @@ export class DrizzleMatchRepository implements MatchRepository {
       dog: r.dog as DogProfile,
       ownerLat: r.ownerLat,
       ownerLon: r.ownerLon,
+      primaryPhotoUrl: r.primaryPhotoUrl ?? null,
     }));
   }
 }

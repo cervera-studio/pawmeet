@@ -326,7 +326,7 @@ export default function DiscoveryScreen() {
               distanceKm: vm.currentProfile.distanceKm,
               compatibilityScore: vm.currentProfile.compatibilityScore,
               ownerName: vm.currentProfile.dog.ownerId,
-              imageUrl: null,
+              imageUrl: vm.currentProfile.primaryPhotoUrl ?? null,
               scoreBreakdown: vm.currentProfile.scoreBreakdown,
             }}
             onSwipeRight={vm.handleSwipeRight}

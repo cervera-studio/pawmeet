@@ -4,6 +4,7 @@ export interface CandidateDog {
   dog: DogProfile;
   ownerLat: number | null;
   ownerLon: number | null;
+  primaryPhotoUrl: string | null;
 }
 
 export interface MatchRepository {

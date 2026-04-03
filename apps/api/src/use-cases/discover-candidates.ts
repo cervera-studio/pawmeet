@@ -30,6 +30,7 @@ type Suggestion = {
   distanceKm: number;
   compatibilityScore: number;
   scoreBreakdown: ScoreBreakdown;
+  primaryPhotoUrl: string | null;
 };
 
 // ── Filter helpers ──────────────────────────────────────────────────────────
@@ -135,6 +136,7 @@ export function createDiscoverCandidates({
             distanceKm: Math.round(distanceKm * 10) / 10,
             compatibilityScore: breakdown.overallScore,
             scoreBreakdown: breakdown,
+            primaryPhotoUrl: c.primaryPhotoUrl,
           },
         ];
       })
@@ -151,6 +153,7 @@ export function createDiscoverCandidates({
           distanceKm: s.distanceKm,
           compatibilityScore: s.compatibilityScore,
           scoreBreakdown: s.scoreBreakdown,
+          primaryPhotoUrl: s.primaryPhotoUrl,
         });
       }
     }

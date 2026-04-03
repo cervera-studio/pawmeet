@@ -338,6 +338,7 @@ export function buildCandidate(overrides: Partial<CandidateDog> = {}): Candidate
     }),
     ownerLat: 41.91,
     ownerLon: 12.5,
+    primaryPhotoUrl: null,
     ...overrides,
   };
 }

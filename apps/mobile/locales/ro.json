@@ -1173,7 +1173,49 @@
   },
   "match": {
     "close": "Închide",
-    "compatibility": "Compatibilitate"
+    "compatibility": "Compatibilitate",
+    "size": {
+      "name": "Mărime",
+      "tier1": "Mărime similară",
+      "tier2": "Mărime compatibilă",
+      "tier3": "Mărime diferită",
+      "tier4": "Mărime foarte diferită"
+    },
+    "energy": {
+      "name": "Energie",
+      "tier1": "Energie similară",
+      "tier2": "Energie compatibilă",
+      "tier3": "Energie diferită",
+      "tier4": "Energie foarte diferită"
+    },
+    "behavior": {
+      "name": "Comportament",
+      "tier1": "Compatibilitate excelentă",
+      "tier2": "Compatibilitate bună",
+      "tier3": "Compatibilitate acceptabilă",
+      "tier4": "Compatibilitate scăzută"
+    },
+    "walk": {
+      "name": "Plimbare",
+      "tier1": "Aceleași preferințe",
+      "tier2": "Preferințe similare",
+      "tier3": "Preferințe diferite",
+      "tier4": "Preferințe foarte diferite"
+    },
+    "distance": {
+      "name": "Distanță",
+      "tier1": "Foarte aproape",
+      "tier2": "Aproape",
+      "tier3": "Departe",
+      "tier4": "Foarte departe"
+    },
+    "leash": {
+      "name": "Lesă",
+      "tier1": "Același obicei",
+      "tier2": "Obicei similar",
+      "tier3": "Obicei diferit",
+      "tier4": "Obicei foarte diferit"
+    }
   },
   "moodHistory": {
     "empty": "Nicio înregistrare a dispoziției. Începe să înregistrezi dispoziția câinelui tău!",

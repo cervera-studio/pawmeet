@@ -1173,7 +1173,49 @@
   },
   "match": {
     "close": "Chiudi",
-    "compatibility": "Compatibilità"
+    "compatibility": "Compatibilità",
+    "size": {
+      "name": "Taglia",
+      "tier1": "Taglia simile",
+      "tier2": "Taglia compatibile",
+      "tier3": "Taglia diversa",
+      "tier4": "Taglia molto diversa"
+    },
+    "energy": {
+      "name": "Energia",
+      "tier1": "Energia simile",
+      "tier2": "Energia compatibile",
+      "tier3": "Energia diversa",
+      "tier4": "Energia molto diversa"
+    },
+    "behavior": {
+      "name": "Comportamento",
+      "tier1": "Ottima compatibilità",
+      "tier2": "Buona compatibilità",
+      "tier3": "Compatibilità discreta",
+      "tier4": "Bassa compatibilità"
+    },
+    "walk": {
+      "name": "Passeggiata",
+      "tier1": "Stesse preferenze",
+      "tier2": "Preferenze simili",
+      "tier3": "Preferenze diverse",
+      "tier4": "Preferenze molto diverse"
+    },
+    "distance": {
+      "name": "Distanza",
+      "tier1": "Molto vicini",
+      "tier2": "Vicini",
+      "tier3": "Distanti",
+      "tier4": "Molto distanti"
+    },
+    "leash": {
+      "name": "Guinzaglio",
+      "tier1": "Stessa abitudine",
+      "tier2": "Abitudine simile",
+      "tier3": "Abitudine diversa",
+      "tier4": "Abitudine molto diversa"
+    }
   },
   "moodHistory": {
     "empty": "Nessuna registrazione dell'umore. Inizia a registrare l'umore del tuo cane!",

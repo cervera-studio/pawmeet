@@ -1173,7 +1173,49 @@
   },
   "match": {
     "close": "Cerrar",
-    "compatibility": "Compatibilidad"
+    "compatibility": "Compatibilidad",
+    "size": {
+      "name": "Tamaño",
+      "tier1": "Tamaño similar",
+      "tier2": "Tamaño compatible",
+      "tier3": "Tamaño diferente",
+      "tier4": "Tamaño muy diferente"
+    },
+    "energy": {
+      "name": "Energía",
+      "tier1": "Energía similar",
+      "tier2": "Energía compatible",
+      "tier3": "Energía diferente",
+      "tier4": "Energía muy diferente"
+    },
+    "behavior": {
+      "name": "Comportamiento",
+      "tier1": "Gran compatibilidad",
+      "tier2": "Buena compatibilidad",
+      "tier3": "Compatibilidad aceptable",
+      "tier4": "Baja compatibilidad"
+    },
+    "walk": {
+      "name": "Paseo",
+      "tier1": "Mismas preferencias",
+      "tier2": "Preferencias similares",
+      "tier3": "Preferencias diferentes",
+      "tier4": "Preferencias muy diferentes"
+    },
+    "distance": {
+      "name": "Distancia",
+      "tier1": "Muy cerca",
+      "tier2": "Cerca",
+      "tier3": "Lejos",
+      "tier4": "Muy lejos"
+    },
+    "leash": {
+      "name": "Correa",
+      "tier1": "Mismo hábito",
+      "tier2": "Hábito similar",
+      "tier3": "Hábito diferente",
+      "tier4": "Hábito muy diferente"
+    }
   },
   "moodHistory": {
     "empty": "Aún no hay registros de ánimo. ¡Empieza a registrar el ánimo de tu perro!",

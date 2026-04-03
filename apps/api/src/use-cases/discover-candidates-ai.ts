@@ -73,6 +73,7 @@ type Suggestion = {
   distanceKm: number;
   compatibilityScore: number;
   primaryPhotoUrl: string | null;
+  ownerDisplayName: string;
   scoreBreakdown?: {
     sizeScore: number;
     energyScore: number;
@@ -147,6 +148,7 @@ function buildBackfill(
       distanceKm: Math.round(distanceKm * 10) / 10,
       compatibilityScore: 0,
       primaryPhotoUrl: c.primaryPhotoUrl,
+      ownerDisplayName: c.ownerDisplayName,
     });
 
     if (scored.length + backfill.length >= effectiveLimit) break;
@@ -243,6 +245,7 @@ export function createDiscoverCandidatesAi({
             distanceKm: Math.round(distanceKm * 10) / 10,
             compatibilityScore: Math.round(result.overallScore * 100) / 100,
             primaryPhotoUrl: c.primaryPhotoUrl,
+            ownerDisplayName: c.ownerDisplayName,
             scoreBreakdown: {
               sizeScore: result.sizeScore,
               energyScore: result.energyScore,

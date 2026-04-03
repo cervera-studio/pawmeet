@@ -19,3 +19,14 @@ export function formatDogAge(birthDate: Date): string {
   if (remainingMonths === 0) return `${years} ${years === 1 ? 'anno' : 'anni'}`;
   return `${years} ${years === 1 ? 'anno' : 'anni'} e ${remainingMonths} mesi`;
 }
+
+/**
+ * Converts a breed code like `"golden_retriever"` or `"bernese-mountain-dog"`
+ * to a human-readable name like `"Golden Retriever"` or `"Bernese Mountain Dog"`.
+ */
+export function formatBreedName(code: string): string {
+  return code
+    .split(/[_-]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}

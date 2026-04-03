@@ -9,7 +9,7 @@ import {
   WALK_TIME,
 } from '@pawmeet/config';
 import type { DiscoveryFilters } from '@pawmeet/types';
-import { formatDogAge } from '@pawmeet/utils';
+import { formatBreedName, formatDogAge } from '@pawmeet/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
@@ -321,11 +321,11 @@ export default function DiscoveryScreen() {
             dog={{
               dogId: vm.currentProfile.dog.id,
               name: vm.currentProfile.dog.name,
-              breed: vm.currentProfile.dog.breed,
+              breed: formatBreedName(vm.currentProfile.dog.breed),
               age: formatDogAge(new Date(vm.currentProfile.dog.birthDate)),
               distanceKm: vm.currentProfile.distanceKm,
               compatibilityScore: vm.currentProfile.compatibilityScore,
-              ownerName: vm.currentProfile.dog.ownerId,
+              ownerName: vm.currentProfile.ownerDisplayName ?? '',
               imageUrl: vm.currentProfile.primaryPhotoUrl ?? null,
               scoreBreakdown: vm.currentProfile.scoreBreakdown,
             }}

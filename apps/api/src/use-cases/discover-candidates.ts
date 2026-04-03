@@ -31,6 +31,7 @@ type Suggestion = {
   compatibilityScore: number;
   scoreBreakdown: ScoreBreakdown;
   primaryPhotoUrl: string | null;
+  ownerDisplayName: string;
 };
 
 // ── Filter helpers ──────────────────────────────────────────────────────────
@@ -137,6 +138,7 @@ export function createDiscoverCandidates({
             compatibilityScore: breakdown.overallScore,
             scoreBreakdown: breakdown,
             primaryPhotoUrl: c.primaryPhotoUrl,
+            ownerDisplayName: c.ownerDisplayName,
           },
         ];
       })
@@ -154,6 +156,7 @@ export function createDiscoverCandidates({
           compatibilityScore: s.compatibilityScore,
           scoreBreakdown: s.scoreBreakdown,
           primaryPhotoUrl: s.primaryPhotoUrl,
+          ownerDisplayName: s.ownerDisplayName,
         });
       }
     }

@@ -121,6 +121,7 @@ export class DrizzleMatchRepository implements MatchRepository {
         dog: dogProfiles,
         ownerLat: users.latitude,
         ownerLon: users.longitude,
+        ownerDisplayName: users.displayName,
         primaryPhotoUrl: sql<string | null>`(
           SELECT ${dogPhotos.url} FROM ${dogPhotos}
           WHERE ${dogPhotos.dogId} = ${dogProfiles.id}
@@ -157,6 +158,7 @@ export class DrizzleMatchRepository implements MatchRepository {
       ownerLat: r.ownerLat,
       ownerLon: r.ownerLon,
       primaryPhotoUrl: r.primaryPhotoUrl ?? null,
+      ownerDisplayName: r.ownerDisplayName,
     }));
   }
 }

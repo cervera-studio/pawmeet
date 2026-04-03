@@ -1173,7 +1173,49 @@
   },
   "match": {
     "close": "Close",
-    "compatibility": "Compatibility"
+    "compatibility": "Compatibility",
+    "size": {
+      "name": "Size",
+      "tier1": "Similar size",
+      "tier2": "Compatible size",
+      "tier3": "Different size",
+      "tier4": "Very different size"
+    },
+    "energy": {
+      "name": "Energy",
+      "tier1": "Similar energy",
+      "tier2": "Compatible energy",
+      "tier3": "Different energy",
+      "tier4": "Very different energy"
+    },
+    "behavior": {
+      "name": "Behavior",
+      "tier1": "Great compatibility",
+      "tier2": "Good compatibility",
+      "tier3": "Fair compatibility",
+      "tier4": "Low compatibility"
+    },
+    "walk": {
+      "name": "Walk",
+      "tier1": "Same preferences",
+      "tier2": "Similar preferences",
+      "tier3": "Different preferences",
+      "tier4": "Very different preferences"
+    },
+    "distance": {
+      "name": "Distance",
+      "tier1": "Very close",
+      "tier2": "Close",
+      "tier3": "Far",
+      "tier4": "Very far"
+    },
+    "leash": {
+      "name": "Leash",
+      "tier1": "Same habit",
+      "tier2": "Similar habit",
+      "tier3": "Different habit",
+      "tier4": "Very different habit"
+    }
   },
   "moodHistory": {
     "empty": "No mood entries yet. Start logging your dog's mood!",

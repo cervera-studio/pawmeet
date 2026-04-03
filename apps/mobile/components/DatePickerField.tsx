@@ -1,4 +1,4 @@
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ interface DatePickerFieldProps {
 /**
  * Unified date picker field.
  * - Android: native date dialog on tap
- * - iOS: BottomSheet with spinner picker
+ * - iOS: BottomSheetModal with spinner picker
  */
 export function DatePickerField({
   value,
@@ -36,19 +36,19 @@ export function DatePickerField({
   const isDark = useColorScheme() === 'dark';
   const [showAndroidPicker, setShowAndroidPicker] = useState(false);
 
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['40%'], []);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['55%'], []);
 
   const openPicker = useCallback(() => {
     if (Platform.OS === 'android') {
       setShowAndroidPicker(true);
     } else {
-      bottomSheetRef.current?.snapToIndex(0);
+      bottomSheetModalRef.current?.present();
     }
   }, []);
 
   const closePicker = useCallback(() => {
-    bottomSheetRef.current?.close();
+    bottomSheetModalRef.current?.dismiss();
   }, []);
 
   const renderBackdrop = useCallback(
@@ -101,9 +101,8 @@ export function DatePickerField({
       )}
 
       {Platform.OS === 'ios' && (
-        <BottomSheet
-          ref={bottomSheetRef}
-          index={-1}
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
           snapPoints={snapPoints}
           enablePanDownToClose
           backdropComponent={renderBackdrop}
@@ -124,13 +123,13 @@ export function DatePickerField({
                 if (selectedDate) onChange(selectedDate);
               }}
             />
-            <Pressable onPress={closePicker} className="mt-2 rounded-2xl bg-primary py-3">
+            <Pressable onPress={closePicker} className="mt-4 mb-8 rounded-2xl bg-primary py-3">
               <Text className="text-center text-base font-semibold text-white">
                 {t('common.confirm')}
               </Text>
             </Pressable>
           </BottomSheetView>
-        </BottomSheet>
+        </BottomSheetModal>
       )}
     </>
   );

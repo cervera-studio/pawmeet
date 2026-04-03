@@ -83,6 +83,7 @@
       "router": {},
       "googleWebClientId": "102633148388-jt1p86oakgel11d5u3171e1iofimk7nm.apps.googleusercontent.com",
       "googleAndroidClientId": "102633148388-i3jm19so5n4cp1ssh20vsttk15h8l37k.apps.googleusercontent.com",
+      "googleIosClientId": "102633148388-7o6fvbtaanqmifbq109nt59n72vfo38v.apps.googleusercontent.com",
       "eas": {
         "projectId": "979c0a63-948a-4c9c-a003-0b0f09a55bf9"
       }

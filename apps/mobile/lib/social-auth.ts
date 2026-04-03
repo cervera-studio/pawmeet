@@ -2,6 +2,7 @@ import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-si
 import * as AppleAuthentication from 'expo-apple-authentication';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
+import { Platform } from 'react-native';
 
 export interface SocialAuthResult {
   provider: 'apple' | 'google';
@@ -64,8 +65,13 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
  */
 export function configureGoogleSignIn(): void {
   const webClientId = Constants.expoConfig?.extra?.googleWebClientId ?? '';
+  const iosClientId = Constants.expoConfig?.extra?.googleIosClientId ?? '';
   if (!webClientId) return;
-  GoogleSignin.configure({ webClientId, offlineAccess: false });
+  GoogleSignin.configure({
+    webClientId,
+    iosClientId: iosClientId || undefined,
+    offlineAccess: false,
+  });
 }
 
 /**
@@ -73,7 +79,9 @@ export function configureGoogleSignIn(): void {
  * Returns an idToken to send to the backend for verification.
  */
 export async function signInWithGoogle(): Promise<SocialAuthResult> {
-  await GoogleSignin.hasPlayServices();
+  if (Platform.OS === 'android') {
+    await GoogleSignin.hasPlayServices();
+  }
 
   const response = await GoogleSignin.signIn();
 

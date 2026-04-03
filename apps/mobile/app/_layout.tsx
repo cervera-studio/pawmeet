@@ -17,6 +17,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, Pressable, Text, useColorScheme, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ConsentModal } from '@/components/ConsentModal';
 import { useAuth } from '@/hooks/useAuth';
@@ -270,135 +271,139 @@ function RootLayout() {
   return (
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
-        <StatsigProviderExpo sdkKey={STATSIG_CLIENT_KEY} user={statsigUser}>
-          <CertificatePinMonitor />
-          <DeviceIntegrityMonitor />
-          <OfflineFirstManager />
-          <AppLifecycleTracker />
-          <AuthHydrator />
-          {isAuthenticated && <PushNotificationRegistration />}
-          {isAuthenticated && <WebSocketManager />}
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          <Stack>
-            <Stack.Protected guard={!isAuthenticated}>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            </Stack.Protected>
+        <BottomSheetModalProvider>
+          <StatsigProviderExpo sdkKey={STATSIG_CLIENT_KEY} user={statsigUser}>
+            <CertificatePinMonitor />
+            <DeviceIntegrityMonitor />
+            <OfflineFirstManager />
+            <AppLifecycleTracker />
+            <AuthHydrator />
+            {isAuthenticated && <PushNotificationRegistration />}
+            {isAuthenticated && <WebSocketManager />}
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            <Stack>
+              <Stack.Protected guard={!isAuthenticated}>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              </Stack.Protected>
 
-            <Stack.Protected guard={isAuthenticated && requiresAgeVerification}>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(modals)/age-gate"
-                options={{
-                  headerShown: false,
-                  gestureEnabled: false,
-                }}
-              />
-            </Stack.Protected>
+              <Stack.Protected guard={isAuthenticated && requiresAgeVerification}>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(modals)/age-gate"
+                  options={{
+                    headerShown: false,
+                    gestureEnabled: false,
+                  }}
+                />
+              </Stack.Protected>
 
-            <Stack.Protected
-              guard={isAuthenticated && !requiresAgeVerification && !onboardingCompleted}
-            >
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(modals)/onboarding"
-                options={{
-                  headerShown: false,
-                  gestureEnabled: false,
-                }}
-              />
-            </Stack.Protected>
+              <Stack.Protected
+                guard={isAuthenticated && !requiresAgeVerification && !onboardingCompleted}
+              >
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(modals)/onboarding"
+                  options={{
+                    headerShown: false,
+                    gestureEnabled: false,
+                  }}
+                />
+              </Stack.Protected>
 
-            <Stack.Protected
-              guard={isAuthenticated && !requiresAgeVerification && onboardingCompleted}
-            >
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(modals)/dog-detail"
-                options={{ presentation: 'modal', title: t('modals.dogDetail') }}
-              />
-              <Stack.Screen
-                name="(modals)/settings"
-                options={{ presentation: 'modal', title: t('modals.settings') }}
-              />
-              <Stack.Screen
-                name="(modals)/report"
-                options={{ presentation: 'modal', title: t('modals.report') }}
-              />
-              <Stack.Screen
-                name="(modals)/blocked"
-                options={{ presentation: 'modal', title: t('modals.blocked') }}
-              />
-              <Stack.Screen
-                name="(modals)/search-users"
-                options={{ presentation: 'modal', title: t('modals.searchUsers') }}
-              />
-              <Stack.Screen
-                name="(modals)/user-profile"
-                options={{ presentation: 'modal', title: t('modals.userProfile') }}
-              />
-              <Stack.Screen
-                name="(modals)/story-viewer"
-                options={{
-                  presentation: 'fullScreenModal',
-                  headerShown: false,
-                  animation: 'fade',
-                }}
-              />
-              <Stack.Screen
-                name="(modals)/privacy"
-                options={{ presentation: 'modal', title: t('modals.privacy') }}
-              />
-              <Stack.Screen
-                name="(modals)/edit-dog"
-                options={{ presentation: 'modal', title: t('modals.editDog') }}
-              />
-              <Stack.Screen
-                name="(modals)/safety"
-                options={{ presentation: 'modal', title: t('modals.safety') }}
-              />
-              <Stack.Screen
-                name="(modals)/support"
-                options={{ presentation: 'modal', title: t('modals.support') }}
-              />
-              <Stack.Screen
-                name="(modals)/support-chat"
-                options={{ presentation: 'modal', title: t('modals.supportChat') }}
-              />
-              <Stack.Screen
-                name="(modals)/story-create"
-                options={{ presentation: 'modal', headerShown: false }}
-              />
-              <Stack.Screen
-                name="(modals)/story-viewers"
-                options={{ presentation: 'modal', title: t('modals.storyViewers') }}
-              />
-              <Stack.Screen
-                name="(modals)/media-viewer"
-                options={{
-                  presentation: 'fullScreenModal',
-                  headerShown: false,
-                  animation: 'fade',
-                }}
-              />
-            </Stack.Protected>
-          </Stack>
+              <Stack.Protected
+                guard={isAuthenticated && !requiresAgeVerification && onboardingCompleted}
+              >
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(modals)/dog-detail"
+                  options={{ presentation: 'modal', title: t('modals.dogDetail') }}
+                />
+                <Stack.Screen
+                  name="(modals)/settings"
+                  options={{ presentation: 'modal', title: t('modals.settings') }}
+                />
+                <Stack.Screen
+                  name="(modals)/report"
+                  options={{ presentation: 'modal', title: t('modals.report') }}
+                />
+                <Stack.Screen
+                  name="(modals)/blocked"
+                  options={{ presentation: 'modal', title: t('modals.blocked') }}
+                />
+                <Stack.Screen
+                  name="(modals)/search-users"
+                  options={{ presentation: 'modal', title: t('modals.searchUsers') }}
+                />
+                <Stack.Screen
+                  name="(modals)/user-profile"
+                  options={{ presentation: 'modal', title: t('modals.userProfile') }}
+                />
+                <Stack.Screen
+                  name="(modals)/story-viewer"
+                  options={{
+                    presentation: 'fullScreenModal',
+                    headerShown: false,
+                    animation: 'fade',
+                  }}
+                />
+                <Stack.Screen
+                  name="(modals)/privacy"
+                  options={{ presentation: 'modal', title: t('modals.privacy') }}
+                />
+                <Stack.Screen
+                  name="(modals)/edit-dog"
+                  options={{ presentation: 'modal', title: t('modals.editDog') }}
+                />
+                <Stack.Screen
+                  name="(modals)/safety"
+                  options={{ presentation: 'modal', title: t('modals.safety') }}
+                />
+                <Stack.Screen
+                  name="(modals)/support"
+                  options={{ presentation: 'modal', title: t('modals.support') }}
+                />
+                <Stack.Screen
+                  name="(modals)/support-chat"
+                  options={{ presentation: 'modal', title: t('modals.supportChat') }}
+                />
+                <Stack.Screen
+                  name="(modals)/story-create"
+                  options={{ presentation: 'modal', headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(modals)/story-viewers"
+                  options={{ presentation: 'modal', title: t('modals.storyViewers') }}
+                />
+                <Stack.Screen
+                  name="(modals)/media-viewer"
+                  options={{
+                    presentation: 'fullScreenModal',
+                    headerShown: false,
+                    animation: 'fade',
+                  }}
+                />
+              </Stack.Protected>
+            </Stack>
 
-          <ConsentModal visible={showConsentModal} onDismiss={() => setShowConsentModal(false)} />
+            <ConsentModal visible={showConsentModal} onDismiss={() => setShowConsentModal(false)} />
 
-          {isLocked && (
-            <View className="absolute inset-0 z-50 items-center justify-center bg-black/95">
-              <Text className="mb-2 text-2xl font-bold text-white">PawMeet</Text>
-              <Text className="mb-8 text-base text-neutral-400">
-                {t('biometric.lockedMessage')}
-              </Text>
-              <Pressable onPress={authenticate} className="rounded-xl bg-emerald-600 px-8 py-4">
-                <Text className="text-base font-semibold text-white">{t('biometric.unlock')}</Text>
-              </Pressable>
-            </View>
-          )}
-        </StatsigProviderExpo>
+            {isLocked && (
+              <View className="absolute inset-0 z-50 items-center justify-center bg-black/95">
+                <Text className="mb-2 text-2xl font-bold text-white">PawMeet</Text>
+                <Text className="mb-8 text-base text-neutral-400">
+                  {t('biometric.lockedMessage')}
+                </Text>
+                <Pressable onPress={authenticate} className="rounded-xl bg-emerald-600 px-8 py-4">
+                  <Text className="text-base font-semibold text-white">
+                    {t('biometric.unlock')}
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+          </StatsigProviderExpo>
+        </BottomSheetModalProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

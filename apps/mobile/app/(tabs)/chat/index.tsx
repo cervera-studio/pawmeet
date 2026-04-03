@@ -179,7 +179,7 @@ function MessagesEmptyState() {
 
   return (
     <View className="flex-1 items-center justify-center py-20">
-      <Text className="text-5xl">{'\u{1F4AC}'}</Text>
+      <Text style={{ fontSize: 48, lineHeight: 60 }}>{'\u{1F4AC}'}</Text>
       <Text className="mt-4 text-lg text-gray-400 dark:text-neutral-500">
         {t('chat.listEmptyTitle')}
       </Text>

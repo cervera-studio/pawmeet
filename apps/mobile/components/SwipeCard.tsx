@@ -239,15 +239,14 @@ export function SwipeCard({
 
         {/* Bottom gradient — tall gradient, not a flat bar */}
         <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.85)']}
-          locations={[0, 0.4, 1]}
+          colors={['transparent', 'rgba(0,0,0,0.55)']}
           className="absolute bottom-0 left-0 right-0"
-          style={{ height: '45%' }}
+          style={{ height: '35%' }}
           pointerEvents="none"
         />
 
         {/* Info overlay — sits on top of gradient */}
-        <View className="absolute bottom-0 left-0 right-0 px-5 pb-24">
+        <View className="absolute bottom-0 left-0 right-0 px-5 pb-20">
           <View className="flex-row items-end justify-between">
             <View className="flex-1 mr-3">
               {/* Name — hero weight */}

@@ -401,7 +401,7 @@ export default function DiscoveryScreen() {
               }}
             />
             {/* Action buttons — overlaid on the card's bottom edge */}
-            <View className="absolute bottom-6 left-0 right-0 flex-row items-center justify-center gap-5 z-10">
+            <View className="absolute bottom-4 left-0 right-0 flex-row items-center justify-center gap-6 z-10">
               <ActionButton
                 onPress={() => cardRef.current?.animateLeft()}
                 size="lg"

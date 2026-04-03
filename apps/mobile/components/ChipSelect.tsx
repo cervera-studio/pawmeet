@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 interface ChipOption {
   readonly value: string;
-  readonly label: string;
+  readonly label?: string;
+  readonly labelKey?: string;
 }
 
 type ChipSelectProps<T extends string> =
@@ -22,11 +24,14 @@ type ChipSelectProps<T extends string> =
 /**
  * A chip-based selector that supports both single-select and multi-select modes.
  *
+ * Options can provide either `label` (raw string) or `labelKey` (i18n translation key).
+ *
  * - Single-select (default): `selected` is a single value, `onSelect` receives the selected value.
  * - Multi-select (`multiple`): `selected` is an array, `onSelect` receives the updated array.
  */
 export function ChipSelect<T extends string>(props: ChipSelectProps<T>) {
   const { options, multiple } = props;
+  const { t } = useTranslation();
 
   const isSelected = (value: T): boolean => {
     if (multiple) {
@@ -49,6 +54,11 @@ export function ChipSelect<T extends string>(props: ChipSelectProps<T>) {
     }
   };
 
+  const getLabel = (opt: ChipOption): string => {
+    if (opt.labelKey) return t(opt.labelKey);
+    return opt.label ?? opt.value;
+  };
+
   return (
     <View className="flex-row flex-wrap gap-2">
       {options.map((opt) => {
@@ -62,7 +72,7 @@ export function ChipSelect<T extends string>(props: ChipSelectProps<T>) {
             <Text
               className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'}`}
             >
-              {opt.label}
+              {getLabel(opt)}
             </Text>
           </Pressable>
         );

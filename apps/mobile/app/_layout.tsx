@@ -6,6 +6,7 @@ import { LogBox } from 'react-native';
 // Suppress Expo Router warnings for colocated view-model files inside _vm/ directories
 LogBox.ignoreLogs([/Route ".*_vm.*" is missing the required default export/]);
 
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { logger } from '@pawmeet/utils';
 import * as Sentry from '@sentry/react-native';
 import { StatsigProviderExpo } from '@statsig/expo-bindings';
@@ -17,7 +18,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, Pressable, Text, useColorScheme, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ConsentModal } from '@/components/ConsentModal';
 import { useAuth } from '@/hooks/useAuth';
@@ -281,7 +281,13 @@ function RootLayout() {
             {isAuthenticated && <PushNotificationRegistration />}
             {isAuthenticated && <WebSocketManager />}
             <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-            <Stack>
+            <Stack
+              screenOptions={{
+                headerStyle: { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#fff' },
+                headerTintColor: colorScheme === 'dark' ? '#F5F5F7' : '#1f2937',
+                contentStyle: { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#fff' },
+              }}
+            >
               <Stack.Protected guard={!isAuthenticated}>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
@@ -323,6 +329,13 @@ function RootLayout() {
                 <Stack.Screen
                   name="(modals)/settings"
                   options={{ presentation: 'modal', title: t('modals.settings') }}
+                />
+                <Stack.Screen
+                  name="(modals)/notification-prefs"
+                  options={{
+                    presentation: 'modal',
+                    title: t('settings.notifications.screenTitle'),
+                  }}
                 />
                 <Stack.Screen
                   name="(modals)/report"

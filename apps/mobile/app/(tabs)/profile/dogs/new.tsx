@@ -1,6 +1,7 @@
 import {
   BEHAVIOR_DOGS_OPTIONS,
   BEHAVIOR_PEOPLE_OPTIONS,
+  ENABLE_AI_FEATURES,
   ENERGY_OPTIONS,
   GENDER_OPTIONS,
   LEASH_OPTIONS,
@@ -23,6 +24,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BreedAutocomplete } from '@/components/BreedAutocomplete';
 import { ChipSelect } from '@/components/ChipSelect';
 import { DatePickerField } from '@/components/DatePickerField';
 import { Button } from '@/components/ui/Button';
@@ -90,21 +92,23 @@ function Step1BasicInfo({
       </Text>
 
       {/* Photo analysis CTA */}
-      <Pressable
-        onPress={onAnalyzePhoto}
-        disabled={analyzingPhoto}
-        className={`flex-row items-center justify-center rounded-2xl border-2 border-dashed py-4 ${
-          analyzingPhoto ? 'border-gray-200 dark:border-[#48484A]' : 'border-primary/40'
-        }`}
-      >
-        <Text
-          className={`text-sm font-medium ${
-            analyzingPhoto ? 'text-gray-400 dark:text-neutral-500' : 'text-primary'
+      {ENABLE_AI_FEATURES && (
+        <Pressable
+          onPress={onAnalyzePhoto}
+          disabled={analyzingPhoto}
+          className={`flex-row items-center justify-center rounded-2xl border-2 border-dashed py-4 ${
+            analyzingPhoto ? 'border-gray-200 dark:border-[#48484A]' : 'border-primary/40'
           }`}
         >
-          {analyzingPhoto ? t('dogForm.analyzingPhoto') : t('dogForm.analyzePhoto')}
-        </Text>
-      </Pressable>
+          <Text
+            className={`text-sm font-medium ${
+              analyzingPhoto ? 'text-gray-400 dark:text-neutral-500' : 'text-primary'
+            }`}
+          >
+            {analyzingPhoto ? t('dogForm.analyzingPhoto') : t('dogForm.analyzePhoto')}
+          </Text>
+        </Pressable>
+      )}
 
       <View>
         <Input
@@ -115,19 +119,17 @@ function Step1BasicInfo({
         <FieldError message={errors.name} />
       </View>
 
-      <View>
-        <Input
-          placeholder={t('dogForm.fields.breed')}
-          value={state.breed}
-          onChangeText={(v) => setField('breed', v)}
-        />
-        <FieldError message={errors.breed} />
-      </View>
+      <BreedAutocomplete
+        placeholder={t('dogForm.fields.breed')}
+        value={state.breed}
+        onSelect={(v) => setField('breed', v)}
+        error={errors.breed}
+      />
 
-      <Input
+      <BreedAutocomplete
         placeholder={t('dogForm.fields.breedSecondary')}
         value={state.breedSecondary}
-        onChangeText={(v) => setField('breedSecondary', v)}
+        onSelect={(v) => setField('breedSecondary', v)}
       />
 
       <DatePickerField
@@ -217,29 +219,33 @@ function Step1BasicInfo({
           multiline
           numberOfLines={3}
         />
-        <Pressable
-          onPress={onGenerateBio}
-          disabled={generatingBio || !canGenerateBio}
-          className={`mt-2 flex-row items-center justify-center rounded-full border px-4 py-2 ${
-            generatingBio || !canGenerateBio
-              ? 'border-gray-200 dark:border-[#48484A]'
-              : 'border-primary'
-          }`}
-        >
-          <Text
-            className={`text-sm font-medium ${
-              generatingBio || !canGenerateBio
-                ? 'text-gray-400 dark:text-neutral-500'
-                : 'text-primary'
-            }`}
-          >
-            {generatingBio ? t('dogForm.generatingBio') : t('dogForm.generateBio')}
-          </Text>
-        </Pressable>
-        {!canGenerateBio && (
-          <Text className="mt-1 px-1 text-xs text-gray-400 dark:text-neutral-500">
-            {t('dogForm.generateBioHint')}
-          </Text>
+        {ENABLE_AI_FEATURES && (
+          <>
+            <Pressable
+              onPress={onGenerateBio}
+              disabled={generatingBio || !canGenerateBio}
+              className={`mt-2 flex-row items-center justify-center rounded-full border px-4 py-2 ${
+                generatingBio || !canGenerateBio
+                  ? 'border-gray-200 dark:border-[#48484A]'
+                  : 'border-primary'
+              }`}
+            >
+              <Text
+                className={`text-sm font-medium ${
+                  generatingBio || !canGenerateBio
+                    ? 'text-gray-400 dark:text-neutral-500'
+                    : 'text-primary'
+                }`}
+              >
+                {generatingBio ? t('dogForm.generatingBio') : t('dogForm.generateBio')}
+              </Text>
+            </Pressable>
+            {!canGenerateBio && (
+              <Text className="mt-1 px-1 text-xs text-gray-400 dark:text-neutral-500">
+                {t('dogForm.generateBioHint')}
+              </Text>
+            )}
+          </>
         )}
       </View>
     </View>

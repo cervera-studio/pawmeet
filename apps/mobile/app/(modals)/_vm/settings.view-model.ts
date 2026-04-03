@@ -37,7 +37,6 @@ const DEFAULT_QUIET_HOURS: QuietHours = {
 export function useSettingsViewModel() {
   const { logout } = useAuth();
   const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
-  const [locationSharing, setLocationSharing] = useState(true);
   const themePreference = useThemeStore((s) => s.preference);
   const setThemePreference = useThemeStore((s) => s.setPreference);
   const darkMode = themePreference === 'dark';
@@ -46,6 +45,8 @@ export function useSettingsViewModel() {
     [setThemePreference],
   );
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
   const [quietHours, setQuietHours] = useState<QuietHours>(DEFAULT_QUIET_HOURS);
   const [searchRadiusKm, setSearchRadiusKmLocal] = useState(5);
   const [language, setLanguageLocal] = useState(i18n.language || 'it');
@@ -78,48 +79,46 @@ export function useSettingsViewModel() {
   }, []);
 
   // Persist a single notification pref toggle to the backend
-  const updatePref = useCallback(
-    (key: keyof NotificationPrefs, value: boolean) => {
-      const updated = { ...prefs, [key]: value };
-      setPrefs(updated);
+  const updatePref = useCallback((key: keyof NotificationPrefs, value: boolean) => {
+    setPrefs((prev) => ({ ...prev, [key]: value }));
 
-      api.users.updateNotificationPrefs.mutate({ [key]: value }).catch((e) => {
-        logger.warn('Settings', `Failed to update ${key} pref`, e);
-        // Revert on failure
-        setPrefs(prefs);
+    api.users.updateNotificationPrefs.mutate({ [key]: value }).catch((e) => {
+      logger.warn('Settings', `Failed to update ${key} pref`, e);
+      setPrefs((prev) => ({ ...prev, [key]: !value }));
+    });
+  }, []);
+
+  const updateQuietHours = useCallback((update: Partial<QuietHours>) => {
+    let snapshot: QuietHours | undefined;
+    setQuietHours((prev) => {
+      snapshot = prev;
+      return { ...prev, ...update };
+    });
+
+    // We need the merged value for the API call
+    const merged = { ...(snapshot ?? DEFAULT_QUIET_HOURS), ...update };
+    api.users.updateNotificationPrefs
+      .mutate({
+        quietHoursStart: merged.enabled ? merged.start : null,
+        quietHoursEnd: merged.enabled ? merged.end : null,
+      })
+      .catch((e) => {
+        logger.warn('Settings', 'Failed to update quiet hours', e);
+        if (snapshot) setQuietHours(snapshot);
       });
-    },
-    [prefs],
-  );
+  }, []);
 
-  const updateQuietHours = useCallback(
-    (update: Partial<QuietHours>) => {
-      const updated = { ...quietHours, ...update };
-      setQuietHours(updated);
-
-      api.users.updateNotificationPrefs
-        .mutate({
-          quietHoursStart: updated.enabled ? updated.start : null,
-          quietHoursEnd: updated.enabled ? updated.end : null,
-        })
-        .catch((e) => {
-          logger.warn('Settings', 'Failed to update quiet hours', e);
-          setQuietHours(quietHours);
-        });
-    },
-    [quietHours],
-  );
-
-  const updateSearchRadius = useCallback(
-    (km: number) => {
-      setSearchRadiusKmLocal(km);
-      api.users.updatePreferences.mutate({ searchRadiusKm: km }).catch((e) => {
-        logger.warn('Settings', 'Failed to update search radius', e);
-        setSearchRadiusKmLocal(searchRadiusKm);
-      });
-    },
-    [searchRadiusKm],
-  );
+  const updateSearchRadius = useCallback((km: number) => {
+    let prev: number | undefined;
+    setSearchRadiusKmLocal((current) => {
+      prev = current;
+      return km;
+    });
+    api.users.updatePreferences.mutate({ searchRadiusKm: km }).catch((e) => {
+      logger.warn('Settings', 'Failed to update search radius', e);
+      if (prev !== undefined) setSearchRadiusKmLocal(prev);
+    });
+  }, []);
 
   const changeLanguage = useCallback((lang: string) => {
     setLanguageLocal(lang);
@@ -136,49 +135,42 @@ export function useSettingsViewModel() {
           text: i18n.t('common.delete'),
           style: 'destructive',
           onPress: () => {
-            Alert.prompt(
-              i18n.t('settings.account.passwordConfirmTitle'),
-              i18n.t('settings.account.passwordConfirmMessage'),
-              [
-                { text: i18n.t('common.cancel'), style: 'cancel' },
-                {
-                  text: i18n.t('settings.account.confirmDeletion'),
-                  style: 'destructive',
-                  onPress: (password: string | undefined) => {
-                    if (!password) return;
-                    setIsDeleting(true);
-                    api.users.deleteAccount
-                      .mutate({ password })
-                      .then(() => {
-                        Alert.alert(
-                          i18n.t('settings.account.deletedTitle'),
-                          i18n.t('settings.account.deletedMessage'),
-                          [{ text: i18n.t('common.ok'), onPress: logout }],
-                        );
-                      })
-                      .catch((err) => {
-                        setIsDeleting(false);
-                        const message =
-                          err?.data?.code === 'INVALID_PASSWORD'
-                            ? i18n.t('settings.account.invalidPassword')
-                            : i18n.t('settings.account.deleteError');
-                        Alert.alert(i18n.t('common.error'), message);
-                      });
-                  },
-                },
-              ],
-              'secure-text',
-            );
+            setDeletePassword('');
+            setShowDeleteConfirm(true);
           },
         },
       ],
     );
-  }, [logout]);
+  }, []);
+
+  const confirmDeleteAccount = useCallback(
+    (password: string) => {
+      if (!password) return;
+      setIsDeleting(true);
+      setShowDeleteConfirm(false);
+      api.users.deleteAccount
+        .mutate({ password })
+        .then(() => {
+          Alert.alert(
+            i18n.t('settings.account.deletedTitle'),
+            i18n.t('settings.account.deletedMessage'),
+            [{ text: i18n.t('common.ok'), onPress: logout }],
+          );
+        })
+        .catch((err) => {
+          setIsDeleting(false);
+          const message =
+            err?.data?.code === 'INVALID_PASSWORD'
+              ? i18n.t('settings.account.invalidPassword')
+              : i18n.t('settings.account.deleteError');
+          Alert.alert(i18n.t('common.error'), message);
+        });
+    },
+    [logout],
+  );
 
   return {
     prefs,
-    locationSharing,
-    setLocationSharing,
     darkMode,
     setDarkMode,
     updatePref,
@@ -186,6 +178,11 @@ export function useSettingsViewModel() {
     updateQuietHours,
     logout,
     deleteAccount,
+    confirmDeleteAccount,
+    showDeleteConfirm,
+    setShowDeleteConfirm,
+    deletePassword,
+    setDeletePassword,
     isDeleting,
     searchRadiusKm,
     updateSearchRadius,

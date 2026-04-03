@@ -2,38 +2,38 @@ export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary
 
 import { MAX_DOGS_PER_USER } from '@pawmeet/config';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DogProfileCard } from '@/components/DogProfileCard';
+import { SettingsRow } from '@/components/SettingsRow';
 import { Avatar } from '@/components/ui/Avatar';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { formatDogAge, useProfileViewModel } from './_vm/index.view-model';
 
-// ── Loading skeleton ──────────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function SectionCard({ children }: { children: React.ReactNode }) {
+  return <View className="rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] px-4 mb-5">{children}</View>;
+}
+
+function Divider() {
+  return <View className="border-b border-gray-200 dark:border-[#38383A]" />;
+}
+
+// ── Loading skeleton ─────────────────────────────────────────────────────────
 
 function ProfileLoadingSkeleton() {
   return (
     <View className="px-4 py-6">
-      {/* Avatar skeleton */}
       <View className="mb-8 items-center">
         <View className="h-20 w-20 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
         <View className="mt-3 h-5 w-32 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
         <View className="mt-2 h-4 w-40 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
       </View>
-
-      {/* Dogs section skeleton */}
       <View className="mb-6">
         <View className="mb-3 h-5 w-24 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
-        <View className="flex-row items-center rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm">
-          <View className="h-12 w-12 rounded-full bg-gray-200 dark:bg-[#48484A] animate-pulse" />
-          <View className="ml-3 flex-1">
-            <View className="h-4 w-28 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
-            <View className="mt-2 h-3 w-36 rounded bg-gray-200 dark:bg-[#48484A] animate-pulse" />
-          </View>
-        </View>
+        <View className="h-20 rounded-2xl bg-gray-100 dark:bg-[#38383A] animate-pulse" />
       </View>
-
-      {/* Menu skeleton */}
       <View className="gap-1">
         <View className="h-12 rounded-xl bg-gray-100 dark:bg-[#38383A] animate-pulse" />
         <View className="h-12 rounded-xl bg-gray-100 dark:bg-[#38383A] animate-pulse" />
@@ -43,14 +43,13 @@ function ProfileLoadingSkeleton() {
   );
 }
 
-// ── Screen ────────────────────────────────────────────────────────────────────
+// ── Screen ───────────────────────────────────────────────────────────────────
 
 export default function ProfileScreen() {
   usePreventScreenCapture();
   const { t } = useTranslation();
   const vm = useProfileViewModel();
 
-  // Show skeleton while initial data is loading
   if (vm.isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
@@ -61,16 +60,15 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
-      <ScrollView contentContainerClassName="px-4 py-6">
-        {/* User profile */}
-        <View className="mb-8 items-center">
+      <ScrollView contentContainerClassName="px-4 pt-6 pb-20">
+        {/* ── User profile header ── */}
+        <View className="mb-6 items-center">
           <Pressable onPress={vm.handleAvatarPress} disabled={vm.uploading} className="relative">
             <Avatar
               name={vm.user?.displayName ?? t('profile.defaultName')}
               imageUrl={vm.user?.avatarUrl}
               size="lg"
             />
-            {/* Camera icon overlay */}
             <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-full bg-primary">
               {vm.uploading ? (
                 <ActivityIndicator size="small" color="#ffffff" />
@@ -83,9 +81,6 @@ export default function ProfileScreen() {
             {vm.user?.displayName ?? t('profile.defaultName')}
           </Text>
           <Text className="text-sm text-gray-500 dark:text-neutral-500">{vm.user?.email}</Text>
-          <Text className="mt-1 text-xs text-gray-400 dark:text-neutral-500">
-            {t('profile.changePhoto')}
-          </Text>
 
           {/* Follow counts */}
           <View className="mt-4 flex-row gap-6">
@@ -114,18 +109,18 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Search users */}
+        {/* ── Search users ── */}
         <Pressable
           onPress={vm.navigateToSearchUsers}
-          className="mb-6 flex-row items-center justify-center gap-2 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] py-3"
+          className="mb-5 flex-row items-center justify-center gap-2 rounded-xl bg-gray-50 dark:bg-[#2C2C2E] py-3"
         >
           <Text className="text-sm text-gray-500 dark:text-neutral-500">
             {t('profile.searchUsersPrompt')}
           </Text>
         </Pressable>
 
-        {/* My dogs */}
-        <View className="mb-6">
+        {/* ── My dogs ── */}
+        <View className="mb-5">
           <View className="mb-3 flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
               {t('profile.myDogs')}
@@ -162,7 +157,6 @@ export default function ProfileScreen() {
                       age={formatDogAge(new Date(dog.birthDate))}
                       onPress={() => vm.navigateToDogDetail(dog.id)}
                     />
-                    {/* Active dog indicator (multi-dog only) */}
                     {vm.dogs.length > 1 && (
                       <Pressable
                         onPress={() => vm.setSelectedDog(dog.id)}
@@ -186,11 +180,11 @@ export default function ProfileScreen() {
           )}
         </View>
 
-        {/* Gamification XP bar */}
+        {/* ── Gamification XP bar ── */}
         {vm.xpSummary ? (
           <Pressable
             onPress={vm.navigateToGamification}
-            className="mb-6 rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 shadow-sm"
+            className="mb-5 rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4"
           >
             <View className="flex-row items-center justify-between mb-2">
               <View className="flex-row items-center gap-2">
@@ -223,92 +217,27 @@ export default function ProfileScreen() {
           </Pressable>
         ) : null}
 
-        {/* Menu */}
-        <View className="gap-1">
-          <Pressable
-            onPress={vm.navigateToNotifications}
-            className="flex-row items-center justify-between rounded-xl px-4 py-4"
-          >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              {t('profile.menu.notifications')}
-            </Text>
-            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={vm.navigateToGamification}
-            className="flex-row items-center justify-between rounded-xl px-4 py-4"
-          >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              {t('profile.menu.gamification')}
-            </Text>
-            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={vm.navigateToActivity}
-            className="flex-row items-center justify-between rounded-xl px-4 py-4"
-          >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              {t('profile.menu.activity')}
-            </Text>
-            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
-          </Pressable>
-
-          <Pressable
+        {/* ── Menu ── */}
+        <SectionCard>
+          <SettingsRow title={t('profile.menu.activity')} onPress={vm.navigateToActivity} />
+          <Divider />
+          <SettingsRow
+            title={t('profile.menu.matchingInsights')}
             onPress={vm.navigateToMatchingInsights}
-            className="flex-row items-center justify-between rounded-xl px-4 py-4"
-          >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              {t('profile.menu.matchingInsights')}
-            </Text>
-            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
-          </Pressable>
+          />
+          <Divider />
+          <SettingsRow title={t('profile.menu.gamification')} onPress={vm.navigateToGamification} />
+        </SectionCard>
 
-          <Pressable
-            onPress={vm.navigateToSettings}
-            className="flex-row items-center justify-between rounded-xl px-4 py-4"
-          >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              {t('profile.menu.settings')}
-            </Text>
-            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={vm.navigateToPrivacy}
-            className="flex-row items-center justify-between rounded-xl px-4 py-4"
-          >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              {t('profile.menu.privacy')}
-            </Text>
-            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={vm.navigateToBlocked}
-            className="flex-row items-center justify-between rounded-xl px-4 py-4"
-          >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              {t('profile.menu.blocked')}
-            </Text>
-            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => Linking.openURL('https://pawmeet.io/help')}
-            className="flex-row items-center justify-between rounded-xl px-4 py-4"
-          >
-            <Text className="text-base text-gray-700 dark:text-[#D1D1D6]">
-              {t('profile.menu.help')}
-            </Text>
-            <Text className="text-gray-400 dark:text-neutral-500">{'\u203A'}</Text>
-          </Pressable>
-
-          <Pressable onPress={vm.logout} className="mt-4 items-center rounded-xl py-4">
-            <Text className="text-base font-medium text-red-500">{t('profile.menu.logout')}</Text>
-          </Pressable>
-        </View>
+        <SectionCard>
+          <SettingsRow title={t('profile.menu.settings')} onPress={vm.navigateToSettings} />
+          <Divider />
+          <SettingsRow title={t('profile.menu.privacy')} onPress={vm.navigateToPrivacy} />
+          <Divider />
+          <SettingsRow title={t('profile.menu.blocked')} onPress={vm.navigateToBlocked} />
+          <Divider />
+          <SettingsRow title={t('profile.menu.help')} onPress={vm.navigateToHelp} />
+        </SectionCard>
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,6 +1,7 @@
 import { formatDogAge, logger } from '@pawmeet/utils';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { Linking } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { useXpSummary } from '@/hooks/useGamification';
 import { useImageUpload } from '@/hooks/useImageUpload';
@@ -11,7 +12,7 @@ export { formatDogAge };
 
 export function useProfileViewModel() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const dogs = useDogsStore((s) => s.dogs);
   const setDogs = useDogsStore((s) => s.setDogs);
   const selectedDogId = useDogsStore((s) => s.selectedDogId);
@@ -83,10 +84,6 @@ export function useProfileViewModel() {
     router.push('/(tabs)/profile/friends');
   };
 
-  const navigateToNotifications = () => {
-    router.push('/(tabs)/profile/notifications');
-  };
-
   const navigateToGamification = () => {
     router.push('/(tabs)/profile/gamification');
   };
@@ -101,6 +98,10 @@ export function useProfileViewModel() {
 
   const navigateToSearchUsers = () => {
     router.push('/(modals)/search-users');
+  };
+
+  const navigateToHelp = () => {
+    Linking.openURL('https://pawmeet.io/help');
   };
 
   const isLoading = !user || loadingDogs;
@@ -123,11 +124,10 @@ export function useProfileViewModel() {
     navigateToFollowers,
     navigateToFollowing,
     navigateToFriends,
-    navigateToNotifications,
     navigateToGamification,
     navigateToPrivacy,
     navigateToBlocked,
     navigateToSearchUsers,
-    logout,
+    navigateToHelp,
   };
 }

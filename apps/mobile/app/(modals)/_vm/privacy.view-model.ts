@@ -27,23 +27,23 @@ export function usePrivacyViewModel() {
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
-    api.users.getProfile
-      .query()
-      .then((profile) => {
-        setPrivacyPrefs(profile.privacyPrefs ?? DEFAULT_PRIVACY_PREFS);
-      })
-      .catch((e) => logger.warn('Privacy', 'Failed to load privacy prefs', e))
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  useEffect(() => {
-    api.follows.listBlocked
-      .query({ limit: 50, offset: 0 })
-      .then((data) => {
-        const result = data as { users?: unknown[] };
+    Promise.allSettled([
+      api.users.getProfile.query(),
+      api.follows.listBlocked.query({ limit: 50, offset: 0 }),
+    ]).then(([profileResult, blockedResult]) => {
+      if (profileResult.status === 'fulfilled') {
+        setPrivacyPrefs(profileResult.value.privacyPrefs ?? DEFAULT_PRIVACY_PREFS);
+      } else {
+        logger.warn('Privacy', 'Failed to load privacy prefs', profileResult.reason);
+      }
+      if (blockedResult.status === 'fulfilled') {
+        const result = blockedResult.value as { users?: unknown[] };
         setBlockedCount(result.users?.length ?? 0);
-      })
-      .catch((e) => logger.warn('Privacy', 'Failed to load blocked users', e));
+      } else {
+        logger.warn('Privacy', 'Failed to load blocked users', blockedResult.reason);
+      }
+      setIsLoading(false);
+    });
   }, []);
 
   const updatePref = useCallback(

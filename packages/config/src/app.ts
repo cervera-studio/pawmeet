@@ -1,3 +1,6 @@
+// Feature flags
+export const ENABLE_AI_FEATURES = false;
+
 // App-wide constants
 export const MAX_DOGS_PER_USER = 5;
 export const MAX_PHOTOS_PER_DOG = 6;

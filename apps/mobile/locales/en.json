@@ -84,7 +84,18 @@
     "uploadPhotoError": "Unable to upload the photo. Please try again.",
     "uploadAvatarError": "Unable to upload the profile picture. Please try again.",
     "galleryPermissionAnalyze": "Allow access to the gallery to analyze the photo.",
-    "galleryPermissionUpload": "Allow access to the gallery to upload photos."
+    "galleryPermissionUpload": "Allow access to the gallery to upload photos.",
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "search": "Search...",
+    "noResults": "No results found"
   },
   "tabs": {
     "discover": "Discover",
@@ -468,7 +479,13 @@
       "algorithmStandard": "Standard",
       "algorithmLabel": "Algorithm",
       "noData": "No data available",
-      "noDataHint": "Start swiping to see your stats"
+      "noDataHint": "Start swiping to see your stats",
+      "dimSize": "Size",
+      "dimEnergy": "Energy",
+      "dimBehavior": "Behavior",
+      "dimWalk": "Walk",
+      "dimDistance": "Distance",
+      "dimLeash": "Leash"
     },
     "challenges": {
       "title": "Challenges",
@@ -900,7 +917,11 @@
       "feedAndStories": "Feed and stories",
       "feedAndStoriesDescription": "Receive notifications for likes, comments, and new stories",
       "nearbyUsers": "Nearby users",
-      "nearbyUsersDescription": "Receive notifications when there are users near you"
+      "nearbyUsersDescription": "Receive notifications when there are users near you",
+      "screenTitle": "Notifications",
+      "summary_one": "{{count}} of {{total}} enabled",
+      "summary_all": "All enabled",
+      "summary_none": "All disabled"
     },
     "quietHours": {
       "title": "Quiet hours",
@@ -942,9 +963,15 @@
       "deletedTitle": "Account deleted",
       "deletedMessage": "Your account has been deactivated. You will receive a confirmation email.",
       "invalidPassword": "Invalid password. Please try again.",
-      "deleteError": "Error during deletion. Please try again later."
+      "deleteError": "Error during deletion. Please try again later.",
+      "passwordModalTitle": "Enter your password",
+      "passwordModalMessage": "To confirm account deletion, enter your password",
+      "passwordPlaceholder": "Password"
     },
-    "manageConsents": "Manage consents"
+    "manageConsents": "Manage consents",
+    "security": {
+      "title": "Security"
+    }
   },
   "report": {
     "title": "Report",
@@ -1199,6 +1226,62 @@
       "in_progress": "In progress",
       "resolved": "Resolved",
       "closed": "Closed"
+    }
+  },
+  "dogOptions": {
+    "size": {
+      "toy": "Toy",
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "giant": "Giant"
+    },
+    "energy": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "very_high": "Very high"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "behaviorDogs": {
+      "very_friendly": "Very friendly",
+      "friendly": "Friendly",
+      "selective": "Selective",
+      "reactive": "Reactive"
+    },
+    "behaviorPeople": {
+      "very_friendly": "Very friendly",
+      "friendly": "Friendly",
+      "shy": "Shy",
+      "wary": "Wary"
+    },
+    "leash": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "in_training": "In training",
+      "difficult": "Difficult"
+    },
+    "recall": {
+      "reliable": "Reliable",
+      "partial": "Partial",
+      "unreliable": "Unreliable"
+    },
+    "walkTime": {
+      "early_morning": "Early morning",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "late_evening": "Late evening"
+    },
+    "terrain": {
+      "urban": "Urban",
+      "park": "Park",
+      "countryside": "Countryside",
+      "beach": "Beach",
+      "mountain": "Mountain"
     }
   }
 }

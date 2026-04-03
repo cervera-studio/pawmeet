@@ -84,7 +84,18 @@
     "uploadPhotoError": "Fotografia nu a putut fi încărcată. Reîncearcă.",
     "uploadAvatarError": "Imaginea de profil nu a putut fi încărcată. Reîncearcă.",
     "galleryPermissionAnalyze": "Permite accesul la galerie pentru a analiza fotografia.",
-    "galleryPermissionUpload": "Permite accesul la galerie pentru a încărca fotografii."
+    "galleryPermissionUpload": "Permite accesul la galerie pentru a încărca fotografii.",
+    "days": {
+      "sun": "Dum",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mie",
+      "thu": "Joi",
+      "fri": "Vin",
+      "sat": "Sâm"
+    },
+    "search": "Caută...",
+    "noResults": "Niciun rezultat"
   },
   "tabs": {
     "discover": "Descoperă",
@@ -468,7 +479,13 @@
       "algorithmStandard": "Standard",
       "algorithmLabel": "Algoritm",
       "noData": "Nicio dată disponibilă",
-      "noDataHint": "Începe să faci swipe pentru a vedea statisticile tale"
+      "noDataHint": "Începe să faci swipe pentru a vedea statisticile tale",
+      "dimSize": "Mărime",
+      "dimEnergy": "Energie",
+      "dimBehavior": "Comportament",
+      "dimWalk": "Plimbare",
+      "dimDistance": "Distanță",
+      "dimLeash": "Lesă"
     },
     "challenges": {
       "title": "Provocări",
@@ -900,7 +917,11 @@
       "feedAndStories": "Feed și povești",
       "feedAndStoriesDescription": "Primește notificări pentru like-uri, comentarii și povești noi",
       "nearbyUsers": "Utilizatori din apropiere",
-      "nearbyUsersDescription": "Primește notificări când sunt utilizatori aproape de tine"
+      "nearbyUsersDescription": "Primește notificări când sunt utilizatori aproape de tine",
+      "screenTitle": "Notificări",
+      "summary_one": "{{count}} din {{total}} activate",
+      "summary_all": "Toate activate",
+      "summary_none": "Toate dezactivate"
     },
     "quietHours": {
       "title": "Ore de liniște",
@@ -942,9 +963,15 @@
       "deletedTitle": "Cont șters",
       "deletedMessage": "Contul tău a fost dezactivat. Vei primi un email de confirmare.",
       "invalidPassword": "Parolă invalidă. Reîncearcă.",
-      "deleteError": "Eroare la ștergere. Reîncearcă mai târziu."
+      "deleteError": "Eroare la ștergere. Reîncearcă mai târziu.",
+      "passwordModalTitle": "Introduceți parola",
+      "passwordModalMessage": "Pentru a confirma ștergerea contului, introduceți parola",
+      "passwordPlaceholder": "Parolă"
     },
-    "manageConsents": "Gestionează consimțămintele"
+    "manageConsents": "Gestionează consimțămintele",
+    "security": {
+      "title": "Securitate"
+    }
   },
   "report": {
     "title": "Raportează",
@@ -1199,6 +1226,62 @@
       "in_progress": "În curs",
       "resolved": "Rezolvat",
       "closed": "Închis"
+    }
+  },
+  "dogOptions": {
+    "size": {
+      "toy": "Toy",
+      "small": "Mic",
+      "medium": "Mediu",
+      "large": "Mare",
+      "giant": "Gigant"
+    },
+    "energy": {
+      "low": "Scăzut",
+      "medium": "Mediu",
+      "high": "Ridicat",
+      "very_high": "Foarte ridicat"
+    },
+    "gender": {
+      "male": "Mascul",
+      "female": "Femelă"
+    },
+    "behaviorDogs": {
+      "very_friendly": "Foarte sociabil",
+      "friendly": "Sociabil",
+      "selective": "Selectiv",
+      "reactive": "Reactiv"
+    },
+    "behaviorPeople": {
+      "very_friendly": "Foarte sociabil",
+      "friendly": "Sociabil",
+      "shy": "Timid",
+      "wary": "Precaut"
+    },
+    "leash": {
+      "excellent": "Excelent",
+      "good": "Bun",
+      "in_training": "În antrenament",
+      "difficult": "Dificil"
+    },
+    "recall": {
+      "reliable": "De încredere",
+      "partial": "Parțial",
+      "unreliable": "Nesigur"
+    },
+    "walkTime": {
+      "early_morning": "Dimineața devreme",
+      "morning": "Dimineața",
+      "afternoon": "După-amiaza",
+      "evening": "Seara",
+      "late_evening": "Seara târziu"
+    },
+    "terrain": {
+      "urban": "Urban",
+      "park": "Parc",
+      "countryside": "Câmp",
+      "beach": "Plajă",
+      "mountain": "Munte"
     }
   }
 }

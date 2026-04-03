@@ -1,20 +1,10 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/trpc';
 
 type Dog = RouterOutput['dogs']['list']['dogs'][number];
-
-const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-
-const DIMENSION_LABELS: Record<string, string> = {
-  size: 'Taglia',
-  energy: 'Energia',
-  behavior: 'Comportamento',
-  walk: 'Passeggiata',
-  distance: 'Distanza',
-  leash: 'Guinzaglio',
-};
 
 interface OptimalTimeFormatted {
   label: string;
@@ -40,10 +30,30 @@ interface InsightsData {
 
 export function useMatchingInsightsViewModel() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [selectedDogId, setSelectedDogId] = useState<string | null>(null);
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const dimensionLabels: Record<string, string> = {
+    size: t('profile.matchingInsights.dimSize'),
+    energy: t('profile.matchingInsights.dimEnergy'),
+    behavior: t('profile.matchingInsights.dimBehavior'),
+    walk: t('profile.matchingInsights.dimWalk'),
+    distance: t('profile.matchingInsights.dimDistance'),
+    leash: t('profile.matchingInsights.dimLeash'),
+  };
+
+  const dayNames = [
+    t('common.days.sun'),
+    t('common.days.mon'),
+    t('common.days.tue'),
+    t('common.days.wed'),
+    t('common.days.thu'),
+    t('common.days.fri'),
+    t('common.days.sat'),
+  ];
 
   const loadDogs = useCallback(async () => {
     try {
@@ -51,9 +61,11 @@ export function useMatchingInsightsViewModel() {
       setDogs(result);
       if (result.length > 0 && result[0]) {
         setSelectedDogId(result[0].id);
+      } else {
+        setLoading(false);
       }
     } catch {
-      // Ignore
+      setLoading(false);
     }
   }, []);
 
@@ -69,12 +81,12 @@ export function useMatchingInsightsViewModel() {
         totalMatches: data.totalMatches,
         matchRate: `${Math.round(data.matchRate * 100)}%`,
         dimensions: data.preferredDimensions.map((d) => ({
-          label: DIMENSION_LABELS[d.dimension] ?? d.dimension,
+          label: dimensionLabels[d.dimension] ?? d.dimension,
           weight: d.weight,
           percentage: `${Math.round(d.weight * 100)}%`,
         })),
         optimalTimes: data.optimalTimes.map((t) => ({
-          label: `${DAY_NAMES[t.dayOfWeek] ?? '?'} ${String(t.hourOfDay).padStart(2, '0')}:00`,
+          label: `${dayNames[t.dayOfWeek] ?? '?'} ${String(t.hourOfDay).padStart(2, '0')}:00`,
           score: t.score,
           nearbyActiveUsers: t.nearbyActiveUsers,
         })),

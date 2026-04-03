@@ -84,7 +84,18 @@
     "uploadPhotoError": "Impossibile caricare la foto. Riprova.",
     "uploadAvatarError": "Impossibile caricare l'immagine del profilo. Riprova.",
     "galleryPermissionAnalyze": "Consenti l'accesso alla galleria per analizzare la foto.",
-    "galleryPermissionUpload": "Consenti l'accesso alla galleria per caricare foto."
+    "galleryPermissionUpload": "Consenti l'accesso alla galleria per caricare foto.",
+    "days": {
+      "sun": "Dom",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Gio",
+      "fri": "Ven",
+      "sat": "Sab"
+    },
+    "search": "Cerca...",
+    "noResults": "Nessun risultato"
   },
   "tabs": {
     "discover": "Scopri",
@@ -481,7 +492,13 @@
       "algorithmStandard": "Standard",
       "algorithmLabel": "Algoritmo",
       "noData": "Nessun dato disponibile",
-      "noDataHint": "Inizia a fare swipe per vedere le tue statistiche"
+      "noDataHint": "Inizia a fare swipe per vedere le tue statistiche",
+      "dimSize": "Taglia",
+      "dimEnergy": "Energia",
+      "dimBehavior": "Comportamento",
+      "dimWalk": "Passeggiata",
+      "dimDistance": "Distanza",
+      "dimLeash": "Guinzaglio"
     },
     "challenges": {
       "title": "Sfide",
@@ -900,7 +917,11 @@
       "feedAndStories": "Feed e storie",
       "feedAndStoriesDescription": "Ricevi notifiche per like, commenti e nuove storie",
       "nearbyUsers": "Utenti nelle vicinanze",
-      "nearbyUsersDescription": "Ricevi notifiche quando ci sono utenti vicino a te"
+      "nearbyUsersDescription": "Ricevi notifiche quando ci sono utenti vicino a te",
+      "screenTitle": "Notifiche",
+      "summary_one": "{{count}} di {{total}} attive",
+      "summary_all": "Tutte attive",
+      "summary_none": "Tutte disattivate"
     },
     "quietHours": {
       "title": "Orari silenziosi",
@@ -942,9 +963,15 @@
       "deletedTitle": "Account eliminato",
       "deletedMessage": "Il tuo account è stato disattivato. Riceverai una email di conferma.",
       "invalidPassword": "Password non valida. Riprova.",
-      "deleteError": "Errore durante la cancellazione. Riprova più tardi."
+      "deleteError": "Errore durante la cancellazione. Riprova più tardi.",
+      "passwordModalTitle": "Inserisci la password",
+      "passwordModalMessage": "Per confermare l'eliminazione dell'account, inserisci la password",
+      "passwordPlaceholder": "Password"
     },
-    "manageConsents": "Gestisci consensi"
+    "manageConsents": "Gestisci consensi",
+    "security": {
+      "title": "Sicurezza"
+    }
   },
   "report": {
     "title": "Segnala",
@@ -1199,6 +1226,62 @@
       "in_progress": "In corso",
       "resolved": "Risolto",
       "closed": "Chiuso"
+    }
+  },
+  "dogOptions": {
+    "size": {
+      "toy": "Toy",
+      "small": "Piccola",
+      "medium": "Media",
+      "large": "Grande",
+      "giant": "Gigante"
+    },
+    "energy": {
+      "low": "Bassa",
+      "medium": "Media",
+      "high": "Alta",
+      "very_high": "Molto alta"
+    },
+    "gender": {
+      "male": "Maschio",
+      "female": "Femmina"
+    },
+    "behaviorDogs": {
+      "very_friendly": "Molto socievole",
+      "friendly": "Socievole",
+      "selective": "Selettivo",
+      "reactive": "Reattivo"
+    },
+    "behaviorPeople": {
+      "very_friendly": "Molto socievole",
+      "friendly": "Socievole",
+      "shy": "Timido",
+      "wary": "Diffidente"
+    },
+    "leash": {
+      "excellent": "Eccellente",
+      "good": "Buono",
+      "in_training": "In addestramento",
+      "difficult": "Difficile"
+    },
+    "recall": {
+      "reliable": "Affidabile",
+      "partial": "Parziale",
+      "unreliable": "Non affidabile"
+    },
+    "walkTime": {
+      "early_morning": "Mattina presto",
+      "morning": "Mattina",
+      "afternoon": "Pomeriggio",
+      "evening": "Sera",
+      "late_evening": "Sera tardi"
+    },
+    "terrain": {
+      "urban": "Urbano",
+      "park": "Parco",
+      "countryside": "Campagna",
+      "beach": "Spiaggia",
+      "mountain": "Montagna"
     }
   }
 }

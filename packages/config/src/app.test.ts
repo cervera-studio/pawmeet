@@ -26,6 +26,7 @@ describe('app constants', () => {
       'GROUP_EVENT_MAX_RECURRING_TEMPLATES',
       'GROUP_EVENT_OCCURRENCES_AHEAD',
       'MAX_EMAIL_LENGTH',
+      'ENABLE_AI_FEATURES',
     ] as const;
 
     it.each(requiredKeys)('exports %s', (key) => {
@@ -37,10 +38,15 @@ describe('app constants', () => {
     });
   });
 
-  describe('all values are finite numbers', () => {
-    it.each(Object.entries(app))('%s is a finite number', (_key, value) => {
-      expect(typeof value).toBe('number');
-      expect(Number.isFinite(value)).toBe(true);
+  describe('all values have expected types', () => {
+    const booleanKeys = new Set(['ENABLE_AI_FEATURES']);
+    it.each(Object.entries(app))('%s has a valid type', (key, value) => {
+      if (booleanKeys.has(key)) {
+        expect(typeof value).toBe('boolean');
+      } else {
+        expect(typeof value).toBe('number');
+        expect(Number.isFinite(value)).toBe(true);
+      }
     });
   });
 

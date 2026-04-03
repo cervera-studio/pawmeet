@@ -84,7 +84,18 @@
     "uploadPhotoError": "No se pudo subir la foto. Inténtalo de nuevo.",
     "uploadAvatarError": "No se pudo subir la imagen de perfil. Inténtalo de nuevo.",
     "galleryPermissionAnalyze": "Permite el acceso a la galería para analizar la foto.",
-    "galleryPermissionUpload": "Permite el acceso a la galería para subir fotos."
+    "galleryPermissionUpload": "Permite el acceso a la galería para subir fotos.",
+    "days": {
+      "sun": "Dom",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mié",
+      "thu": "Jue",
+      "fri": "Vie",
+      "sat": "Sáb"
+    },
+    "search": "Buscar...",
+    "noResults": "Sin resultados"
   },
   "tabs": {
     "discover": "Descubrir",
@@ -468,7 +479,13 @@
       "algorithmStandard": "Estándar",
       "algorithmLabel": "Algoritmo",
       "noData": "No hay datos disponibles",
-      "noDataHint": "Empieza a hacer swipe para ver tus estadísticas"
+      "noDataHint": "Empieza a hacer swipe para ver tus estadísticas",
+      "dimSize": "Tamaño",
+      "dimEnergy": "Energía",
+      "dimBehavior": "Comportamiento",
+      "dimWalk": "Paseo",
+      "dimDistance": "Distancia",
+      "dimLeash": "Correa"
     },
     "challenges": {
       "title": "Desafíos",
@@ -900,7 +917,11 @@
       "feedAndStories": "Feed e historias",
       "feedAndStoriesDescription": "Recibe notificaciones de likes, comentarios y nuevas historias",
       "nearbyUsers": "Usuarios cercanos",
-      "nearbyUsersDescription": "Recibe notificaciones cuando haya usuarios cerca de ti"
+      "nearbyUsersDescription": "Recibe notificaciones cuando haya usuarios cerca de ti",
+      "screenTitle": "Notificaciones",
+      "summary_one": "{{count}} de {{total}} activadas",
+      "summary_all": "Todas activadas",
+      "summary_none": "Todas desactivadas"
     },
     "quietHours": {
       "title": "Horario silencioso",
@@ -942,9 +963,15 @@
       "deletedTitle": "Cuenta eliminada",
       "deletedMessage": "Tu cuenta ha sido desactivada. Recibirás un email de confirmación.",
       "invalidPassword": "Contraseña no válida. Inténtalo de nuevo.",
-      "deleteError": "Error al eliminar la cuenta. Inténtalo más tarde."
+      "deleteError": "Error al eliminar la cuenta. Inténtalo más tarde.",
+      "passwordModalTitle": "Ingresa tu contraseña",
+      "passwordModalMessage": "Para confirmar la eliminación de la cuenta, ingresa tu contraseña",
+      "passwordPlaceholder": "Contraseña"
     },
-    "manageConsents": "Gestionar consentimientos"
+    "manageConsents": "Gestionar consentimientos",
+    "security": {
+      "title": "Seguridad"
+    }
   },
   "report": {
     "title": "Reportar",
@@ -1199,6 +1226,62 @@
       "in_progress": "En curso",
       "resolved": "Resuelto",
       "closed": "Cerrado"
+    }
+  },
+  "dogOptions": {
+    "size": {
+      "toy": "Toy",
+      "small": "Pequeño",
+      "medium": "Mediano",
+      "large": "Grande",
+      "giant": "Gigante"
+    },
+    "energy": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "very_high": "Muy alta"
+    },
+    "gender": {
+      "male": "Macho",
+      "female": "Hembra"
+    },
+    "behaviorDogs": {
+      "very_friendly": "Muy sociable",
+      "friendly": "Sociable",
+      "selective": "Selectivo",
+      "reactive": "Reactivo"
+    },
+    "behaviorPeople": {
+      "very_friendly": "Muy sociable",
+      "friendly": "Sociable",
+      "shy": "Tímido",
+      "wary": "Desconfiado"
+    },
+    "leash": {
+      "excellent": "Excelente",
+      "good": "Bueno",
+      "in_training": "En entrenamiento",
+      "difficult": "Difícil"
+    },
+    "recall": {
+      "reliable": "Fiable",
+      "partial": "Parcial",
+      "unreliable": "No fiable"
+    },
+    "walkTime": {
+      "early_morning": "Madrugada",
+      "morning": "Mañana",
+      "afternoon": "Tarde",
+      "evening": "Noche",
+      "late_evening": "Noche tardía"
+    },
+    "terrain": {
+      "urban": "Urbano",
+      "park": "Parque",
+      "countryside": "Campo",
+      "beach": "Playa",
+      "mountain": "Montaña"
     }
   }
 }

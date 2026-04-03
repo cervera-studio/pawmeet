@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BreedAutocomplete } from '@/components/BreedAutocomplete';
 import { ChipSelect } from '@/components/ChipSelect';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -64,15 +65,15 @@ export default function EditDogScreen() {
               value={vm.form.name}
               onChangeText={(v) => vm.setField('name', v)}
             />
-            <Input
+            <BreedAutocomplete
               placeholder={t('dogForm.fields.breed')}
               value={vm.form.breed}
-              onChangeText={(v) => vm.setField('breed', v)}
+              onSelect={(v) => vm.setField('breed', v)}
             />
-            <Input
+            <BreedAutocomplete
               placeholder={t('dogForm.fields.breedSecondary')}
               value={vm.form.breedSecondary}
-              onChangeText={(v) => vm.setField('breedSecondary', v)}
+              onSelect={(v) => vm.setField('breedSecondary', v)}
             />
             <View>
               <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-[#D1D1D6]">

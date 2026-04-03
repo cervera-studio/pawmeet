@@ -173,21 +173,17 @@ export function SwipeCard({
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View
-        className="flex-1 w-full overflow-hidden rounded-2xl"
+        className="flex-1 w-full overflow-hidden"
         style={cardStyle}
         onLayout={(e) => {
           cardWidth.value = e.nativeEvent.layout.width;
         }}
       >
-        {/* Image or avatar fallback — absolute, covers entire card */}
+        {/* Background — fills the card and provides layout height */}
         {dog.imageUrl ? (
-          <Image
-            source={{ uri: dog.imageUrl }}
-            style={StyleSheet.absoluteFillObject}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: dog.imageUrl }} className="flex-1 w-full" resizeMode="cover" />
         ) : (
-          <View className="absolute inset-0 items-center justify-center bg-neutral-900">
+          <View className="flex-1 items-center justify-center bg-neutral-900">
             <Avatar name={dog.name} size="lg" />
             <Text className="mt-3 text-lg font-semibold text-neutral-300">{dog.name}</Text>
           </View>

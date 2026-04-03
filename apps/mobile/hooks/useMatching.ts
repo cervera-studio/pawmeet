@@ -34,6 +34,7 @@ export function useMatching() {
   const [isLoading, setIsLoading] = useState(false);
   const [newMatch, setNewMatch] = useState<LikeResult | null>(null);
   const [filters, setFilters] = useState<DiscoveryFilters>({});
+  const swipedIdsRef = useRef(new Set<string>());
 
   // Reset suggestions when the active dog changes
   const prevDogIdRef = useRef(dogId);
@@ -61,7 +62,7 @@ export function useMatching() {
         dogId ?? '',
         hasFilters ? filters : undefined,
       );
-      const data = rawData as Suggestion[];
+      const data = (rawData as Suggestion[]).filter((s) => !swipedIdsRef.current.has(s.dog.id));
       setSuggestions(data);
       setCurrentIndex(0);
       swipeCountRef.current = 0;
@@ -114,6 +115,7 @@ export function useMatching() {
 
   const swipeRight = useCallback(
     async (targetDogId: string) => {
+      swipedIdsRef.current.add(targetDogId);
       trackSwipe('right');
       try {
         const result = await matchRepo.like(dogId ?? '', targetDogId);
@@ -130,6 +132,7 @@ export function useMatching() {
 
   const swipeLeft = useCallback(
     async (targetDogId: string) => {
+      swipedIdsRef.current.add(targetDogId);
       trackSwipe('left');
       try {
         await matchRepo.pass(dogId ?? '', targetDogId);
@@ -143,6 +146,7 @@ export function useMatching() {
 
   const superLike = useCallback(
     async (targetDogId: string) => {
+      swipedIdsRef.current.add(targetDogId);
       try {
         const result = await matchRepo.like(dogId ?? '', targetDogId);
         if (result.isMatch) {

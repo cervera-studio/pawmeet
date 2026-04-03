@@ -71,7 +71,7 @@ function ActionButton({
     onPress();
   }, [onPress, scale]);
 
-  const sizeClass = size === 'lg' ? 'h-16 w-16' : 'h-13 w-13';
+  const sizeClass = size === 'lg' ? 'h-16 w-16' : 'h-12 w-12';
 
   return (
     <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handlePress}>
@@ -320,7 +320,7 @@ export default function DiscoveryScreen() {
   }, [hasDog, setShowGate]);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#1A1A1C]">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#1A1A1C]" edges={['top']}>
       <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 pb-1">
@@ -344,7 +344,7 @@ export default function DiscoveryScreen() {
       <DogSelector />
 
       {/* Card area — relative container so action buttons can overlay */}
-      <View className="flex-1 px-3 pt-1 pb-2">
+      <View className="flex-1">
         {vm.dogs.length === 0 ? (
           <View className="flex-1 items-center justify-center px-8">
             <Text className="text-5xl">{'\u{1F436}'}</Text>
@@ -377,6 +377,7 @@ export default function DiscoveryScreen() {
         vm.hasMore ? (
           <>
             <SwipeCard
+              key={vm.currentProfile.dog.id}
               ref={cardRef}
               dog={{
                 dogId: vm.currentProfile.dog.id,
@@ -400,30 +401,32 @@ export default function DiscoveryScreen() {
                 });
               }}
             />
-            {/* Action buttons — overlaid on the card's bottom edge */}
-            <View className="absolute bottom-4 left-0 right-0 flex-row items-center justify-center gap-6 z-10">
-              <ActionButton
-                onPress={() => cardRef.current?.animateLeft()}
-                size="lg"
-                bgClass="bg-white/90 dark:bg-[#2C2C2E]/90"
-              >
-                <Text className="text-2xl font-bold text-red-400">✕</Text>
-              </ActionButton>
-              <ActionButton
-                onPress={() => cardRef.current?.animateUp()}
-                size="sm"
-                bgClass="bg-blue-500"
-              >
-                <Text className="text-lg font-bold text-white">★</Text>
-              </ActionButton>
-              <ActionButton
-                onPress={() => cardRef.current?.animateRight()}
-                size="lg"
-                bgClass="bg-primary"
-              >
-                <Text className="text-2xl">🐾</Text>
-              </ActionButton>
-            </View>
+            {/* Action buttons — overlaid on the card's bottom edge, hidden during match */}
+            {!vm.newMatch?.isMatch && (
+              <View className="absolute bottom-4 left-0 right-0 flex-row items-center justify-center gap-6 z-10">
+                <ActionButton
+                  onPress={() => cardRef.current?.animateLeft()}
+                  size="lg"
+                  bgClass="bg-white/90 dark:bg-[#2C2C2E]/90"
+                >
+                  <Text className="text-2xl font-bold text-red-400">✕</Text>
+                </ActionButton>
+                <ActionButton
+                  onPress={() => cardRef.current?.animateUp()}
+                  size="sm"
+                  bgClass="bg-blue-500"
+                >
+                  <Text className="text-lg font-bold text-white">★</Text>
+                </ActionButton>
+                <ActionButton
+                  onPress={() => cardRef.current?.animateRight()}
+                  size="lg"
+                  bgClass="bg-primary"
+                >
+                  <Text className="text-2xl">🐾</Text>
+                </ActionButton>
+              </View>
+            )}
           </>
         ) : null}
         {vm.dogs.length > 0 &&

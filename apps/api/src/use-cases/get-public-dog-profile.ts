@@ -26,7 +26,7 @@ export function createGetPublicDogProfile({ dogRepo, userRepo }: Deps) {
       .map(({ url, position, isPrimary }) => ({ url, position, isPrimary }));
 
     const now = new Date();
-    const birth = dog.birthDate;
+    const birth = new Date(dog.birthDate);
     const ageMonths =
       (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
 

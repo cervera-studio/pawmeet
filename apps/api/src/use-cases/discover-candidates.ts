@@ -86,7 +86,7 @@ export function createDiscoverCandidates({
 }: Deps) {
   const candidatesCache = createCache<CandidateDog>(redis, {
     prefix: 'cache:candidates',
-    ttlSeconds: 300,
+    ttlSeconds: 60,
   });
 
   return async (

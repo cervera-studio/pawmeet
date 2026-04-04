@@ -149,44 +149,13 @@
       "behavior": "Comportamento",
       "schedule": "Orari",
       "terrain": "Terreno",
-      "maxDistance": "Distanza massima"
-    },
-    "sizeOptions": {
-      "toy": "Toy",
-      "small": "Piccola",
-      "medium": "Media",
-      "large": "Grande",
-      "giant": "Gigante"
-    },
-    "energyOptions": {
-      "low": "Bassa",
-      "medium": "Media",
-      "high": "Alta",
-      "very_high": "Molto alta"
-    },
-    "genderOptions": {
-      "male": "Maschio",
-      "female": "Femmina"
-    },
-    "behaviorOptions": {
-      "very_friendly": "Molto socievole",
-      "friendly": "Socievole",
-      "selective": "Selettivo",
-      "reactive": "Reattivo"
-    },
-    "scheduleOptions": {
-      "early_morning": "Mattina presto",
-      "morning": "Mattina",
-      "afternoon": "Pomeriggio",
-      "evening": "Sera",
-      "late_evening": "Sera tardi"
-    },
-    "terrainOptions": {
-      "urban": "Urbano",
-      "park": "Parco",
-      "countryside": "Campagna",
-      "beach": "Spiaggia",
-      "mountain": "Montagna"
+      "maxDistance": "Distanza massima",
+      "dogCharacteristics": "Caratteristiche del cane",
+      "dogCharacteristicsDesc": "Filtra per taglia, energia e comportamento",
+      "walkPreferences": "Preferenze passeggiata",
+      "walkPreferencesDesc": "Orari e terreni preferiti",
+      "distance": "Distanza",
+      "distanceDesc": "Raggio massimo di ricerca"
     }
   },
   "walks": {

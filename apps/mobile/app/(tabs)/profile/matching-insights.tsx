@@ -41,8 +41,8 @@ export default function MatchingInsightsScreen() {
         {!vm.loading && vm.insights ? (
           <View className="gap-4 pb-6">
             {/* Stats overview */}
-            <View className="rounded-xl bg-emerald-50 p-4">
-              <Text className="mb-3 text-lg font-bold text-emerald-900">
+            <View className="rounded-xl bg-emerald-50 dark:bg-[#2C2C2E] p-4">
+              <Text className="mb-3 text-lg font-bold text-emerald-900 dark:text-emerald-400">
                 {t('profile.matchingInsights.overview')}
               </Text>
               <View className="flex-row flex-wrap gap-3">
@@ -130,7 +130,7 @@ export default function MatchingInsightsScreen() {
             )}
 
             {/* A/B variant indicator (dev only) */}
-            {vm.insights.variant && (
+            {__DEV__ && vm.insights.variant && (
               <View className="rounded-lg bg-zinc-100 dark:bg-[#38383A] px-3 py-2">
                 <Text className="text-xs text-zinc-500 dark:text-neutral-500">
                   {t('profile.matchingInsights.algorithmLabel')}:{' '}

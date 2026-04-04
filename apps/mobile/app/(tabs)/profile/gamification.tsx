@@ -90,7 +90,7 @@ export default function GamificationScreen() {
   const { t } = useTranslation();
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]">
+    <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]" edges={['bottom']}>
       <Stack.Screen
         options={{
           headerShown: true,

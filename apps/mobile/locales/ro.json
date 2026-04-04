@@ -147,44 +147,13 @@
       "behavior": "Comportament",
       "schedule": "Program",
       "terrain": "Teren",
-      "maxDistance": "Distanță maximă"
-    },
-    "sizeOptions": {
-      "toy": "Toy",
-      "small": "Mică",
-      "medium": "Medie",
-      "large": "Mare",
-      "giant": "Gigant"
-    },
-    "energyOptions": {
-      "low": "Scăzută",
-      "medium": "Medie",
-      "high": "Ridicată",
-      "very_high": "Foarte ridicată"
-    },
-    "genderOptions": {
-      "male": "Mascul",
-      "female": "Femelă"
-    },
-    "behaviorOptions": {
-      "very_friendly": "Foarte sociabil",
-      "friendly": "Sociabil",
-      "selective": "Selectiv",
-      "reactive": "Reactiv"
-    },
-    "scheduleOptions": {
-      "early_morning": "Dimineața devreme",
-      "morning": "Dimineața",
-      "afternoon": "După-amiaza",
-      "evening": "Seara",
-      "late_evening": "Seara târziu"
-    },
-    "terrainOptions": {
-      "urban": "Urban",
-      "park": "Parc",
-      "countryside": "Câmp",
-      "beach": "Plajă",
-      "mountain": "Munte"
+      "maxDistance": "Distanță maximă",
+      "dogCharacteristics": "Caracteristicile câinelui",
+      "dogCharacteristicsDesc": "Filtrează după mărime, energie și comportament",
+      "walkPreferences": "Preferințe de plimbare",
+      "walkPreferencesDesc": "Orare și terenuri preferate",
+      "distance": "Distanță",
+      "distanceDesc": "Raza maximă de căutare"
     },
     "otherDogSingular": "alt câine",
     "otherDogPlural": "alți câini"

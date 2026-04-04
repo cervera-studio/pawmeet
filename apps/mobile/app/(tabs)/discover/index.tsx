@@ -1,27 +1,10 @@
 export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ErrorBoundary';
 
-import {
-  BEHAVIOR_WITH_DOGS,
-  DOG_SIZE,
-  ENERGY_LEVEL,
-  GENDER,
-  WALK_TERRAIN,
-  WALK_TIME,
-} from '@pawmeet/config';
-import type { DiscoveryFilters } from '@pawmeet/types';
+import { Ionicons } from '@expo/vector-icons';
 import { formatBreedName, formatDogAge } from '@pawmeet/utils';
-import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { DogSelector } from '@/components/DogSelector';
 import { ExplanationModal } from '@/components/ExplanationModal';
 import { MatchCelebration } from '@/components/MatchCelebration';
@@ -29,282 +12,9 @@ import { RequireDogModal } from '@/components/RequireDogModal';
 import { SwipeCard, type SwipeCardRef } from '@/components/SwipeCard';
 import { useAnalyticsService } from '@/hooks/useAnalytics';
 import { useRequireDog } from '@/hooks/useRequireDog';
+import { ActionButton } from './_components/ActionButton';
+import { FilterModal, type FilterModalRef } from './_components/FilterModal';
 import { useDiscoveryViewModel } from './_vm/index.view-model';
-
-// ── Animated action button ─────────────────────────────────────────────────
-
-const PRESS_SPRING = { mass: 0.3, damping: 15, stiffness: 300 };
-
-function ActionButton({
-  onPress,
-  size,
-  bgClass,
-  children,
-}: {
-  onPress: () => void;
-  size: 'sm' | 'lg';
-  bgClass: string;
-  children: React.ReactNode;
-}) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = useCallback(() => {
-    scale.value = withSpring(0.88, PRESS_SPRING);
-  }, [scale]);
-
-  const handlePressOut = useCallback(() => {
-    scale.value = withSpring(1, PRESS_SPRING);
-  }, [scale]);
-
-  const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Bounce: compress then overshoot then settle
-    scale.value = withSequence(
-      withTiming(0.85, { duration: 60 }),
-      withSpring(1.08, { mass: 0.3, damping: 8, stiffness: 200 }),
-      withSpring(1, PRESS_SPRING),
-    );
-    onPress();
-  }, [onPress, scale]);
-
-  const sizeClass = size === 'lg' ? 'h-16 w-16' : 'h-12 w-12';
-
-  return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handlePress}>
-      <Animated.View
-        className={`${sizeClass} items-center justify-center rounded-full ${bgClass} shadow-lg`}
-        style={animatedStyle}
-      >
-        {children}
-      </Animated.View>
-    </Pressable>
-  );
-}
-
-// ── Filter configuration ────────────────────────────────────────────────────
-
-type FilterSection<K extends keyof DiscoveryFilters> = {
-  key: K;
-  label: string;
-  options: { value: string; label: string }[];
-};
-
-const getFilterSections = (t: (key: string) => string): FilterSection<keyof DiscoveryFilters>[] => [
-  {
-    key: 'size',
-    label: t('discovery.filters.size'),
-    options: [
-      { value: DOG_SIZE.TOY, label: t('discovery.sizeOptions.toy') },
-      { value: DOG_SIZE.SMALL, label: t('discovery.sizeOptions.small') },
-      { value: DOG_SIZE.MEDIUM, label: t('discovery.sizeOptions.medium') },
-      { value: DOG_SIZE.LARGE, label: t('discovery.sizeOptions.large') },
-      { value: DOG_SIZE.GIANT, label: t('discovery.sizeOptions.giant') },
-    ],
-  },
-  {
-    key: 'energyLevel',
-    label: t('discovery.filters.energy'),
-    options: [
-      { value: ENERGY_LEVEL.LOW, label: t('discovery.energyOptions.low') },
-      { value: ENERGY_LEVEL.MEDIUM, label: t('discovery.energyOptions.medium') },
-      { value: ENERGY_LEVEL.HIGH, label: t('discovery.energyOptions.high') },
-      { value: ENERGY_LEVEL.VERY_HIGH, label: t('discovery.energyOptions.very_high') },
-    ],
-  },
-  {
-    key: 'gender',
-    label: t('discovery.filters.gender'),
-    options: [
-      { value: GENDER.MALE, label: t('discovery.genderOptions.male') },
-      { value: GENDER.FEMALE, label: t('discovery.genderOptions.female') },
-    ],
-  },
-  {
-    key: 'behaviorWithDogs',
-    label: t('discovery.filters.behavior'),
-    options: [
-      {
-        value: BEHAVIOR_WITH_DOGS.VERY_FRIENDLY,
-        label: t('discovery.behaviorOptions.very_friendly'),
-      },
-      { value: BEHAVIOR_WITH_DOGS.FRIENDLY, label: t('discovery.behaviorOptions.friendly') },
-      { value: BEHAVIOR_WITH_DOGS.SELECTIVE, label: t('discovery.behaviorOptions.selective') },
-      { value: BEHAVIOR_WITH_DOGS.REACTIVE, label: t('discovery.behaviorOptions.reactive') },
-    ],
-  },
-  {
-    key: 'walkPrefTime',
-    label: t('discovery.filters.schedule'),
-    options: [
-      { value: WALK_TIME.EARLY_MORNING, label: t('discovery.scheduleOptions.early_morning') },
-      { value: WALK_TIME.MORNING, label: t('discovery.scheduleOptions.morning') },
-      { value: WALK_TIME.AFTERNOON, label: t('discovery.scheduleOptions.afternoon') },
-      { value: WALK_TIME.EVENING, label: t('discovery.scheduleOptions.evening') },
-      { value: WALK_TIME.LATE_EVENING, label: t('discovery.scheduleOptions.late_evening') },
-    ],
-  },
-  {
-    key: 'walkPrefTerrain',
-    label: t('discovery.filters.terrain'),
-    options: [
-      { value: WALK_TERRAIN.URBAN, label: t('discovery.terrainOptions.urban') },
-      { value: WALK_TERRAIN.PARK, label: t('discovery.terrainOptions.park') },
-      { value: WALK_TERRAIN.COUNTRYSIDE, label: t('discovery.terrainOptions.countryside') },
-      { value: WALK_TERRAIN.BEACH, label: t('discovery.terrainOptions.beach') },
-      { value: WALK_TERRAIN.MOUNTAIN, label: t('discovery.terrainOptions.mountain') },
-    ],
-  },
-];
-
-const DISTANCE_STEPS = [1, 3, 5, 10, 15, 20, 30, 50];
-
-// ── Chip component ──────────────────────────────────────────────────────────
-
-function FilterChip({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      className={`mr-2 mb-2 rounded-full px-4 py-2 ${selected ? 'bg-primary' : 'bg-gray-200 dark:bg-[#48484A]'}`}
-    >
-      <Text
-        className={`text-sm font-medium ${selected ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'}`}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
-// ── Filter modal ────────────────────────────────────────────────────────────
-
-function FilterModal({
-  visible,
-  filters,
-  onApply,
-  onClose,
-}: {
-  visible: boolean;
-  filters: DiscoveryFilters;
-  onApply: (f: DiscoveryFilters) => void;
-  onClose: () => void;
-}) {
-  const { t } = useTranslation();
-  const [draft, setDraft] = useState<DiscoveryFilters>(filters);
-
-  // Sync draft when modal opens
-  useEffect(() => {
-    if (visible) setDraft(filters);
-  }, [visible, filters]);
-
-  const filterSections = getFilterSections(t);
-
-  const toggleValue = (key: keyof DiscoveryFilters, value: string) => {
-    setDraft((prev) => {
-      const current = (prev[key] as string[] | undefined) ?? [];
-      const next = current.includes(value)
-        ? current.filter((v) => v !== value)
-        : [...current, value];
-      return { ...prev, [key]: next.length > 0 ? next : undefined };
-    });
-  };
-
-  const handleReset = () => setDraft({});
-
-  const handleApply = () => {
-    onApply(draft);
-    onClose();
-  };
-
-  return (
-    <Modal visible={visible} animationType="slide" transparent>
-      <View className="flex-1 justify-end bg-black/40">
-        <View className="max-h-[85%] rounded-t-3xl bg-white dark:bg-[#1C1C1E] px-5 pb-8 pt-4">
-          {/* Handle bar */}
-          <View className="mb-4 items-center">
-            <View className="h-1 w-10 rounded-full bg-gray-300 dark:bg-[#48484A]" />
-          </View>
-
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-              {t('discovery.filters.title')}
-            </Text>
-            <Pressable onPress={handleReset}>
-              <Text className="font-semibold text-primary">{t('discovery.filters.reset')}</Text>
-            </Pressable>
-          </View>
-
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {filterSections.map((section) => (
-              <View key={section.key} className="mb-5">
-                <Text className="mb-2 text-sm font-semibold text-gray-600 dark:text-[#D1D1D6]">
-                  {section.label}
-                </Text>
-                <View className="flex-row flex-wrap">
-                  {section.options.map((opt) => {
-                    const selected = ((draft[section.key] as string[] | undefined) ?? []).includes(
-                      opt.value,
-                    );
-                    return (
-                      <FilterChip
-                        key={opt.value}
-                        label={opt.label}
-                        selected={selected}
-                        onPress={() => toggleValue(section.key, opt.value)}
-                      />
-                    );
-                  })}
-                </View>
-              </View>
-            ))}
-
-            {/* Distance slider (discrete steps) */}
-            <View className="mb-5">
-              <Text className="mb-2 text-sm font-semibold text-gray-600 dark:text-[#D1D1D6]">
-                {t('discovery.filters.maxDistance')}
-                {draft.maxDistanceKm ? ` — ${draft.maxDistanceKm} km` : ''}
-              </Text>
-              <View className="flex-row flex-wrap">
-                {DISTANCE_STEPS.map((km) => (
-                  <FilterChip
-                    key={km}
-                    label={`${km} km`}
-                    selected={draft.maxDistanceKm === km}
-                    onPress={() =>
-                      setDraft((prev) => ({
-                        ...prev,
-                        maxDistanceKm: prev.maxDistanceKm === km ? undefined : km,
-                      }))
-                    }
-                  />
-                ))}
-              </View>
-            </View>
-          </ScrollView>
-
-          <Pressable onPress={handleApply} className="mt-2 rounded-2xl bg-primary py-4">
-            <Text className="text-center text-base font-bold text-white">
-              {t('discovery.filters.apply')}
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
-// ── Discovery screen ────────────────────────────────────────────────────────
 
 export default function DiscoveryScreen() {
   const { t } = useTranslation();
@@ -313,37 +23,22 @@ export default function DiscoveryScreen() {
   const [explanationVisible, setExplanationVisible] = useState(false);
   const { hasDog, showGate, setShowGate, dismissGate, goToAddDog } = useRequireDog();
   const cardRef = useRef<SwipeCardRef>(null);
+  const filterRef = useRef<FilterModalRef>(null);
 
-  // Show gate on mount if no dog
   useEffect(() => {
     if (!hasDog) setShowGate(true);
   }, [hasDog, setShowGate]);
 
-  return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#1A1A1C]" edges={['top']}>
-      <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-4 pb-1">
-        <Text className="text-xl font-bold text-gray-900 dark:text-[#F5F5F7]">
-          {t('discovery.title')}
-        </Text>
-        <Pressable
-          onPress={vm.openFilterModal}
-          className="relative h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-[#1C1C1E] shadow-sm"
-        >
-          <Text className="text-lg">{vm.activeFilterCount > 0 ? '\u2699\uFE0F' : '\u2699'}</Text>
-          {vm.activeFilterCount > 0 && (
-            <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-primary">
-              <Text className="text-xs font-bold text-white">{vm.activeFilterCount}</Text>
-            </View>
-          )}
-        </Pressable>
-      </View>
+  const openFilters = useCallback(() => {
+    filterRef.current?.present(vm.filters);
+  }, [vm.filters]);
 
-      {/* Dog selector (visible only with multiple dogs) */}
+  return (
+    <View className="flex-1 bg-gray-50 dark:bg-[#1A1A1C]">
+      <RequireDogModal visible={showGate} onDismiss={dismissGate} onAddDog={goToAddDog} />
+
       <DogSelector />
 
-      {/* Card area — relative container so action buttons can overlay */}
       <View className="flex-1">
         {vm.dogs.length === 0 ? (
           <View className="flex-1 items-center justify-center px-8">
@@ -362,6 +57,7 @@ export default function DiscoveryScreen() {
             </Pressable>
           </View>
         ) : null}
+
         {vm.dogs.length > 0 && vm.coordinates && vm.isLoading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#065F46" />
@@ -370,6 +66,7 @@ export default function DiscoveryScreen() {
             </Text>
           </View>
         ) : null}
+
         {vm.dogs.length > 0 &&
         vm.coordinates &&
         !vm.isLoading &&
@@ -392,7 +89,6 @@ export default function DiscoveryScreen() {
               }}
               onSwipeRight={vm.handleSwipeRight}
               onSwipeLeft={vm.handleSwipeLeft}
-              onSwipeUp={vm.handleSuperLike}
               onExplanationTap={() => {
                 setExplanationVisible(true);
                 analytics.track('match_explanation_viewed', {
@@ -401,22 +97,33 @@ export default function DiscoveryScreen() {
                 });
               }}
             />
-            {/* Action buttons — overlaid on the card's bottom edge, hidden during match */}
+
+            {/* Filter button — overlaid top-right */}
+            <Pressable
+              onPress={openFilters}
+              className="absolute top-12 right-4 z-20 h-11 w-11 items-center justify-center rounded-full bg-black/20"
+            >
+              <Ionicons
+                name="options"
+                size={22}
+                color={vm.activeFilterCount > 0 ? '#C8A96E' : '#fff'}
+              />
+              {vm.activeFilterCount > 0 && (
+                <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-primary">
+                  <Text className="text-xs font-bold text-white">{vm.activeFilterCount}</Text>
+                </View>
+              )}
+            </Pressable>
+
+            {/* Action buttons — overlaid on the card's bottom edge */}
             {!vm.newMatch?.isMatch && (
-              <View className="absolute bottom-4 left-0 right-0 flex-row items-center justify-center gap-6 z-10">
+              <View className="absolute bottom-4 left-0 right-0 z-10 flex-row items-center justify-center gap-6">
                 <ActionButton
                   onPress={() => cardRef.current?.animateLeft()}
                   size="lg"
                   bgClass="bg-white/90 dark:bg-[#2C2C2E]/90"
                 >
                   <Text className="text-2xl font-bold text-red-400">✕</Text>
-                </ActionButton>
-                <ActionButton
-                  onPress={() => cardRef.current?.animateUp()}
-                  size="sm"
-                  bgClass="bg-blue-500"
-                >
-                  <Text className="text-lg font-bold text-white">★</Text>
                 </ActionButton>
                 <ActionButton
                   onPress={() => cardRef.current?.animateRight()}
@@ -429,6 +136,7 @@ export default function DiscoveryScreen() {
             )}
           </>
         ) : null}
+
         {vm.dogs.length > 0 &&
         vm.coordinates &&
         !vm.isLoading &&
@@ -449,6 +157,7 @@ export default function DiscoveryScreen() {
             </Pressable>
           </View>
         ) : null}
+
         {vm.dogs.length > 0 && !vm.coordinates ? (
           <View className="flex-1 items-center justify-center px-8">
             <Text className="text-5xl">📍</Text>
@@ -481,13 +190,8 @@ export default function DiscoveryScreen() {
         />
       )}
 
-      {/* Filter modal */}
-      <FilterModal
-        visible={vm.filterModalVisible}
-        filters={vm.filters}
-        onApply={vm.handleApplyFilters}
-        onClose={vm.closeFilterModal}
-      />
+      {/* Filter bottom sheet */}
+      <FilterModal ref={filterRef} onApply={vm.handleApplyFilters} />
 
       {/* Explanation modal */}
       <ExplanationModal
@@ -496,6 +200,6 @@ export default function DiscoveryScreen() {
         overallScore={vm.currentProfile?.compatibilityScore ?? 0}
         breakdown={vm.currentProfile?.scoreBreakdown ?? null}
       />
-    </SafeAreaView>
+    </View>
   );
 }

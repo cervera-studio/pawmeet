@@ -147,44 +147,13 @@
       "behavior": "Behavior",
       "schedule": "Schedule",
       "terrain": "Terrain",
-      "maxDistance": "Maximum distance"
-    },
-    "sizeOptions": {
-      "toy": "Toy",
-      "small": "Small",
-      "medium": "Medium",
-      "large": "Large",
-      "giant": "Giant"
-    },
-    "energyOptions": {
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High",
-      "very_high": "Very high"
-    },
-    "genderOptions": {
-      "male": "Male",
-      "female": "Female"
-    },
-    "behaviorOptions": {
-      "very_friendly": "Very friendly",
-      "friendly": "Friendly",
-      "selective": "Selective",
-      "reactive": "Reactive"
-    },
-    "scheduleOptions": {
-      "early_morning": "Early morning",
-      "morning": "Morning",
-      "afternoon": "Afternoon",
-      "evening": "Evening",
-      "late_evening": "Late evening"
-    },
-    "terrainOptions": {
-      "urban": "Urban",
-      "park": "Park",
-      "countryside": "Countryside",
-      "beach": "Beach",
-      "mountain": "Mountain"
+      "maxDistance": "Maximum distance",
+      "dogCharacteristics": "Dog characteristics",
+      "dogCharacteristicsDesc": "Filter by size, energy and behavior",
+      "walkPreferences": "Walk preferences",
+      "walkPreferencesDesc": "Preferred times and terrains",
+      "distance": "Distance",
+      "distanceDesc": "Maximum search radius"
     },
     "otherDogSingular": "other dog",
     "otherDogPlural": "other dogs"

@@ -147,44 +147,13 @@
       "behavior": "Comportamiento",
       "schedule": "Horarios",
       "terrain": "Terreno",
-      "maxDistance": "Distancia máxima"
-    },
-    "sizeOptions": {
-      "toy": "Toy",
-      "small": "Pequeño",
-      "medium": "Mediano",
-      "large": "Grande",
-      "giant": "Gigante"
-    },
-    "energyOptions": {
-      "low": "Baja",
-      "medium": "Media",
-      "high": "Alta",
-      "very_high": "Muy alta"
-    },
-    "genderOptions": {
-      "male": "Macho",
-      "female": "Hembra"
-    },
-    "behaviorOptions": {
-      "very_friendly": "Muy sociable",
-      "friendly": "Sociable",
-      "selective": "Selectivo",
-      "reactive": "Reactivo"
-    },
-    "scheduleOptions": {
-      "early_morning": "Primera hora",
-      "morning": "Mañana",
-      "afternoon": "Tarde",
-      "evening": "Noche",
-      "late_evening": "Noche tarde"
-    },
-    "terrainOptions": {
-      "urban": "Urbano",
-      "park": "Parque",
-      "countryside": "Campo",
-      "beach": "Playa",
-      "mountain": "Montaña"
+      "maxDistance": "Distancia máxima",
+      "dogCharacteristics": "Características del perro",
+      "dogCharacteristicsDesc": "Filtra por tamaño, energía y comportamiento",
+      "walkPreferences": "Preferencias de paseo",
+      "walkPreferencesDesc": "Horarios y terrenos preferidos",
+      "distance": "Distancia",
+      "distanceDesc": "Radio máximo de búsqueda"
     },
     "otherDogSingular": "otro perro",
     "otherDogPlural": "otros perros"

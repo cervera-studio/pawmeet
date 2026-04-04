@@ -34,3 +34,14 @@ export const useThemeStore = create<ThemeState>()(
 function applyTheme(preference: ThemePreference) {
   Appearance.setColorScheme(preference === 'system' ? 'unspecified' : preference);
 }
+
+// Apply theme eagerly before first render to prevent light↔dark flash
+const persisted = mmkvStorage.getItem('pawmeet-theme');
+if (persisted) {
+  try {
+    const { state } = JSON.parse(persisted) as { state: ThemeState };
+    if (state?.preference) applyTheme(state.preference);
+  } catch {
+    // corrupted persisted state — ignore
+  }
+}

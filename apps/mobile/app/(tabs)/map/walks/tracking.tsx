@@ -23,7 +23,7 @@ export default function TrackingScreen() {
   const activeDogId = selectedDogId ?? dogs[0]?.id ?? null;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]" edges={['bottom']}>
       <Stack.Screen
         options={{
           headerShown: true,

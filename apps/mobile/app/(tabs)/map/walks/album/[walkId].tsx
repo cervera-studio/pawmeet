@@ -46,7 +46,7 @@ export default function WalkAlbumScreen() {
   const vm = useWalkAlbumViewModel();
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-[#2C2C2E]" edges={['bottom']}>
       <Stack.Screen
         options={{
           title: vm.album?.album?.title ?? 'Album',

@@ -42,8 +42,15 @@ function getReconnectDelay(): number {
 }
 
 function connect(token: string) {
-  if (isConnecting || sharedWs?.readyState === WebSocket.OPEN) {
+  // If already connected with the same token, skip
+  if (isConnecting || (sharedWs?.readyState === WebSocket.OPEN && sharedToken === token)) {
     return;
+  }
+
+  // Token changed — close stale connection so we reconnect with the new one
+  if (sharedWs && sharedToken !== token) {
+    sharedWs.close();
+    sharedWs = null;
   }
 
   isConnecting = true;
@@ -96,8 +103,10 @@ function scheduleReconnect() {
   );
   reconnectTimer = setTimeout(() => {
     reconnectTimer = null;
-    if (sharedToken && listeners.size > 0) {
-      connect(sharedToken);
+    // Read latest token from store — it may have been refreshed since disconnect
+    const latestToken = useAuthStore.getState().token ?? sharedToken;
+    if (latestToken && listeners.size > 0) {
+      connect(latestToken);
     }
   }, delay);
 }

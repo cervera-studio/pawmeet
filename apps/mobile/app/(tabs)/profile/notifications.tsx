@@ -96,7 +96,7 @@ export default function NotificationsScreen() {
   }, [vm.fetchNotifications]);
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]">
+    <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]" edges={['bottom']}>
       {vm.loading && vm.notifications.length === 0 ? (
         <NotificationsSkeleton />
       ) : (

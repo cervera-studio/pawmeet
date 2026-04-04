@@ -284,6 +284,7 @@ function RootLayout() {
               screenOptions={{
                 headerStyle: { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#fff' },
                 headerTintColor: colorScheme === 'dark' ? '#F5F5F7' : '#1f2937',
+                headerShadowVisible: false,
                 contentStyle: { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#fff' },
               }}
             >

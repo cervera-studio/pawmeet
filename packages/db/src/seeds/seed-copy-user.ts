@@ -16,7 +16,7 @@ const SOURCE_DB = process.env.SOURCE_DB;
 const TARGET_DB = process.env.TARGET_DB;
 const COPY_EMAIL = process.env.COPY_EMAIL;
 
-if (!SOURCE_DB || !TARGET_DB || !COPY_EMAIL) {
+if (!(SOURCE_DB && TARGET_DB && COPY_EMAIL)) {
   console.error('Required: SOURCE_DB, TARGET_DB, COPY_EMAIL');
   process.exit(1);
 }

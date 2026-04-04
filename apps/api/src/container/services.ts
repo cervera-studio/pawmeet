@@ -164,16 +164,19 @@ export const experimentService = new RedisExperimentService(consentRepo);
 
 const posthogHost = process.env.POSTHOG_HOST ?? 'https://eu.i.posthog.com';
 
-export const analyticsProviders: AnalyticsProvider[] = process.env.POSTHOG_API_KEY
-  ? [
-      new PostHogAnalyticsProvider(
-        process.env.POSTHOG_API_KEY,
-        posthogHost,
-        process.env.POSTHOG_PERSONAL_API_KEY,
-        process.env.POSTHOG_PROJECT_ID,
-      ),
-    ]
-  : [];
+const isProduction = process.env.NODE_ENV === 'production';
+
+export const analyticsProviders: AnalyticsProvider[] =
+  process.env.POSTHOG_API_KEY && isProduction
+    ? [
+        new PostHogAnalyticsProvider(
+          process.env.POSTHOG_API_KEY,
+          posthogHost,
+          process.env.POSTHOG_PERSONAL_API_KEY,
+          process.env.POSTHOG_PROJECT_ID,
+        ),
+      ]
+    : [];
 
 // ── PostHog query service (DAU/MAU for admin dashboard) ──────────────────
 

@@ -1,7 +1,7 @@
 import type { DiscoveryFilters } from '@pawmeet/types';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useLocation } from '@/hooks/useLocation';
 import { useMatching } from '@/hooks/useMatching';
 import { useDogsStore } from '@/stores/dogs';
@@ -25,8 +25,6 @@ export function useDiscoveryViewModel() {
     superLike,
     dismissMatch,
   } = useMatching();
-
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
 
   const handleApplyFilters = useCallback(
     (newFilters: DiscoveryFilters) => {
@@ -66,14 +64,6 @@ export function useDiscoveryViewModel() {
     }
   }, [currentProfile, superLike]);
 
-  const openFilterModal = useCallback(() => {
-    setFilterModalVisible(true);
-  }, []);
-
-  const closeFilterModal = useCallback(() => {
-    setFilterModalVisible(false);
-  }, []);
-
   const navigateToAddDog = useCallback(() => {
     router.push('/(tabs)/profile/dogs/new');
   }, [router]);
@@ -95,13 +85,10 @@ export function useDiscoveryViewModel() {
     newMatch,
     filters,
     activeFilterCount,
-    filterModalVisible,
     handleApplyFilters,
     handleSwipeRight,
     handleSwipeLeft,
     handleSuperLike,
-    openFilterModal,
-    closeFilterModal,
     navigateToAddDog,
     navigateToChat,
     dismissMatch,

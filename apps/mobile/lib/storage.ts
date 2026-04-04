@@ -58,14 +58,14 @@ export const passkeyFlag = {
   },
 };
 
-/** Zustand-compatible StateStorage adapter backed by MMKV. */
-export const mmkvStorage: StateStorage = {
-  getItem: (name) => mmkv.getString(name) ?? null,
-  setItem: (name, value) => mmkv.set(name, value),
-  removeItem: (name) => {
+/** Zustand-compatible StateStorage adapter backed by MMKV (synchronous). */
+export const mmkvStorage = {
+  getItem: (name: string): string | null => mmkv.getString(name) ?? null,
+  setItem: (name: string, value: string) => mmkv.set(name, value),
+  removeItem: (name: string) => {
     mmkv.remove(name);
   },
-};
+} satisfies StateStorage;
 
 // ---------------------------------------------------------------------------
 // SecureStore — encrypted storage for auth tokens (unchanged)

@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { type Ref, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
@@ -19,8 +19,6 @@ import { Avatar } from '@/components/ui/Avatar';
 
 const FALLBACK_WIDTH = 400;
 const SWIPE_THRESHOLD = 120;
-const SWIPE_UP_THRESHOLD = -150;
-
 const SNAP_BACK_SPRING = { mass: 0.5, damping: 15, stiffness: 150 };
 
 export interface SwipeCardDog {
@@ -38,7 +36,6 @@ export interface SwipeCardDog {
 export interface SwipeCardRef {
   animateLeft: () => void;
   animateRight: () => void;
-  animateUp: () => void;
 }
 
 interface SwipeCardProps {
@@ -46,7 +43,6 @@ interface SwipeCardProps {
   dog: SwipeCardDog;
   onSwipeRight: () => void;
   onSwipeLeft: () => void;
-  onSwipeUp: () => void;
   onExplanationTap?: () => void;
 }
 
@@ -55,7 +51,6 @@ export function SwipeCard({
   dog,
   onSwipeRight,
   onSwipeLeft,
-  onSwipeUp,
   onExplanationTap,
 }: SwipeCardProps) {
   const router = useRouter();
@@ -81,11 +76,6 @@ export function SwipeCard({
         runOnJS(onSwipeLeft)();
       });
     },
-    animateUp() {
-      translateY.value = withTiming(-cardWidth.value * 2, { duration: 300 }, () => {
-        runOnJS(onSwipeUp)();
-      });
-    },
   }));
 
   const panGesture = Gesture.Pan()
@@ -105,10 +95,6 @@ export function SwipeCard({
       } else if (event.translationX < -threshold) {
         translateX.value = withTiming(-cardWidth.value * 1.5, { duration: 300 }, () => {
           runOnJS(onSwipeLeft)();
-        });
-      } else if (event.translationY < SWIPE_UP_THRESHOLD) {
-        translateY.value = withTiming(-cardWidth.value * 2, { duration: 300 }, () => {
-          runOnJS(onSwipeUp)();
         });
       } else {
         translateX.value = withSpring(0, SNAP_BACK_SPRING);
@@ -152,11 +138,6 @@ export function SwipeCard({
     opacity: interpolate(translateX.value, [-SWIPE_THRESHOLD, 0], [0.3, 0], Extrapolation.CLAMP),
   }));
 
-  // Blue tint overlay on swipe up
-  const superlikeOverlayStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(translateY.value, [SWIPE_UP_THRESHOLD, 0], [0.3, 0], Extrapolation.CLAMP),
-  }));
-
   // Label opacity (appears stronger than tint)
   const likeLabelStyle = useAnimatedStyle(() => ({
     opacity: interpolate(translateX.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolation.CLAMP),
@@ -164,10 +145,6 @@ export function SwipeCard({
 
   const nopeLabelStyle = useAnimatedStyle(() => ({
     opacity: interpolate(translateX.value, [-SWIPE_THRESHOLD, 0], [1, 0], Extrapolation.CLAMP),
-  }));
-
-  const superlikeLabelStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(translateY.value, [SWIPE_UP_THRESHOLD, 0], [1, 0], Extrapolation.CLAMP),
   }));
 
   return (
@@ -200,11 +177,6 @@ export function SwipeCard({
           style={nopeOverlayStyle}
           pointerEvents="none"
         />
-        <Animated.View
-          className="absolute inset-0 bg-blue-500"
-          style={superlikeOverlayStyle}
-          pointerEvents="none"
-        />
 
         {/* Like stamp */}
         <Animated.View
@@ -224,15 +196,6 @@ export function SwipeCard({
           <Text className="text-3xl font-black tracking-tight text-red-400">NO</Text>
         </Animated.View>
 
-        {/* Superlike stamp */}
-        <Animated.View
-          className="absolute bottom-40 self-center rounded-lg border-[3px] border-blue-400 bg-blue-400/20 px-5 py-2"
-          style={superlikeLabelStyle}
-          pointerEvents="none"
-        >
-          <Text className="text-3xl font-black tracking-tight text-blue-400">SUPER</Text>
-        </Animated.View>
-
         {/* Bottom gradient — tall gradient, not a flat bar */}
         <LinearGradient
           colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.75)']}
@@ -242,7 +205,7 @@ export function SwipeCard({
         />
 
         {/* Info overlay — sits on top of gradient */}
-        <View className="absolute bottom-0 left-0 right-0 px-5 pb-20">
+        <View className="absolute bottom-0 left-0 right-0 px-5 pb-24">
           <View className="flex-row items-end justify-between">
             <View className="flex-1 mr-3">
               {/* Name — hero weight */}

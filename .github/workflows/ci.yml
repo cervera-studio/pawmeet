@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  push:
+    branches: [main]  # Catch direct-to-main pushes that bypass PRs
   pull_request:
     branches: [main]
 

@@ -1,14 +1,9 @@
-# Terraform remote state backend configuration
-# Copy to backend.hcl and fill in your values
+# DEPRECATED — State is now managed by Terraform Cloud.
+# This file is kept for reference only.
 #
-# First, create the storage account:
-#   az group create -n pawmeet-tfstate -l westeurope
-#   az storage account create -n pawmeettfstate -g pawmeet-tfstate -l westeurope --sku Standard_LRS
-#   az storage container create -n tfstate --account-name pawmeettfstate
+# Previously used with: terraform init -backend-config=backend.hcl
 #
-# Then init: terraform init -backend-config=backend.hcl
-
-resource_group_name  = "pawmeet-tfstate"
-storage_account_name = "pawmeettfstate"
-container_name       = "tfstate"
-key                  = "api.tfstate"
+# resource_group_name  = "pawmeet-tfstate"
+# storage_account_name = "pawmeettfstate"
+# container_name       = "tfstate"
+# key                  = "api.tfstate"

@@ -1,4 +1,8 @@
-# Copy to terraform.tfvars and fill in your values
+# Non-sensitive variables — set these in Terraform Cloud workspace as Terraform Variables.
+# Sensitive variables (api_secrets, admin_secrets) must be marked as "Sensitive" in TF Cloud.
+#
+# For local overrides during development, copy to terraform.tfvars (gitignored).
+
 subscription_id = "your-azure-subscription-id"
 project         = "pawmeet"
 environment     = "prod"
@@ -6,8 +10,9 @@ location        = "westeurope"
 min_replicas    = 2
 max_replicas    = 5
 
-# Secrets are passed via TF_VAR_api_secrets or a .tfvars file NOT committed to git
-# api_secrets = {
+# api_secrets and admin_secrets → set as HCL-type sensitive variables in TF Cloud.
+# Example HCL value for api_secrets:
+# {
 #   DATABASE_URL              = "postgresql://..."
 #   UPSTASH_REDIS_REST_URL    = "https://..."
 #   UPSTASH_REDIS_REST_TOKEN  = "..."
@@ -30,8 +35,12 @@ max_replicas    = 5
 #   SENTRY_DSN                = "..."
 #   POSTHOG_API_KEY           = "..."
 #   POSTHOG_HOST              = "https://eu.i.posthog.com"
+#   POSTHOG_PROJECT_ID        = "..."
+#   POSTHOG_PERSONAL_API_KEY  = "..."
 #   ANALYTICS_HASH_SALT       = "..."
 #   MESSAGE_ENCRYPTION_KEY    = "..."
-#   PLAY_INTEGRITY_CLIENT_EMAIL = "play-integrity@your-project.iam.gserviceaccount.com"
-#   PLAY_INTEGRITY_PRIVATE_KEY  = "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+#   STATSIG_SERVER_SECRET     = "..."
+#   GOOGLE_CLIENT_ID          = "..."
+#   PLAY_INTEGRITY_CLIENT_EMAIL = "..."
+#   PLAY_INTEGRITY_PRIVATE_KEY  = "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
 # }

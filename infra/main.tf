@@ -8,12 +8,12 @@ terraform {
     }
   }
 
-  backend "azurerm" {
-    # Configure via backend.hcl or -backend-config flags:
-    #   resource_group_name  = "pawmeet-tfstate"
-    #   storage_account_name = "pawmeettfstate"
-    #   container_name       = "tfstate"
-    #   key                  = "api.tfstate"
+  cloud {
+    organization = "cervera-studio"
+
+    workspaces {
+      name = "pawmeet-prod"
+    }
   }
 }
 

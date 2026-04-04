@@ -1,13 +1,7 @@
 import process from 'node:process';
+import { ADMIN_ROLE, type AdminRole } from '@pawmeet/types';
 
-export const AdminRole = {
-  SuperAdmin: 'super_admin',
-  Admin: 'admin',
-  Moderator: 'moderator',
-  Viewer: 'viewer',
-} as const;
-
-export type AdminRole = (typeof AdminRole)[keyof typeof AdminRole];
+export { ADMIN_ROLE, type AdminRole } from '@pawmeet/types';
 
 export interface AdminUser {
   id: string;
@@ -61,10 +55,10 @@ export async function getCurrentUser(): Promise<AdminUser | null> {
  */
 export function hasRole(userRole: AdminRole, requiredRole: AdminRole): boolean {
   const hierarchy: Record<AdminRole, number> = {
-    [AdminRole.SuperAdmin]: 4,
-    [AdminRole.Admin]: 3,
-    [AdminRole.Moderator]: 2,
-    [AdminRole.Viewer]: 1,
+    [ADMIN_ROLE.SUPER_ADMIN]: 4,
+    [ADMIN_ROLE.ADMIN]: 3,
+    [ADMIN_ROLE.MODERATOR]: 2,
+    [ADMIN_ROLE.VIEWER]: 1,
   };
 
   return hierarchy[userRole] >= hierarchy[requiredRole];
@@ -74,24 +68,24 @@ export function hasRole(userRole: AdminRole, requiredRole: AdminRole): boolean {
  * Route-based permission map.
  */
 export const routePermissions: Record<string, AdminRole> = {
-  '/settings': AdminRole.Admin,
-  '/audit-log': AdminRole.Admin,
-  '/users': AdminRole.Moderator,
-  '/moderation': AdminRole.Moderator,
-  '/dogs': AdminRole.Moderator,
-  '/breeds': AdminRole.Moderator,
-  '/safety': AdminRole.Moderator,
-  '/ai-matching': AdminRole.Admin,
-  '/notifications': AdminRole.Admin,
-  '/support': AdminRole.Moderator,
-  '/account-deletions': AdminRole.Admin,
-  '/organizations': AdminRole.Moderator,
-  '/group-events': AdminRole.Moderator,
-  '/challenges': AdminRole.Moderator,
-  '/badges': AdminRole.Moderator,
-  '/fitness': AdminRole.Moderator,
-  '/waitlist': AdminRole.Moderator,
-  '/': AdminRole.Viewer,
+  '/settings': ADMIN_ROLE.ADMIN,
+  '/audit-log': ADMIN_ROLE.ADMIN,
+  '/users': ADMIN_ROLE.MODERATOR,
+  '/moderation': ADMIN_ROLE.MODERATOR,
+  '/dogs': ADMIN_ROLE.MODERATOR,
+  '/breeds': ADMIN_ROLE.MODERATOR,
+  '/safety': ADMIN_ROLE.MODERATOR,
+  '/ai-matching': ADMIN_ROLE.ADMIN,
+  '/notifications': ADMIN_ROLE.ADMIN,
+  '/support': ADMIN_ROLE.MODERATOR,
+  '/account-deletions': ADMIN_ROLE.ADMIN,
+  '/organizations': ADMIN_ROLE.MODERATOR,
+  '/group-events': ADMIN_ROLE.MODERATOR,
+  '/challenges': ADMIN_ROLE.MODERATOR,
+  '/badges': ADMIN_ROLE.MODERATOR,
+  '/fitness': ADMIN_ROLE.MODERATOR,
+  '/waitlist': ADMIN_ROLE.MODERATOR,
+  '/': ADMIN_ROLE.VIEWER,
 };
 
 /**

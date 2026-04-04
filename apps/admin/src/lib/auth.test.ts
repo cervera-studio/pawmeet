@@ -1,5 +1,5 @@
 import type { AdminUser } from './auth';
-import { AdminRole, canAccessRoute, hasRole, routePermissions } from './auth';
+import { ADMIN_ROLE, canAccessRoute, hasRole, routePermissions } from './auth';
 
 // -- Builder --
 
@@ -8,23 +8,23 @@ function buildAdminUser(overrides: Partial<AdminUser> = {}): AdminUser {
     id: 'usr_001',
     email: 'admin@pawmeet.test',
     name: 'Test Admin',
-    role: AdminRole.Admin,
+    role: ADMIN_ROLE.ADMIN,
     ...overrides,
   };
 }
 
-// -- AdminRole const object --
+// -- ADMIN_ROLE const object --
 
-describe('AdminRole', () => {
+describe('ADMIN_ROLE', () => {
   it('exposes all four roles as string values', () => {
-    expect(AdminRole.SuperAdmin).toBe('super_admin');
-    expect(AdminRole.Admin).toBe('admin');
-    expect(AdminRole.Moderator).toBe('moderator');
-    expect(AdminRole.Viewer).toBe('viewer');
+    expect(ADMIN_ROLE.SUPER_ADMIN).toBe('super_admin');
+    expect(ADMIN_ROLE.ADMIN).toBe('admin');
+    expect(ADMIN_ROLE.MODERATOR).toBe('moderator');
+    expect(ADMIN_ROLE.VIEWER).toBe('viewer');
   });
 
   it('has exactly four members', () => {
-    expect(Object.keys(AdminRole)).toHaveLength(4);
+    expect(Object.keys(ADMIN_ROLE)).toHaveLength(4);
   });
 });
 
@@ -32,37 +32,37 @@ describe('AdminRole', () => {
 
 describe('hasRole', () => {
   it('returns true when user role matches required role exactly', () => {
-    expect(hasRole(AdminRole.Admin, AdminRole.Admin)).toBe(true);
-    expect(hasRole(AdminRole.Viewer, AdminRole.Viewer)).toBe(true);
+    expect(hasRole(ADMIN_ROLE.ADMIN, ADMIN_ROLE.ADMIN)).toBe(true);
+    expect(hasRole(ADMIN_ROLE.VIEWER, ADMIN_ROLE.VIEWER)).toBe(true);
   });
 
   it('returns true when user role is higher than required', () => {
-    expect(hasRole(AdminRole.SuperAdmin, AdminRole.Viewer)).toBe(true);
-    expect(hasRole(AdminRole.SuperAdmin, AdminRole.Admin)).toBe(true);
-    expect(hasRole(AdminRole.Admin, AdminRole.Moderator)).toBe(true);
-    expect(hasRole(AdminRole.Moderator, AdminRole.Viewer)).toBe(true);
+    expect(hasRole(ADMIN_ROLE.SUPER_ADMIN, ADMIN_ROLE.VIEWER)).toBe(true);
+    expect(hasRole(ADMIN_ROLE.SUPER_ADMIN, ADMIN_ROLE.ADMIN)).toBe(true);
+    expect(hasRole(ADMIN_ROLE.ADMIN, ADMIN_ROLE.MODERATOR)).toBe(true);
+    expect(hasRole(ADMIN_ROLE.MODERATOR, ADMIN_ROLE.VIEWER)).toBe(true);
   });
 
   it('returns false when user role is lower than required', () => {
-    expect(hasRole(AdminRole.Viewer, AdminRole.Moderator)).toBe(false);
-    expect(hasRole(AdminRole.Viewer, AdminRole.Admin)).toBe(false);
-    expect(hasRole(AdminRole.Viewer, AdminRole.SuperAdmin)).toBe(false);
-    expect(hasRole(AdminRole.Moderator, AdminRole.Admin)).toBe(false);
-    expect(hasRole(AdminRole.Admin, AdminRole.SuperAdmin)).toBe(false);
+    expect(hasRole(ADMIN_ROLE.VIEWER, ADMIN_ROLE.MODERATOR)).toBe(false);
+    expect(hasRole(ADMIN_ROLE.VIEWER, ADMIN_ROLE.ADMIN)).toBe(false);
+    expect(hasRole(ADMIN_ROLE.VIEWER, ADMIN_ROLE.SUPER_ADMIN)).toBe(false);
+    expect(hasRole(ADMIN_ROLE.MODERATOR, ADMIN_ROLE.ADMIN)).toBe(false);
+    expect(hasRole(ADMIN_ROLE.ADMIN, ADMIN_ROLE.SUPER_ADMIN)).toBe(false);
   });
 
   it('SuperAdmin satisfies every role', () => {
-    const allRoles = Object.values(AdminRole);
+    const allRoles = Object.values(ADMIN_ROLE);
     for (const role of allRoles) {
-      expect(hasRole(AdminRole.SuperAdmin, role)).toBe(true);
+      expect(hasRole(ADMIN_ROLE.SUPER_ADMIN, role)).toBe(true);
     }
   });
 
   it('Viewer only satisfies Viewer', () => {
-    expect(hasRole(AdminRole.Viewer, AdminRole.Viewer)).toBe(true);
-    expect(hasRole(AdminRole.Viewer, AdminRole.Moderator)).toBe(false);
-    expect(hasRole(AdminRole.Viewer, AdminRole.Admin)).toBe(false);
-    expect(hasRole(AdminRole.Viewer, AdminRole.SuperAdmin)).toBe(false);
+    expect(hasRole(ADMIN_ROLE.VIEWER, ADMIN_ROLE.VIEWER)).toBe(true);
+    expect(hasRole(ADMIN_ROLE.VIEWER, ADMIN_ROLE.MODERATOR)).toBe(false);
+    expect(hasRole(ADMIN_ROLE.VIEWER, ADMIN_ROLE.ADMIN)).toBe(false);
+    expect(hasRole(ADMIN_ROLE.VIEWER, ADMIN_ROLE.SUPER_ADMIN)).toBe(false);
   });
 });
 
@@ -70,16 +70,16 @@ describe('hasRole', () => {
 
 describe('routePermissions', () => {
   it('maps /settings to Admin', () => {
-    expect(routePermissions['/settings']).toBe(AdminRole.Admin);
+    expect(routePermissions['/settings']).toBe(ADMIN_ROLE.ADMIN);
   });
 
   it('maps /users and /moderation to Moderator', () => {
-    expect(routePermissions['/users']).toBe(AdminRole.Moderator);
-    expect(routePermissions['/moderation']).toBe(AdminRole.Moderator);
+    expect(routePermissions['/users']).toBe(ADMIN_ROLE.MODERATOR);
+    expect(routePermissions['/moderation']).toBe(ADMIN_ROLE.MODERATOR);
   });
 
   it('maps / to Viewer', () => {
-    expect(routePermissions['/']).toBe(AdminRole.Viewer);
+    expect(routePermissions['/']).toBe(ADMIN_ROLE.VIEWER);
   });
 });
 
@@ -89,54 +89,54 @@ describe('canAccessRoute', () => {
   it('allows SuperAdmin to access every mapped route', () => {
     const routes = Object.keys(routePermissions);
     for (const route of routes) {
-      expect(canAccessRoute(AdminRole.SuperAdmin, route)).toBe(true);
+      expect(canAccessRoute(ADMIN_ROLE.SUPER_ADMIN, route)).toBe(true);
     }
   });
 
   it('allows Viewer to access /', () => {
-    expect(canAccessRoute(AdminRole.Viewer, '/')).toBe(true);
+    expect(canAccessRoute(ADMIN_ROLE.VIEWER, '/')).toBe(true);
   });
 
   it('denies Viewer access to /users', () => {
-    expect(canAccessRoute(AdminRole.Viewer, '/users')).toBe(false);
+    expect(canAccessRoute(ADMIN_ROLE.VIEWER, '/users')).toBe(false);
   });
 
   it('denies Viewer access to /settings', () => {
-    expect(canAccessRoute(AdminRole.Viewer, '/settings')).toBe(false);
+    expect(canAccessRoute(ADMIN_ROLE.VIEWER, '/settings')).toBe(false);
   });
 
   it('allows Moderator access to /users', () => {
-    expect(canAccessRoute(AdminRole.Moderator, '/users')).toBe(true);
+    expect(canAccessRoute(ADMIN_ROLE.MODERATOR, '/users')).toBe(true);
   });
 
   it('denies Moderator access to /settings', () => {
-    expect(canAccessRoute(AdminRole.Moderator, '/settings')).toBe(false);
+    expect(canAccessRoute(ADMIN_ROLE.MODERATOR, '/settings')).toBe(false);
   });
 
   it('allows Admin access to /settings', () => {
-    expect(canAccessRoute(AdminRole.Admin, '/settings')).toBe(true);
+    expect(canAccessRoute(ADMIN_ROLE.ADMIN, '/settings')).toBe(true);
   });
 
   it('matches the most specific (longest) route prefix', () => {
     // /users/123 should match /users (Moderator), not / (Viewer)
-    expect(canAccessRoute(AdminRole.Viewer, '/users/123')).toBe(false);
-    expect(canAccessRoute(AdminRole.Moderator, '/users/123')).toBe(true);
+    expect(canAccessRoute(ADMIN_ROLE.VIEWER, '/users/123')).toBe(false);
+    expect(canAccessRoute(ADMIN_ROLE.MODERATOR, '/users/123')).toBe(true);
   });
 
   it('returns true for unknown routes (no permission entry)', () => {
     // Routes not in the map default to allowed
-    expect(canAccessRoute(AdminRole.Viewer, '/unknown-page')).toBe(true);
+    expect(canAccessRoute(ADMIN_ROLE.VIEWER, '/unknown-page')).toBe(true);
   });
 
   it('handles sub-paths of /settings', () => {
-    expect(canAccessRoute(AdminRole.Moderator, '/settings/general')).toBe(false);
-    expect(canAccessRoute(AdminRole.Admin, '/settings/general')).toBe(true);
+    expect(canAccessRoute(ADMIN_ROLE.MODERATOR, '/settings/general')).toBe(false);
+    expect(canAccessRoute(ADMIN_ROLE.ADMIN, '/settings/general')).toBe(true);
   });
 
   it('handles /dogs path requiring Moderator', () => {
-    expect(canAccessRoute(AdminRole.Viewer, '/dogs')).toBe(false);
-    expect(canAccessRoute(AdminRole.Moderator, '/dogs')).toBe(true);
-    expect(canAccessRoute(AdminRole.Admin, '/dogs')).toBe(true);
+    expect(canAccessRoute(ADMIN_ROLE.VIEWER, '/dogs')).toBe(false);
+    expect(canAccessRoute(ADMIN_ROLE.MODERATOR, '/dogs')).toBe(true);
+    expect(canAccessRoute(ADMIN_ROLE.ADMIN, '/dogs')).toBe(true);
   });
 });
 
@@ -147,12 +147,12 @@ describe('buildAdminUser', () => {
     const user = buildAdminUser();
     expect(user.id).toBe('usr_001');
     expect(user.email).toBe('admin@pawmeet.test');
-    expect(user.role).toBe(AdminRole.Admin);
+    expect(user.role).toBe(ADMIN_ROLE.ADMIN);
   });
 
   it('allows overriding individual fields', () => {
-    const user = buildAdminUser({ role: AdminRole.SuperAdmin, name: 'Super' });
-    expect(user.role).toBe(AdminRole.SuperAdmin);
+    const user = buildAdminUser({ role: ADMIN_ROLE.SUPER_ADMIN, name: 'Super' });
+    expect(user.role).toBe(ADMIN_ROLE.SUPER_ADMIN);
     expect(user.name).toBe('Super');
     expect(user.email).toBe('admin@pawmeet.test');
   });

@@ -1,12 +1,17 @@
 import process from 'node:process';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { isValidOrigin } from '@/lib/csrf';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 const ACCESS_TOKEN_MAX_AGE = 30 * 60; // 30 minutes
 const REFRESH_TOKEN_MAX_AGE = 8 * 60 * 60; // 8 hours
 
 export async function POST(request: Request) {
+  if (!isValidOrigin(request)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   const body = await request.json();
 
   const response = await fetch(`${API_URL}/admin/auth/login`, {

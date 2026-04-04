@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@expo/app-integrity": "^55.0.9",
+    "@expo/vector-icons": "^15.1.1",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@pawmeet/api-client": "workspace:*",
     "@pawmeet/config": "workspace:^",

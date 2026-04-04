@@ -7,3 +7,7 @@ if (!DATABASE_URL) throw new Error('DATABASE_URL is required');
 
 const pool = new pg.Pool({ connectionString: DATABASE_URL });
 export const db = drizzle(pool);
+
+export async function closePool(): Promise<void> {
+  await pool.end();
+}

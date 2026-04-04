@@ -78,7 +78,7 @@ export {
 
 /** Set up the WebSocket server (noServer mode — upgrade routing handled externally) */
 export function setupWebSocket() {
-  const wss = new WebSocketServer({ noServer: true });
+  const wss = new WebSocketServer({ noServer: true, maxPayload: 65_536 });
 
   wss.on('connection', (ws: WebSocket, userId: string) => {
     // Enforce connection rate and concurrency limits

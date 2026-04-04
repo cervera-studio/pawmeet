@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server';
 import { trpcServer } from '@hono/trpc-server';
 import { logger as appLogger } from '@pawmeet/utils';
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 import { logger } from 'hono/logger';
 import { registerDomainEventHandlers } from './app/event-handlers.js';
 import { ERROR_MESSAGES } from './constants/messages.js';
@@ -54,6 +55,8 @@ app.use('*', corsMiddleware);
 app.use('/api/*', rateLimitMiddleware);
 app.use('/trpc/*', rateLimitMiddleware);
 app.use('/trpc/*', cacheControlMiddleware);
+app.use('/trpc/*', bodyLimit({ maxSize: 1_048_576 }));
+app.use('/api/*', bodyLimit({ maxSize: 1_048_576 }));
 
 /** Scrub PostgreSQL connection strings from error messages */
 const PG_CONN_RE = /postgresql:\/\/[^\s]+@[^\s/]+\/[^\s]*/gi;
@@ -121,7 +124,7 @@ app.get('/health', async (c) => {
     checks.database = 'fail';
   }
 
-  // Redis connectivity check
+  // Upstash Redis connectivity check
   try {
     const { redis } = await import('./lib/redis.js');
     await redis.ping();
@@ -191,11 +194,79 @@ import('./ws/registry.js').then(({ initWsRedisSubscription }) => {
 });
 
 // Start BullMQ workers in production
+let stopWorkers: (() => Promise<void>) | null = null;
 if (process.env.NODE_ENV === 'production') {
-  import('./jobs/workers.js').then(({ startWorkers }) => {
-    startWorkers();
+  import('./jobs/workers.js').then(async ({ startWorkers }) => {
+    stopWorkers = await startWorkers();
     appLogger.info('API', 'BullMQ workers started');
   });
 }
+
+// Graceful shutdown — registered at top level so SIGTERM is always caught
+// regardless of whether the dynamic workers import has resolved
+let shuttingDown = false;
+const shutdown = async () => {
+  if (shuttingDown) return;
+  shuttingDown = true;
+
+  appLogger.info('API', 'Shutdown signal received, draining...');
+
+  // Force-exit after 25s (ACA grace period is 30s — leave 5s buffer)
+  const forceExit = setTimeout(() => {
+    appLogger.error('API', 'Graceful shutdown timed out, forcing exit');
+    process.exit(1);
+  }, 25_000);
+  forceExit.unref();
+
+  // 1. Stop accepting new HTTP connections and drain inflight requests
+  try {
+    await new Promise<void>((resolve, reject) => {
+      server.close((err) => (err ? reject(err) : resolve()));
+    });
+  } catch (e) {
+    appLogger.warn('API', 'HTTP server close failed', e);
+  }
+
+  // 2. Close WebSocket servers (send 1001 Going Away to connected clients)
+  for (const wss of [userWss, adminWss]) {
+    for (const client of wss.clients) {
+      client.close(1001, 'Server shutting down');
+    }
+    wss.close();
+  }
+
+  // 3. Shut down BullMQ workers (waits for in-flight jobs that use DB)
+  if (stopWorkers) {
+    try {
+      await stopWorkers();
+    } catch (e) {
+      appLogger.warn('API', 'Workers shutdown failed', e);
+    }
+  }
+
+  // 4. Flush experiment service (Statsig events)
+  try {
+    await experimentService.shutdown();
+  } catch {
+    // ignore
+  }
+
+  // 5. Drain the DB connection pool (safe — no more consumers after step 3)
+  try {
+    const { closePool } = await import('./lib/db.js');
+    await closePool();
+  } catch {
+    // ignore
+  }
+
+  // 6. Flush Sentry events
+  await Sentry.close(5000);
+
+  appLogger.info('API', 'Graceful shutdown complete');
+  process.exit(0);
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
 
 export default app;

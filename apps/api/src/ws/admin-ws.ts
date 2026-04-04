@@ -57,7 +57,7 @@ let adminWss: WebSocketServer | null = null;
 
 /** Set up a separate WebSocket server for admin connections at /ws/admin */
 export function setupAdminWebSocket() {
-  const wss = new WebSocketServer({ noServer: true });
+  const wss = new WebSocketServer({ noServer: true, maxPayload: 65_536 });
   adminWss = wss;
 
   wss.on('connection', (ws: WebSocket, adminId: string) => {

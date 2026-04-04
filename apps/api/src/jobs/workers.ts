@@ -1,4 +1,3 @@
-import process from 'node:process';
 import { logger } from '@pawmeet/utils';
 import {
   analyticsProviders,
@@ -72,8 +71,8 @@ import { createWalkReminderWorker, scheduleWalkReminders } from './walk-reminder
 import { createWalkSafetyAlertWorker, scheduleWalkSafetyAlerts } from './walk-safety-alert.js';
 import { createWeeklyChallengeRotationWorker } from './weekly-challenge-rotation.js';
 
-/** Start all BullMQ workers. Call this once on server startup. */
-export async function startWorkers() {
+/** Start all BullMQ workers. Returns a shutdown function to close them gracefully. */
+export async function startWorkers(): Promise<() => Promise<void>> {
   const photoWorker = createPhotoModerationWorker(photoModerationDeps);
   const notifWorker = createNotificationWorker(sendNotificationDeps);
   const emailWorker = createEmailWorker();
@@ -123,8 +122,7 @@ export async function startWorkers() {
   await scheduleWeeklyChallenges();
   await scheduleStreakCheck();
 
-  // Handle graceful shutdown
-  const shutdown = async () => {
+  return async () => {
     logger.info('Workers', 'Shutting down...');
     // Close workers first, then flush analytics providers
     await Promise.all([
@@ -157,12 +155,6 @@ export async function startWorkers() {
     ]);
     // Flush analytics providers after workers stop to prevent event loss on deploys
     await Promise.allSettled(analyticsProviders.map((p) => p.shutdown()));
-    // Flush pending Sentry events before exit
-    const { Sentry } = await import('../lib/sentry.js');
-    await Sentry.close(2000);
     logger.info('Workers', 'All workers stopped');
   };
-
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
 }

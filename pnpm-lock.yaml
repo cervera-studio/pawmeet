@@ -340,8 +340,8 @@ importers:
         specifier: ~55.0.9
         version: 55.0.9(expo@55.0.9)(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       expo-local-authentication:
-        specifier: ^55.0.9
-        version: 55.0.9(expo@55.0.9)
+        specifier: ^55.0.11
+        version: 55.0.11(expo@55.0.9)
       expo-localization:
         specifier: ^55.0.9
         version: 55.0.9(expo@55.0.9)(react@19.2.0)
@@ -6478,8 +6478,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  expo-local-authentication@55.0.9:
-    resolution: {integrity: sha512-WeFmISIOpq3VOg1DkUf2J9xtj7FJuFOjSN5z+z+fNFCjCuFY1vw20UMApbiEz7bOvE2w6tDYpTF4GJhaatKJ/Q==}
+  expo-local-authentication@55.0.11:
+    resolution: {integrity: sha512-GTvDbI0HlsHTvgFVNo4x7fN8a/DV3D2qczqpco31R6O/8qU/yHcn4dTsbsCCr5A/2rmbEO12Trwr+TihiXyIBg==}
     peerDependencies:
       expo: '*'
 
@@ -17332,7 +17332,7 @@ snapshots:
       - typescript
     optional: true
 
-  expo-local-authentication@55.0.9(expo@55.0.9):
+  expo-local-authentication@55.0.11(expo@55.0.9):
     dependencies:
       expo: 55.0.9(@babel/core@7.29.0)(@expo/dom-webview@55.0.3)(@expo/metro-runtime@55.0.6)(expo-router@55.0.8)(react-dom@19.2.4(react@19.2.0))(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       invariant: 2.2.4

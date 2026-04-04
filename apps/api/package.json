@@ -42,7 +42,7 @@
     "drizzle-orm": "^0.45.2",
     "expo-server-sdk": "^6.1.0",
     "hono": "^4.12.8",
-    "ioredis": "^5.10.0",
+    "ioredis": "^5.10.1",
     "jose": "^6.2.0",
     "otpauth": "^9.5.0",
     "pg": "^8.16.0",

@@ -334,8 +334,8 @@ importers:
         specifier: ~55.0.9
         version: 55.0.9(expo@55.0.9)(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       expo-local-authentication:
-        specifier: ^55.0.9
-        version: 55.0.9(expo@55.0.9)
+        specifier: ^55.0.11
+        version: 55.0.11(expo@55.0.9)
       expo-localization:
         specifier: ^55.0.9
         version: 55.0.9(expo@55.0.9)(react@19.2.0)
@@ -670,12 +670,12 @@ packages:
       zod:
         optional: true
 
-  '@asamuzakjp/css-color@5.1.4':
-    resolution: {integrity: sha512-503MoTEmPSyEJ7zQ+5vlkwPtkyxDhbDwR9ajk/jpPGrCLiUFHzgEG4iViUPKdGlZPRT1mWSPSbDL2qkOoLU4vg==}
+  '@asamuzakjp/css-color@5.1.5':
+    resolution: {integrity: sha512-8cMAA1bE66Mb/tfmkhcfJLjEPgyT7SSy6lW6id5XL113ai1ky76d/1L27sGnXCMsLfq66DInAU3OzuahB4lu9Q==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
-  '@asamuzakjp/dom-selector@7.0.5':
-    resolution: {integrity: sha512-7vyrLx4ck24AhfXUSa+aPlL9rw3yw8U0or/TG2yxCutt5CxMnycucf3/DVBsxRqny74l6WNZ/PQ5SD3Moa0lAQ==}
+  '@asamuzakjp/dom-selector@7.0.6':
+    resolution: {integrity: sha512-Tgmk6EQM0nc9xvp7sEHRVavbknhb/vGKht+04yAT3t5KQwZ02CSobCtcFgaHH04ZrjD1BhEKNA8tRhzFV20gkA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@asamuzakjp/nwsapi@2.3.9':
@@ -5329,8 +5329,8 @@ packages:
   caniuse-lite@1.0.30001781:
     resolution: {integrity: sha512-RdwNCyMsNBftLjW6w01z8bKEvT6e/5tpPVEgtn22TiLGlstHOVecsX2KHFkD5e/vRnIE4EGzpuIODb3mtswtkw==}
 
-  caniuse-lite@1.0.30001784:
-    resolution: {integrity: sha512-WU346nBTklUV9YfUl60fqRbU5ZqyXlqvo1SgigE1OAXK5bFL8LL9q1K7aap3N739l4BvNqnkm3YrGHiY9sfUQw==}
+  caniuse-lite@1.0.30001785:
+    resolution: {integrity: sha512-blhOL/WNR+Km1RI/LCVAvA73xplXA7ZbjzI4YkMK9pa6T/P3F2GxjNpEkyw5repTw9IvkyrjyHpwjnhZ5FOvYQ==}
 
   ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
@@ -6177,8 +6177,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  expo-local-authentication@55.0.9:
-    resolution: {integrity: sha512-WeFmISIOpq3VOg1DkUf2J9xtj7FJuFOjSN5z+z+fNFCjCuFY1vw20UMApbiEz7bOvE2w6tDYpTF4GJhaatKJ/Q==}
+  expo-local-authentication@55.0.11:
+    resolution: {integrity: sha512-GTvDbI0HlsHTvgFVNo4x7fN8a/DV3D2qczqpco31R6O/8qU/yHcn4dTsbsCCr5A/2rmbEO12Trwr+TihiXyIBg==}
     peerDependencies:
       expo: '*'
 
@@ -9270,8 +9270,8 @@ packages:
     resolution: {integrity: sha512-Xi4agocCbRzt0yYMZGMA6ApD7gvtUFaxm4ZmeacWI4cZxaF6C+8I8QfofC20NAePiB/IcvZmzkJ7XPa471AEtA==}
     engines: {node: '>=20.18.1'}
 
-  undici@8.0.1:
-    resolution: {integrity: sha512-6qdTUr+jabXmYKeYkv/+pIvO7d0bs1k9uy+5PFnXr4segNVwILH1KExhwRh3/iGa6gSLmySK3hTnSs3k7ZPnjQ==}
+  undici@8.0.2:
+    resolution: {integrity: sha512-B9MeU5wuFhkFAuNeA19K2GDFcQXZxq33fL0nRy2Aq30wdufZbyyvxW3/ChaeipXVfy/wUweZyzovQGk39+9k2w==}
     engines: {node: '>=22.19.0'}
 
   unenv@2.0.0-rc.24:
@@ -9941,7 +9941,7 @@ snapshots:
     optionalDependencies:
       zod: 4.3.6
 
-  '@asamuzakjp/css-color@5.1.4':
+  '@asamuzakjp/css-color@5.1.5':
     dependencies:
       '@csstools/css-calc': 3.1.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-color-parser': 4.0.2(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
@@ -9950,7 +9950,7 @@ snapshots:
       lru-cache: 11.2.7
     optional: true
 
-  '@asamuzakjp/dom-selector@7.0.5':
+  '@asamuzakjp/dom-selector@7.0.6':
     dependencies:
       '@asamuzakjp/nwsapi': 2.3.9
       bidi-js: 1.0.3
@@ -15871,7 +15871,7 @@ snapshots:
   browserslist@4.28.2:
     dependencies:
       baseline-browser-mapping: 2.10.14
-      caniuse-lite: 1.0.30001784
+      caniuse-lite: 1.0.30001785
       electron-to-chromium: 1.5.331
       node-releases: 2.0.37
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
@@ -15921,7 +15921,7 @@ snapshots:
 
   caniuse-lite@1.0.30001781: {}
 
-  caniuse-lite@1.0.30001784: {}
+  caniuse-lite@1.0.30001785: {}
 
   ccount@2.0.1: {}
 
@@ -16805,7 +16805,7 @@ snapshots:
       - typescript
     optional: true
 
-  expo-local-authentication@55.0.9(expo@55.0.9):
+  expo-local-authentication@55.0.11(expo@55.0.9):
     dependencies:
       expo: 55.0.9(@babel/core@7.29.0)(@expo/dom-webview@55.0.3)(@expo/metro-runtime@55.0.6)(expo-router@55.0.8)(react-dom@19.2.4(react@19.2.0))(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       invariant: 2.2.4
@@ -17769,8 +17769,8 @@ snapshots:
 
   jsdom@29.0.0(@noble/hashes@2.0.1):
     dependencies:
-      '@asamuzakjp/css-color': 5.1.4
-      '@asamuzakjp/dom-selector': 7.0.5
+      '@asamuzakjp/css-color': 5.1.5
+      '@asamuzakjp/dom-selector': 7.0.6
       '@bramus/specificity': 2.4.2
       '@csstools/css-syntax-patches-for-csstree': 1.1.2(css-tree@3.2.1)
       '@exodus/bytes': 1.15.0(@noble/hashes@2.0.1)
@@ -17784,7 +17784,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.1
-      undici: 8.0.1
+      undici: 8.0.2
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -20786,7 +20786,7 @@ snapshots:
 
   undici@7.24.6: {}
 
-  undici@8.0.1:
+  undici@8.0.2:
     optional: true
 
   unenv@2.0.0-rc.24:

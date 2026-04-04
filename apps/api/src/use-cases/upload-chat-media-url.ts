@@ -14,7 +14,7 @@ export function createUploadChatMediaUrl({ messageRepo, storage }: Deps) {
     matchId: string,
     contentType: string,
     fileSize: number,
-  ): Promise<Result<{ uploadUrl: string; key: string }>> => {
+  ): Promise<Result<{ uploadUrl: string; key: string; publicUrl: string }>> => {
     const isParticipant = await messageRepo.isMatchParticipant(matchId, userId);
     if (!isParticipant) {
       return fail(
@@ -30,7 +30,8 @@ export function createUploadChatMediaUrl({ messageRepo, storage }: Deps) {
 
     const key = storage.buildChatMediaKey(matchId, contentType);
     const uploadUrl = await storage.generatePresignedUploadUrl(key, contentType);
+    const publicUrl = storage.getPublicUrl(key);
 
-    return succeed({ uploadUrl, key });
+    return succeed({ uploadUrl, key, publicUrl });
   };
 }

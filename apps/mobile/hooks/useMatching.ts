@@ -48,6 +48,7 @@ export function useMatching() {
   }, [dogId, cacheKey]);
 
   const currentProfile = suggestions[currentIndex] ?? null;
+  const nextProfile = suggestions[currentIndex + 1] ?? null;
   const hasMore = currentIndex < suggestions.length;
 
   const activeFilterCount = Object.values(filters).filter(
@@ -166,6 +167,7 @@ export function useMatching() {
 
   return {
     currentProfile,
+    nextProfile,
     suggestions,
     isLoading,
     hasMore,

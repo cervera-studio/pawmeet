@@ -73,6 +73,27 @@ export default function DiscoveryScreen() {
         vm.currentProfile &&
         vm.hasMore ? (
           <>
+            {/* Next card — static preview behind the current one */}
+            {vm.nextProfile && (
+              <View className="absolute inset-0" pointerEvents="none">
+                <SwipeCard
+                  key={vm.nextProfile.dog.id}
+                  dog={{
+                    dogId: vm.nextProfile.dog.id,
+                    name: vm.nextProfile.dog.name,
+                    breed: formatBreedName(vm.nextProfile.dog.breed),
+                    age: formatDogAge(new Date(vm.nextProfile.dog.birthDate)),
+                    distanceKm: vm.nextProfile.distanceKm,
+                    compatibilityScore: vm.nextProfile.compatibilityScore,
+                    ownerName: vm.nextProfile.ownerDisplayName ?? '',
+                    imageUrl: vm.nextProfile.primaryPhotoUrl ?? null,
+                    scoreBreakdown: vm.nextProfile.scoreBreakdown,
+                  }}
+                />
+              </View>
+            )}
+
+            {/* Current card — interactive, on top */}
             <SwipeCard
               key={vm.currentProfile.dog.id}
               ref={cardRef}

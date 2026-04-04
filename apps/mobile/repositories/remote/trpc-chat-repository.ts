@@ -16,24 +16,24 @@ export function createTrpcChatRepository(api: ApiClient): ChatRepository {
       await api.chat.markMessagesRead.mutate({ matchId });
     },
     async uploadImage(matchId, imageUri) {
-      // Step 1: Get presigned URL
-      const { uploadUrl, key } = await api.chat.uploadMediaUrl.mutate({
-        matchId,
-        contentType: 'image/jpeg',
-        fileSize: 0, // Size checked server-side after upload
-      });
-
-      // Step 2: Upload to R2
+      // Step 1: Read image into blob to get actual size
       const response = await fetch(imageUri);
       const blob = await response.blob();
+
+      // Step 2: Get presigned URL with real file size
+      const { uploadUrl, publicUrl } = await api.chat.uploadMediaUrl.mutate({
+        matchId,
+        contentType: 'image/jpeg',
+        fileSize: blob.size,
+      });
+
+      // Step 3: Upload to R2
       await fetch(uploadUrl, {
         method: 'PUT',
         headers: { 'Content-Type': 'image/jpeg' },
         body: blob,
       });
 
-      // Step 3: Build the public URL from the key
-      const publicUrl = key; // Server resolves this to full URL when reading
       return { mediaUrl: publicUrl };
     },
   };

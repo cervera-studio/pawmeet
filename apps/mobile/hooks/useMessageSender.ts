@@ -75,7 +75,7 @@ export function useMessageSender(matchId: string | undefined, deps: MessageSende
         const { mediaUrl } = await chatRepo.uploadImage(matchId, imageUri);
         const { message: msg } = await chatRepo.sendMessage({
           matchId,
-          content: '',
+          content: '📷',
           mediaUrl,
         });
         getSharedWs()?.send(JSON.stringify({ type: 'message', payload: msg }));

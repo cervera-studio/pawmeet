@@ -41,8 +41,8 @@ export interface SwipeCardRef {
 interface SwipeCardProps {
   ref?: Ref<SwipeCardRef>;
   dog: SwipeCardDog;
-  onSwipeRight: () => void;
-  onSwipeLeft: () => void;
+  onSwipeRight?: () => void;
+  onSwipeLeft?: () => void;
   onExplanationTap?: () => void;
 }
 
@@ -60,6 +60,8 @@ export function SwipeCard({
   const cardWidth = useSharedValue(FALLBACK_WIDTH);
 
   const [imageError, setImageError] = useState(false);
+  const emitSwipeRight = () => onSwipeRight?.();
+  const emitSwipeLeft = () => onSwipeLeft?.();
   const distanceLabel = formatDistance(dog.distanceKm);
   const compatPercent = Math.round(dog.compatibilityScore * 100);
   const topReasonKeys = dog.scoreBreakdown ? getTopReasons(dog.scoreBreakdown) : [];
@@ -69,12 +71,12 @@ export function SwipeCard({
   useImperativeHandle(ref, () => ({
     animateRight() {
       translateX.value = withTiming(cardWidth.value * 1.5, { duration: 300 }, () => {
-        runOnJS(onSwipeRight)();
+        runOnJS(emitSwipeRight)();
       });
     },
     animateLeft() {
       translateX.value = withTiming(-cardWidth.value * 1.5, { duration: 300 }, () => {
-        runOnJS(onSwipeLeft)();
+        runOnJS(emitSwipeLeft)();
       });
     },
   }));
@@ -91,11 +93,11 @@ export function SwipeCard({
 
       if (event.translationX > threshold) {
         translateX.value = withTiming(cardWidth.value * 1.5, { duration: 300 }, () => {
-          runOnJS(onSwipeRight)();
+          runOnJS(emitSwipeRight)();
         });
       } else if (event.translationX < -threshold) {
         translateX.value = withTiming(-cardWidth.value * 1.5, { duration: 300 }, () => {
-          runOnJS(onSwipeLeft)();
+          runOnJS(emitSwipeLeft)();
         });
       } else {
         translateX.value = withSpring(0, SNAP_BACK_SPRING);

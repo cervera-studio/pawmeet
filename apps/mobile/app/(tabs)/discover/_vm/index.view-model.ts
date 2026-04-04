@@ -13,6 +13,7 @@ export function useDiscoveryViewModel() {
   const selectedDogId = useDogsStore((s) => s.selectedDogId);
   const {
     currentProfile,
+    nextProfile,
     isLoading,
     hasMore,
     newMatch,
@@ -80,6 +81,7 @@ export function useDiscoveryViewModel() {
     coordinates,
     getCurrentLocation,
     currentProfile,
+    nextProfile,
     isLoading,
     hasMore,
     newMatch,

@@ -123,7 +123,7 @@ describe('logger', () => {
   });
 
   describe('onError hook', () => {
-    it('calls hook on logger.error', () => {
+    it('calls hook on logger.error with LogEvent object', () => {
       vi.spyOn(console, 'error').mockImplementation(() => {
         /* noop */
       });
@@ -132,10 +132,15 @@ describe('logger', () => {
 
       logger.error('tag', 'boom', { detail: 42 });
 
-      expect(hook).toHaveBeenCalledWith('tag', 'boom', { detail: 42 });
+      expect(hook).toHaveBeenCalledWith({
+        level: 'error',
+        tag: 'tag',
+        msg: 'boom',
+        data: { detail: 42 },
+      });
     });
 
-    it('calls hook on logger.warn', () => {
+    it('does not call hook on logger.warn', () => {
       vi.spyOn(console, 'warn').mockImplementation(() => {
         /* noop */
       });
@@ -144,7 +149,7 @@ describe('logger', () => {
 
       logger.warn('tag', 'careful');
 
-      expect(hook).toHaveBeenCalledWith('tag', 'careful', undefined);
+      expect(hook).not.toHaveBeenCalled();
     });
 
     it('still calls hook even when log level suppresses output', () => {

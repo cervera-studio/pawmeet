@@ -1,6 +1,7 @@
 import { logger } from '@pawmeet/utils';
+import * as Sentry from '@sentry/react-native';
 import type { ErrorBoundaryProps } from 'expo-router';
-import { Component, type ComponentType, type ReactNode } from 'react';
+import { Component, type ComponentType, type ReactNode, useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -49,7 +50,9 @@ function ErrorFallback({ error, retry }: ErrorFallbackProps) {
  * ```
  */
 export function ScreenErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-  logger.error(TAG, 'Uncaught error in screen', error);
+  useEffect(() => {
+    logger.error(TAG, 'Uncaught error in screen', error);
+  }, [error]);
   return <ErrorFallback error={error} retry={retry} />;
 }
 
@@ -76,9 +79,9 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    logger.error(TAG, 'Uncaught error in component tree', {
-      message: error.message,
-      componentStack: info.componentStack,
+    Sentry.withScope((scope) => {
+      scope.setExtra('componentStack', info.componentStack);
+      Sentry.captureException(error);
     });
   }
 

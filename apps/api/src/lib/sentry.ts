@@ -100,8 +100,8 @@ export function initSentry() {
     },
   });
 
-  // Wire logger.warn/error to Sentry
-  logger.onError((tag, msg, data) => {
+  // Wire logger.error to Sentry
+  logger.onError(({ tag, msg, data }) => {
     const error = data instanceof Error ? data : new Error(`[${tag}] ${msg}`);
 
     Sentry.withScope((scope) => {

@@ -80,6 +80,19 @@ Sentry.init({
   },
 });
 
+// Route logger.error to Sentry automatically
+logger.onError(({ tag, msg, data }) => {
+  Sentry.withScope((scope) => {
+    scope.setTag('logger.tag', tag);
+    if (data instanceof Error) {
+      Sentry.captureException(data);
+    } else {
+      if (data !== undefined) scope.setExtra('data', data);
+      Sentry.captureMessage(`[${tag}] ${msg}`, 'error');
+    }
+  });
+});
+
 SplashScreen.preventAutoHideAsync();
 
 /** Registers for push notifications only when user is authenticated. */

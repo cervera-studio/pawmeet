@@ -395,6 +395,7 @@
       "deactivateProfile": "Deactivate profile",
       "activateProfile": "Activate profile",
       "deleteProfile": "Delete dog profile",
+      "deleteProfileConfirm": "This action cannot be undone. All photos and associated data will be permanently deleted.",
       "addPhotos": "Add photos",
       "moodHistory": "Mood History",
       "moodHistorySubtitle": "Track your dog's mood over time",
@@ -1138,7 +1139,9 @@
     "defaultName": "Passkey",
     "synced": "Synced",
     "thisDevice": "This device only",
-    "addButton": "Add passkey"
+    "addButton": "Add passkey",
+    "deleteTitle": "Delete passkey",
+    "deleteConfirm": "You won't be able to use this passkey to sign in anymore. Continue?"
   },
   "match": {
     "close": "Close",

@@ -395,6 +395,7 @@
       "deactivateProfile": "Desactivar perfil",
       "activateProfile": "Activar perfil",
       "deleteProfile": "Eliminar perfil del perro",
+      "deleteProfileConfirm": "Esta acción no se puede deshacer. Se eliminarán todas las fotos y datos asociados.",
       "addPhotos": "Añade fotos",
       "moodHistory": "Historial de ánimo",
       "moodHistorySubtitle": "Sigue el ánimo de tu perro a lo largo del tiempo",
@@ -1138,7 +1139,9 @@
     "defaultName": "Passkey",
     "synced": "Sincronizada",
     "thisDevice": "Solo este dispositivo",
-    "addButton": "Añadir passkey"
+    "addButton": "Añadir passkey",
+    "deleteTitle": "Eliminar passkey",
+    "deleteConfirm": "Ya no podrás usar esta passkey para iniciar sesión. ¿Continuar?"
   },
   "match": {
     "close": "Cerrar",

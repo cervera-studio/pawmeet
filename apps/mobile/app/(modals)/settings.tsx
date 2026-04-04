@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { ConsentModal } from '@/components/ConsentModal';
 import { SettingsRow } from '@/components/SettingsRow';
 import { usePasskeys } from '@/hooks/usePasskeys';
@@ -169,7 +169,16 @@ export default function SettingsModal() {
                     </Text>
                   </View>
                   <Pressable
-                    onPress={() => pk.deletePasskey(p.id)}
+                    onPress={() =>
+                      Alert.alert(t('passkey.deleteTitle'), t('passkey.deleteConfirm'), [
+                        { text: t('common.cancel'), style: 'cancel' },
+                        {
+                          text: t('common.delete'),
+                          style: 'destructive',
+                          onPress: () => pk.deletePasskey(p.id),
+                        },
+                      ])
+                    }
                     className="rounded-lg px-3 py-1.5"
                   >
                     <Text className="text-sm text-red-500">{t('common.delete')}</Text>

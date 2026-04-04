@@ -395,6 +395,7 @@
       "deactivateProfile": "Disattiva profilo",
       "activateProfile": "Attiva profilo",
       "deleteProfile": "Elimina profilo cane",
+      "deleteProfileConfirm": "Questa azione è irreversibile. Verranno eliminati anche tutte le foto e i dati associati.",
       "addPhotos": "Aggiungi delle foto",
       "moodHistory": "Storico umore",
       "moodHistorySubtitle": "Monitora l'umore del tuo cane nel tempo",
@@ -1138,7 +1139,9 @@
     "defaultName": "Passkey",
     "synced": "Sincronizzata",
     "thisDevice": "Solo questo dispositivo",
-    "addButton": "Aggiungi passkey"
+    "addButton": "Aggiungi passkey",
+    "deleteTitle": "Elimina passkey",
+    "deleteConfirm": "Non potrai più usare questa passkey per accedere. Continuare?"
   },
   "match": {
     "close": "Chiudi",

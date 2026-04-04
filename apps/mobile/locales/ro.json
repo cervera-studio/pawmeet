@@ -395,6 +395,7 @@
       "deactivateProfile": "Dezactivează profil",
       "activateProfile": "Activează profil",
       "deleteProfile": "Șterge profilul câinelui",
+      "deleteProfileConfirm": "Această acțiune este ireversibilă. Toate fotografiile și datele asociate vor fi șterse definitiv.",
       "addPhotos": "Adaugă fotografii",
       "moodHistory": "Istoric dispoziție",
       "moodHistorySubtitle": "Urmărește dispoziția câinelui tău în timp",
@@ -1138,7 +1139,9 @@
     "defaultName": "Passkey",
     "synced": "Sincronizată",
     "thisDevice": "Doar pe acest dispozitiv",
-    "addButton": "Adaugă passkey"
+    "addButton": "Adaugă passkey",
+    "deleteTitle": "Șterge passkey",
+    "deleteConfirm": "Nu vei mai putea folosi această passkey pentru autentificare. Continui?"
   },
   "match": {
     "close": "Închide",

@@ -17,7 +17,7 @@ type DogPhoto = RouterOutput['dogs']['get']['photos'][number];
 
 function InfoChip({ title, value }: { title: string; value: string }) {
   return (
-    <View className="flex-1 items-center rounded-xl bg-primary-50 p-3">
+    <View className="flex-1 items-center rounded-xl bg-primary-50 dark:bg-[#2C2C2E] p-3">
       <Text className="text-xs text-gray-500 dark:text-neutral-500">{title}</Text>
       <Text className="text-center text-sm font-semibold text-gray-900 dark:text-[#F5F5F7]">
         {value}
@@ -364,11 +364,13 @@ export default function DogDetailScreen() {
           <DogReviews dogId={vm.dog.id} dogRating={vm.dogRating} />
 
           {/* Edit button */}
-          <Button
-            onPress={vm.navigateToEdit}
-            label={t('profile.dogDetail.editProfile')}
-            variant="outline"
-          />
+          <View className="mt-4">
+            <Button
+              onPress={vm.navigateToEdit}
+              label={t('profile.dogDetail.editProfile')}
+              variant="outline"
+            />
+          </View>
 
           {/* Photo gallery */}
           <PhotoGallery

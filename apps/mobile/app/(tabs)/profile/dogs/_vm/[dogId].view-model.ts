@@ -129,18 +129,27 @@ export function useDogDetailViewModel() {
     }
   }, [dog, updateDogInStore]);
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(() => {
     if (!dog) return;
-    setDeleting(true);
-    try {
-      await api.dogs.delete.mutate({ id: dog.id });
-      removeDogFromStore(dog.id);
-      router.back();
-    } catch (e) {
-      logger.warn('DogDetail', 'Failed to delete dog', e);
-      setDeleting(false);
-    }
-  }, [dog, removeDogFromStore, router]);
+    Alert.alert(t('profile.dogDetail.deleteProfile'), t('profile.dogDetail.deleteProfileConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: async () => {
+          setDeleting(true);
+          try {
+            await api.dogs.delete.mutate({ id: dog.id });
+            removeDogFromStore(dog.id);
+            router.back();
+          } catch (e) {
+            logger.warn('DogDetail', 'Failed to delete dog', e);
+            setDeleting(false);
+          }
+        },
+      },
+    ]);
+  }, [dog, removeDogFromStore, router, t]);
 
   const navigateToEdit = useCallback(() => {
     if (!validDogId) return;

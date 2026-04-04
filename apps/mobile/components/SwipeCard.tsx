@@ -2,7 +2,7 @@ import type { ScoreBreakdown } from '@pawmeet/types';
 import { formatDistance, getTopReasons } from '@pawmeet/utils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { type Ref, useImperativeHandle } from 'react';
+import { type Ref, useImperativeHandle, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -59,6 +59,7 @@ export function SwipeCard({
   const translateY = useSharedValue(0);
   const cardWidth = useSharedValue(FALLBACK_WIDTH);
 
+  const [imageError, setImageError] = useState(false);
   const distanceLabel = formatDistance(dog.distanceKm);
   const compatPercent = Math.round(dog.compatibilityScore * 100);
   const topReasonKeys = dog.scoreBreakdown ? getTopReasons(dog.scoreBreakdown) : [];
@@ -157,8 +158,13 @@ export function SwipeCard({
         }}
       >
         {/* Background — fills the card and provides layout height */}
-        {dog.imageUrl ? (
-          <Image source={{ uri: dog.imageUrl }} className="flex-1 w-full" resizeMode="cover" />
+        {dog.imageUrl && !imageError ? (
+          <Image
+            source={{ uri: dog.imageUrl }}
+            className="flex-1 w-full"
+            resizeMode="cover"
+            onError={() => setImageError(true)}
+          />
         ) : (
           <View className="flex-1 items-center justify-center bg-neutral-900">
             <Avatar name={dog.name} size="lg" />

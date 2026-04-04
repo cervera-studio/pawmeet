@@ -651,6 +651,8 @@
   },
   "chat": {
     "title": "Chat",
+    "tabMessages": "Mensajes",
+    "tabGroups": "Grupos",
     "groupChat": "Chat de grupo",
     "backButton": "Chat",
     "messagePlaceholder": "Escribe un mensaje...",

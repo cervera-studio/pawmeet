@@ -183,7 +183,9 @@ function MessagesEmptyState() {
       <Text className="mt-4 text-lg text-gray-400 dark:text-neutral-500">
         {t('chat.listEmptyTitle')}
       </Text>
-      <Text className="text-sm text-gray-300">{t('chat.listEmptyDescription')}</Text>
+      <Text className="text-sm text-gray-400 dark:text-neutral-600">
+        {t('chat.listEmptyDescription')}
+      </Text>
     </View>
   );
 }
@@ -197,7 +199,9 @@ function GroupsEmptyState() {
       <Text className="mt-4 text-lg text-gray-400 dark:text-neutral-500">
         {t('chat.groupListEmptyTitle')}
       </Text>
-      <Text className="text-sm text-gray-300">{t('chat.groupListEmptyDescription')}</Text>
+      <Text className="text-sm text-gray-400 dark:text-neutral-600">
+        {t('chat.groupListEmptyDescription')}
+      </Text>
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import type { RouterOutput } from '@pawmeet/api-client';
 import { formatBreedName, formatDogAge } from '@pawmeet/utils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { DogReviews } from '@/components/DogReviews';
@@ -50,6 +50,8 @@ export default function DogDetailModal() {
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [photoError, setPhotoError] = useState(false);
+  const handlePhotoError = useCallback(() => setPhotoError(true), []);
 
   useEffect(() => {
     if (!dogId) {
@@ -96,13 +98,18 @@ export default function DogDetailModal() {
   return (
     <ScrollView className="flex-1 bg-white dark:bg-[#1C1C1E]" contentContainerClassName="px-6 py-4">
       {/* Header photo */}
-      {primaryPhoto ? (
+      {primaryPhoto && !photoError ? (
         <View className="mb-4 h-72 overflow-hidden rounded-2xl">
-          <Image source={{ uri: primaryPhoto.url }} className="h-full w-full" resizeMode="cover" />
+          <Image
+            source={{ uri: primaryPhoto.url }}
+            className="h-full w-full"
+            resizeMode="cover"
+            onError={handlePhotoError}
+          />
         </View>
       ) : (
         <View className="mb-4 h-72 items-center justify-center rounded-2xl bg-gray-100 dark:bg-[#38383A]">
-          <Text className="text-6xl">🐕</Text>
+          <Avatar name={profile.name} size="lg" />
         </View>
       )}
 

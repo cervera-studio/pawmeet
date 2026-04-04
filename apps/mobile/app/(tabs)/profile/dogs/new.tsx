@@ -22,6 +22,7 @@ import type {
   WalkTime,
 } from '@pawmeet/types';
 import { Stack } from 'expo-router';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -527,6 +528,12 @@ export default function NewDogScreen() {
     pendingPhotos,
   } = useNewDogViewModel();
 
+  const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+  }, [step]);
+
   return (
     <>
       <Stack.Screen
@@ -537,7 +544,11 @@ export default function NewDogScreen() {
         }}
       />
       <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
-        <ScrollView contentContainerClassName="px-6 py-4" keyboardShouldPersistTaps="handled">
+        <ScrollView
+          ref={scrollRef}
+          contentContainerClassName="px-6 py-4"
+          keyboardShouldPersistTaps="handled"
+        >
           <StepIndicator step={step} />
 
           {apiError ? (

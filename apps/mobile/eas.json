@@ -19,9 +19,7 @@
       "cache": {
         "key": "v2"
       },
-      "env": {
-        "SENTRY_ALLOW_FAILURE": "true"
-      }
+      "env": {}
     }
   },
   "submit": {

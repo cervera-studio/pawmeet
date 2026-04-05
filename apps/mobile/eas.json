@@ -29,9 +29,9 @@
         "track": "internal"
       },
       "ios": {
-        "appleId": "$APPLE_ID",
-        "ascAppId": "$ASC_APP_ID",
-        "appleTeamId": "$APPLE_TEAM_ID"
+        "appleId": "dev.cer@cervera.studio",
+        "ascAppId": "6761265869",
+        "appleTeamId": "VUAXY43Z5C"
       }
     }
   }

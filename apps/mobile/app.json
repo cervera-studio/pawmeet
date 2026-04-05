@@ -98,8 +98,7 @@
       "expo-video",
       "@react-native-community/datetimepicker",
       "expo-build-properties",
-      "@react-native-google-signin/google-signin",
-      "./plugins/with-sentry-allow-failure"
+      "@react-native-google-signin/google-signin"
     ],
     "extra": {
       "router": {},

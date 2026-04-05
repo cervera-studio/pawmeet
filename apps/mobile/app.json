@@ -99,7 +99,8 @@
       "@react-native-community/datetimepicker",
       "@sentry/react-native",
       "expo-build-properties",
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "./plugins/with-sentry-allow-failure"
     ],
     "extra": {
       "router": {},

@@ -79,6 +79,14 @@ export default function LoginScreen() {
                   onAppleLogin={vm.handleAppleLogin}
                   onGoogleLogin={vm.handleGoogleLogin}
                 />
+                <Pressable onPress={vm.navigateToRegister} className="items-center py-2 mt-2">
+                  <Text className="text-base text-gray-500 dark:text-neutral-500">
+                    {t('auth.login.noAccount')}{' '}
+                    <Text className="font-semibold text-primary">
+                      {t('auth.login.registerLink')}
+                    </Text>
+                  </Text>
+                </Pressable>
               </View>
             </>
           ) : (
@@ -112,15 +120,6 @@ export default function LoginScreen() {
               />
             </>
           )}
-        </View>
-
-        <View className="px-8 pb-8">
-          <Pressable onPress={vm.navigateToRegister} className="items-center py-2">
-            <Text className="text-base text-gray-500 dark:text-neutral-500">
-              {t('auth.login.noAccount')}{' '}
-              <Text className="font-semibold text-primary">{t('auth.login.registerLink')}</Text>
-            </Text>
-          </Pressable>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -20,15 +20,23 @@ export function BreedAutocomplete({ value, onSelect, placeholder, error }: Breed
 
   const displayName = value ? getBreedName(value, locale) : '';
 
+  const sortedBreedCodes = useMemo(
+    () =>
+      [...BREED_CODES].sort((a, b) =>
+        getBreedName(a, locale).localeCompare(getBreedName(b, locale), locale),
+      ),
+    [locale],
+  );
+
   const results = useMemo(() => {
-    if (!query || query.length < 2) return BREED_CODES.slice(0, 20);
+    if (!query || query.length < 2) return sortedBreedCodes.slice(0, 20);
     const lower = query.toLowerCase();
-    return BREED_CODES.filter((code) => {
+    return sortedBreedCodes.filter((code) => {
       const name = getBreedName(code, locale).toLowerCase();
       const nameEn = getBreedName(code, 'en').toLowerCase();
       return name.includes(lower) || nameEn.includes(lower);
     });
-  }, [query, locale]);
+  }, [query, locale, sortedBreedCodes]);
 
   const handleOpen = useCallback(() => {
     setQuery('');

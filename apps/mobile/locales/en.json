@@ -1193,6 +1193,8 @@
   },
   "moodHistory": {
     "empty": "No mood entries yet. Start logging your dog's mood!",
+    "emptyTitle": "No entries yet",
+    "emptyDescription": "After each walk you can rate your dog's mood from 1 to 5 stars and add tags like calm, playful or reactive. Track their progress over time.",
     "title": "Mood History"
   },
   "notifications": {

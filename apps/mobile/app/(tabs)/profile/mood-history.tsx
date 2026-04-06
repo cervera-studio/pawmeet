@@ -126,10 +126,13 @@ export default function MoodHistoryScreen() {
           contentContainerClassName="px-4 py-4"
           renderItem={({ item }) => <MoodLogRow log={item} />}
           ListEmptyComponent={
-            <View className="items-center py-12">
-              <Text className="text-4xl mb-3">{'\u{1F4DD}'}</Text>
-              <Text className="text-neutral-500 dark:text-neutral-500 text-center">
-                {t('moodHistory.empty')}
+            <View className="items-center px-6 py-12">
+              <Text className="text-5xl mb-4">{'\u{1F43E}'}</Text>
+              <Text className="text-lg font-semibold text-neutral-800 dark:text-[#F5F5F7] text-center mb-2">
+                {t('moodHistory.emptyTitle')}
+              </Text>
+              <Text className="text-sm text-neutral-500 dark:text-neutral-400 text-center leading-5">
+                {t('moodHistory.emptyDescription')}
               </Text>
             </View>
           }

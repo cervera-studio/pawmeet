@@ -1193,6 +1193,8 @@
   },
   "moodHistory": {
     "empty": "Aún no hay registros de ánimo. ¡Empieza a registrar el ánimo de tu perro!",
+    "emptyTitle": "Aún no hay registros",
+    "emptyDescription": "Después de cada paseo podrás valorar el ánimo de tu perro de 1 a 5 estrellas y añadir etiquetas como tranquilo, juguetón o reactivo. Así podrás seguir su progreso con el tiempo.",
     "title": "Historial de ánimo"
   },
   "notifications": {

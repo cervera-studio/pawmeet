@@ -1193,6 +1193,8 @@
   },
   "moodHistory": {
     "empty": "Nessuna registrazione dell'umore. Inizia a registrare l'umore del tuo cane!",
+    "emptyTitle": "Nessuna registrazione ancora",
+    "emptyDescription": "Dopo ogni passeggiata potrai valutare l'umore del tuo cane con un voto da 1 a 5 stelle e aggiungere tag come calmo, giocherellone o reattivo. Così potrai monitorare i suoi progressi nel tempo.",
     "title": "Storico umore"
   },
   "notifications": {

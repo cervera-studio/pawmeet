@@ -1193,6 +1193,8 @@
   },
   "moodHistory": {
     "empty": "Nicio înregistrare a dispoziției. Începe să înregistrezi dispoziția câinelui tău!",
+    "emptyTitle": "Nicio înregistrare încă",
+    "emptyDescription": "După fiecare plimbare vei putea evalua dispoziția câinelui tău de la 1 la 5 stele și să adaugi etichete precum calm, jucăuș sau reactiv. Astfel vei putea urmări progresul în timp.",
     "title": "Istoric dispoziție"
   },
   "notifications": {

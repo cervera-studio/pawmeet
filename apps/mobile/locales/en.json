@@ -1004,7 +1004,15 @@
     "blockedTitle": "User blocked",
     "blockedMessage": "You will no longer see this user.",
     "blockError": "Unable to block the user. Please try again.",
-    "followError": "Unable to complete the action. Please try again."
+    "followError": "Unable to complete the action. Please try again.",
+    "profileSheet": {
+      "followers": "Followers",
+      "following": "Following",
+      "memberSince": "Member since",
+      "dogs": "Dogs",
+      "noDogs": "No dogs registered",
+      "errorLoading": "Failed to load profile"
+    }
   },
   "searchUsers": {
     "placeholder": "Search users...",

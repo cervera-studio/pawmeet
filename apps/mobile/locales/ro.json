@@ -1004,7 +1004,15 @@
     "blockedTitle": "Utilizator blocat",
     "blockedMessage": "Nu vei mai vedea acest utilizator.",
     "blockError": "Utilizatorul nu a putut fi blocat. Reîncearcă.",
-    "followError": "Acțiunea nu a putut fi finalizată. Reîncearcă."
+    "followError": "Acțiunea nu a putut fi finalizată. Reîncearcă.",
+    "profileSheet": {
+      "followers": "Urmăritori",
+      "following": "Urmărești",
+      "memberSince": "Membru din",
+      "dogs": "Câini",
+      "noDogs": "Niciun câine înregistrat",
+      "errorLoading": "Eroare la încărcarea profilului"
+    }
   },
   "searchUsers": {
     "placeholder": "Caută utilizatori...",

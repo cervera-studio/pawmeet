@@ -1004,7 +1004,15 @@
     "blockedTitle": "Utente bloccato",
     "blockedMessage": "Non vedrai più questo utente.",
     "blockError": "Impossibile bloccare l'utente. Riprova.",
-    "followError": "Impossibile completare l'azione. Riprova."
+    "followError": "Impossibile completare l'azione. Riprova.",
+    "profileSheet": {
+      "followers": "Follower",
+      "following": "Seguiti",
+      "memberSince": "Membro dal",
+      "dogs": "Cani",
+      "noDogs": "Nessun cane registrato",
+      "errorLoading": "Errore nel caricamento del profilo"
+    }
   },
   "searchUsers": {
     "placeholder": "Cerca utenti...",

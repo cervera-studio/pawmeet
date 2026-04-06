@@ -1,7 +1,9 @@
 import type { LeaderboardEntry } from '@pawmeet/types';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
+import { useRef } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserProfileSheet, type UserProfileSheetRef } from './_components/UserProfileSheet';
 import { useLeaderboardViewModel } from './_vm/leaderboard.view-model';
 
 const SKELETON_KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -44,11 +46,10 @@ function LeaderboardRow({
 }: {
   entry: LeaderboardEntry;
   isCurrentUser: boolean;
-  onPress: () => void;
+  onPress?: () => void;
 }) {
-  return (
-    <Pressable
-      onPress={onPress}
+  const content = (
+    <View
       className={`mb-2 flex-row items-center rounded-2xl p-4 shadow-sm ${
         isCurrentUser
           ? 'bg-primary/10 dark:bg-primary/20 border border-primary'
@@ -82,15 +83,19 @@ function LeaderboardRow({
         </Text>
         <Text className="text-xs text-neutral-500 dark:text-neutral-500">XP</Text>
       </View>
-    </Pressable>
+    </View>
   );
+
+  if (isCurrentUser || !onPress) return content;
+
+  return <Pressable onPress={onPress}>{content}</Pressable>;
 }
 
 // ── Main Screen ─────────────────────────────────────────────────────────────
 
 export default function LeaderboardScreen() {
   const vm = useLeaderboardViewModel();
-  const router = useRouter();
+  const sheetRef = useRef<UserProfileSheetRef>(null);
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]" edges={['bottom']}>
@@ -142,18 +147,16 @@ export default function LeaderboardScreen() {
           <FlatList
             data={vm.entries}
             keyExtractor={(item) => item.userId}
-            renderItem={({ item }) => (
-              <LeaderboardRow
-                entry={item}
-                isCurrentUser={item.userId === vm.currentUserId}
-                onPress={() =>
-                  router.push({
-                    pathname: '/(modals)/user-profile',
-                    params: { userId: item.userId },
-                  })
-                }
-              />
-            )}
+            renderItem={({ item }) => {
+              const isMe = item.userId === vm.currentUserId;
+              return (
+                <LeaderboardRow
+                  entry={item}
+                  isCurrentUser={isMe}
+                  onPress={isMe ? undefined : () => sheetRef.current?.present(item.userId)}
+                />
+              );
+            }}
             ListEmptyComponent={
               <View className="items-center py-12">
                 <Text className="text-4xl mb-3">{'\u{1F3C6}'}</Text>
@@ -166,6 +169,8 @@ export default function LeaderboardScreen() {
           />
         </View>
       )}
+
+      <UserProfileSheet ref={sheetRef} />
     </SafeAreaView>
   );
 }

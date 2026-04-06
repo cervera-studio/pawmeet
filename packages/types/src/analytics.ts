@@ -133,6 +133,7 @@ export interface AnalyticsEventMap {
   social_user_blocked: { hadPriorFollow: boolean };
   social_user_unblocked: Record<string, never>;
   social_user_searched: { resultCount: number; queryLength: number };
+  social_profile_viewed: { targetUserId: string };
 
   // Main Events & Brands
   event_main_created: {

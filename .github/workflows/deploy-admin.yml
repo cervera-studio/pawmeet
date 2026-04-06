@@ -54,6 +54,9 @@ jobs:
         run: az acr login --name "$ACR_NAME"
 
       - name: Build and push image
+        env:
+          ADMIN_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          ADMIN_SENTRY_DSN: ${{ vars.ADMIN_SENTRY_DSN }}
         run: |
           FULL_IMAGE="${ACR_NAME}.azurecr.io/${IMAGE_NAME}"
           docker build \
@@ -65,9 +68,6 @@ jobs:
             --tag "${FULL_IMAGE}:${IMAGE_TAG}" \
             --tag "${FULL_IMAGE}:latest" \
             .
-        env:
-          ADMIN_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          ADMIN_SENTRY_DSN: ${{ vars.ADMIN_SENTRY_DSN }}
           docker push "${FULL_IMAGE}:${IMAGE_TAG}"
           docker push "${FULL_IMAGE}:latest"
 

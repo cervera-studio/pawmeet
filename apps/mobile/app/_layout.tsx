@@ -395,6 +395,14 @@ function RootLayout() {
                     animation: 'fade',
                   }}
                 />
+                <Stack.Screen
+                  name="(modals)/add-dog"
+                  options={{
+                    presentation: 'fullScreenModal',
+                    headerShown: true,
+                    title: t('dogForm.newTitle'),
+                  }}
+                />
               </Stack.Protected>
             </Stack>
 

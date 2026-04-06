@@ -15,6 +15,8 @@ export default function AgeGateScreen() {
       <ScrollView
         contentContainerClassName="flex-grow justify-center px-8"
         keyboardShouldPersistTaps="handled"
+        bounces={false}
+        scrollEnabled={false}
       >
         <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-[#F5F5F7]">
           {t('auth.ageGate.title')}

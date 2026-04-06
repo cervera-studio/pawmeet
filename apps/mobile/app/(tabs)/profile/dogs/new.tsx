@@ -1,3 +1,4 @@
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import {
   BEHAVIOR_DOGS_OPTIONS,
   BEHAVIOR_PEOPLE_OPTIONS,
@@ -21,11 +22,11 @@ import type {
   WalkTerrain,
   WalkTime,
 } from '@pawmeet/types';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BreedAutocomplete } from '@/components/BreedAutocomplete';
 import { ChipField } from '@/components/ChipField';
 import { DatePickerField } from '@/components/DatePickerField';
@@ -528,10 +529,14 @@ export default function NewDogScreen() {
     pendingPhotos,
   } = useNewDogViewModel();
 
+  const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
+  const { bottom } = useSafeAreaInsets();
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
+    if (step >= 0) {
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+    }
   }, [step]);
 
   return (
@@ -540,60 +545,72 @@ export default function NewDogScreen() {
         options={{
           headerShown: true,
           title: t('dogForm.newTitle'),
-          headerBackTitle: t('profile.dogDetail.backButton'),
+          headerLeft: () => (
+            <Pressable onPress={step > 0 ? prevStep : () => router.back()} hitSlop={8}>
+              <Text className="text-base text-primary">
+                {step > 0 ? `‹ ${t('common.back')}` : `‹ ${t('common.close')}`}
+              </Text>
+            </Pressable>
+          ),
         }}
       />
-      <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
-        <ScrollView
-          ref={scrollRef}
-          contentContainerClassName="px-6 py-4"
-          keyboardShouldPersistTaps="handled"
-        >
-          <StepIndicator step={step} />
+      <BottomSheetModalProvider>
+        <View className="flex-1 bg-white dark:bg-[#1C1C1E]">
+          <ScrollView
+            ref={scrollRef}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingTop: 16,
+              paddingBottom: bottom + 16,
+            }}
+            keyboardShouldPersistTaps="handled"
+            automaticallyAdjustKeyboardInsets
+          >
+            <StepIndicator step={step} />
 
-          {apiError ? (
-            <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
-              <Text className="text-sm text-red-600 dark:text-red-400">{apiError}</Text>
-            </View>
-          ) : null}
+            {apiError ? (
+              <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
+                <Text className="text-sm text-red-600 dark:text-red-400">{apiError}</Text>
+              </View>
+            ) : null}
 
-          {step === 0 && (
-            <Step1BasicInfo
-              state={state}
-              setField={setField}
-              errors={errors}
-              generatingBio={generatingBio}
-              canGenerateBio={canGenerateBio}
-              onGenerateBio={generateBio}
-              analyzingPhoto={analyzingPhoto}
-              onAnalyzePhoto={analyzePhoto}
-            />
-          )}
-          {step === 1 && <Step2Personality state={state} setField={setField} errors={errors} />}
-          {step === 2 && <Step3WalkPrefs state={state} setField={setField} errors={errors} />}
-          {step === 3 && (
-            <Step4Photos
-              photos={pendingPhotos}
-              onAdd={addPendingPhoto}
-              onRemove={removePendingPhoto}
-            />
-          )}
-
-          {/* Navigation */}
-          <View className="mt-8 gap-3">
-            {step < 3 ? (
-              <Button onPress={nextStep} label={t('common.next')} />
-            ) : (
-              <Button
-                onPress={handleSubmit}
-                label={loading ? t('dogForm.creating') : t('dogForm.createProfile')}
-                disabled={loading}
+            {step === 0 && (
+              <Step1BasicInfo
+                state={state}
+                setField={setField}
+                errors={errors}
+                generatingBio={generatingBio}
+                canGenerateBio={canGenerateBio}
+                onGenerateBio={generateBio}
+                analyzingPhoto={analyzingPhoto}
+                onAnalyzePhoto={analyzePhoto}
               />
             )}
-            {step > 0 && <Button onPress={prevStep} label={t('common.back')} variant="outline" />}
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+            {step === 1 && <Step2Personality state={state} setField={setField} errors={errors} />}
+            {step === 2 && <Step3WalkPrefs state={state} setField={setField} errors={errors} />}
+            {step === 3 && (
+              <Step4Photos
+                photos={pendingPhotos}
+                onAdd={addPendingPhoto}
+                onRemove={removePendingPhoto}
+              />
+            )}
+
+            {/* Navigation */}
+            <View className="mt-8 gap-3">
+              {step < 3 ? (
+                <Button onPress={nextStep} label={t('common.next')} />
+              ) : (
+                <Button
+                  onPress={handleSubmit}
+                  label={loading ? t('dogForm.creating') : t('dogForm.createProfile')}
+                  disabled={loading}
+                />
+              )}
+            </View>
+          </ScrollView>
+        </View>
+      </BottomSheetModalProvider>
     </>
   );
 }

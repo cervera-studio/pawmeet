@@ -738,7 +738,7 @@
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Contraseña",
       "confirmPasswordPlaceholder": "Confirmar contraseña",
-      "dateOfBirthPlaceholder": "Fecha de nacimiento (AAAA-MM-DD)",
+      "dateOfBirthPlaceholder": "Fecha de nacimiento",
       "registerButton": "Registrarse",
       "registering": "Registrando...",
       "terms": "Al registrarte aceptas nuestros Términos de Servicio y la Política de Privacidad",
@@ -751,7 +751,7 @@
     "ageGate": {
       "title": "Verificación de edad",
       "description": "Para seguir usando PawMeet, introduce tu fecha de nacimiento. Debes tener al menos {{age}} años.",
-      "dateOfBirthPlaceholder": "Fecha de nacimiento (AAAA-MM-DD)",
+      "dateOfBirthPlaceholder": "Fecha de nacimiento",
       "submitButton": "Confirmar",
       "submitting": "Enviando...",
       "invalidDate": "Fecha no válida"

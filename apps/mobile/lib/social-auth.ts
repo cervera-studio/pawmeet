@@ -1,8 +1,15 @@
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
-import { Platform } from 'react-native';
+import { Platform, TurboModuleRegistry } from 'react-native';
+
+export const isGoogleSignInAvailable = TurboModuleRegistry.get('RNGoogleSignin') != null;
+
+const GoogleSignin = isGoogleSignInAvailable
+  ? (
+      require('@react-native-google-signin/google-signin') as typeof import('@react-native-google-signin/google-signin')
+    ).GoogleSignin
+  : null;
 
 export interface SocialAuthResult {
   provider: 'apple' | 'google';
@@ -64,6 +71,7 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
  * Configure Google Sign-In. Call once at app startup.
  */
 export function configureGoogleSignIn(): void {
+  if (!GoogleSignin) return;
   const webClientId = Constants.expoConfig?.extra?.googleWebClientId ?? '';
   const iosClientId = Constants.expoConfig?.extra?.googleIosClientId ?? '';
   if (!webClientId) return;
@@ -79,6 +87,10 @@ export function configureGoogleSignIn(): void {
  * Returns an idToken to send to the backend for verification.
  */
 export async function signInWithGoogle(): Promise<SocialAuthResult> {
+  if (!GoogleSignin) {
+    throw new Error('Google Sign In non disponibile su questo dispositivo');
+  }
+
   if (Platform.OS === 'android') {
     await GoogleSignin.hasPlayServices();
   }

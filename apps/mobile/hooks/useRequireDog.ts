@@ -31,7 +31,7 @@ export function useRequireDog() {
 
   const goToAddDog = useCallback(() => {
     setShowGate(false);
-    router.push('/(tabs)/profile/dogs/new');
+    router.push('/(modals)/add-dog');
   }, [router]);
 
   return { hasDog, showGate, setShowGate, dismissGate, goToAddDog, guardAction };

@@ -2,7 +2,7 @@ import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, Text, useColorScheme, View } from 'react-native';
+import { Keyboard, Platform, Pressable, Text, useColorScheme, View } from 'react-native';
 import { getDateLocale } from '@/lib/i18n';
 
 interface DatePickerFieldProps {
@@ -40,6 +40,7 @@ export function DatePickerField({
   const snapPoints = useMemo(() => ['55%'], []);
 
   const openPicker = useCallback(() => {
+    Keyboard.dismiss();
     if (Platform.OS === 'android') {
       setShowAndroidPicker(true);
     } else {
@@ -119,6 +120,7 @@ export function DatePickerField({
               display="spinner"
               maximumDate={maximumDate}
               minimumDate={minimumDate}
+              themeVariant={isDark ? 'dark' : 'light'}
               onChange={(_event, selectedDate) => {
                 if (selectedDate) onChange(selectedDate);
               }}

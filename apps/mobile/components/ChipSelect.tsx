@@ -104,7 +104,7 @@ export function ChipSelect<T extends string>(props: ChipSelectProps<T>) {
             role={multiple ? 'checkbox' : 'radio'}
             aria-checked={active}
             aria-label={getLabel(opt)}
-            className={`rounded-full px-4 py-2 ${active ? 'bg-primary' : 'bg-gray-100 dark:bg-[#38383A]'}`}
+            className={`rounded-full border px-4 py-2 ${active ? 'bg-primary border-primary' : 'bg-white border-gray-200 dark:bg-[#2C2C2E] dark:border-[#48484A]'}`}
           >
             <Text
               className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-700 dark:text-[#D1D1D6]'}`}

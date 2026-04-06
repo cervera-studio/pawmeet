@@ -738,7 +738,7 @@
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Parolă",
       "confirmPasswordPlaceholder": "Confirmă parola",
-      "dateOfBirthPlaceholder": "Data nașterii (AAAA-LL-ZZ)",
+      "dateOfBirthPlaceholder": "Data nașterii",
       "registerButton": "Înregistrează-te",
       "registering": "Înregistrare...",
       "terms": "Prin înregistrare accepți Termenii și Condițiile și Politica de Confidențialitate",
@@ -751,7 +751,7 @@
     "ageGate": {
       "title": "Verificare vârstă",
       "description": "Pentru a continua să folosești PawMeet, introdu data ta de naștere. Trebuie să ai cel puțin {{age}} ani (D.Lgs. 101/2018).",
-      "dateOfBirthPlaceholder": "Data nașterii (AAAA-LL-ZZ)",
+      "dateOfBirthPlaceholder": "Data nașterii",
       "submitButton": "Confirmă",
       "submitting": "Se trimite...",
       "invalidDate": "Dată invalidă"

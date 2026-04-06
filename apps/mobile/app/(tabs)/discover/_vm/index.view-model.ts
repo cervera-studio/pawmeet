@@ -66,7 +66,7 @@ export function useDiscoveryViewModel() {
   }, [currentProfile, superLike]);
 
   const navigateToAddDog = useCallback(() => {
-    router.push('/(tabs)/profile/dogs/new');
+    router.push('/(modals)/add-dog');
   }, [router]);
 
   const navigateToChat = useCallback(

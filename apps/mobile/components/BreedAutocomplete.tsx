@@ -59,7 +59,8 @@ export function BreedAutocomplete({ value, onSelect, placeholder, error }: Breed
     <View>
       <Pressable
         onPress={handleOpen}
-        className="mb-1 min-h-[52px] flex-row items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 dark:border-[#38383A] dark:bg-[#2C2C2E]"
+        className="mb-1 min-h-[52px] flex-row items-center justify-between rounded-2xl border border-gray-200 bg-white dark:border-[#38383A] dark:bg-[#1C1C1E]"
+        style={{ paddingHorizontal: 16, paddingVertical: 14 }}
       >
         <Text
           className={
@@ -78,7 +79,12 @@ export function BreedAutocomplete({ value, onSelect, placeholder, error }: Breed
       </Pressable>
       {error ? <Text className="mb-3 px-1 text-sm text-red-500">{error}</Text> : null}
 
-      <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
+      <Modal
+        visible={open}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setOpen(false)}
+      >
         <SafeAreaView className="flex-1 bg-white dark:bg-[#1C1C1E]">
           {/* Header */}
           <View className="flex-row items-center justify-between px-4 pb-2 pt-2">

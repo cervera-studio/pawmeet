@@ -7,7 +7,8 @@ interface InputProps extends TextInputProps {
 export function Input({ className = '', ...props }: InputProps) {
   return (
     <TextInput
-      className={`min-h-[52px] rounded-2xl border border-gray-200 dark:border-[#38383A] bg-gray-50 dark:bg-[#2C2C2E] px-4 py-3.5 text-base leading-6 text-gray-900 dark:text-[#F5F5F7] ${className}`}
+      className={`rounded-2xl border border-gray-200 dark:border-[#38383A] bg-white dark:bg-[#1C1C1E] text-base leading-tight text-gray-900 dark:text-[#F5F5F7] ${className}`}
+      style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14 }}
       placeholderTextColor="#9CA3AF"
       {...props}
     />

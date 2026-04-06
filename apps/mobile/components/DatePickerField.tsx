@@ -64,7 +64,8 @@ export function DatePickerField({
       <View>
         <Pressable
           onPress={openPicker}
-          className="mb-1 min-h-[52px] justify-center rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 dark:border-[#38383A] dark:bg-[#2C2C2E]"
+          className="mb-1 justify-center rounded-2xl border border-gray-200 bg-white dark:border-[#38383A] dark:bg-[#1C1C1E]"
+          style={{ paddingHorizontal: 16, paddingVertical: 14 }}
         >
           <Text
             className={
@@ -106,6 +107,7 @@ export function DatePickerField({
           ref={bottomSheetModalRef}
           snapPoints={snapPoints}
           enablePanDownToClose
+          enableContentPanningGesture={false}
           backdropComponent={renderBackdrop}
           backgroundStyle={{ backgroundColor: isDark ? '#1C1C1E' : '#fff' }}
           handleIndicatorStyle={{ backgroundColor: isDark ? '#48484A' : '#D1D5DB', width: 40 }}

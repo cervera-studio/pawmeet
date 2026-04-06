@@ -32,7 +32,7 @@ export default function ProfileLayout() {
           headerShown: true,
           title: t('dogForm.newTitle'),
           headerBackTitle: t('tabs.profile'),
-          presentation: 'modal',
+          presentation: 'fullScreenModal',
         }}
       />
       <Stack.Screen

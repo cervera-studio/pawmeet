@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
+import Svg, { Circle, Ellipse, G } from 'react-native-svg';
 import { FormField } from '@/components/FormField';
 import { OrSeparator, SocialAuthButtons } from '@/components/SocialAuth';
 import { Button } from '@/components/ui/Button';
@@ -60,7 +60,6 @@ export default function LoginScreen() {
                 onChangeText={vm.setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                autoFocus
                 error={vm.errors.email}
               />
 
@@ -101,7 +100,6 @@ export default function LoginScreen() {
                 value={vm.password}
                 onChangeText={vm.setPassword}
                 secureTextEntry
-                autoFocus
                 error={vm.errors.password}
                 spacingClassName="mb-2"
               />

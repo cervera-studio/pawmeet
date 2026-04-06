@@ -1,9 +1,11 @@
-import {
-  prepareIntegrityTokenProviderAsync,
-  requestIntegrityCheckAsync,
-} from '@expo/app-integrity';
 import { logger } from '@pawmeet/utils';
-import { Platform } from 'react-native';
+import { Platform, TurboModuleRegistry } from 'react-native';
+
+const isAppIntegrityAvailable = TurboModuleRegistry.get('ExpoAppIntegrity') != null;
+
+const appIntegrity = isAppIntegrityAvailable
+  ? (require('@expo/app-integrity') as typeof import('@expo/app-integrity'))
+  : null;
 
 const CLOUD_PROJECT_NUMBER = process.env.EXPO_PUBLIC_GOOGLE_CLOUD_PROJECT_NUMBER ?? '';
 
@@ -14,10 +16,10 @@ let providerReady = false;
  * No-ops on iOS.
  */
 export async function preparePlayIntegrity(): Promise<void> {
-  if (Platform.OS !== 'android' || !CLOUD_PROJECT_NUMBER) return;
+  if (!appIntegrity || Platform.OS !== 'android' || !CLOUD_PROJECT_NUMBER) return;
 
   try {
-    await prepareIntegrityTokenProviderAsync(CLOUD_PROJECT_NUMBER);
+    await appIntegrity.prepareIntegrityTokenProviderAsync(CLOUD_PROJECT_NUMBER);
     providerReady = true;
     logger.debug('PlayIntegrity', 'Token provider ready');
   } catch (err) {
@@ -30,10 +32,10 @@ export async function preparePlayIntegrity(): Promise<void> {
  * Returns `undefined` on iOS or if the provider is not ready.
  */
 export async function requestIntegrityToken(requestHash: string): Promise<string | undefined> {
-  if (Platform.OS !== 'android' || !providerReady) return;
+  if (!appIntegrity || Platform.OS !== 'android' || !providerReady) return;
 
   try {
-    return await requestIntegrityCheckAsync(requestHash);
+    return await appIntegrity.requestIntegrityCheckAsync(requestHash);
   } catch (err) {
     logger.warn('PlayIntegrity', 'Failed to request integrity token', err);
     return;

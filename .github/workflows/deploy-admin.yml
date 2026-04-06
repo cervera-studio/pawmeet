@@ -59,9 +59,15 @@ jobs:
           docker build \
             --file apps/admin/Dockerfile \
             --build-arg "APP_VERSION=${IMAGE_TAG}" \
+            --build-arg "NEXT_PUBLIC_API_URL=${ADMIN_API_URL}" \
+            --build-arg "NEXT_PUBLIC_ADMIN_URL=https://den.pawmeet.io" \
+            --build-arg "NEXT_PUBLIC_SENTRY_DSN=${ADMIN_SENTRY_DSN}" \
             --tag "${FULL_IMAGE}:${IMAGE_TAG}" \
             --tag "${FULL_IMAGE}:latest" \
             .
+        env:
+          ADMIN_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          ADMIN_SENTRY_DSN: ${{ vars.ADMIN_SENTRY_DSN }}
           docker push "${FULL_IMAGE}:${IMAGE_TAG}"
           docker push "${FULL_IMAGE}:latest"
 

@@ -135,6 +135,7 @@ module "admin" {
     PORT                     = "3000"
     APP_VERSION              = var.admin_image_tag
     NEXT_PUBLIC_API_URL      = "https://${module.api.fqdn}"
+    NEXT_PUBLIC_ADMIN_URL    = "https://den.pawmeet.io"
     NEXT_PUBLIC_SENTRY_DSN   = "https://30044a6df7d42e0d81113a39b20cfb69@o4511031773822976.ingest.de.sentry.io/4511031860199504"
   }
 

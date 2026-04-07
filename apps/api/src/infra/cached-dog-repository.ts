@@ -54,6 +54,10 @@ export class CachedDogRepository implements DogRepository {
     return this.inner.findPhotos(dogId);
   }
 
+  findPhotosByDogIds(dogIds: string[]): Promise<DogPhoto[]> {
+    return this.inner.findPhotosByDogIds(dogIds);
+  }
+
   countPhotos(dogId: string): Promise<number> {
     return this.inner.countPhotos(dogId);
   }

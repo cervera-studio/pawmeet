@@ -79,6 +79,16 @@ export class DrizzleDogRepository implements DogRepository {
     return rowsAs<DogPhoto>(rows);
   }
 
+  async findPhotosByDogIds(dogIds: string[]): Promise<DogPhoto[]> {
+    if (dogIds.length === 0) return [];
+    const rows = await this.db
+      .select()
+      .from(dogPhotos)
+      .where(inArray(dogPhotos.dogId, dogIds))
+      .orderBy(asc(dogPhotos.position));
+    return rowsAs<DogPhoto>(rows);
+  }
+
   async countPhotos(dogId: string): Promise<number> {
     const [row] = await this.db
       .select({ count: count() })

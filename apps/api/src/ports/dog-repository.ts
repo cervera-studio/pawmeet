@@ -34,6 +34,7 @@ export interface DogRepository {
 
   // Photos
   findPhotos(dogId: string): Promise<DogPhoto[]>;
+  findPhotosByDogIds(dogIds: string[]): Promise<DogPhoto[]>;
   countPhotos(dogId: string): Promise<number>;
   addPhoto(input: {
     dogId: string;

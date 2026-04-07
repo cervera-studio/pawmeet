@@ -1,7 +1,7 @@
 import type { PublicUserProfile } from '@pawmeet/types';
 import { AppError, fail, type Result, succeed } from '@pawmeet/types';
-import type { DogRepository } from '../ports/index.js';
 import type { FollowRepository } from '../ports/follow-repository.js';
+import type { DogRepository } from '../ports/index.js';
 import type { UserRepository } from '../ports/user-repository.js';
 
 type Deps = {
@@ -32,7 +32,7 @@ export function createGetPublicUserProfile({ userRepo, dogRepo, followRepo }: De
     }
 
     const dogs = await dogRepo.findByOwner(targetUserId, true);
-    const dogPhotos = await Promise.all(dogs.map((d) => dogRepo.findPhotos(d.id)));
+    const allPhotos = await dogRepo.findPhotosByDogIds(dogs.map((d) => d.id));
 
     return succeed({
       id: user.id,
@@ -41,13 +41,15 @@ export function createGetPublicUserProfile({ userRepo, dogRepo, followRepo }: De
       followersCount: user.followersCount,
       followingCount: user.followingCount,
       createdAt: user.createdAt,
-      dogs: dogs.map((d, i) => ({
+      dogs: dogs.map((d) => ({
         id: d.id,
         name: d.name,
         breed: d.breed,
         size: d.size,
         avatarUrl:
-          dogPhotos[i]?.find((p) => p.isPrimary && p.moderationStatus === 'approved')?.url ?? null,
+          allPhotos.find(
+            (p) => p.dogId === d.id && p.isPrimary && p.moderationStatus === 'approved',
+          )?.url ?? null,
       })),
     });
   };

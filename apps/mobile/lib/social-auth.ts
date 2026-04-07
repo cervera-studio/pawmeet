@@ -46,7 +46,7 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
   });
 
   if (!credential.identityToken) {
-    throw new Error('Apple Sign In: nessun identity token ricevuto');
+    throw new Error('Apple Sign In: no identity token received');
   }
 
   const payload = decodeJwtPayload(credential.identityToken);
@@ -98,7 +98,7 @@ export async function signInWithGoogle(): Promise<SocialAuthResult> {
   const response = await GoogleSignin.signIn();
 
   if (response.type !== 'success' || !response.data.idToken) {
-    throw new Error('Google Sign In: autenticazione annullata');
+    throw new Error('Google Sign In: authentication cancelled');
   }
 
   const { user, idToken } = response.data;

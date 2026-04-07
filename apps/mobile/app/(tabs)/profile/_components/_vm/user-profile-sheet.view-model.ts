@@ -31,19 +31,29 @@ export function useUserProfileSheetViewModel(userId: string | null) {
       return;
     }
 
+    let cancelled = false;
+
     setLoading(true);
     setError(null);
 
     Promise.all([userRepo.getPublicProfile(userId), followRepo.getFollowStatus(userId)])
       .then(([profileData, status]) => {
+        if (cancelled) return;
         setProfile(profileData);
         setFollowStatus(status);
       })
       .catch((e) => {
+        if (cancelled) return;
         logger.warn('UserProfileSheet', 'Failed to fetch profile', e);
         setError(i18n.t('userProfile.profileSheet.errorLoading'));
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [userId, isCurrentUser]);
 
   const handleBlock = useCallback(

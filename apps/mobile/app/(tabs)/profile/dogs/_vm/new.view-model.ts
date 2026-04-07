@@ -88,16 +88,19 @@ const initialState: DogFormState = {
 
 // -- Reducer --
 
-type DogFormAction = {
-  type: 'SET_FIELD';
-  field: keyof DogFormState;
-  value: DogFormState[keyof DogFormState];
-};
+type DogFormAction =
+  | { type: 'SET_FIELD'; field: keyof DogFormState; value: DogFormState[keyof DogFormState] }
+  | { type: 'ADD_PENDING_PHOTO'; photo: PendingPhoto }
+  | { type: 'REMOVE_PENDING_PHOTO'; index: number };
 
 function formReducer(state: DogFormState, action: DogFormAction): DogFormState {
   switch (action.type) {
     case 'SET_FIELD':
       return { ...state, [action.field]: action.value };
+    case 'ADD_PENDING_PHOTO':
+      return { ...state, pendingPhotos: [...state.pendingPhotos, action.photo] };
+    case 'REMOVE_PENDING_PHOTO':
+      return { ...state, pendingPhotos: state.pendingPhotos.filter((_, i) => i !== action.index) };
     default:
       return state;
   }
@@ -333,24 +336,12 @@ export function useNewDogViewModel() {
     }
 
     const contentType = asset.mimeType ?? 'image/jpeg';
-    const photo: PendingPhoto = { uri: asset.uri, contentType, fileSize };
-    dispatch({
-      type: 'SET_FIELD',
-      field: 'pendingPhotos',
-      value: [...state.pendingPhotos, photo],
-    });
-  }, [state.pendingPhotos]);
+    dispatch({ type: 'ADD_PENDING_PHOTO', photo: { uri: asset.uri, contentType, fileSize } });
+  }, [state.pendingPhotos.length]);
 
-  const removePendingPhoto = useCallback(
-    (index: number) => {
-      dispatch({
-        type: 'SET_FIELD',
-        field: 'pendingPhotos',
-        value: state.pendingPhotos.filter((_, i) => i !== index),
-      });
-    },
-    [state.pendingPhotos],
-  );
+  const removePendingPhoto = useCallback((index: number) => {
+    dispatch({ type: 'REMOVE_PENDING_PHOTO', index });
+  }, []);
 
   const analyzePhoto = useCallback(async () => {
     const photo = await pickPhotoFromLibrary();
@@ -416,6 +407,7 @@ export function useNewDogViewModel() {
     try {
       const { dog } = await dogRepo.create(result.data);
 
+      let failedUploads = 0;
       for (const photo of state.pendingPhotos) {
         try {
           const contentType = photo.contentType as MediaContentType;
@@ -427,11 +419,20 @@ export function useNewDogViewModel() {
           await uploadToPresignedUrl(uploadUrl, photo.uri, contentType);
           await mediaRepo.confirmDogPhoto(dog.id, key);
         } catch (e) {
+          failedUploads++;
           logger.warn('NewDog', `Failed to upload photo: ${photo.uri}`, e);
         }
       }
 
       addDog(dog);
+
+      if (failedUploads > 0) {
+        Alert.alert(
+          i18n.t('dogForm.photoUploadPartialTitle'),
+          i18n.t('dogForm.photoUploadPartialMessage', { count: failedUploads }),
+        );
+      }
+
       router.replace('/(tabs)/profile');
     } catch (e) {
       setApiError(handleApiError(e, 'createDog').message);

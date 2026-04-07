@@ -373,7 +373,7 @@ export function buildDogRepo(overrides: Partial<DogRepository> = {}): DogReposit
     update: vi.fn(),
     softDelete: vi.fn(),
     findPhotos: vi.fn(),
-    findPhotosByDogIds: vi.fn().mockResolvedValue([]),
+    findPrimaryApprovedPhotosByDogIds: vi.fn().mockResolvedValue([]),
     countPhotos: vi.fn(),
     addPhoto: vi.fn(),
     findPhoto: vi.fn(),

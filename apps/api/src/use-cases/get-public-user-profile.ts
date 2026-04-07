@@ -32,7 +32,7 @@ export function createGetPublicUserProfile({ userRepo, dogRepo, followRepo }: De
     }
 
     const dogs = await dogRepo.findByOwner(targetUserId, true);
-    const allPhotos = await dogRepo.findPhotosByDogIds(dogs.map((d) => d.id));
+    const primaryPhotos = await dogRepo.findPrimaryApprovedPhotosByDogIds(dogs.map((d) => d.id));
 
     return succeed({
       id: user.id,
@@ -46,10 +46,7 @@ export function createGetPublicUserProfile({ userRepo, dogRepo, followRepo }: De
         name: d.name,
         breed: d.breed,
         size: d.size,
-        avatarUrl:
-          allPhotos.find(
-            (p) => p.dogId === d.id && p.isPrimary && p.moderationStatus === 'approved',
-          )?.url ?? null,
+        avatarUrl: primaryPhotos.find((p) => p.dogId === d.id)?.url ?? null,
       })),
     });
   };

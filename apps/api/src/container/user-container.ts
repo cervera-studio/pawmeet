@@ -2,7 +2,6 @@
 
 import { enqueueGdprExport } from '../jobs/queues/index.js';
 import { createCompleteOnboarding } from '../use-cases/complete-onboarding.js';
-import { createGetPublicUserProfile } from '../use-cases/get-public-user-profile.js';
 import { createConfirmAvatar } from '../use-cases/confirm-avatar.js';
 import { createDeleteAccount } from '../use-cases/delete-account.js';
 import { createDeleteAvatar } from '../use-cases/delete-avatar.js';
@@ -10,6 +9,7 @@ import { createExportUserData } from '../use-cases/export-user-data.js';
 import { createFindNearby } from '../use-cases/find-nearby.js';
 import { createGetConsents } from '../use-cases/get-consents.js';
 import { createGetProfile } from '../use-cases/get-profile.js';
+import { createGetPublicUserProfile } from '../use-cases/get-public-user-profile.js';
 import { createReactivateAccount } from '../use-cases/reactivate-account.js';
 import { createRegisterPushToken } from '../use-cases/register-push-token.js';
 import { createRequestDataExport } from '../use-cases/request-data-export.js';

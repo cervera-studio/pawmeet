@@ -1,8 +1,8 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import { useState } from 'react';
 import type { TextInputProps } from 'react-native';
 import { Pressable, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'nativewind';
 import { Input } from '@/components/ui/Input';
 
 interface FormFieldProps extends TextInputProps {

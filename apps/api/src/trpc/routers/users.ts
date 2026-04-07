@@ -120,12 +120,12 @@ export function createUsersRouter(deps: typeof userDeps) {
     getPublicProfile: protectedProcedure
       .input(getPublicProfileSchema)
       .query(async ({ ctx, input }) => {
-        const result = unwrapResult(
-          await deps.getPublicUserProfile(ctx.userId, input.userId),
-        );
-        trackEvent('social_profile_viewed', ctx.userId, {
-          targetUserId: input.userId,
-        });
+        const result = unwrapResult(await deps.getPublicUserProfile(ctx.userId, input.userId));
+        if (ctx.userId !== input.userId) {
+          trackEvent('social_profile_viewed', ctx.userId, {
+            targetUserId: input.userId,
+          });
+        }
         return result;
       }),
 

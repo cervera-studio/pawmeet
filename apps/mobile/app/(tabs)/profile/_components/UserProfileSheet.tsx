@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Pressable, Text, useColorScheme, View } from 'react-native';
 import { FollowButton } from '@/components/follow-button';
 import { Avatar } from '@/components/ui/Avatar';
+import i18n from '@/lib/i18n';
 import { useUserProfileSheetViewModel } from './_vm/user-profile-sheet.view-model';
 
 export interface UserProfileSheetRef {
@@ -45,8 +46,12 @@ export function UserProfileSheet({ ref, onDismiss }: UserProfileSheetProps) {
 
   const formatDate = (date: Date | string) => {
     const d = typeof date === 'string' ? new Date(date) : date;
-    return d.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' });
+    return d.toLocaleDateString(i18n.language, { month: 'short', year: 'numeric' });
   };
+
+  const dismiss = useCallback(() => {
+    bottomSheetRef.current?.dismiss();
+  }, []);
 
   return (
     <BottomSheetModal
@@ -75,7 +80,7 @@ export function UserProfileSheet({ ref, onDismiss }: UserProfileSheetProps) {
           </View>
         )}
 
-        {!vm.loading && !vm.error && vm.profile && (
+        {!(vm.loading || vm.error) && vm.profile && (
           <View>
             {/* Avatar + Name */}
             <View className="items-center pt-2 pb-4">
@@ -168,7 +173,7 @@ export function UserProfileSheet({ ref, onDismiss }: UserProfileSheetProps) {
               <View className="flex-row items-center gap-3 pt-2">
                 <FollowButton userId={selectedUserId} size="md" />
                 <Pressable
-                  onPress={vm.handleBlock}
+                  onPress={() => vm.handleBlock(dismiss)}
                   className="rounded-xl border border-red-300 px-5 py-2.5"
                 >
                   <Text className="text-sm font-semibold text-red-500">{t('common.block')}</Text>

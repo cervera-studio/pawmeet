@@ -275,9 +275,9 @@ export function useNewDogViewModel() {
   const setField = useCallback(<K extends keyof DogFormState>(field: K, value: DogFormState[K]) => {
     dispatch({ type: 'SET_FIELD', field, value: value as DogFormState[keyof DogFormState] });
     setErrors((prev) => {
-      if (!prev[field as string]) return prev;
+      if (!prev[field]) return prev;
       const next = { ...prev };
-      delete next[field as string];
+      delete next[field];
       return next;
     });
   }, []);

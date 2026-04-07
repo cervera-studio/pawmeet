@@ -1,24 +1,19 @@
-import type { PublicUserProfile } from '@pawmeet/types';
 import { logger } from '@pawmeet/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { container } from 'tsyringe';
 import { useAuth } from '@/hooks/useAuth';
 import i18n from '@/lib/i18n';
-import { api } from '@/lib/trpc';
 import type { FollowStatus } from '@/repositories/interfaces/follow-repository';
-import { FOLLOW_REPOSITORY } from '@/repositories/tokens';
+import type { PublicUserProfile } from '@/repositories/interfaces/user-repository';
+import { FOLLOW_REPOSITORY, USER_REPOSITORY } from '@/repositories/tokens';
 
-/** tRPC serializes Date as string over the wire. */
-type SerializedPublicUserProfile = Omit<PublicUserProfile, 'createdAt'> & {
-  createdAt: string;
-};
-
+const userRepo = container.resolve(USER_REPOSITORY);
 const followRepo = container.resolve(FOLLOW_REPOSITORY);
 
 export function useUserProfileSheetViewModel(userId: string | null) {
   const { user: currentUser } = useAuth();
-  const [profile, setProfile] = useState<SerializedPublicUserProfile | null>(null);
+  const [profile, setProfile] = useState<PublicUserProfile | null>(null);
   const [followStatus, setFollowStatus] = useState<FollowStatus>({
     isFollowing: false,
     isFollowedByMe: false,
@@ -39,7 +34,7 @@ export function useUserProfileSheetViewModel(userId: string | null) {
     setLoading(true);
     setError(null);
 
-    Promise.all([api.users.getPublicProfile.query({ userId }), followRepo.getFollowStatus(userId)])
+    Promise.all([userRepo.getPublicProfile(userId), followRepo.getFollowStatus(userId)])
       .then(([profileData, status]) => {
         setProfile(profileData);
         setFollowStatus(status);
@@ -51,32 +46,39 @@ export function useUserProfileSheetViewModel(userId: string | null) {
       .finally(() => setLoading(false));
   }, [userId, isCurrentUser]);
 
-  const handleBlock = useCallback(() => {
-    if (!userId) return;
+  const handleBlock = useCallback(
+    (onBlocked?: () => void) => {
+      if (!userId) return;
 
-    Alert.alert(
-      i18n.t('userProfile.blockTitle'),
-      i18n.t('userProfile.blockMessage', {
-        name: profile?.displayName || i18n.t('common.user'),
-      }),
-      [
-        { text: i18n.t('common.cancel'), style: 'cancel' },
-        {
-          text: i18n.t('userProfile.blockButton'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await followRepo.block(userId);
-              Alert.alert(i18n.t('userProfile.blockedTitle'), i18n.t('userProfile.blockedMessage'));
-            } catch (e) {
-              logger.warn('UserProfileSheet', 'Failed to block user', e);
-              Alert.alert(i18n.t('common.error'), i18n.t('userProfile.blockError'));
-            }
+      Alert.alert(
+        i18n.t('userProfile.blockTitle'),
+        i18n.t('userProfile.blockMessage', {
+          name: profile?.displayName || i18n.t('common.user'),
+        }),
+        [
+          { text: i18n.t('common.cancel'), style: 'cancel' },
+          {
+            text: i18n.t('userProfile.blockButton'),
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await followRepo.block(userId);
+                Alert.alert(
+                  i18n.t('userProfile.blockedTitle'),
+                  i18n.t('userProfile.blockedMessage'),
+                );
+                onBlocked?.();
+              } catch (e) {
+                logger.warn('UserProfileSheet', 'Failed to block user', e);
+                Alert.alert(i18n.t('common.error'), i18n.t('userProfile.blockError'));
+              }
+            },
           },
-        },
-      ],
-    );
-  }, [userId, profile?.displayName]);
+        ],
+      );
+    },
+    [userId, profile?.displayName],
+  );
 
   return {
     profile,

@@ -88,7 +88,7 @@ export function configureGoogleSignIn(): void {
  */
 export async function signInWithGoogle(): Promise<SocialAuthResult> {
   if (!GoogleSignin) {
-    throw new Error('Google Sign In non disponibile su questo dispositivo');
+    throw new Error('Google Sign In is not available on this device');
   }
 
   if (Platform.OS === 'android') {

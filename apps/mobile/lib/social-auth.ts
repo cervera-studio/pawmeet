@@ -1,8 +1,15 @@
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
-import { Platform } from 'react-native';
+import { Platform, TurboModuleRegistry } from 'react-native';
+
+export const isGoogleSignInAvailable = TurboModuleRegistry.get('RNGoogleSignin') != null;
+
+const GoogleSignin = isGoogleSignInAvailable
+  ? (
+      require('@react-native-google-signin/google-signin') as typeof import('@react-native-google-signin/google-signin')
+    ).GoogleSignin
+  : null;
 
 export interface SocialAuthResult {
   provider: 'apple' | 'google';
@@ -39,7 +46,7 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
   });
 
   if (!credential.identityToken) {
-    throw new Error('Apple Sign In: nessun identity token ricevuto');
+    throw new Error('Apple Sign In: no identity token received');
   }
 
   const payload = decodeJwtPayload(credential.identityToken);
@@ -64,6 +71,7 @@ export async function signInWithApple(): Promise<SocialAuthResult> {
  * Configure Google Sign-In. Call once at app startup.
  */
 export function configureGoogleSignIn(): void {
+  if (!GoogleSignin) return;
   const webClientId = Constants.expoConfig?.extra?.googleWebClientId ?? '';
   const iosClientId = Constants.expoConfig?.extra?.googleIosClientId ?? '';
   if (!webClientId) return;
@@ -79,6 +87,10 @@ export function configureGoogleSignIn(): void {
  * Returns an idToken to send to the backend for verification.
  */
 export async function signInWithGoogle(): Promise<SocialAuthResult> {
+  if (!GoogleSignin) {
+    throw new Error('Google Sign In is not available on this device');
+  }
+
   if (Platform.OS === 'android') {
     await GoogleSignin.hasPlayServices();
   }
@@ -86,7 +98,7 @@ export async function signInWithGoogle(): Promise<SocialAuthResult> {
   const response = await GoogleSignin.signIn();
 
   if (response.type !== 'success' || !response.data.idToken) {
-    throw new Error('Google Sign In: autenticazione annullata');
+    throw new Error('Google Sign In: authentication cancelled');
   }
 
   const { user, idToken } = response.data;

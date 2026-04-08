@@ -9,6 +9,7 @@ import { createExportUserData } from '../use-cases/export-user-data.js';
 import { createFindNearby } from '../use-cases/find-nearby.js';
 import { createGetConsents } from '../use-cases/get-consents.js';
 import { createGetProfile } from '../use-cases/get-profile.js';
+import { createGetPublicUserProfile } from '../use-cases/get-public-user-profile.js';
 import { createReactivateAccount } from '../use-cases/reactivate-account.js';
 import { createRegisterPushToken } from '../use-cases/register-push-token.js';
 import { createRequestDataExport } from '../use-cases/request-data-export.js';
@@ -39,6 +40,7 @@ import {
 
 export const userDeps = {
   getProfile: createGetProfile({ userRepo }),
+  getPublicUserProfile: createGetPublicUserProfile({ userRepo, dogRepo, followRepo }),
   updateLocation: createUpdateLocation({ userRepo }),
   updatePreferences: createUpdatePreferences({ userRepo }),
   findNearby: createFindNearby({ userRepo, followRepo }),

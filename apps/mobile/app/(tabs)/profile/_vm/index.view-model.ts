@@ -53,7 +53,7 @@ export function useProfileViewModel() {
   };
 
   const navigateToAddDog = () => {
-    router.push('/(tabs)/profile/dogs/new');
+    router.push('/(modals)/add-dog');
   };
 
   const navigateToDogDetail = (dogId: string) => {

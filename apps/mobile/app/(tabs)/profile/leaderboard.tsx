@@ -1,7 +1,10 @@
 import type { LeaderboardEntry } from '@pawmeet/types';
 import { Stack } from 'expo-router';
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserProfileSheet, type UserProfileSheetRef } from './_components/UserProfileSheet';
 import { useLeaderboardViewModel } from './_vm/leaderboard.view-model';
 
 const SKELETON_KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -40,11 +43,17 @@ function RankBadge({ rank }: { rank: number }) {
 function LeaderboardRow({
   entry,
   isCurrentUser,
+  onPress,
+  youLabel,
+  levelLabel,
 }: {
   entry: LeaderboardEntry;
   isCurrentUser: boolean;
+  onPress?: () => void;
+  youLabel: string;
+  levelLabel: string;
 }) {
-  return (
+  const content = (
     <View
       className={`mb-2 flex-row items-center rounded-2xl p-4 shadow-sm ${
         isCurrentUser
@@ -67,11 +76,9 @@ function LeaderboardRow({
           }`}
         >
           {entry.displayName}
-          {isCurrentUser ? ' (tu)' : ''}
+          {isCurrentUser ? ` ${youLabel}` : ''}
         </Text>
-        <Text className="text-xs text-neutral-500 dark:text-neutral-500">
-          Livello: {entry.level}
-        </Text>
+        <Text className="text-xs text-neutral-500 dark:text-neutral-500">{levelLabel}</Text>
       </View>
       <View className="items-end">
         <Text className="text-lg font-bold text-neutral-900 dark:text-[#F5F5F7]">
@@ -81,20 +88,26 @@ function LeaderboardRow({
       </View>
     </View>
   );
+
+  if (isCurrentUser || !onPress) return content;
+
+  return <Pressable onPress={onPress}>{content}</Pressable>;
 }
 
 // ── Main Screen ─────────────────────────────────────────────────────────────
 
 export default function LeaderboardScreen() {
+  const { t } = useTranslation();
   const vm = useLeaderboardViewModel();
+  const sheetRef = useRef<UserProfileSheetRef>(null);
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-[#2C2C2E]" edges={['bottom']}>
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Classifica',
-          headerBackTitle: 'Gamification',
+          title: t('gamification.leaderboard'),
+          headerBackTitle: t('gamification.leaderboardBack'),
         }}
       />
 
@@ -115,7 +128,7 @@ export default function LeaderboardScreen() {
                   vm.type === 'weekly' ? 'text-white' : 'text-neutral-700 dark:text-[#D1D1D6]'
                 }`}
               >
-                Settimanale
+                {t('gamification.leaderboardWeekly')}
               </Text>
             </Pressable>
             <Pressable
@@ -129,7 +142,7 @@ export default function LeaderboardScreen() {
                   vm.type === 'allTime' ? 'text-white' : 'text-neutral-700 dark:text-[#D1D1D6]'
                 }`}
               >
-                Sempre
+                {t('gamification.leaderboardAllTime')}
               </Text>
             </Pressable>
           </View>
@@ -138,14 +151,23 @@ export default function LeaderboardScreen() {
           <FlatList
             data={vm.entries}
             keyExtractor={(item) => item.userId}
-            renderItem={({ item }) => (
-              <LeaderboardRow entry={item} isCurrentUser={item.userId === vm.currentUserId} />
-            )}
+            renderItem={({ item }) => {
+              const isMe = item.userId === vm.currentUserId;
+              return (
+                <LeaderboardRow
+                  entry={item}
+                  isCurrentUser={isMe}
+                  onPress={isMe ? undefined : () => sheetRef.current?.present(item.userId)}
+                  youLabel={t('gamification.leaderboardYou')}
+                  levelLabel={t('gamification.leaderboardLevel', { level: item.level })}
+                />
+              );
+            }}
             ListEmptyComponent={
               <View className="items-center py-12">
                 <Text className="text-4xl mb-3">{'\u{1F3C6}'}</Text>
                 <Text className="text-neutral-500 dark:text-neutral-500 text-center">
-                  La classifica è ancora vuota.{'\n'}Inizia a passeggiare per salire in classifica!
+                  {t('gamification.leaderboardEmpty')}
                 </Text>
               </View>
             }
@@ -153,6 +175,8 @@ export default function LeaderboardScreen() {
           />
         </View>
       )}
+
+      <UserProfileSheet ref={sheetRef} />
     </SafeAreaView>
   );
 }

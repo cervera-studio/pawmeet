@@ -52,6 +52,7 @@ export type {
   LocationUpdateResult,
   NearbyUser,
   PrivacyPrefs,
+  PublicUserProfile,
   UserRepository,
 } from './user-repository';
 export type { ProposeWalkInput, WalkRepository } from './walk-repository';

@@ -488,6 +488,12 @@
       "xpToNextLevel": "{{count}} XP to next level",
       "leaderboard": "Leaderboard",
       "leaderboardSubtitle": "Compare your points with others",
+      "leaderboardWeekly": "Weekly",
+      "leaderboardAllTime": "All time",
+      "leaderboardLevel": "Level: {{level}}",
+      "leaderboardYou": "(you)",
+      "leaderboardEmpty": "The leaderboard is still empty.\nStart walking to climb the ranks!",
+      "leaderboardBack": "Gamification",
       "challenges": "Challenges",
       "challengesSubtitle": "Weekly challenges to earn XP",
       "achievements": "Achievements",
@@ -738,7 +744,7 @@
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Password",
       "confirmPasswordPlaceholder": "Confirm password",
-      "dateOfBirthPlaceholder": "Date of birth (YYYY-MM-DD)",
+      "dateOfBirthPlaceholder": "Date of birth",
       "registerButton": "Sign up",
       "registering": "Signing up...",
       "terms": "By signing up you agree to our Terms of Service and Privacy Policy",
@@ -751,7 +757,7 @@
     "ageGate": {
       "title": "Age verification",
       "description": "To continue using PawMeet, enter your date of birth. You must be at least {{age}} years old.",
-      "dateOfBirthPlaceholder": "Date of birth (YYYY-MM-DD)",
+      "dateOfBirthPlaceholder": "Date of birth",
       "submitButton": "Confirm",
       "submitting": "Submitting...",
       "invalidDate": "Invalid date"
@@ -770,6 +776,8 @@
   "dogForm": {
     "newTitle": "New dog",
     "editTitle": "Edit {{name}}",
+    "photoUploadPartialTitle": "Photos not uploaded",
+    "photoUploadPartialMessage": "The profile was created but {{count}} photo(s) failed to upload. You can add them later.",
     "step1Title": "What's your dog's name?",
     "step2Title": "Tell us about their personality",
     "step3Title": "Walk preferences",
@@ -1004,7 +1012,15 @@
     "blockedTitle": "User blocked",
     "blockedMessage": "You will no longer see this user.",
     "blockError": "Unable to block the user. Please try again.",
-    "followError": "Unable to complete the action. Please try again."
+    "followError": "Unable to complete the action. Please try again.",
+    "profileSheet": {
+      "followers": "Followers",
+      "following": "Following",
+      "memberSince": "Member since",
+      "dogs": "Dogs",
+      "noDogs": "No dogs registered",
+      "errorLoading": "Failed to load profile"
+    }
   },
   "searchUsers": {
     "placeholder": "Search users...",

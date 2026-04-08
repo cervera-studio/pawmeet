@@ -488,6 +488,12 @@
       "xpToNextLevel": "{{count}} XP al siguiente nivel",
       "leaderboard": "Clasificación",
       "leaderboardSubtitle": "Compara tus puntos con otros",
+      "leaderboardWeekly": "Semanal",
+      "leaderboardAllTime": "Siempre",
+      "leaderboardLevel": "Nivel: {{level}}",
+      "leaderboardYou": "(tú)",
+      "leaderboardEmpty": "La clasificación está vacía.\n¡Empieza a pasear para subir en la tabla!",
+      "leaderboardBack": "Gamification",
       "challenges": "Desafíos",
       "challengesSubtitle": "Desafíos semanales para ganar XP",
       "achievements": "Logros",
@@ -738,7 +744,7 @@
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Contraseña",
       "confirmPasswordPlaceholder": "Confirmar contraseña",
-      "dateOfBirthPlaceholder": "Fecha de nacimiento (AAAA-MM-DD)",
+      "dateOfBirthPlaceholder": "Fecha de nacimiento",
       "registerButton": "Registrarse",
       "registering": "Registrando...",
       "terms": "Al registrarte aceptas nuestros Términos de Servicio y la Política de Privacidad",
@@ -751,7 +757,7 @@
     "ageGate": {
       "title": "Verificación de edad",
       "description": "Para seguir usando PawMeet, introduce tu fecha de nacimiento. Debes tener al menos {{age}} años.",
-      "dateOfBirthPlaceholder": "Fecha de nacimiento (AAAA-MM-DD)",
+      "dateOfBirthPlaceholder": "Fecha de nacimiento",
       "submitButton": "Confirmar",
       "submitting": "Enviando...",
       "invalidDate": "Fecha no válida"
@@ -770,6 +776,8 @@
   "dogForm": {
     "newTitle": "Nuevo perro",
     "editTitle": "Editar {{name}}",
+    "photoUploadPartialTitle": "Fotos no subidas",
+    "photoUploadPartialMessage": "El perfil fue creado pero {{count}} foto(s) no se subieron. Puedes agregarlas después.",
     "step1Title": "¿Cómo se llama tu perro?",
     "step2Title": "Cuéntanos sobre su carácter",
     "step3Title": "Preferencias de paseo",
@@ -1004,7 +1012,15 @@
     "blockedTitle": "Usuario bloqueado",
     "blockedMessage": "Ya no verás a este usuario.",
     "blockError": "No se pudo bloquear al usuario. Inténtalo de nuevo.",
-    "followError": "No se pudo completar la acción. Inténtalo de nuevo."
+    "followError": "No se pudo completar la acción. Inténtalo de nuevo.",
+    "profileSheet": {
+      "followers": "Seguidores",
+      "following": "Siguiendo",
+      "memberSince": "Miembro desde",
+      "dogs": "Perros",
+      "noDogs": "Ningún perro registrado",
+      "errorLoading": "Error al cargar el perfil"
+    }
   },
   "searchUsers": {
     "placeholder": "Buscar usuarios...",

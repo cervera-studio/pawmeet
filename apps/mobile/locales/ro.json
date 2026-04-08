@@ -488,6 +488,12 @@
       "xpToNextLevel": "{{count}} XP până la nivelul următor",
       "leaderboard": "Clasament",
       "leaderboardSubtitle": "Compară punctele tale cu ale altora",
+      "leaderboardWeekly": "Săptămânal",
+      "leaderboardAllTime": "Tot timpul",
+      "leaderboardLevel": "Nivel: {{level}}",
+      "leaderboardYou": "(tu)",
+      "leaderboardEmpty": "Clasamentul este gol.\nÎncepe să te plimbi pentru a urca în clasament!",
+      "leaderboardBack": "Gamification",
       "challenges": "Provocări",
       "challengesSubtitle": "Provocări săptămânale pentru a câștiga XP",
       "achievements": "Realizări",
@@ -738,7 +744,7 @@
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Parolă",
       "confirmPasswordPlaceholder": "Confirmă parola",
-      "dateOfBirthPlaceholder": "Data nașterii (AAAA-LL-ZZ)",
+      "dateOfBirthPlaceholder": "Data nașterii",
       "registerButton": "Înregistrează-te",
       "registering": "Înregistrare...",
       "terms": "Prin înregistrare accepți Termenii și Condițiile și Politica de Confidențialitate",
@@ -751,7 +757,7 @@
     "ageGate": {
       "title": "Verificare vârstă",
       "description": "Pentru a continua să folosești PawMeet, introdu data ta de naștere. Trebuie să ai cel puțin {{age}} ani (D.Lgs. 101/2018).",
-      "dateOfBirthPlaceholder": "Data nașterii (AAAA-LL-ZZ)",
+      "dateOfBirthPlaceholder": "Data nașterii",
       "submitButton": "Confirmă",
       "submitting": "Se trimite...",
       "invalidDate": "Dată invalidă"
@@ -770,6 +776,8 @@
   "dogForm": {
     "newTitle": "Câine nou",
     "editTitle": "Editează {{name}}",
+    "photoUploadPartialTitle": "Fotografii neîncărcate",
+    "photoUploadPartialMessage": "Profilul a fost creat, dar {{count}} fotografie/fotografii nu au fost încărcate. Le poți adăuga mai târziu.",
     "step1Title": "Cum se numește câinele tău?",
     "step2Title": "Spune-ne despre caracterul lui",
     "step3Title": "Preferințe de plimbare",
@@ -1004,7 +1012,15 @@
     "blockedTitle": "Utilizator blocat",
     "blockedMessage": "Nu vei mai vedea acest utilizator.",
     "blockError": "Utilizatorul nu a putut fi blocat. Reîncearcă.",
-    "followError": "Acțiunea nu a putut fi finalizată. Reîncearcă."
+    "followError": "Acțiunea nu a putut fi finalizată. Reîncearcă.",
+    "profileSheet": {
+      "followers": "Urmăritori",
+      "following": "Urmărești",
+      "memberSince": "Membru din",
+      "dogs": "Câini",
+      "noDogs": "Niciun câine înregistrat",
+      "errorLoading": "Eroare la încărcarea profilului"
+    }
   },
   "searchUsers": {
     "placeholder": "Caută utilizatori...",

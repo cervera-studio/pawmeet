@@ -414,7 +414,7 @@ async function seed() {
         isActive: true,
         dateOfBirth: randomDate(1975, 2004),
         locale: 'it',
-        lastLoginAt: new Date(Date.now() - randInt(0, 7 * 86400000)),
+        lastLoginAt: new Date(Date.now() - randInt(0, 7 * 86_400_000)),
         termsAcceptedAt: new Date(),
         onboardingCompletedAt: new Date(),
       })

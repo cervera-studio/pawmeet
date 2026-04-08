@@ -35,5 +35,8 @@ export function createTrpcUserRepository(api: ApiClient): UserRepository {
     async updatePrivacyPrefs(prefs: Partial<PrivacyPrefs>) {
       return api.users.updatePrivacyPrefs.mutate(prefs);
     },
+    async getPublicProfile(userId) {
+      return api.users.getPublicProfile.query({ userId });
+    },
   };
 }

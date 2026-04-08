@@ -442,6 +442,12 @@
       "xpToNextLevel": "{{count}} XP al prossimo livello",
       "leaderboard": "Classifica",
       "leaderboardSubtitle": "Confronta i tuoi punti con gli altri",
+      "leaderboardWeekly": "Settimanale",
+      "leaderboardAllTime": "Sempre",
+      "leaderboardLevel": "Livello: {{level}}",
+      "leaderboardYou": "(tu)",
+      "leaderboardEmpty": "La classifica è ancora vuota.\nInizia a passeggiare per salire in classifica!",
+      "leaderboardBack": "Gamification",
       "challenges": "Sfide",
       "challengesSubtitle": "Sfide settimanali per guadagnare XP",
       "achievements": "Obiettivi",
@@ -738,7 +744,7 @@
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Password",
       "confirmPasswordPlaceholder": "Conferma password",
-      "dateOfBirthPlaceholder": "Data di nascita (AAAA-MM-GG)",
+      "dateOfBirthPlaceholder": "Data di nascita",
       "registerButton": "Registrati",
       "registering": "Registrazione...",
       "terms": "Registrandoti accetti i nostri Termini di Servizio e la Privacy Policy",
@@ -751,7 +757,7 @@
     "ageGate": {
       "title": "Verifica età",
       "description": "Per continuare a usare PawMeet, inserisci la tua data di nascita. Devi avere almeno {{age}} anni (D.Lgs. 101/2018).",
-      "dateOfBirthPlaceholder": "Data di nascita (AAAA-MM-GG)",
+      "dateOfBirthPlaceholder": "Data di nascita",
       "submitButton": "Conferma",
       "submitting": "Invio...",
       "invalidDate": "Data non valida"
@@ -770,6 +776,8 @@
   "dogForm": {
     "newTitle": "Nuovo cane",
     "editTitle": "Modifica {{name}}",
+    "photoUploadPartialTitle": "Foto non caricate",
+    "photoUploadPartialMessage": "Il profilo è stato creato ma {{count}} foto non sono state caricate. Puoi aggiungerle in seguito.",
     "step1Title": "Come si chiama il tuo cane?",
     "step2Title": "Parlaci del suo carattere",
     "step3Title": "Preferenze passeggiata",
@@ -1004,7 +1012,15 @@
     "blockedTitle": "Utente bloccato",
     "blockedMessage": "Non vedrai più questo utente.",
     "blockError": "Impossibile bloccare l'utente. Riprova.",
-    "followError": "Impossibile completare l'azione. Riprova."
+    "followError": "Impossibile completare l'azione. Riprova.",
+    "profileSheet": {
+      "followers": "Follower",
+      "following": "Seguiti",
+      "memberSince": "Membro dal",
+      "dogs": "Cani",
+      "noDogs": "Nessun cane registrato",
+      "errorLoading": "Errore nel caricamento del profilo"
+    }
   },
   "searchUsers": {
     "placeholder": "Cerca utenti...",

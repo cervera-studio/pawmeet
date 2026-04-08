@@ -56,3 +56,22 @@ export interface User {
 
 /** User data without sensitive fields (passwordHash, pushToken). */
 export type SafeUser = Omit<User, 'passwordHash' | 'pushToken'>;
+
+/** Public profile visible to other authenticated users. */
+export interface PublicUserProfile {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  followersCount: number;
+  followingCount: number;
+  createdAt: Date;
+  dogs: PublicUserDog[];
+}
+
+export interface PublicUserDog {
+  id: string;
+  name: string;
+  breed: string;
+  size: string;
+  avatarUrl: string | null;
+}

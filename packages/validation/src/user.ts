@@ -87,3 +87,9 @@ export const reactivateAccountSchema = z.object({
 });
 
 export type ReactivateAccountInput = z.infer<typeof reactivateAccountSchema>;
+
+export const getPublicProfileSchema = z.object({
+  userId: z.string().uuid(),
+});
+
+export type GetPublicProfileInput = z.infer<typeof getPublicProfileSchema>;

@@ -181,7 +181,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* ── Gamification XP bar ── */}
-        {vm.xpSummary ? (
+        {vm.xpSummary && vm.dogs.length > 0 ? (
           <Pressable
             onPress={vm.navigateToGamification}
             className="mb-5 rounded-2xl bg-gray-50 dark:bg-[#2C2C2E] p-4"

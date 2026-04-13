@@ -106,9 +106,22 @@ export function handleApiError(error: unknown, context: string): AppErrorResult 
     };
   }
 
-  // 4. Unknown errors — never expose raw message
+  // 4. HTTP errors from non-tRPC-shaped responses (e.g. Hono global onError
+  //    returning { error, errorId } on 5xx) — surface a server error instead of "unknown".
+  if (isHttpServerError(error)) {
+    logToSentry(error, context, 'error');
+    return { message: i18n.t('errors.server'), fieldErrors: {}, isRetryable: true };
+  }
+
+  // 5. Unknown errors — never expose raw message
   logToSentry(error, context, 'error');
   return { message: i18n.t('errors.unknown'), fieldErrors: {}, isRetryable: false };
+}
+
+function isHttpServerError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message;
+  return /\b5\d{2}\b/.test(msg) || msg.toLowerCase().includes('internal server error');
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

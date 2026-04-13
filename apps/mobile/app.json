@@ -98,7 +98,12 @@
       "expo-video",
       "@react-native-community/datetimepicker",
       "expo-build-properties",
-      "@react-native-google-signin/google-signin"
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.102633148388-7o6fvbtaanqmifbq109nt59n72vfo38v"
+        }
+      ]
     ],
     "extra": {
       "router": {},

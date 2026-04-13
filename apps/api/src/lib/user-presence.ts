@@ -3,9 +3,31 @@ import { redis } from './redis.js';
 const PRESENCE_TTL_SECONDS = 5 * 60; // 5 minutes
 const PRESENCE_KEY_PREFIX = 'user:active:';
 
+/**
+ * Dedup window: only refresh the Redis presence key at most once per userId
+ * within this interval. A user making 100 API calls in 60s produces 1 Redis
+ * write, not 100. TTL in Redis is 5min so refreshing every ~60s is sufficient
+ * to keep them marked active.
+ */
+const LOCAL_DEDUP_MS = 60 * 1000;
+const lastWriteByUser = new Map<string, number>();
+
 /** Mark a user as active (call on any API interaction). */
 export async function markUserActive(userId: string): Promise<void> {
-  await redis.set(`${PRESENCE_KEY_PREFIX}${userId}`, Date.now().toString(), {
+  const now = Date.now();
+  const last = lastWriteByUser.get(userId) ?? 0;
+  if (now - last < LOCAL_DEDUP_MS) return;
+  lastWriteByUser.set(userId, now);
+
+  // Opportunistic GC to prevent map growth in long-lived processes
+  if (lastWriteByUser.size > 10_000) {
+    const cutoff = now - LOCAL_DEDUP_MS;
+    for (const [uid, ts] of lastWriteByUser) {
+      if (ts < cutoff) lastWriteByUser.delete(uid);
+    }
+  }
+
+  await redis.set(`${PRESENCE_KEY_PREFIX}${userId}`, now.toString(), {
     ex: PRESENCE_TTL_SECONDS,
   });
 }

@@ -23,9 +23,17 @@ import type {
   WalkTime,
 } from '@pawmeet/types';
 import { Stack, useRouter } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BreedAutocomplete } from '@/components/BreedAutocomplete';
 import { ChipField } from '@/components/ChipField';
@@ -67,6 +75,77 @@ function StepIndicator({ step }: { step: number }) {
 function FieldError({ message }: { message: string | undefined }) {
   if (!message) return null;
   return <Text className="mt-1 px-1 text-sm text-red-500">{message}</Text>;
+}
+
+function BirthDateField({
+  value,
+  onChange,
+  error,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+}) {
+  const { t } = useTranslation();
+  // Year-only is the default when value looks like YYYY-01-01 with day === 1 and month === 1.
+  const looksLikeYearOnly = /^\d{4}-01-01$/.test(value);
+  const [yearOnly, setYearOnly] = useState(looksLikeYearOnly);
+
+  const toggle = () => {
+    setYearOnly((prev) => {
+      const next = !prev;
+      if (next) {
+        const year = value ? value.slice(0, 4) : '';
+        onChange(year.length === 4 ? `${year}-01-01` : '');
+      }
+      return next;
+    });
+  };
+
+  if (yearOnly) {
+    const yearText = value ? value.slice(0, 4) : '';
+    return (
+      <View>
+        <Input
+          placeholder={t('dogForm.fields.birthYear')}
+          value={yearText}
+          onChangeText={(v) => {
+            const year = v.replace(/[^0-9]/g, '').slice(0, 4);
+            if (year.length === 4) {
+              const n = Number(year);
+              const current = new Date().getFullYear();
+              if (n >= 1990 && n <= current) {
+                onChange(`${year}-01-01`);
+                return;
+              }
+            }
+            onChange(year ? `${year}-01-01` : '');
+          }}
+          keyboardType="number-pad"
+          maxLength={4}
+        />
+        <FieldError message={error} />
+        <Pressable onPress={toggle} className="mt-2">
+          <Text className="text-sm text-primary">{t('dogForm.fields.birthKnowFullDate')}</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <View>
+      <DatePickerField
+        value={value ? new Date(value) : null}
+        onChange={(date) => onChange(date.toISOString().split('T')[0] ?? '')}
+        placeholder={t('dogForm.fields.birthDate')}
+        error={error}
+        spacingClassName="mb-0"
+      />
+      <Pressable onPress={toggle} className="mt-2">
+        <Text className="text-sm text-primary">{t('dogForm.fields.birthKnowOnlyYear')}</Text>
+      </Pressable>
+    </View>
+  );
 }
 
 const NEUTERED_OPTIONS = [
@@ -158,12 +237,10 @@ function Step1BasicInfo({
           />
         )}
 
-        <DatePickerField
-          value={state.birthDate ? new Date(state.birthDate) : null}
-          onChange={(date) => setField('birthDate', date.toISOString().split('T')[0] ?? '')}
-          placeholder={t('dogForm.fields.birthDate')}
+        <BirthDateField
+          value={state.birthDate}
+          onChange={(v) => setField('birthDate', v)}
           error={errors.birthDate}
-          spacingClassName="mb-0"
         />
       </FormSection>
 

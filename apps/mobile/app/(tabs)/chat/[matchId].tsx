@@ -81,6 +81,13 @@ export default function ChatConversationScreen() {
           className="flex-1"
           keyboardVerticalOffset={headerHeight}
         >
+          {/* Privacy notice: explains why screenshots are blocked */}
+          <View className="border-b border-gray-100 dark:border-[#38383A] bg-gray-50 dark:bg-[#2C2C2E] px-4 py-2">
+            <Text className="text-center text-xs text-gray-500 dark:text-neutral-400">
+              {t('chat.screenshotPrivacyNotice')}
+            </Text>
+          </View>
+
           {/* Search bar */}
           {vm.searchActive && (
             <View className="border-b border-gray-100 dark:border-[#38383A] px-4 py-2">

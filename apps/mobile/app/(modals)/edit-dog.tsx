@@ -351,19 +351,19 @@ export default function EditDogScreen() {
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
           >
-          {vm.apiError ? (
-            <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
-              <Text className="text-sm text-red-600 dark:text-red-400">{vm.apiError}</Text>
-            </View>
-          ) : null}
+            {vm.apiError ? (
+              <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
+                <Text className="text-sm text-red-600 dark:text-red-400">{vm.apiError}</Text>
+              </View>
+            ) : null}
 
-          <EditFormSections vm={vm as EditVM & { form: Form }} />
+            <EditFormSections vm={vm as EditVM & { form: Form }} />
 
-          <Button
-            onPress={vm.handleSave}
-            label={vm.saving ? t('dogForm.saving') : t('dogForm.saveChanges')}
-            disabled={vm.saving}
-          />
+            <Button
+              onPress={vm.handleSave}
+              label={vm.saving ? t('dogForm.saving') : t('dogForm.saveChanges')}
+              disabled={vm.saving}
+            />
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>

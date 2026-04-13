@@ -25,7 +25,7 @@ import type {
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BreedAutocomplete } from '@/components/BreedAutocomplete';
 import { ChipField } from '@/components/ChipField';
@@ -555,15 +555,19 @@ export default function NewDogScreen() {
         }}
       />
       <BottomSheetModalProvider>
-        <View className="flex-1 bg-white dark:bg-[#1C1C1E]">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1 bg-white dark:bg-[#1C1C1E]"
+        >
           <ScrollView
             ref={scrollRef}
             contentContainerStyle={{
               paddingHorizontal: 24,
               paddingTop: 16,
-              paddingBottom: bottom + 16,
+              paddingBottom: bottom + 120,
             }}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
             automaticallyAdjustKeyboardInsets
           >
             <StepIndicator step={step} />
@@ -609,7 +613,7 @@ export default function NewDogScreen() {
               )}
             </View>
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </BottomSheetModalProvider>
     </>
   );

@@ -167,7 +167,13 @@ export default function MapScreen() {
         }}
         showsUserLocation
         showsMyLocationButton={false}
-        onPress={vm.handleMapPress}
+        onPress={(e) => {
+          // react-native-maps bubbles marker taps to MapView.onPress on iOS with
+          // action: 'marker-press'. Ignore those so selecting a marker doesn't
+          // immediately deselect it.
+          if (e.nativeEvent.action === 'marker-press') return;
+          vm.handleMapPress();
+        }}
       >
         {/* Search radius circle */}
         <Circle

@@ -181,7 +181,7 @@ export default function DiscoveryScreen() {
 
         {vm.dogs.length > 0 && !vm.coordinates ? (
           <View className="flex-1 items-center justify-center px-8">
-            <Text className="text-5xl">📍</Text>
+            <Text style={{ fontSize: 48, lineHeight: 64 }}>📍</Text>
             <Text className="mt-4 text-center text-lg font-semibold text-gray-900 dark:text-[#F5F5F7]">
               {t('discovery.locationRequired')}
             </Text>

@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Ellipse, G } from 'react-native-svg';
 import { FormField } from '@/components/FormField';
@@ -33,7 +33,12 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        <View className="flex-1 justify-center px-8">
+        <ScrollView
+          contentContainerClassName="flex-grow justify-center px-8 py-8"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          showsVerticalScrollIndicator={false}
+        >
           <View className="mb-4 flex-row items-center gap-3">
             <PawLogo />
             <Text className="text-2xl font-bold text-primary">PawMeet</Text>
@@ -118,7 +123,7 @@ export default function LoginScreen() {
               />
             </>
           )}
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

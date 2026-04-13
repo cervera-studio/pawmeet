@@ -79,7 +79,22 @@ app.onError((err, c) => {
 
   // Zod validation errors return 400 — never expose raw details to client
   if (err.message.includes('Validation')) {
+    if (c.req.path.startsWith('/trpc/')) {
+      return c.json(
+        { error: { json: { message: ERROR_MESSAGES.INVALID_DATA, code: -32600, data: { code: 'BAD_REQUEST', httpStatus: 400, errorId } } } },
+        400,
+      );
+    }
     return c.json({ error: ERROR_MESSAGES.INVALID_DATA, errorId }, 400);
+  }
+
+  // tRPC clients expect a specific error envelope — keep them compatible so
+  // the mobile/admin error handlers can extract code + message.
+  if (c.req.path.startsWith('/trpc/')) {
+    return c.json(
+      { error: { json: { message: ERROR_MESSAGES.INTERNAL_ERROR, code: -32603, data: { code: 'INTERNAL_SERVER_ERROR', httpStatus: 500, errorId } } } },
+      500,
+    );
   }
 
   return c.json({ error: ERROR_MESSAGES.INTERNAL_ERROR, errorId }, 500);

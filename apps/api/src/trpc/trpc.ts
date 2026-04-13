@@ -115,14 +115,20 @@ async function getRateLimiter(
 function createRateLimitedProcedure(prefix: string, maxRequests: number, window: string) {
   return t.procedure.use(async ({ ctx, next }) => {
     const identifier = ctx.userId ?? ctx.clientIp;
-    const limiter = await getRateLimiter(prefix, maxRequests, window);
-    const { success } = await limiter.limit(identifier);
-
-    if (!success) {
-      throw new TRPCError({
-        code: 'TOO_MANY_REQUESTS',
-        message: 'Too many requests, please try again later',
-      });
+    try {
+      const limiter = await getRateLimiter(prefix, maxRequests, window);
+      const { success } = await limiter.limit(identifier);
+      if (!success) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: 'Too many requests, please try again later',
+        });
+      }
+    } catch (err) {
+      if (err instanceof TRPCError) throw err;
+      // Fail-open: if Redis/Upstash is unreachable, allow the request through
+      // rather than returning a 500. Rate limiting is a safety net, not a gate.
+      logger.warn('tRPC', `Rate limiter unavailable (${prefix}), failing open`, err);
     }
 
     return next();

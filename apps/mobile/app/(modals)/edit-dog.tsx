@@ -2,7 +2,16 @@ import { getBreedSize, SIZE_OPTIONS } from '@pawmeet/config';
 import type { DogSize, WalkTerrain, WalkTime } from '@pawmeet/types';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BreedAutocomplete } from '@/components/BreedAutocomplete';
 import { ChipField } from '@/components/ChipField';
@@ -333,7 +342,15 @@ export default function EditDogScreen() {
         options={{ headerShown: true, title: t('dogForm.editTitle', { name: vm.dog?.name ?? '' }) }}
       />
       <SafeAreaView edges={['bottom']} className="flex-1 bg-white dark:bg-[#1C1C1E]">
-        <ScrollView contentContainerClassName="px-6 py-4 pb-16" keyboardShouldPersistTaps="handled">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1"
+        >
+          <ScrollView
+            contentContainerClassName="px-6 py-4 pb-32"
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          >
           {vm.apiError ? (
             <View className="mb-4 rounded-xl bg-red-50 px-4 py-3">
               <Text className="text-sm text-red-600 dark:text-red-400">{vm.apiError}</Text>
@@ -347,7 +364,8 @@ export default function EditDogScreen() {
             label={vm.saving ? t('dogForm.saving') : t('dogForm.saveChanges')}
             disabled={vm.saving}
           />
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </>
   );

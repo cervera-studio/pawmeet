@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
 import { useGroupChatConversationViewModel } from './_vm/[eventId].view-model';
 
@@ -86,6 +86,8 @@ export default function GroupChatConversationScreen() {
   usePreventScreenCapture();
   const { t } = useTranslation();
   const vm = useGroupChatConversationViewModel();
+  const insets = useSafeAreaInsets();
+  const headerHeight = insets.top + (Platform.OS === 'ios' ? 44 : 56);
 
   return (
     <>
@@ -100,7 +102,7 @@ export default function GroupChatConversationScreen() {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           className="flex-1"
-          keyboardVerticalOffset={90}
+          keyboardVerticalOffset={headerHeight}
         >
           {/* Messages */}
           {vm.loadingMessages ? (

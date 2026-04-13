@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChatBubble } from '@/components/ChatBubble';
 import { ProposeWalkModal } from '@/components/ProposeWalkModal';
 import { usePreventScreenCapture } from '@/hooks/useScreenSecurity';
@@ -50,6 +50,9 @@ export default function ChatConversationScreen() {
   usePreventScreenCapture();
   const vm = useChatConversationViewModel();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  // Header = status bar (insets.top) + navigation bar (44 iOS / 56 Android).
+  const headerHeight = insets.top + (Platform.OS === 'ios' ? 44 : 56);
 
   return (
     <>
@@ -76,7 +79,7 @@ export default function ChatConversationScreen() {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           className="flex-1"
-          keyboardVerticalOffset={90}
+          keyboardVerticalOffset={headerHeight}
         >
           {/* Search bar */}
           {vm.searchActive && (

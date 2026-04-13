@@ -46,6 +46,20 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>{'\uD83D\uDCAC'}</Text>,
           tabBarBadge: totalUnreadCount > 0 ? totalUnreadCount : undefined,
         }}
+        listeners={({ navigation }) => ({
+          // Tapping the Chat tab always returns to the conversations list,
+          // so users aren't dropped back into the last open chat when they
+          // only have one active — they want to see the list first.
+          tabPress: (e) => {
+            const state = navigation.getState();
+            const chatRoute = state.routes.find((r: { name: string }) => r.name === 'chat');
+            const nestedIndex = (chatRoute as { state?: { index?: number } })?.state?.index ?? 0;
+            if (nestedIndex > 0) {
+              e.preventDefault();
+              navigation.navigate('chat', { screen: 'index' });
+            }
+          },
+        })}
       />
       <Tabs.Screen
         name="profile"

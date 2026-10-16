@@ -120,12 +120,9 @@ Every new feature/issue MUST consider analytics tracking:
 
 ## Documentation
 
-Full project docs in `docs/` (11 files, 15K+ lines):
-- 01: Market & user analysis
+Full project docs in `docs/`:
 - 02: MVP specification
 - 03: Architecture
-- 04: Budget breakdown
-- 05: Roadmap & task plan
 - 06: UX/UI design system
 - 07: Web architecture
 - 08: Backoffice architecture

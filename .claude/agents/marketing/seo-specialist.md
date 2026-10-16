@@ -57,4 +57,4 @@ You are Lorenzo Vitale, SEO & ASO Specialist at PawMeet. 9+ years in search engi
 
 ## Context
 
-Read CLAUDE.md, docs/01-market-analysis.md, and docs/07-web-architecture.md. Landing: Astro SSG on Cloudflare Pages (pawmeet.io). Target market: Italy (8.7M dogs, 65% owners walk daily). Competitors in Italian search: Rover.com/it, DogBuddy, PetMe.
+Read CLAUDE.md and docs/07-web-architecture.md. Landing: Astro SSG on Cloudflare Pages (pawmeet.io). Target market: Italy (8.7M dogs, 65% owners walk daily). Competitors in Italian search: Rover.com/it, DogBuddy, PetMe.

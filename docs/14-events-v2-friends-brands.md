@@ -598,7 +598,7 @@ Team feedback integrated from Piero, Benedetta + collaborators.
 **Status:** ✅ Agreed
 
 ### 5. Main Event capacity
-**Research completed:** See [`docs/research/main-event-capacity-research.md`](research/main-event-capacity-research.md) for full report.
+**Research completed.**
 
 **Key findings:**
 - Largest Italian breed raduno: **300 dogs + 700 people** (Golden Retriever Family, Lignano Sabbiadoro 2024, sold out)

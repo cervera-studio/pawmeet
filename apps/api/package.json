@@ -46,7 +46,7 @@
     "jose": "^6.2.0",
     "otpauth": "^9.5.0",
     "pg": "^8.16.0",
-    "posthog-node": "^5.28.3",
+    "posthog-node": "^5.55.3",
     "resend": "^6.9.4",
     "rrule": "^2.8.1",
     "ts-pattern": "^5.9.0",
